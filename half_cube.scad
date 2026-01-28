@@ -24,7 +24,12 @@ show_mech = true;
 module assembly() {
     difference() {
         union() {
-            if (show_base) color("cyan") base_plate();
+            // Base: Move to Bottom (Z = -size/2 + thick/2)
+            if (show_base) 
+                color("cyan") 
+                translate([0, 0, -size/2 + thick/2]) 
+                base_plate();
+                
             if (show_walls) color("lime") translate([-size/2 + thick/2, 0, 0]) mitered_wall_left();
             if (show_walls) color("lime") translate([size/2 - thick/2, 0, 0]) mitered_wall_right();
             
@@ -191,9 +196,10 @@ module welds() {
         cube([thick/2, size/2, thick/2], center=true);
         
     // 3. Mechanism to Base
-    // It's likely connected, but let's be sure.
-    // Center of Mechanism. Base Floor.
-    translate([0, 0, -size/2 + thick]) // Top of Base
+    // Base is now explicitly at bottom.
+    // Mechanism root is at -size/2 + thick.
+    // Weld at -size/2 + thick/2?
+    translate([0, 0, -size/2 + thick/2]) 
         cube([2, 2, 2], center=true);
 }
 
@@ -205,4 +211,13 @@ module emboss_text() {
 }
 
 
-assembly();
+// --- Main Render ---
+if (!is_undef(run_demo)) {
+    assembly();
+}
+
+// Fallback for direct execution in GUI (OpenSCAD defines nothing by default?)
+// Actually, usually we check 'is_undef(run_demo) && is_undef(is_library)'
+if (is_undef(is_library)) {
+    assembly();
+}

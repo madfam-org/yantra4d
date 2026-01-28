@@ -19,28 +19,41 @@ print(f"Verify Script: {VERIFY_SCRIPT}")
 
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
+ALLOWED_FILES = {
+    "half_cube.scad": os.path.abspath(os.path.join(BASE_DIR, "../../half_cube.scad")),
+    "tablaco.scad": os.path.abspath(os.path.join(BASE_DIR, "../../tablaco.scad"))
+}
+
 @app.route('/api/render', methods=['POST'])
 def render_stl():
     data = request.json
-    # Extract params with defaults
-    size = data.get('size', 20.0)
-    thick = data.get('thick', 2.5)
-    show_base = str(data.get('show_base', True)).lower()
-    show_walls = str(data.get('show_walls', True)).lower()
-    show_mech = str(data.get('show_mech', True)).lower()
+    scad_filename = data.get('scad_file', 'half_cube.scad')
+    
+    if scad_filename not in ALLOWED_FILES:
+        return jsonify({"status": "error", "error": f"Invalid SCAD file: {scad_filename}"}), 400
+        
+    scad_path = ALLOWED_FILES[scad_filename]
     
     # Construct OpenSCAD command
-    # openscad -o output.stl -D var=val ... input.scad
     cmd = [
         "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
         "-o", PREVIEW_STL,
-        "-D", f"size={size}",
-        "-D", f"thick={thick}",
-        "-D", f"show_base={show_base}",
-        "-D", f"show_walls={show_walls}",
-        "-D", f"show_mech={show_mech}",
-        SCAD_FILE_PATH
     ]
+    
+    # Append all other parameters as -D flags
+    for key, value in data.items():
+        if key == 'scad_file':
+            continue
+            
+        # Handle boolean conversion for OpenSCAD
+        if isinstance(value, bool):
+            val_str = str(value).lower()
+        else:
+            val_str = str(value)
+            
+        cmd.extend(["-D", f"{key}={val_str}"])
+        
+    cmd.append(scad_path)
     
     print(f"Running: {' '.join(cmd)}")
     try:

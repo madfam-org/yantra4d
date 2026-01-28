@@ -2,11 +2,28 @@
 
 **Tablaco Studio** is a local web application for visualizing, customizing, and verifying the design.
 
+---
+
+## Key Features
+- **Two-Step Workflow**:
+    1.  **Unit Mode**: Visualize and verify a single `half_cube` unit. Adjust Size, Thickness, Rod Diameter, and Primitive Visibility.
+    2.  **Grid Mode**: Generate a full `tablaco` grid using the defined unit. Adjust Rows, Columns, and Rod Extension.
+- **Interactive 3D Viewer**: Real-time rendering of the generated STL (Unit or Grid) with loading progress.
+- **One-Click Verification**: Run the `verify_design.py` suite directly from the UI (Unit Mode).
+- **Live Parameter Controls**: Sliders and toggles update the model dynamically.
+- **Theme Toggle**: Switch between Light, Dark, and System (Auto) modes. Preference is persisted.
+- **Bilingual UI**: English and Spanish (Spanish is default). Toggled via a Globe icon.
+- **Export Capabilities**:
+    - **Download STL**: Save the current model as an STL file.
+    - **Export Images**: Capture screenshots from predefined camera angles (Isometric, Top, Front, Right).
+
+---
+
 ## Architecture
 
 The app follows a standard client-server model:
--   **Frontend**: React (Vite)
--   **Backend**: Python (Flask)
+-   **Frontend**: React (Vite) with Tailwind CSS and Shadcn UI.
+-   **Backend**: Python (Flask).
 
 ### Backend (`web_interface/backend/`)
 
@@ -15,7 +32,7 @@ The Flask entry point. It exposes a REST API via port `5000`.
 
 -   **API Endpoints**:
     -   `POST /api/render`:
-        -   **Input**: JSON `{size, thick, show_base, ...}`
+        -   **Input**: JSON `{scad_file, size, rows, ...}`.
         -   **Action**: Calls OpenSCAD via subprocess with `-D` flags.
         -   **Output**: JSON `{stl_url: "..."}`
     -   `POST /api/verify`:
@@ -25,15 +42,23 @@ The Flask entry point. It exposes a REST API via port `5000`.
 
 ### Frontend (`web_interface/frontend/`)
 
-Built with React + Vite + Three.js (Fiber).
+Built with **React + Vite + Three.js (Fiber) + Tailwind CSS + Shadcn UI**.
 
 #### Key Components
--   **`App.jsx`**: Main state container. Manages parameters and API calls.
--   **`Controls.jsx`**: Sidebar with sliders and checkboxes. Debounces input to avoid flooding the backend.
+-   **`App.jsx`**: Main state container. Manages parameters, **mode state** (Unit vs Grid), theme/language toggles, and API calls.
+-   **`Controls.jsx`**: Sidebar component. Renders different inputs based on the active mode (`mode` prop). Uses Shadcn `Slider`, `Checkbox`, and `Label`.
 -   **`Viewer.jsx`**: The 3D view.
-    -   Uses `@react-three/fiber` `Canvas`.
+    -   Uses `@react-three/fiber` `Canvas` with `preserveDrawingBuffer` for screenshots.
     -   Uses `STLLoader` to parse the binary STL.
     -   Includes `OrbitControls` for user interaction.
+    -   Exposes `ref` API with `captureSnapshot()` and `setCameraView(view)` methods.
+    -   Displays a loading overlay with progress percentage.
+
+#### Contexts (`web_interface/frontend/src/contexts/`)
+-   **`ThemeProvider.jsx`**: Manages Light/Dark/System modes. Persists to `localStorage`. Applies `.dark` class to `<html>`.
+-   **`LanguageProvider.jsx`**: Manages English/Spanish translations. Provides `t(key)` function for lookups.
+
+---
 
 ### Running the App
 
@@ -49,3 +74,4 @@ Built with React + Vite + Three.js (Fiber).
 3.  **Access**: http://localhost:5173
 
 [Back to Index](./index.md)
+

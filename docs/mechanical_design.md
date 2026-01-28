@@ -2,6 +2,8 @@
 
 The core of the Tablaco project is the **Parametric Half-Cube** (`half_cube.scad`), a 3-walled interlocking component designed for FDM 3D printing.
 
+---
+
 ## File: `half_cube.scad`
 
 This OpenSCAD script defines a single "Half-Cube" which, when printed twice and rotated 180 degrees, forms a complete 20mm cube.
@@ -12,7 +14,7 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 | :--- | :--- | :--- |
 | `size` | `20.0` | The outer dimension of the cube (mm). |
 | `thick` | `2.5` | Wall thickness. Includes base and side walls. |
-| `rod_D` | `6.0` | Diameter of the central rod hole (not currently used for interlocking but defined). |
+| `rod_D` | `6.0` | Diameter of the central rod hole. Used for grid assembly rods. |
 | `clearance` | `0.2` | General clearance for bores. |
 | `fit_clear` | `0.1` | **Critical**: Physical clearance gap applied to miter faces to ensure assembly. |
 | `show_base` | `true` | Toggle visibility of the Base Plate. |
@@ -44,4 +46,38 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 -   **Geometry**: Small hidden cubes at internal intersections.
 -   **Purpose**: Forces OpenSCAD to recognize the assembly as a single connected volume ("Volumes: 1") by bridging any potential arithmetic gaps between primitives.
 
+---
+
+## File: `tablaco.scad`
+
+This script generates a **grid assembly** of full cubes, including vertical rods and stopper rails.
+
+### Parameters
+
+| Parameter | Default | Description |
+| :--- | :--- | :--- |
+| `rows` | `8` | Number of rows in the grid (vertical). |
+| `cols` | `8` | Number of columns in the grid (horizontal). |
+| `rod_extension` | `10` | How far the rods protrude beyond the stoppers (mm). 0 = flush. |
+
+### Modules
+
+#### 1. `full_cube()`
+-   Combines two `assembly()` calls (from `half_cube.scad`), one rotated 180 degrees, to form a complete interlocking cube.
+
+#### 2. `stopper_rail()`
+-   A horizontal bar placed at the top and bottom of the grid.
+-   Contains holes matching `rod_D` for the vertical rods to pass through.
+-   Acts as a structural cap for the assembly.
+
+#### 3. `vertical_rod()`
+-   A simple cylinder with diameter `rod_D`.
+-   Length is dynamically calculated: `(rows * size) + (2 * rail_H) + (2 * rod_extension)`.
+
+### Assembly Logic
+1.  A nested loop generates a grid of `full_cube()` modules.
+2.  Vertical rods are placed at the center of each column.
+3.  Stoppers are placed flush at the top and bottom of the grid stack.
+
 [Back to Index](./index.md)
+

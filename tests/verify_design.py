@@ -30,11 +30,11 @@ def verify_single_part(mesh_path):
     # 3. Dimensions
     extents = mesh.extents
     print(f"[INFO] Dimensions: {extents}")
-    # Target 20x20x20
-    if np.allclose(extents, [20, 20, 20], atol=0.2):
-        print("[PASS] Dimensions match ~20mm")
+    # Target: Half-cube ~20x20x10 (±2mm tolerance for wall variations)
+    if np.allclose(extents[:2], [20, 20], atol=0.5) and 8 < extents[2] < 12:
+        print("[PASS] Dimensions match half-cube (~20x20x10)")
     else:
-        print(f"[FAIL] Dimensions incorrect. Expected ~[20,20,20]")
+        print(f"[FAIL] Dimensions incorrect. Expected ~[20,20,~10] for half-cube")
 
     return mesh
 

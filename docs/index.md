@@ -13,7 +13,7 @@ Welcome to the documentation for the Tablaco Interlocking Cube project.
 ### 1. Generating Models
 ```bash
 # Standard Model
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl half_cube.scad
+/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl scad/half_cube.scad
 ```
 
 ### 2. Running Verification

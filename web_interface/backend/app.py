@@ -9,7 +9,7 @@ CORS(app)
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SCAD_FILE_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../half_cube.scad"))
+SCAD_FILE_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../scad/half_cube.scad"))
 STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 PREVIEW_STL = os.path.join(STATIC_FOLDER, "preview.stl")
 VERIFY_SCRIPT = os.path.abspath(os.path.join(BASE_DIR, "../../tests/verify_design.py"))
@@ -20,8 +20,8 @@ print(f"Verify Script: {VERIFY_SCRIPT}")
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
 ALLOWED_FILES = {
-    "half_cube.scad": os.path.abspath(os.path.join(BASE_DIR, "../../half_cube.scad")),
-    "tablaco.scad": os.path.abspath(os.path.join(BASE_DIR, "../../tablaco.scad"))
+    "half_cube.scad": os.path.abspath(os.path.join(BASE_DIR, "../../scad/half_cube.scad")),
+    "tablaco.scad": os.path.abspath(os.path.join(BASE_DIR, "../../scad/tablaco.scad"))
 }
 
 @app.route('/api/render', methods=['POST'])

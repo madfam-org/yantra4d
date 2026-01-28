@@ -38,7 +38,7 @@ Full documentation is available in the [`docs/`](./docs/index.md) directory:
 ### Quick Run
 Generate the default model:
 ```bash
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl half_cube.scad
+/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl scad/half_cube.scad
 ```
 
 ### Launching Tablaco Studio

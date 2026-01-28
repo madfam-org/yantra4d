@@ -25,14 +25,15 @@ Full documentation is available in the [`docs/`](./docs/index.md) directory:
 
 ## Tech Stack
 -   **CAD**: OpenSCAD
--   **Backend**: Python 3 (Flask, trimesh)
+-   **Backend**: Python 3 (Flask + Blueprints, gunicorn)
 -   **Frontend**: React (Vite), Tailwind CSS, Shadcn UI, Three.js
+-   **Containerization**: Docker + docker-compose
 
 ## Usage
 
 ### Prerequisites
 -   OpenSCAD
--   Python 3 (trimesh, flask, flask-cors)
+-   Python 3.10+ (`pip install -r web_interface/backend/requirements.txt`)
 -   Node.js (v18+)
 
 ### Quick Run
@@ -42,6 +43,8 @@ Generate the default model:
 ```
 
 ### Launching Tablaco Studio
+
+#### Development
 ```bash
 # Terminal 1: Backend
 python3 web_interface/backend/app.py
@@ -52,4 +55,24 @@ npm install  # First time only
 npm run dev
 ```
 Open http://localhost:5173
+
+#### Production (Docker)
+```bash
+docker-compose up --build
+```
+Open http://localhost:3000
+
+#### Production (Manual)
+```bash
+# Backend with gunicorn
+cd web_interface/backend
+pip install -r requirements.txt
+gunicorn -w 2 -b 0.0.0.0:5000 --timeout 300 app:app
+
+# Frontend
+cd web_interface/frontend
+npm run build
+npm run preview
+```
+
 

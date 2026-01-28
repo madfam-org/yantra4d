@@ -1,95 +1,62 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
-import subprocess
+"""
+Tablaco Backend API
+Production-ready Flask application for OpenSCAD rendering.
+
+Structure:
+- routes/render.py   - Render endpoints (estimate, render, render-stream)
+- routes/health.py   - Health check endpoint
+- routes/verify.py   - Verification endpoint
+- services/openscad.py - OpenSCAD subprocess wrapper
+- config.py          - Configuration management
+"""
+import logging
 import os
-import json
 
-app = Flask(__name__)
-CORS(app)
+from flask import Flask, send_from_directory
+from flask_cors import CORS
 
-# Configuration
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SCAD_FILE_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../scad/half_cube.scad"))
-STATIC_FOLDER = os.path.join(BASE_DIR, "static")
-PREVIEW_STL = os.path.join(STATIC_FOLDER, "preview.stl")
-VERIFY_SCRIPT = os.path.abspath(os.path.join(BASE_DIR, "../../tests/verify_design.py"))
+from config import Config
+from routes.render import render_bp
+from routes.health import health_bp
+from routes.verify import verify_bp
 
-print(f"SCAD Path: {SCAD_FILE_PATH}")
-print(f"Verify Script: {VERIFY_SCRIPT}")
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG if Config.DEBUG else logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
-os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-ALLOWED_FILES = {
-    "half_cube.scad": os.path.abspath(os.path.join(BASE_DIR, "../../scad/half_cube.scad")),
-    "tablaco.scad": os.path.abspath(os.path.join(BASE_DIR, "../../scad/tablaco.scad"))
-}
-
-@app.route('/api/render', methods=['POST'])
-def render_stl():
-    data = request.json
-    scad_filename = data.get('scad_file', 'half_cube.scad')
+def create_app():
+    """Application factory for Flask app."""
+    app = Flask(__name__)
+    CORS(app)
     
-    if scad_filename not in ALLOWED_FILES:
-        return jsonify({"status": "error", "error": f"Invalid SCAD file: {scad_filename}"}), 400
-        
-    scad_path = ALLOWED_FILES[scad_filename]
+    # Ensure static directory exists
+    Config.STATIC_DIR.mkdir(parents=True, exist_ok=True)
     
-    # Construct OpenSCAD command
-    cmd = [
-        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD",
-        "-o", PREVIEW_STL,
-    ]
+    # Register blueprints
+    app.register_blueprint(render_bp)
+    app.register_blueprint(health_bp)
+    app.register_blueprint(verify_bp)
     
-    # Append all other parameters as -D flags
-    for key, value in data.items():
-        if key == 'scad_file':
-            continue
-            
-        # Handle boolean conversion for OpenSCAD
-        if isinstance(value, bool):
-            val_str = str(value).lower()
-        else:
-            val_str = str(value)
-            
-        cmd.extend(["-D", f"{key}={val_str}"])
-        
-    cmd.append(scad_path)
+    # Static file serving
+    @app.route('/static/<path:filename>')
+    def serve_static(filename):
+        return send_from_directory(str(Config.STATIC_DIR), filename)
     
-    print(f"Running: {' '.join(cmd)}")
-    try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-        return jsonify({
-            "status": "success", 
-            "stl_url": "http://localhost:5000/static/preview.stl",
-            "log": result.stderr
-        })
-    except subprocess.CalledProcessError as e:
-        return jsonify({"status": "error", "error": e.stderr}), 500
+    logger.info(f"Tablaco Backend initialized - Debug: {Config.DEBUG}")
+    logger.info(f"SCAD Directory: {Config.SCAD_DIR}")
+    logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")
+    
+    return app
 
-@app.route('/api/verify', methods=['POST'])
-def verify_design():
-    # Run verification on the PREVIEW stl
-    if not os.path.exists(PREVIEW_STL):
-        return jsonify({"status": "error", "message": "No preview generated yet"}), 400
-        
-    cmd = ["python3", VERIFY_SCRIPT, PREVIEW_STL]
-    print(f"Verifying: {' '.join(cmd)}")
-    
-    try:
-        # Run and capture stdout
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        success = result.returncode == 0
-        return jsonify({
-            "status": "success" if success else "failure",
-            "output": result.stdout + "\n" + result.stderr,
-            "passed": success
-        })
-    except Exception as e:
-        return jsonify({"status": "error", "error": str(e)}), 500
 
-@app.route('/static/<path:filename>')
-def serve_static(filename):
-    return send_from_directory(STATIC_FOLDER, filename)
+# Create app instance for gunicorn
+app = create_app()
+
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    logger.info(f"Starting development server on port {Config.PORT}")
+    app.run(debug=Config.DEBUG, port=Config.PORT, host=Config.HOST)

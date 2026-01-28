@@ -1,14 +1,21 @@
+// Suppress default render in half_cube
+is_library = 1;
 include <half_cube.scad>
 
 // --- Parameters ---
 rows = 8;
 cols = 8;
 rod_extension = 10;
+rotation_clearance = 2;  // Gap between rotating cubes (mm)
 is_library = true; // Suppress half_cube single render
 
 // --- Derived ---
-total_width = cols * size;
-total_height = rows * size;
+// Grid pitch = cube diagonal + clearance for free rotation
+grid_pitch = size * sqrt(2) + rotation_clearance;
+
+// Total dimensions based on grid pitch
+total_width = (cols - 1) * grid_pitch + size;  // First and last cubes contribute half their size
+total_height = rows * size;  // Vertical stacking remains at cube size
 
 // Rod Logic:
 // The assembly stack is:
@@ -41,12 +48,12 @@ module stopper_rail() {
     rail_L = total_width;
     
     difference() {
-        translate([rail_L/2 - size/2, 0, 0])
+        translate([(cols-1)*grid_pitch/2, 0, 0])
              cube([rail_L, rail_W, rail_H], center=true);
              
-        // Holes for Rods
+        // Holes for Rods (spaced at grid_pitch)
         for (i = [0 : cols-1]) {
-            translate([i*size, 0, 0])
+            translate([i*grid_pitch, 0, 0])
                 cylinder(r=rod_D/2 + clearance, h=rail_H*3, center=true);
         }
     }
@@ -59,33 +66,41 @@ module vertical_rod() {
 
 // --- Main Assembly ---
 
+// --- Render Logic ---
+render_mode = 0; // 0=all, 1=bottom, 2=top, 3=rods, 4=stoppers
+
+// --- Main Assembly ---
+
 // 1. Grid of Cubes
 for (j = [0 : rows-1]) {
     for (i = [0 : cols-1]) {
-        translate([i*size, 0, j*size])
-            full_cube();
+        translate([i*grid_pitch, 0, j*size]) {
+            // Part A: Right-side up (Bottom Unit)
+            if (render_mode == 0 || render_mode == 1)
+                assembly();
+            
+            // Part B: Upside down and Rotated 90 (Top Unit)
+            if (render_mode == 0 || render_mode == 2)
+                rotate([180, 0, 90]) assembly();
+        }
     }
 }
 
 // 2. Vertical Rods (Per Column)
-for (i = [0 : cols-1]) {
-    // Center rod vertically relative to the grid
-    // Grid Z goes from -size/2 (bottom of first cube) to (rows-1)*size + size/2
-    // Actually, full_cube is centered at 0.
-    // So row 0 is at Z=0.
-    // Row 1 is at Z=20.
-    // Total Z range: [-10, (rows-1)*20 + 10].
-    // Center Z = (rows-1)*10.
-    
-    translate([i*size, 0, (rows-1)*size/2])
-        vertical_rod();
+if (render_mode == 0 || render_mode == 3) {
+    for (i = [0 : cols-1]) {
+        translate([i*grid_pitch, 0, (rows-1)*size/2])
+            vertical_rod();
+    }
 }
 
 // 3. Stoppers (Top and Bottom)
-// Bottom Stopper (Flush with bottom of grid at Z=-size/2)
-translate([0, 0, -size/2 - rail_H/2])
-    stopper_rail();
+if (render_mode == 0 || render_mode == 4) {
+    // Bottom Stopper
+    translate([0, 0, -size/2 - rail_H/2])
+        stopper_rail();
 
-// Top Stopper (Flush with top of grid at Z = (rows-1)*size + size/2)
-translate([0, 0, (rows-1)*size + size/2 + rail_H/2])
-    stopper_rail();
+    // Top Stopper
+    translate([0, 0, (rows-1)*size + size/2 + rail_H/2])
+        stopper_rail();
+}

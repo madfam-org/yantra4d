@@ -23,22 +23,33 @@
 
 The app follows a standard client-server model:
 -   **Frontend**: React (Vite) with Tailwind CSS and Shadcn UI.
--   **Backend**: Python (Flask).
+-   **Backend**: Python (Flask) with Blueprint pattern.
 
-### Backend (`web_interface/backend/`)
+### Backend Structure (`web_interface/backend/`)
 
-#### `app.py`
-The Flask entry point. It exposes a REST API via port `5000`.
+```
+backend/
+├── app.py              # App factory, blueprint registration
+├── config.py           # Centralized configuration (env vars)
+├── requirements.txt    # Python dependencies
+├── routes/
+│   ├── render.py       # /api/estimate, /api/render, /api/render-stream
+│   ├── health.py       # /api/health
+│   └── verify.py       # /api/verify
+├── services/
+│   └── openscad.py     # OpenSCAD subprocess wrapper
+└── static/             # Generated STL files
+```
 
--   **API Endpoints**:
-    -   `POST /api/render`:
-        -   **Input**: JSON `{scad_file, size, rows, ...}`.
-        -   **Action**: Calls OpenSCAD via subprocess with `-D` flags.
-        -   **Output**: JSON `{stl_url: "..."}`
-    -   `POST /api/verify`:
-        -   **Action**: Runs `verify_design.py` against the last generated STL.
-        -   **Output**: JSON `{passed: bool, output: str}`
--   **Static Serving**: Serves the generated `preview.stl` from the `static/` folder.
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/estimate` | POST | Estimate render time |
+| `/api/render` | POST | Synchronous render |
+| `/api/render-stream` | POST | SSE progress streaming |
+| `/api/verify` | POST | Run verification suite |
+| `/api/health` | GET | Health check for monitoring |
 
 ### Frontend (`web_interface/frontend/`)
 
@@ -60,18 +71,37 @@ Built with **React + Vite + Three.js (Fiber) + Tailwind CSS + Shadcn UI**.
 
 ---
 
-### Running the App
+## Running the App
 
-1.  **Start Backend**:
-    ```bash
-    python3 web_interface/backend/app.py
-    ```
-2.  **Start Frontend**:
-    ```bash
-    cd web_interface/frontend
-    npm run dev
-    ```
-3.  **Access**: http://localhost:5173
+### Development Mode
+```bash
+# Terminal 1: Backend
+python3 web_interface/backend/app.py
+
+# Terminal 2: Frontend
+cd web_interface/frontend
+npm run dev
+```
+Access: http://localhost:5173
+
+### Production Mode
+```bash
+# Backend with gunicorn
+cd web_interface/backend
+gunicorn -w 2 -b 0.0.0.0:5000 --timeout 300 app:app
+
+# Frontend (build + serve)
+cd web_interface/frontend
+npm run build
+npm run preview
+```
+
+### Docker
+```bash
+docker-compose up --build
+```
+Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 
 [Back to Index](./index.md)
+
 

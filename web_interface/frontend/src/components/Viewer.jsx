@@ -1,8 +1,8 @@
 import React, { Suspense, forwardRef, useImperativeHandle } from 'react'
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
-import { OrbitControls, Center, Grid, Environment, Edges } from '@react-three/drei'
+import { OrbitControls, Center, Grid, Environment, Edges, Bounds } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
-import { useLanguage } from "../contexts/LanguageProvider" // Use translation for loading text
+import { useLanguage } from "../contexts/LanguageProvider"
 
 // Helper for API access inside Canvas context
 const SceneController = forwardRef((props, ref) => {
@@ -16,7 +16,6 @@ const SceneController = forwardRef((props, ref) => {
         },
         setCameraView: (view) => {
             const dist = 100
-            const animDur = 0 // Immediate for now, could animate
 
             // Standard ThreeJS Y-up (Model is rotated to match)
             switch (view) {
@@ -42,14 +41,13 @@ const SceneController = forwardRef((props, ref) => {
 
 SceneController.displayName = "SceneController"
 
-const Model = ({ url }) => {
+const Model = ({ url, color }) => {
     const geom = useLoader(STLLoader, url)
     // Fix rotation for Z-up STL to Y-up ThreeJS
     return (
         <mesh geometry={geom} rotation={[-Math.PI / 2, 0, 0]}>
-            {/* Main Material: Grey matte with slight sheen */}
             <meshStandardMaterial
-                color="#e5e7eb"
+                color={color || "#e5e7eb"}
                 roughness={0.5}
                 metalness={0.1}
             />
@@ -59,7 +57,7 @@ const Model = ({ url }) => {
     )
 }
 
-const Viewer = forwardRef(({ stlUrl, loading, progress }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, loading, progress }, ref) => {
     const { t } = useLanguage()
 
     return (
@@ -96,11 +94,18 @@ const Viewer = forwardRef(({ stlUrl, loading, progress }, ref) => {
                 />
 
                 <Suspense fallback={null}>
-                    {stlUrl && (
+                    {/* Bounds will calculate the bounding box and fit the camera */}
+                    <Bounds fit clip observe margin={1.2}>
                         <Center top>
-                            <Model url={stlUrl} />
+                            {parts.map((part) => (
+                                <Model
+                                    key={part.url} // URL includes cache bust timestamp so it works as key
+                                    url={part.url}
+                                    color={colors[part.type] || (part.type === 'main' ? colors.bottom : "#e5e7eb")}
+                                />
+                            ))}
                         </Center>
-                    )}
+                    </Bounds>
                 </Suspense>
             </Canvas>
         </div>

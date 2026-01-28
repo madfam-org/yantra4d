@@ -6,7 +6,7 @@ $fn = 64;
 // --- Parameters ---
 size = 20.0;
 thick = 2.5;
-rod_D = 6.0;
+rod_D = 3.0;
 clearance = 0.2; // Rod/Miter clearance
 snap_h = 2.0;
 fit_clear = 0.1; // Miter fit clearance (physical gap)

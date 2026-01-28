@@ -14,7 +14,7 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 | :--- | :--- | :--- |
 | `size` | `20.0` | The outer dimension of the cube (mm). |
 | `thick` | `2.5` | Wall thickness. Includes base and side walls. |
-| `rod_D` | `6.0` | Diameter of the central rod hole. Used for grid assembly rods. |
+| `rod_D` | `3.0` | Diameter of the central rod hole. Used for grid assembly rods. |
 | `clearance` | `0.2` | General clearance for bores. |
 | `fit_clear` | `0.1` | **Critical**: Physical clearance gap applied to miter faces to ensure assembly. |
 | `show_base` | `true` | Toggle visibility of the Base Plate. |

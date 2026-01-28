@@ -19,13 +19,13 @@ function App() {
     // Unit Params
     size: 20.0,
     thick: 2.5,
-    rod_D: 6.0,
+    rod_D: 3.0,
     show_base: true,
     show_walls: true,
     show_mech: true,
     // Grid Params
-    rows: 4,
-    cols: 4,
+    rows: 8,
+    cols: 8,
     rod_extension: 10
   })
 

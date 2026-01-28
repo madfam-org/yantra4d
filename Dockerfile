@@ -3,8 +3,11 @@ FROM python:3.12-slim
 
 # Install system dependencies for OpenSCAD
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openscad && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get install -y --no-install-recommends \
+  openscad \
+  fonts-liberation \
+  fontconfig && \
+  rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -23,6 +26,8 @@ ENV FLASK_DEBUG=false
 ENV OPENSCAD_PATH=/usr/bin/openscad
 ENV PORT=5000
 ENV HOST=0.0.0.0
+ENV SCAD_DIR=/app/scad
+ENV VERIFY_SCRIPT=/app/tests/verify_design.py
 
 # Expose port
 EXPOSE 5000

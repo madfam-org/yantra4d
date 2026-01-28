@@ -5,10 +5,16 @@ class Config:
     """Application configuration with environment variable support."""
     
     # Paths
+    # Paths
     BASE_DIR = Path(__file__).parent
-    SCAD_DIR = BASE_DIR.parent.parent / "scad"
+    
+    _default_scad = BASE_DIR.parent.parent / "scad"
+    SCAD_DIR = Path(os.getenv("SCAD_DIR", _default_scad))
+    
     STATIC_DIR = BASE_DIR / "static"
-    VERIFY_SCRIPT = BASE_DIR.parent.parent / "tests" / "verify_design.py"
+    
+    _default_verify = BASE_DIR.parent.parent / "tests" / "verify_design.py"
+    VERIFY_SCRIPT = Path(os.getenv("VERIFY_SCRIPT", _default_verify))
     
     # Server
     DEBUG = os.getenv("FLASK_DEBUG", "false").lower() == "true"

@@ -16,4 +16,4 @@ if (render_mode == 0 || render_mode == 1)
 
 // Part B: Upside down and Rotated 90 (Top Unit)
 if (render_mode == 0 || render_mode == 2)
-    rotate([180, 0, 90]) assembly();
+    rotate([180, 0, 90]) assembly(flipped=true);

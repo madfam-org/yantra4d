@@ -71,7 +71,7 @@ def run_render(cmd: list) -> tuple[bool, str]:
         return False, e.stderr
 
 
-def stream_render(cmd: list, part: str, part_base: float, part_weight: float):
+def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int):
     """
     Generator that streams OpenSCAD progress as SSE events.
     Yields JSON-formatted SSE data strings.
@@ -83,7 +83,9 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float):
     yield json.dumps({
         'event': 'part_start', 
         'part': part, 
-        'progress': round(initial_progress)
+        'progress': round(initial_progress),
+        'index': index,
+        'total': total
     })
     
     # Run with Popen to stream stderr

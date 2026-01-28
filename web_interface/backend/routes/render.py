@@ -123,7 +123,7 @@ def render_stl_stream():
             cmd = build_openscad_command(output_path, scad_path, data, mode_id)
             
             # Stream progress events
-            for event_data in stream_render(cmd, part, part_base, part_weight):
+            for event_data in stream_render(cmd, part, part_base, part_weight, i, num_parts):
                 yield f"data: {event_data}\n\n"
                 event = json.loads(event_data)
                 if event.get('event') == 'part_done':

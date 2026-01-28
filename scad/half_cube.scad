@@ -15,13 +15,23 @@ fit_clear = 0.2;      // Miter face clearance (increased per research)
 show_base = true;
 show_walls = true;
 show_mech = true;
+show_letter = true;
+
+// --- Flip Mode (for top unit) ---
+is_flipped = false;        // true = top unit (rotated mechanism, inverted letter)
+
+// --- Letter Parameters ---
+letter = is_flipped ? "F" : "V";  // Default: V for bottom, F for top
+letter_emboss = false;     // true = raised, false = carved
+letter_depth = 0.5;        // Depth/height of letter (mm)
+letter_size = 6;           // Font size (mm)
 
 // Derived
 cyl_R = 4.5;          // Mechanism cylinder radius
 cyl_H = size/2 - thick - fit_clear; // Height from base top to part top
 
 // --- Main Assembly ---
-module assembly() {
+module assembly(flipped=is_flipped) {
     difference() {
         union() {
             // 1. Base Plate (bottom of U-channel)
@@ -41,12 +51,20 @@ module assembly() {
             // Position at base plate bottom (z=-10) so base_ring spans through base
             if (show_mech)
                 translate([0, 0, -size/2])  // Start at very bottom of part
-                    mechanism_pillars();
+                    mechanism_pillars(flipped=flipped);
+            
+            // 4. Letter (embossed mode - raised)
+            if (show_letter && letter_emboss)
+                letter_geometry(flipped=flipped);
         }
         
         // Global subtractions
         // Rod bore through center
         cylinder(r=rod_D/2 + clearance, h=size*2, center=true);
+        
+        // Letter (carved mode - recessed)
+        if (show_letter && !letter_emboss)
+            letter_geometry(flipped=flipped);
     }
 }
 
@@ -81,12 +99,44 @@ module mitered_wall() {
         ]);
 }
 
+// --- Letter Geometry ---
+// Places letter on left wall exterior
+// Flipped 180° for top unit so it reads correctly after assembly
+module letter_geometry(flipped=is_flipped) {
+    // Position on left wall exterior face
+    wall_x = -size/2;  // Left wall position
+    letter_z = -size/4;  // Center of wall height
+    
+    // Determine letter and rotation based on local flipped state
+    local_letter = flipped ? "F" : "V";
+    
+    // Rotation: 90° to face outward from wall
+    // When flipped: add 180° so letter reads correctly after assembly flip
+    flip_angle = flipped ? 180 : 0;
+    
+    translate([wall_x, 0, letter_z])
+        rotate([90, flip_angle, 90]) { // Face outward (-X direction)
+            // Counter-mirror for flipped unit to ensure text reads Left-to-Right
+            scale([flipped ? -1 : 1, 1, 1])
+            
+            linear_extrude(letter_depth + (letter_emboss ? 0 : thick))
+                text(local_letter, size=letter_size, halign="center", valign="center", 
+                     font="Liberation Sans:style=Bold");
+}
+}
+
 // --- Mechanism Pillars ---
-// Two opposing quadrant pillars (0° and 180°) with a solid base ring
-module mechanism_pillars() {
+// Two opposing quadrant pillars with a solid base ring
+// Bottom unit: pillars at 0°/180°, cuts at 90°/270°
+// Flipped unit: pillars at 90°/270°, cuts at 0°/180° (rotated 90°)
+module mechanism_pillars(flipped=is_flipped) {
     base_ring_h = thick + 0.1;  // Height of solid ring = base plate thickness + overlap
     pillar_height = cyl_H;
     
+    // Rotate entire mechanism 90° for flipped (top) unit
+    mech_rotation = flipped ? 90 : 0;
+    
+    rotate([0, 0, mech_rotation])
     union() {
         // 1. Solid base ring (no wedge cuts) - this connects to base plate
         cylinder(r=cyl_R, h=base_ring_h);

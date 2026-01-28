@@ -1,10 +1,10 @@
 # Mechanical Design Documentation
 
-The core of the Tablaco project is the **Parametric Half-Cube** (`half_cube.scad`), a 3-walled interlocking component designed for FDM 3D printing.
+The core of the Tablaco project is the **Parametric Half-Cube** (`scad/half_cube.scad`), a 3-walled interlocking component designed for FDM 3D printing.
 
 ---
 
-## File: `half_cube.scad`
+## File: `scad/half_cube.scad`
 
 This OpenSCAD script defines a single "Half-Cube" which, when printed twice and rotated 180 degrees, forms a complete 20mm cube.
 
@@ -48,7 +48,7 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 
 ---
 
-## File: `tablaco.scad`
+## File: `scad/tablaco.scad`
 
 This script generates a **grid assembly** of full cubes, including vertical rods and stopper rails.
 

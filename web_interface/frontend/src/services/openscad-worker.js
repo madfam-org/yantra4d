@@ -18,7 +18,7 @@ import { createOpenSCAD } from 'openscad-wasm'
 let openscadInstance = null
 let scadFilesLoaded = false
 
-function detectPhase(line) {
+export function detectPhase(line) {
   if (line.includes('Compiling')) return 'compiling'
   if (line.includes('CGAL')) return 'cgal'
   if (line.includes('Rendering') || line.includes('Geometries')) return 'rendering'
@@ -26,7 +26,7 @@ function detectPhase(line) {
   return null
 }
 
-function isLogWorthy(line) {
+export function isLogWorthy(line) {
   return line.includes('Compiling') || line.includes('Parsing') ||
     line.includes('CGAL') || line.includes('Geometries') ||
     line.includes('Rendering') || line.includes('Total') ||

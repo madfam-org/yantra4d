@@ -10,6 +10,7 @@ import json
 from flask import Blueprint, request, jsonify
 
 from config import Config
+from manifest import get_manifest
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +18,6 @@ verify_bp = Blueprint('verify', __name__)
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
 VERIFY_SCRIPT = str(Config.VERIFY_SCRIPT)
-PARTS_MAP = Config.PARTS_MAP
-
-# Map frontend mode to SCAD file
-MODE_TO_SCAD = {
-    "unit": "half_cube.scad",
-    "assembly": "assembly.scad",
-    "grid": "tablaco.scad"
-}
 
 
 @verify_bp.route('/api/verify', methods=['POST'])
@@ -33,8 +26,10 @@ def verify_design():
     data = request.json or {}
     mode = data.get('mode', 'unit')
 
-    scad_file = MODE_TO_SCAD.get(mode, 'half_cube.scad')
-    parts = PARTS_MAP.get(scad_file, ["main"])
+    manifest = get_manifest()
+    parts = manifest.get_parts_for_mode(mode)
+    if not parts:
+        parts = ["main"]
 
     results = []
     all_passed = True

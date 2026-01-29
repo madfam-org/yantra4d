@@ -3,14 +3,13 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useLanguage } from "../contexts/LanguageProvider"
+import { useManifest } from "../contexts/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Star } from 'lucide-react'
-import { DEFAULTS, MODE_COLORS_MAP } from '../config/defaults'
-
-const PARAM_DEFAULTS = DEFAULTS.params
 
 export default function Controls({ params, setParams, mode, colors, setColors }) {
-    const { t } = useLanguage()
+    const { language } = useLanguage()
+    const { getParametersForMode, getPartColors, getLabel } = useManifest()
 
     const handleSliderChange = (name, valArray) => {
         setParams(prev => ({ ...prev, [name]: valArray[0] }))
@@ -24,28 +23,36 @@ export default function Controls({ params, setParams, mode, colors, setColors })
         setColors(prev => ({ ...prev, [key]: val }))
     }
 
-    const renderSlider = (name, label, min, max, step, tooltipKey) => {
-        const value = params[name]
-        const isDefault = value === PARAM_DEFAULTS[name]
+    const parametersForMode = getParametersForMode(mode)
+    const sliders = parametersForMode.filter(p => p.type === 'slider')
+    const checkboxes = parametersForMode.filter(p => p.type === 'checkbox')
+    const visibilityCheckboxes = checkboxes.filter(p => p.group === 'visibility')
+    const otherCheckboxes = checkboxes.filter(p => !p.group)
+
+    const partColors = getPartColors(mode)
+
+    const renderSlider = (param) => {
+        const value = params[param.id]
+        const isDefault = value === param.default
         const [editing, setEditing] = useState(false)
         const [editValue, setEditValue] = useState('')
 
         const commitEdit = () => {
             const num = parseFloat(editValue)
             if (!isNaN(num)) {
-                const clamped = Math.min(max, Math.max(min, num))
-                const stepped = Math.round(clamped / step) * step
-                handleSliderChange(name, [parseFloat(stepped.toFixed(4))])
+                const clamped = Math.min(param.max, Math.max(param.min, num))
+                const stepped = Math.round(clamped / param.step) * param.step
+                handleSliderChange(param.id, [parseFloat(stepped.toFixed(4))])
             }
             setEditing(false)
         }
 
         return (
-            <div className="space-y-2">
+            <div key={param.id} className="space-y-2">
                 <div className="flex justify-between items-center">
-                    <Tooltip content={t(tooltipKey)}>
+                    <Tooltip content={getLabel(param, 'tooltip', language)}>
                         <Label className="flex items-center gap-2 cursor-help">
-                            {label}
+                            {getLabel(param, 'label', language)}
                             {isDefault && <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />}
                         </Label>
                     </Tooltip>
@@ -54,7 +61,7 @@ export default function Controls({ params, setParams, mode, colors, setColors })
                             type="number"
                             className="w-16 text-sm text-right bg-input border border-border rounded px-1 py-0.5"
                             value={editValue}
-                            min={min} max={max} step={step}
+                            min={param.min} max={param.max} step={param.step}
                             autoFocus
                             onChange={(e) => setEditValue(e.target.value)}
                             onBlur={commitEdit}
@@ -72,87 +79,81 @@ export default function Controls({ params, setParams, mode, colors, setColors })
                 </div>
                 <Slider
                     value={[value]}
-                    min={min} max={max} step={step}
-                    onValueChange={(vals) => handleSliderChange(name, vals)}
+                    min={param.min} max={param.max} step={param.step}
+                    onValueChange={(vals) => handleSliderChange(param.id, vals)}
                 />
+                {param.description && (
+                    <p className="text-xs text-muted-foreground">{getLabel(param, 'description', language)}</p>
+                )}
             </div>
         )
     }
 
-    const colorKeys = MODE_COLORS_MAP[mode] || ['main']
-    const colorLabelMap = {
-        main: 'ctl.color.main',
-        bottom: 'ctl.color.bottom',
-        top: 'ctl.color.top',
-        rods: 'ctl.color.rods',
-        stoppers: 'ctl.color.stoppers',
-    }
-
     return (
         <div className="flex flex-col gap-6">
-
-            {/* Unit / Assembly Mode Specific */}
-            {(mode === 'unit' || mode === 'assembly') && (
+            {/* Sliders */}
+            {sliders.length > 0 && (
                 <div className="space-y-4">
-                    {renderSlider('size', t("ctl.size"), 10, 50, 0.5, 'tooltip.size')}
-                    {renderSlider('thick', t("ctl.thick"), 1, 10, 0.1, 'tooltip.thick')}
-                    {renderSlider('rod_D', t("ctl.rod_d"), 2, 10, 0.1, 'tooltip.rod_d')}
-
-                    <div className="space-y-4 border-t border-border pt-4">
-                        <Label className="text-base font-semibold">{t("ctl.vis")}</Label>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="show_base" checked={params.show_base} onCheckedChange={(c) => handleCheckedChange('show_base', c)} />
-                            <Tooltip content={t("tooltip.base")}>
-                                <Label htmlFor="show_base" className="cursor-help">{t("ctl.vis.base")}</Label>
-                            </Tooltip>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="show_walls" checked={params.show_walls} onCheckedChange={(c) => handleCheckedChange('show_walls', c)} />
-                            <Tooltip content={t("tooltip.walls")}>
-                                <Label htmlFor="show_walls" className="cursor-help">{t("ctl.vis.walls")}</Label>
-                            </Tooltip>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="show_mech" checked={params.show_mech} onCheckedChange={(c) => handleCheckedChange('show_mech', c)} />
-                            <Tooltip content={t("tooltip.mech")}>
-                                <Label htmlFor="show_mech" className="cursor-help">{t("ctl.vis.mech")}</Label>
-                            </Tooltip>
-                        </div>
-                    </div>
+                    {sliders.map(renderSlider)}
                 </div>
             )}
 
-            {/* Grid Mode Specific */}
-            {mode === 'grid' && (
-                <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-muted-foreground">{t("ctl.grid.dim")}</h3>
-                    {renderSlider('rows', t("ctl.rows"), 1, 20, 1, 'tooltip.rows')}
-                    {renderSlider('cols', t("ctl.cols"), 1, 20, 1, 'tooltip.cols')}
-
-                    <div className="space-y-2">
-                        {renderSlider('rod_extension', t("ctl.rod_ext"), 0, 50, 1, 'tooltip.rod_ext')}
-                        <p className="text-xs text-muted-foreground">{t("ctl.rod_ext_desc")}</p>
-                    </div>
-                </div>
-            )}
-
-            {/* Color Controls — mode-filtered */}
-            <div className="space-y-4 border-t border-border pt-4">
-                <Label className="text-base font-semibold">{t("ctl.colors")}</Label>
-                <div className={`grid gap-2 ${colorKeys.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                    {colorKeys.map((key) => (
-                        <div key={key} className="flex flex-col gap-1">
-                            <Label className="text-xs">{t(colorLabelMap[key])}</Label>
-                            <input
-                                type="color"
-                                className="w-full h-8 cursor-pointer"
-                                value={colors[key] || '#e5e7eb'}
-                                onChange={(e) => handleColorChange(key, e.target.value)}
+            {/* Visibility checkboxes */}
+            {visibilityCheckboxes.length > 0 && (
+                <div className="space-y-4 border-t border-border pt-4">
+                    <Label className="text-base font-semibold">{language === 'es' ? 'Visibilidad' : 'Visibility'}</Label>
+                    {visibilityCheckboxes.map(param => (
+                        <div key={param.id} className="flex items-center space-x-2">
+                            <Checkbox
+                                id={param.id}
+                                checked={params[param.id]}
+                                onCheckedChange={(c) => handleCheckedChange(param.id, c)}
                             />
+                            <Tooltip content={getLabel(param, 'tooltip', language)}>
+                                <Label htmlFor={param.id} className="cursor-help">
+                                    {getLabel(param, 'label', language)}
+                                </Label>
+                            </Tooltip>
                         </div>
                     ))}
                 </div>
-            </div>
+            )}
+
+            {/* Other checkboxes */}
+            {otherCheckboxes.map(param => (
+                <div key={param.id} className="flex items-center space-x-2">
+                    <Checkbox
+                        id={param.id}
+                        checked={params[param.id]}
+                        onCheckedChange={(c) => handleCheckedChange(param.id, c)}
+                    />
+                    <Tooltip content={getLabel(param, 'tooltip', language)}>
+                        <Label htmlFor={param.id} className="cursor-help">
+                            {getLabel(param, 'label', language)}
+                        </Label>
+                    </Tooltip>
+                </div>
+            ))}
+
+            {/* Color Controls */}
+            {partColors.length > 0 && (
+                <div className="space-y-4 border-t border-border pt-4">
+                    <Label className="text-base font-semibold">{language === 'es' ? 'Colores' : 'Colors'}</Label>
+                    <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        {partColors.map((part) => (
+                            <div key={part.id} className="flex flex-col gap-1">
+                                <Label className="text-xs">{getLabel(part, 'label', language)}</Label>
+                                <input
+                                    type="color"
+                                    className="w-full h-8 cursor-pointer"
+                                    value={colors[part.id] || part.default_color}
+                                    onChange={(e) => handleColorChange(part.id, e.target.value)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

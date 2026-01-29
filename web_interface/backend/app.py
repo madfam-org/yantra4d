@@ -3,11 +3,14 @@ Tablaco Backend API
 Production-ready Flask application for OpenSCAD rendering.
 
 Structure:
-- routes/render.py   - Render endpoints (estimate, render, render-stream)
-- routes/health.py   - Health check endpoint
-- routes/verify.py   - Verification endpoint
+- manifest.py          - Project manifest loader (modes, parts, parameters)
+- config.py            - Environment configuration (paths, server settings)
+- routes/render.py     - Render endpoints (estimate, render, render-stream, cancel)
+- routes/verify.py     - Verification endpoint
+- routes/health.py     - Health check endpoint
+- routes/manifest_route.py - GET /api/manifest
+- routes/config_route.py   - GET /api/config (legacy, delegates to manifest)
 - services/openscad.py - OpenSCAD subprocess wrapper
-- config.py          - Configuration management
 """
 import logging
 import os
@@ -20,6 +23,7 @@ from routes.render import render_bp
 from routes.health import health_bp
 from routes.verify import verify_bp
 from routes.config_route import config_bp
+from routes.manifest_route import manifest_bp
 
 # Configure logging
 logging.basicConfig(
@@ -42,6 +46,7 @@ def create_app():
     app.register_blueprint(health_bp)
     app.register_blueprint(verify_bp)
     app.register_blueprint(config_bp)
+    app.register_blueprint(manifest_bp)
     
     # Static file serving
     @app.route('/static/<path:filename>')

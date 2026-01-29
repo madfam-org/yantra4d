@@ -1,16 +1,52 @@
-# React + Vite
+# Tablaco Studio — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React SPA for the Tablaco parametric design studio. Built with Vite, Tailwind CSS, Shadcn UI, and Three.js (via React Three Fiber).
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+npm run dev       # Development server at http://localhost:5173
+npm run build     # Production build to dist/
+npm run preview   # Preview production build
+```
 
-## React Compiler
+## Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The frontend is data-driven via a **project manifest** fetched from the backend at `/api/manifest`. See [Project Manifest docs](../../docs/manifest.md) for the schema.
 
-## Expanding the ESLint configuration
+### Provider Hierarchy (`main.jsx`)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+ThemeProvider → ManifestProvider → LanguageProvider → App
+```
+
+- **ManifestProvider**: Fetches manifest from API; falls back to `src/config/fallback-manifest.json`.
+- **LanguageProvider**: UI chrome translations only (buttons, log messages, phase labels). Parameter labels and tooltips come from the manifest.
+- **ThemeProvider**: Light / Dark / System theme persistence.
+
+### Key Files
+
+| File | Role |
+|------|------|
+| `src/App.jsx` | Main shell — state, API calls, layout, keyboard shortcuts |
+| `src/components/Controls.jsx` | Data-driven sliders, checkboxes, color pickers from manifest |
+| `src/components/Viewer.jsx` | Three.js STL viewer with camera controls and snapshot export |
+| `src/contexts/ManifestProvider.jsx` | Manifest fetch, fallback, typed accessors via `useManifest()` |
+| `src/config/fallback-manifest.json` | Bundled copy of `scad/project.json` |
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
+
+### Updating the Fallback Manifest
+
+When `scad/project.json` changes, copy it to the frontend:
+
+```bash
+cp scad/project.json web_interface/frontend/src/config/fallback-manifest.json
+```
+
+This ensures the app works even when the backend is unreachable.

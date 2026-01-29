@@ -103,7 +103,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                                 <Model
                                     key={part.url}
                                     url={part.url}
-                                    color={colors[part.type] || (part.type === 'main' ? colors.bottom : "#e5e7eb")}
+                                    color={colors[part.type] || "#e5e7eb"}
                                 />
                             ))}
                         </Center>

@@ -52,6 +52,38 @@ const Model = ({ url, color }) => {
     )
 }
 
+class ViewerErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = { hasError: false }
+    }
+    static getDerivedStateFromError() {
+        return { hasError: true }
+    }
+    componentDidCatch(error, info) {
+        console.error('Viewer error:', error, info)
+    }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="flex items-center justify-center h-full bg-muted text-muted-foreground">
+                    <div className="text-center p-8">
+                        <p className="text-lg font-semibold">3D viewer failed to load</p>
+                        <p className="text-sm mt-2">Try refreshing the page</p>
+                        <button
+                            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded"
+                            onClick={() => this.setState({ hasError: false })}
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            )
+        }
+        return this.props.children
+    }
+}
+
 const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhase }, ref) => {
     const { t } = useLanguage()
     const { theme } = useTheme()
@@ -79,6 +111,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                 </div>
             )}
 
+            <ViewerErrorBoundary>
             <Canvas shadows className="h-full w-full" camera={{ position: [50, 50, 50], fov: 45 }} gl={{ preserveDrawingBuffer: true }}>
                 <color attach="background" args={[bgColor]} />
                 <SceneController ref={ref} />
@@ -101,7 +134,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                         <Center top>
                             {parts.map((part) => (
                                 <Model
-                                    key={part.url}
+                                    key={part.type}
                                     url={part.url}
                                     color={colors[part.type] || "#e5e7eb"}
                                 />
@@ -110,6 +143,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                     </Bounds>
                 </Suspense>
             </Canvas>
+            </ViewerErrorBoundary>
         </div>
     )
 })

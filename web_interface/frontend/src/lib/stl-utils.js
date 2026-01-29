@@ -3,9 +3,18 @@
  * Returns { vertices: Float32Array, faces: Uint32Array, faceCount }
  */
 export function parseSTL(buffer) {
+  if (buffer.byteLength < 84) {
+    throw new Error('Invalid STL: buffer too small')
+  }
   const view = new DataView(buffer)
-  // Skip 80-byte header
   const faceCount = view.getUint32(80, true)
+  if (faceCount > 10_000_000) {
+    throw new Error('Invalid STL: face count exceeds 10M limit')
+  }
+  const expectedSize = 84 + faceCount * 50
+  if (buffer.byteLength < expectedSize) {
+    throw new Error('Invalid STL: buffer smaller than expected for face count')
+  }
   const vertices = new Float32Array(faceCount * 9) // 3 verts * 3 coords
   const faces = new Uint32Array(faceCount * 3)
 

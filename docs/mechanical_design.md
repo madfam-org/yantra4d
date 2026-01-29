@@ -20,6 +20,21 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 | `show_base` | `true` | Toggle visibility of the Base Plate. |
 | `show_walls` | `true` | Toggle visibility of Side Walls. |
 | `show_mech` | `true` | Toggle visibility of the Snap Mechanism. |
+| `show_letter` | `true` | Toggle visibility of the embossed/carved letter. |
+| `is_flipped` | `false` | Flip mode for top unit (rotates mechanism, inverts letter). |
+
+### Design Constants (not UI-exposed)
+
+The following parameters are defined in `half_cube.scad` but are intentionally **not exposed** in the web UI or project manifest. They are design constants tuned for the current geometry:
+
+| Parameter | Default | Description |
+| :--- | :--- | :--- |
+| `clearance` | `0.2` | General clearance for rod bores (mm). |
+| `fit_clear` | `0.2` | Miter face clearance gap for assembly fit (mm). |
+| `letter` | `"V"` / `"F"` | Letter character (V for bottom, F for top unit). |
+| `letter_emboss` | `false` | `true` = raised letter, `false` = carved letter. |
+| `letter_depth` | `0.5` | Depth/height of letter emboss/carve (mm). |
+| `letter_size` | `6` | Font size of the letter (mm). |
 
 All togglable parameters (`show_base`, `show_walls`, `show_mech`) and dimensional parameters (`size`, `thick`, `rod_D`) are declared in the [project manifest](./manifest.md) and exposed in the web UI for the Unit and Assembly modes.
 

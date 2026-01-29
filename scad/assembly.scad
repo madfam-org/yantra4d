@@ -5,7 +5,7 @@ include <half_cube.scad>
 // --- Parameters ---
 // Inherits size, thick, rod_D from half_cube via command line
 
-render_mode = 0; // 0=all, 1=bottom, 2=top
+render_mode = 0; // Part selector (see project.json manifest): 0=all, 1=bottom, 2=top
 
 // --- Main Assembly ---
 // A single interlocking cube (two half-cubes)

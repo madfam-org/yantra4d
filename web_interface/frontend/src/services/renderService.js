@@ -62,7 +62,7 @@ function initWorker() {
  * Render parts via WASM worker.
  * Returns array of { type, blob, url } for each part.
  */
-async function renderWasm(mode, params, manifest, onProgress) {
+async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
   await initWorker()
 
   const modeConfig = manifest.modes.find(m => m.id === mode)
@@ -72,6 +72,7 @@ async function renderWasm(mode, params, manifest, onProgress) {
   const totalParts = modeConfig.parts.length
 
   for (let i = 0; i < totalParts; i++) {
+    if (abortSignal?.aborted) throw new DOMException('Aborted', 'AbortError')
     const partId = modeConfig.parts[i]
     const partDef = manifest.parts.find(p => p.id === partId)
     if (!partDef) continue
@@ -102,6 +103,17 @@ async function renderWasm(mode, params, manifest, onProgress) {
             log: msg.line
           })
         }
+      }
+      if (abortSignal) {
+        const onAbort = () => {
+          _worker.removeEventListener('message', handler)
+          _worker.terminate()
+          _worker = null
+          _workerReady = false
+          _initPromise = null
+          reject(new DOMException('Aborted', 'AbortError'))
+        }
+        abortSignal.addEventListener('abort', onAbort, { once: true })
       }
       _worker.addEventListener('message', handler)
       _worker.postMessage({
@@ -140,6 +152,11 @@ async function renderBackend(mode, params, onProgress, abortSignal) {
     body: JSON.stringify(payload),
     signal: abortSignal
   })
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => '')
+    throw new Error(`Render request failed (HTTP ${response.status}): ${text}`)
+  }
 
   const reader = response.body.getReader()
   const decoder = new TextDecoder()
@@ -191,8 +208,12 @@ async function renderBackend(mode, params, onProgress, abortSignal) {
         } else if (data.event === 'error') {
           onProgress?.({ log: `[ERROR] ${data.part}: ${data.message}` })
         }
-      } catch { /* ignore */ }
+      } catch (e) { console.warn('Malformed SSE data:', e) }
     }
+  }
+
+  if (finalParts.length === 0) {
+    throw new Error('Render stream completed without producing any parts')
   }
 
   const timestamp = Date.now()
@@ -216,7 +237,7 @@ export async function renderParts(mode, params, manifest, { onProgress, abortSig
   if (currentMode === 'backend') {
     return renderBackend(mode, params, onProgress, abortSignal)
   } else {
-    return renderWasm(mode, params, manifest, onProgress)
+    return renderWasm(mode, params, manifest, onProgress, abortSignal)
   }
 }
 

@@ -67,7 +67,7 @@ module vertical_rod() {
 // --- Main Assembly ---
 
 // --- Render Logic ---
-render_mode = 0; // 0=all, 1=bottom, 2=top, 3=rods, 4=stoppers
+render_mode = 0; // Part selector (see project.json manifest): 0=all, 1=bottom, 2=top, 3=rods, 4=stoppers
 
 // --- Main Assembly ---
 

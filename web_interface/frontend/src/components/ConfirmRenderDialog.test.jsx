@@ -1,10 +1,14 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import ConfirmRenderDialog from './ConfirmRenderDialog'
+import { LanguageProvider } from '../contexts/LanguageProvider'
+
+const renderWithProviders = (ui) =>
+  render(<LanguageProvider defaultLanguage="en">{ui}</LanguageProvider>)
 
 describe('ConfirmRenderDialog', () => {
   it('renders when open=true and shows estimated time in seconds', () => {
-    render(
+    renderWithProviders(
       <ConfirmRenderDialog open={true} onConfirm={() => {}} onCancel={() => {}} estimatedTime={30} />
     )
     expect(screen.getByText('Long Render Warning', { exact: false })).toBeInTheDocument()
@@ -12,7 +16,7 @@ describe('ConfirmRenderDialog', () => {
   })
 
   it('shows estimated time in minutes for >= 60s', () => {
-    render(
+    renderWithProviders(
       <ConfirmRenderDialog open={true} onConfirm={() => {}} onCancel={() => {}} estimatedTime={120} />
     )
     expect(screen.getByText(/~2 minutes/)).toBeInTheDocument()
@@ -20,7 +24,7 @@ describe('ConfirmRenderDialog', () => {
 
   it('calls onConfirm when confirm clicked', () => {
     const onConfirm = vi.fn()
-    render(
+    renderWithProviders(
       <ConfirmRenderDialog open={true} onConfirm={onConfirm} onCancel={() => {}} estimatedTime={10} />
     )
     screen.getByText('Render Anyway').click()
@@ -29,7 +33,7 @@ describe('ConfirmRenderDialog', () => {
 
   it('calls onCancel when cancel clicked', () => {
     const onCancel = vi.fn()
-    render(
+    renderWithProviders(
       <ConfirmRenderDialog open={true} onConfirm={() => {}} onCancel={onCancel} estimatedTime={10} />
     )
     screen.getByText('Cancel').click()

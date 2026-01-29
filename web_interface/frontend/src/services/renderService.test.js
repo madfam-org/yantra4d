@@ -72,3 +72,67 @@ describe('cancelRender', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('renderParts (backend mode)', () => {
+  // Helper to create a readable stream from SSE text
+  function sseStream(lines) {
+    const text = lines.join('\n')
+    const encoder = new TextEncoder()
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(text))
+        controller.close()
+      }
+    })
+  }
+
+  it('throws on non-ok HTTP response', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      text: () => Promise.resolve('Invalid SCAD file: bad.scad')
+    })
+
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow('Render request failed (HTTP 400)')
+  })
+
+  it('throws when stream produces no parts', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: sseStream([
+        'data: {"event":"output","part":"main","line":"Compiling...","progress":50}',
+        '' // stream ends without a "complete" event
+      ])
+    })
+
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow('Render stream completed without producing any parts')
+  })
+
+  it('warns on malformed SSE JSON and continues', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: sseStream([
+        'data: {INVALID JSON}',
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    const result = await renderService.renderParts('unit', {}, manifest, {})
+
+    expect(warnSpy).toHaveBeenCalledWith('Malformed SSE data:', expect.any(SyntaxError))
+    expect(result).toHaveLength(1)
+    warnSpy.mockRestore()
+  })
+})

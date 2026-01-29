@@ -36,6 +36,10 @@ const translations = {
         "phase.geometry": "Procesando geometría...",
         "phase.cgal": "Procesando CGAL...",
         "phase.rendering": "Renderizando malla...",
+        "dialog.render_warning_title": "⚠️ Advertencia de Renderizado Largo",
+        "dialog.render_warning_body": "Se estima que este renderizado tardará",
+        "dialog.render_warning_note": "La aplicación puede no responder durante este tiempo.",
+        "dialog.render_anyway": "Renderizar de Todos Modos",
     },
     en: {
         "btn.gen": "Generate",
@@ -70,6 +74,10 @@ const translations = {
         "phase.geometry": "Processing geometry...",
         "phase.cgal": "Processing CGAL...",
         "phase.rendering": "Rendering mesh...",
+        "dialog.render_warning_title": "⚠️ Long Render Warning",
+        "dialog.render_warning_body": "This render is estimated to take",
+        "dialog.render_warning_note": "The application may appear unresponsive during this time.",
+        "dialog.render_anyway": "Render Anyway",
     }
 }
 

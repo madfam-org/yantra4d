@@ -41,6 +41,7 @@ async function verifyClient(parts) {
     try {
       // Fetch STL data
       const response = await fetch(part.url)
+      if (!response.ok) throw new Error(`Failed to fetch STL for ${part.type}: HTTP ${response.status}`)
       const buffer = await response.arrayBuffer()
       const { vertices, faces, faceCount } = parseSTL(buffer)
 

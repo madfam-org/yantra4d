@@ -113,6 +113,7 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 | Verify false positives | Verification needs rendered STLs to exist first; render before verifying |
 | Render timeouts | Complex grid renders (high rows×cols) can exceed default timeout; Docker uses 300s |
 | Env vars | Backend reads `OPENSCAD_PATH`, `SCAD_DIR`, `VERIFY_SCRIPT` — set in Docker or `.env` |
+| CORS origins | Backend restricts CORS via `CORS_ORIGINS` env var; add your domain when deploying |
 | Client-side WASM | `openscad-worker.js` runs in a Web Worker; cannot access DOM |
 
 ## Do NOT Edit

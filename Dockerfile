@@ -38,4 +38,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Run with gunicorn for production
 WORKDIR /app/backend
+
+# Create non-root user
+RUN useradd -r -s /bin/false tablaco && chown -R tablaco:tablaco /app
+USER tablaco
+
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "--timeout", "300", "app:app"]

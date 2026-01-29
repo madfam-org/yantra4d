@@ -4,7 +4,6 @@ Parses scad/project.json and provides typed accessors for modes, parts, paramete
 """
 import json
 import logging
-from pathlib import Path
 
 from config import Config
 

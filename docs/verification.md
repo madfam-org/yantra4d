@@ -34,7 +34,10 @@ python3 tests/verify_design.py path/to/preview.stl
     -   *Pass*: No collision (Distance > 0).
     -   *Current Behavior*: Reports collision (Distance 0.0) because the parts are designed with a tight sliding fit. The `fit_clear` parameter (0.1mm) creates the physical gap, but the mathematical intersection is touching.
 
-## Integration
-This script is called automatically by the [Web Interface](./web_interface.md) "Run Verification Suite" button.
+## Web Interface Integration
+
+The verification suite is invoked from the [Web Interface](./web_interface.md) via the "Run Verification Suite" button. The backend endpoint `POST /api/verify` accepts a `mode` field (e.g., `"unit"`, `"assembly"`, `"grid"`) and resolves the corresponding part list from the [project manifest](./manifest.md).
+
+For example, verifying in Grid mode checks all four parts: `bottom`, `top`, `rods`, and `stoppers`.
 
 [Back to Index](./index.md)

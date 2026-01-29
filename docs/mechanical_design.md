@@ -21,6 +21,8 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 | `show_walls` | `true` | Toggle visibility of Side Walls. |
 | `show_mech` | `true` | Toggle visibility of the Snap Mechanism. |
 
+All togglable parameters (`show_base`, `show_walls`, `show_mech`) and dimensional parameters (`size`, `thick`, `rod_D`) are declared in the [project manifest](./manifest.md) and exposed in the web UI for the Unit and Assembly modes.
+
 ### Modules
 
 #### 1. `base_plate()`
@@ -48,6 +50,27 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 
 ---
 
+## File: `scad/assembly.scad`
+
+This script generates a **single interlocking cube** by combining two half-cubes. It is the source file for the **Assembly** mode in the web interface.
+
+### Parameters
+
+Inherits `size`, `thick`, and `rod_D` from `half_cube.scad` via command-line defines.
+
+| Parameter | Default | Description |
+| :--- | :--- | :--- |
+| `render_mode` | `0` | `0` = all parts, `1` = bottom only, `2` = top only |
+
+### Assembly Logic
+
+- **Part A (Bottom)**: The half-cube in its default orientation.
+- **Part B (Top)**: The same half-cube rotated 180° around X and 90° around Z, positioned to interlock.
+
+The web interface renders bottom and top as separate STL files (using `render_mode` 1 and 2) so they can be colored independently.
+
+---
+
 ## File: `scad/tablaco.scad`
 
 This script generates a **grid assembly** of full cubes, including vertical rods and stopper rails.
@@ -59,6 +82,8 @@ This script generates a **grid assembly** of full cubes, including vertical rods
 | `rows` | `8` | Number of rows in the grid (vertical). |
 | `cols` | `8` | Number of columns in the grid (horizontal). |
 | `rod_extension` | `10` | How far the rods protrude beyond the stoppers (mm). 0 = flush. |
+
+These parameters are declared in the [project manifest](./manifest.md) and exposed in the web UI for the Grid mode.
 
 ### Modules
 
@@ -79,5 +104,18 @@ This script generates a **grid assembly** of full cubes, including vertical rods
 2.  Vertical rods are placed at the center of each column.
 3.  Stoppers are placed flush at the top and bottom of the grid stack.
 
-[Back to Index](./index.md)
+---
 
+## Render Modes and Parts
+
+Each SCAD file uses a `render_mode` integer to select which part to export. The mapping is declared in the [project manifest](./manifest.md):
+
+| Part ID | `render_mode` | Used in Modes |
+|---------|---------------|---------------|
+| `main` | 0 | Unit |
+| `bottom` | 1 | Assembly, Grid |
+| `top` | 2 | Assembly, Grid |
+| `rods` | 3 | Grid |
+| `stoppers` | 4 | Grid |
+
+[Back to Index](./index.md)

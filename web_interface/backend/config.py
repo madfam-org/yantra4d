@@ -5,7 +5,6 @@ class Config:
     """Application configuration with environment variable support."""
     
     # Paths
-    # Paths
     BASE_DIR = Path(__file__).parent
     
     _default_scad = BASE_DIR.parent.parent / "scad"
@@ -27,32 +26,24 @@ class Config:
         "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
     )
     
-    # Allowed SCAD files
-    ALLOWED_FILES = {
-        "half_cube.scad": SCAD_DIR / "half_cube.scad",
-        "assembly.scad": SCAD_DIR / "assembly.scad",
-        "tablaco.scad": SCAD_DIR / "tablaco.scad"
-    }
-    
-    # Parts configuration
-    PARTS_MAP = {
-        "half_cube.scad": ["main"],
-        "assembly.scad": ["bottom", "top"],
-        "tablaco.scad": ["bottom", "top", "rods", "stoppers"]
-    }
-    
-    MODE_MAP = {
-        "main": 0,
-        "bottom": 1,
-        "top": 2,
-        "rods": 3,
-        "stoppers": 4
-    }
-    
-    # Render time estimation constants
-    ESTIMATE_CONSTANTS = {
-        "base_time": 5,
-        "per_unit": 1.5,
-        "fn_factor": 64,
-        "per_part": 8
-    }
+    # --- Manifest-delegated accessors (backward compat) ---
+
+    @staticmethod
+    def get_allowed_files():
+        from manifest import get_manifest
+        return get_manifest().get_allowed_files()
+
+    @staticmethod
+    def get_parts_map():
+        from manifest import get_manifest
+        return get_manifest().get_parts_map()
+
+    @staticmethod
+    def get_mode_map():
+        from manifest import get_manifest
+        return get_manifest().get_mode_map()
+
+    @staticmethod
+    def get_estimate_constants():
+        from manifest import get_manifest
+        return get_manifest().estimate_constants

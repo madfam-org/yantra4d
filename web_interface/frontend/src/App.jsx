@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useTheme } from "./contexts/ThemeProvider"
 import { useLanguage } from "./contexts/LanguageProvider"
+import { useManifest } from "./contexts/ManifestProvider"
 import { Sun, Moon, Monitor, Globe, Download, Square, RotateCcw } from 'lucide-react'
 import JSZip from 'jszip'
-import { DEFAULTS, MODE_SCAD_MAP } from './config/defaults'
 import './index.css'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
@@ -27,10 +27,14 @@ function safeParse(key, fallback) {
 function App() {
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
+  const { manifest, getDefaultParams, getDefaultColors, getLabel, projectSlug } = useManifest()
 
-  const [mode, setMode] = useState(() => localStorage.getItem('tablaco-mode') || 'unit')
-  const [params, setParams] = useState(() => safeParse('tablaco-params', DEFAULTS.params))
-  const [colors, setColors] = useState(() => safeParse('tablaco-colors', DEFAULTS.colors))
+  const defaultParams = getDefaultParams()
+  const defaultColors = getDefaultColors()
+
+  const [mode, setMode] = useState(() => localStorage.getItem(`${projectSlug}-mode`) || manifest.modes[0].id)
+  const [params, setParams] = useState(() => safeParse(`${projectSlug}-params`, defaultParams))
+  const [colors, setColors] = useState(() => safeParse(`${projectSlug}-colors`, defaultColors))
 
   const [parts, setParts] = useState([])
   const [logs, setLogs] = useState(t("log.ready"))
@@ -49,18 +53,18 @@ function App() {
 
   // --- Persistence (debounced) ---
   useEffect(() => {
-    const id = setTimeout(() => localStorage.setItem('tablaco-params', JSON.stringify(params)), 300)
+    const id = setTimeout(() => localStorage.setItem(`${projectSlug}-params`, JSON.stringify(params)), 300)
     return () => clearTimeout(id)
-  }, [params])
+  }, [params, projectSlug])
 
   useEffect(() => {
-    const id = setTimeout(() => localStorage.setItem('tablaco-colors', JSON.stringify(colors)), 300)
+    const id = setTimeout(() => localStorage.setItem(`${projectSlug}-colors`, JSON.stringify(colors)), 300)
     return () => clearTimeout(id)
-  }, [colors])
+  }, [colors, projectSlug])
 
   useEffect(() => {
-    localStorage.setItem('tablaco-mode', mode)
-  }, [mode])
+    localStorage.setItem(`${projectSlug}-mode`, mode)
+  }, [mode, projectSlug])
 
   // --- Health check on mount ---
   useEffect(() => {
@@ -69,14 +73,17 @@ function App() {
     })
   }, [])
 
-  // Cache key includes rod_extension
+  // Cache key derived from manifest parameter IDs
   const getCacheKey = useCallback((m, p) => {
-    return JSON.stringify({ mode: m, size: p.size, thick: p.thick, rod_D: p.rod_D, rows: p.rows, cols: p.cols, rod_extension: p.rod_extension })
-  }, [])
+    const keyObj = { mode: m }
+    for (const param of manifest.parameters) {
+      if (p[param.id] !== undefined) keyObj[param.id] = p[param.id]
+    }
+    return JSON.stringify(keyObj)
+  }, [manifest])
 
   const handleGenerate = async (forceRender = false, overridePayload = null) => {
-    const scad_file = MODE_SCAD_MAP[mode] || 'half_cube.scad'
-    const payload = overridePayload || { ...params, scad_file }
+    const payload = overridePayload || { ...params, mode }
     const cacheKey = getCacheKey(mode, params)
 
     if (!forceRender && partsCache[cacheKey]) {
@@ -210,8 +217,8 @@ function App() {
   }
 
   const handleReset = () => {
-    setParams(DEFAULTS.params)
-    setColors(DEFAULTS.colors)
+    setParams(getDefaultParams())
+    setColors(getDefaultColors())
   }
 
   const handleVerify = async () => {
@@ -235,7 +242,7 @@ function App() {
     if (parts.length === 1) {
       const link = document.createElement('a')
       link.href = parts[0].url
-      link.download = `tablaco_${mode}_${parts[0].type}.stl`
+      link.download = `${projectSlug}_${mode}_${parts[0].type}.stl`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -248,13 +255,13 @@ function App() {
       for (const part of parts) {
         const res = await fetch(part.url)
         const blob = await res.blob()
-        zip.file(`tablaco_${mode}_${part.type}.stl`, blob)
+        zip.file(`${projectSlug}_${mode}_${part.type}.stl`, blob)
       }
       const content = await zip.generateAsync({ type: 'blob' })
       const url = URL.createObjectURL(content)
       const link = document.createElement('a')
       link.href = url
-      link.download = `tablaco_${mode}_all_parts.zip`
+      link.download = `${projectSlug}_${mode}_all_parts.zip`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -272,7 +279,7 @@ function App() {
       const dataUrl = viewerRef.current.captureSnapshot()
       const link = document.createElement('a')
       link.href = dataUrl
-      link.download = `tablaco_${mode}_${view}.png`
+      link.download = `${projectSlug}_${mode}_${view}.png`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -290,13 +297,13 @@ function App() {
       const data = atob(dataUrl.split(',')[1])
       const arr = new Uint8Array(data.length)
       for (let i = 0; i < data.length; i++) arr[i] = data.charCodeAt(i)
-      zip.file(`tablaco_${mode}_${view}.png`, arr)
+      zip.file(`${projectSlug}_${mode}_${view}.png`, arr)
     }
     const blob = await zip.generateAsync({ type: 'blob' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `tablaco_${mode}_all_views.zip`
+    link.download = `${projectSlug}_${mode}_all_views.zip`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -316,7 +323,7 @@ function App() {
     return () => clearTimeout(timer)
   }, [params, mode])
 
-  // --- Keyboard shortcuts ---
+  // --- Keyboard shortcuts (dynamic Cmd+1..N for modes) ---
   useEffect(() => {
     const handler = (e) => {
       const mod = e.metaKey || e.ctrlKey
@@ -325,17 +332,17 @@ function App() {
         handleGenerate()
       } else if (e.key === 'Escape' && loading) {
         handleCancelGenerate()
-      } else if (mod && e.key === '1') {
-        e.preventDefault(); setMode('unit')
-      } else if (mod && e.key === '2') {
-        e.preventDefault(); setMode('assembly')
-      } else if (mod && e.key === '3') {
-        e.preventDefault(); setMode('grid')
+      } else if (mod) {
+        const num = parseInt(e.key, 10)
+        if (num >= 1 && num <= manifest.modes.length) {
+          e.preventDefault()
+          setMode(manifest.modes[num - 1].id)
+        }
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [loading, params, mode])
+  }, [loading, params, mode, manifest])
 
   const cycleTheme = () => {
     const themes = ['light', 'dark', 'system']
@@ -353,7 +360,7 @@ function App() {
     <div className="flex flex-col h-screen w-full bg-background text-foreground">
       {/* Header */}
       <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4">
-        <h1 className="text-lg font-bold tracking-tight">{t("app.title")}</h1>
+        <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? 'English' : 'Español'}>
             <Globe className="h-5 w-5" />
@@ -370,10 +377,12 @@ function App() {
         {/* Sidebar */}
         <div className="w-80 border-r border-border bg-card p-4 flex flex-col gap-4 overflow-y-auto">
           <Tabs value={mode} onValueChange={setMode} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="unit">{t("tab.unit")}</TabsTrigger>
-              <TabsTrigger value="assembly">{t("tab.assembly")}</TabsTrigger>
-              <TabsTrigger value="grid">{t("tab.grid")}</TabsTrigger>
+            <TabsList className={`grid w-full grid-cols-${manifest.modes.length}`}>
+              {manifest.modes.map(m => (
+                <TabsTrigger key={m.id} value={m.id}>
+                  {getLabel(m, 'label', language)}
+                </TabsTrigger>
+              ))}
             </TabsList>
           </Tabs>
 

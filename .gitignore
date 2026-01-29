@@ -38,3 +38,6 @@ Thumbs.db
 .env
 .env.local
 *.local
+
+# MCP tool caches
+.playwright-mcp/

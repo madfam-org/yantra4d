@@ -17,22 +17,32 @@ python3 tests/verify_design.py
 python3 tests/verify_design.py path/to/preview.stl
 ```
 
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | All checks passed |
+| `1` | One or more checks failed |
+
 ### Tests Performed
 
 #### 1. Single Part Verification
 -   **Watertightness**: Checks if the mesh is a closed manifold (no holes).
-    -   *Current Status*: Reports "Not Watertight" due to minor artifacts from the snap slot cuts, but functional.
+    -   *Current Status*: May report "Not Watertight" due to minor artifacts from snap relief slot cuts, but functional.
 -   **Volume Count**: Verifies the object is a single continuous solid.
     -   *Goal*: `Volumes: 1`.
-    -   *Mitigation*: The `welds()` module in SCAD ensures connectivity.
+    -   *Mitigation*: Weld cubes integrated into `mechanism_pillars()` ensure connectivity.
 -   **Dimensions**: Measures the bounding box.
-    -   *Requirement*: `[20, 20, 20]` mm (approx).
+    -   *Requirement*: XY ~`[20, 20]` mm; Z between 8–14 mm (varies with snap beam protrusion).
+-   **Facet Count (Feature Presence)**: Verifies geometric complexity exceeds a minimum threshold.
+    -   *Purpose*: Catches regressions where snap-fit features silently disappear from the render.
+    -   *Threshold*: ≥400 facets (a plain half-cube without snaps has ~200).
 
 #### 2. Assembly Verification
--   **Simulation**: Duplicate the mesh, rotate it 180 degrees around Z, and translate it to `[0,0,size]`.
+-   **Simulation**: Duplicate the mesh, rotate it 180° around X and 90° around Z.
 -   **Collision Check**: Uses `trimesh.collision.CollisionManager` (interfaces with FCL).
     -   *Pass*: No collision (Distance > 0).
-    -   *Current Behavior*: Reports collision (Distance 0.0) because the parts are designed with a tight sliding fit. The `fit_clear` parameter (0.1mm) creates the physical gap, but the mathematical intersection is touching.
+    -   *Current Behavior*: May report collision (Distance 0.0) because parts are designed with a tight sliding fit. The `fit_clear` parameter (0.2mm) creates the physical gap, but the mathematical intersection can be touching.
 
 ## Web Interface Integration
 

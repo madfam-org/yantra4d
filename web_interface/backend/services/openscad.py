@@ -6,10 +6,14 @@ import logging
 import subprocess
 import json
 import os
+import signal
 
 from config import Config
 
 logger = logging.getLogger(__name__)
+
+# Track the active render process for cancellation
+_active_process = None
 
 # Phase weights for progress estimation
 PHASE_WEIGHTS = {
@@ -89,8 +93,10 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
     })
     
     # Run with Popen to stream stderr
+    global _active_process
     process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
-    
+    _active_process = process
+
     for line in process.stderr:
         line = line.strip()
         if not line:
@@ -113,7 +119,8 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         })
     
     process.wait()
-    
+    _active_process = None
+
     if process.returncode == 0:
         final_progress = part_base + part_weight
         yield json.dumps({
@@ -124,8 +131,23 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         return True
     else:
         yield json.dumps({
-            'event': 'error', 
-            'part': part, 
+            'event': 'error',
+            'part': part,
             'message': 'Render failed'
         })
         return False
+
+
+def cancel_render():
+    """Kill the active OpenSCAD render process if one is running."""
+    global _active_process
+    if _active_process and _active_process.poll() is None:
+        logger.info("Cancelling active render process")
+        _active_process.terminate()
+        try:
+            _active_process.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            _active_process.kill()
+        _active_process = None
+        return True
+    return False

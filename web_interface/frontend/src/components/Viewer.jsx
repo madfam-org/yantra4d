@@ -3,21 +3,18 @@ import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { OrbitControls, Center, Grid, Environment, Edges, Bounds } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { useLanguage } from "../contexts/LanguageProvider"
+import { useTheme } from "../contexts/ThemeProvider"
 
-// Helper for API access inside Canvas context
 const SceneController = forwardRef((props, ref) => {
     const { gl, camera, scene } = useThree()
 
     useImperativeHandle(ref, () => ({
         captureSnapshot: () => {
-            // Render explicitly to ensure the buffer is fresh
             gl.render(scene, camera)
             return gl.domElement.toDataURL('image/png')
         },
         setCameraView: (view) => {
             const dist = 100
-
-            // Standard ThreeJS Y-up (Model is rotated to match)
             switch (view) {
                 case 'iso':
                     camera.position.set(50, 50, 50)
@@ -43,7 +40,6 @@ SceneController.displayName = "SceneController"
 
 const Model = ({ url, color }) => {
     const geom = useLoader(STLLoader, url)
-    // Fix rotation for Z-up STL to Y-up ThreeJS
     return (
         <mesh geometry={geom} rotation={[-Math.PI / 2, 0, 0]}>
             <meshStandardMaterial
@@ -51,14 +47,18 @@ const Model = ({ url, color }) => {
                 roughness={0.5}
                 metalness={0.1}
             />
-            {/* Edges: Dark grey for highlighting geometry topology */}
             <Edges threshold={15} color="#374151" />
         </mesh>
     )
 }
 
-const Viewer = forwardRef(({ parts = [], colors, loading, progress }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhase }, ref) => {
     const { t } = useLanguage()
+    const { theme } = useTheme()
+
+    // Resolve effective theme for canvas background
+    const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const bgColor = isDark ? '#09090b' : '#f4f4f5'
 
     return (
         <div className="relative h-full w-full">
@@ -73,13 +73,16 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress }, ref) => {
                         />
                     </div>
                     <div className="mt-1 text-sm text-muted-foreground">{progress}%</div>
+                    {progressPhase && (
+                        <div className="text-sm text-muted-foreground mt-1">{progressPhase}</div>
+                    )}
                 </div>
             )}
 
             <Canvas shadows className="h-full w-full" camera={{ position: [50, 50, 50], fov: 45 }} gl={{ preserveDrawingBuffer: true }}>
+                <color attach="background" args={[bgColor]} />
                 <SceneController ref={ref} />
 
-                {/* Lighting Setup */}
                 <Environment preset="city" />
                 <ambientLight intensity={0.3} />
                 <pointLight position={[10, 10, 10]} intensity={0.5} />
@@ -94,12 +97,11 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress }, ref) => {
                 />
 
                 <Suspense fallback={null}>
-                    {/* Bounds will calculate the bounding box and fit the camera */}
                     <Bounds fit clip observe margin={1.2}>
                         <Center top>
                             {parts.map((part) => (
                                 <Model
-                                    key={part.url} // URL includes cache bust timestamp so it works as key
+                                    key={part.url}
                                     url={part.url}
                                     color={colors[part.type] || (part.type === 'main' ? colors.bottom : "#e5e7eb")}
                                 />

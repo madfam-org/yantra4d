@@ -5,6 +5,7 @@ Handles /api/verify endpoint for design verification.
 import logging
 import subprocess
 import os
+import json
 
 from flask import Blueprint, request, jsonify
 
@@ -15,27 +16,55 @@ logger = logging.getLogger(__name__)
 verify_bp = Blueprint('verify', __name__)
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
-PREVIEW_STL = str(Config.STATIC_DIR / "preview.stl")
 VERIFY_SCRIPT = str(Config.VERIFY_SCRIPT)
+PARTS_MAP = Config.PARTS_MAP
+
+# Map frontend mode to SCAD file
+MODE_TO_SCAD = {
+    "unit": "half_cube.scad",
+    "assembly": "assembly.scad",
+    "grid": "tablaco.scad"
+}
 
 
 @verify_bp.route('/api/verify', methods=['POST'])
 def verify_design():
-    """Run verification on the preview STL."""
-    if not os.path.exists(PREVIEW_STL):
-        return jsonify({"status": "error", "message": "No preview generated yet"}), 400
-        
-    cmd = ["python3", VERIFY_SCRIPT, PREVIEW_STL]
-    logger.info(f"Verifying: {' '.join(cmd)}")
-    
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        success = result.returncode == 0
-        return jsonify({
-            "status": "success" if success else "failure",
-            "output": result.stdout + "\n" + result.stderr,
-            "passed": success
-        })
-    except Exception as e:
-        logger.error(f"Verification failed: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+    """Run verification on rendered STL parts for the current mode."""
+    data = request.json or {}
+    mode = data.get('mode', 'unit')
+
+    scad_file = MODE_TO_SCAD.get(mode, 'half_cube.scad')
+    parts = PARTS_MAP.get(scad_file, ["main"])
+
+    results = []
+    all_passed = True
+
+    for part in parts:
+        stl_path = os.path.join(STATIC_FOLDER, f"preview_{part}.stl")
+
+        if not os.path.exists(stl_path):
+            results.append(f"--- {part} ---\n[SKIP] File not found: preview_{part}.stl\n")
+            all_passed = False
+            continue
+
+        cmd = ["python3", VERIFY_SCRIPT, stl_path]
+        logger.info(f"Verifying {part}: {' '.join(cmd)}")
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            output = result.stdout + result.stderr
+            results.append(f"--- {part} ---\n{output}")
+            if result.returncode != 0:
+                all_passed = False
+        except Exception as e:
+            logger.error(f"Verification failed for {part}: {e}")
+            results.append(f"--- {part} ---\n[ERROR] {str(e)}\n")
+            all_passed = False
+
+    combined = "\n".join(results)
+    return jsonify({
+        "status": "success" if all_passed else "failure",
+        "output": combined,
+        "passed": all_passed,
+        "parts_checked": len(parts)
+    })

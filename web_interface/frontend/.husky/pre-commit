@@ -1,0 +1,1 @@
+cd web_interface/frontend && npx lint-staged

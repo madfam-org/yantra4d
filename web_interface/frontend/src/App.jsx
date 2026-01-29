@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import axios from 'axios'
 import Controls from './components/Controls'
 import Viewer from './components/Viewer'
 import ConfirmRenderDialog from './components/ConfirmRenderDialog'
@@ -10,9 +9,9 @@ import { useLanguage } from "./contexts/LanguageProvider"
 import { useManifest } from "./contexts/ManifestProvider"
 import { Sun, Moon, Monitor, Globe, Download, Square, RotateCcw } from 'lucide-react'
 import JSZip from 'jszip'
+import { renderParts, cancelRender, estimateRenderTime } from './services/renderService'
+import { verify } from './services/verifyService'
 import './index.css'
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
 
 function safeParse(key, fallback) {
   try {
@@ -66,13 +65,6 @@ function App() {
     localStorage.setItem(`${projectSlug}-mode`, mode)
   }, [mode, projectSlug])
 
-  // --- Health check on mount ---
-  useEffect(() => {
-    axios.get(`${API_BASE}/api/health`).catch(() => {
-      setLogs(prev => prev + `\n⚠️ ${t("log.backend_warn")}`)
-    })
-  }, [])
-
   // Cache key derived from manifest parameter IDs
   const getCacheKey = useCallback((m, p) => {
     const keyObj = { mode: m }
@@ -93,17 +85,12 @@ function App() {
     }
 
     if (!forceRender) {
-      try {
-        const estRes = await axios.post(`${API_BASE}/api/estimate`, payload)
-        const estimate = estRes.data.estimated_seconds
-        if (estimate > 60) {
-          setPendingEstimate(estimate)
-          setPendingPayload(payload)
-          setShowConfirmDialog(true)
-          return
-        }
-      } catch (e) {
-        console.warn('Estimate failed, proceeding:', e)
+      const estimate = estimateRenderTime(mode, params, manifest)
+      if (estimate > 60) {
+        setPendingEstimate(estimate)
+        setPendingPayload(payload)
+        setShowConfirmDialog(true)
+        return
       }
     }
 
@@ -116,68 +103,21 @@ function App() {
     abortControllerRef.current = controller
 
     try {
-      const response = await fetch(`${API_BASE}/api/render-stream`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal
+      const result = await renderParts(mode, params, manifest, {
+        onProgress: ({ percent, phase, log }) => {
+          if (percent !== undefined) setProgress(percent)
+          if (phase) {
+            const phaseKey = `phase.${phase}`
+            const translated = t(phaseKey)
+            if (translated !== phaseKey) setProgressPhase(translated)
+          }
+          if (log) setLogs(prev => prev + `\n${log}`)
+        },
+        abortSignal: controller.signal
       })
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let finalParts = []
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split('\n').filter(line => line.startsWith('data: '))
-
-        for (const rawLine of lines) {
-          try {
-            const data = JSON.parse(rawLine.slice(6))
-
-            if (data.progress !== undefined) {
-              setProgress(data.progress)
-            }
-
-            if (data.event === 'part_start') {
-              setLogs(prev => prev + `\n[${data.part}] Starting... (${data.index + 1}/${data.total})`)
-            } else if (data.event === 'output') {
-              const line = data.line
-              if (line.includes('Compiling')) setProgressPhase(t("phase.compiling"))
-              else if (line.includes('CGAL')) setProgressPhase(t("phase.cgal"))
-              else if (line.includes('Rendering') || line.includes('Geometries')) setProgressPhase(t("phase.rendering"))
-              else if (line.includes('Parsing')) setProgressPhase(t("phase.geometry"))
-
-              if (line.includes('Compiling') || line.includes('Parsing') ||
-                line.includes('CGAL') || line.includes('Geometries') ||
-                line.includes('Rendering') || line.includes('Total') ||
-                line.includes('Simple:')) {
-                setLogs(prev => prev + `\n  ${line}`)
-              }
-            } else if (data.event === 'part_done') {
-              setLogs(prev => prev + `\n[${data.part}] Done (${data.progress}%)`)
-            } else if (data.event === 'complete') {
-              finalParts = data.parts
-            } else if (data.event === 'error') {
-              setLogs(prev => prev + `\n[ERROR] ${data.part}: ${data.message}`)
-            }
-          } catch (parseErr) {
-            // Ignore malformed JSON
-          }
-        }
-      }
-
-      const timestamp = Date.now()
-      const partsWithCache = finalParts.map(p => ({
-        ...p,
-        url: p.url + "?t=" + timestamp
-      }))
-
-      setParts(partsWithCache)
-      setPartsCache(prev => ({ ...prev, [cacheKey]: partsWithCache }))
+      setParts(result)
+      setPartsCache(prev => ({ ...prev, [cacheKey]: result }))
       setProgress(100)
       setLogs(prev => prev + `\n${t("log.gen_stl")}`)
     } catch (e) {
@@ -200,9 +140,7 @@ function App() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
     }
-    try {
-      await axios.post(`${API_BASE}/api/render-cancel`)
-    } catch (_) {}
+    await cancelRender()
   }
 
   const handleConfirmRender = () => {
@@ -225,9 +163,9 @@ function App() {
     setLoading(true)
     setLogs(prev => prev + `\n${t("log.verify")}`)
     try {
-      const res = await axios.post(`${API_BASE}/api/verify`, { mode })
-      setLogs(prev => prev + "\n\n--- VERIFICATION REPORT ---\n" + res.data.output)
-      if (res.data.passed) setLogs(prev => prev + `\n${t("log.pass")}`)
+      const res = await verify(parts, mode)
+      setLogs(prev => prev + "\n\n--- VERIFICATION REPORT ---\n" + res.output)
+      if (res.passed) setLogs(prev => prev + `\n${t("log.pass")}`)
       else setLogs(prev => prev + `\n${t("log.fail")}`)
     } catch (e) {
       setLogs(prev => prev + `\n${t("log.error")}` + e.message)

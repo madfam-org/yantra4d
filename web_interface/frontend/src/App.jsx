@@ -314,7 +314,7 @@ function App() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div className="w-80 border-r border-border bg-card p-4 flex flex-col gap-4 overflow-y-auto">
-          <Tabs value={mode} onValueChange={setMode} className="w-full">
+          <Tabs value={mode} onValueChange={setMode} className="w-full relative z-10">
             <TabsList className={`grid w-full grid-cols-${manifest.modes.length}`}>
               {manifest.modes.map(m => (
                 <TabsTrigger key={m.id} value={m.id}>

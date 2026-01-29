@@ -5,12 +5,13 @@ Handles /api/estimate, /api/render, /api/render-stream endpoints.
 import logging
 import os
 import json
+import subprocess
 
 from flask import Blueprint, request, jsonify, Response
 
 from config import Config
 from manifest import get_manifest
-from services.openscad import build_openscad_command, run_render, stream_render, cancel_render
+from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,8 @@ def _resolve_render_context(data):
 def estimate_render_time():
     """Estimate render time based on parameters before actually rendering."""
     data = request.json
+    if not data:
+        return jsonify({"status": "error", "error": "Request body must be JSON"}), 400
     manifest = get_manifest()
     constants = manifest.estimate_constants
 
@@ -83,6 +86,8 @@ def estimate_render_time():
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
+    if not data:
+        return jsonify({"status": "error", "error": "Request body must be JSON"}), 400
     scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
 
     if scad_filename is None:
@@ -92,13 +97,21 @@ def render_stl():
     generated_parts = []
     combined_log = ""
 
+    # Clean old STL files before rendering
+    for part in parts_to_render:
+        old_path = os.path.join(STATIC_FOLDER, f"preview_{part}.stl")
+        try:
+            os.remove(old_path)
+        except OSError:
+            pass
+
     try:
         for part in parts_to_render:
             output_filename = f"preview_{part}.stl"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             render_mode = mode_map.get(part, 0)
-            params = data.get('parameters', data)
+            params = validate_params(data.get('parameters', data))
             cmd = build_openscad_command(output_path, scad_path, params, render_mode)
 
             success, stderr = run_render(cmd)
@@ -106,7 +119,10 @@ def render_stl():
                 return jsonify({"status": "error", "error": stderr}), 500
 
             combined_log += f"[{part}] {stderr}\n"
-            size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
+            try:
+                size_bytes = os.path.getsize(output_path)
+            except OSError:
+                size_bytes = None
             generated_parts.append({
                 "type": part,
                 "url": f"{request.host_url}static/{output_filename}",
@@ -118,8 +134,14 @@ def render_stl():
             "parts": generated_parts,
             "log": combined_log
         })
+    except subprocess.CalledProcessError as e:
+        logger.error(f"OpenSCAD process failed: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
+    except OSError as e:
+        logger.error(f"File operation failed during render: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
     except Exception as e:
-        logger.error(f"Render failed: {e}")
+        logger.warning(f"Unexpected error during render: {type(e).__name__}: {e}")
         return jsonify({"status": "error", "error": str(e)}), 500
 
 
@@ -127,17 +149,26 @@ def render_stl():
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
+    if not data:
+        return jsonify({"status": "error", "error": "Request body must be JSON"}), 400
+
     scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
 
     if scad_filename is None:
         bad_name = scad_path
-        def error_gen():
-            yield f"data: {json.dumps({'error': f'Invalid SCAD file: {bad_name}'})}\n\n"
-        return Response(error_gen(), mimetype='text/event-stream')
+        return jsonify({"status": "error", "error": f"Invalid SCAD file: {bad_name}"}), 400
 
     num_parts = len(parts_to_render)
     host_url = request.host_url
-    params = data.get('parameters', data)
+    params = validate_params(data.get('parameters', data))
+
+    # Clean old STL files before rendering
+    for part in parts_to_render:
+        old_path = os.path.join(STATIC_FOLDER, f"preview_{part}.stl")
+        try:
+            os.remove(old_path)
+        except OSError:
+            pass
 
     def generate():
         generated_parts = []
@@ -154,9 +185,16 @@ def render_stl_stream():
 
             for event_data in stream_render(cmd, part, part_base, part_weight, i, num_parts):
                 yield f"data: {event_data}\n\n"
-                event = json.loads(event_data)
+                try:
+                    event = json.loads(event_data)
+                except json.JSONDecodeError:
+                    logger.warning(f"Malformed SSE event data: {event_data!r}")
+                    continue
                 if event.get('event') == 'part_done':
-                    size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
+                    try:
+                        size_bytes = os.path.getsize(output_path)
+                    except OSError:
+                        size_bytes = None
                     generated_parts.append({
                         "type": part,
                         "url": f"{host_url}static/{output_filename}",

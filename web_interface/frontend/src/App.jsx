@@ -197,13 +197,16 @@ function App() {
       }
       const content = await zip.generateAsync({ type: 'blob' })
       const url = URL.createObjectURL(content)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${projectSlug}_${mode}_all_parts.zip`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
+      try {
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${projectSlug}_${mode}_all_parts.zip`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } finally {
+        URL.revokeObjectURL(url)
+      }
       setLogs(prev => prev + `\n${t("log.zip_done")}`)
     } catch (e) {
       setLogs(prev => prev + `\n${t("log.error")}` + e.message)
@@ -226,26 +229,34 @@ function App() {
 
   const handleExportAllViews = async () => {
     if (!viewerRef.current || parts.length === 0) return
-    const views = ['iso', 'top', 'front', 'right']
-    const zip = new JSZip()
-    for (const view of views) {
-      viewerRef.current.setCameraView(view)
-      await new Promise(r => setTimeout(r, 150))
-      const dataUrl = viewerRef.current.captureSnapshot()
-      const data = atob(dataUrl.split(',')[1])
-      const arr = new Uint8Array(data.length)
-      for (let i = 0; i < data.length; i++) arr[i] = data.charCodeAt(i)
-      zip.file(`${projectSlug}_${mode}_${view}.png`, arr)
+    try {
+      const views = ['iso', 'top', 'front', 'right']
+      const zip = new JSZip()
+      for (const view of views) {
+        viewerRef.current.setCameraView(view)
+        await new Promise(r => setTimeout(r, 150))
+        const dataUrl = viewerRef.current.captureSnapshot()
+        const data = atob(dataUrl.split(',')[1])
+        const arr = new Uint8Array(data.length)
+        for (let i = 0; i < data.length; i++) arr[i] = data.charCodeAt(i)
+        zip.file(`${projectSlug}_${mode}_${view}.png`, arr)
+      }
+      const blob = await zip.generateAsync({ type: 'blob' })
+      const url = URL.createObjectURL(blob)
+      try {
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${projectSlug}_${mode}_all_views.zip`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } finally {
+        URL.revokeObjectURL(url)
+      }
+    } catch (e) {
+      console.error('Export all views failed:', e)
+      setLogs(prev => prev + `\n${t("log.error")}` + e.message)
     }
-    const blob = await zip.generateAsync({ type: 'blob' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `${projectSlug}_${mode}_all_views.zip`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
   }
 
   // Debounced auto-generate with cache check
@@ -259,7 +270,7 @@ function App() {
       handleGenerate()
     }, 500)
     return () => clearTimeout(timer)
-  }, [params, mode])
+  }, [params, mode, getCacheKey, partsCache])
 
   // --- Keyboard shortcuts (dynamic Cmd+1..N for modes) ---
   useEffect(() => {

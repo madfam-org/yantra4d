@@ -78,6 +78,85 @@ backend/
 
 Both styles are supported. When `mode` is present, `scad_file` is resolved automatically from the manifest.
 
+**Verify**:
+```json
+{ "mode": "unit" }
+```
+
+**Render Cancel** (no body required):
+```
+POST /api/render-cancel
+```
+
+#### Response Examples
+
+**Render (success)**:
+```json
+{
+  "status": "success",
+  "parts": [
+    { "type": "main", "url": "http://localhost:5000/static/preview_main.stl", "size_bytes": 12345 }
+  ],
+  "log": "[main] Compiling design...\n"
+}
+```
+
+**Render (error)**:
+```json
+{ "status": "error", "error": "OpenSCAD failed: syntax error" }
+```
+
+**Estimate**:
+```json
+{ "estimated_seconds": 45.2, "num_parts": 2, "num_units": 4 }
+```
+
+**Verify**:
+```json
+{
+  "status": "success",
+  "output": "--- main ---\n[PASS] ...",
+  "passed": true,
+  "parts_checked": 1
+}
+```
+
+**Health**:
+```json
+{ "status": "healthy", "openscad_available": true, "scad_dir_exists": true }
+```
+
+#### Error Codes
+
+| Status | Meaning |
+|--------|---------|
+| 200 | Success |
+| 400 | Invalid input (missing JSON body, unknown SCAD file, invalid parameters) |
+| 404 | Unknown endpoint |
+| 500 | Render failure or internal error |
+
+All error responses use a consistent JSON envelope:
+```json
+{ "status": "error", "error": "Human-readable message" }
+```
+
+Global handlers for 400, 404, and 500 ensure this format even for unhandled Flask errors.
+
+**Note on `/api/render-stream`**: Input validation errors (missing body, invalid SCAD file) return a standard HTTP 400 JSON response *before* opening the SSE stream. Only valid requests upgrade to `text/event-stream`.
+
+#### Error Handling
+
+- **Manifest loading**: If `scad/project.json` is missing or contains invalid JSON, the backend raises a `RuntimeError` at startup with a descriptive message.
+- **Frontend fallback**: If the `/api/manifest` fetch fails (backend unavailable or network error), `ManifestProvider` logs a warning and uses the bundled `fallback-manifest.json`. This enables GitHub Pages / static deploys.
+- **Render service**: The frontend checks `response.ok` before reading the SSE stream and throws if the backend returns an error status. Malformed SSE lines are logged with `console.warn` and skipped. An empty stream (no parts produced) throws an error.
+- **Verify service**: Client-side verification checks `response.ok` when fetching STL files and reports fetch failures per-part in the verification output.
+
+#### Timeout Behavior
+
+- Backend synchronous render: Flask default timeout (no limit, but gunicorn uses 300s)
+- SSE streaming: `proxy_read_timeout 300s` in nginx config
+- WASM rendering: no timeout (runs in browser worker)
+
 ---
 
 ### Frontend Structure (`web_interface/frontend/src/`)
@@ -118,7 +197,7 @@ src/
 - **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values.
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains only UI chrome translations (buttons, log messages, phases, view labels). All parameter labels, tooltips, tab names, and color labels come from the manifest.
-- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `#e5e7eb`. No project-specific logic.
+- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `#e5e7eb`. No project-specific logic. Includes an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
 
 ---
 
@@ -166,5 +245,6 @@ Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 | `PORT` | `5000` | Backend server port |
 | `HOST` | `0.0.0.0` | Backend bind address |
 | `VITE_API_BASE` | `http://localhost:5000` | Frontend → backend API base URL |
+| `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3000` | Comma-separated allowed CORS origins for backend |
 
 [Back to Index](./index.md)

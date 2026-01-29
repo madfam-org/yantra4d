@@ -3,17 +3,21 @@ OpenSCAD Service
 Handles all OpenSCAD subprocess interactions.
 """
 import logging
+import re
 import subprocess
 import json
 import os
 import signal
+import threading
 
 from config import Config
+from manifest import get_manifest
 
 logger = logging.getLogger(__name__)
 
 # Track the active render process for cancellation
 _active_process = None
+_process_lock = threading.Lock()
 
 # Phase weights for progress estimation
 PHASE_WEIGHTS = {
@@ -44,22 +48,89 @@ def get_phase_from_line(line: str) -> str | None:
     return None
 
 
+def validate_params(params: dict) -> dict:
+    """Validate parameters against the manifest.
+
+    Checks types, enforces min/max for numbers, and rejects unknown keys.
+    Returns a cleaned dict of validated parameters.
+    """
+    manifest = get_manifest()
+    param_defs = {p["id"]: p for p in manifest.parameters}
+    pass_through_keys = {"mode", "scad_file", "parameters"}
+    cleaned = {}
+
+    for key, value in params.items():
+        if key in pass_through_keys:
+            continue
+
+        if key not in param_defs:
+            logger.warning(f"Rejecting unknown parameter: {key}")
+            continue
+
+        defn = param_defs[key]
+        param_type = defn.get("type", "slider")
+
+        if param_type == "slider":
+            try:
+                num_val = float(value)
+            except (TypeError, ValueError):
+                logger.warning(f"Rejecting non-numeric value for {key}: {value}")
+                continue
+            min_val = defn.get("min")
+            max_val = defn.get("max")
+            if min_val is not None and num_val < float(min_val):
+                num_val = float(min_val)
+            if max_val is not None and num_val > float(max_val):
+                num_val = float(max_val)
+            cleaned[key] = num_val
+        elif param_type == "checkbox":
+            if isinstance(value, bool):
+                cleaned[key] = value
+            elif str(value).lower() in ("true", "false"):
+                cleaned[key] = str(value).lower() == "true"
+            else:
+                logger.warning(f"Rejecting non-boolean value for {key}: {value}")
+                continue
+        else:
+            str_val = str(value)
+            if not re.match(r'^[a-zA-Z0-9_]+$', str_val):
+                logger.warning(f"Rejecting non-alphanumeric string for {key}: {value}")
+                continue
+            cleaned[key] = str_val
+
+    return cleaned
+
+
 def build_openscad_command(output_path: str, scad_path: str, params: dict, mode_id: int = 0) -> list:
     """Build OpenSCAD command with parameters."""
     cmd = [Config.OPENSCAD_PATH, "-o", output_path]
-    
+
     for key, value in params.items():
         if key == 'scad_file':
             continue
         if isinstance(value, bool):
             val_str = str(value).lower()
-        else:
+        elif isinstance(value, (int, float)):
             val_str = str(value)
+        else:
+            str_val = str(value)
+            if re.match(r'^[a-zA-Z0-9_]+$', str_val):
+                val_str = str_val
+            else:
+                try:
+                    float(str_val)
+                    val_str = str_val
+                except (TypeError, ValueError):
+                    if str_val.lower() in ("true", "false"):
+                        val_str = str_val.lower()
+                    else:
+                        logger.warning(f"Skipping invalid -D value for {key}: {str_val}")
+                        continue
         cmd.extend(["-D", f"{key}={val_str}"])
-    
+
     if mode_id != 0:
         cmd.extend(["-D", f"render_mode={mode_id}"])
-    
+
     cmd.append(scad_path)
     return cmd
 
@@ -95,31 +166,35 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
     # Run with Popen to stream stderr
     global _active_process
     process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
-    _active_process = process
+    with _process_lock:
+        _active_process = process
 
-    for line in process.stderr:
-        line = line.strip()
-        if not line:
-            continue
-        
-        # Detect phase transitions
-        detected_phase = get_phase_from_line(line)
-        if detected_phase and detected_phase in PHASE_ORDER:
-            phase_idx = PHASE_ORDER.index(detected_phase)
-            current_phase_progress = sum(PHASE_WEIGHTS.get(p, 0) for p in PHASE_ORDER[:phase_idx + 1])
-        
-        # Calculate overall progress
-        overall_progress = part_base + (current_phase_progress / 100) * part_weight
-        
-        yield json.dumps({
-            'event': 'output', 
-            'part': part, 
-            'line': line, 
-            'progress': round(overall_progress)
-        })
-    
-    process.wait()
-    _active_process = None
+    try:
+        for line in process.stderr:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Detect phase transitions
+            detected_phase = get_phase_from_line(line)
+            if detected_phase and detected_phase in PHASE_ORDER:
+                phase_idx = PHASE_ORDER.index(detected_phase)
+                current_phase_progress = sum(PHASE_WEIGHTS.get(p, 0) for p in PHASE_ORDER[:phase_idx + 1])
+
+            # Calculate overall progress
+            overall_progress = part_base + (current_phase_progress / 100) * part_weight
+
+            yield json.dumps({
+                'event': 'output',
+                'part': part,
+                'line': line,
+                'progress': round(overall_progress)
+            })
+
+        process.wait()
+    finally:
+        with _process_lock:
+            _active_process = None
 
     if process.returncode == 0:
         final_progress = part_base + part_weight
@@ -141,13 +216,14 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
 def cancel_render():
     """Kill the active OpenSCAD render process if one is running."""
     global _active_process
-    if _active_process and _active_process.poll() is None:
-        logger.info("Cancelling active render process")
-        _active_process.terminate()
-        try:
-            _active_process.wait(timeout=3)
-        except subprocess.TimeoutExpired:
-            _active_process.kill()
-        _active_process = None
-        return True
+    with _process_lock:
+        if _active_process and _active_process.poll() is None:
+            logger.info("Cancelling active render process")
+            _active_process.terminate()
+            try:
+                _active_process.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                _active_process.kill()
+            _active_process = None
+            return True
     return False

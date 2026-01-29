@@ -15,7 +15,7 @@ Structure:
 import logging
 import os
 
-from flask import Flask, send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
 from config import Config
@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 def create_app():
     """Application factory for Flask app."""
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, origins=os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(","))
     
     # Ensure static directory exists
     Config.STATIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -53,10 +53,23 @@ def create_app():
     def serve_static(filename):
         return send_from_directory(str(Config.STATIC_DIR), filename)
     
+    # Global error handlers
+    @app.errorhandler(400)
+    def bad_request(e):
+        return jsonify({"status": "error", "error": "Bad request"}), 400
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"status": "error", "error": "Not found"}), 404
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        return jsonify({"status": "error", "error": "Internal server error"}), 500
+
     logger.info(f"Tablaco Backend initialized - Debug: {Config.DEBUG}")
     logger.info(f"SCAD Directory: {Config.SCAD_DIR}")
     logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")
-    
+
     return app
 
 

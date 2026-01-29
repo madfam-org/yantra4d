@@ -6,6 +6,7 @@ import logging
 import subprocess
 import os
 import json
+from pathlib import Path
 
 from flask import Blueprint, request, jsonify
 
@@ -36,6 +37,12 @@ def verify_design():
 
     for part in parts:
         stl_path = os.path.join(STATIC_FOLDER, f"preview_{part}.stl")
+
+        resolved = Path(stl_path).resolve()
+        if not resolved.is_relative_to(Path(STATIC_FOLDER).resolve()):
+            results.append(f"--- {part} ---\n[ERROR] Invalid path\n")
+            all_passed = False
+            continue
 
         if not os.path.exists(stl_path):
             results.append(f"--- {part} ---\n[SKIP] File not found: preview_{part}.stl\n")

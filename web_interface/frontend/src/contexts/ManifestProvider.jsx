@@ -17,8 +17,8 @@ export function ManifestProvider({ children }) {
         return res.json()
       })
       .then((data) => setManifest(data))
-      .catch(() => {
-        // Static deploy or backend unavailable — bundled fallback is the source of truth
+      .catch((err) => {
+        console.warn('Manifest fetch failed, using fallback:', err)
       })
       .finally(() => setLoading(false))
   }, [])

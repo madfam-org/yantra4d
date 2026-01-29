@@ -106,8 +106,15 @@ def load_manifest() -> ProjectManifest:
     manifest_path = Config.SCAD_DIR / "project.json"
     logger.info(f"Loading project manifest from {manifest_path}")
 
-    with open(manifest_path, "r") as f:
-        data = json.load(f)
+    try:
+        with open(manifest_path, "r") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        logger.error(f"Manifest not found: {manifest_path}")
+        raise RuntimeError(f"Project manifest not found at {manifest_path}")
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in manifest {manifest_path}: {e}")
+        raise RuntimeError(f"Project manifest contains invalid JSON: {e}")
 
     _manifest_cache = ProjectManifest(data)
     return _manifest_cache

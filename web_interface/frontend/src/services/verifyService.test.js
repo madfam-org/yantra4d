@@ -33,6 +33,22 @@ describe('verify', () => {
     await expect(verifyService.verify([], 'unit')).rejects.toThrow('Verification failed: 500')
   })
 
+  it('in client mode, throws on non-ok STL fetch', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockRejectedValueOnce(new Error('unreachable')) // health → wasm mode
+
+    // STL fetch returns 404
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 404 })
+
+    const result = await verifyService.verify(
+      [{ type: 'main', url: 'http://x/missing.stl' }],
+      'unit'
+    )
+
+    expect(result.passed).toBe(false)
+    expect(result.output).toContain('Failed to fetch STL for main: HTTP 404')
+  })
+
   it('checkBackend caches result on second call', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // first health

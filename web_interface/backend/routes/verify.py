@@ -5,7 +5,6 @@ Handles /api/verify endpoint for design verification.
 import logging
 import subprocess
 import os
-import json
 from pathlib import Path
 
 from flask import Blueprint, request, jsonify

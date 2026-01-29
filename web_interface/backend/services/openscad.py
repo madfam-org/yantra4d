@@ -6,8 +6,6 @@ import logging
 import re
 import subprocess
 import json
-import os
-import signal
 import threading
 
 from config import Config

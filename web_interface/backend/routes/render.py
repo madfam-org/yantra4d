@@ -98,7 +98,8 @@ def render_stl():
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             render_mode = mode_map.get(part, 0)
-            cmd = build_openscad_command(output_path, scad_path, data, render_mode)
+            params = data.get('parameters', data)
+            cmd = build_openscad_command(output_path, scad_path, params, render_mode)
 
             success, stderr = run_render(cmd)
             if not success:
@@ -135,6 +136,8 @@ def render_stl_stream():
         return Response(error_gen(), mimetype='text/event-stream')
 
     num_parts = len(parts_to_render)
+    host_url = request.host_url
+    params = data.get('parameters', data)
 
     def generate():
         generated_parts = []
@@ -147,7 +150,7 @@ def render_stl_stream():
             part_weight = 100 / num_parts
 
             render_mode = mode_map.get(part, 0)
-            cmd = build_openscad_command(output_path, scad_path, data, render_mode)
+            cmd = build_openscad_command(output_path, scad_path, params, render_mode)
 
             for event_data in stream_render(cmd, part, part_base, part_weight, i, num_parts):
                 yield f"data: {event_data}\n\n"
@@ -156,7 +159,7 @@ def render_stl_stream():
                     size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
                     generated_parts.append({
                         "type": part,
-                        "url": f"{request.host_url}static/{output_filename}",
+                        "url": f"{host_url}static/{output_filename}",
                         "size_bytes": size_bytes
                     })
 

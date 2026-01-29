@@ -15,6 +15,14 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 })
 
+// ResizeObserver is not available in jsdom
+class ResizeObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+window.ResizeObserver = window.ResizeObserver || ResizeObserverStub
+
 // URL.createObjectURL / revokeObjectURL are not available in jsdom
 if (typeof URL.createObjectURL === 'undefined') {
   URL.createObjectURL = () => 'blob:mock-url'

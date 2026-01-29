@@ -1,5 +1,14 @@
-import { describe, it, expect } from 'vitest'
-import { estimateRenderTime } from './renderService'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// We need to reset module state between tests because detectMode caches _mode
+let renderService
+
+beforeEach(async () => {
+  vi.restoreAllMocks()
+  // Re-import fresh module to reset cached _mode
+  vi.resetModules()
+  renderService = await import('./renderService')
+})
 
 const manifest = {
   modes: [
@@ -12,25 +21,54 @@ const manifest = {
 
 describe('estimateRenderTime', () => {
   it('unit mode: base_time + 1*per_unit + 1*per_part', () => {
-    // 5 + 1*1.5 + 1*8 = 14.5
-    expect(estimateRenderTime('unit', {}, manifest)).toBe(14.5)
+    expect(renderService.estimateRenderTime('unit', {}, manifest)).toBe(14.5)
   })
 
   it('assembly mode: base_time + 2*per_unit + 2*per_part', () => {
-    // 5 + 2*1.5 + 2*8 = 24
-    expect(estimateRenderTime('assembly', {}, manifest)).toBe(24)
+    expect(renderService.estimateRenderTime('assembly', {}, manifest)).toBe(24)
   })
 
   it('grid mode 4x4: base_time + 16*per_unit + 4*per_part', () => {
-    // 5 + 16*1.5 + 4*8 = 5 + 24 + 32 = 61
-    expect(estimateRenderTime('grid', { rows: 4, cols: 4 }, manifest)).toBe(61)
+    expect(renderService.estimateRenderTime('grid', { rows: 4, cols: 4 }, manifest)).toBe(61)
   })
 
   it('returns 0 when estimate_constants is missing', () => {
-    expect(estimateRenderTime('unit', {}, { modes: manifest.modes })).toBe(0)
+    expect(renderService.estimateRenderTime('unit', {}, { modes: manifest.modes })).toBe(0)
   })
 
   it('returns 0 for unknown mode', () => {
-    expect(estimateRenderTime('nonexistent', {}, manifest)).toBe(0)
+    expect(renderService.estimateRenderTime('nonexistent', {}, manifest)).toBe(0)
+  })
+})
+
+describe('getRenderMode', () => {
+  it('returns "detecting" when mode has not been detected yet', () => {
+    expect(renderService.getRenderMode()).toBe('detecting')
+  })
+})
+
+describe('cancelRender', () => {
+  it('in backend mode, calls /api/render-cancel', async () => {
+    // First, make detectMode resolve to 'backend'
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health check → backend
+    fetchMock.mockResolvedValueOnce({ ok: true }) // cancel call
+
+    // Trigger detection by calling cancelRender (which calls detectMode internally)
+    await renderService.cancelRender()
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(fetchMock.mock.calls[1][0]).toContain('/api/render-cancel')
+    expect(fetchMock.mock.calls[1][1]).toEqual({ method: 'POST' })
+  })
+
+  it('in wasm mode, does not call fetch for cancel', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockRejectedValueOnce(new Error('unreachable')) // health check fails → wasm
+
+    await renderService.cancelRender()
+
+    // Only the health check fetch, no cancel fetch
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })

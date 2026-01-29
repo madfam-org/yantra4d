@@ -16,7 +16,7 @@ This OpenSCAD script defines a single "Half-Cube" which, when printed twice and 
 | `thick` | `2.5` | Wall thickness. Includes base and side walls. |
 | `rod_D` | `3.0` | Diameter of the central rod hole. Used for grid assembly rods. |
 | `clearance` | `0.2` | General clearance for bores. |
-| `fit_clear` | `0.1` | **Critical**: Physical clearance gap applied to miter faces to ensure assembly. |
+| `fit_clear` | `0.2` | **Critical**: Physical clearance gap applied to miter faces to ensure assembly. |
 | `show_base` | `true` | Toggle visibility of the Base Plate. |
 | `show_walls` | `true` | Toggle visibility of Side Walls. |
 | `show_mech` | `true` | Toggle visibility of the Snap Mechanism. |
@@ -36,32 +36,67 @@ The following parameters are defined in `half_cube.scad` but are intentionally *
 | `letter_depth` | `0.5` | Depth/height of letter emboss/carve (mm). |
 | `letter_size` | `6` | Font size of the letter (mm). |
 
+### Snap-Fit Parameters
+
+These constants scale with `scale_factor = size / 20` and have minimum-value guards:
+
+| Parameter | Formula | Min | Description |
+| :--- | :--- | :--- | :--- |
+| `snap_beam_len` | `6.0 * scale_factor` | `1.5` | Cantilever beam length |
+| `snap_beam_width` | `3.0 * scale_factor` | `0.8` | Beam width |
+| `snap_beam_thick` | `1.2 * scale_factor` | `0.4` | Beam thickness |
+| `snap_undercut` | `0.6 * scale_factor` | `0.15` | Undercut depth on snap head |
+| `snap_head_len` | `1.5 * scale_factor` | `0.4` | Length of snap head |
+| `snap_relief_w` | `1.5 * scale_factor` | `0.3` | Relief slot width |
+| `snap_relief_d` | `0.8 * scale_factor` | `0.2` | Relief slot depth into head |
+| `snap_sink` | `0.1` | — | Head sunk into shaft for boolean union |
+
+### Derived Geometry Constants
+
+| Parameter | Formula | Description |
+| :--- | :--- | :--- |
+| `cyl_R` | `size * 0.15 + rod_D/2 + clearance + 1` | Mechanism cylinder radius, parametric |
+| `cyl_H` | `size/2 - thick - fit_clear` | Cylinder height |
+| `weld` | `0.4` | Weld cube size for boolean connectivity |
+
 All togglable parameters (`show_base`, `show_walls`, `show_mech`) and dimensional parameters (`size`, `thick`, `rod_D`) are declared in the [project manifest](./manifest.md) and exposed in the web UI for the Unit and Assembly modes.
 
 ### Modules
 
 #### 1. `base_plate()`
--   **Geometry**: Inverted Pyramid / Dovetail shape.
+-   **Geometry**: Rectangular slab (`cube(...)`, centered).
 -   **Function**: Forms the floor of the U-channel.
--   **Design Note**: The simple trapezoid was inverted to ensuring the top surface (where walls meet) is wide enough to support the full wall thickness.
--   **Clearance**: Y-faces are shaved by `fit_clear` to prevent collision with the mating part's walls.
+-   **Clearance**: XY faces are shaved by `fit_clear` to prevent collision with the mating part's walls.
 
-#### 2. `mitered_wall_left()` / `mitered_wall_right()`
--   **Geometry**: Vertical walls with 45-degree miter cuts on Top, Front, and Back faces.
+#### 2. `mitered_wall()` (mirrored for left/right)
+-   **Geometry**: Vertical wall with 45-degree miter cuts on Top face. Front and back edges are cut via `difference()` to create miter clearance.
 -   **Function**: Interlocks with the mating half's walls.
 -   **Clearance**: Miter cuts are offset deeper by `fit_clear`.
+-   **Usage**: Called once directly (left wall) and once with `mirror([1,0,0])` (right wall).
 
-#### 3. `mechanism()`
--   **Geometry**: Central cylindrical shaft with cantilever snaps.
+#### 3. `mechanism_pillars(flipped)`
+-   **Geometry**: Central cylindrical mechanism with snap-fit locking.
 -   **Function**: Locks the two halves together.
--   **Integration**: Uses a "Union-Then-Subtract" approach to fuse the snaps to the shaft, preventing mesh disconnection.
--   **Features**:
-    -   **Snaps**: True cantilever heads with a 1.5mm relief slot cut through them.
-    -   **Sinking**: The snap heads are sunk 0.1mm into the shaft to force a valid boolean union.
+-   **Structure**:
+    -   Base ring (`cylinder(r=cyl_R, h=base_ring_h)`)
+    -   Two opposing quadrant pillars with wedge cuts (90° sectors)
+    -   4 snap beams via `snap_beam_at(angle, pillar_height)` at 45°, 135°, 225°, 315°
+    -   Snap heads with undercut and relief slots via `snap_head()`
+    -   Weld cubes at base and top junctions for boolean connectivity
+-   **Flip**: When `flipped=true`, the mechanism is rotated 180° on X so snap beams engage from the opposite direction.
 
-#### 4. `welds()`
--   **Geometry**: Small hidden cubes at internal intersections.
--   **Purpose**: Forces OpenSCAD to recognize the assembly as a single connected volume ("Volumes: 1") by bridging any potential arithmetic gaps between primitives.
+#### 4. `snap_beam_at(angle, pillar_height)`
+-   **Geometry**: Single cantilever beam with tapered profile and snap head.
+-   **Function**: Provides the deflection and locking action for snap-fit assembly.
+
+#### 5. `snap_head()`
+-   **Geometry**: Overhanging head with undercut ramp and relief slot.
+-   **Function**: Creates the locking barb that catches on the mating cylinder bore.
+
+#### 6. `letter_geometry(flipped, side)`
+-   **Geometry**: Extruded text character on wall surface.
+-   **Function**: Embosses or carves a letter on both left and right walls.
+-   **Mirror logic**: Right wall text is mirrored so it reads correctly from the outside.
 
 ---
 

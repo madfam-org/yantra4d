@@ -1,5 +1,5 @@
-// half_cube.scad - Simplified Parametric Half-Cube
-// Designed for verification: single volume, watertight, no collision
+// half_cube.scad - Parametric Half-Cube with Snap-Fit Mechanism
+// Research-faithful implementation: Dual-U topology, snap locks, mitered walls
 // Units: mm
 
 $fn = 64;
@@ -9,7 +9,7 @@ size = 20.0;          // Outer cube dimension
 thick = 2.5;          // Wall thickness
 rod_D = 3.0;          // Rod diameter
 clearance = 0.2;      // Clearance for rod bore
-fit_clear = 0.2;      // Miter face clearance (increased per research)
+fit_clear = 0.2;      // Miter face clearance (per research)
 
 // --- Visibility Toggles ---
 show_base = true;
@@ -21,148 +21,255 @@ show_letter = true;
 is_flipped = false;        // true = top unit (rotated mechanism, inverted letter)
 
 // --- Letter Parameters ---
-letter = is_flipped ? "F" : "V";  // Default: V for bottom, F for top
+letter = is_flipped ? "F" : "V";
 letter_emboss = false;     // true = raised, false = carved
-letter_depth = 0.5;        // Depth/height of letter (mm)
-letter_size = 6;           // Font size (mm)
+letter_depth = 0.5;
+letter_size = 6;
+
+// --- Snap-Fit Parameters (scaled from research: 60mm -> size) ---
+scale_factor = size / 60;
+snap_beam_len   = max(6.0 * scale_factor, 1.5);  // Cantilever beam length
+snap_beam_width = max(3.0 * scale_factor, 0.8);   // Beam width
+snap_beam_thick = max(1.2 * scale_factor, 0.4);   // Beam thickness
+snap_undercut   = max(0.6 * scale_factor, 0.15);   // Undercut depth on snap head
+snap_head_len   = max(1.5 * scale_factor, 0.4);    // Length of snap head
+snap_relief_w   = max(1.5 * scale_factor, 0.3);    // Relief slot width
+snap_relief_d   = max(0.8 * scale_factor, 0.2);    // Relief slot depth into head
+snap_sink       = 0.1;                              // Head sunk into shaft for boolean union
 
 // Derived
-cyl_R = 4.5;          // Mechanism cylinder radius
-cyl_H = size/2 - thick - fit_clear; // Height from base top to part top
+cyl_R = size * 0.15 + rod_D/2 + clearance + 1;  // Parametric: derived from size and rod
+cyl_H = size/2 - thick - fit_clear;
+
+// Weld cube size for mesh integrity at internal junctions
+weld = 0.4;
 
 // --- Main Assembly ---
 module assembly(flipped=is_flipped) {
     difference() {
         union() {
-            // 1. Base Plate (bottom of U-channel)
+            // 1. Base Plate
             if (show_base)
                 translate([0, 0, -size/2 + thick/2])
                     base_plate();
-            
-            // 2. Side Walls with mitered edges
+
+            // 2. Side Walls with full mitered edges (top + front/back)
             if (show_walls) {
                 translate([-size/2 + thick/2, 0, 0])
                     mitered_wall();
                 translate([size/2 - thick/2, 0, 0])
                     mirror([1,0,0]) mitered_wall();
             }
-            
-            // 3. Central mechanism pillars
-            // Position at base plate bottom (z=-10) so base_ring spans through base
+
+            // 3. Central mechanism with snap-fit
             if (show_mech)
-                translate([0, 0, -size/2])  // Start at very bottom of part
+                translate([0, 0, -size/2])
                     mechanism_pillars(flipped=flipped);
-            
-            // 4. Letter (embossed mode - raised)
-            if (show_letter && letter_emboss)
-                letter_geometry(flipped=flipped);
+
+            // 4. Letters on BOTH walls (embossed mode)
+            if (show_letter && letter_emboss) {
+                letter_geometry(flipped=flipped, side="left");
+                letter_geometry(flipped=flipped, side="right");
+            }
         }
-        
+
         // Global subtractions
         // Rod bore through center
         cylinder(r=rod_D/2 + clearance, h=size*2, center=true);
-        
-        // Letter (carved mode - recessed)
-        if (show_letter && !letter_emboss)
-            letter_geometry(flipped=flipped);
+
+        // Letters carved on BOTH walls
+        if (show_letter && !letter_emboss) {
+            letter_geometry(flipped=flipped, side="left");
+            letter_geometry(flipped=flipped, side="right");
+        }
     }
 }
 
 // --- Base Plate ---
-// Full width in X and Y, with trapezoid profile in Y-Z
+// Full width/depth, matching wall footprint for flush assembled faces
 module base_plate() {
-    // Simple rectangular base that spans full width
-    // The Y dimension must go edge to edge (minus clearance)
     cube([size - 2*fit_clear, size - 2*fit_clear, thick], center=true);
 }
 
 // --- Mitered Wall ---
-// Wall with 45° chamfer only on top for mating interface
-// Wall only spans HALF the cube (from base to midpoint)
+// Wall spans from base to midpoint with 45° chamfer on top AND front/back edges
 module mitered_wall() {
-    // The wall needs to span: 
-    //   X = thick (wall thickness)
-    //   Y = size (full cube width, minus clearance)
-    //   Z = half cube height (from -size/2 to -fit_clear)
-    
     wall_length = size - 2*fit_clear;  // Y dimension
-    
-    // Rotate the extrusion so it extends along Y instead of Z
-    rotate([90, 0, 0])  // Rotate -90° around X to point extrusion in -Y (then center=true makes it +/-Y)
-    linear_extrude(wall_length, center=true)  // This now extrudes along Y
-        // Polygon in XZ plane (after rotation, this becomes the actual XZ plane of the wall)
-        polygon([
-            [-thick/2, -size/2],             // Bottom-outer (z=-10)
-            [-thick/2, -fit_clear],          // Top-outer (z=-0.2)
-            [thick/2, -thick - fit_clear],   // Top-inner (z=-2.7, chamfered)
-            [thick/2, -size/2]               // Bottom-inner (z=-10)
-        ]);
+    wall_half_z = size/2;              // Total Z span from -size/2 to 0
+
+    // Wall height: from base bottom (-size/2) to top (-fit_clear)
+    // With 45° miter on top edge and front/back edges
+    difference() {
+        // Main wall body
+        rotate([90, 0, 0])
+        linear_extrude(wall_length, center=true)
+            // Profile in XZ plane: 45° chamfer on top
+            polygon([
+                [-thick/2, -size/2],             // Bottom-outer
+                [-thick/2, -fit_clear],          // Top-outer
+                [thick/2, -thick - fit_clear],   // Top-inner (45° chamfer)
+                [thick/2, -size/2]               // Bottom-inner
+            ]);
+
+        // Front miter cut: 45° chamfer on front face (+Y edge)
+        translate([0, size/2 - fit_clear, -size/4])
+            rotate([45, 0, 0])
+                cube([thick + 1, thick * 1.5, thick * 1.5], center=true);
+
+        // Back miter cut: 45° chamfer on back face (-Y edge)
+        translate([0, -(size/2 - fit_clear), -size/4])
+            rotate([-45, 0, 0])
+                cube([thick + 1, thick * 1.5, thick * 1.5], center=true);
+    }
 }
 
 // --- Letter Geometry ---
-// Places letter on left wall exterior
-// Flipped 180° for top unit so it reads correctly after assembly
-module letter_geometry(flipped=is_flipped) {
-    // Position on left wall exterior face
-    wall_x = -size/2;  // Left wall position
-    letter_z = -size/4;  // Center of wall height
-    
-    // Determine letter and rotation based on local flipped state
+// Places letter on specified wall exterior
+// Both left and right walls get letters
+module letter_geometry(flipped=is_flipped, side="left") {
     local_letter = flipped ? "F" : "V";
-    
-    // Rotation: 90° to face outward from wall
-    // When flipped: add 180° so letter reads correctly after assembly flip
     flip_angle = flipped ? 180 : 0;
-    
-    translate([wall_x, 0, letter_z])
-        rotate([90, flip_angle, 90]) { // Face outward (-X direction)
-            // Counter-mirror for flipped unit to ensure text reads Left-to-Right
-            scale([flipped ? -1 : 1, 1, 1])
-            
-            linear_extrude(letter_depth + (letter_emboss ? 0 : thick))
-                text(local_letter, size=letter_size, halign="center", valign="center", 
-                     font="Liberation Sans:style=Bold");
-}
+    letter_z = -size/4;
+
+    if (side == "left") {
+        wall_x = -size/2;
+        translate([wall_x, 0, letter_z])
+            rotate([90, flip_angle, 90])
+                scale([flipped ? -1 : 1, 1, 1])
+                    linear_extrude(letter_depth + (letter_emboss ? 0 : thick))
+                        text(local_letter, size=letter_size, halign="center", valign="center",
+                             font="Liberation Sans:style=Bold");
+    } else {
+        // Right wall: mirror placement
+        wall_x = size/2;
+        translate([wall_x, 0, letter_z])
+            rotate([90, flip_angle, -90])
+                scale([flipped ? -1 : 1, 1, 1])
+                    linear_extrude(letter_depth + (letter_emboss ? 0 : thick))
+                        text(local_letter, size=letter_size, halign="center", valign="center",
+                             font="Liberation Sans:style=Bold");
+    }
 }
 
-// --- Mechanism Pillars ---
-// Two opposing quadrant pillars with a solid base ring
-// Bottom unit: pillars at 0°/180°, cuts at 90°/270°
-// Flipped unit: pillars at 90°/270°, cuts at 0°/180° (rotated 90°)
+// --- Mechanism Pillars with Snap-Fit ---
+// Two opposing quadrant pillars with base ring, snap beams, and weld cubes
 module mechanism_pillars(flipped=is_flipped) {
-    base_ring_h = thick + 0.1;  // Height of solid ring = base plate thickness + overlap
+    base_ring_h = thick + 0.1;
     pillar_height = cyl_H;
-    
-    // Rotate entire mechanism 90° for flipped (top) unit
+
     mech_rotation = flipped ? 90 : 0;
-    
+
     rotate([0, 0, mech_rotation])
     union() {
-        // 1. Solid base ring (no wedge cuts) - this connects to base plate
+        // 1. Solid base ring
         cylinder(r=cyl_R, h=base_ring_h);
-        
-        // 2. Pillars above the base ring (with wedge cuts)
-        translate([0, 0, base_ring_h - 0.1])  // Small overlap for solid union
+
+        // 2. Weld cubes at base ring / pillar junction for mesh integrity
+        for (angle = [0, 90, 180, 270])
+            rotate([0, 0, angle])
+                translate([cyl_R * 0.5, 0, base_ring_h - weld/2])
+                    cube(weld, center=true);
+
+        // 3. Pillars with wedge cuts
+        translate([0, 0, base_ring_h - 0.1])
             difference() {
                 cylinder(r=cyl_R, h=pillar_height);
-                
-                // Cut away two opposing quadrants (90° and 270°)
+
+                // Cut away Q2 and Q4 (90° and 270°)
                 rotate([0, 0, 90])
                     wedge_cutter(pillar_height + 1);
                 rotate([0, 0, 270])
                     wedge_cutter(pillar_height + 1);
             }
+
+        // 4. Snap-fit cantilever beams on pillar faces
+        // Beams face outward from each pillar into the cut-away quadrants
+        // Q1 pillar (0°-90°) gets beams facing into Q2 (90°) and Q4 (360°/0°-side)
+        // Q3 pillar (180°-270°) gets beams facing into Q2 and Q4
+
+        // Pillar Q1: beam at 90° face (facing +Y)
+        translate([0, 0, base_ring_h - 0.1])
+            snap_beam_at(angle=45, pillar_height=pillar_height);
+
+        // Pillar Q1: beam at 0° face (facing +X)
+        translate([0, 0, base_ring_h - 0.1])
+            snap_beam_at(angle=315, pillar_height=pillar_height);
+
+        // Pillar Q3: beam at 180° face (facing -X)
+        translate([0, 0, base_ring_h - 0.1])
+            snap_beam_at(angle=135, pillar_height=pillar_height);
+
+        // Pillar Q3: beam at 270° face (facing -Y)
+        translate([0, 0, base_ring_h - 0.1])
+            snap_beam_at(angle=225, pillar_height=pillar_height);
+
+        // 5. Weld cubes at pillar tops for mesh integrity
+        for (angle = [0, 180])
+            rotate([0, 0, angle])
+                translate([cyl_R * 0.4, 0, base_ring_h + pillar_height - weld/2])
+                    cube(weld, center=true);
     }
 }
 
-// Wedge cutter for 90° sector
+// --- Snap Beam ---
+// Cantilever beam with undercut head and relief slot
+// Placed at a given angle on the cylinder surface, growing upward from mid-pillar
+module snap_beam_at(angle, pillar_height) {
+    beam_z_start = pillar_height * 0.3;  // Start beam at 30% up the pillar
+
+    rotate([0, 0, angle])
+    translate([cyl_R - snap_sink, 0, beam_z_start]) {
+        // Cantilever beam body
+        // Extends radially outward, with length along Z
+        rotate([0, 0, 0])
+        union() {
+            // Beam shaft - tapered slightly (thicker at root)
+            hull() {
+                // Root (attached to pillar)
+                translate([0, -snap_beam_width/2, 0])
+                    cube([snap_beam_thick, snap_beam_width, 0.01]);
+                // Tip (slightly thinner)
+                translate([0, -snap_beam_width/2, snap_beam_len])
+                    cube([snap_beam_thick * 0.85, snap_beam_width, 0.01]);
+            }
+
+            // Snap head with undercut
+            translate([0, -snap_beam_width/2, snap_beam_len])
+                snap_head();
+        }
+    }
+}
+
+// --- Snap Head ---
+// Overhanging head with undercut for positive engagement
+// Includes relief slot for beam flexibility
+module snap_head() {
+    difference() {
+        // Ramped head: hull from full undercut at base to flush at tip
+        // Creates ~30° lead-in chamfer for easier insertion
+        hull() {
+            // Base: full undercut width
+            translate([-snap_undercut, 0, 0])
+                cube([snap_beam_thick + snap_undercut, snap_beam_width, 0.01]);
+            // Tip: no undercut (flush with beam)
+            translate([0, 0, snap_head_len - 0.01])
+                cube([snap_beam_thick, snap_beam_width, 0.01]);
+        }
+
+        // Relief slot through center of head for flexibility
+        translate([snap_beam_thick/2 - snap_relief_d/2, (snap_beam_width - snap_relief_w)/2, -0.1])
+            cube([snap_relief_d, snap_relief_w, snap_head_len + 0.2]);
+    }
+}
+
+// --- Wedge Cutter ---
+// 90° sector cutter for quadrant removal
 module wedge_cutter(h=size) {
     linear_extrude(h)
         polygon([[0, 0], [size, 0], [0, size]]);
 }
 
 // --- Render ---
-// Only render if not included as library
 if (is_undef(is_library)) {
     assembly();
 }

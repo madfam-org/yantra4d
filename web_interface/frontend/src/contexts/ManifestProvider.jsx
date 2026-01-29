@@ -10,14 +10,15 @@ export function ManifestProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/manifest`)
+    // Try backend API first; fall back to bundled manifest (always available for static deploy)
+    fetch(`${API_BASE}/api/manifest`, { signal: AbortSignal.timeout(2000) })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
       })
       .then((data) => setManifest(data))
-      .catch((err) => {
-        console.warn("Manifest fetch failed, using bundled fallback:", err.message)
+      .catch(() => {
+        // Static deploy or backend unavailable — bundled fallback is the source of truth
       })
       .finally(() => setLoading(false))
   }, [])
@@ -72,6 +73,7 @@ export function ManifestProvider({ children }) {
   return <ManifestContext.Provider value={value}>{children}</ManifestContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useManifest = () => {
   const context = useContext(ManifestContext)
   if (context === undefined) throw new Error("useManifest must be used within a ManifestProvider")

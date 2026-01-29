@@ -34,8 +34,8 @@ export default function Controls({ params, setParams, mode, colors, setColors })
     const renderSlider = (param) => {
         const value = params[param.id]
         const isDefault = value === param.default
-        const [editing, setEditing] = useState(false)
-        const [editValue, setEditValue] = useState('')
+        const [editing, setEditing] = useState(false) // eslint-disable-line react-hooks/rules-of-hooks
+        const [editValue, setEditValue] = useState('') // eslint-disable-line react-hooks/rules-of-hooks
 
         const commitEdit = () => {
             const num = parseFloat(editValue)

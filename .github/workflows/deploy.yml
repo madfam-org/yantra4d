@@ -1,8 +1,9 @@
+# GitHub Pages deployment — requires Pages enabled in repo settings.
+# Trigger manually via workflow_dispatch when ready to deploy.
+
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

@@ -19,6 +19,7 @@ from config import Config
 from routes.render import render_bp
 from routes.health import health_bp
 from routes.verify import verify_bp
+from routes.config_route import config_bp
 
 # Configure logging
 logging.basicConfig(
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(render_bp)
     app.register_blueprint(health_bp)
     app.register_blueprint(verify_bp)
+    app.register_blueprint(config_bp)
     
     # Static file serving
     @app.route('/static/<path:filename>')

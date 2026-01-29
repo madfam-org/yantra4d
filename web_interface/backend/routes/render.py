@@ -9,7 +9,7 @@ import json
 from flask import Blueprint, request, jsonify, Response
 
 from config import Config
-from services.openscad import build_openscad_command, run_render, stream_render
+from services.openscad import build_openscad_command, run_render, stream_render, cancel_render
 
 logger = logging.getLogger(__name__)
 
@@ -79,9 +79,11 @@ def render_stl():
                 return jsonify({"status": "error", "error": stderr}), 500
             
             combined_log += f"[{part}] {stderr}\n"
+            size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
             generated_parts.append({
                 "type": part,
-                "url": f"http://localhost:5000/static/{output_filename}"
+                "url": f"{request.host_url}static/{output_filename}",
+                "size_bytes": size_bytes
             })
 
         return jsonify({
@@ -127,12 +129,24 @@ def render_stl_stream():
                 yield f"data: {event_data}\n\n"
                 event = json.loads(event_data)
                 if event.get('event') == 'part_done':
+                    size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
                     generated_parts.append({
                         "type": part,
-                        "url": f"http://localhost:5000/static/{output_filename}"
+                        "url": f"{request.host_url}static/{output_filename}",
+                        "size_bytes": size_bytes
                     })
         
         # Final completion event
         yield f"data: {json.dumps({'event': 'complete', 'parts': generated_parts, 'progress': 100})}\n\n"
     
     return Response(generate(), mimetype='text/event-stream')
+
+
+@render_bp.route('/api/render-cancel', methods=['POST'])
+def cancel_render_endpoint():
+    """Cancel the active render process."""
+    cancelled = cancel_render()
+    return jsonify({
+        "status": "cancelled" if cancelled else "no_active_render",
+        "cancelled": cancelled
+    })

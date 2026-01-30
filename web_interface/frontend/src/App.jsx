@@ -115,6 +115,14 @@ function App() {
 
   // Debounced auto-generate with cache check
   useEffect(() => {
+    // Skip render if all visibility params for current mode are unchecked
+    const visibilityParams = manifest.parameters.filter(
+      p => p.group === 'visibility' && (p.visible_in_modes || []).includes(mode)
+    )
+    if (visibilityParams.length > 0 && visibilityParams.every(p => !params[p.id])) {
+      return
+    }
+
     const cacheKey = getCacheKey(mode, params)
     if (partsCache[cacheKey]) {
       setParts(partsCache[cacheKey])
@@ -124,7 +132,7 @@ function App() {
       handleGenerate()
     }, 500)
     return () => clearTimeout(timer)
-  }, [params, mode, getCacheKey, partsCache])
+  }, [params, mode, getCacheKey, partsCache, manifest])
 
   // --- Keyboard shortcuts (dynamic Cmd+1..N for modes) ---
   useEffect(() => {
@@ -162,7 +170,7 @@ function App() {
   return (
     <div className="flex flex-col h-screen w-full bg-background text-foreground">
       {/* Header */}
-      <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4">
+      <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
         <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? 'English' : 'Español'}>
@@ -176,9 +184,9 @@ function App() {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
         {/* Sidebar */}
-        <div className="w-80 border-r border-border bg-card p-4 flex flex-col gap-4 overflow-y-auto">
+        <div className="w-full lg:w-80 lg:min-w-[20rem] border-b lg:border-b-0 lg:border-r border-border bg-card p-4 flex flex-col gap-4 overflow-y-auto shrink-0 max-h-[50vh] lg:max-h-none">
           <Tabs value={mode} onValueChange={setMode} className="w-full relative z-10">
             <TabsList className={`grid w-full grid-cols-${manifest.modes.length}`}>
               {manifest.modes.map(m => (
@@ -236,6 +244,8 @@ function App() {
 
           <ExportPanel
             parts={parts}
+            mode={mode}
+            manifest={manifest}
             onDownloadStl={handleDownloadStl}
             onExportImage={handleExportImage}
             onExportAllViews={handleExportAllViews}
@@ -243,16 +253,17 @@ function App() {
         </div>
 
         {/* Main View */}
-        <div className="flex-1 relative flex flex-col">
-          <div className="flex-1 relative">
+        <div className="flex-1 relative flex flex-col min-h-0">
+          <div className="flex-1 relative min-h-0">
             <Viewer ref={viewerRef} parts={parts} colors={colors} loading={loading} progress={progress} progressPhase={progressPhase} />
           </div>
 
           {/* Console */}
           <div
-            className="h-48 bg-muted border-t border-border p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap"
+            className="h-32 lg:h-48 bg-muted border-t border-border p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap shrink-0"
             role="log"
             aria-live="polite"
+            aria-label="Render console"
           >
             {logs}
           </div>

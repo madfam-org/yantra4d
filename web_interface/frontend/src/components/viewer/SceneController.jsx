@@ -11,15 +11,16 @@ const SceneController = forwardRef((props, ref) => {
     },
     setCameraView: (view) => {
       const dist = 100
+      camera.up.set(0, 0, 1)
       switch (view) {
         case 'iso':
           camera.position.set(50, 50, 50)
           break
         case 'top':
-          camera.position.set(0, dist, 0)
+          camera.position.set(0, 0, dist)
           break
         case 'front':
-          camera.position.set(0, 0, dist)
+          camera.position.set(0, -dist, 0)
           break
         case 'right':
           camera.position.set(dist, 0, 0)

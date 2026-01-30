@@ -66,6 +66,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, isDef
 export default function Controls({ params, setParams, mode, colors, setColors }) {
     const { language } = useLanguage()
     const { getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
+    const [visibilityLevel, setVisibilityLevel] = useState('basic')
 
     const handleSliderChange = (name, valArray) => {
         setParams(prev => ({ ...prev, [name]: valArray[0] }))
@@ -85,7 +86,20 @@ export default function Controls({ params, setParams, mode, colors, setColors })
     const visibilityCheckboxes = checkboxes.filter(p => p.group === 'visibility')
     const otherCheckboxes = checkboxes.filter(p => !p.group)
 
+    // Filter visibility checkboxes by level
+    const filteredVisibility = visibilityCheckboxes.filter(p => {
+        if (visibilityLevel === 'basic') {
+            return !p.visibility_level || p.visibility_level === 'basic'
+        }
+        return true // advanced shows all
+    })
+
     const partColors = getPartColors(mode)
+
+    const isParentUnchecked = (param) => {
+        if (!param.parent) return false
+        return params[param.parent] === false
+    }
 
     return (
         <div className="flex flex-col gap-6">
@@ -109,21 +123,40 @@ export default function Controls({ params, setParams, mode, colors, setColors })
             {/* Visibility checkboxes */}
             {visibilityCheckboxes.length > 0 && (
                 <div className="space-y-4 border-t border-border pt-4">
-                    <Label className="text-base font-semibold">{getGroupLabel('visibility', language)}</Label>
-                    {visibilityCheckboxes.map(param => (
-                        <div key={param.id} className="flex items-center space-x-2">
-                            <Checkbox
-                                id={param.id}
-                                checked={params[param.id]}
-                                onCheckedChange={(c) => handleCheckedChange(param.id, c)}
-                            />
-                            <Tooltip content={getLabel(param, 'tooltip', language)}>
-                                <Label htmlFor={param.id} className="cursor-help">
-                                    {getLabel(param, 'label', language)}
-                                </Label>
-                            </Tooltip>
-                        </div>
-                    ))}
+                    <div className="flex justify-between items-center">
+                        <Label className="text-base font-semibold">{getGroupLabel('visibility', language)}</Label>
+                        <button
+                            type="button"
+                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() => setVisibilityLevel(prev => prev === 'basic' ? 'advanced' : 'basic')}
+                        >
+                            {visibilityLevel === 'basic'
+                                ? (language === 'es' ? 'Avanzado' : 'Advanced')
+                                : (language === 'es' ? 'Básico' : 'Basic')}
+                        </button>
+                    </div>
+                    {filteredVisibility.map(param => {
+                        const isChild = param.visibility_level === 'advanced' && param.parent
+                        const disabled = isParentUnchecked(param)
+                        return (
+                            <div key={param.id} className={`flex items-center space-x-2 ${isChild ? 'ml-4' : ''}`}>
+                                <Checkbox
+                                    id={param.id}
+                                    checked={params[param.id]}
+                                    onCheckedChange={(c) => handleCheckedChange(param.id, c)}
+                                    disabled={disabled}
+                                />
+                                <Tooltip content={getLabel(param, 'tooltip', language)}>
+                                    <Label
+                                        htmlFor={param.id}
+                                        className={`cursor-help ${disabled ? 'opacity-50' : ''}`}
+                                    >
+                                        {getLabel(param, 'label', language)}
+                                    </Label>
+                                </Tooltip>
+                            </div>
+                        )
+                    })}
                 </div>
             )}
 

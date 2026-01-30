@@ -15,6 +15,27 @@ show_top = true;       // Show/hide top half-cube units
 show_rods = true;      // Show/hide connecting rods
 show_stoppers = true;  // Show/hide rod stoppers
 
+// --- Per-Half Advanced Visibility ---
+show_bottom_base = true;
+show_bottom_walls = true;
+show_bottom_mech = true;
+show_bottom_letter = true;
+show_bottom_wall_left = true;
+show_bottom_wall_right = true;
+show_bottom_mech_base_ring = true;
+show_bottom_mech_pillars = true;
+show_bottom_mech_snap_beams = true;
+
+show_top_base = true;
+show_top_walls = true;
+show_top_mech = true;
+show_top_letter = true;
+show_top_wall_left = true;
+show_top_wall_right = true;
+show_top_mech_base_ring = true;
+show_top_mech_pillars = true;
+show_top_mech_snap_beams = true;
+
 // --- Derived ---
 // Grid pitch = cube diagonal + clearance for free rotation
 grid_pitch = size * sqrt(2) + rotation_clearance;
@@ -40,10 +61,24 @@ rod_length = flush_length + 2 * rod_extension;
 module full_cube() {
     union() {
         // Part A: Right-side up
-        assembly();
+        assembly(
+            v_base=show_bottom_base, v_walls=show_bottom_walls,
+            v_mech=show_bottom_mech, v_letter=show_bottom_letter,
+            v_wall_left=show_bottom_wall_left, v_wall_right=show_bottom_wall_right,
+            v_mech_base_ring=show_bottom_mech_base_ring,
+            v_mech_pillars=show_bottom_mech_pillars,
+            v_mech_snap_beams=show_bottom_mech_snap_beams
+        );
 
         // Part B: Upside down and Rotated 90
-        rotate([180, 0, 90]) assembly(flipped=true);
+        rotate([180, 0, 90]) assembly(flipped=true,
+            v_base=show_top_base, v_walls=show_top_walls,
+            v_mech=show_top_mech, v_letter=show_top_letter,
+            v_wall_left=show_top_wall_left, v_wall_right=show_top_wall_right,
+            v_mech_base_ring=show_top_mech_base_ring,
+            v_mech_pillars=show_top_mech_pillars,
+            v_mech_snap_beams=show_top_mech_snap_beams
+        );
     }
 }
 
@@ -83,11 +118,25 @@ for (j = [0 : rows-1]) {
         translate([i*grid_pitch, 0, j*size]) {
             // Part A: Right-side up (Bottom Unit)
             if (render_mode == 0 || render_mode == 1)
-                if (show_bottom) assembly();
+                if (show_bottom) assembly(
+                    v_base=show_bottom_base, v_walls=show_bottom_walls,
+                    v_mech=show_bottom_mech, v_letter=show_bottom_letter,
+                    v_wall_left=show_bottom_wall_left, v_wall_right=show_bottom_wall_right,
+                    v_mech_base_ring=show_bottom_mech_base_ring,
+                    v_mech_pillars=show_bottom_mech_pillars,
+                    v_mech_snap_beams=show_bottom_mech_snap_beams
+                );
 
             // Part B: Upside down and Rotated 90 (Top Unit)
             if (render_mode == 0 || render_mode == 2)
-                if (show_top) rotate([180, 0, 90]) assembly(flipped=true);
+                if (show_top) rotate([180, 0, 90]) assembly(flipped=true,
+                    v_base=show_top_base, v_walls=show_top_walls,
+                    v_mech=show_top_mech, v_letter=show_top_letter,
+                    v_wall_left=show_top_wall_left, v_wall_right=show_top_wall_right,
+                    v_mech_base_ring=show_top_mech_base_ring,
+                    v_mech_pillars=show_top_mech_pillars,
+                    v_mech_snap_beams=show_top_mech_snap_beams
+                );
         }
     }
 }

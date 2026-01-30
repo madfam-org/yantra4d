@@ -178,7 +178,7 @@ function App() {
             <Globe className="h-5 w-5" />
             <span className="sr-only">Toggle Language</span>
           </Button>
-          <Button variant="ghost" size="icon" onClick={cycleTheme} title={theme}>
+          <Button variant="ghost" size="icon" onClick={cycleTheme} title={t(`theme.${theme}`)}>
             <ThemeIcon className="h-5 w-5" />
             <span className="sr-only">Toggle Theme</span>
           </Button>

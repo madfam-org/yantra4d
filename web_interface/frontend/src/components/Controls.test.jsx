@@ -126,4 +126,37 @@ describe('Controls', () => {
     const rightWallCheckbox = screen.getByRole('checkbox', { name: 'Right Wall' })
     expect(rightWallCheckbox).toBeDisabled()
   })
+
+  it('sliders have aria-label on their root element', () => {
+    renderControls()
+    // Radix Slider: aria-label is set on the root <span>, not the thumb (role="slider")
+    // Query by aria-label directly to verify it's in the DOM
+    expect(screen.getByLabelText('Size (mm)')).toBeInTheDocument()
+    expect(screen.getByLabelText('Thickness (mm)')).toBeInTheDocument()
+    expect(screen.getByLabelText('Rod Diameter (mm)')).toBeInTheDocument()
+  })
+
+  it('value displays have descriptive aria-label', () => {
+    renderControls()
+    const valueDisplay = screen.getByLabelText(/Size \(mm\): 20\. Click to edit/)
+    expect(valueDisplay).toBeInTheDocument()
+    expect(valueDisplay).toHaveAttribute('role', 'button')
+    expect(valueDisplay).toHaveAttribute('tabIndex', '0')
+  })
+
+  it('checkboxes use boolean checked to avoid controlled/uncontrolled warning', () => {
+    // Pass undefined for a checkbox param — should render without error
+    renderControls({
+      params: {
+        size: 20, thick: 2.5, rod_D: 3,
+        show_base: undefined, show_walls: true, show_mech: true, show_letter: true,
+        show_wall_left: true, show_wall_right: true,
+        show_mech_base_ring: true, show_mech_pillars: true, show_mech_snap_beams: true,
+      },
+    })
+    // Base checkbox should render as unchecked (!!undefined === false), not crash
+    const baseCheckbox = screen.getByRole('checkbox', { name: 'Base' })
+    expect(baseCheckbox).toBeInTheDocument()
+    expect(baseCheckbox).toHaveAttribute('aria-checked', 'false')
+  })
 })

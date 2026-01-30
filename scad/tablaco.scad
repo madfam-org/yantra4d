@@ -7,6 +7,9 @@ rows = 8;
 cols = 8;
 rod_extension = 10;
 rotation_clearance = 2;  // Gap between rotating cubes (mm)
+tubing_H = 2;           // Tubing spacer height (mm)
+tubing_wall = 1;        // Tubing wall thickness (mm)
+show_tubing = true;     // Visibility toggle
 is_library = true; // Suppress half_cube single render
 
 // --- Letter Parameters ---
@@ -46,7 +49,8 @@ grid_pitch = size * sqrt(2) + rotation_clearance;
 
 // Total dimensions based on grid pitch
 total_width = (cols - 1) * grid_pitch + size;  // First and last cubes contribute half their size
-total_height = rows * size;  // Vertical stacking remains at cube size
+total_tubing = (rows + 1) * tubing_H;  // rows+1 spacers per column
+total_height = rows * size + total_tubing;  // Vertical stacking includes tubing gaps
 
 // Rod Logic:
 // The assembly stack is:
@@ -109,17 +113,26 @@ module vertical_rod() {
     cylinder(r=rod_D/2, h=rod_length, center=true);
 }
 
+module tubing() {
+    color("orange")
+    difference() {
+        cylinder(r = rod_D/2 + tubing_wall, h = tubing_H);
+        translate([0, 0, -0.01])
+            cylinder(r = rod_D/2, h = tubing_H + 0.02);
+    }
+}
+
 // --- Main Assembly ---
 
 // --- Render Logic ---
-render_mode = 0; // Part selector (see project.json manifest): 0=all, 1=bottom, 2=top, 3=rods, 4=stoppers
+render_mode = 0; // Part selector (see project.json manifest): 0=all, 1=bottom, 2=top, 3=rods, 4=stoppers, 5=tubing
 
 // --- Main Assembly ---
 
 // 1. Grid of Cubes
 for (j = [0 : rows-1]) {
     for (i = [0 : cols-1]) {
-        translate([0, i*grid_pitch, j*size]) {
+        translate([0, i*grid_pitch, j * (size + tubing_H) + tubing_H]) {
             // Part A: Right-side up (Bottom Unit)
             if (render_mode == 0 || render_mode == 1)
                 if (show_bottom) assembly(
@@ -149,7 +162,7 @@ for (j = [0 : rows-1]) {
 if (render_mode == 0 || render_mode == 3) {
     if (show_rods) {
         for (i = [0 : cols-1]) {
-            translate([size/2, i*grid_pitch + size/2, rows*size/2])
+            translate([size/2, i*grid_pitch + size/2, total_height/2])
                 vertical_rod();
         }
     }
@@ -163,7 +176,19 @@ if (render_mode == 0 || render_mode == 4) {
             stopper_rail();
 
         // Top Stopper
-        translate([0, 0, rows*size + rail_H/2])
+        translate([0, 0, total_height + rail_H/2])
             stopper_rail();
+    }
+}
+
+// 4. Tubing Spacers
+if (render_mode == 0 || render_mode == 5) {
+    if (show_tubing) {
+        for (i = [0 : cols-1]) {
+            for (k = [0 : rows]) {
+                translate([size/2, i*grid_pitch + size/2, k * (size + tubing_H)])
+                    tubing();
+            }
+        }
     }
 }

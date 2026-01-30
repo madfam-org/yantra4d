@@ -62,7 +62,10 @@ function App() {
     // Merge: defaults < localStorage < preset from URL
     return { ...defaultParams, ...stored, ...initialPresetValues }
   })
-  const [colors, setColors] = useState(() => safeParse(`${projectSlug}-colors`, defaultColors))
+  const [colors, setColors] = useState(() => ({
+    ...defaultColors,
+    ...safeParse(`${projectSlug}-colors`, {})
+  }))
   const [activePresetId, setActivePresetId] = useState(() => initialHash.preset?.id || presets[0]?.id || null)
   const [gridPresetId, setGridPresetId] = useState(manifest.grid_presets?.default || Object.keys(manifest.grid_presets || {}).find(k => k !== 'default'))
   const [wireframe, setWireframe] = useState(false)

@@ -23,7 +23,7 @@
       "id": "grid",
       "scad_file": "tablaco.scad",
       "label": { "en": "Grid", "es": "Retícula" },
-      "parts": ["bottom", "top", "rods", "stoppers"],
+      "parts": ["bottom", "top", "rods", "stoppers", "tubing"],
       "estimate": { "base_units": "rows*cols", "formula": "grid", "formula_vars": ["rows", "cols"] }
     }
   ],
@@ -32,7 +32,8 @@
     { "id": "bottom", "render_mode": 1, "label": { "en": "Bottom Unit", "es": "Unidad Inferior" }, "default_color": "#ffffff" },
     { "id": "top", "render_mode": 2, "label": { "en": "Top Unit", "es": "Unidad Superior" }, "default_color": "#000000" },
     { "id": "rods", "render_mode": 3, "label": { "en": "Rods", "es": "Varillas" }, "default_color": "#808080" },
-    { "id": "stoppers", "render_mode": 4, "label": { "en": "Stoppers", "es": "Topes" }, "default_color": "#ffd700" }
+    { "id": "stoppers", "render_mode": 4, "label": { "en": "Stoppers", "es": "Topes" }, "default_color": "#ffd700" },
+    { "id": "tubing", "render_mode": 5, "label": { "en": "Tubing", "es": "Tubos" }, "default_color": "#ff8c00" }
   ],
   "presets": [
     {
@@ -42,7 +43,8 @@
         "size": 20, "thick": 2.5, "rod_D": 3.0,
         "clearance": 0.2, "fit_clear": 0,
         "letter_depth": 0.5, "letter_size": 10,
-        "rod_extension": 10, "rotation_clearance": 2
+        "rod_extension": 10, "rotation_clearance": 2,
+        "tubing_H": 2, "tubing_wall": 1
       }
     },
     {
@@ -52,7 +54,8 @@
         "size": 5, "thick": 0.8, "rod_D": 1.5,
         "clearance": 0.15, "fit_clear": 0,
         "letter_depth": 0.2, "letter_size": 2,
-        "rod_extension": 2, "rotation_clearance": 0.5
+        "rod_extension": 2, "rotation_clearance": 0.5,
+        "tubing_H": 1, "tubing_wall": 0.5
       }
     }
   ],
@@ -539,6 +542,38 @@
       "step": 0.5,
       "label": { "en": "Rotation Gap (mm)", "es": "Espacio de Rotación (mm)" },
       "tooltip": { "en": "Gap between cubes in grid — controls free rotation space", "es": "Espacio entre cubos en la retícula — controla espacio de rotación libre" },
+      "visible_in_modes": ["grid"]
+    },
+    {
+      "id": "tubing_H",
+      "type": "slider",
+      "default": 2,
+      "min": 0.5,
+      "max": 3.5,
+      "step": 0.5,
+      "label": { "en": "Tubing Height (mm)", "es": "Altura del Tubo (mm)" },
+      "tooltip": { "en": "Height of tubing spacers between cubes", "es": "Altura de los separadores de tubo entre cubos" },
+      "visible_in_modes": ["grid"]
+    },
+    {
+      "id": "tubing_wall",
+      "type": "slider",
+      "default": 1,
+      "min": 0.5,
+      "max": 2,
+      "step": 0.25,
+      "label": { "en": "Tubing Wall (mm)", "es": "Pared del Tubo (mm)" },
+      "tooltip": { "en": "Wall thickness of tubing spacers", "es": "Grosor de pared de los separadores de tubo" },
+      "visible_in_modes": ["grid"]
+    },
+    {
+      "id": "show_tubing",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Tubing", "es": "Tubos" },
+      "tooltip": { "en": "Show or hide tubing spacers", "es": "Mostrar u ocultar separadores de tubo" },
+      "group": "visibility",
+      "visibility_level": "basic",
       "visible_in_modes": ["grid"]
     }
   ],

@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent } from '@testing-library/react'
 import Controls from './Controls'
-import { ManifestProvider } from '../contexts/ManifestProvider'
-import { LanguageProvider } from '../contexts/LanguageProvider'
+import { renderWithProviders } from '../test/render-with-providers'
 
 // Wrap with required providers
 function renderControls(props = {}) {
@@ -17,13 +16,7 @@ function renderControls(props = {}) {
   // ManifestProvider fetches manifest on mount; mock fetch to fail so it uses fallback
   vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
 
-  return render(
-    <LanguageProvider defaultLanguage="en" storageKey="test-lang">
-      <ManifestProvider>
-        <Controls {...defaultProps} {...props} />
-      </ManifestProvider>
-    </LanguageProvider>
-  )
+  return renderWithProviders(<Controls {...defaultProps} {...props} />)
 }
 
 describe('Controls', () => {

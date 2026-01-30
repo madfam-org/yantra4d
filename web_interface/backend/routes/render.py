@@ -12,6 +12,7 @@ from flask import Blueprint, request, jsonify, Response
 from config import Config
 from manifest import get_manifest
 from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
+from services.route_helpers import cleanup_old_stl_files, error_response
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ def estimate_render_time():
     """Estimate render time based on parameters before actually rendering."""
     data = request.json
     if not data:
-        return jsonify({"status": "error", "error": "Request body must be JSON"}), 400
+        return error_response("Request body must be JSON", 400)
     manifest = get_manifest()
     constants = manifest.estimate_constants
 
@@ -87,23 +88,17 @@ def render_stl():
     """Synchronous render endpoint."""
     data = request.json
     if not data:
-        return jsonify({"status": "error", "error": "Request body must be JSON"}), 400
+        return error_response("Request body must be JSON", 400)
     scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
 
     if scad_filename is None:
         bad_name = scad_path  # 4th return is the bad filename on error
-        return jsonify({"status": "error", "error": f"Invalid SCAD file: {bad_name}"}), 400
+        return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
     generated_parts = []
     combined_log = ""
 
-    # Clean old STL files before rendering
-    for part in parts_to_render:
-        old_path = os.path.join(STATIC_FOLDER, f"preview_{part}.stl")
-        try:
-            os.remove(old_path)
-        except OSError:
-            pass
+    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER)
 
     try:
         for part in parts_to_render:
@@ -116,7 +111,7 @@ def render_stl():
 
             success, stderr = run_render(cmd)
             if not success:
-                return jsonify({"status": "error", "error": stderr}), 500
+                return error_response(stderr)
 
             combined_log += f"[{part}] {stderr}\n"
             try:
@@ -135,14 +130,12 @@ def render_stl():
             "log": combined_log
         })
     except subprocess.CalledProcessError as e:
-        logger.error(f"OpenSCAD process failed: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+        return error_response(str(e))
     except OSError as e:
-        logger.error(f"File operation failed during render: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+        return error_response(str(e))
     except Exception as e:
         logger.warning(f"Unexpected error during render: {type(e).__name__}: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+        return error_response(str(e))
 
 
 @render_bp.route('/api/render-stream', methods=['POST'])
@@ -150,25 +143,19 @@ def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
     if not data:
-        return jsonify({"status": "error", "error": "Request body must be JSON"}), 400
+        return error_response("Request body must be JSON", 400)
 
     scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
 
     if scad_filename is None:
         bad_name = scad_path
-        return jsonify({"status": "error", "error": f"Invalid SCAD file: {bad_name}"}), 400
+        return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
     num_parts = len(parts_to_render)
     host_url = request.host_url
     params = validate_params(data.get('parameters', data))
 
-    # Clean old STL files before rendering
-    for part in parts_to_render:
-        old_path = os.path.join(STATIC_FOLDER, f"preview_{part}.stl")
-        try:
-            os.remove(old_path)
-        except OSError:
-            pass
+    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER)
 
     def generate():
         generated_parts = []

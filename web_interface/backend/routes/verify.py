@@ -4,13 +4,12 @@ Handles /api/verify endpoint for design verification.
 """
 import logging
 import subprocess
-import os
-from pathlib import Path
 
 from flask import Blueprint, request, jsonify
 
 from config import Config
 from manifest import get_manifest
+from services.route_helpers import safe_join_path, error_response
 
 logger = logging.getLogger(__name__)
 
@@ -35,20 +34,20 @@ def verify_design():
     all_passed = True
 
     for part in parts:
-        stl_path = os.path.join(STATIC_FOLDER, f"preview_{part}.stl")
+        stl_filename = f"preview_{part}.stl"
+        resolved = safe_join_path(STATIC_FOLDER, stl_filename)
 
-        resolved = Path(stl_path).resolve()
-        if not resolved.is_relative_to(Path(STATIC_FOLDER).resolve()):
+        if resolved is None:
             results.append(f"--- {part} ---\n[ERROR] Invalid path\n")
             all_passed = False
             continue
 
-        if not os.path.exists(stl_path):
-            results.append(f"--- {part} ---\n[SKIP] File not found: preview_{part}.stl\n")
+        if not resolved.exists():
+            results.append(f"--- {part} ---\n[SKIP] File not found: {stl_filename}\n")
             all_passed = False
             continue
 
-        cmd = ["python3", VERIFY_SCRIPT, stl_path]
+        cmd = ["python3", VERIFY_SCRIPT, str(resolved)]
         logger.info(f"Verifying {part}: {' '.join(cmd)}")
 
         try:

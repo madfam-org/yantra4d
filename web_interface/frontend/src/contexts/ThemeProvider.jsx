@@ -5,7 +5,7 @@ const ThemeProviderContext = createContext()
 export function ThemeProvider({
     children,
     defaultTheme = "system",
-    storageKey = "vite-ui-theme",
+    storageKey = "tablaco-theme",
 }) {
     const [theme, setTheme] = useState(
         () => localStorage.getItem(storageKey) || defaultTheme

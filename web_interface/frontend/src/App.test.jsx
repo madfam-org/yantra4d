@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import App from './App'
 import { renderWithProviders } from './test/render-with-providers'
+import fallbackManifest from './config/fallback-manifest.json'
 
 // Mock services
 vi.mock('./services/renderService', () => ({
@@ -35,24 +36,24 @@ function renderApp() {
 describe('App', () => {
   it('renders header with project name', () => {
     renderApp()
-    expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+    expect(screen.getByText(fallbackManifest.project.name)).toBeInTheDocument()
   })
 
   it('renders mode tabs for all manifest modes', () => {
     renderApp()
-    expect(screen.getByText('Unit')).toBeInTheDocument()
-    expect(screen.getByText('Assembly')).toBeInTheDocument()
-    expect(screen.getByText('Grid')).toBeInTheDocument()
+    for (const mode of fallbackManifest.modes) {
+      expect(screen.getByText(mode.label.en)).toBeInTheDocument()
+    }
   })
 
   it('all mode tabs render as interactive tab elements', () => {
     renderApp()
     const tabs = screen.getAllByRole('tab')
-    expect(tabs).toHaveLength(3)
-    expect(tabs[0]).toHaveTextContent('Unit')
-    expect(tabs[1]).toHaveTextContent('Assembly')
-    expect(tabs[2]).toHaveTextContent('Grid')
-    // Unit tab is selected by default
+    expect(tabs).toHaveLength(fallbackManifest.modes.length)
+    fallbackManifest.modes.forEach((mode, i) => {
+      expect(tabs[i]).toHaveTextContent(mode.label.en)
+    })
+    // First tab is selected by default
     expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
   })
 

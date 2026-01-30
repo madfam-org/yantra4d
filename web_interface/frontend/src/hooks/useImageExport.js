@@ -1,6 +1,9 @@
 import { useCallback } from 'react'
 import { downloadDataUrl, downloadZipFromData } from '../lib/downloadUtils'
 
+const CAMERA_SETTLE_MS = 100
+const SCREENSHOT_DELAY_MS = 150
+
 /**
  * Hook for exporting viewer snapshots as PNG images.
  */
@@ -11,7 +14,7 @@ export function useImageExport({ viewerRef, projectSlug, mode, parts, setLogs, t
     setTimeout(() => {
       const dataUrl = viewerRef.current.captureSnapshot()
       downloadDataUrl(dataUrl, `${projectSlug}_${mode}_${view}.png`)
-    }, 100)
+    }, CAMERA_SETTLE_MS)
   }, [viewerRef, projectSlug, mode])
 
   const handleExportAllViews = useCallback(async () => {
@@ -21,7 +24,7 @@ export function useImageExport({ viewerRef, projectSlug, mode, parts, setLogs, t
       const items = []
       for (const view of views) {
         viewerRef.current.setCameraView(view)
-        await new Promise(r => setTimeout(r, 150))
+        await new Promise(r => setTimeout(r, SCREENSHOT_DELAY_MS))
         const dataUrl = viewerRef.current.captureSnapshot()
         const data = atob(dataUrl.split(',')[1])
         const arr = new Uint8Array(data.length)

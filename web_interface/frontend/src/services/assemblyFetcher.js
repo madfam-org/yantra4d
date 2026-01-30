@@ -10,12 +10,9 @@ const API_BASE = getApiBase()
 const cache = new Map()
 const loader = new STLLoader()
 
-function paramHash(params) {
-  const keys = ['size', 'thick', 'rod_D', 'clearance', 'fit_clear',
-    'letter_depth', 'letter_size', 'rod_extension', 'rotation_clearance',
-    'letter_bottom', 'letter_top']
+function paramHash(params, geometryKeys) {
   const obj = {}
-  for (const k of keys) {
+  for (const k of geometryKeys) {
     if (params[k] !== undefined) obj[k] = params[k]
   }
   return JSON.stringify(obj)
@@ -25,8 +22,8 @@ function paramHash(params) {
  * Fetch assembly STL parts and parse them into BufferGeometry objects.
  * Returns an array of { type, geometry } for assembly parts (bottom, top).
  */
-export async function fetchAssemblyGeometries(params) {
-  const hash = paramHash(params)
+export async function fetchAssemblyGeometries(params, geometryKeys) {
+  const hash = paramHash(params, geometryKeys)
   if (cache.has(hash)) return cache.get(hash)
 
   const payload = { ...params, mode: 'assembly' }

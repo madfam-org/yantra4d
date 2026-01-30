@@ -32,6 +32,6 @@ describe('ThemeProvider', () => {
     )
     act(() => screen.getByText('Dark').click())
     expect(screen.getByTestId('theme').textContent).toBe('dark')
-    expect(localStorage.getItem('vite-ui-theme')).toBe('dark')
+    expect(localStorage.getItem('tablaco-theme')).toBe('dark')
   })
 })

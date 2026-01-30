@@ -49,7 +49,7 @@ backend/
 #### Key Modules
 
 - **`manifest.py`**: Loads `scad/project.json` and exposes a `ProjectManifest` class with typed accessors: `get_allowed_files()`, `get_parts_map()`, `get_mode_map()`, `get_scad_file_for_mode()`, `get_parts_for_mode()`, `calculate_estimate_units()`. The manifest is loaded once and cached.
-- **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary). Static methods delegate to the manifest for backward compatibility.
+- **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary, `STL_PREFIX`). Static methods delegate to the manifest for backward compatibility.
 - **`routes/render.py`**: Accepts both `mode` (new) and `scad_file` (legacy) fields in payloads. The `_resolve_render_context()` helper resolves both to the correct SCAD path and part list.
 
 ### API Endpoints
@@ -154,9 +154,11 @@ Global handlers for 400, 404, and 500 ensure this format even for unhandled Flas
 
 #### Timeout Behavior
 
-- Backend synchronous render: Flask default timeout (no limit, but gunicorn uses 300s)
-- SSE streaming: `proxy_read_timeout 300s` in nginx config
+- Backend synchronous render: `subprocess.run(timeout=300)` kills OpenSCAD after 300s; gunicorn also enforces 300s
+- Backend verification: `subprocess.run(timeout=120)` kills the verify script after 120s
+- SSE streaming: `Popen` subprocess; gunicorn worker timeout applies (300s)
 - WASM rendering: no timeout (runs in browser worker)
+- Frontend manifest fetch: `AbortSignal.timeout(2000)` — falls back to bundled manifest on timeout
 
 ---
 
@@ -170,6 +172,7 @@ src/
 │   ├── Controls.jsx               # Data-driven parameter + color controls
 │   ├── Viewer.jsx                 # Three.js 3D viewer (STLLoader, Z-up)
 │   ├── viewer/
+│   │   ├── AnimatedGrid.jsx       # Animated grid preview (Z-rotation per cube)
 │   │   ├── SceneController.jsx    # Camera view switching (data-driven from manifest)
 │   │   └── NumberedAxes.jsx       # Labeled XYZ axis lines with tick marks
 │   ├── ConfirmRenderDialog.jsx    # Long-render confirmation dialog
@@ -179,6 +182,20 @@ src/
 │   ├── ManifestProvider.jsx       # Fetches /api/manifest, bundled fallback
 │   ├── LanguageProvider.jsx       # i18n for UI chrome strings
 │   └── ThemeProvider.jsx          # Light/Dark/System theme
+├── hooks/
+│   ├── useRender.js               # Render orchestration (generate, cancel, cache, confirm)
+│   ├── useImageExport.js          # PNG snapshot export for camera views
+│   └── useLocalStoragePersistence.js # Debounced localStorage sync
+├── lib/
+│   ├── openscad-phases.js         # Shared OpenSCAD phase detection (main + worker)
+│   ├── stl-utils.js               # Binary STL parser + bounding box
+│   └── downloadUtils.js           # File/ZIP download helpers
+├── services/
+│   ├── renderService.js           # Dual-mode render (backend SSE / WASM worker)
+│   ├── backendDetection.js        # Backend availability check + API base URL
+│   ├── openscad-worker.js         # Web Worker for OpenSCAD WASM rendering
+│   ├── verifyService.js           # STL verification client
+│   └── assemblyFetcher.js         # Assembly STL fetcher for animated preview
 └── config/
     └── fallback-manifest.json     # Bundled copy of scad/project.json
 ```
@@ -197,10 +214,11 @@ src/
 
 #### Key Components
 
-- **`ManifestProvider.jsx`**: Fetches `/api/manifest` on mount. On failure, falls back to the bundled `fallback-manifest.json`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`.
+- **`ManifestProvider.jsx`**: Fetches `/api/manifest` on mount (via `getApiBase()` from `backendDetection`). On failure, falls back to the bundled `fallback-manifest.json`. All accessor functions are memoized with `useCallback`; the provider `value` is wrapped in `useMemo`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`.
 - **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values. Accessible: sliders carry `aria-label` matching the parameter name; value displays have descriptive `aria-label` with parameter name and current value, `role="button"`, and keyboard support.
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains only UI chrome translations (buttons, log messages, phases, view labels, theme state labels). All parameter labels, tooltips, tab names, and color labels come from the manifest.
+- **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis, rows stack flush along Z. Each cube plays a sequential 90° Z-rotation animation.
 - **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
 
 ---

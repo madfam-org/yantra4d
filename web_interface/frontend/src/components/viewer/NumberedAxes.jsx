@@ -47,11 +47,13 @@ const AxisLine = ({ direction, color, label }) => {
   )
 }
 
-const NumberedAxes = () => (
+const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
+
+const NumberedAxes = ({ axisColors = DEFAULT_AXIS_COLORS }) => (
   <group>
-    <AxisLine direction={0} color="#ef4444" label="X" />
-    <AxisLine direction={1} color="#22c55e" label="Y" />
-    <AxisLine direction={2} color="#3b82f6" label="Z" />
+    <AxisLine direction={0} color={axisColors[0]} label="X" />
+    <AxisLine direction={1} color={axisColors[1]} label="Y" />
+    <AxisLine direction={2} color={axisColors[2]} label="Z" />
   </group>
 )
 

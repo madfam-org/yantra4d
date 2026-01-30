@@ -18,25 +18,11 @@
  */
 
 import { createOpenSCAD } from 'openscad-wasm'
+import { detectPhase, isLogWorthy } from '../lib/openscad-phases'
 
 /** Cached SCAD file contents: Map<filename, string> */
 let scadFileCache = new Map()
 let initialized = false
-
-export function detectPhase(line) {
-  if (line.includes('Compiling')) return 'compiling'
-  if (line.includes('CGAL')) return 'cgal'
-  if (line.includes('Rendering') || line.includes('Geometries')) return 'rendering'
-  if (line.includes('Parsing')) return 'geometry'
-  return null
-}
-
-export function isLogWorthy(line) {
-  return line.includes('Compiling') || line.includes('Parsing') ||
-    line.includes('CGAL') || line.includes('Geometries') ||
-    line.includes('Rendering') || line.includes('Total') ||
-    line.includes('Simple:')
-}
 
 /**
  * Create a fresh OpenSCAD WASM instance and write cached SCAD files to its FS.

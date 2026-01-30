@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepare": "cd ../.. && husky web_interface/frontend/.husky"
+    "prepare": "cd ../.. && husky web_interface/frontend/.husky",
+    "check-manifest-sync": "diff ../../scad/project.json src/config/fallback-manifest.json || echo 'WARNING: fallback manifest out of sync'"
   },
   "lint-staged": {
     "*.{js,jsx}": ["eslint --fix", "vitest related --run"]

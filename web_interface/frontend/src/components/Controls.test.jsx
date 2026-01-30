@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import Controls from './Controls'
 import { renderWithProviders } from '../test/render-with-providers'
+// eslint-disable-next-line no-unused-vars
+import fallbackManifest from '../config/fallback-manifest.json'
 
 // Wrap with required providers
 function renderControls(props = {}) {

@@ -1,3 +1,5 @@
+const MAX_STL_FACES = 10_000_000
+
 /**
  * Parse binary STL to get vertex/face data.
  * Returns { vertices: Float32Array, faces: Uint32Array, faceCount }
@@ -8,7 +10,7 @@ export function parseSTL(buffer) {
   }
   const view = new DataView(buffer)
   const faceCount = view.getUint32(80, true)
-  if (faceCount > 10_000_000) {
+  if (faceCount > MAX_STL_FACES) {
     throw new Error('Invalid STL: face count exceeds 10M limit')
   }
   const expectedSize = 84 + faceCount * 50

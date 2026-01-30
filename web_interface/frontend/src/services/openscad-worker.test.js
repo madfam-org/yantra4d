@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { detectPhase, isLogWorthy } from './openscad-worker'
+import { detectPhase, isLogWorthy } from '../lib/openscad-phases'
 
 describe('detectPhase', () => {
   it('returns "compiling" for lines containing Compiling', () => {

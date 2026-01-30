@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
+import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
@@ -9,6 +9,8 @@ import { ErrorBoundary } from './ErrorBoundary'
 import SceneController from './viewer/SceneController'
 import NumberedAxes from './viewer/NumberedAxes'
 import AnimatedGrid from './viewer/AnimatedGrid'
+
+const AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 
 const Model = ({ url, color, wireframe }) => {
     const geom = useLoader(STLLoader, url)
@@ -50,10 +52,21 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
     const { language } = useLanguage()
     const { t } = useLanguage()
     const { theme } = useTheme()
-    const { getCameraViews, getViewerConfig, getLabel } = useManifest()
+    const { getCameraViews, getViewerConfig, getLabel, getMode } = useManifest()
     const cameraViews = getCameraViews()
     const viewerConfig = getViewerConfig()
     const defaultColor = viewerConfig.default_color || "#e5e7eb"
+    const isoView = cameraViews.find(v => v.id === 'iso') || cameraViews[0]
+    const initialCameraPos = isoView?.position || [50, 50, 50]
+
+    // Structural parts: in grid mode but not in assembly mode (e.g. rods, stoppers)
+    const gridMode = getMode('grid')
+    const assemblyMode = getMode('assembly')
+    const structuralPartIds = useMemo(() => {
+        if (!gridMode || !assemblyMode) return []
+        return gridMode.parts.filter(p => !assemblyMode.parts.includes(p))
+    }, [gridMode, assemblyMode])
+
     const [showAxes, setShowAxes] = useState(true)
     const [activeView, setActiveView] = useState('iso')
     const [animReady, setAnimReady] = useState(false)
@@ -130,7 +143,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
             </div>
 
             <ErrorBoundary>
-            <Canvas shadows className="h-full w-full" camera={{ position: [50, 50, 50], fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
+            <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
                 <color attach="background" args={[bgColor]} />
                 <SceneController ref={sceneRef} cameraViews={cameraViews} />
 
@@ -148,16 +161,16 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                     rotation={[Math.PI / 2, 0, 0]}
                 />
                 <GizmoHelper alignment="bottom-left" margin={[60, 60]}>
-                    <GizmoViewport axisColors={['#ef4444', '#22c55e', '#3b82f6']} labelColor="white" />
+                    <GizmoViewport axisColors={AXIS_COLORS} labelColor="white" />
                 </GizmoHelper>
 
-                {showAxes && <NumberedAxes />}
+                {showAxes && <NumberedAxes axisColors={AXIS_COLORS} />}
 
                 <Suspense fallback={null}>
                     <Bounds fit clip observe margin={1.2}>
-                        {/* Rods & stoppers — always visible */}
+                        {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
                         <group>
-                            {parts.filter(p => p.type === 'rods' || p.type === 'stoppers').map((part) => (
+                            {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (
                                 <Model
                                     key={part.type}
                                     url={part.url}
@@ -166,9 +179,9 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                                 />
                             ))}
                         </group>
-                        {/* Bottom & top — hidden when animated grid is active */}
+                        {/* Assembly parts — hidden when animated grid is active */}
                         <group visible={!(animating && mode === 'grid' && animReady)}>
-                            {parts.filter(p => p.type !== 'rods' && p.type !== 'stoppers').map((part) => (
+                            {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => (
                                 <Model
                                     key={part.type}
                                     url={part.url}

@@ -8,13 +8,15 @@ from typing import Optional
 
 from flask import jsonify
 
+from config import Config
+
 logger = logging.getLogger(__name__)
 
 
 def cleanup_old_stl_files(parts: list[str], static_folder: str) -> None:
     """Remove old STL preview files for the given parts."""
     for part in parts:
-        old_path = os.path.join(static_folder, f"preview_{part}.stl")
+        old_path = os.path.join(static_folder, f"{Config.STL_PREFIX}{part}.stl")
         try:
             os.remove(old_path)
         except OSError:

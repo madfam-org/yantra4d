@@ -80,7 +80,7 @@
       "step": 0.1,
       "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
       "tooltip": { "en": "Wall thickness of the cube", "es": "Grosor de las paredes del cubo" },
-      "visible_in_modes": ["unit", "assembly"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "rod_D",
@@ -102,7 +102,7 @@
       "step": 0.05,
       "label": { "en": "Rod Clearance (mm)", "es": "Holgura de Varilla (mm)" },
       "tooltip": { "en": "Radial clearance for rod bore — increase for looser fit", "es": "Holgura radial del orificio — aumentar para ajuste más holgado" },
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit", "assembly"]
     },
     {
       "id": "fit_clear",
@@ -114,7 +114,7 @@
       "disabled": true,
       "label": { "en": "Seam Clearance (mm)", "es": "Holgura de Junta (mm)" },
       "tooltip": { "en": "Gap between interlocking cube faces — currently zeroed out (kept for future use)", "es": "Espacio entre caras de cubos — actualmente en cero (reservado para uso futuro)" },
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_base",
@@ -124,7 +124,7 @@
       "tooltip": { "en": "Show or hide the base plate", "es": "Mostrar u ocultar la placa base" },
       "group": "visibility",
       "visibility_level": "basic",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_walls",
@@ -134,7 +134,7 @@
       "tooltip": { "en": "Show or hide the side walls", "es": "Mostrar u ocultar las paredes laterales" },
       "group": "visibility",
       "visibility_level": "basic",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_wall_left",
@@ -145,7 +145,7 @@
       "group": "visibility",
       "visibility_level": "advanced",
       "parent": "show_walls",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_wall_right",
@@ -156,7 +156,7 @@
       "group": "visibility",
       "visibility_level": "advanced",
       "parent": "show_walls",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_mech",
@@ -166,7 +166,7 @@
       "tooltip": { "en": "Show or hide the interlocking mechanism", "es": "Mostrar u ocultar el mecanismo de enclavamiento" },
       "group": "visibility",
       "visibility_level": "basic",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_mech_base_ring",
@@ -177,7 +177,7 @@
       "group": "visibility",
       "visibility_level": "advanced",
       "parent": "show_mech",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_mech_pillars",
@@ -188,7 +188,7 @@
       "group": "visibility",
       "visibility_level": "advanced",
       "parent": "show_mech",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_mech_snap_beams",
@@ -199,7 +199,7 @@
       "group": "visibility",
       "visibility_level": "advanced",
       "parent": "show_mech",
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit"]
     },
     {
       "id": "show_letter",
@@ -456,7 +456,7 @@
       "maxlength": 1,
       "label": { "en": "Bottom Letter", "es": "Letra Inferior" },
       "tooltip": { "en": "Character on bottom unit faces", "es": "Carácter en caras de unidad inferior" },
-      "visible_in_modes": ["unit", "assembly", "grid"]
+      "visible_in_modes": ["unit", "assembly"]
     },
     {
       "id": "letter_top",
@@ -465,7 +465,7 @@
       "maxlength": 1,
       "label": { "en": "Top Letter", "es": "Letra Superior" },
       "tooltip": { "en": "Character on top unit faces", "es": "Carácter en caras de unidad superior" },
-      "visible_in_modes": ["assembly", "grid"]
+      "visible_in_modes": ["assembly"]
     },
     {
       "id": "letter_emboss",

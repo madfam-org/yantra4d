@@ -56,22 +56,22 @@ These constants scale with `scale_factor = size / 20` and have minimum-value gua
 | Parameter | Formula | Description |
 | :--- | :--- | :--- |
 | `cyl_R` | `size * 0.15 + rod_D/2 + clearance + 1` | Mechanism cylinder radius, parametric |
-| `cyl_H` | `size/2 - thick - fit_clear` | Cylinder height |
+| `cyl_H` | `size - thick - fit_clear` | Cylinder/pillar height (full interleaving height) |
 | `weld` | `0.4` | Weld cube size for boolean connectivity |
 
 All togglable parameters (`show_base`, `show_walls`, `show_mech`) and dimensional parameters (`size`, `thick`, `rod_D`) are declared in the [project manifest](./manifest.md) and exposed in the web UI for the Unit and Assembly modes.
 
 ### Modules
 
-#### 1. `base_plate()`
--   **Geometry**: Rectangular slab (`cube(...)`, centered).
--   **Function**: Forms the floor of the U-channel.
--   **Clearance**: XY faces are shaved by `fit_clear` to prevent collision with the mating part's walls.
+#### 1. `base_plate(flipped)`
+-   **Geometry**: Rectangular slab with quarter-circle perforations for opposing mechanism pass-through.
+-   **Function**: Forms the floor of the U-channel; perforations allow the mating half's mechanism pillars to extend through.
+-   **Clearance**: XY faces are shaved by `fit_clear`; perforations sized at `cyl_R + fit_clear`.
 
 #### 2. `mitered_wall()` (mirrored for left/right)
--   **Geometry**: Vertical wall with 45-degree miter cuts on Top face. Front and back edges are cut via `difference()` to create miter clearance.
--   **Function**: Interlocks with the mating half's walls.
--   **Clearance**: Miter cuts are offset deeper by `fit_clear`.
+-   **Geometry**: Full-height vertical wall (`size - fit_clear` tall) with 45° miter on top edge and full-height 45° chamfers on front/back corners.
+-   **Function**: Interlocks with the mating half's perpendicular walls. Bottom half walls sit on X-faces, top half walls on Y-faces after assembly rotation — no wall-to-wall collision.
+-   **Clearance**: Miter cuts offset by `fit_clear`. Corner miters resolve the `thick×thick` overlap at the 4 vertical corners.
 -   **Usage**: Called once directly (left wall) and once with `mirror([1,0,0])` (right wall).
 
 #### 3. `mechanism_pillars(flipped)`

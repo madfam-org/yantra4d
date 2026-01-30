@@ -9,12 +9,12 @@ function gridPitch(size, rotationClearance) {
 }
 
 /** Mirrors the per-cube position computation from AnimatedGrid.jsx */
-function cubePosition(r, c, size, rotationClearance, center = { x: 0, y: 0, z: 0 }) {
+function cubePosition(r, c, size, rotationClearance, tubingH = 0, center = { x: 0, y: 0, z: 0 }) {
   const pitch = gridPitch(size, rotationClearance)
   return {
     x: center.x,
     y: c * pitch + center.y,
-    z: r * size + center.z,
+    z: r * (size + tubingH) + tubingH + center.z,
   }
 }
 
@@ -54,21 +54,23 @@ describe('AnimatedGrid positioning logic', () => {
       expect(p0.x).toBeCloseTo(p1.x)
     })
 
-    it('rows stack along Z axis (flush, no clearance)', () => {
-      const p0 = cubePosition(0, 0, 20, 2)
-      const p1 = cubePosition(1, 0, 20, 2)
-      const p2 = cubePosition(2, 0, 20, 2)
+    it('rows stack along Z axis with tubing spacers', () => {
+      const tubingH = 2
+      const p0 = cubePosition(0, 0, 20, 2, tubingH)
+      const p1 = cubePosition(1, 0, 20, 2, tubingH)
+      const p2 = cubePosition(2, 0, 20, 2, tubingH)
 
-      expect(p0.z).toBeCloseTo(0)
-      expect(p1.z).toBeCloseTo(20)
-      expect(p2.z).toBeCloseTo(40)
+      // z = r * (size + tubingH) + tubingH
+      expect(p0.z).toBeCloseTo(2)       // 0*(20+2)+2
+      expect(p1.z).toBeCloseTo(24)      // 1*(20+2)+2
+      expect(p2.z).toBeCloseTo(46)      // 2*(20+2)+2
       // Y unchanged across rows in the same column
       expect(p0.y).toBeCloseTo(p1.y)
     })
 
     it('single cell (1×1) sits at the center offset', () => {
       const center = { x: 5, y: 10, z: 15 }
-      const pos = cubePosition(0, 0, 20, 2, center)
+      const pos = cubePosition(0, 0, 20, 2, 0, center)
       expect(pos.x).toBeCloseTo(5)
       expect(pos.y).toBeCloseTo(10)
       expect(pos.z).toBeCloseTo(15)
@@ -77,10 +79,26 @@ describe('AnimatedGrid positioning logic', () => {
     it('applies geometry center offset to all cells', () => {
       const center = { x: 1, y: 2, z: 3 }
       const pitch = gridPitch(20, 2)
-      const pos = cubePosition(1, 2, 20, 2, center)
+      // tubingH = 0: flush stacking
+      const pos = cubePosition(1, 2, 20, 2, 0, center)
       expect(pos.x).toBeCloseTo(1)
       expect(pos.y).toBeCloseTo(2 * pitch + 2)
-      expect(pos.z).toBeCloseTo(1 * 20 + 3)
+      expect(pos.z).toBeCloseTo(1 * 20 + 0 + 3)
+
+      // tubingH = 2: spacer gaps
+      const pos2 = cubePosition(1, 2, 20, 2, 2, center)
+      expect(pos2.z).toBeCloseTo(1 * (20 + 2) + 2 + 3) // 27
+    })
+
+    it('tubingH defaults to 0 (flush stacking)', () => {
+      // Omit tubingH — should behave like tubingH=0
+      const p0 = cubePosition(0, 0, 20, 2)
+      const p1 = cubePosition(1, 0, 20, 2)
+      const p2 = cubePosition(2, 0, 20, 2)
+
+      expect(p0.z).toBeCloseTo(0)   // 0*(20+0)+0
+      expect(p1.z).toBeCloseTo(20)  // 1*(20+0)+0
+      expect(p2.z).toBeCloseTo(40)  // 2*(20+0)+0
     })
   })
 

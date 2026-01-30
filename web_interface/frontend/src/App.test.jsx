@@ -1,10 +1,8 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import App from './App'
-import { ThemeProvider } from './contexts/ThemeProvider'
-import { LanguageProvider } from './contexts/LanguageProvider'
-import { ManifestProvider } from './contexts/ManifestProvider'
+import { renderWithProviders } from './test/render-with-providers'
 
 // Mock services
 vi.mock('./services/renderService', () => ({
@@ -31,15 +29,7 @@ beforeEach(() => {
 })
 
 function renderApp() {
-  return render(
-    <ThemeProvider defaultTheme="light" storageKey="test-theme">
-      <LanguageProvider defaultLanguage="en" storageKey="test-lang">
-        <ManifestProvider>
-          <App />
-        </ManifestProvider>
-      </LanguageProvider>
-    </ThemeProvider>
-  )
+  return renderWithProviders(<App />)
 }
 
 describe('App', () => {

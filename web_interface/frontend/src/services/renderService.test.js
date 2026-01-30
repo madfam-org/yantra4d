@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { createSSEStream } from '../test/mock-streams'
 
 // We need to reset module state between tests because detectMode caches _mode
 let renderService
@@ -74,18 +75,6 @@ describe('cancelRender', () => {
 })
 
 describe('renderParts (backend mode)', () => {
-  // Helper to create a readable stream from SSE text
-  function sseStream(lines) {
-    const text = lines.join('\n')
-    const encoder = new TextEncoder()
-    return new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(text))
-        controller.close()
-      }
-    })
-  }
-
   it('throws on non-ok HTTP response', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
@@ -105,7 +94,7 @@ describe('renderParts (backend mode)', () => {
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
     fetchMock.mockResolvedValueOnce({
       ok: true,
-      body: sseStream([
+      body: createSSEStream([
         'data: {"event":"output","part":"main","line":"Compiling...","progress":50}',
         '' // stream ends without a "complete" event
       ])
@@ -122,7 +111,7 @@ describe('renderParts (backend mode)', () => {
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
     fetchMock.mockResolvedValueOnce({
       ok: true,
-      body: sseStream([
+      body: createSSEStream([
         'data: {INVALID JSON}',
         'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
         ''

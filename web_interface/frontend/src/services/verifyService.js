@@ -4,22 +4,10 @@
  * - Client mode: uses manifold-3d for in-browser mesh verification
  */
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-
-let _backendAvailable = null
-
-async function checkBackend() {
-  if (_backendAvailable !== null) return _backendAvailable
-  try {
-    const res = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(2000) })
-    _backendAvailable = res.ok
-  } catch {
-    _backendAvailable = false
-  }
-  return _backendAvailable
-}
-
+import { isBackendAvailable, getApiBase } from './backendDetection'
 import { parseSTL, getBoundingBox } from '../lib/stl-utils'
+
+const API_BASE = getApiBase()
 
 /**
  * Client-side verification using manifold-3d.
@@ -119,7 +107,7 @@ async function verifyBackend(mode) {
  * @returns {Promise<{status: string, passed: boolean, output: string, parts_checked: number}>}
  */
 export async function verify(parts, mode) {
-  const backend = await checkBackend()
+  const backend = await isBackendAvailable()
   if (backend) {
     return verifyBackend(mode)
   }

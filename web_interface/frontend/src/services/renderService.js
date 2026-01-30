@@ -6,7 +6,9 @@
  * Auto-detects which mode to use by checking if the backend is reachable.
  */
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+import { isBackendAvailable, getApiBase } from './backendDetection'
+
+const API_BASE = getApiBase()
 
 let _mode = null // 'backend' | 'wasm'
 let _worker = null
@@ -18,14 +20,8 @@ let _initPromise = null
  */
 async function detectMode() {
   if (_mode) return _mode
-  try {
-    const res = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(2000) })
-    if (res.ok) {
-      _mode = 'backend'
-      return _mode
-    }
-  } catch { /* backend unreachable */ }
-  _mode = 'wasm'
+  const available = await isBackendAvailable()
+  _mode = available ? 'backend' : 'wasm'
   return _mode
 }
 
@@ -56,6 +52,43 @@ function initWorker() {
   })
 
   return _initPromise
+}
+
+/**
+ * Detect the progress phase from an output line.
+ */
+function detectPhase(line) {
+  if (line.includes('Compiling')) return 'compiling'
+  if (line.includes('CGAL')) return 'cgal'
+  if (line.includes('Rendering') || line.includes('Geometries')) return 'rendering'
+  if (line.includes('Parsing')) return 'geometry'
+  return null
+}
+
+/**
+ * Check if a line is worth logging (contains significant output info).
+ */
+function isSignificantLine(line) {
+  return line.includes('Compiling') || line.includes('Parsing') ||
+    line.includes('CGAL') || line.includes('Geometries') ||
+    line.includes('Rendering') || line.includes('Total') ||
+    line.includes('Simple:')
+}
+
+/**
+ * Parse a raw SSE chunk string into individual JSON data objects.
+ */
+function parseSSEChunk(chunk) {
+  const lines = chunk.split('\n').filter(line => line.startsWith('data: '))
+  const results = []
+  for (const rawLine of lines) {
+    try {
+      results.push(JSON.parse(rawLine.slice(6)))
+    } catch (e) {
+      console.warn('Malformed SSE data:', e)
+    }
+  }
+  return results
 }
 
 /**
@@ -167,48 +200,35 @@ async function renderBackend(mode, params, onProgress, abortSignal) {
     if (done) break
 
     const chunk = decoder.decode(value, { stream: true })
-    const lines = chunk.split('\n').filter(line => line.startsWith('data: '))
+    const events = parseSSEChunk(chunk)
 
-    for (const rawLine of lines) {
-      try {
-        const data = JSON.parse(rawLine.slice(6))
+    for (const data of events) {
+      if (data.progress !== undefined) {
+        onProgress?.({ percent: data.progress })
+      }
 
-        if (data.progress !== undefined) {
-          onProgress?.({ percent: data.progress })
+      if (data.event === 'part_start') {
+        onProgress?.({
+          part: data.part,
+          log: `[${data.part}] Starting... (${data.index + 1}/${data.total})`
+        })
+      } else if (data.event === 'output') {
+        const line = data.line
+        const phase = detectPhase(line)
+        if (phase) onProgress?.({ phase })
+        if (isSignificantLine(line)) {
+          onProgress?.({ log: `  ${line}` })
         }
-
-        if (data.event === 'part_start') {
-          onProgress?.({
-            part: data.part,
-            log: `[${data.part}] Starting... (${data.index + 1}/${data.total})`
-          })
-        } else if (data.event === 'output') {
-          const line = data.line
-          let phase = null
-          if (line.includes('Compiling')) phase = 'compiling'
-          else if (line.includes('CGAL')) phase = 'cgal'
-          else if (line.includes('Rendering') || line.includes('Geometries')) phase = 'rendering'
-          else if (line.includes('Parsing')) phase = 'geometry'
-
-          if (phase) onProgress?.({ phase })
-
-          if (line.includes('Compiling') || line.includes('Parsing') ||
-            line.includes('CGAL') || line.includes('Geometries') ||
-            line.includes('Rendering') || line.includes('Total') ||
-            line.includes('Simple:')) {
-            onProgress?.({ log: `  ${line}` })
-          }
-        } else if (data.event === 'part_done') {
-          onProgress?.({
-            part: data.part,
-            log: `[${data.part}] Done (${data.progress}%)`
-          })
-        } else if (data.event === 'complete') {
-          finalParts = data.parts
-        } else if (data.event === 'error') {
-          onProgress?.({ log: `[ERROR] ${data.part}: ${data.message}` })
-        }
-      } catch (e) { console.warn('Malformed SSE data:', e) }
+      } else if (data.event === 'part_done') {
+        onProgress?.({
+          part: data.part,
+          log: `[${data.part}] Done (${data.progress}%)`
+        })
+      } else if (data.event === 'complete') {
+        finalParts = data.parts
+      } else if (data.event === 'error') {
+        onProgress?.({ log: `[ERROR] ${data.part}: ${data.message}` })
+      }
     }
   }
 
@@ -225,12 +245,6 @@ async function renderBackend(mode, params, onProgress, abortSignal) {
 
 /**
  * Main entry point: render parts for the given mode and parameters.
- *
- * @param {string} mode - 'unit' | 'assembly' | 'grid'
- * @param {object} params - Parameter key/value pairs
- * @param {object} manifest - Full project manifest
- * @param {object} options - { onProgress, abortSignal }
- * @returns {Promise<Array<{type: string, url: string, blob?: Blob}>>}
  */
 export async function renderParts(mode, params, manifest, { onProgress, abortSignal } = {}) {
   const currentMode = await detectMode()
@@ -243,8 +257,6 @@ export async function renderParts(mode, params, manifest, { onProgress, abortSig
 
 /**
  * Cancel the current render.
- * Backend: sends cancel API call + aborts fetch.
- * WASM: terminates and respawns worker.
  */
 export async function cancelRender() {
   const currentMode = await detectMode()

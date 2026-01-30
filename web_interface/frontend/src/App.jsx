@@ -189,7 +189,7 @@ function App() {
         {/* Sidebar */}
         <div className="w-full lg:w-80 lg:min-w-[20rem] border-b lg:border-b-0 lg:border-r border-border bg-card p-4 flex flex-col gap-4 overflow-y-auto shrink-0 max-h-[50vh] lg:max-h-none">
           <Tabs value={mode} onValueChange={setMode} className="w-full relative z-10">
-            <TabsList className={`grid w-full grid-cols-${manifest.modes.length}`}>
+            <TabsList className="grid w-full grid-cols-3">
               {manifest.modes.map(m => (
                 <TabsTrigger key={m.id} value={m.id}>
                   {getLabel(m, 'label', language)}

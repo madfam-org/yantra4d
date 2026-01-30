@@ -24,14 +24,17 @@ python3 tests/verify_design.py
 
 ### 3. Launching Tablaco Studio
 ```bash
-# Terminal 1
-python3 web_interface/backend/app.py
-
-# Terminal 2
-cd web_interface/frontend
-npm run dev
+./scripts/dev.sh          # start backend + frontend
+./scripts/dev-stop.sh     # stop all dev servers
 ```
 Open http://localhost:5173
+
+Or with Docker:
+```bash
+docker compose up --build   # start
+docker compose down         # stop
+```
+Access: http://localhost:3000
 
 ## Architecture Overview
 

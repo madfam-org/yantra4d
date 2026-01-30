@@ -57,4 +57,11 @@ describe('Controls', () => {
     expect(screen.getByText('Rows')).toBeInTheDocument()
     expect(screen.getByText('Cols')).toBeInTheDocument()
   })
+
+  it('renders manifest-driven group labels for visibility and colors', () => {
+    renderControls()
+    // These labels now come from manifest.parameter_groups, not hardcoded ternaries
+    expect(screen.getByText('Visibility')).toBeInTheDocument()
+    expect(screen.getByText('Colors')).toBeInTheDocument()
+  })
 })

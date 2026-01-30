@@ -31,7 +31,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
 
     if (!forceRender) {
       const estimate = estimateRenderTime(mode, params, manifest)
-      if (estimate > 60) {
+      const threshold = manifest.estimate_constants?.warning_threshold_seconds || 60
+      if (estimate > threshold) {
         setPendingEstimate(estimate)
         setPendingPayload(payload)
         setShowConfirmDialog(true)

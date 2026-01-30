@@ -80,13 +80,14 @@ class ProjectManifest:
         for mode in self.modes:
             if mode["id"] == mode_id:
                 est = mode.get("estimate", {})
-                formula = est.get("formula", "constant")
                 base = est.get("base_units", 1)
+                formula_vars = est.get("formula_vars")
 
-                if formula == "grid":
-                    rows = params.get("rows", 1)
-                    cols = params.get("cols", 1)
-                    return int(rows) * int(cols)
+                if formula_vars:
+                    result = 1
+                    for var in formula_vars:
+                        result *= int(params.get(var, 1))
+                    return result
                 else:
                     return int(base) if isinstance(base, (int, float)) else 1
         return 1

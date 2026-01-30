@@ -29,7 +29,7 @@ function safeParse(key, fallback) {
 function App() {
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
-  const { manifest, getDefaultParams, getDefaultColors, getLabel, projectSlug } = useManifest()
+  const { manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, projectSlug } = useManifest()
 
   const defaultParams = getDefaultParams()
   const defaultColors = getDefaultColors()
@@ -71,8 +71,9 @@ function App() {
     handleCancelRender,
   } = useRender({ mode, params, manifest, t, getCacheKey })
 
+  const cameraViews = getCameraViews()
   const { handleExportImage, handleExportAllViews } = useImageExport({
-    viewerRef, projectSlug, mode, parts, setLogs, t
+    viewerRef, projectSlug, mode, parts, setLogs, t, cameraViews
   })
 
   const handleReset = () => {

@@ -27,8 +27,9 @@ async function detectMode() {
 
 /**
  * Initialize the WASM worker (lazy, called on first WASM render).
+ * @param {object} [manifest] - Project manifest to extract SCAD file list from
  */
-function initWorker() {
+function initWorker(manifest) {
   if (_initPromise) return _initPromise
 
   _initPromise = new Promise((resolve, reject) => {
@@ -48,7 +49,11 @@ function initWorker() {
       }
     }
     _worker.addEventListener('message', handler)
-    _worker.postMessage({ type: 'init' })
+
+    const scadFiles = manifest
+      ? [...new Set(manifest.modes.map(m => m.scad_file))]
+      : []
+    _worker.postMessage({ type: 'init', scadFiles })
   })
 
   return _initPromise
@@ -96,7 +101,7 @@ function parseSSEChunk(chunk) {
  * Returns array of { type, blob, url } for each part.
  */
 async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
-  await initWorker()
+  await initWorker(manifest)
 
   const modeConfig = manifest.modes.find(m => m.id === mode)
   if (!modeConfig) throw new Error(`Unknown mode: ${mode}`)
@@ -283,19 +288,20 @@ export function estimateRenderTime(mode, params, manifest) {
   if (!modeConfig) return 0
 
   let units = 1
-  if (modeConfig.estimate?.formula === 'grid') {
-    units = (params.rows || 1) * (params.cols || 1)
+  if (modeConfig.estimate?.formula_vars) {
+    units = modeConfig.estimate.formula_vars.reduce((acc, v) => acc * (params[v] || 1), 1)
   } else {
-    units = modeConfig.estimate?.base_units || 1
+    const base = modeConfig.estimate?.base_units
+    units = (typeof base === 'number') ? base : 1
   }
 
   const numParts = modeConfig.parts.length
   const estimate = constants.base_time + (units * constants.per_unit) + (numParts * constants.per_part)
 
-  // WASM is typically 2-5x slower than native
+  // WASM is typically slower than native
   const currentMode = _mode
   if (currentMode === 'wasm') {
-    return estimate * 3 // conservative 3x multiplier
+    return estimate * (constants.wasm_multiplier || 3)
   }
   return estimate
 }

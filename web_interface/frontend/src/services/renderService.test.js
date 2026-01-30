@@ -15,7 +15,7 @@ const manifest = {
   modes: [
     { id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } },
     { id: 'assembly', parts: ['bottom', 'top'], estimate: { base_units: 2, formula: 'constant' } },
-    { id: 'grid', parts: ['bottom', 'top', 'rods', 'stoppers'], estimate: { formula: 'grid' } },
+    { id: 'grid', parts: ['bottom', 'top', 'rods', 'stoppers'], estimate: { base_units: 'rows*cols', formula: 'grid', formula_vars: ['rows', 'cols'] } },
   ],
   estimate_constants: { base_time: 5, per_unit: 1.5, per_part: 8 },
 }
@@ -39,6 +39,26 @@ describe('estimateRenderTime', () => {
 
   it('returns 0 for unknown mode', () => {
     expect(renderService.estimateRenderTime('nonexistent', {}, manifest)).toBe(0)
+  })
+
+  it('uses formula_vars to compute units generically', () => {
+    const customManifest = {
+      modes: [
+        { id: 'custom', parts: ['a'], estimate: { formula_vars: ['x', 'y'] } },
+      ],
+      estimate_constants: { base_time: 2, per_unit: 1, per_part: 3 },
+    }
+    // x=3, y=5 → units=15 → 2 + 15*1 + 1*3 = 20
+    expect(renderService.estimateRenderTime('custom', { x: 3, y: 5 }, customManifest)).toBe(20)
+  })
+
+  it('uses wasm_multiplier from estimate_constants', () => {
+    const wasmManifest = {
+      modes: [{ id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } }],
+      estimate_constants: { base_time: 5, per_unit: 1.5, per_part: 8, wasm_multiplier: 5 },
+    }
+    // In non-wasm mode (default _mode=null → not 'wasm'), multiplier is not applied
+    expect(renderService.estimateRenderTime('unit', {}, wasmManifest)).toBe(14.5)
   })
 })
 

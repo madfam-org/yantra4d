@@ -24,7 +24,7 @@
       "scad_file": "tablaco.scad",
       "label": { "en": "Grid", "es": "Retícula" },
       "parts": ["bottom", "top", "rods", "stoppers"],
-      "estimate": { "base_units": "rows*cols", "formula": "grid" }
+      "estimate": { "base_units": "rows*cols", "formula": "grid", "formula_vars": ["rows", "cols"] }
     }
   ],
   "parts": [
@@ -69,13 +69,35 @@
       "visible_in_modes": ["unit", "assembly"]
     },
     {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.2,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "label": { "en": "Rod Clearance (mm)", "es": "Holgura de Varilla (mm)" },
+      "tooltip": { "en": "Radial clearance for rod bore — increase for looser fit", "es": "Holgura radial del orificio — aumentar para ajuste más holgado" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "fit_clear",
+      "type": "slider",
+      "default": 0.2,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "label": { "en": "Seam Clearance (mm)", "es": "Holgura de Junta (mm)" },
+      "tooltip": { "en": "Gap between interlocking cube faces — increase for easier assembly", "es": "Espacio entre caras de cubos — aumentar para ensamblaje más fácil" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
       "id": "show_base",
       "type": "checkbox",
       "default": true,
       "label": { "en": "Base", "es": "Base" },
       "tooltip": { "en": "Show or hide the base plate", "es": "Mostrar u ocultar la placa base" },
       "group": "visibility",
-      "visible_in_modes": ["unit", "assembly"]
+      "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
       "id": "show_walls",
@@ -84,7 +106,7 @@
       "label": { "en": "Walls", "es": "Paredes" },
       "tooltip": { "en": "Show or hide the side walls", "es": "Mostrar u ocultar las paredes laterales" },
       "group": "visibility",
-      "visible_in_modes": ["unit", "assembly"]
+      "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
       "id": "show_mech",
@@ -93,7 +115,82 @@
       "label": { "en": "Mechanism", "es": "Mecanismo" },
       "tooltip": { "en": "Show or hide the interlocking mechanism", "es": "Mostrar u ocultar el mecanismo de enclavamiento" },
       "group": "visibility",
-      "visible_in_modes": ["unit", "assembly"]
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "show_letter",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Letters", "es": "Letras" },
+      "tooltip": { "en": "Show or hide embossed letters on walls", "es": "Mostrar u ocultar letras en relieve en las paredes" },
+      "group": "visibility",
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "show_bottom",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Unit", "es": "Unidad Inferior" },
+      "tooltip": { "en": "Show or hide bottom half-cube units", "es": "Mostrar u ocultar unidades inferiores" },
+      "group": "visibility",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Unit", "es": "Unidad Superior" },
+      "tooltip": { "en": "Show or hide top half-cube units", "es": "Mostrar u ocultar unidades superiores" },
+      "group": "visibility",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_rods",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Rods", "es": "Varillas" },
+      "tooltip": { "en": "Show or hide connecting rods", "es": "Mostrar u ocultar varillas de conexión" },
+      "group": "visibility",
+      "visible_in_modes": ["grid"]
+    },
+    {
+      "id": "show_stoppers",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Stoppers", "es": "Topes" },
+      "tooltip": { "en": "Show or hide rod stoppers", "es": "Mostrar u ocultar topes de varilla" },
+      "group": "visibility",
+      "visible_in_modes": ["grid"]
+    },
+    {
+      "id": "letter_emboss",
+      "type": "checkbox",
+      "default": false,
+      "label": { "en": "Emboss Letters", "es": "Letras en Relieve" },
+      "tooltip": { "en": "Raised letters (on) or carved letters (off)", "es": "Letras en relieve (on) o talladas (off)" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "letter_depth",
+      "type": "slider",
+      "default": 0.5,
+      "min": 0.1,
+      "max": 2.0,
+      "step": 0.1,
+      "label": { "en": "Letter Depth (mm)", "es": "Profundidad de Letra (mm)" },
+      "tooltip": { "en": "How deep letters are carved or how high they are embossed", "es": "Profundidad del tallado o altura del relieve de las letras" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "letter_size",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "label": { "en": "Letter Size", "es": "Tamaño de Letra" },
+      "tooltip": { "en": "Font size of embossed/carved letters on walls", "es": "Tamaño de fuente de las letras en las paredes" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
       "id": "rows",
@@ -128,12 +225,38 @@
       "tooltip": { "en": "Rod length protruding beyond stoppers", "es": "Longitud de varilla que sobresale de los topes" },
       "description": { "en": "Protrusion beyond stoppers (0 = flush)", "es": "Protrusión más allá de los topes (0 = al ras)" },
       "visible_in_modes": ["grid"]
+    },
+    {
+      "id": "rotation_clearance",
+      "type": "slider",
+      "default": 2,
+      "min": 0.5,
+      "max": 5.0,
+      "step": 0.5,
+      "label": { "en": "Rotation Gap (mm)", "es": "Espacio de Rotación (mm)" },
+      "tooltip": { "en": "Gap between cubes in grid — controls free rotation space", "es": "Espacio entre cubos en la retícula — controla espacio de rotación libre" },
+      "visible_in_modes": ["grid"]
     }
   ],
+  "camera_views": [
+    { "id": "iso",   "label": {"en": "Isometric", "es": "Isométrico"}, "position": [50, 50, 50] },
+    { "id": "top",   "label": {"en": "Top", "es": "Superior"},         "position": [0, 0, 100] },
+    { "id": "front", "label": {"en": "Front", "es": "Frente"},         "position": [0, -100, 0] },
+    { "id": "right", "label": {"en": "Right", "es": "Derecha"},        "position": [100, 0, 0] }
+  ],
+  "parameter_groups": [
+    { "id": "visibility", "label": {"en": "Visibility", "es": "Visibilidad"} },
+    { "id": "colors",     "label": {"en": "Colors", "es": "Colores"} }
+  ],
+  "viewer": {
+    "default_color": "#e5e7eb"
+  },
   "estimate_constants": {
     "base_time": 5,
     "per_unit": 1.5,
     "fn_factor": 64,
-    "per_part": 8
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
   }
 }

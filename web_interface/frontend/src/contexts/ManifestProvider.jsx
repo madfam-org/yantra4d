@@ -58,6 +58,18 @@ export function ManifestProvider({ children }) {
     return obj[key][lang] || obj[key]["en"] || ""
   }
 
+  const getCameraViews = () => manifest.camera_views || []
+
+  const getGroupLabel = (groupId, lang) => {
+    const group = (manifest.parameter_groups || []).find((g) => g.id === groupId)
+    if (!group) return groupId
+    return getLabel(group, "label", lang)
+  }
+
+  const getViewerConfig = () => manifest.viewer || {}
+
+  const getEstimateConstants = () => manifest.estimate_constants || {}
+
   const value = {
     manifest,
     loading,
@@ -67,6 +79,10 @@ export function ManifestProvider({ children }) {
     getDefaultParams,
     getDefaultColors,
     getLabel,
+    getCameraViews,
+    getGroupLabel,
+    getViewerConfig,
+    getEstimateConstants,
     projectSlug: manifest.project.slug,
   }
 

@@ -30,7 +30,7 @@ export default function ExportPanel({ parts, mode, manifest, onDownloadStl, onEx
       <div className="text-xs text-muted-foreground mb-1">{t("act.export_img")}</div>
       <div className="grid grid-cols-2 gap-2">
         {cameraViews.map(view => (
-          <Button key={view.id} variant="outline" size="sm" onClick={() => onExportImage(view.id)} disabled={disabled}>
+          <Button key={view.id} variant="outline" size="sm" className="min-h-[44px]" onClick={() => onExportImage(view.id)} disabled={disabled}>
             {getLabel(view, 'label', language)}
           </Button>
         ))}
@@ -41,7 +41,7 @@ export default function ExportPanel({ parts, mode, manifest, onDownloadStl, onEx
         size="sm"
         onClick={onExportAllViews}
         disabled={disabled}
-        className="w-full"
+        className="w-full min-h-[44px]"
       >
         {t("act.export_all")}
       </Button>

@@ -67,7 +67,8 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
                 {(() => {
                     const stepCount = Math.round((param.max - param.min) / param.step) + 1
                     const showTicks = stepCount <= 30
-                    const defaultPct = ((param.default - param.min) / (param.max - param.min)) * 100
+                    const starValue = param.star ?? param.default
+                    const starPct = ((starValue - param.min) / (param.max - param.min)) * 100
 
                     return (
                         <>
@@ -86,7 +87,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
                             })}
                             <div
                                 className="absolute top-0 -translate-x-1/2"
-                                style={{ left: `${defaultPct}%` }}
+                                style={{ left: `${starPct}%` }}
                                 data-testid={`default-star-${param.id}`}
                             >
                                 <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
@@ -165,7 +166,7 @@ export default function Controls({ params, setParams, mode, colors, setColors })
                         <Label className="text-base font-semibold">{getGroupLabel('visibility', language)}</Label>
                         <button
                             type="button"
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                            className="text-xs text-muted-foreground hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                             onClick={() => setVisibilityLevel(prev => prev === 'basic' ? 'advanced' : 'basic')}
                         >
                             {visibilityLevel === 'basic'

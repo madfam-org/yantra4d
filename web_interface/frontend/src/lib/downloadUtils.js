@@ -1,5 +1,3 @@
-import JSZip from 'jszip'
-
 /**
  * Trigger a file download via a temporary anchor element.
  */
@@ -24,6 +22,7 @@ export function downloadDataUrl(dataUrl, filename) {
  * For blob URLs, fetches each one. Returns the generated blob.
  */
 export async function downloadZip(items, zipFilename) {
+  const { default: JSZip } = await import('jszip')
   const zip = new JSZip()
   for (const item of items) {
     const res = await fetch(item.url)
@@ -44,6 +43,7 @@ export async function downloadZip(items, zipFilename) {
  * Create a ZIP from an array of { filename, data: Uint8Array } items, then trigger download.
  */
 export async function downloadZipFromData(items, zipFilename) {
+  const { default: JSZip } = await import('jszip')
   const zip = new JSZip()
   for (const item of items) {
     zip.file(item.filename, item.data)

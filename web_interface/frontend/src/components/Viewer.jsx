@@ -1,4 +1,4 @@
-import React, { Suspense, useState, forwardRef, useImperativeHandle, useCallback } from 'react'
+import React, { Suspense, useState, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { OrbitControls, Center, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
@@ -22,6 +22,25 @@ const Model = ({ url, color }) => {
         </mesh>
     )
 }
+
+const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progressPhase, t }) {
+    if (!loading) return null
+    return (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="text-xl font-bold">{t("loader.loading")}</div>
+            <div className="mt-2 h-2 w-48 overflow-hidden rounded-full bg-secondary">
+                <div
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${progress}%` }}
+                />
+            </div>
+            <div className="mt-1 text-sm text-muted-foreground">{progress}%</div>
+            {progressPhase && (
+                <div className="text-sm text-muted-foreground mt-1">{progressPhase}</div>
+            )}
+        </div>
+    )
+})
 
 const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhase }, ref) => {
     const { language } = useLanguage()
@@ -53,25 +72,11 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
 
     return (
         <div className="relative h-full w-full">
-            {loading && (
-                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
-                    <div className="text-xl font-bold">{t("loader.loading")}</div>
-                    <div className="mt-2 h-2 w-48 overflow-hidden rounded-full bg-secondary">
-                        <div
-                            className="h-full bg-primary transition-all duration-300 ease-out"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                    <div className="mt-1 text-sm text-muted-foreground">{progress}%</div>
-                    {progressPhase && (
-                        <div className="text-sm text-muted-foreground mt-1">{progressPhase}</div>
-                    )}
-                </div>
-            )}
+            <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
             <button
                 onClick={() => setShowAxes(s => !s)}
-                className="absolute top-2 left-2 z-10 flex items-center justify-center w-8 h-8 rounded bg-background/70 border border-border text-xs font-bold hover:bg-background/90 backdrop-blur-sm"
+                className="absolute top-2 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-xs font-bold hover:bg-background/90 backdrop-blur-sm"
                 title={showAxes ? "Hide axes" : "Show axes"}
             >
                 {showAxes ? "⊞" : "⊟"}
@@ -82,7 +87,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                     <button
                         key={view.id}
                         onClick={() => handleViewChange(view.id)}
-                        className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
+                        className={`px-2 py-1 min-h-[44px] min-w-[44px] text-xs rounded font-medium transition-colors ${
                             activeView === view.id
                                 ? 'bg-primary text-primary-foreground'
                                 : 'hover:bg-muted text-muted-foreground'

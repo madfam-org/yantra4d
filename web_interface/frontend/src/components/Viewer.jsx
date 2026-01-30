@@ -1,6 +1,6 @@
 import React, { Suspense, useState, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
-import { OrbitControls, Center, Grid, Environment, Edges, Bounds } from '@react-three/drei'
+import { OrbitControls, Center, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useTheme } from "../contexts/ThemeProvider"
@@ -13,7 +13,7 @@ const VIEWS = ['iso', 'top', 'front', 'right']
 const Model = ({ url, color }) => {
     const geom = useLoader(STLLoader, url)
     return (
-        <mesh geometry={geom} rotation={[-Math.PI / 2, 0, 0]}>
+        <mesh geometry={geom}>
             <meshStandardMaterial
                 color={color || "#e5e7eb"}
                 roughness={0.5}
@@ -90,7 +90,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
             </div>
 
             <ErrorBoundary>
-            <Canvas shadows className="h-full w-full" camera={{ position: [50, 50, 50], fov: 45 }} gl={{ preserveDrawingBuffer: true }}>
+            <Canvas shadows className="h-full w-full" camera={{ position: [50, 50, 50], fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
                 <color attach="background" args={[bgColor]} />
                 <SceneController ref={sceneRef} />
 
@@ -98,14 +98,18 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                 <ambientLight intensity={0.3} />
                 <pointLight position={[10, 10, 10]} intensity={0.5} />
 
-                <OrbitControls makeDefault />
+                <OrbitControls makeDefault up={[0, 0, 1]} />
                 <Grid
                     infiniteGrid
                     sectionColor="#4b5563"
                     cellColor="#374151"
                     fadeDistance={500}
                     args={[10, 10]}
+                    rotation={[Math.PI / 2, 0, 0]}
                 />
+                <GizmoHelper alignment="bottom-left" margin={[60, 60]}>
+                    <GizmoViewport axisColors={['#ef4444', '#22c55e', '#3b82f6']} labelColor="white" />
+                </GizmoHelper>
 
                 {showAxes && <NumberedAxes />}
 

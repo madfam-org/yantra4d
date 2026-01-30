@@ -75,7 +75,7 @@ module full_cube() {
         );
 
         // Part B: Upside down and Rotated 90
-        rotate([180, 0, 90]) assembly(flipped=true,
+        translate([0, 0, size]) rotate([180, 0, 90]) assembly(flipped=true,
             v_base=show_top_base, v_walls=show_top_walls,
             v_mech=show_top_mech, v_letter=show_top_letter,
             v_wall_left=show_top_wall_left, v_wall_right=show_top_wall_right,
@@ -93,12 +93,12 @@ module stopper_rail() {
     rail_L = total_width;
 
     difference() {
-        translate([(cols-1)*grid_pitch/2, 0, 0])
-             cube([rail_L, rail_W, rail_H], center=true);
+        translate([size/2, (cols-1)*grid_pitch/2 + size/2, 0])
+             cube([rail_W, rail_L, rail_H], center=true);
 
         // Holes for Rods (spaced at grid_pitch)
         for (i = [0 : cols-1]) {
-            translate([i*grid_pitch, 0, 0])
+            translate([size/2, i*grid_pitch + size/2, 0])
                 cylinder(r=rod_D/2 + clearance, h=rail_H*3, center=true);
         }
     }
@@ -119,7 +119,7 @@ render_mode = 0; // Part selector (see project.json manifest): 0=all, 1=bottom, 
 // 1. Grid of Cubes
 for (j = [0 : rows-1]) {
     for (i = [0 : cols-1]) {
-        translate([i*grid_pitch, 0, j*size]) {
+        translate([0, i*grid_pitch, j*size]) {
             // Part A: Right-side up (Bottom Unit)
             if (render_mode == 0 || render_mode == 1)
                 if (show_bottom) assembly(
@@ -133,7 +133,7 @@ for (j = [0 : rows-1]) {
 
             // Part B: Upside down and Rotated 90 (Top Unit)
             if (render_mode == 0 || render_mode == 2)
-                if (show_top) rotate([180, 0, 90]) assembly(flipped=true,
+                if (show_top) translate([0, 0, size]) rotate([180, 0, 90]) assembly(flipped=true,
                     v_base=show_top_base, v_walls=show_top_walls,
                     v_mech=show_top_mech, v_letter=show_top_letter,
                     v_wall_left=show_top_wall_left, v_wall_right=show_top_wall_right,
@@ -149,7 +149,7 @@ for (j = [0 : rows-1]) {
 if (render_mode == 0 || render_mode == 3) {
     if (show_rods) {
         for (i = [0 : cols-1]) {
-            translate([i*grid_pitch, 0, (rows-1)*size/2])
+            translate([size/2, i*grid_pitch + size/2, rows*size/2])
                 vertical_rod();
         }
     }
@@ -159,11 +159,11 @@ if (render_mode == 0 || render_mode == 3) {
 if (render_mode == 0 || render_mode == 4) {
     if (show_stoppers) {
         // Bottom Stopper
-        translate([0, 0, -size/2 - rail_H/2])
+        translate([0, 0, -rail_H/2])
             stopper_rail();
 
         // Top Stopper
-        translate([0, 0, (rows-1)*size + size/2 + rail_H/2])
+        translate([0, 0, rows*size + rail_H/2])
             stopper_rail();
     }
 }

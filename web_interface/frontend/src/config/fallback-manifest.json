@@ -40,8 +40,8 @@
       "label": { "en": "Standard (20mm)", "es": "Estándar (20mm)" },
       "values": {
         "size": 20, "thick": 2.5, "rod_D": 3.0,
-        "clearance": 0.2, "fit_clear": 0.2,
-        "letter_depth": 0.5, "letter_size": 6,
+        "clearance": 0.2, "fit_clear": 0,
+        "letter_depth": 0.5, "letter_size": 10,
         "rod_extension": 10, "rotation_clearance": 2
       }
     },
@@ -50,7 +50,7 @@
       "label": { "en": "Mini (5mm)", "es": "Mini (5mm)" },
       "values": {
         "size": 5, "thick": 0.8, "rod_D": 1.5,
-        "clearance": 0.15, "fit_clear": 0.15,
+        "clearance": 0.15, "fit_clear": 0,
         "letter_depth": 0.2, "letter_size": 2,
         "rod_extension": 2, "rotation_clearance": 0.5
       }
@@ -104,12 +104,13 @@
     {
       "id": "fit_clear",
       "type": "slider",
-      "default": 0.2,
-      "min": 0.05,
+      "default": 0,
+      "min": 0,
       "max": 0.4,
       "step": 0.05,
+      "disabled": true,
       "label": { "en": "Seam Clearance (mm)", "es": "Holgura de Junta (mm)" },
-      "tooltip": { "en": "Gap between interlocking cube faces — increase for easier assembly", "es": "Espacio entre caras de cubos — aumentar para ensamblaje más fácil" },
+      "tooltip": { "en": "Gap between interlocking cube faces — currently zeroed out (kept for future use)", "es": "Espacio entre caras de cubos — actualmente en cero (reservado para uso futuro)" },
       "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
@@ -485,9 +486,9 @@
     {
       "id": "letter_size",
       "type": "slider",
-      "default": 6,
-      "min": 1,
-      "max": 10,
+      "default": 10,
+      "min": 6,
+      "max": 14,
       "step": 1,
       "label": { "en": "Letter Size", "es": "Tamaño de Letra" },
       "tooltip": { "en": "Font size of embossed/carved letters on walls", "es": "Tamaño de fuente de las letras en las paredes" },

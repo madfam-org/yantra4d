@@ -9,7 +9,7 @@ size = 20.0;          // Outer cube dimension
 thick = 2.5;          // Wall thickness
 rod_D = 3.0;          // Rod diameter
 clearance = 0.2;      // Clearance for rod bore
-fit_clear = 0.2;      // Miter face clearance (per research)
+fit_clear = 0;        // Miter face clearance (zeroed; kept for future use)
 
 // --- Visibility Toggles ---
 show_base = true;
@@ -33,7 +33,7 @@ letter_top = "F";
 letter = is_flipped ? letter_top : letter_bottom;
 letter_emboss = false;     // true = raised, false = carved
 letter_depth = 0.5;
-letter_size = 6;
+letter_size = 10;
 
 // --- Snap-Fit Parameters (scaled from research: 60mm -> size) ---
 scale_factor = size / 60;
@@ -67,20 +67,20 @@ module assembly(
         union() {
             // 1. Base Plate
             if (v_base)
-                translate([0, 0, -size/2 + thick/2])
+                translate([size/2, size/2, thick/2])
                     base_plate(flipped=flipped);
 
             // 2. Side Walls with full mitered edges (top + front/back)
             if (v_walls && v_wall_left)
-                translate([-size/2 + thick/2, 0, 0])
+                translate([thick/2, size/2, size/2])
                     mitered_wall();
             if (v_walls && v_wall_right)
-                translate([size/2 - thick/2, 0, 0])
+                translate([size - thick/2, size/2, size/2])
                     mirror([1,0,0]) mitered_wall();
 
             // 3. Central mechanism with snap-fit
             if (v_mech)
-                translate([0, 0, -size/2])
+                translate([size/2, size/2, 0])
                     mechanism_pillars(flipped=flipped,
                         v_base_ring=v_mech_base_ring,
                         v_pillars=v_mech_pillars,
@@ -95,7 +95,8 @@ module assembly(
 
         // Global subtractions
         // Rod bore through center
-        cylinder(r=rod_D/2 + clearance, h=size*2, center=true);
+        translate([size/2, size/2, size/2])
+            cylinder(r=rod_D/2 + clearance, h=size*2, center=true);
 
         // Letters carved on BOTH walls
         if (v_letter && !letter_emboss) {
@@ -109,7 +110,6 @@ module assembly(
 // Frustum floor: wider on outer (bottom) face, tapered on inner (top) face
 // Quarter-circle perforations for opposing mechanism pass-through
 module base_plate(flipped=false) {
-    perf_R = cyl_R + fit_clear;
     // Bottom half (flipped=false): opposing pillars are at Q2/Q4 (angles 90, 270)
     // Top half (flipped=true): opposing pillars are at Q1/Q3 (angles 0, 180)
     perf_base = flipped ? 0 : 90;
@@ -127,14 +127,14 @@ module base_plate(flipped=false) {
                 cube([side - 2*taper, side - 2*taper, 0.01], center=true);
         }
 
-        // Quarter-circle perforations for opposing mechanism
+        // Pillar-shaped perforations for opposing mechanism (pie-slice matching cyl_R)
         for (angle = [perf_base, perf_base + 180])
             rotate([0, 0, angle])
-                linear_extrude(thick + 1, center=true)
+                linear_extrude(thick * 2 + 1, center=true)
                     intersection() {
-                        circle(r = perf_R, $fn = 64);
+                        circle(r=cyl_R);
                         polygon([[0,0], [size,0], [0,size]]);
-                    };
+                    }
     }
 }
 
@@ -165,25 +165,25 @@ module mitered_wall() {
 module letter_geometry(flipped=is_flipped, side="left") {
     local_letter = flipped ? letter_top : letter_bottom;
     flip_angle = flipped ? 180 : 0;
-    letter_z = 0;  // Center of cube (full-height walls)
+    letter_z = size/2;  // Center of cube (full-height walls)
 
     // Extrusion must penetrate the full frustum wall plus margin
     letter_extrude = letter_depth + (letter_emboss ? 0 : thick + 1);
 
     if (side == "left") {
-        wall_x = -size/2 - 0.5;  // Start outside the wall to ensure full cut-through
-        translate([wall_x, 0, letter_z])
+        wall_x = -0.5;  // Start outside the wall to ensure full cut-through
+        translate([wall_x, size/2, letter_z])
             rotate([90, flip_angle, 90])
-                scale([flipped ? 1 : -1, 1, 1])
+                scale([-1, 1, 1])
                     linear_extrude(letter_extrude)
                         text(local_letter, size=letter_size, halign="center", valign="center",
                              font="Allerta Stencil:style=Regular");
     } else {
         // Right wall: mirror placement
-        wall_x = size/2 + 0.5;  // Start outside the wall to ensure full cut-through
-        translate([wall_x, 0, letter_z])
+        wall_x = size + 0.5;  // Start outside the wall to ensure full cut-through
+        translate([wall_x, size/2, letter_z])
             rotate([90, flip_angle, -90])
-                scale([flipped ? 1 : -1, 1, 1])
+                scale([-1, 1, 1])
                     linear_extrude(letter_extrude)
                         text(local_letter, size=letter_size, halign="center", valign="center",
                              font="Allerta Stencil:style=Regular");
@@ -196,27 +196,15 @@ module mechanism_pillars(flipped=is_flipped,
     v_base_ring=true, v_pillars=true, v_snap_beams=true
 ) {
     base_ring_h = thick + max(size * 0.005, 0.05);
-    pillar_height = cyl_H;
+    pillar_height = size;
 
     mech_rotation = flipped ? 90 : 0;
 
     rotate([0, 0, mech_rotation])
     union() {
-        // 1. Solid base ring
-        if (v_base_ring)
-            cylinder(r=cyl_R, h=base_ring_h);
-
-        // 2. Weld cubes at base ring / pillar junction for mesh integrity
-        //    Placed at pillar centers (Q1=45°, Q3=225°) to avoid quadrant cut boundaries
+        // 1. Pillars with wedge cuts (no base ring)
         if (v_pillars)
-            for (angle = [45, 225])
-                rotate([0, 0, angle])
-                    translate([cyl_R * 0.5, 0, base_ring_h - weld/2])
-                        cube(weld, center=true);
-
-        // 3. Pillars with wedge cuts
-        if (v_pillars)
-            translate([0, 0, base_ring_h - 0.1])
+            translate([0, 0, 0])
                 difference() {
                     cylinder(r=cyl_R, h=pillar_height);
 
@@ -232,19 +220,19 @@ module mechanism_pillars(flipped=is_flipped,
         //    are fully within pillar material (Q1: 0°–90°, Q3: 180°–270°)
         if (v_snap_beams) {
             // Q1 pillar: beam on +Y face (near 90° boundary)
-            translate([0, 0, base_ring_h - 0.1])
+            translate([0, 0, 0])
                 snap_beam_at(angle=80, pillar_height=pillar_height);
 
             // Q1 pillar: beam on +X face (near 0° boundary)
-            translate([0, 0, base_ring_h - 0.1])
+            translate([0, 0, 0])
                 snap_beam_at(angle=10, pillar_height=pillar_height);
 
             // Q3 pillar: beam on -X face (near 180° boundary)
-            translate([0, 0, base_ring_h - 0.1])
+            translate([0, 0, 0])
                 snap_beam_at(angle=190, pillar_height=pillar_height);
 
             // Q3 pillar: beam on -Y face (near 270° boundary)
-            translate([0, 0, base_ring_h - 0.1])
+            translate([0, 0, 0])
                 snap_beam_at(angle=260, pillar_height=pillar_height);
         }
 
@@ -253,7 +241,7 @@ module mechanism_pillars(flipped=is_flipped,
         if (v_snap_beams)
             for (angle = [45, 225])
                 rotate([0, 0, angle])
-                    translate([cyl_R * 0.4, 0, base_ring_h + pillar_height - weld/2])
+                    translate([cyl_R * 0.4, 0, pillar_height - weld/2])
                         cube(weld, center=true);
     }
 }

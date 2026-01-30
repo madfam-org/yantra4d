@@ -209,12 +209,9 @@ src/
 
 ### Development Mode
 ```bash
-# Terminal 1: Backend
-python3 web_interface/backend/app.py
-
-# Terminal 2: Frontend
-cd web_interface/frontend
-npm run dev
+./scripts/dev.sh              # start backend (Flask :5000) + frontend (Vite :5173)
+./scripts/dev-stop.sh         # stop all dev servers
+./scripts/dev.sh --frontend-only  # frontend only (e.g. for GitHub Pages/WASM mode)
 ```
 Access: http://localhost:5173
 
@@ -232,7 +229,8 @@ npm run preview
 
 ### Docker
 ```bash
-docker-compose up --build
+docker compose up --build     # start
+docker compose down           # stop
 ```
 Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 

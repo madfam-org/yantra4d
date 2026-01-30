@@ -7,7 +7,7 @@ import { useManifest } from "../contexts/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Star } from 'lucide-react'
 
-function SliderControl({ param, value, onSliderChange, getLabel, language, isDefault }) {
+function SliderControl({ param, value, onSliderChange, getLabel, language }) {
     const [editing, setEditing] = useState(false)
     const [editValue, setEditValue] = useState('')
 
@@ -21,13 +21,15 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, isDef
         setEditing(false)
     }
 
+    const labelId = `param-label-${param.id}`
+
     return (
         <div className="space-y-2">
             <div className="flex justify-between items-center">
                 <Tooltip content={getLabel(param, 'tooltip', language)}>
-                    <Label className="flex items-center gap-2 cursor-help">
+                    <Label id={labelId} className="flex items-center gap-2 cursor-help">
                         {getLabel(param, 'label', language)}
-                        {isDefault && <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />}
+
                     </Label>
                 </Tooltip>
                 {editing ? (
@@ -58,8 +60,41 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, isDef
                 value={[value]}
                 min={param.min} max={param.max} step={param.step}
                 onValueChange={(vals) => onSliderChange(param.id, vals)}
-                aria-label={getLabel(param, 'label', language)}
+                aria-labelledby={labelId}
             />
+            {/* Tick marks with default star */}
+            <div className="relative w-full h-4 -mt-1" aria-hidden="true">
+                {(() => {
+                    const stepCount = Math.round((param.max - param.min) / param.step) + 1
+                    const showTicks = stepCount <= 30
+                    const defaultPct = ((param.default - param.min) / (param.max - param.min)) * 100
+
+                    return (
+                        <>
+                            {showTicks && Array.from({ length: stepCount }, (_, i) => {
+                                const val = param.min + i * param.step
+                                const pct = ((val - param.min) / (param.max - param.min)) * 100
+                                const isDefaultTick = Math.abs(val - param.default) < param.step / 2
+                                if (isDefaultTick) return null
+                                return (
+                                    <div
+                                        key={i}
+                                        className="absolute top-0 w-px h-2 bg-muted-foreground/30"
+                                        style={{ left: `${pct}%` }}
+                                    />
+                                )
+                            })}
+                            <div
+                                className="absolute top-0 -translate-x-1/2"
+                                style={{ left: `${defaultPct}%` }}
+                                data-testid={`default-star-${param.id}`}
+                            >
+                                <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                            </div>
+                        </>
+                    )
+                })()}
+            </div>
             {param.description && (
                 <p className="text-xs text-muted-foreground">{getLabel(param, 'description', language)}</p>
             )}
@@ -118,7 +153,6 @@ export default function Controls({ params, setParams, mode, colors, setColors })
                             onSliderChange={handleSliderChange}
                             getLabel={getLabel}
                             language={language}
-                            isDefault={params[param.id] === param.default}
                         />
                     ))}
                 </div>

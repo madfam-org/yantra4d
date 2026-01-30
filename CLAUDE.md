@@ -65,11 +65,14 @@ cd web_interface/frontend && npm run test:watch # watch mode
 
 ### Local dev
 ```bash
-# Backend
-cd web_interface/backend && pip install -r requirements.txt && python app.py
+./scripts/dev.sh          # start backend + frontend
+./scripts/dev-stop.sh     # stop all dev servers
+```
 
-# Frontend
-cd web_interface/frontend && npm install && npm run dev
+### Docker
+```bash
+docker compose up --build   # start
+docker compose down         # stop
 ```
 
 ### Verify design

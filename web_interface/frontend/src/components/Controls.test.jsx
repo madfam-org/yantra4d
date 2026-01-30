@@ -127,10 +127,9 @@ describe('Controls', () => {
     expect(rightWallCheckbox).toBeDisabled()
   })
 
-  it('sliders have aria-label on their root element', () => {
+  it('sliders are labelled via aria-labelledby pointing to the parameter label', () => {
     renderControls()
-    // Radix Slider: aria-label is set on the root <span>, not the thumb (role="slider")
-    // Query by aria-label directly to verify it's in the DOM
+    // aria-labelledby on Slider Root is forwarded to the Thumb (role="slider") by Radix
     expect(screen.getByLabelText('Size (mm)')).toBeInTheDocument()
     expect(screen.getByLabelText('Thickness (mm)')).toBeInTheDocument()
     expect(screen.getByLabelText('Rod Diameter (mm)')).toBeInTheDocument()
@@ -142,6 +141,25 @@ describe('Controls', () => {
     expect(valueDisplay).toBeInTheDocument()
     expect(valueDisplay).toHaveAttribute('role', 'button')
     expect(valueDisplay).toHaveAttribute('tabIndex', '0')
+  })
+
+  it('renders default star indicators on slider tracks', () => {
+    renderControls()
+    // Stars should always be present as default position indicators, not conditional on value
+    expect(screen.getByTestId('default-star-size')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-thick')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-rod_D')).toBeInTheDocument()
+  })
+
+  it('default star remains when value differs from default', () => {
+    renderControls({ params: {
+      size: 25, thick: 2.5, rod_D: 3,
+      show_base: true, show_walls: true, show_mech: true, show_letter: true,
+      show_wall_left: true, show_wall_right: true,
+      show_mech_base_ring: true, show_mech_pillars: true, show_mech_snap_beams: true,
+    }})
+    // Star should still be present even though size (25) != default (20)
+    expect(screen.getByTestId('default-star-size')).toBeInTheDocument()
   })
 
   it('checkboxes use boolean checked to avoid controlled/uncontrolled warning', () => {

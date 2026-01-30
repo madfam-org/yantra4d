@@ -13,6 +13,7 @@
 - **Interactive 3D Viewer**: Real-time rendering of generated STL files with loading progress. Uses Z-up axis convention (matching OpenSCAD) with an orientation gizmo widget.
 - **One-Click Verification**: Run the `verify_design.py` suite directly from the UI.
 - **Live Parameter Controls**: Sliders and toggles update the model dynamically (debounced auto-render).
+- **Advanced Visibility**: The Visibility section has a Basic/Advanced toggle. Basic mode shows coarse toggles (Base, Walls, Mechanism, Letters, Bottom Unit, Top Unit). Advanced mode adds sub-component toggles (e.g., Left Wall, Right Wall, Base Ring, Pillars, Snap Beams) indented under their parent. In Assembly/Grid modes, Advanced also shows per-half overrides (e.g., Bottom Base, Bottom Walls). When a parent toggle is unchecked, its children are grayed out.
 - **Theme Toggle**: Switch between Light, Dark, and System (Auto) modes. Preference is persisted.
 - **Bilingual UI**: English and Spanish (Spanish is default). Parameter labels and tooltips come from the manifest; UI chrome strings come from `LanguageProvider`.
 - **Export Capabilities**:

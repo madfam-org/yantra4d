@@ -17,6 +17,13 @@ show_walls = true;
 show_mech = true;
 show_letter = true;
 
+// --- Advanced Visibility (sub-component toggles) ---
+show_wall_left = true;
+show_wall_right = true;
+show_mech_base_ring = true;
+show_mech_pillars = true;
+show_mech_snap_beams = true;
+
 // --- Flip Mode (for top unit) ---
 is_flipped = false;        // true = top unit (rotated mechanism, inverted letter)
 
@@ -45,29 +52,39 @@ cyl_H = size/2 - thick - fit_clear;
 weld = 0.4;
 
 // --- Main Assembly ---
-module assembly(flipped=is_flipped) {
+module assembly(
+    flipped=is_flipped,
+    v_base=show_base, v_walls=show_walls, v_mech=show_mech, v_letter=show_letter,
+    v_wall_left=show_wall_left, v_wall_right=show_wall_right,
+    v_mech_base_ring=show_mech_base_ring,
+    v_mech_pillars=show_mech_pillars,
+    v_mech_snap_beams=show_mech_snap_beams
+) {
     difference() {
         union() {
             // 1. Base Plate
-            if (show_base)
+            if (v_base)
                 translate([0, 0, -size/2 + thick/2])
                     base_plate();
 
             // 2. Side Walls with full mitered edges (top + front/back)
-            if (show_walls) {
+            if (v_walls && v_wall_left)
                 translate([-size/2 + thick/2, 0, 0])
                     mitered_wall();
+            if (v_walls && v_wall_right)
                 translate([size/2 - thick/2, 0, 0])
                     mirror([1,0,0]) mitered_wall();
-            }
 
             // 3. Central mechanism with snap-fit
-            if (show_mech)
+            if (v_mech)
                 translate([0, 0, -size/2])
-                    mechanism_pillars(flipped=flipped);
+                    mechanism_pillars(flipped=flipped,
+                        v_base_ring=v_mech_base_ring,
+                        v_pillars=v_mech_pillars,
+                        v_snap_beams=v_mech_snap_beams);
 
             // 4. Letters on BOTH walls (embossed mode)
-            if (show_letter && letter_emboss) {
+            if (v_letter && letter_emboss) {
                 letter_geometry(flipped=flipped, side="left");
                 letter_geometry(flipped=flipped, side="right");
             }
@@ -78,7 +95,7 @@ module assembly(flipped=is_flipped) {
         cylinder(r=rod_D/2 + clearance, h=size*2, center=true);
 
         // Letters carved on BOTH walls
-        if (show_letter && !letter_emboss) {
+        if (v_letter && !letter_emboss) {
             letter_geometry(flipped=flipped, side="left");
             letter_geometry(flipped=flipped, side="right");
         }
@@ -153,7 +170,9 @@ module letter_geometry(flipped=is_flipped, side="left") {
 
 // --- Mechanism Pillars with Snap-Fit ---
 // Two opposing quadrant pillars with base ring, snap beams, and weld cubes
-module mechanism_pillars(flipped=is_flipped) {
+module mechanism_pillars(flipped=is_flipped,
+    v_base_ring=true, v_pillars=true, v_snap_beams=true
+) {
     base_ring_h = thick + 0.1;
     pillar_height = cyl_H;
 
@@ -162,52 +181,54 @@ module mechanism_pillars(flipped=is_flipped) {
     rotate([0, 0, mech_rotation])
     union() {
         // 1. Solid base ring
-        cylinder(r=cyl_R, h=base_ring_h);
+        if (v_base_ring)
+            cylinder(r=cyl_R, h=base_ring_h);
 
         // 2. Weld cubes at base ring / pillar junction for mesh integrity
-        for (angle = [0, 90, 180, 270])
-            rotate([0, 0, angle])
-                translate([cyl_R * 0.5, 0, base_ring_h - weld/2])
-                    cube(weld, center=true);
+        if (v_pillars)
+            for (angle = [0, 90, 180, 270])
+                rotate([0, 0, angle])
+                    translate([cyl_R * 0.5, 0, base_ring_h - weld/2])
+                        cube(weld, center=true);
 
         // 3. Pillars with wedge cuts
-        translate([0, 0, base_ring_h - 0.1])
-            difference() {
-                cylinder(r=cyl_R, h=pillar_height);
+        if (v_pillars)
+            translate([0, 0, base_ring_h - 0.1])
+                difference() {
+                    cylinder(r=cyl_R, h=pillar_height);
 
-                // Cut away Q2 and Q4 (90° and 270°)
-                rotate([0, 0, 90])
-                    wedge_cutter(pillar_height + 1);
-                rotate([0, 0, 270])
-                    wedge_cutter(pillar_height + 1);
-            }
+                    // Cut away Q2 and Q4 (90° and 270°)
+                    rotate([0, 0, 90])
+                        wedge_cutter(pillar_height + 1);
+                    rotate([0, 0, 270])
+                        wedge_cutter(pillar_height + 1);
+                }
 
         // 4. Snap-fit cantilever beams on pillar faces
-        // Beams face outward from each pillar into the cut-away quadrants
-        // Q1 pillar (0°-90°) gets beams facing into Q2 (90°) and Q4 (360°/0°-side)
-        // Q3 pillar (180°-270°) gets beams facing into Q2 and Q4
+        if (v_snap_beams) {
+            // Pillar Q1: beam at 90° face (facing +Y)
+            translate([0, 0, base_ring_h - 0.1])
+                snap_beam_at(angle=45, pillar_height=pillar_height);
 
-        // Pillar Q1: beam at 90° face (facing +Y)
-        translate([0, 0, base_ring_h - 0.1])
-            snap_beam_at(angle=45, pillar_height=pillar_height);
+            // Pillar Q1: beam at 0° face (facing +X)
+            translate([0, 0, base_ring_h - 0.1])
+                snap_beam_at(angle=315, pillar_height=pillar_height);
 
-        // Pillar Q1: beam at 0° face (facing +X)
-        translate([0, 0, base_ring_h - 0.1])
-            snap_beam_at(angle=315, pillar_height=pillar_height);
+            // Pillar Q3: beam at 180° face (facing -X)
+            translate([0, 0, base_ring_h - 0.1])
+                snap_beam_at(angle=135, pillar_height=pillar_height);
 
-        // Pillar Q3: beam at 180° face (facing -X)
-        translate([0, 0, base_ring_h - 0.1])
-            snap_beam_at(angle=135, pillar_height=pillar_height);
-
-        // Pillar Q3: beam at 270° face (facing -Y)
-        translate([0, 0, base_ring_h - 0.1])
-            snap_beam_at(angle=225, pillar_height=pillar_height);
+            // Pillar Q3: beam at 270° face (facing -Y)
+            translate([0, 0, base_ring_h - 0.1])
+                snap_beam_at(angle=225, pillar_height=pillar_height);
+        }
 
         // 5. Weld cubes at pillar tops for mesh integrity
-        for (angle = [0, 180])
-            rotate([0, 0, angle])
-                translate([cyl_R * 0.4, 0, base_ring_h + pillar_height - weld/2])
-                    cube(weld, center=true);
+        if (v_snap_beams)
+            for (angle = [0, 180])
+                rotate([0, 0, angle])
+                    translate([cyl_R * 0.4, 0, base_ring_h + pillar_height - weld/2])
+                        cube(weld, center=true);
     }
 }
 

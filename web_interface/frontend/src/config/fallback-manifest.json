@@ -97,6 +97,7 @@
       "label": { "en": "Base", "es": "Base" },
       "tooltip": { "en": "Show or hide the base plate", "es": "Mostrar u ocultar la placa base" },
       "group": "visibility",
+      "visibility_level": "basic",
       "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
@@ -106,6 +107,29 @@
       "label": { "en": "Walls", "es": "Paredes" },
       "tooltip": { "en": "Show or hide the side walls", "es": "Mostrar u ocultar las paredes laterales" },
       "group": "visibility",
+      "visibility_level": "basic",
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "show_wall_left",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Left Wall", "es": "Pared Izquierda" },
+      "tooltip": { "en": "Show or hide the left mitered wall", "es": "Mostrar u ocultar la pared izquierda" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_walls",
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "show_wall_right",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Right Wall", "es": "Pared Derecha" },
+      "tooltip": { "en": "Show or hide the right mitered wall", "es": "Mostrar u ocultar la pared derecha" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_walls",
       "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
@@ -115,6 +139,40 @@
       "label": { "en": "Mechanism", "es": "Mecanismo" },
       "tooltip": { "en": "Show or hide the interlocking mechanism", "es": "Mostrar u ocultar el mecanismo de enclavamiento" },
       "group": "visibility",
+      "visibility_level": "basic",
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "show_mech_base_ring",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Base Ring", "es": "Anillo Base" },
+      "tooltip": { "en": "Show or hide the mechanism base ring", "es": "Mostrar u ocultar el anillo base del mecanismo" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_mech",
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "show_mech_pillars",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Pillars", "es": "Pilares" },
+      "tooltip": { "en": "Show or hide the dual-quadrant pillars", "es": "Mostrar u ocultar los pilares de doble cuadrante" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_mech",
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "show_mech_snap_beams",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Snap Beams", "es": "Vigas de Encaje" },
+      "tooltip": { "en": "Show or hide the cantilever snap-fit beams", "es": "Mostrar u ocultar las vigas cantilever de encaje" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_mech",
       "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
@@ -124,6 +182,7 @@
       "label": { "en": "Letters", "es": "Letras" },
       "tooltip": { "en": "Show or hide embossed letters on walls", "es": "Mostrar u ocultar letras en relieve en las paredes" },
       "group": "visibility",
+      "visibility_level": "basic",
       "visible_in_modes": ["unit", "assembly", "grid"]
     },
     {
@@ -133,6 +192,106 @@
       "label": { "en": "Bottom Unit", "es": "Unidad Inferior" },
       "tooltip": { "en": "Show or hide bottom half-cube units", "es": "Mostrar u ocultar unidades inferiores" },
       "group": "visibility",
+      "visibility_level": "basic",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_base",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Base", "es": "Base Inferior" },
+      "tooltip": { "en": "Show or hide bottom unit's base plate", "es": "Mostrar u ocultar la base de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_walls",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Walls", "es": "Paredes Inferiores" },
+      "tooltip": { "en": "Show or hide bottom unit's walls", "es": "Mostrar u ocultar paredes de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_mech",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Mechanism", "es": "Mecanismo Inferior" },
+      "tooltip": { "en": "Show or hide bottom unit's mechanism", "es": "Mostrar u ocultar mecanismo de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_letter",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Letters", "es": "Letras Inferiores" },
+      "tooltip": { "en": "Show or hide bottom unit's letters", "es": "Mostrar u ocultar letras de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_wall_left",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Left Wall", "es": "Pared Izq. Inferior" },
+      "tooltip": { "en": "Show or hide bottom unit's left wall", "es": "Mostrar u ocultar pared izquierda de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_wall_right",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Right Wall", "es": "Pared Der. Inferior" },
+      "tooltip": { "en": "Show or hide bottom unit's right wall", "es": "Mostrar u ocultar pared derecha de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_mech_base_ring",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Base Ring", "es": "Anillo Base Inferior" },
+      "tooltip": { "en": "Show or hide bottom unit's mechanism base ring", "es": "Mostrar u ocultar anillo base del mecanismo inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_mech_pillars",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Pillars", "es": "Pilares Inferiores" },
+      "tooltip": { "en": "Show or hide bottom unit's pillars", "es": "Mostrar u ocultar pilares de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_bottom_mech_snap_beams",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Bottom Snap Beams", "es": "Vigas Encaje Inferiores" },
+      "tooltip": { "en": "Show or hide bottom unit's snap beams", "es": "Mostrar u ocultar vigas de encaje de la unidad inferior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_bottom",
       "visible_in_modes": ["assembly", "grid"]
     },
     {
@@ -142,6 +301,106 @@
       "label": { "en": "Top Unit", "es": "Unidad Superior" },
       "tooltip": { "en": "Show or hide top half-cube units", "es": "Mostrar u ocultar unidades superiores" },
       "group": "visibility",
+      "visibility_level": "basic",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_base",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Base", "es": "Base Superior" },
+      "tooltip": { "en": "Show or hide top unit's base plate", "es": "Mostrar u ocultar la base de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_walls",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Walls", "es": "Paredes Superiores" },
+      "tooltip": { "en": "Show or hide top unit's walls", "es": "Mostrar u ocultar paredes de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_mech",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Mechanism", "es": "Mecanismo Superior" },
+      "tooltip": { "en": "Show or hide top unit's mechanism", "es": "Mostrar u ocultar mecanismo de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_letter",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Letters", "es": "Letras Superiores" },
+      "tooltip": { "en": "Show or hide top unit's letters", "es": "Mostrar u ocultar letras de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_wall_left",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Left Wall", "es": "Pared Izq. Superior" },
+      "tooltip": { "en": "Show or hide top unit's left wall", "es": "Mostrar u ocultar pared izquierda de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_wall_right",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Right Wall", "es": "Pared Der. Superior" },
+      "tooltip": { "en": "Show or hide top unit's right wall", "es": "Mostrar u ocultar pared derecha de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_mech_base_ring",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Base Ring", "es": "Anillo Base Superior" },
+      "tooltip": { "en": "Show or hide top unit's mechanism base ring", "es": "Mostrar u ocultar anillo base del mecanismo superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_mech_pillars",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Pillars", "es": "Pilares Superiores" },
+      "tooltip": { "en": "Show or hide top unit's pillars", "es": "Mostrar u ocultar pilares de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
+      "id": "show_top_mech_snap_beams",
+      "type": "checkbox",
+      "default": true,
+      "label": { "en": "Top Snap Beams", "es": "Vigas Encaje Superiores" },
+      "tooltip": { "en": "Show or hide top unit's snap beams", "es": "Mostrar u ocultar vigas de encaje de la unidad superior" },
+      "group": "visibility",
+      "visibility_level": "advanced",
+      "parent": "show_top",
       "visible_in_modes": ["assembly", "grid"]
     },
     {
@@ -151,6 +410,7 @@
       "label": { "en": "Rods", "es": "Varillas" },
       "tooltip": { "en": "Show or hide connecting rods", "es": "Mostrar u ocultar varillas de conexión" },
       "group": "visibility",
+      "visibility_level": "basic",
       "visible_in_modes": ["grid"]
     },
     {
@@ -160,6 +420,7 @@
       "label": { "en": "Stoppers", "es": "Topes" },
       "tooltip": { "en": "Show or hide rod stoppers", "es": "Mostrar u ocultar topes de varilla" },
       "group": "visibility",
+      "visibility_level": "basic",
       "visible_in_modes": ["grid"]
     },
     {
@@ -245,7 +506,11 @@
     { "id": "right", "label": {"en": "Right", "es": "Derecha"},        "position": [100, 0, 0] }
   ],
   "parameter_groups": [
-    { "id": "visibility", "label": {"en": "Visibility", "es": "Visibilidad"} },
+    { "id": "visibility", "label": {"en": "Visibility", "es": "Visibilidad"}, "levels": [
+        {"id": "basic", "label": {"en": "Basic", "es": "Básico"}},
+        {"id": "advanced", "label": {"en": "Advanced", "es": "Avanzado"}}
+      ]
+    },
     { "id": "colors",     "label": {"en": "Colors", "es": "Colores"} }
   ],
   "viewer": {

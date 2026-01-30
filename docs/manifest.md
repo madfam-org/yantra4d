@@ -57,6 +57,8 @@ The project manifest (`scad/project.json`) is the single source of truth for mod
       "tooltip": { "en": "...", "es": "..." },
       "description": { "en": "...", "es": "..." },  // Optional, shown below slider
       "group": "visibility",                // Optional grouping (renders with header)
+      "visibility_level": "basic",           // Optional: "basic" (default) or "advanced"
+      "parent": "show_walls",               // Optional: parent param ID (for hierarchy)
       "visible_in_modes": ["unit", "assembly"]  // Which modes show this parameter
     }
     // ... more parameters
@@ -74,7 +76,11 @@ The project manifest (`scad/project.json`) is the single source of truth for mod
   "parameter_groups": [
     {
       "id": "visibility",                             // Group ID (matches param.group)
-      "label": { "en": "Visibility", "es": "Visibilidad" }  // Section header label
+      "label": { "en": "Visibility", "es": "Visibilidad" },  // Section header label
+      "levels": [                                    // Optional: enables Basic/Advanced toggle
+        {"id": "basic", "label": {"en": "Basic", "es": "Básico"}},
+        {"id": "advanced", "label": {"en": "Advanced", "es": "Avanzado"}}
+      ]
     }
     // ... more groups
   ],

@@ -65,7 +65,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, isDef
 
 export default function Controls({ params, setParams, mode, colors, setColors }) {
     const { language } = useLanguage()
-    const { getParametersForMode, getPartColors, getLabel } = useManifest()
+    const { getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
 
     const handleSliderChange = (name, valArray) => {
         setParams(prev => ({ ...prev, [name]: valArray[0] }))
@@ -109,7 +109,7 @@ export default function Controls({ params, setParams, mode, colors, setColors })
             {/* Visibility checkboxes */}
             {visibilityCheckboxes.length > 0 && (
                 <div className="space-y-4 border-t border-border pt-4">
-                    <Label className="text-base font-semibold">{language === 'es' ? 'Visibilidad' : 'Visibility'}</Label>
+                    <Label className="text-base font-semibold">{getGroupLabel('visibility', language)}</Label>
                     {visibilityCheckboxes.map(param => (
                         <div key={param.id} className="flex items-center space-x-2">
                             <Checkbox
@@ -146,7 +146,7 @@ export default function Controls({ params, setParams, mode, colors, setColors })
             {/* Color Controls */}
             {partColors.length > 0 && (
                 <div className="space-y-4 border-t border-border pt-4">
-                    <Label className="text-base font-semibold">{language === 'es' ? 'Colores' : 'Colors'}</Label>
+                    <Label className="text-base font-semibold">{getGroupLabel('colors', language)}</Label>
                     <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                         {partColors.map((part) => (
                             <div key={part.id} className="flex flex-col gap-1">

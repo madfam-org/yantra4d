@@ -4,18 +4,17 @@ import { OrbitControls, Center, Grid, Environment, Edges, Bounds, GizmoHelper, G
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useTheme } from "../contexts/ThemeProvider"
+import { useManifest } from "../contexts/ManifestProvider"
 import { ErrorBoundary } from './ErrorBoundary'
 import SceneController from './viewer/SceneController'
 import NumberedAxes from './viewer/NumberedAxes'
-
-const VIEWS = ['iso', 'top', 'front', 'right']
 
 const Model = ({ url, color }) => {
     const geom = useLoader(STLLoader, url)
     return (
         <mesh geometry={geom}>
             <meshStandardMaterial
-                color={color || "#e5e7eb"}
+                color={color}
                 roughness={0.5}
                 metalness={0.1}
             />
@@ -25,8 +24,13 @@ const Model = ({ url, color }) => {
 }
 
 const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhase }, ref) => {
+    const { language } = useLanguage()
     const { t } = useLanguage()
     const { theme } = useTheme()
+    const { getCameraViews, getViewerConfig, getLabel } = useManifest()
+    const cameraViews = getCameraViews()
+    const viewerConfig = getViewerConfig()
+    const defaultColor = viewerConfig.default_color || "#e5e7eb"
     const [showAxes, setShowAxes] = useState(true)
     const [activeView, setActiveView] = useState('iso')
     const sceneRef = React.useRef()
@@ -74,17 +78,17 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
             </button>
 
             <div className="absolute top-2 right-2 z-10 flex gap-1 rounded bg-background/70 border border-border p-0.5 backdrop-blur-sm">
-                {VIEWS.map(view => (
+                {cameraViews.map(view => (
                     <button
-                        key={view}
-                        onClick={() => handleViewChange(view)}
+                        key={view.id}
+                        onClick={() => handleViewChange(view.id)}
                         className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
-                            activeView === view
+                            activeView === view.id
                                 ? 'bg-primary text-primary-foreground'
                                 : 'hover:bg-muted text-muted-foreground'
                         }`}
                     >
-                        {view.charAt(0).toUpperCase() + view.slice(1)}
+                        {getLabel(view, 'label', language)}
                     </button>
                 ))}
             </div>
@@ -92,7 +96,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
             <ErrorBoundary>
             <Canvas shadows className="h-full w-full" camera={{ position: [50, 50, 50], fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
                 <color attach="background" args={[bgColor]} />
-                <SceneController ref={sceneRef} />
+                <SceneController ref={sceneRef} cameraViews={cameraViews} />
 
                 <Environment preset="city" />
                 <ambientLight intensity={0.3} />
@@ -120,7 +124,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                                 <Model
                                     key={part.type}
                                     url={part.url}
-                                    color={colors[part.type] || "#e5e7eb"}
+                                    color={colors[part.type] || defaultColor}
                                 />
                             ))}
                         </Center>

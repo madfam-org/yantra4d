@@ -23,12 +23,12 @@ VERIFY_SCRIPT = str(Config.VERIFY_SCRIPT)
 def verify_design():
     """Run verification on rendered STL parts for the current mode."""
     data = request.json or {}
-    mode = data.get('mode', 'unit')
-
     manifest = get_manifest()
+    mode = data.get('mode', manifest.modes[0]["id"])
+
     parts = manifest.get_parts_for_mode(mode)
     if not parts:
-        parts = ["main"]
+        parts = manifest.get_parts_for_mode(manifest.modes[0]["id"]) or ["main"]
 
     results = []
     all_passed = True

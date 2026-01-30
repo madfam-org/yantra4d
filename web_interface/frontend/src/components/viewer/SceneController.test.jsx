@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // SceneController is a Three.js component that can't render in jsdom,
-// so we test the camera view logic directly.
+// so we test the camera view logic directly using manifest-driven positions.
+
+const cameraViews = [
+  { id: 'iso',   position: [50, 50, 50] },
+  { id: 'top',   position: [0, 0, 100] },
+  { id: 'front', position: [0, -100, 0] },
+  { id: 'right', position: [100, 0, 0] },
+]
 
 describe('SceneController view positions (Z-up convention)', () => {
   let camera
@@ -15,31 +22,20 @@ describe('SceneController view positions (Z-up convention)', () => {
     }
   })
 
-  // Mirror the setCameraView logic from SceneController.jsx
-  function setCameraView(view) {
-    const dist = 100
-    camera.up.set(0, 0, 1)
-    switch (view) {
-      case 'iso':
-        camera.position.set(50, 50, 50)
-        break
-      case 'top':
-        camera.position.set(0, 0, dist)
-        break
-      case 'front':
-        camera.position.set(0, -dist, 0)
-        break
-      case 'right':
-        camera.position.set(dist, 0, 0)
-        break
+  // Mirror the data-driven setCameraView logic from SceneController.jsx
+  function setCameraView(viewId) {
+    const viewConfig = cameraViews.find(v => v.id === viewId)
+    if (viewConfig) {
+      camera.up.set(0, 0, 1)
+      camera.position.set(...viewConfig.position)
     }
     camera.lookAt(0, 0, 0)
     camera.updateProjectionMatrix()
   }
 
   it('sets Z-up for all views', () => {
-    for (const view of ['iso', 'top', 'front', 'right']) {
-      setCameraView(view)
+    for (const view of cameraViews) {
+      setCameraView(view.id)
       expect(camera.up.set).toHaveBeenCalledWith(0, 0, 1)
     }
   })
@@ -65,10 +61,10 @@ describe('SceneController view positions (Z-up convention)', () => {
   })
 
   it('all views call lookAt(0,0,0) and updateProjectionMatrix', () => {
-    for (const view of ['iso', 'top', 'front', 'right']) {
+    for (const view of cameraViews) {
       camera.lookAt.mockClear()
       camera.updateProjectionMatrix.mockClear()
-      setCameraView(view)
+      setCameraView(view.id)
       expect(camera.lookAt).toHaveBeenCalledWith(0, 0, 0)
       expect(camera.updateProjectionMatrix).toHaveBeenCalled()
     }

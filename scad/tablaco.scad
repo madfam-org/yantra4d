@@ -9,6 +9,12 @@ rod_extension = 10;
 rotation_clearance = 2;  // Gap between rotating cubes (mm)
 is_library = true; // Suppress half_cube single render
 
+// --- Visibility Toggles ---
+show_bottom = true;    // Show/hide bottom half-cube units
+show_top = true;       // Show/hide top half-cube units
+show_rods = true;      // Show/hide connecting rods
+show_stoppers = true;  // Show/hide rod stoppers
+
 // --- Derived ---
 // Grid pitch = cube diagonal + clearance for free rotation
 grid_pitch = size * sqrt(2) + rotation_clearance;
@@ -35,7 +41,7 @@ module full_cube() {
     union() {
         // Part A: Right-side up
         assembly();
-        
+
         // Part B: Upside down and Rotated 90
         rotate([180, 0, 90]) assembly(flipped=true);
     }
@@ -46,11 +52,11 @@ module stopper_rail() {
     rail_W = size;
     rail_H = thick * 2;
     rail_L = total_width;
-    
+
     difference() {
         translate([(cols-1)*grid_pitch/2, 0, 0])
              cube([rail_L, rail_W, rail_H], center=true);
-             
+
         // Holes for Rods (spaced at grid_pitch)
         for (i = [0 : cols-1]) {
             translate([i*grid_pitch, 0, 0])
@@ -77,30 +83,34 @@ for (j = [0 : rows-1]) {
         translate([i*grid_pitch, 0, j*size]) {
             // Part A: Right-side up (Bottom Unit)
             if (render_mode == 0 || render_mode == 1)
-                assembly();
-            
+                if (show_bottom) assembly();
+
             // Part B: Upside down and Rotated 90 (Top Unit)
             if (render_mode == 0 || render_mode == 2)
-                rotate([180, 0, 90]) assembly(flipped=true);
+                if (show_top) rotate([180, 0, 90]) assembly(flipped=true);
         }
     }
 }
 
 // 2. Vertical Rods (Per Column)
 if (render_mode == 0 || render_mode == 3) {
-    for (i = [0 : cols-1]) {
-        translate([i*grid_pitch, 0, (rows-1)*size/2])
-            vertical_rod();
+    if (show_rods) {
+        for (i = [0 : cols-1]) {
+            translate([i*grid_pitch, 0, (rows-1)*size/2])
+                vertical_rod();
+        }
     }
 }
 
 // 3. Stoppers (Top and Bottom)
 if (render_mode == 0 || render_mode == 4) {
-    // Bottom Stopper
-    translate([0, 0, -size/2 - rail_H/2])
-        stopper_rail();
+    if (show_stoppers) {
+        // Bottom Stopper
+        translate([0, 0, -size/2 - rail_H/2])
+            stopper_rail();
 
-    // Top Stopper
-    translate([0, 0, (rows-1)*size + size/2 + rail_H/2])
-        stopper_rail();
+        // Top Stopper
+        translate([0, 0, (rows-1)*size + size/2 + rail_H/2])
+            stopper_rail();
+    }
 }

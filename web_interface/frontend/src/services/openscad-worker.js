@@ -33,7 +33,7 @@ export function isLogWorthy(line) {
     line.includes('Simple:')
 }
 
-async function handleInit() {
+async function handleInit({ scadFiles }) {
   try {
     const wrapper = await createOpenSCAD({
       noInitialRun: true,
@@ -48,7 +48,7 @@ async function handleInit() {
 
     // Fetch and write SCAD source files to the Emscripten virtual FS
     const baseUrl = self.location.origin + (import.meta.env?.BASE_URL || '/')
-    const files = ['half_cube.scad', 'assembly.scad', 'tablaco.scad']
+    const files = scadFiles || []
     for (const name of files) {
       const response = await fetch(`${baseUrl}scad/${name}`)
       if (!response.ok) throw new Error(`Failed to fetch ${name}: ${response.status}`)
@@ -107,6 +107,6 @@ function handleRender({ scadFile, params, renderMode }) {
 
 self.onmessage = (e) => {
   const { type } = e.data
-  if (type === 'init') handleInit()
+  if (type === 'init') handleInit(e.data)
   else if (type === 'render') handleRender(e.data)
 }

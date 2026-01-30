@@ -9,7 +9,7 @@
     1.  **Unit Mode**: Visualize and verify a single `half_cube` unit. Adjust Size, Thickness, Rod Diameter, and Primitive Visibility.
     2.  **Assembly Mode**: Preview how two half-cubes fit together (bottom + top parts).
     3.  **Grid Mode**: Generate a full `tablaco` grid assembly. Adjust Rows, Columns, and Rod Extension.
-- **Data-Driven UI**: All modes, parameters, parts, and labels are declared in a [project manifest](./manifest.md) (`scad/project.json`). No hardcoded control definitions in the frontend.
+- **Data-Driven UI**: All modes, parameters, parts, camera views, parameter group labels, viewer defaults, and estimation constants are declared in a [project manifest](./manifest.md) (`scad/project.json`). No hardcoded control definitions, camera positions, or UI labels in the frontend.
 - **Interactive 3D Viewer**: Real-time rendering of generated STL files with loading progress. Uses Z-up axis convention (matching OpenSCAD) with an orientation gizmo widget.
 - **One-Click Verification**: Run the `verify_design.py` suite directly from the UI.
 - **Live Parameter Controls**: Sliders and toggles update the model dynamically (debounced auto-render).
@@ -17,7 +17,7 @@
 - **Bilingual UI**: English and Spanish (Spanish is default). Parameter labels and tooltips come from the manifest; UI chrome strings come from `LanguageProvider`.
 - **Export Capabilities**:
     - **Download STL**: Save the current model as an STL file (or ZIP for multi-part modes).
-    - **Export Images**: Capture screenshots from predefined camera angles (Isometric, Top, Front, Right).
+    - **Export Images**: Capture screenshots from manifest-defined camera angles (default: Isometric, Top, Front, Right).
 - **Keyboard Shortcuts**: `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel.
 
 ---
@@ -169,7 +169,7 @@ src/
 │   ├── Controls.jsx               # Data-driven parameter + color controls
 │   ├── Viewer.jsx                 # Three.js 3D viewer (STLLoader, Z-up)
 │   ├── viewer/
-│   │   ├── SceneController.jsx    # Camera view switching (iso/top/front/right)
+│   │   ├── SceneController.jsx    # Camera view switching (data-driven from manifest)
 │   │   └── NumberedAxes.jsx       # Labeled XYZ axis lines with tick marks
 │   ├── ConfirmRenderDialog.jsx    # Long-render confirmation dialog
 │   ├── ErrorBoundary.jsx          # React error boundary
@@ -186,21 +186,21 @@ src/
 
 ```
 <ThemeProvider>
-  <ManifestProvider>        ← fetches manifest, provides useManifest()
-    <LanguageProvider>      ← UI chrome translations (btn, log, view, phase, etc.)
+  <ManifestProvider>                    ← fetches manifest, provides useManifest()
+    <ManifestAwareLanguageProvider>     ← derives storageKey from projectSlug
       <App />
-    </LanguageProvider>
+    </ManifestAwareLanguageProvider>
   </ManifestProvider>
 </ThemeProvider>
 ```
 
 #### Key Components
 
-- **`ManifestProvider.jsx`**: Fetches `/api/manifest` on mount. On failure, falls back to the bundled `fallback-manifest.json`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `projectSlug`.
+- **`ManifestProvider.jsx`**: Fetches `/api/manifest` on mount. On failure, falls back to the bundled `fallback-manifest.json`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`.
 - **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values.
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains only UI chrome translations (buttons, log messages, phases, view labels). All parameter labels, tooltips, tab names, and color labels come from the manifest.
-- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `#e5e7eb`. No project-specific logic. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
+- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
 
 ---
 

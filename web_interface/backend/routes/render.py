@@ -35,9 +35,9 @@ def _resolve_render_context(data):
         parts = manifest.get_parts_for_mode(mode_id)
     else:
         if not scad_filename:
-            scad_filename = 'half_cube.scad'
+            scad_filename = manifest.modes[0]["scad_file"]
         parts_map = manifest.get_parts_map()
-        parts = parts_map.get(scad_filename, ["main"])
+        parts = parts_map.get(scad_filename, manifest.modes[0]["parts"])
 
     allowed = manifest.get_allowed_files()
     if scad_filename not in allowed:

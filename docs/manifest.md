@@ -30,7 +30,8 @@ The project manifest (`scad/project.json`) is the single source of truth for mod
       "parts": ["main"],                    // Part IDs rendered in this mode
       "estimate": {
         "base_units": 1,                    // Fixed unit count, or "rows*cols"
-        "formula": "constant"               // "constant" or "grid"
+        "formula": "constant",              // "constant" or "grid"
+        "formula_vars": ["rows", "cols"]    // Optional: param names multiplied to compute units
       }
     }
     // ... more modes
@@ -61,11 +62,34 @@ The project manifest (`scad/project.json`) is the single source of truth for mod
     // ... more parameters
   ],
 
+  "camera_views": [
+    {
+      "id": "iso",                                    // View identifier
+      "label": { "en": "Isometric", "es": "Isométrico" },  // Button label (bilingual)
+      "position": [50, 50, 50]                        // Camera XYZ position
+    }
+    // ... more views
+  ],
+
+  "parameter_groups": [
+    {
+      "id": "visibility",                             // Group ID (matches param.group)
+      "label": { "en": "Visibility", "es": "Visibilidad" }  // Section header label
+    }
+    // ... more groups
+  ],
+
+  "viewer": {
+    "default_color": "#e5e7eb"                        // Fallback mesh color
+  },
+
   "estimate_constants": {
     "base_time": 5,       // Base seconds for any render
     "per_unit": 1.5,      // Added per unit (grid cell or fixed count)
     "fn_factor": 64,      // OpenSCAD $fn resolution factor
-    "per_part": 8         // Added per part in the mode
+    "per_part": 8,        // Added per part in the mode
+    "wasm_multiplier": 3, // Multiplier applied to estimates in WASM mode
+    "warning_threshold_seconds": 60  // Show confirmation dialog above this estimate
   }
 }
 ```
@@ -107,6 +131,10 @@ The `useManifest()` hook provides:
 | `getDefaultParams()` | `{param_id: default_value}` for all parameters |
 | `getDefaultColors()` | `{part_id: default_color}` for all parts |
 | `getLabel(obj, key, lang)` | Resolve bilingual label from an object |
+| `getCameraViews()` | Array of `{id, label, position}` camera view configs |
+| `getGroupLabel(groupId, lang)` | Translated label for a parameter group section |
+| `getViewerConfig()` | Viewer settings (e.g., `default_color`) |
+| `getEstimateConstants()` | Estimate constants including `wasm_multiplier`, `warning_threshold_seconds` |
 
 ---
 
@@ -115,13 +143,18 @@ The `useManifest()` hook provides:
 Each mode declares an `estimate` block:
 
 - **`formula: "constant"`**: Uses `base_units` directly (e.g., `1` for unit, `2` for assembly).
-- **`formula: "grid"`**: Computes `rows * cols` from the request parameters.
+- **`formula_vars`** (preferred): When present, the unit count is computed as the product of the named parameter values. For example, `"formula_vars": ["rows", "cols"]` computes `rows × cols`.
+- **Legacy `formula: "grid"`**: Equivalent to `formula_vars: ["rows", "cols"]`. Supported for backward compatibility.
 
 The total estimated time is:
 
 ```
 estimated_seconds = base_time + (num_units × per_unit) + (num_parts × per_part)
 ```
+
+In WASM mode, this estimate is multiplied by `wasm_multiplier` (default: 3).
+
+If the estimate exceeds `warning_threshold_seconds` (default: 60), a confirmation dialog is shown before rendering.
 
 ---
 

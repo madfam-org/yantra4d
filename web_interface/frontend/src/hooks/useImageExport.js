@@ -4,7 +4,7 @@ import { downloadDataUrl, downloadZipFromData } from '../lib/downloadUtils'
 /**
  * Hook for exporting viewer snapshots as PNG images.
  */
-export function useImageExport({ viewerRef, projectSlug, mode, parts, setLogs, t }) {
+export function useImageExport({ viewerRef, projectSlug, mode, parts, setLogs, t, cameraViews }) {
   const handleExportImage = useCallback((view) => {
     if (!viewerRef.current) return
     viewerRef.current.setCameraView(view)
@@ -17,7 +17,7 @@ export function useImageExport({ viewerRef, projectSlug, mode, parts, setLogs, t
   const handleExportAllViews = useCallback(async () => {
     if (!viewerRef.current || parts.length === 0) return
     try {
-      const views = ['iso', 'top', 'front', 'right']
+      const views = (cameraViews || []).map(v => v.id)
       const items = []
       for (const view of views) {
         viewerRef.current.setCameraView(view)
@@ -33,7 +33,7 @@ export function useImageExport({ viewerRef, projectSlug, mode, parts, setLogs, t
       console.error('Export all views failed:', e)
       setLogs(prev => prev + `\n${t("log.error")}` + e.message)
     }
-  }, [viewerRef, projectSlug, mode, parts, setLogs, t])
+  }, [viewerRef, projectSlug, mode, parts, setLogs, t, cameraViews])
 
   return { handleExportImage, handleExportAllViews }
 }

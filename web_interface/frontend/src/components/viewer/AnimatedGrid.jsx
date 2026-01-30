@@ -1,9 +1,21 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
+import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { Edges } from '@react-three/drei'
 import { fetchAssemblyGeometries } from '../../services/assemblyFetcher'
 
-const ROTATION_SPEED = 4.0 // radians per second (π/2 in ~0.4s)
+function getCombinedCenter(geometries) {
+  const box = new THREE.Box3()
+  for (const { geometry } of geometries) {
+    geometry.computeBoundingBox()
+    box.union(geometry.boundingBox)
+  }
+  const center = new THREE.Vector3()
+  box.getCenter(center)
+  return center
+}
+
+const ROTATION_SPEED = Math.PI / 2 // π/2 rad/s → 1 full 90° turn per second
 const PAUSE_DURATION = 0.3 // seconds between rotations
 
 function AnimatedGrid({ params, colors, wireframe, onReady }) {
@@ -14,6 +26,7 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
   const defaultColor = '#e5e7eb'
 
   const [geometries, setGeometries] = useState(null)
+  const [geoCenter, setGeoCenter] = useState(null)
   const [error, setError] = useState(null)
 
   // Per-cube animation state: { currentAngle, targetAngle }
@@ -39,6 +52,7 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
       .then(geos => {
         if (!cancelled) {
           setGeometries(geos)
+          setGeoCenter(getCombinedCenter(geos))
           onReady?.()
         }
       })
@@ -89,7 +103,11 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
     }
   })
 
-  if (error || !geometries) return null
+  if (error || !geometries || !geoCenter) return null
+
+  const cx = geoCenter.x
+  const cy = geoCenter.y
+  const cz = geoCenter.z
 
   // Build grid of cubes
   const cubes = []
@@ -99,9 +117,9 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
       const x = c * gridPitch
       const y = r * gridPitch
       cubes.push(
-        <group key={idx} position={[x + size / 2, y + size / 2, 0]}>
+        <group key={idx} position={[x + cx, y + cy, cz]}>
           <group ref={groupRefs[idx]}>
-          <group position={[-size / 2, -size / 2, 0]}>
+          <group position={[-cx, -cy, -cz]}>
             {geometries.map(({ type, geometry }) => (
               <mesh key={type} geometry={geometry.clone()}>
                 <meshStandardMaterial

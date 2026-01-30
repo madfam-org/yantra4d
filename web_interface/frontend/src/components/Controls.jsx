@@ -26,8 +26,10 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
 
     const labelId = `param-label-${param.id}`
 
+    const isDisabled = !!param.disabled
+
     return (
-        <div className="space-y-2">
+        <div className={`space-y-2 ${isDisabled ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="flex justify-between items-center">
                 <Tooltip content={getLabel(param, 'tooltip', language)}>
                     <Label id={labelId} className="flex items-center gap-2 cursor-help">

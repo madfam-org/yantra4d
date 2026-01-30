@@ -1,6 +1,6 @@
-import React, { Suspense, useState, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
+import React, { Suspense, useState, useEffect, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
-import { OrbitControls, Center, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
+import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useTheme } from "../contexts/ThemeProvider"
@@ -8,6 +8,7 @@ import { useManifest } from "../contexts/ManifestProvider"
 import { ErrorBoundary } from './ErrorBoundary'
 import SceneController from './viewer/SceneController'
 import NumberedAxes from './viewer/NumberedAxes'
+import AnimatedGrid from './viewer/AnimatedGrid'
 
 const Model = ({ url, color, wireframe }) => {
     const geom = useLoader(STLLoader, url)
@@ -45,7 +46,7 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     )
 })
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, progressPhase }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, progressPhase, animating, setAnimating, mode, params }, ref) => {
     const { language } = useLanguage()
     const { t } = useLanguage()
     const { theme } = useTheme()
@@ -55,6 +56,12 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
     const defaultColor = viewerConfig.default_color || "#e5e7eb"
     const [showAxes, setShowAxes] = useState(true)
     const [activeView, setActiveView] = useState('iso')
+    const [animReady, setAnimReady] = useState(false)
+
+    // Reset animReady when animation is toggled off or mode changes
+    useEffect(() => {
+        if (!animating) setAnimReady(false) // eslint-disable-line react-hooks/set-state-in-effect
+    }, [animating, mode])
     const sceneRef = React.useRef()
 
     useImperativeHandle(ref, () => ({
@@ -77,6 +84,17 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
         <div className="relative h-full w-full">
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
+            {animating && mode === 'grid' && !animReady && (
+                <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
+                    <div className="flex flex-col items-center gap-2 rounded-lg bg-background backdrop-blur-sm px-6 py-4 opacity-90">
+                        <div className="text-sm font-medium">{t("anim.preparing")}</div>
+                        <div className="h-1.5 w-32 overflow-hidden rounded-full bg-secondary">
+                            <div className="h-full w-full bg-primary animate-pulse rounded-full" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <button
                 onClick={() => setShowAxes(s => !s)}
                 className="absolute top-2 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-xs font-bold hover:bg-background/90 backdrop-blur-sm"
@@ -84,6 +102,16 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
             >
                 {showAxes ? "⊞" : "⊟"}
             </button>
+
+            {mode === 'grid' && (
+                <button
+                    onClick={() => setAnimating(a => !a)}
+                    className="absolute top-16 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-lg hover:bg-background/90 backdrop-blur-sm"
+                    title={animating ? "Pause animation" : "Play animation"}
+                >
+                    {animating ? "⏸" : "▶"}
+                </button>
+            )}
 
             <div className="absolute top-2 right-2 z-10 flex gap-1 rounded bg-background/70 border border-border p-0.5 backdrop-blur-sm">
                 {cameraViews.map(view => (
@@ -127,8 +155,9 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
 
                 <Suspense fallback={null}>
                     <Bounds fit clip observe margin={1.2}>
-                        <Center bottom>
-                            {parts.map((part) => (
+                        {/* Rods & stoppers — always visible */}
+                        <group>
+                            {parts.filter(p => p.type === 'rods' || p.type === 'stoppers').map((part) => (
                                 <Model
                                     key={part.type}
                                     url={part.url}
@@ -136,7 +165,29 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                                     wireframe={wireframe}
                                 />
                             ))}
-                        </Center>
+                        </group>
+                        {/* Bottom & top — hidden when animated grid is active */}
+                        <group visible={!(animating && mode === 'grid' && animReady)}>
+                            {parts.filter(p => p.type !== 'rods' && p.type !== 'stoppers').map((part) => (
+                                <Model
+                                    key={part.type}
+                                    url={part.url}
+                                    color={colors[part.type] || defaultColor}
+                                    wireframe={wireframe}
+                                />
+                            ))}
+                        </group>
+                        {/* Animated grid — mounted when animating, visible once ready */}
+                        {animating && mode === 'grid' && (
+                            <group visible={animReady}>
+                                <AnimatedGrid
+                                    params={params}
+                                    colors={colors}
+                                    wireframe={wireframe}
+                                    onReady={() => setAnimReady(true)}
+                                />
+                            </group>
+                        )}
                     </Bounds>
                 </Suspense>
             </Canvas>

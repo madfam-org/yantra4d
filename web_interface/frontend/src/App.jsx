@@ -64,6 +64,7 @@ function App() {
   const [activePresetId, setActivePresetId] = useState(() => initialHash.preset?.id || presets[0]?.id || null)
   const [gridPresetId, setGridPresetId] = useState('rendering')
   const [wireframe, setWireframe] = useState(false)
+  const [animating, setAnimating] = useState(false)
 
   // Set initial hash if missing or invalid
   useEffect(() => {
@@ -92,11 +93,19 @@ function App() {
   // Wrap setMode to also update hash
   const setMode = useCallback((newMode) => {
     setModeState(newMode)
+    setAnimating(false)
+    if (newMode === 'grid') {
+      const renderingValues = manifest.grid_presets?.rendering?.values
+      if (renderingValues) {
+        setParams(prev => ({ ...prev, ...renderingValues }))
+        setGridPresetId('rendering')
+      }
+    }
     const presetId = activePresetId || presets[0]?.id
     if (presetId) {
       window.location.hash = buildHash(presetId, newMode)
     }
-  }, [activePresetId, presets])
+  }, [activePresetId, presets, manifest])
 
   const viewerRef = useRef(null)
   const consoleRef = useRef(null)
@@ -357,7 +366,7 @@ function App() {
         {/* Main View */}
         <div className="flex-1 relative flex flex-col min-h-0">
           <div className="flex-1 relative min-h-0">
-            <Viewer ref={viewerRef} parts={parts} colors={colors} wireframe={wireframe} loading={loading} progress={progress} progressPhase={progressPhase} />
+            <Viewer ref={viewerRef} parts={parts} colors={colors} wireframe={wireframe} loading={loading} progress={progress} progressPhase={progressPhase} animating={animating} setAnimating={setAnimating} mode={mode} params={params} />
           </div>
 
           {/* Console */}

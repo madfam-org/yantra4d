@@ -52,7 +52,7 @@ if (render_mode == 0 || render_mode == 1)
 
 // Part B: Upside down and Rotated 90 (Top Unit)
 if (render_mode == 0 || render_mode == 2)
-    if (show_top) rotate([180, 0, 90]) assembly(flipped=true,
+    if (show_top) translate([0, 0, size]) rotate([180, 0, 90]) assembly(flipped=true,
         v_base=show_top_base, v_walls=show_top_walls,
         v_mech=show_top_mech, v_letter=show_top_letter,
         v_wall_left=show_top_wall_left, v_wall_right=show_top_wall_right,

@@ -46,7 +46,7 @@ snap_sink       = 0.1;                              // Head sunk into shaft for 
 
 // Derived
 cyl_R = size * 0.15 + rod_D/2 + clearance + 1;  // Parametric: derived from size and rod
-cyl_H = size/2 - thick - fit_clear;
+cyl_H = size - thick - fit_clear;
 
 // Weld cube size for mesh integrity at internal junctions
 weld = 0.4;
@@ -65,7 +65,7 @@ module assembly(
             // 1. Base Plate
             if (v_base)
                 translate([0, 0, -size/2 + thick/2])
-                    base_plate();
+                    base_plate(flipped=flipped);
 
             // 2. Side Walls with full mitered edges (top + front/back)
             if (v_walls && v_wall_left)
@@ -103,40 +103,52 @@ module assembly(
 }
 
 // --- Base Plate ---
-// Full width/depth, matching wall footprint for flush assembled faces
-module base_plate() {
-    cube([size - 2*fit_clear, size - 2*fit_clear, thick], center=true);
+// Full width/depth with quarter-circle perforations for opposing mechanism pass-through
+module base_plate(flipped=false) {
+    perf_R = cyl_R + fit_clear;
+    // Bottom half (flipped=false): opposing pillars are at Q2/Q4 (angles 90, 270)
+    // Top half (flipped=true): opposing pillars are at Q1/Q3 (angles 0, 180)
+    perf_base = flipped ? 0 : 90;
+
+    difference() {
+        cube([size - 2*fit_clear, size - 2*fit_clear, thick], center=true);
+
+        // Quarter-circle perforations for opposing mechanism
+        for (angle = [perf_base, perf_base + 180])
+            rotate([0, 0, angle])
+                linear_extrude(thick + 1, center=true)
+                    intersection() {
+                        circle(r = perf_R, $fn = 64);
+                        polygon([[0,0], [size,0], [0,size]]);
+                    };
+    }
 }
 
 // --- Mitered Wall ---
-// Wall spans from base to midpoint with 45° chamfer on top AND front/back edges
+// Full-height wall from -size/2 to +size/2-fit_clear with 45° miters on top and front/back
 module mitered_wall() {
     wall_length = size - 2*fit_clear;  // Y dimension
-    wall_half_z = size/2;              // Total Z span from -size/2 to 0
 
-    // Wall height: from base bottom (-size/2) to top (-fit_clear)
-    // With 45° miter on top edge and front/back edges
     difference() {
-        // Main wall body
+        // Main wall body — full height
         rotate([90, 0, 0])
         linear_extrude(wall_length, center=true)
-            // Profile in XZ plane: 45° chamfer on top
             polygon([
-                [-thick/2, -size/2],             // Bottom-outer
-                [-thick/2, -fit_clear],          // Top-outer
-                [thick/2, -thick - fit_clear],   // Top-inner (45° chamfer)
-                [thick/2, -size/2]               // Bottom-inner
+                [-thick/2, -size/2],                   // Bottom-outer
+                [-thick/2, size/2 - fit_clear],        // Top-outer (full height)
+                [thick/2, size/2 - thick - fit_clear], // Top-inner (45° miter)
+                [thick/2, -size/2]                     // Bottom-inner
             ]);
 
-        // Front miter cut: 45° chamfer on front face (+Y edge)
-        translate([0, size/2 - fit_clear, -size/4])
+        // Front miter cut: full-height 45° chamfer at +Y corner
+        translate([0, size/2 - fit_clear, 0])
             rotate([45, 0, 0])
-                cube([thick + 1, thick * 1.5, thick * 1.5], center=true);
+                cube([thick + 1, thick * 1.5, size * 2], center=true);
 
-        // Back miter cut: 45° chamfer on back face (-Y edge)
-        translate([0, -(size/2 - fit_clear), -size/4])
+        // Back miter cut: full-height 45° chamfer at -Y corner
+        translate([0, -(size/2 - fit_clear), 0])
             rotate([-45, 0, 0])
-                cube([thick + 1, thick * 1.5, thick * 1.5], center=true);
+                cube([thick + 1, thick * 1.5, size * 2], center=true);
     }
 }
 
@@ -146,7 +158,7 @@ module mitered_wall() {
 module letter_geometry(flipped=is_flipped, side="left") {
     local_letter = flipped ? "F" : "V";
     flip_angle = flipped ? 180 : 0;
-    letter_z = -size/4;
+    letter_z = 0;  // Center of cube (full-height walls)
 
     if (side == "left") {
         wall_x = -size/2;

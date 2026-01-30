@@ -119,7 +119,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
 
                 <Suspense fallback={null}>
                     <Bounds fit clip observe margin={1.2}>
-                        <Center top>
+                        <Center bottom>
                             {parts.map((part) => (
                                 <Model
                                     key={part.type}

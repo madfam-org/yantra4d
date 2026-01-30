@@ -40,11 +40,13 @@ def verify_single_part(mesh_path):
     print(f"[INFO] Dimensions: {extents}")
     # XY should be ~20x20; Z varies with snap beams protruding beyond cylinder
     xy_ok = np.allclose(extents[:2], [20, 20], atol=0.5)
-    z_ok = 8 < extents[2] < 14  # loosened for snap beam protrusion
+    # Each half is now nearly full cube height (size - fit_clear)
+    approx_size = max(extents[:2])
+    z_ok = approx_size * 0.9 < extents[2] < approx_size * 1.1
     if xy_ok and z_ok:
-        print("[PASS] Dimensions within expected range (~20x20, Z 8-14)")
+        print(f"[PASS] Dimensions within expected range (~20x20, Z ~{approx_size:.0f})")
     else:
-        print(f"[FAIL] Dimensions incorrect. Expected ~[20, 20, 8-14], got {extents}")
+        print(f"[FAIL] Dimensions incorrect. Expected ~[20, 20, ~{approx_size:.0f}], got {extents}")
         failures.append("dimensions")
 
     # 4. Snap-fit feature presence (facet count)

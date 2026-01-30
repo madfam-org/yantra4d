@@ -44,7 +44,7 @@ snap_undercut   = max(0.6 * scale_factor, 0.15);   // Undercut depth on snap hea
 snap_head_len   = max(1.5 * scale_factor, 0.4);    // Length of snap head
 snap_relief_w   = max(1.5 * scale_factor, 0.3);    // Relief slot width
 snap_relief_d   = max(0.8 * scale_factor, 0.2);    // Relief slot depth into head
-snap_sink       = max(size * 0.005, 0.05);            // Head sunk into shaft for boolean union
+snap_sink       = max(size * 0.03, 0.3);               // Head sunk into shaft for boolean union (increased for robust CGAL merge)
 
 // Derived
 cyl_R_base = rod_D/2 + clearance;
@@ -106,15 +106,26 @@ module assembly(
 }
 
 // --- Base Plate ---
-// Full width/depth with quarter-circle perforations for opposing mechanism pass-through
+// Frustum floor: wider on outer (bottom) face, tapered on inner (top) face
+// Quarter-circle perforations for opposing mechanism pass-through
 module base_plate(flipped=false) {
     perf_R = cyl_R + fit_clear;
     // Bottom half (flipped=false): opposing pillars are at Q2/Q4 (angles 90, 270)
     // Top half (flipped=true): opposing pillars are at Q1/Q3 (angles 0, 180)
     perf_base = flipped ? 0 : 90;
+    taper = thick;  // 45° slope: taper equals thickness (rise = run)
+    side = size - 2*fit_clear;
 
     difference() {
-        cube([size - 2*fit_clear, size - 2*fit_clear, thick], center=true);
+        // Frustum: hull between larger outer (bottom) face and smaller inner (top) face
+        hull() {
+            // Outer face (bottom, z = -thick/2)
+            translate([0, 0, -thick/2])
+                cube([side, side, 0.01], center=true);
+            // Inner face (top, z = +thick/2), inset by taper on XY edges
+            translate([0, 0, thick/2])
+                cube([side - 2*taper, side - 2*taper, 0.01], center=true);
+        }
 
         // Quarter-circle perforations for opposing mechanism
         for (angle = [perf_base, perf_base + 180])
@@ -128,30 +139,23 @@ module base_plate(flipped=false) {
 }
 
 // --- Mitered Wall ---
-// Full-height wall from -size/2 to +size/2-fit_clear with 45° miters on top and front/back
+// Full-height wall as truncated pyramid (frustum): wider outer face, tapered inner face
+// Improves interlocking between mating half-cubes
 module mitered_wall() {
     wall_length = size - 2*fit_clear;  // Y dimension
+    taper = thick;                      // 45° slope: taper equals thickness (rise = run)
 
     difference() {
-        // Main wall body — full height
-        rotate([90, 0, 0])
-        linear_extrude(wall_length, center=true)
-            polygon([
-                [-thick/2, -size/2],                   // Bottom-outer
-                [-thick/2, size/2 - fit_clear],        // Top-outer (full height)
-                [thick/2, size/2 - thick - fit_clear], // Top-inner (45° miter)
-                [thick/2, -size/2]                     // Bottom-inner
-            ]);
+        // Frustum: hull between larger outer face and smaller inner face
+        hull() {
+            // Outer face (at x = -thick/2)
+            translate([-thick/2, 0, 0])
+                cube([0.01, wall_length, size - fit_clear], center=true);
+            // Inner face (at x = +thick/2), smaller by taper on each edge
+            translate([thick/2, 0, -taper/2])
+                cube([0.01, wall_length - 2*taper, size - fit_clear - taper], center=true);
+        }
 
-        // Front miter cut: full-height 45° chamfer at +Y corner
-        translate([0, size/2 - fit_clear, 0])
-            rotate([45, 0, 0])
-                cube([thick + 1, thick * 1.5, size * 2], center=true);
-
-        // Back miter cut: full-height 45° chamfer at -Y corner
-        translate([0, -(size/2 - fit_clear), 0])
-            rotate([-45, 0, 0])
-                cube([thick + 1, thick * 1.5, size * 2], center=true);
     }
 }
 
@@ -200,8 +204,9 @@ module mechanism_pillars(flipped=is_flipped,
             cylinder(r=cyl_R, h=base_ring_h);
 
         // 2. Weld cubes at base ring / pillar junction for mesh integrity
+        //    Placed at pillar centers (Q1=45°, Q3=225°) to avoid quadrant cut boundaries
         if (v_pillars)
-            for (angle = [0, 90, 180, 270])
+            for (angle = [45, 225])
                 rotate([0, 0, angle])
                     translate([cyl_R * 0.5, 0, base_ring_h - weld/2])
                         cube(weld, center=true);
@@ -220,27 +225,30 @@ module mechanism_pillars(flipped=is_flipped,
                 }
 
         // 4. Snap-fit cantilever beams on pillar faces
+        //    Angles inset 10° from quadrant boundaries to ensure beam roots
+        //    are fully within pillar material (Q1: 0°–90°, Q3: 180°–270°)
         if (v_snap_beams) {
-            // Pillar Q1: beam at 90° face (facing +Y)
+            // Q1 pillar: beam on +Y face (near 90° boundary)
             translate([0, 0, base_ring_h - 0.1])
-                snap_beam_at(angle=45, pillar_height=pillar_height);
+                snap_beam_at(angle=80, pillar_height=pillar_height);
 
-            // Pillar Q1: beam at 0° face (facing +X)
+            // Q1 pillar: beam on +X face (near 0° boundary)
             translate([0, 0, base_ring_h - 0.1])
-                snap_beam_at(angle=315, pillar_height=pillar_height);
+                snap_beam_at(angle=10, pillar_height=pillar_height);
 
-            // Pillar Q3: beam at 180° face (facing -X)
+            // Q3 pillar: beam on -X face (near 180° boundary)
             translate([0, 0, base_ring_h - 0.1])
-                snap_beam_at(angle=135, pillar_height=pillar_height);
+                snap_beam_at(angle=190, pillar_height=pillar_height);
 
-            // Pillar Q3: beam at 270° face (facing -Y)
+            // Q3 pillar: beam on -Y face (near 270° boundary)
             translate([0, 0, base_ring_h - 0.1])
-                snap_beam_at(angle=225, pillar_height=pillar_height);
+                snap_beam_at(angle=260, pillar_height=pillar_height);
         }
 
         // 5. Weld cubes at pillar tops for mesh integrity
+        //    Placed at pillar centers (Q1=45°, Q3=225°) to avoid cut boundaries
         if (v_snap_beams)
-            for (angle = [0, 180])
+            for (angle = [45, 225])
                 rotate([0, 0, angle])
                     translate([cyl_R * 0.4, 0, base_ring_h + pillar_height - weld/2])
                         cube(weld, center=true);

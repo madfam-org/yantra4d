@@ -98,6 +98,7 @@ function App() {
   }, [activePresetId, presets])
 
   const viewerRef = useRef(null)
+  const consoleRef = useRef(null)
 
   // --- Persistence ---
   useLocalStoragePersistence(`${projectSlug}-params`, params)
@@ -129,6 +130,13 @@ function App() {
     handleConfirmRender,
     handleCancelRender,
   } = useRender({ mode, params, manifest, t, getCacheKey })
+
+  // Auto-scroll console to bottom on new logs
+  useEffect(() => {
+    if (consoleRef.current) {
+      consoleRef.current.scrollTop = consoleRef.current.scrollHeight
+    }
+  }, [logs])
 
   // Revoke old blob URLs when parts change to prevent memory leaks
   useEffect(() => {
@@ -350,6 +358,7 @@ function App() {
 
           {/* Console */}
           <div
+            ref={consoleRef}
             className="h-32 lg:h-48 bg-muted border-t border-border p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap shrink-0"
             role="log"
             aria-live="polite"

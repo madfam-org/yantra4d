@@ -26,17 +26,76 @@ function safeParse(key, fallback) {
   }
 }
 
+function parseHash(hash, presets, modes) {
+  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+  const presetId = parts[0]
+  const modeId = parts[1]
+  const preset = presets.find(p => p.id === presetId)
+  const mode = modes.find(m => m.id === modeId)
+  return {
+    preset: preset || presets[0] || null,
+    mode: mode || modes[0],
+  }
+}
+
+function buildHash(presetId, modeId) {
+  return `#/${presetId}/${modeId}`
+}
+
 function App() {
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
-  const { manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, projectSlug } = useManifest()
+  const { manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, projectSlug, presets } = useManifest()
 
   const defaultParams = getDefaultParams()
   const defaultColors = getDefaultColors()
 
-  const [mode, setMode] = useState(() => localStorage.getItem(`${projectSlug}-mode`) || manifest.modes[0].id)
-  const [params, setParams] = useState(() => safeParse(`${projectSlug}-params`, defaultParams))
+  // Parse initial state from URL hash
+  const initialHash = parseHash(window.location.hash, presets, manifest.modes)
+  const initialPresetValues = initialHash.preset?.values || {}
+
+  const [mode, setModeState] = useState(() => initialHash.mode.id)
+  const [params, setParams] = useState(() => {
+    const stored = safeParse(`${projectSlug}-params`, defaultParams)
+    // Merge: defaults < localStorage < preset from URL
+    return { ...defaultParams, ...stored, ...initialPresetValues }
+  })
   const [colors, setColors] = useState(() => safeParse(`${projectSlug}-colors`, defaultColors))
+  const [activePresetId, setActivePresetId] = useState(() => initialHash.preset?.id || presets[0]?.id || null)
+  const [gridPresetId, setGridPresetId] = useState('rendering')
+
+  // Set initial hash if missing or invalid
+  useEffect(() => {
+    const parsed = parseHash(window.location.hash, presets, manifest.modes)
+    const presetId = parsed.preset?.id || presets[0]?.id
+    const modeId = parsed.mode.id
+    if (presetId) {
+      window.location.hash = buildHash(presetId, modeId)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Listen for browser back/forward
+  useEffect(() => {
+    const onHashChange = () => {
+      const parsed = parseHash(window.location.hash, presets, manifest.modes)
+      setModeState(parsed.mode.id)
+      if (parsed.preset) {
+        setActivePresetId(parsed.preset.id)
+        setParams(prev => ({ ...prev, ...parsed.preset.values }))
+      }
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [presets, manifest.modes])
+
+  // Wrap setMode to also update hash
+  const setMode = useCallback((newMode) => {
+    setModeState(newMode)
+    const presetId = activePresetId || presets[0]?.id
+    if (presetId) {
+      window.location.hash = buildHash(presetId, newMode)
+    }
+  }, [activePresetId, presets])
 
   const viewerRef = useRef(null)
 
@@ -82,6 +141,25 @@ function App() {
   const { handleExportImage, handleExportAllViews } = useImageExport({
     viewerRef, projectSlug, mode, parts, setLogs, t, cameraViews
   })
+
+  const handleGridPresetToggle = useCallback(() => {
+    const nextId = gridPresetId === 'rendering' ? 'manufacturing' : 'rendering'
+    setGridPresetId(nextId)
+    const gp = manifest.grid_presets?.[nextId]
+    if (gp) {
+      setParams(prev => ({ ...prev, ...gp.values }))
+    }
+  }, [gridPresetId, manifest])
+
+  const handleApplyPreset = (preset) => {
+    setParams(prev => {
+      const renderingValues = manifest.grid_presets?.rendering?.values || {}
+      return { ...prev, ...preset.values, ...renderingValues }
+    })
+    setActivePresetId(preset.id)
+    setGridPresetId('rendering')
+    window.location.hash = buildHash(preset.id, mode)
+  }
 
   const handleReset = () => {
     setParams(getDefaultParams())
@@ -212,6 +290,9 @@ function App() {
             mode={mode}
             colors={colors}
             setColors={setColors}
+            presets={presets}
+            onApplyPreset={handleApplyPreset}
+            onToggleGridPreset={handleGridPresetToggle}
           />
 
           <div className="flex-1"></div>

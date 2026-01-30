@@ -83,6 +83,7 @@ export function ManifestProvider({ children }) {
     getGroupLabel,
     getViewerConfig,
     getEstimateConstants,
+    presets: manifest.presets || [],
     projectSlug: manifest.project.slug,
   }
 

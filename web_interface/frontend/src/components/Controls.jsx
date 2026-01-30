@@ -10,6 +10,8 @@ import { Star } from 'lucide-react'
 function SliderControl({ param, value, onSliderChange, getLabel, language }) {
     const [editing, setEditing] = useState(false)
     const [editValue, setEditValue] = useState('')
+    const decimals = param.step % 1 === 0 ? 0 : (param.step.toString().split('.')[1]?.length || 0)
+    const displayValue = typeof value === 'number' ? parseFloat(value.toFixed(decimals)) : value
 
     const commitEdit = () => {
         const num = parseFloat(editValue)
@@ -46,13 +48,13 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
                 ) : (
                     <span
                         className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
-                        onClick={() => { setEditing(true); setEditValue(String(value)) }}
+                        onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
                         role="button"
                         tabIndex={0}
-                        aria-label={`${getLabel(param, 'label', language)}: ${value}. Click to edit`}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); setEditValue(String(value)) } }}
+                        aria-label={`${getLabel(param, 'label', language)}: ${displayValue}. Click to edit`}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); setEditValue(String(displayValue)) } }}
                     >
-                        {value}
+                        {displayValue}
                     </span>
                 )}
             </div>
@@ -103,9 +105,9 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
     )
 }
 
-export default function Controls({ params, setParams, mode, colors, setColors }) {
+export default function Controls({ params, setParams, mode, colors, setColors, presets = [], onApplyPreset, onToggleGridPreset }) {
     const { language } = useLanguage()
-    const { getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
+    const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
     const [visibilityLevel, setVisibilityLevel] = useState('basic')
 
     const handleSliderChange = (name, valArray) => {
@@ -141,8 +143,59 @@ export default function Controls({ params, setParams, mode, colors, setColors })
         return params[param.parent] === false
     }
 
+    const activePresetId = presets.find(p =>
+        Object.entries(p.values).every(([k, v]) => params[k] === v)
+    )?.id || null
+
     return (
         <div className="flex flex-col gap-6">
+            {/* Size Presets */}
+            {presets.length > 0 && (
+                <div className="flex gap-2">
+                    {presets.map(p => (
+                        <button
+                            key={p.id}
+                            type="button"
+                            className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                                activePresetId === p.id
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'bg-background text-muted-foreground border-border hover:text-foreground'
+                            }`}
+                            onClick={() => onApplyPreset(p)}
+                        >
+                            {getLabel(p, 'label', language)}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Grid Presets */}
+            {mode === 'grid' && manifest.grid_presets && (() => {
+                const gp = manifest.grid_presets
+                const activeGp = ['rendering', 'manufacturing'].find(id => {
+                    const v = gp[id]?.values
+                    return v && Object.entries(v).every(([k, val]) => params[k] === val)
+                }) || null
+                return (
+                    <div className="flex gap-2">
+                        {['rendering', 'manufacturing'].map(id => (
+                            <button
+                                key={id}
+                                type="button"
+                                className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                                    activeGp === id
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-background text-muted-foreground border-border hover:text-foreground'
+                                }`}
+                                onClick={() => activeGp !== id && onToggleGridPreset()}
+                            >
+                                {gp[id].emoji} {getLabel(gp[id], 'label', language)}
+                            </button>
+                        ))}
+                    </div>
+                )
+            })()}
+
             {/* Sliders */}
             {sliders.length > 0 && (
                 <div className="space-y-4">

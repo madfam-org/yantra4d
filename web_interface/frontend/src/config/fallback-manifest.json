@@ -34,13 +34,35 @@
     { "id": "rods", "render_mode": 3, "label": { "en": "Rods", "es": "Varillas" }, "default_color": "#808080" },
     { "id": "stoppers", "render_mode": 4, "label": { "en": "Stoppers", "es": "Topes" }, "default_color": "#ffd700" }
   ],
+  "presets": [
+    {
+      "id": "standard",
+      "label": { "en": "Standard (20mm)", "es": "Estándar (20mm)" },
+      "values": {
+        "size": 20, "thick": 2.5, "rod_D": 3.0,
+        "clearance": 0.2, "fit_clear": 0.2,
+        "letter_depth": 0.5, "letter_size": 6,
+        "rod_extension": 10, "rotation_clearance": 2
+      }
+    },
+    {
+      "id": "mini",
+      "label": { "en": "Mini (5mm)", "es": "Mini (5mm)" },
+      "values": {
+        "size": 5, "thick": 0.8, "rod_D": 1.5,
+        "clearance": 0.15, "fit_clear": 0.15,
+        "letter_depth": 0.2, "letter_size": 2,
+        "rod_extension": 2, "rotation_clearance": 0.5
+      }
+    }
+  ],
   "parameters": [
     {
       "id": "size",
       "type": "slider",
       "default": 20.0,
       "min": 10,
-      "max": 50,
+      "max": 30,
       "step": 0.5,
       "label": { "en": "Size (mm)", "es": "Tamaño (mm)" },
       "tooltip": { "en": "Width/height of each unit cube in millimeters", "es": "Ancho/alto de cada cubo unitario en milímetros" },
@@ -50,8 +72,8 @@
       "id": "thick",
       "type": "slider",
       "default": 2.5,
-      "min": 1,
-      "max": 10,
+      "min": 0.6,
+      "max": 4,
       "step": 0.1,
       "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
       "tooltip": { "en": "Wall thickness of the cube", "es": "Grosor de las paredes del cubo" },
@@ -61,8 +83,8 @@
       "id": "rod_D",
       "type": "slider",
       "default": 3.0,
-      "min": 2,
-      "max": 10,
+      "min": 1.0,
+      "max": 4,
       "step": 0.1,
       "label": { "en": "Rod Diameter (mm)", "es": "Diámetro Varilla (mm)" },
       "tooltip": { "en": "Diameter of connecting rods", "es": "Diámetro de las varillas de conexión" },
@@ -72,8 +94,8 @@
       "id": "clearance",
       "type": "slider",
       "default": 0.2,
-      "min": 0.0,
-      "max": 1.0,
+      "min": 0.05,
+      "max": 0.4,
       "step": 0.05,
       "label": { "en": "Rod Clearance (mm)", "es": "Holgura de Varilla (mm)" },
       "tooltip": { "en": "Radial clearance for rod bore — increase for looser fit", "es": "Holgura radial del orificio — aumentar para ajuste más holgado" },
@@ -83,8 +105,8 @@
       "id": "fit_clear",
       "type": "slider",
       "default": 0.2,
-      "min": 0.0,
-      "max": 1.0,
+      "min": 0.05,
+      "max": 0.4,
       "step": 0.05,
       "label": { "en": "Seam Clearance (mm)", "es": "Holgura de Junta (mm)" },
       "tooltip": { "en": "Gap between interlocking cube faces — increase for easier assembly", "es": "Espacio entre caras de cubos — aumentar para ensamblaje más fácil" },
@@ -436,7 +458,7 @@
       "type": "slider",
       "default": 0.5,
       "min": 0.1,
-      "max": 2.0,
+      "max": 1.0,
       "step": 0.1,
       "label": { "en": "Letter Depth (mm)", "es": "Profundidad de Letra (mm)" },
       "tooltip": { "en": "How deep letters are carved or how high they are embossed", "es": "Profundidad del tallado o altura del relieve de las letras" },
@@ -446,8 +468,8 @@
       "id": "letter_size",
       "type": "slider",
       "default": 6,
-      "min": 2,
-      "max": 15,
+      "min": 1,
+      "max": 10,
       "step": 1,
       "label": { "en": "Letter Size", "es": "Tamaño de Letra" },
       "tooltip": { "en": "Font size of embossed/carved letters on walls", "es": "Tamaño de fuente de las letras en las paredes" },
@@ -459,7 +481,7 @@
       "default": 2,
       "star": 8,
       "min": 1,
-      "max": 20,
+      "max": 15,
       "step": 1,
       "label": { "en": "Rows", "es": "Filas" },
       "tooltip": { "en": "Number of rows in the grid", "es": "Número de filas en la retícula" },
@@ -471,7 +493,7 @@
       "default": 2,
       "star": 8,
       "min": 1,
-      "max": 20,
+      "max": 15,
       "step": 1,
       "label": { "en": "Cols", "es": "Cols" },
       "tooltip": { "en": "Number of columns in the grid", "es": "Número de columnas en la retícula" },
@@ -482,7 +504,7 @@
       "type": "slider",
       "default": 10,
       "min": 0,
-      "max": 50,
+      "max": 20,
       "step": 1,
       "label": { "en": "Rod Extension (mm)", "es": "Extensión Varilla (mm)" },
       "tooltip": { "en": "Rod length protruding beyond stoppers", "es": "Longitud de varilla que sobresale de los topes" },
@@ -494,7 +516,7 @@
       "type": "slider",
       "default": 2,
       "min": 0.5,
-      "max": 5.0,
+      "max": 3.5,
       "step": 0.5,
       "label": { "en": "Rotation Gap (mm)", "es": "Espacio de Rotación (mm)" },
       "tooltip": { "en": "Gap between cubes in grid — controls free rotation space", "es": "Espacio entre cubos en la retícula — controla espacio de rotación libre" },
@@ -517,6 +539,19 @@
   ],
   "viewer": {
     "default_color": "#e5e7eb"
+  },
+  "grid_presets": {
+    "rendering": {
+      "emoji": "🪽",
+      "label": { "en": "Fast Preview", "es": "Vista Rápida" },
+      "values": { "rows": 2, "cols": 2 }
+    },
+    "manufacturing": {
+      "emoji": "⭐",
+      "label": { "en": "Manufacturing", "es": "Manufactura" },
+      "values": { "rows": 8, "cols": 8 }
+    },
+    "default": "rendering"
   },
   "estimate_constants": {
     "base_time": 5,

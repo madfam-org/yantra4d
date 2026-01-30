@@ -446,6 +446,24 @@
       "visible_in_modes": ["grid"]
     },
     {
+      "id": "letter_bottom",
+      "type": "text",
+      "default": "V",
+      "maxlength": 1,
+      "label": { "en": "Bottom Letter", "es": "Letra Inferior" },
+      "tooltip": { "en": "Character on bottom unit faces", "es": "Carácter en caras de unidad inferior" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "letter_top",
+      "type": "text",
+      "default": "F",
+      "maxlength": 1,
+      "label": { "en": "Top Letter", "es": "Letra Superior" },
+      "tooltip": { "en": "Character on top unit faces", "es": "Carácter en caras de unidad superior" },
+      "visible_in_modes": ["assembly", "grid"]
+    },
+    {
       "id": "letter_emboss",
       "type": "checkbox",
       "default": false,

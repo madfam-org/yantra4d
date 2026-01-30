@@ -28,7 +28,9 @@ show_mech_snap_beams = true;
 is_flipped = false;        // true = top unit (rotated mechanism, inverted letter)
 
 // --- Letter Parameters ---
-letter = is_flipped ? "F" : "V";
+letter_bottom = "V";
+letter_top = "F";
+letter = is_flipped ? letter_top : letter_bottom;
 letter_emboss = false;     // true = raised, false = carved
 letter_depth = 0.5;
 letter_size = 6;
@@ -157,7 +159,7 @@ module mitered_wall() {
 // Places letter on specified wall exterior
 // Both left and right walls get letters
 module letter_geometry(flipped=is_flipped, side="left") {
-    local_letter = flipped ? "F" : "V";
+    local_letter = flipped ? letter_top : letter_bottom;
     flip_angle = flipped ? 180 : 0;
     letter_z = 0;  // Center of cube (full-height walls)
 

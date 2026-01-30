@@ -124,6 +124,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, p
 
     const parametersForMode = getParametersForMode(mode)
     const sliders = parametersForMode.filter(p => p.type === 'slider')
+    const textInputs = parametersForMode.filter(p => p.type === 'text')
     const checkboxes = parametersForMode.filter(p => p.type === 'checkbox')
     const visibilityCheckboxes = checkboxes.filter(p => p.group === 'visibility')
     const otherCheckboxes = checkboxes.filter(p => !p.group)
@@ -195,6 +196,26 @@ export default function Controls({ params, setParams, mode, colors, setColors, p
                     </div>
                 )
             })()}
+
+            {/* Text Inputs */}
+            {textInputs.length > 0 && (
+                <div className="space-y-4">
+                    {textInputs.map(param => (
+                        <div key={param.id} className="space-y-1">
+                            <Tooltip content={getLabel(param, 'tooltip', language)}>
+                                <Label className="cursor-help">{getLabel(param, 'label', language)}</Label>
+                            </Tooltip>
+                            <input
+                                type="text"
+                                maxLength={param.maxlength || 1}
+                                className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background"
+                                value={params[param.id] ?? ''}
+                                onChange={(e) => setParams(prev => ({ ...prev, [param.id]: e.target.value }))}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Sliders */}
             {sliders.length > 0 && (

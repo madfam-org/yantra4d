@@ -7,6 +7,10 @@ include <half_cube.scad>
 
 render_mode = 0; // Part selector (see project.json manifest): 0=all, 1=bottom, 2=top
 
+// --- Letter Parameters ---
+letter_bottom = "V";
+letter_top = "F";
+
 // --- Visibility Toggles ---
 show_bottom = true;  // Show/hide bottom half-cube unit
 show_top = true;     // Show/hide top half-cube unit

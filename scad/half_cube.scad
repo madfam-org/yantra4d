@@ -42,14 +42,15 @@ snap_undercut   = max(0.6 * scale_factor, 0.15);   // Undercut depth on snap hea
 snap_head_len   = max(1.5 * scale_factor, 0.4);    // Length of snap head
 snap_relief_w   = max(1.5 * scale_factor, 0.3);    // Relief slot width
 snap_relief_d   = max(0.8 * scale_factor, 0.2);    // Relief slot depth into head
-snap_sink       = 0.1;                              // Head sunk into shaft for boolean union
+snap_sink       = max(size * 0.005, 0.05);            // Head sunk into shaft for boolean union
 
 // Derived
-cyl_R = size * 0.15 + rod_D/2 + clearance + 1;  // Parametric: derived from size and rod
+cyl_R_base = rod_D/2 + clearance;
+cyl_R = cyl_R_base + (size/2 - thick - cyl_R_base) * 0.7;  // Adaptive to available space
 cyl_H = size - thick - fit_clear;
 
 // Weld cube size for mesh integrity at internal junctions
-weld = 0.4;
+weld = max(size * 0.02, 0.15);
 
 // --- Main Assembly ---
 module assembly(
@@ -185,7 +186,7 @@ module letter_geometry(flipped=is_flipped, side="left") {
 module mechanism_pillars(flipped=is_flipped,
     v_base_ring=true, v_pillars=true, v_snap_beams=true
 ) {
-    base_ring_h = thick + 0.1;
+    base_ring_h = thick + max(size * 0.005, 0.05);
     pillar_height = cyl_H;
 
     mech_rotation = flipped ? 90 : 0;

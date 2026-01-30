@@ -9,7 +9,7 @@ from flask import Blueprint, request, jsonify
 
 from config import Config
 from manifest import get_manifest
-from services.route_helpers import safe_join_path, error_response
+from services.route_helpers import safe_join_path
 
 logger = logging.getLogger(__name__)
 

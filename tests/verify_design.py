@@ -29,9 +29,8 @@ def verify_single_part(mesh_path):
     if len(bodies) == 1:
         print("[PASS] Single unified volume confirmed")
     else:
-        # Sometimes text adds bodies if floating
-        # Or internal voids from relief slots
-        print(f"[WARN] Multiple bodies found ({len(bodies)}). Checking volumes...")
+        print(f"[FAIL] Multiple bodies found ({len(bodies)}). Single body required for FDM.")
+        failures.append("body_count")
         for i, b in enumerate(bodies):
             print(f"  Body {i}: Volume {b.volume:.2f}")
 

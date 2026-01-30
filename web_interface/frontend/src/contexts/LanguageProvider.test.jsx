@@ -15,6 +15,17 @@ function TestConsumer() {
   )
 }
 
+function TestThemeKeys() {
+  const { t } = useLanguage()
+  return (
+    <div>
+      <span data-testid="theme-light">{t('theme.light')}</span>
+      <span data-testid="theme-dark">{t('theme.dark')}</span>
+      <span data-testid="theme-system">{t('theme.system')}</span>
+    </div>
+  )
+}
+
 describe('LanguageProvider', () => {
   beforeEach(() => localStorage.clear())
 
@@ -65,5 +76,28 @@ describe('LanguageProvider', () => {
       </LanguageProvider>
     )
     expect(screen.getByTestId('lang').textContent).toBe('en')
+  })
+
+  it('has theme translation keys in both languages', () => {
+    // English
+    const { unmount } = render(
+      <LanguageProvider defaultLanguage="en">
+        <TestThemeKeys />
+      </LanguageProvider>
+    )
+    expect(screen.getByTestId('theme-light').textContent).toBe('Theme: Light')
+    expect(screen.getByTestId('theme-dark').textContent).toBe('Theme: Dark')
+    expect(screen.getByTestId('theme-system').textContent).toBe('Theme: System')
+    unmount()
+
+    // Spanish
+    render(
+      <LanguageProvider defaultLanguage="es">
+        <TestThemeKeys />
+      </LanguageProvider>
+    )
+    expect(screen.getByTestId('theme-light').textContent).toBe('Tema: Claro')
+    expect(screen.getByTestId('theme-dark').textContent).toBe('Tema: Oscuro')
+    expect(screen.getByTestId('theme-system').textContent).toBe('Tema: Sistema')
   })
 })

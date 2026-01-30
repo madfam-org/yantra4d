@@ -198,9 +198,9 @@ src/
 #### Key Components
 
 - **`ManifestProvider.jsx`**: Fetches `/api/manifest` on mount. On failure, falls back to the bundled `fallback-manifest.json`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`.
-- **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values.
+- **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values. Accessible: sliders carry `aria-label` matching the parameter name; value displays have descriptive `aria-label` with parameter name and current value, `role="button"`, and keyboard support.
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
-- **`LanguageProvider.jsx`**: Contains only UI chrome translations (buttons, log messages, phases, view labels). All parameter labels, tooltips, tab names, and color labels come from the manifest.
+- **`LanguageProvider.jsx`**: Contains only UI chrome translations (buttons, log messages, phases, view labels, theme state labels). All parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
 
 ---

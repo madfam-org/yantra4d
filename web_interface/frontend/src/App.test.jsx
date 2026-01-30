@@ -119,4 +119,14 @@ describe('App', () => {
     const dlBtn = screen.getByText(/Download STL/i)
     expect(dlBtn).toBeDisabled()
   })
+
+  it('theme toggle shows translated tooltip', () => {
+    renderApp()
+    // renderWithProviders defaults to theme='light'
+    const themeBtn = screen.getByTitle('Theme: Light')
+    expect(themeBtn).toBeInTheDocument()
+    fireEvent.click(themeBtn)
+    // After click, theme cycles light → dark
+    expect(screen.getByTitle('Theme: Dark')).toBeInTheDocument()
+  })
 })

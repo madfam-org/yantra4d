@@ -40,6 +40,9 @@ const translations = {
         "dialog.render_warning_body": "Se estima que este renderizado tardará",
         "dialog.render_warning_note": "La aplicación puede no responder durante este tiempo.",
         "dialog.render_anyway": "Renderizar de Todos Modos",
+        "theme.light": "Tema: Claro",
+        "theme.dark": "Tema: Oscuro",
+        "theme.system": "Tema: Sistema",
     },
     en: {
         "btn.gen": "Generate",
@@ -78,6 +81,9 @@ const translations = {
         "dialog.render_warning_body": "This render is estimated to take",
         "dialog.render_warning_note": "The application may appear unresponsive during this time.",
         "dialog.render_anyway": "Render Anyway",
+        "theme.light": "Theme: Light",
+        "theme.dark": "Theme: Dark",
+        "theme.system": "Theme: System",
     }
 }
 

@@ -45,7 +45,10 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, isDef
                     <span
                         className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                         onClick={() => { setEditing(true); setEditValue(String(value)) }}
-                        title="Click to edit"
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${getLabel(param, 'label', language)}: ${value}. Click to edit`}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); setEditValue(String(value)) } }}
                     >
                         {value}
                     </span>
@@ -55,6 +58,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, isDef
                 value={[value]}
                 min={param.min} max={param.max} step={param.step}
                 onValueChange={(vals) => onSliderChange(param.id, vals)}
+                aria-label={getLabel(param, 'label', language)}
             />
             {param.description && (
                 <p className="text-xs text-muted-foreground">{getLabel(param, 'description', language)}</p>
@@ -142,7 +146,7 @@ export default function Controls({ params, setParams, mode, colors, setColors })
                             <div key={param.id} className={`flex items-center space-x-2 ${isChild ? 'ml-4' : ''}`}>
                                 <Checkbox
                                     id={param.id}
-                                    checked={params[param.id]}
+                                    checked={!!params[param.id]}
                                     onCheckedChange={(c) => handleCheckedChange(param.id, c)}
                                     disabled={disabled}
                                 />
@@ -165,7 +169,7 @@ export default function Controls({ params, setParams, mode, colors, setColors })
                 <div key={param.id} className="flex items-center space-x-2">
                     <Checkbox
                         id={param.id}
-                        checked={params[param.id]}
+                        checked={!!params[param.id]}
                         onCheckedChange={(c) => handleCheckedChange(param.id, c)}
                     />
                     <Tooltip content={getLabel(param, 'tooltip', language)}>

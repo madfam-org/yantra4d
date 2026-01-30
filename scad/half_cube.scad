@@ -167,23 +167,26 @@ module letter_geometry(flipped=is_flipped, side="left") {
     flip_angle = flipped ? 180 : 0;
     letter_z = 0;  // Center of cube (full-height walls)
 
+    // Extrusion must penetrate the full frustum wall plus margin
+    letter_extrude = letter_depth + (letter_emboss ? 0 : thick + 1);
+
     if (side == "left") {
-        wall_x = -size/2;
+        wall_x = -size/2 - 0.5;  // Start outside the wall to ensure full cut-through
         translate([wall_x, 0, letter_z])
             rotate([90, flip_angle, 90])
-                scale([flipped ? -1 : 1, 1, 1])
-                    linear_extrude(letter_depth + (letter_emboss ? 0 : thick))
+                scale([flipped ? 1 : -1, 1, 1])
+                    linear_extrude(letter_extrude)
                         text(local_letter, size=letter_size, halign="center", valign="center",
-                             font="Liberation Sans:style=Bold");
+                             font="Allerta Stencil:style=Regular");
     } else {
         // Right wall: mirror placement
-        wall_x = size/2;
+        wall_x = size/2 + 0.5;  // Start outside the wall to ensure full cut-through
         translate([wall_x, 0, letter_z])
             rotate([90, flip_angle, -90])
-                scale([flipped ? -1 : 1, 1, 1])
-                    linear_extrude(letter_depth + (letter_emboss ? 0 : thick))
+                scale([flipped ? 1 : -1, 1, 1])
+                    linear_extrude(letter_extrude)
                         text(local_letter, size=letter_size, halign="center", valign="center",
-                             font="Liberation Sans:style=Bold");
+                             font="Allerta Stencil:style=Regular");
     }
 }
 

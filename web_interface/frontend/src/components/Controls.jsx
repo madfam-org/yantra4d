@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Switch } from "@/components/ui/switch"
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useManifest } from "../contexts/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
@@ -105,7 +106,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
     )
 }
 
-export default function Controls({ params, setParams, mode, colors, setColors, presets = [], onApplyPreset, onToggleGridPreset }) {
+export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, presets = [], onApplyPreset, onToggleGridPreset }) {
     const { language } = useLanguage()
     const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
     const [visibilityLevel, setVisibilityLevel] = useState('basic')
@@ -293,6 +294,16 @@ export default function Controls({ params, setParams, mode, colors, setColors, p
             {partColors.length > 0 && (
                 <div className="space-y-4 border-t border-border pt-4">
                     <Label className="text-base font-semibold">{getGroupLabel('colors', language)}</Label>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="wireframe-toggle" className="text-sm">
+                            {language === 'es' ? 'Estructura' : 'Wireframe'}
+                        </Label>
+                        <Switch
+                            id="wireframe-toggle"
+                            checked={wireframe}
+                            onCheckedChange={setWireframe}
+                        />
+                    </div>
                     <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                         {partColors.map((part) => (
                             <div key={part.id} className="flex flex-col gap-1">

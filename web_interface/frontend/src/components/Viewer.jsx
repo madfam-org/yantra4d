@@ -9,14 +9,17 @@ import { ErrorBoundary } from './ErrorBoundary'
 import SceneController from './viewer/SceneController'
 import NumberedAxes from './viewer/NumberedAxes'
 
-const Model = ({ url, color }) => {
+const Model = ({ url, color, wireframe }) => {
     const geom = useLoader(STLLoader, url)
     return (
         <mesh geometry={geom}>
             <meshStandardMaterial
+                key={wireframe ? 'wf' : 'solid'}
                 color={color}
                 roughness={0.5}
                 metalness={0.1}
+                transparent={wireframe}
+                opacity={wireframe ? 0.08 : 1}
             />
             <Edges threshold={15} color="#374151" />
         </mesh>
@@ -42,7 +45,7 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     )
 })
 
-const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhase }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, progressPhase }, ref) => {
     const { language } = useLanguage()
     const { t } = useLanguage()
     const { theme } = useTheme()
@@ -130,6 +133,7 @@ const Viewer = forwardRef(({ parts = [], colors, loading, progress, progressPhas
                                     key={part.type}
                                     url={part.url}
                                     color={colors[part.type] || defaultColor}
+                                    wireframe={wireframe}
                                 />
                             ))}
                         </Center>

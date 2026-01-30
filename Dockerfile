@@ -9,6 +9,10 @@ RUN apt-get update && \
   fontconfig && \
   rm -rf /var/lib/apt/lists/*
 
+# Install custom fonts (Allerta Stencil for letter engravings)
+COPY scad/fonts/*.ttf /usr/share/fonts/truetype/custom/
+RUN fc-cache -fv
+
 # Set working directory
 WORKDIR /app
 

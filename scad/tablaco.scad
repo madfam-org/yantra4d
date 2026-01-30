@@ -9,6 +9,10 @@ rod_extension = 10;
 rotation_clearance = 2;  // Gap between rotating cubes (mm)
 is_library = true; // Suppress half_cube single render
 
+// --- Letter Parameters ---
+letter_bottom = "V";
+letter_top = "F";
+
 // --- Visibility Toggles ---
 show_bottom = true;    // Show/hide bottom half-cube units
 show_top = true;       // Show/hide top half-cube units

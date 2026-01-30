@@ -81,6 +81,15 @@ def validate_params(params: dict) -> dict:
             if max_val is not None and num_val > float(max_val):
                 num_val = float(max_val)
             cleaned[key] = num_val
+        elif param_type == "text":
+            str_val = str(value)
+            if not re.match(r'^[a-zA-Z0-9 _.!?-]*$', str_val):
+                logger.warning(f"Rejecting unsafe text value for {key}: {value}")
+                continue
+            maxlen = defn.get("maxlength")
+            if maxlen and len(str_val) > maxlen:
+                str_val = str_val[:maxlen]
+            cleaned[key] = str_val
         elif param_type == "checkbox":
             if isinstance(value, bool):
                 cleaned[key] = value
@@ -110,6 +119,8 @@ def build_openscad_command(output_path: str, scad_path: str, params: dict, mode_
             val_str = str(value).lower()
         elif isinstance(value, (int, float)):
             val_str = str(value)
+        elif isinstance(value, str):
+            val_str = f'"{value}"'
         else:
             str_val = str(value)
             if re.match(r'^[a-zA-Z0-9_]+$', str_val):

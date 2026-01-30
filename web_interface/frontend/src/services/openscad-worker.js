@@ -101,6 +101,8 @@ async function handleRender({ scadFile, params, renderMode }) {
     for (const [key, value] of Object.entries(params)) {
       if (typeof value === 'boolean') {
         args.push('-D', `${key}=${value ? 'true' : 'false'}`)
+      } else if (typeof value === 'string') {
+        args.push('-D', `${key}="${value}"`)
       } else {
         args.push('-D', `${key}=${value}`)
       }

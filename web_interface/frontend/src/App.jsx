@@ -62,7 +62,7 @@ function App() {
     loading,
     progress,
     progressPhase,
-    partsCache,
+    checkCache,
     showConfirmDialog,
     pendingEstimate,
     handleGenerate,
@@ -70,6 +70,13 @@ function App() {
     handleConfirmRender,
     handleCancelRender,
   } = useRender({ mode, params, manifest, t, getCacheKey })
+
+  // Revoke old blob URLs when parts change to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      parts.forEach(p => { if (p.url?.startsWith('blob:')) URL.revokeObjectURL(p.url) })
+    }
+  }, [parts])
 
   const cameraViews = getCameraViews()
   const { handleExportImage, handleExportAllViews } = useImageExport({
@@ -125,15 +132,16 @@ function App() {
     }
 
     const cacheKey = getCacheKey(mode, params)
-    if (partsCache[cacheKey]) {
-      setParts(partsCache[cacheKey])
+    const cached = checkCache(cacheKey)
+    if (cached) {
+      setParts(cached)
       return
     }
     const timer = setTimeout(() => {
       handleGenerate()
     }, 500)
     return () => clearTimeout(timer)
-  }, [params, mode, getCacheKey, partsCache, manifest])
+  }, [params, mode, getCacheKey, manifest])
 
   // --- Keyboard shortcuts (dynamic Cmd+1..N for modes) ---
   useEffect(() => {
@@ -191,7 +199,7 @@ function App() {
           <Tabs value={mode} onValueChange={setMode} className="w-full relative z-10">
             <TabsList className="grid w-full grid-cols-3">
               {manifest.modes.map(m => (
-                <TabsTrigger key={m.id} value={m.id}>
+                <TabsTrigger key={m.id} value={m.id} className="min-h-[44px]">
                   {getLabel(m, 'label', language)}
                 </TabsTrigger>
               ))}

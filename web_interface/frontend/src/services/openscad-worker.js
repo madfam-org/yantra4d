@@ -11,12 +11,17 @@
  *   { type: 'progress', percent, phase, line }
  *   { type: 'result', stl: Uint8Array }   (transferred)
  *   { type: 'error', message }
+ *
+ * NOTE: Emscripten's callMain() corrupts internal state after the first call,
+ * so we create a fresh WASM instance for every render. SCAD file contents are
+ * cached in memory so re-initialization is fast (no re-fetch).
  */
 
 import { createOpenSCAD } from 'openscad-wasm'
 
-let openscadInstance = null
-let scadFilesLoaded = false
+/** Cached SCAD file contents: Map<filename, string> */
+let scadFileCache = new Map()
+let initialized = false
 
 export function detectPhase(line) {
   if (line.includes('Compiling')) return 'compiling'
@@ -33,44 +38,62 @@ export function isLogWorthy(line) {
     line.includes('Simple:')
 }
 
+/**
+ * Create a fresh OpenSCAD WASM instance and write cached SCAD files to its FS.
+ */
+async function createFreshInstance() {
+  const wrapper = await createOpenSCAD({
+    noInitialRun: true,
+    printErr: (text) => {
+      const phase = detectPhase(text)
+      if (phase || isLogWorthy(text)) {
+        self.postMessage({ type: 'progress', phase, line: text })
+      }
+    }
+  })
+  const instance = wrapper.getInstance()
+
+  // Write cached SCAD files to the new instance's virtual FS
+  for (const [name, content] of scadFileCache) {
+    instance.FS.writeFile(`/${name}`, content)
+  }
+
+  return instance
+}
+
 async function handleInit({ scadFiles }) {
   try {
-    const wrapper = await createOpenSCAD({
-      noInitialRun: true,
-      printErr: (text) => {
-        const phase = detectPhase(text)
-        if (phase || isLogWorthy(text)) {
-          self.postMessage({ type: 'progress', phase, line: text })
-        }
-      }
-    })
-    openscadInstance = wrapper.getInstance()
-
-    // Fetch and write SCAD source files to the Emscripten virtual FS
+    // Fetch and cache SCAD source files
     const baseUrl = self.location.origin + (import.meta.env?.BASE_URL || '/')
     const files = scadFiles || []
     for (const name of files) {
       const response = await fetch(`${baseUrl}scad/${name}`)
       if (!response.ok) throw new Error(`Failed to fetch ${name}: ${response.status}`)
       const content = await response.text()
-      openscadInstance.FS.writeFile(`/${name}`, content)
+      scadFileCache.set(name, content)
     }
-    scadFilesLoaded = true
 
+    // Verify we can create an instance (fail-fast)
+    await createFreshInstance()
+
+    initialized = true
     self.postMessage({ type: 'init-done' })
   } catch (e) {
     self.postMessage({ type: 'init-error', error: e.message })
   }
 }
 
-function handleRender({ scadFile, params, renderMode }) {
-  if (!openscadInstance || !scadFilesLoaded) {
+async function handleRender({ scadFile, params, renderMode }) {
+  if (!initialized) {
     self.postMessage({ type: 'error', message: 'OpenSCAD not initialized' })
     return
   }
 
   try {
     const outFile = '/output.stl'
+
+    // Create a fresh WASM instance for this render (avoids callMain reuse crash)
+    const instance = await createFreshInstance()
 
     // Build command-line args
     const args = [`/${scadFile}`]
@@ -89,17 +112,15 @@ function handleRender({ scadFile, params, renderMode }) {
 
     self.postMessage({ type: 'progress', percent: 10, phase: 'compiling', line: 'Starting OpenSCAD...' })
 
-    const exitCode = openscadInstance.callMain(args)
+    const exitCode = instance.callMain(args)
 
     if (exitCode !== 0) {
       self.postMessage({ type: 'error', message: `OpenSCAD exited with code ${exitCode}` })
       return
     }
 
-    const stl = openscadInstance.FS.readFile(outFile, { encoding: 'binary' })
+    const stl = instance.FS.readFile(outFile, { encoding: 'binary' })
     self.postMessage({ type: 'result', stl }, [stl.buffer])
-
-    try { openscadInstance.FS.unlink(outFile) } catch { /* cleanup */ }
   } catch (e) {
     self.postMessage({ type: 'error', message: e.message || String(e) })
   }

@@ -15,7 +15,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
   const [pendingEstimate, setPendingEstimate] = useState(0)
   const [pendingPayload, setPendingPayload] = useState(null)
 
-  const [partsCache, setPartsCache] = useState({})
+  const partsCacheRef = useRef({})
 
   const abortControllerRef = useRef(null)
 
@@ -23,8 +23,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
     const payload = overridePayload || { ...params, mode }
     const cacheKey = getCacheKey(mode, params)
 
-    if (!forceRender && partsCache[cacheKey]) {
-      setParts(partsCache[cacheKey])
+    if (!forceRender && partsCacheRef.current[cacheKey]) {
+      setParts(partsCacheRef.current[cacheKey])
       setLogs(prev => prev + `\n⚡ ${t("log.cache_hit")}`)
       return
     }
@@ -63,7 +63,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
       })
 
       setParts(result)
-      setPartsCache(prev => ({ ...prev, [cacheKey]: result }))
+      partsCacheRef.current[cacheKey] = result
       setProgress(100)
       setLogs(prev => prev + `\n${t("log.gen_stl")}`)
     } catch (e) {
@@ -80,7 +80,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
         setProgress(0)
       }, 500)
     }
-  }, [mode, params, manifest, t, getCacheKey, partsCache])
+  }, [mode, params, manifest, t, getCacheKey])
 
   const handleCancelGenerate = useCallback(async () => {
     if (abortControllerRef.current) {
@@ -108,7 +108,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
     loading,
     progress,
     progressPhase,
-    partsCache,
+    checkCache: (key) => partsCacheRef.current[key],
     showConfirmDialog,
     pendingEstimate,
     handleGenerate,

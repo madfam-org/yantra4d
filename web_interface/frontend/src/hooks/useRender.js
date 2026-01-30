@@ -1,6 +1,9 @@
 import { useState, useRef, useCallback } from 'react'
 import { renderParts, cancelRender, estimateRenderTime } from '../services/renderService'
 
+const INITIAL_PROGRESS = 5
+const LOADING_RESET_DELAY_MS = 500
+
 /**
  * Hook encapsulating render orchestration: generate, cancel, confirm dialog, cache.
  */
@@ -41,7 +44,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
     }
 
     setLoading(true)
-    setProgress(5)
+    setProgress(INITIAL_PROGRESS)
     setProgressPhase(t("phase.compiling"))
     setLogs(prev => prev + `\n${t("log.generating")} (${mode})...`)
 
@@ -78,7 +81,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
       setTimeout(() => {
         setLoading(false)
         setProgress(0)
-      }, 500)
+      }, LOADING_RESET_DELAY_MS)
     }
   }, [mode, params, manifest, t, getCacheKey])
 

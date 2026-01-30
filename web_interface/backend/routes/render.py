@@ -5,7 +5,6 @@ Handles /api/estimate, /api/render, /api/render-stream endpoints.
 import logging
 import os
 import json
-import subprocess
 
 from flask import Blueprint, request, jsonify, Response
 
@@ -54,6 +53,8 @@ def estimate_render_time():
     data = request.json
     if not data:
         return error_response("Request body must be JSON", 400)
+    if not isinstance(data, dict):
+        return error_response("Request body must be a JSON object", 400)
     manifest = get_manifest()
     constants = manifest.estimate_constants
 
@@ -89,6 +90,8 @@ def render_stl():
     data = request.json
     if not data:
         return error_response("Request body must be JSON", 400)
+    if not isinstance(data, dict):
+        return error_response("Request body must be a JSON object", 400)
     scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
 
     if scad_filename is None:
@@ -100,13 +103,14 @@ def render_stl():
 
     cleanup_old_stl_files(parts_to_render, STATIC_FOLDER)
 
+    params = validate_params(data.get('parameters', data))
+
     try:
         for part in parts_to_render:
-            output_filename = f"preview_{part}.stl"
+            output_filename = f"{Config.STL_PREFIX}{part}.stl"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             render_mode = mode_map.get(part, 0)
-            params = validate_params(data.get('parameters', data))
             cmd = build_openscad_command(output_path, scad_path, params, render_mode)
 
             success, stderr = run_render(cmd)
@@ -129,8 +133,6 @@ def render_stl():
             "parts": generated_parts,
             "log": combined_log
         })
-    except subprocess.CalledProcessError as e:
-        return error_response(str(e))
     except OSError as e:
         return error_response(str(e))
     except Exception as e:
@@ -144,6 +146,8 @@ def render_stl_stream():
     data = request.json
     if not data:
         return error_response("Request body must be JSON", 400)
+    if not isinstance(data, dict):
+        return error_response("Request body must be a JSON object", 400)
 
     scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
 
@@ -161,7 +165,7 @@ def render_stl_stream():
         generated_parts = []
 
         for i, part in enumerate(parts_to_render):
-            output_filename = f"preview_{part}.stl"
+            output_filename = f"{Config.STL_PREFIX}{part}.stl"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             part_base = (i / num_parts) * 100

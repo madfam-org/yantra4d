@@ -2,7 +2,7 @@ import trimesh
 import numpy as np
 import sys
 
-# Design note: fit_clear is 0.2mm (not 0.1mm as earlier docs stated).
+# Design note: fit_clear defaults to 0 (kept as a parameter for future use).
 # Snap-fit features (cantilever beams, undercut heads, relief slots, weld cubes)
 # protrude beyond the base cylinder, increasing Z extent.
 
@@ -37,15 +37,16 @@ def verify_single_part(mesh_path):
     # 3. Dimensions (parametric Z tolerance)
     extents = mesh.extents
     print(f"[INFO] Dimensions: {extents}")
-    # XY should be ~20x20; Z varies with snap beams protruding beyond cylinder
-    xy_ok = np.allclose(extents[:2], [20, 20], atol=0.5)
+    # XY should be approximately square; Z varies with snap beams
+    xy_max = max(extents[:2])
+    xy_min = min(extents[:2])
+    xy_ok = np.isclose(xy_max, xy_min, atol=0.5)
     # Each half is now nearly full cube height (size - fit_clear)
-    approx_size = max(extents[:2])
-    z_ok = approx_size * 0.9 < extents[2] < approx_size * 1.1
+    z_ok = xy_max * 0.9 < extents[2] < xy_max * 1.1
     if xy_ok and z_ok:
-        print(f"[PASS] Dimensions within expected range (~20x20, Z ~{approx_size:.0f})")
+        print(f"[PASS] Dimensions within expected range (~{xy_max:.0f}x{xy_min:.0f}, Z ~{xy_max:.0f})")
     else:
-        print(f"[FAIL] Dimensions incorrect. Expected ~[20, 20, ~{approx_size:.0f}], got {extents}")
+        print(f"[FAIL] Dimensions incorrect. Expected square XY, got {extents}")
         failures.append("dimensions")
 
     # 4. Snap-fit feature presence (facet count)

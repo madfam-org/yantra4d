@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { Edges } from '@react-three/drei'
 import { fetchAssemblyGeometries } from '../../services/assemblyFetcher'
+import { useManifest } from '../../contexts/ManifestProvider'
 
 function getCombinedCenter(geometries) {
   const box = new THREE.Box3()
@@ -19,11 +20,14 @@ const ROTATION_SPEED = Math.PI / 2 // π/2 rad/s → 1 full 90° turn per second
 const PAUSE_DURATION = 0.3 // seconds between rotations
 
 function AnimatedGrid({ params, colors, wireframe, onReady }) {
-  const rows = params.rows || 2
-  const cols = params.cols || 2
-  const size = params.size || 20
-  const gridPitch = params.grid_pitch || size
-  const defaultColor = '#e5e7eb'
+  const { getViewerConfig, manifest } = useManifest()
+  const rows = params.rows
+  const cols = params.cols
+  const size = params.size
+  const rotationClearance = params.rotation_clearance
+  // Grid pitch formula mirrors tablaco.scad: pitch = size * sqrt(2) + rotation_clearance
+  const gridPitch = size * Math.SQRT2 + rotationClearance
+  const defaultColor = getViewerConfig().default_color || '#e5e7eb'
 
   const [geometries, setGeometries] = useState(null)
   const [geoCenter, setGeoCenter] = useState(null)
@@ -44,11 +48,23 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
     pauseTimer.current = 0
   }, [rows, cols])
 
+  // Derive geometry-affecting parameter keys from manifest (exclude checkboxes)
+  const geometryKeys = useMemo(
+    () => manifest.parameters.filter(p => p.type !== 'checkbox').map(p => p.id),
+    [manifest.parameters]
+  )
+
+  // Stable hash of geometry-affecting params for dependency tracking
+  const geoHash = useMemo(
+    () => JSON.stringify(geometryKeys.map(k => params[k])),
+    [geometryKeys, params]
+  )
+
   // Fetch assembly geometries on mount / param change
   useEffect(() => {
     let cancelled = false
     setError(null) // eslint-disable-line react-hooks/set-state-in-effect
-    fetchAssemblyGeometries(params)
+    fetchAssemblyGeometries(params, geometryKeys)
       .then(geos => {
         if (!cancelled) {
           setGeometries(geos)
@@ -58,9 +74,7 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
       })
       .catch(err => { if (!cancelled) setError(err.message) })
     return () => { cancelled = true }
-  }, [params.size, params.thick, params.rod_D, params.clearance, params.fit_clear,
-      params.letter_depth, params.letter_size, params.rod_extension, params.rotation_clearance,
-      params.letter_bottom, params.letter_top])
+  }, [geoHash]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Group refs created synchronously so they're available on first render
   const groupRefs = useMemo(
@@ -114,10 +128,10 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const idx = r * cols + c
-      const x = c * gridPitch
-      const y = r * gridPitch
+      const yPos = c * gridPitch    // columns spread along Y (mirrors tablaco.scad)
+      const zPos = r * size          // rows stack along Z, flush (mirrors tablaco.scad)
       cubes.push(
-        <group key={idx} position={[x + cx, y + cy, cz]}>
+        <group key={idx} position={[cx, yPos + cy, zPos + cz]}>
           <group ref={groupRefs[idx]}>
           <group position={[-cx, -cy, -cz]}>
             {geometries.map(({ type, geometry }) => (

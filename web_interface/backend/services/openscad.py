@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 _active_process = None
 _process_lock = threading.Lock()
 
-# Phase weights for progress estimation
+# Phase weights represent the approximate % of total render time each OpenSCAD
+# phase consumes. Used to calculate progress bar position during streaming renders.
 PHASE_WEIGHTS = {
     'start': 5,
     'compiling': 15,
@@ -148,8 +149,11 @@ def run_render(cmd: list) -> tuple[bool, str]:
     """Execute OpenSCAD render synchronously. Returns (success, stderr)."""
     logger.info(f"Running OpenSCAD: {' '.join(cmd)}")
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=300)
         return True, result.stderr
+    except subprocess.TimeoutExpired:
+        logger.error("OpenSCAD render timed out after 300s")
+        return False, "Render timed out after 300 seconds"
     except subprocess.CalledProcessError as e:
         logger.error(f"OpenSCAD failed: {e.stderr}")
         return False, e.stderr

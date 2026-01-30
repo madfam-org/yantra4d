@@ -1,14 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import fallbackManifest from '../../config/fallback-manifest.json'
 
 // SceneController is a Three.js component that can't render in jsdom,
 // so we test the camera view logic directly using manifest-driven positions.
 
-const cameraViews = [
-  { id: 'iso',   position: [50, 50, 50] },
-  { id: 'top',   position: [0, 0, 100] },
-  { id: 'front', position: [0, -100, 0] },
-  { id: 'right', position: [100, 0, 0] },
-]
+const cameraViews = fallbackManifest.camera_views
 
 describe('SceneController view positions (Z-up convention)', () => {
   let camera

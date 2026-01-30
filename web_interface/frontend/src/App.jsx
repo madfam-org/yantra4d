@@ -16,6 +16,8 @@ import { downloadFile, downloadZip } from './lib/downloadUtils'
 import { verify } from './services/verifyService'
 import './index.css'
 
+const RENDER_DEBOUNCE_MS = 500
+
 function safeParse(key, fallback) {
   try {
     const raw = localStorage.getItem(key)
@@ -62,7 +64,7 @@ function App() {
   })
   const [colors, setColors] = useState(() => safeParse(`${projectSlug}-colors`, defaultColors))
   const [activePresetId, setActivePresetId] = useState(() => initialHash.preset?.id || presets[0]?.id || null)
-  const [gridPresetId, setGridPresetId] = useState('rendering')
+  const [gridPresetId, setGridPresetId] = useState(manifest.grid_presets?.default || Object.keys(manifest.grid_presets || {}).find(k => k !== 'default'))
   const [wireframe, setWireframe] = useState(false)
   const [animating, setAnimating] = useState(false)
 
@@ -90,15 +92,21 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [presets, manifest.modes])
 
+  const isGridMode = (modeId) => {
+    const m = manifest.modes.find(md => md.id === modeId)
+    return m?.estimate?.formula === 'grid'
+  }
+
   // Wrap setMode to also update hash
   const setMode = useCallback((newMode) => {
     setModeState(newMode)
     setAnimating(false)
-    if (newMode === 'grid') {
-      const renderingValues = manifest.grid_presets?.rendering?.values
-      if (renderingValues) {
-        setParams(prev => ({ ...prev, ...renderingValues }))
-        setGridPresetId('rendering')
+    if (isGridMode(newMode)) {
+      const defaultGridPreset = manifest.grid_presets?.default || 'rendering'
+      const presetValues = manifest.grid_presets?.[defaultGridPreset]?.values
+      if (presetValues) {
+        setParams(prev => ({ ...prev, ...presetValues }))
+        setGridPresetId(defaultGridPreset)
       }
     }
     const presetId = activePresetId || presets[0]?.id
@@ -161,7 +169,9 @@ function App() {
   })
 
   const handleGridPresetToggle = useCallback(() => {
-    const nextId = gridPresetId === 'rendering' ? 'manufacturing' : 'rendering'
+    const presetKeys = Object.keys(manifest.grid_presets || {}).filter(k => k !== 'default')
+    const currentIndex = presetKeys.indexOf(gridPresetId)
+    const nextId = presetKeys[(currentIndex + 1) % presetKeys.length]
     setGridPresetId(nextId)
     const gp = manifest.grid_presets?.[nextId]
     if (gp) {
@@ -170,12 +180,13 @@ function App() {
   }, [gridPresetId, manifest])
 
   const handleApplyPreset = (preset) => {
+    const defaultGridPreset = manifest.grid_presets?.default || 'rendering'
     setParams(prev => {
-      const renderingValues = manifest.grid_presets?.rendering?.values || {}
-      return { ...prev, ...preset.values, ...renderingValues }
+      const gridValues = manifest.grid_presets?.[defaultGridPreset]?.values || {}
+      return { ...prev, ...preset.values, ...gridValues }
     })
     setActivePresetId(preset.id)
-    setGridPresetId('rendering')
+    setGridPresetId(defaultGridPreset)
     window.location.hash = buildHash(preset.id, mode)
   }
 
@@ -236,7 +247,7 @@ function App() {
     }
     const timer = setTimeout(() => {
       handleGenerate()
-    }, 500)
+    }, RENDER_DEBOUNCE_MS)
     return () => clearTimeout(timer)
   }, [params, mode, getCacheKey, manifest])
 
@@ -294,7 +305,7 @@ function App() {
         {/* Sidebar */}
         <div className="w-full lg:w-80 lg:min-w-[20rem] border-b lg:border-b-0 lg:border-r border-border bg-card p-4 flex flex-col gap-4 overflow-y-auto shrink-0 max-h-[50vh] lg:max-h-none">
           <Tabs value={mode} onValueChange={setMode} className="w-full relative z-10">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
               {manifest.modes.map(m => (
                 <TabsTrigger key={m.id} value={m.id} className="min-h-[44px]">
                   {getLabel(m, 'label', language)}
@@ -356,7 +367,6 @@ function App() {
           <ExportPanel
             parts={parts}
             mode={mode}
-            manifest={manifest}
             onDownloadStl={handleDownloadStl}
             onExportImage={handleExportImage}
             onExportAllViews={handleExportAllViews}

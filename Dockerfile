@@ -47,4 +47,4 @@ WORKDIR /app/backend
 RUN useradd -r -s /bin/false tablaco && chown -R tablaco:tablaco /app
 USER tablaco
 
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "--timeout", "300", "app:app"]
+CMD gunicorn -w 2 -b "0.0.0.0:${PORT}" --timeout 300 app:app

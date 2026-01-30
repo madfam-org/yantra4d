@@ -22,9 +22,11 @@ class Config:
     
     # OpenSCAD
     OPENSCAD_PATH = os.getenv(
-        "OPENSCAD_PATH", 
+        "OPENSCAD_PATH",
         "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
     )
+
+    STL_PREFIX = "preview_"
     
     # --- Manifest-delegated accessors (backward compat) ---
 

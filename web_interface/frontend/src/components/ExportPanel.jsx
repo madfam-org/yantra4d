@@ -3,9 +3,9 @@ import { Download } from 'lucide-react'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useManifest } from "../contexts/ManifestProvider"
 
-export default function ExportPanel({ parts, mode, manifest, onDownloadStl, onExportImage, onExportAllViews }) {
+export default function ExportPanel({ parts, mode, onDownloadStl, onExportImage, onExportAllViews }) {
   const { language, t } = useLanguage()
-  const { getCameraViews, getLabel } = useManifest()
+  const { getCameraViews, getLabel, manifest } = useManifest()
   const cameraViews = getCameraViews()
   const disabled = parts.length === 0
 

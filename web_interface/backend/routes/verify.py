@@ -4,6 +4,7 @@ Handles /api/verify endpoint for design verification.
 """
 import logging
 import subprocess
+import sys
 
 from flask import Blueprint, request, jsonify
 
@@ -28,13 +29,13 @@ def verify_design():
 
     parts = manifest.get_parts_for_mode(mode)
     if not parts:
-        parts = manifest.get_parts_for_mode(manifest.modes[0]["id"]) or ["main"]
+        parts = manifest.get_parts_for_mode(manifest.modes[0]["id"])
 
     results = []
     all_passed = True
 
     for part in parts:
-        stl_filename = f"preview_{part}.stl"
+        stl_filename = f"{Config.STL_PREFIX}{part}.stl"
         resolved = safe_join_path(STATIC_FOLDER, stl_filename)
 
         if resolved is None:
@@ -47,15 +48,19 @@ def verify_design():
             all_passed = False
             continue
 
-        cmd = ["python3", VERIFY_SCRIPT, str(resolved)]
+        cmd = [sys.executable, VERIFY_SCRIPT, str(resolved)]
         logger.info(f"Verifying {part}: {' '.join(cmd)}")
 
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
             output = result.stdout + result.stderr
             results.append(f"--- {part} ---\n{output}")
             if result.returncode != 0:
                 all_passed = False
+        except subprocess.TimeoutExpired:
+            logger.error(f"Verification timed out for {part}")
+            results.append(f"--- {part} ---\n[ERROR] Verification timed out\n")
+            all_passed = False
         except Exception as e:
             logger.error(f"Verification failed for {part}: {e}")
             results.append(f"--- {part} ---\n[ERROR] {str(e)}\n")

@@ -7,12 +7,12 @@
  */
 
 import { isBackendAvailable, getApiBase } from './backendDetection'
+import { detectPhase, isLogWorthy } from '../lib/openscad-phases'
 
 const API_BASE = getApiBase()
 
 let _mode = null // 'backend' | 'wasm'
 let _worker = null
-let _workerReady = false
 let _initPromise = null
 
 /**
@@ -40,7 +40,6 @@ function initWorker(manifest) {
 
     const handler = (e) => {
       if (e.data.type === 'init-done') {
-        _workerReady = true
         _worker.removeEventListener('message', handler)
         resolve()
       } else if (e.data.type === 'init-error') {
@@ -57,27 +56,6 @@ function initWorker(manifest) {
   })
 
   return _initPromise
-}
-
-/**
- * Detect the progress phase from an output line.
- */
-function detectPhase(line) {
-  if (line.includes('Compiling')) return 'compiling'
-  if (line.includes('CGAL')) return 'cgal'
-  if (line.includes('Rendering') || line.includes('Geometries')) return 'rendering'
-  if (line.includes('Parsing')) return 'geometry'
-  return null
-}
-
-/**
- * Check if a line is worth logging (contains significant output info).
- */
-function isSignificantLine(line) {
-  return line.includes('Compiling') || line.includes('Parsing') ||
-    line.includes('CGAL') || line.includes('Geometries') ||
-    line.includes('Rendering') || line.includes('Total') ||
-    line.includes('Simple:')
 }
 
 /**
@@ -147,7 +125,6 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
           _worker.removeEventListener('message', handler)
           _worker.terminate()
           _worker = null
-          _workerReady = false
           _initPromise = null
           reject(new DOMException('Aborted', 'AbortError'))
         }
@@ -221,7 +198,7 @@ async function renderBackend(mode, params, onProgress, abortSignal) {
         const line = data.line
         const phase = detectPhase(line)
         if (phase) onProgress?.({ phase })
-        if (isSignificantLine(line)) {
+        if (isLogWorthy(line)) {
           onProgress?.({ log: `  ${line}` })
         }
       } else if (data.event === 'part_done') {
@@ -272,7 +249,6 @@ export async function cancelRender() {
   } else if (_worker) {
     _worker.terminate()
     _worker = null
-    _workerReady = false
     _initPromise = null
   }
 }

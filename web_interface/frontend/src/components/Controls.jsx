@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -111,7 +111,10 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
 export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, presets = [], onApplyPreset, onToggleGridPreset }) {
     const { language } = useLanguage()
     const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
-    const [visibilityLevel, setVisibilityLevel] = useState('basic')
+    const [visibilityLevel, setVisibilityLevel] = useState(() => {
+        const visGroup = manifest.parameter_groups?.find(g => g.id === 'visibility')
+        return visGroup?.levels?.[0]?.id || 'basic'
+    })
 
     const handleSliderChange = (name, valArray) => {
         setParams(prev => ({ ...prev, [name]: valArray[0] }))
@@ -134,10 +137,12 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
     // Filter visibility checkboxes by level
     const filteredVisibility = visibilityCheckboxes.filter(p => {
-        if (visibilityLevel === 'basic') {
-            return !p.visibility_level || p.visibility_level === 'basic'
+        const visGroup = manifest.parameter_groups?.find(g => g.id === 'visibility')
+        const firstLevelId = visGroup?.levels?.[0]?.id || 'basic'
+        if (visibilityLevel === firstLevelId) {
+            return !p.visibility_level || p.visibility_level === firstLevelId
         }
-        return true // advanced shows all
+        return true // higher levels show all
     })
 
     const partColors = getPartColors(mode)
@@ -176,13 +181,14 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
             {/* Grid Presets */}
             {mode === 'grid' && manifest.grid_presets && (() => {
                 const gp = manifest.grid_presets
-                const activeGp = ['rendering', 'manufacturing'].find(id => {
+                const presetKeys = Object.keys(gp).filter(k => k !== 'default')
+                const activeGp = presetKeys.find(id => {
                     const v = gp[id]?.values
                     return v && Object.entries(v).every(([k, val]) => params[k] === val)
                 }) || null
                 return (
                     <div className="flex gap-2">
-                        {['rendering', 'manufacturing'].map(id => (
+                        {presetKeys.map(id => (
                             <button
                                 key={id}
                                 type="button"
@@ -246,9 +252,12 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                             onClick={() => setVisibilityLevel(prev => prev === 'basic' ? 'advanced' : 'basic')}
                         >
-                            {visibilityLevel === 'basic'
-                                ? (language === 'es' ? 'Avanzado' : 'Advanced')
-                                : (language === 'es' ? 'Básico' : 'Basic')}
+                            {(() => {
+                                const visGroup = manifest.parameter_groups?.find(g => g.id === 'visibility')
+                                const nextLevel = visibilityLevel === 'basic' ? 'advanced' : 'basic'
+                                const nextLevelDef = visGroup?.levels?.find(l => l.id === nextLevel)
+                                return nextLevelDef ? getLabel(nextLevelDef, 'label', language) : nextLevel
+                            })()}
                         </button>
                     </div>
                     {filteredVisibility.map(param => {

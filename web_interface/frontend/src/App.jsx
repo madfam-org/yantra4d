@@ -63,6 +63,7 @@ function App() {
   const [colors, setColors] = useState(() => safeParse(`${projectSlug}-colors`, defaultColors))
   const [activePresetId, setActivePresetId] = useState(() => initialHash.preset?.id || presets[0]?.id || null)
   const [gridPresetId, setGridPresetId] = useState('rendering')
+  const [wireframe, setWireframe] = useState(false)
 
   // Set initial hash if missing or invalid
   useEffect(() => {
@@ -172,6 +173,7 @@ function App() {
   const handleReset = () => {
     setParams(getDefaultParams())
     setColors(getDefaultColors())
+    setWireframe(false)
   }
 
   const handleVerify = async () => {
@@ -298,6 +300,8 @@ function App() {
             mode={mode}
             colors={colors}
             setColors={setColors}
+            wireframe={wireframe}
+            setWireframe={setWireframe}
             presets={presets}
             onApplyPreset={handleApplyPreset}
             onToggleGridPreset={handleGridPresetToggle}
@@ -353,7 +357,7 @@ function App() {
         {/* Main View */}
         <div className="flex-1 relative flex flex-col min-h-0">
           <div className="flex-1 relative min-h-0">
-            <Viewer ref={viewerRef} parts={parts} colors={colors} loading={loading} progress={progress} progressPhase={progressPhase} />
+            <Viewer ref={viewerRef} parts={parts} colors={colors} wireframe={wireframe} loading={loading} progress={progress} progressPhase={progressPhase} />
           </div>
 
           {/* Console */}

@@ -18,15 +18,17 @@ export default function ConfirmRenderDialog({ open, onConfirm, onCancel, estimat
         : `~${Math.round(estimatedTime)} seconds`
 
     return (
-        <AlertDialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+        <AlertDialog open={open}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>{t("dialog.render_warning_title")}</AlertDialogTitle>
-                    <AlertDialogDescription className="space-y-2">
-                        <p>{t("dialog.render_warning_body")} <strong>{timeDisplay}</strong>.</p>
-                        <p className="text-sm text-muted-foreground">
-                            {t("dialog.render_warning_note")}
-                        </p>
+                    <AlertDialogDescription asChild>
+                        <div className="space-y-2">
+                            <span className="block">{t("dialog.render_warning_body")} <strong>{timeDisplay}</strong>.</span>
+                            <span className="block text-sm text-muted-foreground">
+                                {t("dialog.render_warning_note")}
+                            </span>
+                        </div>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

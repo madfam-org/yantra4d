@@ -1,7 +1,7 @@
 # Competitive Landscape Research & Improvement Roadmap
 
 > **Date**: 2026-01-31
-> **Purpose**: Market research benchmarking for Tablaco's strategic positioning
+> **Purpose**: Market research benchmarking for Qubic's strategic positioning
 
 ---
 
@@ -9,7 +9,7 @@
 
 18+ open-source projects researched across 8 categories. Key competitors:
 
-| Project | Type | Strengths vs Tablaco | Weaknesses vs Tablaco |
+| Project | Type | Strengths vs Qubic | Weaknesses vs Qubic |
 |---------|------|---------------------|----------------------|
 | **OpenSCAD Playground** | Official WASM editor | Monaco editor, large community | Code-centric, not for end-users |
 | **OpenJSCAD** | JS CAD framework | Native JS, modular, no OpenSCAD dep | Not a platform, dev-focused |
@@ -19,7 +19,7 @@
 | **CadQuery/build123d** | Python CAD | Powerful parametric scripting | No web UI at all |
 | **FreeCAD/SolveSpace** | Desktop CAD | Professional-grade features | Desktop-only, heavyweight |
 
-**Tablaco's unique position**: The only manifest-driven, end-user configurator platform with dual rendering, integrated verification, and multi-project management. No competitor combines "zero-code project onboarding" with "web-based 3D preview."
+**Qubic's unique position**: The only manifest-driven, end-user configurator platform with dual rendering, integrated verification, and multi-project management. No competitor combines "zero-code project onboarding" with "web-based 3D preview."
 
 ---
 
@@ -145,13 +145,13 @@ All additions are optional — existing projects continue to work unchanged.
 
 ### Print-Adjacent Tools
 - **PrusaSlicer/Cura**: Print estimation algorithms are the gold standard. Our heuristic estimator approximates their approach for quick feedback without requiring actual slicing.
-- **Printables/Thingiverse**: Gallery and sharing platforms. Their configurator features (Thingiverse Customizer) are deprecated/broken — opportunity for Tablaco.
+- **Printables/Thingiverse**: Gallery and sharing platforms. Their configurator features (Thingiverse Customizer) are deprecated/broken — opportunity for Qubic.
 
 ---
 
 ## Key Takeaway
 
-Tablaco occupies a genuinely unique niche: **manifest-driven parametric configurator for end-users**. The competitive moat is the combination of:
+Qubic occupies a genuinely unique niche: **manifest-driven parametric configurator for end-users**. The competitive moat is the combination of:
 1. Zero-code project onboarding (manifest + SCAD = working configurator)
 2. Dual rendering (backend + WASM fallback)
 3. Integrated verification pipeline

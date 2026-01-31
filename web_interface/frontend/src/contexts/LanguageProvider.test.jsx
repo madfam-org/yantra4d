@@ -99,12 +99,12 @@ describe('LanguageProvider', () => {
       </LanguageProvider>
     )
     act(() => screen.getByText('EN').click())
-    expect(localStorage.getItem('tablaco-lang')).toBe('en')
+    expect(localStorage.getItem('qubic-lang')).toBe('en')
     expect(screen.getByTestId('text').textContent).toBe('Generate')
   })
 
   it('reads default language from localStorage', () => {
-    localStorage.setItem('tablaco-lang', 'en')
+    localStorage.setItem('qubic-lang', 'en')
     render(
       <LanguageProvider>
         <TestConsumer />

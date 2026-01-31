@@ -178,4 +178,9 @@ describe('App', () => {
     renderApp()
     expect(screen.getByTitle('Redo')).toBeDisabled()
   })
+
+  it('studio view renders "powered by Qubic" tagline', () => {
+    renderApp()
+    expect(screen.getByText('powered by Qubic')).toBeInTheDocument()
+  })
 })

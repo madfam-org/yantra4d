@@ -5,7 +5,7 @@ const ThemeProviderContext = createContext()
 export function ThemeProvider({
     children,
     defaultTheme = "system",
-    storageKey = "tablaco-theme",
+    storageKey = "qubic-theme",
 }) {
     const [theme, setTheme] = useState(
         () => localStorage.getItem(storageKey) || defaultTheme

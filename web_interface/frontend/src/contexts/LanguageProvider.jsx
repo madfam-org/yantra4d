@@ -121,6 +121,7 @@ const translations = {
         "print.weight": "Peso",
         "print.length": "Filamento",
         "print.cost": "Costo",
+        "platform.powered_by": "desarrollado con Qubic",
     },
     en: {
         "btn.gen": "Generate",
@@ -240,13 +241,14 @@ const translations = {
         "print.weight": "Weight",
         "print.length": "Filament",
         "print.cost": "Cost",
+        "platform.powered_by": "powered by Qubic",
     }
 }
 
 export function LanguageProvider({
     children,
     defaultLanguage = "es",
-    storageKey = "tablaco-lang",
+    storageKey = "qubic-lang",
 }) {
     const [language, setLanguage] = useState(
         () => localStorage.getItem(storageKey) || defaultLanguage

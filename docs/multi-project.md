@@ -1,6 +1,6 @@
 # Multi-Project Platform Guide
 
-Tablaco supports serving multiple parametric 3D projects from a single instance.
+Qubic supports serving multiple parametric 3D projects from a single instance.
 
 ## Directory Structure
 
@@ -49,10 +49,10 @@ Render, verify, and estimate endpoints accept an optional `project` field in the
 
 ```bash
 # Analyze without writing
-scripts/tablaco-init ./path/to/scad --slug my-project --analyze-only
+scripts/qubic-init ./path/to/scad --slug my-project --analyze-only
 
 # Generate manifest and install
-scripts/tablaco-init ./path/to/scad --slug my-project --install
+scripts/qubic-init ./path/to/scad --slug my-project --install
 ```
 
 ### Web UI

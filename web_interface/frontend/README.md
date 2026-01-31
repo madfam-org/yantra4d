@@ -1,6 +1,6 @@
-# Tablaco Studio — Frontend
+# Qubic — Frontend
 
-React SPA for the Tablaco parametric design studio. Built with Vite, Tailwind CSS, Shadcn UI, and Three.js (via React Three Fiber).
+React SPA for the Qubic parametric design studio. Built with Vite, Tailwind CSS, Shadcn UI, and Three.js (via React Three Fiber).
 
 ## Setup
 

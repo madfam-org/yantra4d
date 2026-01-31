@@ -1,4 +1,4 @@
-# Tablaco — Parametric 3D Print Design Studio
+# Qubic — Parametric 3D Print Design Studio
 
 Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview.
 
@@ -47,7 +47,7 @@ projects/
 | `web_interface/frontend/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
 | `docs/competitive-landscape.md` | Competitive research & feature roadmap | YES |
 | `web_interface/frontend/src/components/ui/*` | Shadcn primitives | **NEVER** |
-| `scripts/tablaco-init` | CLI tool for onboarding external SCAD projects | RARELY |
+| `scripts/qubic-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `tests/verify_design.py` | STL quality checker script | RARELY |
 | `pyproject.toml` | pytest + coverage config | RARELY |
@@ -70,7 +70,7 @@ projects/
 
 ### Onboard an external SCAD project
 ```bash
-scripts/tablaco-init ./path/to/scad-dir --slug my-project --install
+scripts/qubic-init ./path/to/scad-dir --slug my-project --install
 ```
 Or use the web UI: upload `.scad` files → review analysis → edit manifest → save.
 

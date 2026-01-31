@@ -1,15 +1,15 @@
-# Tablaco Studio — Parametric 3D Print Design Platform
+# Qubic — Parametric 3D Print Design Platform
 
 A manifest-driven platform for parametric OpenSCAD models with a web-based 3D preview studio.
 
-![Tablaco Studio](/docs/images/half_cube_iso.png)
+![Qubic](/docs/images/half_cube_iso.png)
 
 Ships with the **tablaco** interlocking cube project. See [`projects/tablaco/README.md`](./projects/tablaco/README.md) for project-specific details.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
 -   **Multi-Project**: Serve and switch between multiple SCAD projects from a single instance.
--   **Tablaco Studio**: A web-based interface for customization and visualization.
+-   **White-Label Studio**: Each project white-labels the studio header with its own name via `manifest.project.name`, with a "powered by Qubic" tagline.
     -   **Theme Toggle**: Light, Dark, and System (Auto) modes.
     -   **Bilingual UI**: Spanish (default) and English.
     -   **Export**: Download STL files and capture images (Iso, Top, Front, Right).
@@ -97,7 +97,7 @@ Generate the default model:
 /Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o projects/tablaco/exports/models/half_cube.stl projects/tablaco/half_cube.scad
 ```
 
-### Launching Tablaco Studio
+### Launching Qubic
 
 #### Development
 ```bash

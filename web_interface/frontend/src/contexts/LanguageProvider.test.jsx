@@ -43,6 +43,24 @@ function TestThemeKeys() {
   )
 }
 
+function TestPhase1Keys() {
+  const { t } = useLanguage()
+  return (
+    <div>
+      <span data-testid="act-share">{t('act.share')}</span>
+      <span data-testid="act-share-copied">{t('act.share_copied')}</span>
+      <span data-testid="act-undo">{t('act.undo')}</span>
+      <span data-testid="act-redo">{t('act.redo')}</span>
+      <span data-testid="act-format">{t('act.format')}</span>
+      <span data-testid="print-title">{t('print.title')}</span>
+      <span data-testid="print-material">{t('print.material')}</span>
+      <span data-testid="print-time">{t('print.time')}</span>
+      <span data-testid="print-weight">{t('print.weight')}</span>
+      <span data-testid="print-cost">{t('print.cost')}</span>
+    </div>
+  )
+}
+
 describe('LanguageProvider', () => {
   beforeEach(() => localStorage.clear())
 
@@ -150,5 +168,41 @@ describe('LanguageProvider', () => {
     expect(screen.getByTestId('sr-toggle-lang').textContent).toBe('Cambiar Idioma')
     expect(screen.getByTestId('lang-en').textContent).toBe('English')
     expect(screen.getByTestId('lang-es').textContent).toBe('Español')
+  })
+
+  it('has Phase 1 translation keys (share, undo/redo, format, print) in English', () => {
+    render(
+      <LanguageProvider defaultLanguage="en">
+        <TestPhase1Keys />
+      </LanguageProvider>
+    )
+    expect(screen.getByTestId('act-share').textContent).toBe('Share configuration')
+    expect(screen.getByTestId('act-share-copied').textContent).toBe('Link copied!')
+    expect(screen.getByTestId('act-undo').textContent).toBe('Undo')
+    expect(screen.getByTestId('act-redo').textContent).toBe('Redo')
+    expect(screen.getByTestId('act-format').textContent).toBe('Format')
+    expect(screen.getByTestId('print-title').textContent).toBe('Print Estimate')
+    expect(screen.getByTestId('print-material').textContent).toBe('Material')
+    expect(screen.getByTestId('print-time').textContent).toBe('Time')
+    expect(screen.getByTestId('print-weight').textContent).toBe('Weight')
+    expect(screen.getByTestId('print-cost').textContent).toBe('Cost')
+  })
+
+  it('has Phase 1 translation keys (share, undo/redo, format, print) in Spanish', () => {
+    render(
+      <LanguageProvider defaultLanguage="es">
+        <TestPhase1Keys />
+      </LanguageProvider>
+    )
+    expect(screen.getByTestId('act-share').textContent).toBe('Compartir configuración')
+    expect(screen.getByTestId('act-share-copied').textContent).toBe('¡Enlace copiado!')
+    expect(screen.getByTestId('act-undo').textContent).toBe('Deshacer')
+    expect(screen.getByTestId('act-redo').textContent).toBe('Rehacer')
+    expect(screen.getByTestId('act-format').textContent).toBe('Formato')
+    expect(screen.getByTestId('print-title').textContent).toBe('Estimación de Impresión')
+    expect(screen.getByTestId('print-material').textContent).toBe('Material')
+    expect(screen.getByTestId('print-time').textContent).toBe('Tiempo')
+    expect(screen.getByTestId('print-weight').textContent).toBe('Peso')
+    expect(screen.getByTestId('print-cost').textContent).toBe('Costo')
   })
 })

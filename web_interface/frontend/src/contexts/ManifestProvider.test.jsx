@@ -10,7 +10,7 @@ beforeEach(() => {
 
 function TestConsumer() {
   const {
-    loading, getMode, getParametersForMode, getDefaultParams, getDefaultColors, getLabel,
+    loading, manifest, getMode, getParametersForMode, getDefaultParams, getDefaultColors, getLabel,
     getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants, projectSlug,
     projects, switchProject,
   } = useManifest()
@@ -48,6 +48,8 @@ function TestConsumer() {
       <span data-testid="warning-threshold">{estimateConstants.warning_threshold_seconds}</span>
       <span data-testid="project-slug">{projectSlug}</span>
       <span data-testid="projects-count">{projects.length}</span>
+      <span data-testid="export-formats">{JSON.stringify(manifest?.export_formats || 'undefined')}</span>
+      <span data-testid="print-estimation">{JSON.stringify(manifest?.print_estimation || 'undefined')}</span>
       <button data-testid="switch-btn" onClick={() => switchProject('other')}>switch</button>
     </div>
   )
@@ -185,6 +187,20 @@ describe('ManifestProvider', () => {
     // switchProject should be callable without error
     const btn = screen.getByTestId('switch-btn')
     expect(btn).toBeInTheDocument()
+  })
+
+  it('export_formats and print_estimation are undefined in fallback manifest', async () => {
+    render(
+      <ManifestProvider>
+        <TestConsumer />
+      </ManifestProvider>
+    )
+
+    await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
+
+    // Fallback manifest doesn't include these optional Phase 1 fields
+    expect(screen.getByTestId('export-formats').textContent).toBe('"undefined"')
+    expect(screen.getByTestId('print-estimation').textContent).toBe('"undefined"')
   })
 
   it('fetches projects list from /api/projects on mount', async () => {

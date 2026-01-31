@@ -8,6 +8,7 @@ from flask import Blueprint, jsonify
 
 from config import Config
 from manifest import discover_projects, get_manifest
+from middleware.auth import require_role
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -46,6 +47,7 @@ def _enrich_project(proj):
 
 
 @admin_bp.route('/api/admin/projects', methods=['GET'])
+@require_role("admin")
 def admin_list_projects():
     """Return enriched list of all projects."""
     projects = discover_projects()
@@ -54,6 +56,7 @@ def admin_list_projects():
 
 
 @admin_bp.route('/api/admin/projects/<slug>', methods=['GET'])
+@require_role("admin")
 def admin_project_detail(slug):
     """Return detailed info for a single project."""
     project_dir = Config.PROJECTS_DIR / slug

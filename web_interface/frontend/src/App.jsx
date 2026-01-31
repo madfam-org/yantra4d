@@ -3,19 +3,24 @@ import Controls from './components/Controls'
 import Viewer from './components/Viewer'
 import ConfirmRenderDialog from './components/ConfirmRenderDialog'
 import ExportPanel from './components/ExportPanel'
+import PrintEstimateOverlay from './components/PrintEstimateOverlay'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useTheme } from "./contexts/ThemeProvider"
 import { useLanguage } from "./contexts/LanguageProvider"
 import { useManifest } from "./contexts/ManifestProvider"
-import { Sun, Moon, Monitor, Globe, Square, RotateCcw } from 'lucide-react'
+import { Sun, Moon, Monitor, Globe, Square, RotateCcw, Share2, Undo2, Redo2 } from 'lucide-react'
 import { useRender } from './hooks/useRender'
 import { useImageExport } from './hooks/useImageExport'
 import { useLocalStoragePersistence } from './hooks/useLocalStoragePersistence'
+import { useShareableUrl, getSharedParams } from './hooks/useShareableUrl'
+import { useUndoRedo } from './hooks/useUndoRedo'
 import { downloadFile, downloadZip } from './lib/downloadUtils'
 import { verify } from './services/verifyService'
+import AuthButton from './components/AuthButton'
 import ProjectSelector from './components/ProjectSelector'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { useAuth } from './contexts/AuthProvider'
 import './index.css'
 
 const ProjectsView = lazy(() => import('./components/ProjectsView'))
@@ -68,6 +73,7 @@ function App() {
   )
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
+  const { handleOAuthCallback: handleOAuth } = useAuth()
   const { manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, projectSlug, presets } = useManifest()
 
   const defaultParams = getDefaultParams()
@@ -78,10 +84,14 @@ function App() {
   const initialPresetValues = initialHash.preset?.values || {}
 
   const [mode, setModeState] = useState(() => initialHash.mode.id)
-  const [params, setParams] = useState(() => {
+
+  // Shared params from ?p= query string take highest priority
+  const sharedParams = getSharedParams()
+
+  const [params, setParams, { undo: undoParams, redo: redoParams, canUndo, canRedo }] = useUndoRedo(() => {
     const stored = safeParse(`${projectSlug}-params`, defaultParams)
-    // Merge: defaults < localStorage < preset from URL
-    return { ...defaultParams, ...stored, ...initialPresetValues }
+    // Merge: defaults < localStorage < preset from URL < shared params
+    return { ...defaultParams, ...stored, ...initialPresetValues, ...sharedParams }
   })
   const [colors, setColors] = useState(() => ({
     ...defaultColors,
@@ -91,6 +101,34 @@ function App() {
   const [gridPresetId, setGridPresetId] = useState(manifest.grid_presets?.default || Object.keys(manifest.grid_presets || {}).find(k => k !== 'default'))
   const [wireframe, setWireframe] = useState(false)
   const [animating, setAnimating] = useState(false)
+  const [shareToast, setShareToast] = useState(false)
+  const [printEstimate, setPrintEstimate] = useState(null)
+  const [exportFormat, setExportFormat] = useState('stl')
+
+  // Shareable URL hook
+  const { copyShareUrl } = useShareableUrl({ params, mode, projectSlug, defaultParams })
+
+  const handleShare = useCallback(async () => {
+    const ok = await copyShareUrl()
+    if (ok) {
+      setShareToast(true)
+      setTimeout(() => setShareToast(false), 2000)
+    }
+  }, [copyShareUrl])
+
+  // Handle OAuth callback (?code=&state= query params)
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const code = url.searchParams.get('code')
+    const state = url.searchParams.get('state')
+    if (code && state) {
+      handleOAuth(code, state).catch(() => {})
+      // Clean query params without reload
+      url.searchParams.delete('code')
+      url.searchParams.delete('state')
+      window.history.replaceState({}, '', url.pathname + url.hash)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Set initial hash if missing or invalid
   useEffect(() => {
@@ -284,7 +322,15 @@ function App() {
   useEffect(() => {
     const handler = (e) => {
       const mod = e.metaKey || e.ctrlKey
-      if (mod && e.key === 'Enter') {
+      if (mod && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        undoParams()
+        return
+      } else if (mod && e.key === 'z' && e.shiftKey) {
+        e.preventDefault()
+        redoParams()
+        return
+      } else if (mod && e.key === 'Enter') {
         e.preventDefault()
         handleGenerate()
       } else if (e.key === 'Escape' && loading) {
@@ -319,6 +365,7 @@ function App() {
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
           <h1 className="text-lg font-bold tracking-tight">Tablaco</h1>
           <div className="flex items-center gap-2">
+            <AuthButton />
             <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
               <Globe className="h-5 w-5" />
             </Button>
@@ -347,7 +394,27 @@ function App() {
           <ProjectSelector />
           <a href="#/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</a>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <AuthButton />
+          <Button variant="ghost" size="icon" onClick={undoParams} disabled={!canUndo} title={t('act.undo')}>
+            <Undo2 className="h-4 w-4" />
+            <span className="sr-only">{t('act.undo')}</span>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={redoParams} disabled={!canRedo} title={t('act.redo')}>
+            <Redo2 className="h-4 w-4" />
+            <span className="sr-only">{t('act.redo')}</span>
+          </Button>
+          <div className="relative">
+            <Button variant="ghost" size="icon" onClick={handleShare} title={t('act.share')}>
+              <Share2 className="h-4 w-4" />
+              <span className="sr-only">{t('act.share')}</span>
+            </Button>
+            {shareToast && (
+              <div className="absolute top-full right-0 mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded whitespace-nowrap z-50">
+                {t('act.share_copied')}
+              </div>
+            )}
+          </div>
           <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
             <Globe className="h-5 w-5" />
             <span className="sr-only">{t('sr.toggle_lang')}</span>
@@ -428,13 +495,16 @@ function App() {
             onDownloadStl={handleDownloadStl}
             onExportImage={handleExportImage}
             onExportAllViews={handleExportAllViews}
+            exportFormat={exportFormat}
+            onExportFormatChange={setExportFormat}
           />
         </div>
 
         {/* Main View */}
         <div className="flex-1 relative flex flex-col min-h-0">
           <div className="flex-1 relative min-h-0">
-            <Viewer ref={viewerRef} parts={parts} colors={colors} wireframe={wireframe} loading={loading} progress={progress} progressPhase={progressPhase} animating={animating} setAnimating={setAnimating} mode={mode} params={params} />
+            <Viewer ref={viewerRef} parts={parts} colors={colors} wireframe={wireframe} loading={loading} progress={progress} progressPhase={progressPhase} animating={animating} setAnimating={setAnimating} mode={mode} params={params} onGeometryStats={setPrintEstimate} />
+            <PrintEstimateOverlay volumeMm3={printEstimate?.volumeMm3} boundingBox={printEstimate?.boundingBox} />
           </div>
 
           {/* Console */}

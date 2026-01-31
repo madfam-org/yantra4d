@@ -139,7 +139,7 @@ describe('Controls', () => {
 
   it('value displays have descriptive aria-label', () => {
     renderControls()
-    const valueDisplay = screen.getByLabelText(/Size \(mm\): 20\. Click to edit/)
+    const valueDisplay = screen.getByLabelText(/Size \(mm\): 20\. (Click to edit|Clic para editar)/)
     expect(valueDisplay).toBeInTheDocument()
     expect(valueDisplay).toHaveAttribute('role', 'button')
     expect(valueDisplay).toHaveAttribute('tabIndex', '0')

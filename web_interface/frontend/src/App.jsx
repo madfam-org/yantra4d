@@ -15,6 +15,8 @@ import { useLocalStoragePersistence } from './hooks/useLocalStoragePersistence'
 import { downloadFile, downloadZip } from './lib/downloadUtils'
 import { verify } from './services/verifyService'
 import ProjectSelector from './components/ProjectSelector'
+import ProjectsView from './components/ProjectsView'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import './index.css'
 
 const RENDER_DEBOUNCE_MS = 500
@@ -27,6 +29,11 @@ function safeParse(key, fallback) {
   } catch {
     return fallback
   }
+}
+
+function isProjectsView(hash) {
+  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+  return parts.length === 1 && parts[0] === 'projects'
 }
 
 function parseHash(hash, presets, modes) {
@@ -54,6 +61,9 @@ function buildHash(projectSlug, presetId, modeId) {
 }
 
 function App() {
+  const [currentView, setCurrentView] = useState(() =>
+    isProjectsView(window.location.hash) ? 'projects' : 'studio'
+  )
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
   const { manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, projectSlug, presets } = useManifest()
@@ -93,6 +103,11 @@ function App() {
   // Listen for browser back/forward
   useEffect(() => {
     const onHashChange = () => {
+      if (isProjectsView(window.location.hash)) {
+        setCurrentView('projects')
+        return
+      }
+      setCurrentView('studio')
       const parsed = parseHash(window.location.hash, presets, manifest.modes)
       setModeState(parsed.mode.id)
       if (parsed.preset) {
@@ -296,6 +311,29 @@ function App() {
 
   const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
 
+  if (currentView === 'projects') {
+    return (
+      <div className="flex flex-col h-screen w-full bg-background text-foreground">
+        <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
+          <h1 className="text-lg font-bold tracking-tight">Tablaco</h1>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
+              <Globe className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={cycleTheme} title={t(`theme.${theme}`)}>
+              <ThemeIcon className="h-5 w-5" />
+            </Button>
+          </div>
+        </header>
+        <div className="flex-1 overflow-y-auto">
+          <ErrorBoundary t={t}>
+            <ProjectsView />
+          </ErrorBoundary>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col h-screen w-full bg-background text-foreground">
       {/* Header */}
@@ -303,15 +341,16 @@ function App() {
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
           <ProjectSelector />
+          <a href="#/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</a>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? 'English' : 'Español'}>
+          <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
             <Globe className="h-5 w-5" />
-            <span className="sr-only">Toggle Language</span>
+            <span className="sr-only">{t('sr.toggle_lang')}</span>
           </Button>
           <Button variant="ghost" size="icon" onClick={cycleTheme} title={t(`theme.${theme}`)}>
             <ThemeIcon className="h-5 w-5" />
-            <span className="sr-only">Toggle Theme</span>
+            <span className="sr-only">{t('sr.toggle_theme')}</span>
           </Button>
         </div>
       </header>

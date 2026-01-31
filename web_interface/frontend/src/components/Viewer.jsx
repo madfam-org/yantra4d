@@ -111,7 +111,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
             <button
                 onClick={() => setShowAxes(s => !s)}
                 className="absolute top-2 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-xs font-bold hover:bg-background/90 backdrop-blur-sm"
-                title={showAxes ? "Hide axes" : "Show axes"}
+                title={showAxes ? t("viewer.hide_axes") : t("viewer.show_axes")}
             >
                 {showAxes ? "⊞" : "⊟"}
             </button>
@@ -120,7 +120,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                 <button
                     onClick={() => setAnimating(a => !a)}
                     className="absolute top-16 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-lg hover:bg-background/90 backdrop-blur-sm"
-                    title={animating ? "Pause animation" : "Play animation"}
+                    title={animating ? t("viewer.pause_anim") : t("viewer.play_anim")}
                 >
                     {animating ? "⏸" : "▶"}
                 </button>
@@ -142,7 +142,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                 ))}
             </div>
 
-            <ErrorBoundary>
+            <ErrorBoundary t={t}>
             <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
                 <color attach="background" args={[bgColor]} />
                 <SceneController ref={sceneRef} cameraViews={cameraViews} />

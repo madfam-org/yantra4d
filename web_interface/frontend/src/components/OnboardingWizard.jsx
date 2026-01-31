@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { getApiBase } from "../services/backendDetection"
+import { useLanguage } from "../contexts/LanguageProvider"
 import { Upload, ChevronRight, ChevronLeft, Check, AlertTriangle } from "lucide-react"
 
-const STEPS = ["Upload", "Review", "Edit", "Save"]
+const STEP_KEYS = ["onboard.step_upload", "onboard.step_review", "onboard.step_edit", "onboard.step_save"]
 
 export default function OnboardingWizard({ onComplete, onCancel }) {
+  const { t } = useLanguage()
   const [step, setStep] = useState(0)
   const [files, setFiles] = useState([])
   const [slug, setSlug] = useState("new-project")
@@ -88,14 +90,21 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
     })
   }
 
+  const saveSummary = t("onboard.save_summary")
+    .replace("{name}", manifest?.project?.name || "")
+    .replace("{slug}", manifest?.project?.slug || "")
+    .replace("{files}", files.length)
+    .replace("{modes}", manifest?.modes?.length || 0)
+    .replace("{params}", manifest?.parameters?.length || 0)
+
   return (
     <div className="flex flex-col gap-4 p-6 max-w-2xl mx-auto">
       {/* Step indicator */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-        {STEPS.map((s, i) => (
-          <span key={s} className={`${i === step ? "text-foreground font-semibold" : ""}`}>
+        {STEP_KEYS.map((key, i) => (
+          <span key={key} className={`${i === step ? "text-foreground font-semibold" : ""}`}>
             {i > 0 && <span className="mx-1">›</span>}
-            {s}
+            {t(key)}
           </span>
         ))}
       </div>
@@ -109,16 +118,16 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
       {/* Step 0: Upload */}
       {step === 0 && (
         <div className="flex flex-col gap-4">
-          <div className="text-lg font-semibold">Upload SCAD Files</div>
+          <div className="text-lg font-semibold">{t("onboard.upload_title")}</div>
 
           <div>
-            <label className="text-sm font-medium">Project Slug</label>
+            <label className="text-sm font-medium">{t("onboard.slug_label")}</label>
             <input
               type="text"
               value={slug}
               onChange={(e) => setSlug(e.target.value.replace(/[^a-z0-9-_]/gi, ""))}
               className="w-full mt-1 px-3 py-2 rounded-md border border-border bg-background text-sm"
-              placeholder="my-project"
+              placeholder={t("onboard.slug_placeholder")}
             />
           </div>
 
@@ -129,7 +138,7 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
           >
             <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Drag & drop .scad files here, or click to browse
+              {t("onboard.drop_text")}
             </p>
             <input
               type="file"
@@ -140,13 +149,13 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
               id="scad-upload"
             />
             <label htmlFor="scad-upload" className="text-primary text-sm underline cursor-pointer">
-              Browse files
+              {t("onboard.browse")}
             </label>
           </div>
 
           {files.length > 0 && (
             <div className="text-sm">
-              <div className="font-medium mb-1">{files.length} file(s) selected:</div>
+              <div className="font-medium mb-1">{files.length} {t("onboard.files_selected")}</div>
               <ul className="list-disc list-inside text-muted-foreground">
                 {files.map((f) => (
                   <li key={f.name}>{f.name}</li>
@@ -156,7 +165,7 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
           )}
 
           <Button onClick={handleAnalyze} disabled={files.length === 0 || loading}>
-            {loading ? "Analyzing..." : "Analyze Files"}
+            {loading ? t("onboard.analyzing") : t("onboard.analyze_btn")}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
@@ -165,12 +174,12 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
       {/* Step 1: Review Analysis */}
       {step === 1 && analysis && (
         <div className="flex flex-col gap-4">
-          <div className="text-lg font-semibold">Analysis Results</div>
+          <div className="text-lg font-semibold">{t("onboard.review_title")}</div>
 
           {warnings.length > 0 && (
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
               <div className="flex items-center gap-1 text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-1">
-                <AlertTriangle className="h-4 w-4" /> Warnings
+                <AlertTriangle className="h-4 w-4" /> {t("onboard.warnings")}
               </div>
               <ul className="list-disc list-inside text-sm text-muted-foreground">
                 {warnings.map((w, i) => (
@@ -184,20 +193,20 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
             <div key={fname} className="border border-border rounded-md p-3">
               <div className="font-mono text-sm font-semibold mb-2">{fname}</div>
               <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                <div>Variables: {data.variables.length}</div>
-                <div>Modules: {data.modules.length}</div>
-                <div>Includes: {data.includes.length}</div>
-                <div>Render modes: {data.render_modes.length > 0 ? data.render_modes.join(", ") : "none"}</div>
+                <div>{t("onboard.variables")}: {data.variables.length}</div>
+                <div>{t("onboard.modules")}: {data.modules.length}</div>
+                <div>{t("onboard.includes")}: {data.includes.length}</div>
+                <div>{t("onboard.render_modes")}: {data.render_modes.length > 0 ? data.render_modes.join(", ") : t("onboard.none")}</div>
               </div>
             </div>
           ))}
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setStep(0)}>
-              <ChevronLeft className="h-4 w-4 mr-1" /> Back
+              <ChevronLeft className="h-4 w-4 mr-1" /> {t("onboard.back")}
             </Button>
             <Button onClick={() => setStep(2)}>
-              Edit Manifest <ChevronRight className="h-4 w-4 ml-1" />
+              {t("onboard.edit_manifest")} <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
         </div>
@@ -206,10 +215,10 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
       {/* Step 2: Edit Manifest */}
       {step === 2 && manifest && (
         <div className="flex flex-col gap-4">
-          <div className="text-lg font-semibold">Edit Manifest</div>
+          <div className="text-lg font-semibold">{t("onboard.edit_title")}</div>
 
           <div>
-            <label className="text-sm font-medium">Project Name</label>
+            <label className="text-sm font-medium">{t("onboard.project_name")}</label>
             <input
               type="text"
               value={manifest.project.name}
@@ -219,7 +228,7 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Manifest JSON</label>
+            <label className="text-sm font-medium">{t("onboard.manifest_json")}</label>
             <textarea
               value={JSON.stringify(manifest, null, 2)}
               onChange={(e) => {
@@ -227,7 +236,7 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
                   setManifest(JSON.parse(e.target.value))
                   setError(null)
                 } catch {
-                  setError("Invalid JSON")
+                  setError(t("onboard.invalid_json"))
                 }
               }}
               rows={20}
@@ -237,10 +246,10 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setStep(1)}>
-              <ChevronLeft className="h-4 w-4 mr-1" /> Back
+              <ChevronLeft className="h-4 w-4 mr-1" /> {t("onboard.back")}
             </Button>
             <Button onClick={() => setStep(3)}>
-              Review & Save <ChevronRight className="h-4 w-4 ml-1" />
+              {t("onboard.review_save")} <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
         </div>
@@ -249,24 +258,22 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
       {/* Step 3: Save */}
       {step === 3 && (
         <div className="flex flex-col gap-4">
-          <div className="text-lg font-semibold">Save Project</div>
+          <div className="text-lg font-semibold">{t("onboard.save_title")}</div>
           <div className="text-sm text-muted-foreground">
-            Project <strong>{manifest?.project?.name}</strong> ({manifest?.project?.slug}) will be created with{" "}
-            {files.length} SCAD file(s), {manifest?.modes?.length || 0} mode(s), and{" "}
-            {manifest?.parameters?.length || 0} parameter(s).
+            {saveSummary}
           </div>
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setStep(2)}>
-              <ChevronLeft className="h-4 w-4 mr-1" /> Back
+              <ChevronLeft className="h-4 w-4 mr-1" /> {t("onboard.back")}
             </Button>
             <Button onClick={handleSave} disabled={loading}>
-              {loading ? "Saving..." : "Create Project"}
+              {loading ? t("onboard.saving") : t("onboard.create_btn")}
               <Check className="h-4 w-4 ml-1" />
             </Button>
             {onCancel && (
               <Button variant="ghost" onClick={onCancel}>
-                Cancel
+                {t("onboard.cancel")}
               </Button>
             )}
           </div>

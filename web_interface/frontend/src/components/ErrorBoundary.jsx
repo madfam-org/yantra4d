@@ -20,16 +20,18 @@ export class ErrorBoundary extends React.Component {
   }
 
   render() {
+    const translate = this.props.t || ((key) => key)
+
     if (this.state.hasError) {
       return (
         <div className="flex items-center justify-center h-screen bg-background text-foreground">
           <div className="text-center space-y-4 max-w-md p-8">
-            <h1 className="text-2xl font-bold">Something went wrong</h1>
+            <h1 className="text-2xl font-bold">{translate("error.title")}</h1>
             <p className="text-muted-foreground text-sm font-mono">
-              {this.state.error?.message || 'An unexpected error occurred'}
+              {this.state.error?.message || translate('error.fallback')}
             </p>
             <Button onClick={this.handleReset}>
-              Try Again
+              {translate("error.retry")}
             </Button>
           </div>
         </div>

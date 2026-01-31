@@ -1,4 +1,4 @@
-"""Tests for projects API routes."""
+"""Tests for verify API route."""
 import json
 import sys
 from pathlib import Path
@@ -10,7 +10,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "web_interface" / "backend
 
 @pytest.fixture
 def app(tmp_path):
-    """Create a test Flask app with a temporary projects directory."""
     project_dir = tmp_path / "test-project"
     project_dir.mkdir()
     manifest = {
@@ -34,20 +33,12 @@ def client(app):
     return app.test_client()
 
 
-class TestProjectsAPI:
-    def test_list_projects(self, client):
-        res = client.get("/api/projects")
+class TestVerifyAPI:
+    def test_verify_no_stls(self, client):
+        """Verify with no rendered STLs returns expected structure."""
+        res = client.post("/api/verify", json={"mode": "default", "project": "test-project"})
         assert res.status_code == 200
         data = res.get_json()
-        assert len(data) >= 1
-        assert data[0]["slug"] == "test-project"
-
-    def test_get_project_manifest(self, client):
-        res = client.get("/api/projects/test-project/manifest")
-        assert res.status_code == 200
-        data = res.get_json()
-        assert data["project"]["slug"] == "test-project"
-
-    def test_unknown_project_404(self, client):
-        res = client.get("/api/projects/nonexistent/manifest")
-        assert res.status_code == 404
+        assert "status" in data
+        assert "output" in data
+        assert "passed" in data

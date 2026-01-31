@@ -13,7 +13,7 @@
 - **Live Parameter Controls**: Sliders and toggles update the model dynamically (debounced auto-render).
 - **Advanced Visibility**: The Visibility section has a Basic/Advanced toggle. Basic mode shows coarse toggles (Base, Walls, Mechanism, Letters, Bottom Unit, Top Unit). Advanced mode adds sub-component toggles (e.g., Left Wall, Right Wall, Base Ring, Pillars, Snap Beams) indented under their parent. In Assembly/Grid modes, Advanced also shows per-half overrides (e.g., Bottom Base, Bottom Walls). When a parent toggle is unchecked, its children are grayed out.
 - **Theme Toggle**: Switch between Light, Dark, and System (Auto) modes. Preference is persisted.
-- **Bilingual UI**: English and Spanish (Spanish is default). Parameter labels and tooltips come from the manifest; UI chrome strings come from `LanguageProvider`.
+- **Bilingual UI**: English and Spanish (Spanish is default). Every user-visible string is translated: buttons, labels, error messages, onboarding wizard, viewer controls, navigation, and accessibility text. Parameter labels and tooltips come from the manifest; all other UI strings come from `LanguageProvider` via the `t()` function.
 - **Export Capabilities**:
     - **Download STL**: Save the current model as an STL file (or ZIP for multi-part modes).
     - **Export Images**: Capture screenshots from manifest-defined camera angles (default: Isometric, Top, Front, Right).
@@ -198,7 +198,7 @@ src/
 │   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
 │   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
 │   ├── ConfirmRenderDialog.jsx    # Long-render confirmation dialog
-│   ├── ErrorBoundary.jsx          # React error boundary
+│   ├── ErrorBoundary.jsx          # React error boundary (accepts `t` prop for i18n)
 │   └── ui/                        # Shadcn UI primitives
 ├── contexts/
 │   ├── ManifestProvider.jsx       # Fetches /api/manifest, bundled fallback
@@ -239,7 +239,7 @@ src/
 - **`ManifestProvider.jsx`**: Fetches `/api/projects` on mount to discover available projects, then fetches `/api/projects/{slug}/manifest` for the active project. On failure, falls back to the bundled `fallback-manifest.json`. All accessor functions are memoized with `useCallback`; the provider `value` is wrapped in `useMemo`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`, `projects`, `switchProject()`.
 - **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values. Accessible: sliders carry `aria-label` matching the parameter name; value displays have descriptive `aria-label` with parameter name and current value, `role="button"`, and keyboard support.
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
-- **`LanguageProvider.jsx`**: Contains only UI chrome translations (buttons, log messages, phases, view labels, theme state labels). All parameter labels, tooltips, tab names, and color labels come from the manifest.
+- **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.
 - **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
 

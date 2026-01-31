@@ -8,7 +8,7 @@ import { useManifest } from "../contexts/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Star } from 'lucide-react'
 
-function SliderControl({ param, value, onSliderChange, getLabel, language }) {
+function SliderControl({ param, value, onSliderChange, getLabel, language, t }) {
     const [editing, setEditing] = useState(false)
     const [editValue, setEditValue] = useState('')
     const decimals = param.step % 1 === 0 ? 0 : (param.step.toString().split('.')[1]?.length || 0)
@@ -54,7 +54,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
                         onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
                         role="button"
                         tabIndex={0}
-                        aria-label={`${getLabel(param, 'label', language)}: ${displayValue}. Click to edit`}
+                        aria-label={`${getLabel(param, 'label', language)}: ${displayValue}. ${t('ctrl.click_to_edit')}`}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); setEditValue(String(displayValue)) } }}
                     >
                         {displayValue}
@@ -109,7 +109,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language }) {
 }
 
 export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, presets = [], onApplyPreset, onToggleGridPreset }) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
     const [visibilityLevel, setVisibilityLevel] = useState(() => {
         const visGroup = manifest.parameter_groups?.find(g => g.id === 'visibility')
@@ -237,6 +237,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             onSliderChange={handleSliderChange}
                             getLabel={getLabel}
                             language={language}
+                            t={t}
                         />
                     ))}
                 </div>
@@ -307,7 +308,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                     <Label className="text-base font-semibold">{getGroupLabel('colors', language)}</Label>
                     <div className="flex items-center justify-between">
                         <Label htmlFor="wireframe-toggle" className="text-sm">
-                            {language === 'es' ? 'Estructura' : 'Wireframe'}
+                            {t('ctrl.wireframe')}
                         </Label>
                         <Switch
                             id="wireframe-toggle"

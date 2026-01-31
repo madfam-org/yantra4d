@@ -5,10 +5,7 @@
 ---
 
 ## Key Features
-- **Three-Mode Workflow**:
-    1.  **Unit Mode**: Visualize and verify a single `half_cube` unit. Adjust Size, Thickness, Rod Diameter, and Primitive Visibility.
-    2.  **Assembly Mode**: Preview how two half-cubes fit together (bottom + top parts).
-    3.  **Grid Mode**: Generate a full `tablaco` grid assembly. Adjust Rows, Columns, and Rod Extension.
+- **Mode-Based Workflow**: Modes are defined per-project in `project.json`. The built-in tablaco project defines Unit, Assembly, and Grid modes — see [`projects/tablaco/docs/`](../projects/tablaco/docs/index.md).
 - **Multi-Project Platform**: Serve and switch between multiple SCAD projects. See [Multi-Project Platform](./multi-project.md).
 - **Data-Driven UI**: All modes, parameters, parts, camera views, parameter group labels, viewer defaults, and estimation constants are declared in a [project manifest](./manifest.md) (`projects/{slug}/project.json`). No hardcoded control definitions, camera positions, or UI labels in the frontend.
 - **Interactive 3D Viewer**: Real-time rendering of generated STL files with loading progress. Uses Z-up axis convention (matching OpenSCAD) with an orientation gizmo widget.

@@ -59,7 +59,7 @@ These constants scale with `scale_factor = size / 20` and have minimum-value gua
 | `cyl_H` | `size - thick - fit_clear` | Cylinder/pillar height (full interleaving height) |
 | `weld` | `0.4` | Weld cube size for boolean connectivity |
 
-All togglable parameters (`show_base`, `show_walls`, `show_mech`) and dimensional parameters (`size`, `thick`, `rod_D`) are declared in the [project manifest](./manifest.md) and exposed in the web UI for the Unit and Assembly modes.
+All togglable parameters (`show_base`, `show_walls`, `show_mech`) and dimensional parameters (`size`, `thick`, `rod_D`) are declared in the [project manifest](../../../docs/manifest.md) and exposed in the web UI for the Unit and Assembly modes.
 
 ### Modules
 
@@ -133,7 +133,7 @@ This script generates a **grid assembly** of full cubes, including vertical rods
 | `cols` | `8` | Number of columns in the grid (horizontal). |
 | `rod_extension` | `10` | How far the rods protrude beyond the stoppers (mm). 0 = flush. |
 
-These parameters are declared in the [project manifest](./manifest.md) and exposed in the web UI for the Grid mode.
+These parameters are declared in the [project manifest](../../../docs/manifest.md) and exposed in the web UI for the Grid mode.
 
 ### Modules
 
@@ -158,7 +158,7 @@ These parameters are declared in the [project manifest](./manifest.md) and expos
 
 ## Render Modes and Parts
 
-Each SCAD file uses a `render_mode` integer to select which part to export. The mapping is declared in the [project manifest](./manifest.md):
+Each SCAD file uses a `render_mode` integer to select which part to export. The mapping is declared in the [project manifest](../../../docs/manifest.md):
 
 | Part ID | `render_mode` | Used in Modes |
 |---------|---------------|---------------|
@@ -168,4 +168,4 @@ Each SCAD file uses a `render_mode` integer to select which part to export. The 
 | `rods` | 3 | Grid |
 | `stoppers` | 4 | Grid |
 
-[Back to Index](./index.md)
+[Platform Docs](../../../docs/index.md) | [Project Docs](./index.md)

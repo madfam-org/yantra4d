@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   backend:
     build: .
@@ -21,13 +19,14 @@ services:
       retries: 3
 
   frontend:
-    build: ./web_interface/frontend
+    build:
+      context: ./web_interface/frontend
+      args:
+        VITE_API_BASE: http://backend:5000
+        VITE_JANUA_BASE_URL: ${VITE_JANUA_BASE_URL:-}
+        VITE_JANUA_CLIENT_ID: ${VITE_JANUA_CLIENT_ID:-qubic}
     ports:
       - "3000:80"
     depends_on:
       backend:
         condition: service_healthy
-    environment:
-      - VITE_API_URL=http://backend:5000
-      - VITE_JANUA_BASE_URL=${VITE_JANUA_BASE_URL:-}
-      - VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID:-qubic}

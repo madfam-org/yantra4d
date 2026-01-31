@@ -80,7 +80,7 @@ describe('cancelRender', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(fetchMock.mock.calls[1][0]).toContain('/api/render-cancel')
-    expect(fetchMock.mock.calls[1][1]).toEqual({ method: 'POST' })
+    expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: 'POST' })
   })
 
   it('in wasm mode, does not call fetch for cancel', async () => {

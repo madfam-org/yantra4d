@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 def create_app():
     """Application factory for Flask app."""
     app = Flask(__name__)
-    CORS(app, origins=os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(","))
+    CORS(app, origins=[o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")])
 
     limiter.init_app(app)
 

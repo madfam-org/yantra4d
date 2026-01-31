@@ -158,7 +158,6 @@ def discover_projects() -> list[dict]:
                         "name": proj.get("name", child.name),
                         "version": proj.get("version", "0.0.0"),
                         "description": proj.get("description", ""),
-                        "path": str(child),
                     })
                 except (json.JSONDecodeError, KeyError) as e:
                     logger.warning(f"Skipping invalid project at {child}: {e}")
@@ -176,7 +175,6 @@ def discover_projects() -> list[dict]:
                     "name": proj.get("name", "Default Project"),
                     "version": proj.get("version", "0.0.0"),
                     "description": proj.get("description", ""),
-                    "path": str(Config.SCAD_DIR),
                 })
             except (json.JSONDecodeError, KeyError) as e:
                 logger.error(f"Failed to load fallback manifest: {e}")
@@ -220,6 +218,12 @@ def load_manifest(slug: str | None = None) -> ProjectManifest:
     manifest = ProjectManifest(data, project_dir)
     _manifest_cache[cache_key] = manifest
     return manifest
+
+
+def invalidate_cache(slug: str | None = None) -> None:
+    """Remove a cached manifest so the next load_manifest() re-reads disk."""
+    project_dir = _resolve_project_dir(slug)
+    _manifest_cache.pop(str(project_dir), None)
 
 
 def get_manifest(slug: str | None = None) -> ProjectManifest:

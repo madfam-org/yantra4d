@@ -10,6 +10,7 @@ export default function ProjectSelector() {
       value={projectSlug}
       onChange={(e) => switchProject(e.target.value)}
       className="h-8 px-2 text-sm rounded-md border border-border bg-background text-foreground"
+      aria-label="Select project"
     >
       {projects.map((p) => (
         <option key={p.slug} value={p.slug}>

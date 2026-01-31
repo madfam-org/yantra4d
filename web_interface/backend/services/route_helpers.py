@@ -1,12 +1,13 @@
 """
 Shared route helpers for consistent error handling, STL cleanup, and path safety.
 """
+import functools
 import logging
 import os
 from pathlib import Path
 from typing import Optional
 
-from flask import jsonify
+from flask import jsonify, request
 
 from config import Config
 
@@ -39,3 +40,16 @@ def error_response(message: str, status_code: int = 500):
     """Return a standardized JSON error response."""
     logger.error(f"[{status_code}] {message}")
     return jsonify({"status": "error", "error": message}), status_code
+
+
+def require_json_body(f):
+    """Decorator: reject request with 400 if body is not a JSON object."""
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        data = request.json
+        if not data:
+            return error_response("Request body must be JSON", 400)
+        if not isinstance(data, dict):
+            return error_response("Request body must be a JSON object", 400)
+        return f(*args, **kwargs)
+    return decorated

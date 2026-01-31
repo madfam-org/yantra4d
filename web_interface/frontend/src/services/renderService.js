@@ -1,13 +1,14 @@
 /**
  * Render service with dual-mode support:
  * - Backend mode: uses Flask API (native OpenSCAD, faster)
- * - WASM mode: uses openscad-wasm in a Web Worker (for static deploy / GitHub Pages)
+ * - WASM mode: uses openscad-wasm in a Web Worker (for offline/static deploy)
  *
  * Auto-detects which mode to use by checking if the backend is reachable.
  */
 
 import { isBackendAvailable, getApiBase } from './backendDetection'
 import { detectPhase, isLogWorthy } from '../lib/openscad-phases'
+import { apiFetch } from './apiClient'
 
 const API_BASE = getApiBase()
 
@@ -162,7 +163,7 @@ async function renderBackend(mode, params, onProgress, abortSignal, project) {
   const payload = { ...params, mode }
   if (project) payload.project = project
 
-  const response = await fetch(`${API_BASE}/api/render-stream`, {
+  const response = await apiFetch(`${API_BASE}/api/render-stream`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -245,7 +246,7 @@ export async function cancelRender() {
   const currentMode = await detectMode()
   if (currentMode === 'backend') {
     try {
-      await fetch(`${API_BASE}/api/render-cancel`, { method: 'POST' })
+      await apiFetch(`${API_BASE}/api/render-cancel`, { method: 'POST' })
     } catch { /* best-effort cancel */ }
   } else if (_worker) {
     _worker.terminate()

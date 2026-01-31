@@ -8,6 +8,13 @@ from flask import Flask
 from middleware.auth import require_auth, require_role, optional_auth, decode_token
 
 
+@pytest.fixture(autouse=True)
+def _enable_auth(monkeypatch):
+    """Auth middleware tests need AUTH_ENABLED=True (conftest disables it globally)."""
+    from config import Config
+    monkeypatch.setattr(Config, "AUTH_ENABLED", True)
+
+
 @pytest.fixture
 def app():
     app = Flask(__name__)

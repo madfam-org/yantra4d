@@ -12,6 +12,7 @@ from flask import Blueprint, request, jsonify
 from config import Config
 from extensions import limiter
 from manifest import get_manifest, resolve_part_config
+from middleware.auth import require_auth
 from services.route_helpers import safe_join_path
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,7 @@ VERIFY_SCRIPT = str(Config.VERIFY_SCRIPT)
 
 
 @verify_bp.route('/api/verify', methods=['POST'])
+@require_auth
 @limiter.limit("50/hour")
 def verify_design():
     """Run verification on rendered STL parts for the current mode."""
@@ -38,11 +40,13 @@ def verify_design():
     # Build verification config from manifest
     verify_cfg = manifest.get_verification_config(mode)
 
+    stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
+
     results = []
     all_passed = True
 
     for part in parts:
-        stl_filename = f"{Config.STL_PREFIX}{part}.stl"
+        stl_filename = f"{stl_prefix}{part}.stl"
         resolved = safe_join_path(STATIC_FOLDER, stl_filename)
 
         if resolved is None:

@@ -5,6 +5,7 @@
 
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { getApiBase } from './backendDetection'
+import { apiFetch } from './apiClient'
 
 const API_BASE = getApiBase()
 const cache = new Map()
@@ -27,7 +28,7 @@ export async function fetchAssemblyGeometries(params, geometryKeys) {
   if (cache.has(hash)) return cache.get(hash)
 
   const payload = { ...params, mode: 'assembly' }
-  const response = await fetch(`${API_BASE}/api/render`, {
+  const response = await apiFetch(`${API_BASE}/api/render`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

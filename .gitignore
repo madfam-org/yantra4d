@@ -40,8 +40,13 @@ Thumbs.db
 .env.local
 *.local
 
+# Python caches
+.pytest_cache/
+.ruff_cache/
+
 # MCP tool caches
 .playwright-mcp/
+.serena/
 
 # Dev server PIDs
 .dev-pids/

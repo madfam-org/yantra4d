@@ -25,6 +25,38 @@ describe('verify', () => {
     expect(fetchMock.mock.calls[1][0]).toContain('/api/verify')
   })
 
+  it('in backend mode, sends project slug when provided', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: 'passed', passed: true, output: 'ok', parts_checked: 1 }),
+    })
+
+    await verifyService.verify([{ type: 'main', url: 'http://x/a.stl' }], 'unit', 'my-project')
+
+    const verifyCall = fetchMock.mock.calls[1]
+    const body = JSON.parse(verifyCall[1].body)
+    expect(body.project).toBe('my-project')
+    expect(body.mode).toBe('unit')
+  })
+
+  it('in backend mode, omits project field when not provided', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: 'passed', passed: true, output: 'ok', parts_checked: 1 }),
+    })
+
+    await verifyService.verify([], 'unit')
+
+    const verifyCall = fetchMock.mock.calls[1]
+    const body = JSON.parse(verifyCall[1].body)
+    expect(body.project).toBeUndefined()
+    expect(body.mode).toBe('unit')
+  })
+
   it('in backend mode, throws on non-ok response', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health

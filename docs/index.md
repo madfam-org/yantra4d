@@ -8,13 +8,15 @@ Welcome to the documentation for the Tablaco Interlocking Cube project.
 -   [Verification Suite](./verification.md): Automated STL quality checks — watertightness, volume count, assembly fit.
 -   [Web Interface](./web_interface.md): Full-stack architecture (Flask/React), API reference, component structure.
 -   [Project Manifest](./manifest.md): Extensible manifest schema, how the webapp is data-driven, and how to add new projects.
+-   [Multi-Project Platform](./multi-project.md): Multi-project setup, project switching, and Docker configuration.
+-   [Developer Experience Guide](./devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
 
 ## Quick Start
 
 ### 1. Generating Models
 ```bash
 # Standard Model
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl scad/half_cube.scad
+/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl projects/tablaco/half_cube.scad
 ```
 
 ### 2. Running Verification
@@ -40,8 +42,8 @@ Access: http://localhost:3000
 
 The project has three layers:
 
-1. **OpenSCAD Models** (`scad/`) — Parametric geometry definitions
+1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions (e.g., `projects/tablaco/`)
 2. **Backend API** (`web_interface/backend/`) — Flask server that invokes OpenSCAD and serves STL files
 3. **Frontend SPA** (`web_interface/frontend/`) — React app with Three.js viewer
 
-All three layers are connected through the **project manifest** (`scad/project.json`), which declares modes, parameters, parts, and labels. The backend loads it at startup; the frontend fetches it at runtime from `/api/manifest` (with a bundled fallback). See [Project Manifest](./manifest.md) for details.
+All three layers are connected through **project manifests** (`projects/{slug}/project.json`), which declare modes, parameters, parts, and labels. The backend's manifest registry discovers projects at startup; the frontend fetches the active project's manifest via `/api/projects/{slug}/manifest` (with a bundled fallback). See [Project Manifest](./manifest.md) and [Multi-Project Platform](./multi-project.md) for details.

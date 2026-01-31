@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { ManifestProvider, useManifest } from './ManifestProvider'
+import fallbackManifest from '../config/fallback-manifest.json'
 
 // Mock fetch so the provider doesn't hit the network
 beforeEach(() => {
@@ -11,6 +12,7 @@ function TestConsumer() {
   const {
     loading, getMode, getParametersForMode, getDefaultParams, getDefaultColors, getLabel,
     getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants, projectSlug,
+    projects, switchProject,
   } = useManifest()
   if (loading) return <div data-testid="loading">loading</div>
 
@@ -45,6 +47,8 @@ function TestConsumer() {
       <span data-testid="wasm-multiplier">{estimateConstants.wasm_multiplier}</span>
       <span data-testid="warning-threshold">{estimateConstants.warning_threshold_seconds}</span>
       <span data-testid="project-slug">{projectSlug}</span>
+      <span data-testid="projects-count">{projects.length}</span>
+      <button data-testid="switch-btn" onClick={() => switchProject('other')}>switch</button>
     </div>
   )
 }
@@ -155,5 +159,63 @@ describe('ManifestProvider', () => {
     expect(gridParamIds).toContain('rows')
     expect(gridParamIds).toContain('cols')
     expect(gridParamIds).not.toContain('size')
+  })
+
+  it('projects list is empty when fetch fails (fallback mode)', async () => {
+    render(
+      <ManifestProvider>
+        <TestConsumer />
+      </ManifestProvider>
+    )
+
+    await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
+
+    expect(screen.getByTestId('projects-count').textContent).toBe('0')
+  })
+
+  it('exposes switchProject function', async () => {
+    render(
+      <ManifestProvider>
+        <TestConsumer />
+      </ManifestProvider>
+    )
+
+    await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
+
+    // switchProject should be callable without error
+    const btn = screen.getByTestId('switch-btn')
+    expect(btn).toBeInTheDocument()
+  })
+
+  it('fetches projects list from /api/projects on mount', async () => {
+    const projectsList = [
+      { slug: 'tablaco', name: 'Tablaco Studio', version: '1.0.0' },
+      { slug: 'other', name: 'Other Project', version: '0.1.0' },
+    ]
+
+    const fetchMock = vi.fn()
+    // First call: /api/projects
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(projectsList),
+    })
+    // Second call: /api/projects/tablaco/manifest
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(fallbackManifest),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(
+      <ManifestProvider>
+        <TestConsumer />
+      </ManifestProvider>
+    )
+
+    await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
+
+    expect(fetchMock.mock.calls[0][0]).toContain('/api/projects')
+    expect(screen.getByTestId('projects-count').textContent).toBe('2')
+    expect(screen.getByTestId('project-slug').textContent).toBe('tablaco')
   })
 })

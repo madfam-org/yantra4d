@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tablaco.dev/schemas/project-manifest.schema.json",
+  "title": "Tablaco Project Manifest",
+  "description": "Schema for project.json files used by the Tablaco parametric 3D design platform.",
+  "type": "object",
+  "required": ["project", "modes", "parts", "parameters", "estimate_constants"],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["name", "slug", "version"],
+      "properties": {
+        "name": { "type": "string", "description": "Human-readable project name" },
+        "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-_]*$", "description": "URL-safe project identifier" },
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "description": { "type": "string" }
+      }
+    },
+    "modes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "scad_file", "label", "parts", "estimate"],
+        "properties": {
+          "id": { "type": "string" },
+          "scad_file": { "type": "string", "pattern": "\\.scad$" },
+          "label": { "$ref": "#/$defs/i18nString" },
+          "parts": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "estimate": {
+            "type": "object",
+            "properties": {
+              "base_units": {},
+              "formula": { "type": "string", "enum": ["constant", "grid"] },
+              "formula_vars": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "render_mode", "label", "default_color"],
+        "properties": {
+          "id": { "type": "string" },
+          "render_mode": { "type": "integer", "minimum": 0 },
+          "label": { "$ref": "#/$defs/i18nString" },
+          "default_color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+        }
+      }
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "default", "label"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "enum": ["slider", "checkbox", "text"] },
+          "default": {},
+          "min": { "type": "number" },
+          "max": { "type": "number" },
+          "step": { "type": "number" },
+          "label": { "$ref": "#/$defs/i18nString" },
+          "tooltip": { "$ref": "#/$defs/i18nString" },
+          "group": { "type": "string" },
+          "visible_in_modes": { "type": "array", "items": { "type": "string" } },
+          "visibility_level": { "type": "string" },
+          "parent": { "type": "string" },
+          "disabled": { "type": "boolean" }
+        }
+      }
+    },
+    "presets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "values"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "$ref": "#/$defs/i18nString" },
+          "values": { "type": "object" }
+        }
+      }
+    },
+    "camera_views": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "position"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "$ref": "#/$defs/i18nString" },
+          "position": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 }
+        }
+      }
+    },
+    "parameter_groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "$ref": "#/$defs/i18nString" },
+          "levels": { "type": "array" }
+        }
+      }
+    },
+    "viewer": {
+      "type": "object",
+      "properties": {
+        "default_color": { "type": "string" }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "stages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "checks": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": { "type": "boolean" }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "required": ["checks"]
+          }
+        },
+        "mode_overrides": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "stages": { "type": "array", "items": { "type": "string" } },
+              "overrides": { "type": "object", "additionalProperties": true },
+              "part_overrides": { "type": "object", "additionalProperties": true }
+            }
+          }
+        }
+      },
+      "required": ["stages"]
+    },
+    "grid_presets": { "type": "object" },
+    "estimate_constants": {
+      "type": "object",
+      "required": ["base_time", "per_unit", "per_part"],
+      "properties": {
+        "base_time": { "type": "number" },
+        "per_unit": { "type": "number" },
+        "per_part": { "type": "number" },
+        "fn_factor": { "type": "number" },
+        "wasm_multiplier": { "type": "number" },
+        "warning_threshold_seconds": { "type": "number" }
+      }
+    }
+  },
+  "$defs": {
+    "i18nString": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "object", "properties": { "en": { "type": "string" }, "es": { "type": "string" } }, "required": ["en"] }
+      ]
+    }
+  }
+}

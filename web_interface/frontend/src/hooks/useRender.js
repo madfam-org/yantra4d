@@ -7,7 +7,7 @@ const LOADING_RESET_DELAY_MS = 500
 /**
  * Hook encapsulating render orchestration: generate, cancel, confirm dialog, cache.
  */
-export function useRender({ mode, params, manifest, t, getCacheKey }) {
+export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
   const [parts, setParts] = useState([])
   const [logs, setLogs] = useState(t("log.ready"))
   const [loading, setLoading] = useState(false)
@@ -62,7 +62,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
           }
           if (log) setLogs(prev => prev + `\n${log}`)
         },
-        abortSignal: controller.signal
+        abortSignal: controller.signal,
+        project
       })
 
       setParts(result)
@@ -83,7 +84,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey }) {
         setProgress(0)
       }, LOADING_RESET_DELAY_MS)
     }
-  }, [mode, params, manifest, t, getCacheKey])
+  }, [mode, params, manifest, t, getCacheKey, project])
 
   const handleCancelGenerate = useCallback(async () => {
     if (abortControllerRef.current) {

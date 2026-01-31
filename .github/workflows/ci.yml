@@ -42,4 +42,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check manifest sync
-        run: diff <(python3 -c "import json; print(json.dumps(json.load(open('scad/project.json')), indent=2))") <(python3 -c "import json; print(json.dumps(json.load(open('web_interface/frontend/src/config/fallback-manifest.json')), indent=2))")
+        run: diff <(python3 -c "import json; print(json.dumps(json.load(open('projects/tablaco/project.json')), indent=2))") <(python3 -c "import json; print(json.dumps(json.load(open('web_interface/frontend/src/config/fallback-manifest.json')), indent=2))")

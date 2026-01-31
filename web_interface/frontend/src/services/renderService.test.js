@@ -144,4 +144,42 @@ describe('renderParts (backend mode)', () => {
     expect(result).toHaveLength(1)
     warnSpy.mockRestore()
   })
+
+  it('includes project slug in render payload when provided', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', { size: 20 }, manifest, { project: 'my-project' })
+
+    const renderCall = fetchMock.mock.calls[1]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.project).toBe('my-project')
+    expect(body.mode).toBe('unit')
+    expect(body.size).toBe(20)
+  })
+
+  it('omits project field from payload when not provided', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', { size: 20 }, manifest, {})
+
+    const renderCall = fetchMock.mock.calls[1]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.project).toBeUndefined()
+  })
 })

@@ -24,6 +24,8 @@ from routes.health import health_bp
 from routes.verify import verify_bp
 from routes.config_route import config_bp
 from routes.manifest_route import manifest_bp
+from routes.projects import projects_bp
+from routes.onboard import onboard_bp
 
 # Configure logging
 logging.basicConfig(
@@ -47,6 +49,8 @@ def create_app():
     app.register_blueprint(verify_bp)
     app.register_blueprint(config_bp)
     app.register_blueprint(manifest_bp)
+    app.register_blueprint(projects_bp)
+    app.register_blueprint(onboard_bp)
     
     # Static file serving
     @app.route('/static/<path:filename>')
@@ -68,6 +72,8 @@ def create_app():
 
     logger.info(f"Tablaco Backend initialized - Debug: {Config.DEBUG}")
     logger.info(f"SCAD Directory: {Config.SCAD_DIR}")
+    logger.info(f"Projects Directory: {Config.PROJECTS_DIR}")
+    logger.info(f"Multi-project mode: {Config.MULTI_PROJECT}")
     logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")
 
     return app

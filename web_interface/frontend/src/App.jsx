@@ -14,6 +14,7 @@ import { useImageExport } from './hooks/useImageExport'
 import { useLocalStoragePersistence } from './hooks/useLocalStoragePersistence'
 import { downloadFile, downloadZip } from './lib/downloadUtils'
 import { verify } from './services/verifyService'
+import ProjectSelector from './components/ProjectSelector'
 import './index.css'
 
 const RENDER_DEBOUNCE_MS = 500
@@ -30,8 +31,16 @@ function safeParse(key, fallback) {
 
 function parseHash(hash, presets, modes) {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-  const presetId = parts[0]
-  const modeId = parts[1]
+  // Support both 2-segment (preset/mode) and 3-segment (project/preset/mode) formats
+  let presetId, modeId
+  if (parts.length >= 3) {
+    // 3-segment: project/preset/mode — project handled by ManifestProvider
+    presetId = parts[1]
+    modeId = parts[2]
+  } else {
+    presetId = parts[0]
+    modeId = parts[1]
+  }
   const preset = presets.find(p => p.id === presetId)
   const mode = modes.find(m => m.id === modeId)
   return {
@@ -40,8 +49,8 @@ function parseHash(hash, presets, modes) {
   }
 }
 
-function buildHash(presetId, modeId) {
-  return `#/${presetId}/${modeId}`
+function buildHash(projectSlug, presetId, modeId) {
+  return `#/${projectSlug}/${presetId}/${modeId}`
 }
 
 function App() {
@@ -77,7 +86,7 @@ function App() {
     const presetId = parsed.preset?.id || presets[0]?.id
     const modeId = parsed.mode.id
     if (presetId) {
-      window.location.hash = buildHash(presetId, modeId)
+      window.location.hash = buildHash(projectSlug, presetId, modeId)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -114,9 +123,9 @@ function App() {
     }
     const presetId = activePresetId || presets[0]?.id
     if (presetId) {
-      window.location.hash = buildHash(presetId, newMode)
+      window.location.hash = buildHash(projectSlug, presetId, newMode)
     }
-  }, [activePresetId, presets, manifest])
+  }, [activePresetId, presets, manifest, projectSlug])
 
   const viewerRef = useRef(null)
   const consoleRef = useRef(null)
@@ -150,7 +159,7 @@ function App() {
     handleCancelGenerate,
     handleConfirmRender,
     handleCancelRender,
-  } = useRender({ mode, params, manifest, t, getCacheKey })
+  } = useRender({ mode, params, manifest, t, getCacheKey, project: projectSlug })
 
   // Auto-scroll console to bottom on new logs
   useEffect(() => {
@@ -190,7 +199,7 @@ function App() {
     })
     setActivePresetId(preset.id)
     setGridPresetId(defaultGridPreset)
-    window.location.hash = buildHash(preset.id, mode)
+    window.location.hash = buildHash(projectSlug, preset.id, mode)
   }
 
   const handleReset = () => {
@@ -202,7 +211,7 @@ function App() {
   const handleVerify = async () => {
     setLogs(prev => prev + `\n${t("log.verify")}`)
     try {
-      const res = await verify(parts, mode)
+      const res = await verify(parts, mode, projectSlug)
       setLogs(prev => prev + "\n\n--- VERIFICATION REPORT ---\n" + res.output)
       if (res.passed) setLogs(prev => prev + `\n${t("log.pass")}`)
       else setLogs(prev => prev + `\n${t("log.fail")}`)
@@ -291,7 +300,10 @@ function App() {
     <div className="flex flex-col h-screen w-full bg-background text-foreground">
       {/* Header */}
       <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-        <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
+          <ProjectSelector />
+        </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? 'English' : 'Español'}>
             <Globe className="h-5 w-5" />

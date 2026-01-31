@@ -6,11 +6,43 @@ const ManifestContext = createContext()
 
 export function ManifestProvider({ children }) {
   const [manifest, setManifest] = useState(fallbackManifest)
+  const [projects, setProjects] = useState([])
+  const [projectSlug, setProjectSlug] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Fetch projects list on mount
   useEffect(() => {
-    // Try backend API first; fall back to bundled manifest (always available for static deploy)
-    fetch(`${getApiBase()}/api/manifest`, { signal: AbortSignal.timeout(2000) })
+    fetch(`${getApiBase()}/api/projects`, { signal: AbortSignal.timeout(2000) })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
+      })
+      .then((data) => {
+        setProjects(data)
+        // Determine initial project from URL hash or first project
+        const hashSlug = _getProjectSlugFromHash()
+        const slug = data.find(p => p.slug === hashSlug)?.slug || data[0]?.slug
+        if (slug) {
+          setProjectSlug(slug)
+        }
+      })
+      .catch((err) => {
+        console.warn('Projects fetch failed, using fallback:', err)
+        setProjectSlug(fallbackManifest.project.slug)
+        setLoading(false)
+      })
+  }, [])
+
+  // Fetch manifest when projectSlug changes
+  useEffect(() => {
+    if (!projectSlug) return
+
+    setLoading(true) // eslint-disable-line react-hooks/set-state-in-effect -- intentional loading indicator before async fetch
+    const url = projects.length > 0
+      ? `${getApiBase()}/api/projects/${projectSlug}/manifest`
+      : `${getApiBase()}/api/manifest`
+
+    fetch(url, { signal: AbortSignal.timeout(2000) })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
@@ -18,8 +50,13 @@ export function ManifestProvider({ children }) {
       .then((data) => setManifest(data))
       .catch((err) => {
         console.warn('Manifest fetch failed, using fallback:', err)
+        setManifest(fallbackManifest)
       })
       .finally(() => setLoading(false))
+  }, [projectSlug, projects.length])
+
+  const switchProject = useCallback((slug) => {
+    setProjectSlug(slug)
   }, [])
 
   const getMode = useCallback((modeId) => manifest.modes.find((m) => m.id === modeId), [manifest])
@@ -72,6 +109,9 @@ export function ManifestProvider({ children }) {
   const value = useMemo(() => ({
     manifest,
     loading,
+    projects,
+    projectSlug: projectSlug || manifest.project.slug,
+    switchProject,
     getMode,
     getParametersForMode,
     getPartColors,
@@ -83,10 +123,16 @@ export function ManifestProvider({ children }) {
     getViewerConfig,
     getEstimateConstants,
     presets: manifest.presets || [],
-    projectSlug: manifest.project.slug,
-  }), [manifest, loading, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
+  }), [manifest, loading, projects, projectSlug, switchProject, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
 
   return <ManifestContext.Provider value={value}>{children}</ManifestContext.Provider>
+}
+
+function _getProjectSlugFromHash() {
+  const hash = window.location.hash.replace(/^#\/?/, '')
+  const parts = hash.split('/').filter(Boolean)
+  // 3-segment hash: project/preset/mode
+  return parts.length >= 3 ? parts[0] : null
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

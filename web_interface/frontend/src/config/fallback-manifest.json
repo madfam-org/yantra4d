@@ -614,5 +614,53 @@
     "per_part": 8,
     "wasm_multiplier": 3,
     "warning_threshold_seconds": 60
+  },
+  "verification": {
+    "stages": {
+      "geometry": {
+        "checks": {
+          "watertight": { "enabled": true },
+          "body_count": { "enabled": true, "expected": 1 },
+          "dimensions": {
+            "enabled": true,
+            "xy_tolerance_mm": 0.5,
+            "z_ratio_min": 0.9,
+            "z_ratio_max": 1.1
+          },
+          "facet_count": { "enabled": true, "min_facets": 400 }
+        }
+      },
+      "printability": {
+        "checks": {
+          "thin_wall": { "enabled": true, "min_thickness_mm": 0.8 },
+          "overhang": { "enabled": true, "max_angle_deg": 45 },
+          "min_feature_size": { "enabled": true, "min_size_mm": 0.4 }
+        }
+      },
+      "assembly_fit": {
+        "checks": {
+          "collision": {
+            "enabled": true,
+            "transform": { "rotate_x_deg": 180, "rotate_z_deg": 90 }
+          }
+        }
+      }
+    },
+    "mode_overrides": {
+      "unit": {
+        "stages": ["geometry", "printability"]
+      },
+      "assembly": {
+        "stages": ["geometry", "printability", "assembly_fit"]
+      },
+      "grid": {
+        "stages": ["geometry", "printability"],
+        "part_overrides": {
+          "rods":     { "geometry.facet_count": { "min_facets": 50 }, "geometry.dimensions": { "enabled": false } },
+          "stoppers": { "geometry.facet_count": { "min_facets": 50 }, "geometry.dimensions": { "enabled": false } },
+          "tubing":   { "geometry.facet_count": { "min_facets": 50 }, "geometry.dimensions": { "enabled": false } }
+        }
+      }
+    }
   }
 }

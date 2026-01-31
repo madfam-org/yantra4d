@@ -1,29 +1,31 @@
-# Tablaco: Parametric Interlocking Cube
+# Tablaco Studio — Parametric 3D Print Design Platform
 
-A generative design project creating a 3-walled interlocking cube system optimized for FDM 3D printing.
+A manifest-driven platform for parametric OpenSCAD models with a web-based 3D preview studio.
 
 ![Tablaco Studio](/docs/images/half_cube_iso.png)
 
+Ships with the **tablaco** interlocking cube project. See [`projects/tablaco/README.md`](./projects/tablaco/README.md) for project-specific details.
+
 ## Features
--   **Parametric**: Fully adjustable size, thickness, and clearance via OpenSCAD.
--   **Interlocking**: Two identical "Half-Cubes" snap together to form a solid void.
--   **Cantilever Snaps**: Integrated mechanism for secure, repeated assembly.
--   **Grid Assembly**: Generate arrays of cubes with configurable rows, columns, and connecting rods.
+-   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
+-   **Multi-Project**: Serve and switch between multiple SCAD projects from a single instance.
 -   **Tablaco Studio**: A web-based interface for customization and visualization.
-    -   **Three Modes**: Unit Design, Assembly Preview, and Grid Design.
     -   **Theme Toggle**: Light, Dark, and System (Auto) modes.
     -   **Bilingual UI**: Spanish (default) and English.
     -   **Export**: Download STL files and capture images (Iso, Top, Front, Right).
--   **Extensible Manifest Architecture**: The webapp is data-driven via a project manifest (`project.json`). Swapping SCAD projects requires only a new manifest file.
+-   **Onboarding**: CLI tool and web wizard for onboarding external SCAD projects.
 
 ## Documentation
 
-Full documentation is available in the [`docs/`](./docs/index.md) directory:
+Platform documentation is available in the [`docs/`](./docs/index.md) directory:
 
--   [Mechanical Design](./docs/mechanical_design.md) — OpenSCAD geometry, parameters, modules
 -   [Verification Suite](./docs/verification.md) — Automated STL quality checks
 -   [Web Interface](./docs/web_interface.md) — Full-stack architecture (Flask/React)
 -   [Project Manifest](./docs/manifest.md) — Extensible manifest schema and how to add new projects
+-   [Multi-Project Platform](./docs/multi-project.md) — Multi-project setup and configuration
+-   [Developer Experience](./docs/devx-guide.md) — Onboarding external SCAD projects
+
+Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./projects/tablaco/README.md) for the built-in project.
 
 ## Tech Stack
 -   **CAD**: OpenSCAD

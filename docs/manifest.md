@@ -192,7 +192,7 @@ No frontend or backend code changes are required in either mode.
 
 ## Relationship to Other Docs
 
-- The manifest defines the modes documented in [Mechanical Design](./mechanical_design.md)
+- The manifest defines the modes documented in [Mechanical Design](../projects/tablaco/docs/mechanical_design.md)
 - The backend loader is part of the architecture described in [Web Interface](./web_interface.md)
 - Verification modes map to manifest mode IDs, as described in [Verification Suite](./verification.md)
 

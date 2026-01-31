@@ -1,25 +1,23 @@
-# Tablaco Project Documentation
+# Tablaco Studio — Platform Documentation
 
-Welcome to the documentation for the Tablaco Interlocking Cube project.
+Platform-level documentation for the Tablaco Studio parametric 3D print design platform.
 
 ## Documentation Index
 
--   [Mechanical Design](./mechanical_design.md): Parametric Half-Cube geometry, modules, clearance strategies, and grid assembly.
 -   [Verification Suite](./verification.md): Automated STL quality checks — watertightness, volume count, assembly fit.
 -   [Web Interface](./web_interface.md): Full-stack architecture (Flask/React), API reference, component structure.
 -   [Project Manifest](./manifest.md): Extensible manifest schema, how the webapp is data-driven, and how to add new projects.
 -   [Multi-Project Platform](./multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [Developer Experience Guide](./devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
 
+### Per-Project Docs
+
+Each project carries its own docs in `projects/{slug}/docs/`. For example:
+-   [Tablaco project docs](../projects/tablaco/docs/index.md) — Interlocking cube mechanical design
+
 ## Quick Start
 
-### 1. Generating Models
-```bash
-# Standard Model
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl projects/tablaco/half_cube.scad
-```
-
-### 2. Running Verification
+### 1. Running Verification
 ```bash
 python3 tests/verify_design.py
 ```

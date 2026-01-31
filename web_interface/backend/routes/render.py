@@ -24,8 +24,10 @@ def _resolve_render_context(data):
     """Resolve scad_file, parts, and mode_map from payload.
 
     Supports both new `mode` field and legacy `scad_file` field.
+    Accepts optional `project` slug for multi-project support.
     """
-    manifest = get_manifest()
+    project_slug = data.get('project')
+    manifest = get_manifest(project_slug)
     mode_id = data.get('mode')
     scad_filename = data.get('scad_file')
 
@@ -55,7 +57,8 @@ def estimate_render_time():
         return error_response("Request body must be JSON", 400)
     if not isinstance(data, dict):
         return error_response("Request body must be a JSON object", 400)
-    manifest = get_manifest()
+    project_slug = data.get('project')
+    manifest = get_manifest(project_slug)
     constants = manifest.estimate_constants
 
     mode_id = data.get('mode')
@@ -98,16 +101,19 @@ def render_stl():
         bad_name = scad_path  # 4th return is the bad filename on error
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
+    project_slug = data.get('project', '')
+    stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
+
     generated_parts = []
     combined_log = ""
 
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER)
+    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix)
 
     params = validate_params(data.get('parameters', data))
 
     try:
         for part in parts_to_render:
-            output_filename = f"{Config.STL_PREFIX}{part}.stl"
+            output_filename = f"{stl_prefix}{part}.stl"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             render_mode = mode_map.get(part, 0)
@@ -155,17 +161,20 @@ def render_stl_stream():
         bad_name = scad_path
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
+    project_slug = data.get('project', '')
+    stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
+
     num_parts = len(parts_to_render)
     host_url = request.host_url
     params = validate_params(data.get('parameters', data))
 
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER)
+    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix)
 
     def generate():
         generated_parts = []
 
         for i, part in enumerate(parts_to_render):
-            output_filename = f"{Config.STL_PREFIX}{part}.stl"
+            output_filename = f"{stl_prefix}{part}.stl"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             part_base = (i / num_parts) * 100

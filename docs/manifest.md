@@ -1,13 +1,13 @@
 # Project Manifest
 
-The project manifest (`scad/project.json`) is the single source of truth for modes, parameters, parts, colors, labels, and estimation formulas. Both the backend and frontend consume it, making the webapp fully data-driven and project-agnostic.
+The project manifest (`projects/{slug}/project.json`) is the single source of truth for modes, parameters, parts, colors, labels, and estimation formulas. Both the backend and frontend consume it, making the webapp fully data-driven and project-agnostic. A formal JSON Schema is available at `schemas/project-manifest.schema.json`.
 
 ---
 
 ## How It Works
 
-1. **Backend** (`manifest.py`): Loads `project.json` from `SCAD_DIR` at startup. Provides typed accessors used by all route handlers. Cached after first load.
-2. **Frontend** (`ManifestProvider.jsx`): Fetches `/api/manifest` on mount. On failure (backend down), falls back to a bundled copy at `src/config/fallback-manifest.json`.
+1. **Backend** (`manifest.py`): Multi-project manifest registry. `discover_projects()` scans `PROJECTS_DIR` for subdirectories with `project.json`. `get_manifest(slug)` loads and caches per-project `ProjectManifest` instances. Falls back to `SCAD_DIR` for single-project mode.
+2. **Frontend** (`ManifestProvider.jsx`): Fetches `/api/projects` on mount, then `/api/projects/{slug}/manifest` for the active project. On failure (backend down), falls back to a bundled copy at `src/config/fallback-manifest.json`.
 3. **All UI controls** (sliders, checkboxes, color pickers, tabs, labels, tooltips) are rendered from manifest data — no hardcoded parameter definitions in the frontend.
 
 ---
@@ -117,8 +117,8 @@ The `ProjectManifest` class provides:
 | `as_json()` | `dict` | Raw data for API serialization |
 
 Module-level functions:
-- `load_manifest()` — Load and cache from `SCAD_DIR/project.json`
-- `get_manifest()` — Get the cached instance
+- `discover_projects()` — Scan `PROJECTS_DIR` for subdirectories with `project.json`
+- `get_manifest(slug=None)` — Load and cache a project manifest by slug (falls back to `SCAD_DIR`)
 
 ---
 
@@ -131,6 +131,8 @@ The `useManifest()` hook provides:
 | `manifest` | Raw manifest object |
 | `loading` | `true` while fetching |
 | `projectSlug` | `manifest.project.slug` |
+| `projects` | List of available projects (`[{slug, name, version}]`) |
+| `switchProject(slug)` | Switch to a different project (re-fetches manifest) |
 | `getMode(modeId)` | Mode object by ID |
 | `getParametersForMode(modeId)` | Parameters visible in that mode |
 | `getPartColors(modeId)` | Part definitions (with labels + default colors) for that mode |
@@ -166,15 +168,25 @@ If the estimate exceeds `warning_threshold_seconds` (default: 60), a confirmatio
 
 ## Adding a New SCAD Project
 
-To make the webapp render a completely different SCAD project:
+### Multi-Project Mode (recommended)
 
 1. **Write your `.scad` files** with a `render_mode` parameter convention (integer selects which part to export).
-2. **Create `project.json`** alongside the SCAD files, declaring your modes, parts, parameters, and labels.
-3. **Set `SCAD_DIR`** environment variable to point at your new directory (or replace the default `scad/` contents).
-4. **Copy `project.json`** to `web_interface/frontend/src/config/fallback-manifest.json` (so the frontend works even if the backend is down).
-5. **Restart the backend** — the frontend auto-adapts to the new manifest.
+2. **Create a project directory** under `projects/`: `projects/my-project/`
+3. **Create `project.json`** in that directory, declaring your modes, parts, parameters, and labels. Validate against `schemas/project-manifest.schema.json`.
+4. **Place `.scad` files** in the same directory.
+5. **Restart the backend** — the new project appears in `/api/projects` and the frontend project selector.
 
-No frontend or backend code changes are required.
+Alternatively, use the CLI tool: `scripts/tablaco-init <scad-directory> --slug my-project --install`
+
+See [Multi-Project Platform](./multi-project.md) and [Developer Experience Guide](./devx-guide.md) for details.
+
+### Single-Project Mode (legacy)
+
+1. **Set `SCAD_DIR`** environment variable to point at your project directory.
+2. **Copy `project.json`** to `web_interface/frontend/src/config/fallback-manifest.json` for offline mode.
+3. **Restart the backend**.
+
+No frontend or backend code changes are required in either mode.
 
 ---
 

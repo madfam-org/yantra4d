@@ -3,13 +3,18 @@ from pathlib import Path
 
 class Config:
     """Application configuration with environment variable support."""
-    
+
     # Paths
     BASE_DIR = Path(__file__).parent
-    
-    _default_scad = BASE_DIR.parent.parent / "scad"
+
+    _default_scad = BASE_DIR.parent.parent / "projects" / "tablaco"
     SCAD_DIR = Path(os.getenv("SCAD_DIR", _default_scad))
-    
+
+    _default_projects = BASE_DIR.parent.parent / "projects"
+    PROJECTS_DIR = Path(os.getenv("PROJECTS_DIR", _default_projects))
+
+    MULTI_PROJECT = os.getenv("PROJECTS_DIR") is not None or _default_projects.is_dir()
+
     STATIC_DIR = BASE_DIR / "static"
     
     _default_verify = BASE_DIR.parent.parent / "tests" / "verify_design.py"

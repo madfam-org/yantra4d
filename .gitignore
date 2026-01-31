@@ -20,8 +20,8 @@ dist/
 # Generated STL files (build artifacts)
 *.stl
 
-# Keep source models directory tracked
-!models/*.stl
+# Keep reference models tracked
+!projects/*/exports/models/*.stl
 
 # IDE
 .idea/

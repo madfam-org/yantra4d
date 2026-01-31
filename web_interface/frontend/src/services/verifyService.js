@@ -89,11 +89,13 @@ async function verifyClient(parts) {
 /**
  * Backend verification.
  */
-async function verifyBackend(mode) {
+async function verifyBackend(mode, project) {
+  const payload = { mode }
+  if (project) payload.project = project
   const res = await fetch(`${API_BASE}/api/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mode })
+    body: JSON.stringify(payload)
   })
   if (!res.ok) throw new Error(`Verification failed: ${res.status}`)
   return res.json()
@@ -106,10 +108,10 @@ async function verifyBackend(mode) {
  * @param {string} mode - Current mode
  * @returns {Promise<{status: string, passed: boolean, output: string, parts_checked: number}>}
  */
-export async function verify(parts, mode) {
+export async function verify(parts, mode, project) {
   const backend = await isBackendAvailable()
   if (backend) {
-    return verifyBackend(mode)
+    return verifyBackend(mode, project)
   }
   return verifyClient(parts)
 }

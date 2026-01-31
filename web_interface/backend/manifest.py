@@ -1,28 +1,36 @@
 """
 Project Manifest loader.
-Parses scad/project.json and provides typed accessors for modes, parts, parameters.
+Parses project.json and provides typed accessors for modes, parts, parameters.
+Supports multi-project mode via PROJECTS_DIR.
 """
+import copy
 import json
 import logging
+from pathlib import Path
 
 from config import Config
 
 logger = logging.getLogger(__name__)
 
-_manifest_cache = None
+_manifest_cache: dict[str, "ProjectManifest"] = {}
 
 
 class ProjectManifest:
     """Typed wrapper around project.json data."""
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, project_dir: Path):
         self._data = data
+        self.project_dir = project_dir
 
     # --- Core accessors ---
 
     @property
     def project(self) -> dict:
         return self._data["project"]
+
+    @property
+    def slug(self) -> str:
+        return self._data["project"]["slug"]
 
     @property
     def modes(self) -> list:
@@ -47,7 +55,7 @@ class ProjectManifest:
         result = {}
         for mode in self.modes:
             fname = mode["scad_file"]
-            result[fname] = Config.SCAD_DIR / fname
+            result[fname] = self.project_dir / fname
         return result
 
     def get_parts_map(self) -> dict:
@@ -92,18 +100,111 @@ class ProjectManifest:
                     return int(base) if isinstance(base, (int, float)) else 1
         return 1
 
+    def get_verification_config(self, mode_id: str) -> dict | None:
+        """Build resolved verification config for a mode, with per-part overrides."""
+        raw = self._data.get("verification")
+        if raw is None:
+            return None  # Signal to use script defaults
+
+        base_stages = raw["stages"]
+        mode_cfg = raw.get("mode_overrides", {}).get(mode_id, {})
+        enabled_stage_ids = mode_cfg.get("stages", list(base_stages.keys()))
+
+        # Filter to enabled stages only
+        stages = {}
+        for sid in enabled_stage_ids:
+            if sid in base_stages:
+                stages[sid] = copy.deepcopy(base_stages[sid])
+
+        # Apply mode-level overrides (dot-notation: "geometry.facet_count")
+        for key, val in mode_cfg.get("overrides", {}).items():
+            stage_id, check_id = key.split(".", 1)
+            if stage_id in stages and check_id in stages[stage_id]["checks"]:
+                stages[stage_id]["checks"][check_id].update(val)
+
+        return {"stages": stages, "part_overrides": mode_cfg.get("part_overrides", {})}
+
     def as_json(self) -> dict:
         """Return raw data for API serialization."""
         return self._data
 
 
-def load_manifest() -> ProjectManifest:
-    """Load and cache the project manifest from SCAD_DIR/project.json."""
-    global _manifest_cache
-    if _manifest_cache is not None:
-        return _manifest_cache
+def resolve_part_config(base_config: dict, part_id: str) -> dict:
+    """Apply part_overrides to base config, return config for a single part."""
+    result = copy.deepcopy(base_config["stages"])
+    overrides = base_config.get("part_overrides", {}).get(part_id, {})
+    for key, val in overrides.items():
+        stage_id, check_id = key.split(".", 1)
+        if stage_id in result and check_id in result[stage_id]["checks"]:
+            result[stage_id]["checks"][check_id].update(val)
+    return {"stages": result}
 
-    manifest_path = Config.SCAD_DIR / "project.json"
+
+def discover_projects() -> list[dict]:
+    """Scan PROJECTS_DIR for projects, return metadata list."""
+    projects = []
+    projects_dir = Config.PROJECTS_DIR
+
+    if projects_dir.is_dir():
+        for child in sorted(projects_dir.iterdir()):
+            manifest_path = child / "project.json"
+            if child.is_dir() and manifest_path.exists():
+                try:
+                    with open(manifest_path, "r") as f:
+                        data = json.load(f)
+                    proj = data.get("project", {})
+                    projects.append({
+                        "slug": proj.get("slug", child.name),
+                        "name": proj.get("name", child.name),
+                        "version": proj.get("version", "0.0.0"),
+                        "description": proj.get("description", ""),
+                        "path": str(child),
+                    })
+                except (json.JSONDecodeError, KeyError) as e:
+                    logger.warning(f"Skipping invalid project at {child}: {e}")
+
+    # Fallback: single-project mode via SCAD_DIR
+    if not projects:
+        manifest_path = Config.SCAD_DIR / "project.json"
+        if manifest_path.exists():
+            try:
+                with open(manifest_path, "r") as f:
+                    data = json.load(f)
+                proj = data.get("project", {})
+                projects.append({
+                    "slug": proj.get("slug", "default"),
+                    "name": proj.get("name", "Default Project"),
+                    "version": proj.get("version", "0.0.0"),
+                    "description": proj.get("description", ""),
+                    "path": str(Config.SCAD_DIR),
+                })
+            except (json.JSONDecodeError, KeyError) as e:
+                logger.error(f"Failed to load fallback manifest: {e}")
+
+    return projects
+
+
+def _resolve_project_dir(slug: str | None) -> Path:
+    """Resolve the project directory for a given slug."""
+    if slug:
+        # Try PROJECTS_DIR first
+        candidate = Config.PROJECTS_DIR / slug
+        if candidate.is_dir() and (candidate / "project.json").exists():
+            return candidate
+
+    # Fallback to SCAD_DIR (single-project mode)
+    return Config.SCAD_DIR
+
+
+def load_manifest(slug: str | None = None) -> ProjectManifest:
+    """Load and cache the project manifest for a given slug."""
+    project_dir = _resolve_project_dir(slug)
+    cache_key = str(project_dir)
+
+    if cache_key in _manifest_cache:
+        return _manifest_cache[cache_key]
+
+    manifest_path = project_dir / "project.json"
     logger.info(f"Loading project manifest from {manifest_path}")
 
     try:
@@ -116,10 +217,11 @@ def load_manifest() -> ProjectManifest:
         logger.error(f"Invalid JSON in manifest {manifest_path}: {e}")
         raise RuntimeError(f"Project manifest contains invalid JSON: {e}")
 
-    _manifest_cache = ProjectManifest(data)
-    return _manifest_cache
+    manifest = ProjectManifest(data, project_dir)
+    _manifest_cache[cache_key] = manifest
+    return manifest
 
 
-def get_manifest() -> ProjectManifest:
+def get_manifest(slug: str | None = None) -> ProjectManifest:
     """Get the cached manifest (loads on first call)."""
-    return load_manifest()
+    return load_manifest(slug)

@@ -50,8 +50,8 @@ jobs:
       # Copy SCAD source files into public/ so they're served statically
       - name: Copy SCAD files to public
         run: |
-          cp ../../scad/*.scad public/scad/
-          cp ../../scad/project.json public/manifest.json
+          cp ../../projects/tablaco/*.scad public/scad/
+          cp ../../projects/tablaco/project.json public/manifest.json
 
       - run: npm ci
       - run: npm run build

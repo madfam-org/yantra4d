@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""
+tablaco-init — Onboard an external SCAD project into the Tablaco platform.
+
+Usage:
+  tablaco-init <directory> [--slug NAME] [--analyze-only] [--install]
+
+Examples:
+  tablaco-init ./my-design --slug my-design --analyze-only
+  tablaco-init ./my-design --slug my-design --install
+"""
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+# Add backend to path so we can import analyzer/generator
+SCRIPT_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = SCRIPT_DIR.parent / "web_interface" / "backend"
+sys.path.insert(0, str(BACKEND_DIR))
+
+from services.scad_analyzer import analyze_directory
+from services.manifest_generator import generate_manifest
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Onboard an external SCAD project into Tablaco."
+    )
+    parser.add_argument("directory", type=Path, help="Directory containing .scad files")
+    parser.add_argument("--slug", type=str, default=None, help="Project slug (default: directory name)")
+    parser.add_argument("--analyze-only", action="store_true", help="Print analysis without writing manifest")
+    parser.add_argument("--install", action="store_true", help="Symlink project into projects/ directory")
+    parser.add_argument("--output", type=str, default=None, help="Output path for project.json (default: <directory>/project.json)")
+
+    args = parser.parse_args()
+    directory = args.directory.resolve()
+
+    if not directory.is_dir():
+        print(f"Error: {directory} is not a directory", file=sys.stderr)
+        sys.exit(1)
+
+    scad_files = list(directory.glob("*.scad"))
+    if not scad_files:
+        print(f"Error: No .scad files found in {directory}", file=sys.stderr)
+        sys.exit(1)
+
+    slug = args.slug or directory.name
+    print(f"Analyzing {len(scad_files)} SCAD file(s) in {directory}...")
+
+    result = generate_manifest(directory, slug=slug)
+    analysis = result["analysis"]
+    manifest = result["manifest"]
+    warnings = result["warnings"]
+
+    # Print analysis summary
+    print(f"\n{'='*60}")
+    print(f"  Project: {manifest['project']['name']} ({slug})")
+    print(f"{'='*60}")
+
+    for fname, data in analysis["files"].items():
+        print(f"\n  {fname}:")
+        print(f"    Variables: {len(data['variables'])} ({', '.join(v['name'] for v in data['variables'][:5])}{'...' if len(data['variables']) > 5 else ''})")
+        print(f"    Modules:   {len(data['modules'])} ({', '.join(m['name'] for m in data['modules'][:5])}{'...' if len(data['modules']) > 5 else ''})")
+        print(f"    Includes:  {data['includes']}")
+        print(f"    Uses:      {data['uses']}")
+        print(f"    Render modes: {data['render_modes'] or 'none'}")
+
+    print(f"\n  Entry points: {analysis['entry_points']}")
+    print(f"  Dependency graph: {analysis['dependency_graph']}")
+
+    print(f"\n  Generated manifest:")
+    print(f"    Modes:      {len(manifest['modes'])} ({', '.join(m['id'] for m in manifest['modes'])})")
+    print(f"    Parts:      {len(manifest['parts'])} ({', '.join(p['id'] for p in manifest['parts'])})")
+    print(f"    Parameters: {len(manifest['parameters'])}")
+
+    if warnings:
+        print(f"\n  ⚠ Warnings:")
+        for w in warnings:
+            print(f"    - {w}")
+
+    if args.analyze_only:
+        print(f"\n  (analyze-only mode — no files written)")
+        return
+
+    # Write manifest
+    output_path = Path(args.output) if args.output else directory / "project.json"
+    if output_path.exists():
+        response = input(f"\n  {output_path} already exists. Overwrite? [y/N] ")
+        if response.lower() != "y":
+            print("  Aborted.")
+            return
+
+    with open(output_path, "w") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"\n  ✓ Wrote {output_path}")
+
+    # Install (symlink into projects/)
+    if args.install:
+        projects_dir = SCRIPT_DIR.parent / "projects"
+        projects_dir.mkdir(exist_ok=True)
+        link_path = projects_dir / slug
+
+        if link_path.exists():
+            print(f"  ⚠ {link_path} already exists, skipping symlink")
+        else:
+            link_path.symlink_to(directory)
+            print(f"  ✓ Linked {link_path} → {directory}")
+
+    print(f"\n  Done! Review the generated manifest and adjust parameter ranges as needed.")
+
+
+if __name__ == "__main__":
+    main()

@@ -9,7 +9,8 @@
     1.  **Unit Mode**: Visualize and verify a single `half_cube` unit. Adjust Size, Thickness, Rod Diameter, and Primitive Visibility.
     2.  **Assembly Mode**: Preview how two half-cubes fit together (bottom + top parts).
     3.  **Grid Mode**: Generate a full `tablaco` grid assembly. Adjust Rows, Columns, and Rod Extension.
-- **Data-Driven UI**: All modes, parameters, parts, camera views, parameter group labels, viewer defaults, and estimation constants are declared in a [project manifest](./manifest.md) (`scad/project.json`). No hardcoded control definitions, camera positions, or UI labels in the frontend.
+- **Multi-Project Platform**: Serve and switch between multiple SCAD projects. See [Multi-Project Platform](./multi-project.md).
+- **Data-Driven UI**: All modes, parameters, parts, camera views, parameter group labels, viewer defaults, and estimation constants are declared in a [project manifest](./manifest.md) (`projects/{slug}/project.json`). No hardcoded control definitions, camera positions, or UI labels in the frontend.
 - **Interactive 3D Viewer**: Real-time rendering of generated STL files with loading progress. Uses Z-up axis convention (matching OpenSCAD) with an orientation gizmo widget.
 - **One-Click Verification**: Run the `verify_design.py` suite directly from the UI.
 - **Live Parameter Controls**: Sliders and toggles update the model dynamically (debounced auto-render).
@@ -32,36 +33,48 @@ The app follows a client-server model. Configuration is centralized in a **proje
 ```
 backend/
 ├── app.py                # App factory, blueprint registration
-├── config.py             # Environment config (paths, server settings)
-├── manifest.py           # Project manifest loader (ProjectManifest class)
+├── config.py             # Environment config (paths, server settings, PROJECTS_DIR)
+├── manifest.py           # Multi-project manifest registry (ProjectManifest class)
 ├── requirements.txt      # Python dependencies
 ├── routes/
 │   ├── render.py         # /api/estimate, /api/render, /api/render-stream, /api/render-cancel
 │   ├── verify.py         # /api/verify
 │   ├── health.py         # /api/health
-│   ├── manifest_route.py # /api/manifest
+│   ├── manifest_route.py # /api/manifest (default project)
+│   ├── projects.py       # /api/projects, /api/projects/<slug>/manifest
+│   ├── onboard.py        # /api/projects/analyze, /api/projects/create
 │   └── config_route.py   # /api/config (legacy, delegates to manifest)
 ├── services/
-│   └── openscad.py       # OpenSCAD subprocess wrapper
-└── static/               # Generated STL files (runtime)
+│   ├── openscad.py       # OpenSCAD subprocess wrapper
+│   ├── scad_analyzer.py  # SCAD file regex analysis engine
+│   └── manifest_generator.py  # Draft manifest scaffolding from analysis
+└── static/               # Generated STL files (runtime, namespaced by project)
 ```
 
 #### Key Modules
 
-- **`manifest.py`**: Loads `scad/project.json` and exposes a `ProjectManifest` class with typed accessors: `get_allowed_files()`, `get_parts_map()`, `get_mode_map()`, `get_scad_file_for_mode()`, `get_parts_for_mode()`, `calculate_estimate_units()`. The manifest is loaded once and cached.
-- **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary, `STL_PREFIX`). Static methods delegate to the manifest for backward compatibility.
-- **`routes/render.py`**: Accepts both `mode` (new) and `scad_file` (legacy) fields in payloads. The `_resolve_render_context()` helper resolves both to the correct SCAD path and part list.
+- **`manifest.py`**: Multi-project manifest registry. `discover_projects()` scans `PROJECTS_DIR` for subdirectories with `project.json`. `get_manifest(slug)` loads and caches per-project `ProjectManifest` instances. Each manifest has a `project_dir` so SCAD paths resolve relative to the project, not a global config. Falls back to `SCAD_DIR` for single-project mode.
+- **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary, `STL_PREFIX`). Adds `PROJECTS_DIR` (default: `projects/`) and `MULTI_PROJECT` boolean. Static methods delegate to the manifest for backward compatibility.
+- **`routes/render.py`**: Accepts both `mode` (new) and `scad_file` (legacy) fields in payloads. Also accepts optional `project` slug for multi-project routing. The `_resolve_render_context()` helper resolves to the correct SCAD path and part list. STL output is namespaced by project slug.
+- **`routes/projects.py`**: Lists available projects (`GET /api/projects`) and serves per-project manifests (`GET /api/projects/<slug>/manifest`).
+- **`routes/onboard.py`**: Accepts uploaded `.scad` files for analysis (`POST /api/projects/analyze`) and creates new projects (`POST /api/projects/create`).
+- **`services/scad_analyzer.py`**: Regex-based extraction of variables, modules, includes/uses, render_mode patterns, and dependency graphs from `.scad` files.
+- **`services/manifest_generator.py`**: Generates draft `project.json` from analyzer output with auto-detected parameter ranges and warnings.
 
 ### API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/manifest` | GET | Full project manifest as JSON |
-| `/api/estimate` | POST | Estimate render time. Accepts `mode` or `scad_file`. |
-| `/api/render` | POST | Synchronous render |
-| `/api/render-stream` | POST | SSE progress streaming. Accepts `mode` or `scad_file`. |
+| `/api/projects` | GET | List all available projects (multi-project) |
+| `/api/projects/<slug>/manifest` | GET | Full manifest for a specific project |
+| `/api/projects/analyze` | POST | Upload `.scad` files → analysis + draft manifest |
+| `/api/projects/create` | POST | Create new project in `PROJECTS_DIR` |
+| `/api/manifest` | GET | Full project manifest as JSON (default project) |
+| `/api/estimate` | POST | Estimate render time. Accepts `mode` or `scad_file`. Optional `project` slug. |
+| `/api/render` | POST | Synchronous render. Optional `project` slug. |
+| `/api/render-stream` | POST | SSE progress streaming. Optional `project` slug. |
 | `/api/render-cancel` | POST | Cancel active render |
-| `/api/verify` | POST | Run verification suite for a mode |
+| `/api/verify` | POST | Run verification suite for a mode. Optional `project` slug. |
 | `/api/health` | GET | Health check |
 | `/api/config` | GET | Legacy config endpoint (delegates to manifest) |
 
@@ -72,16 +85,26 @@ backend/
 { "mode": "grid", "rows": 4, "cols": 4, "rod_extension": 10 }
 ```
 
+**Estimate / Render (multi-project)**:
+```json
+{ "mode": "grid", "rows": 4, "cols": 4, "rod_extension": 10, "project": "my-project" }
+```
+
 **Estimate / Render (legacy)**:
 ```json
 { "scad_file": "tablaco.scad", "rows": 4, "cols": 4, "rod_extension": 10 }
 ```
 
-Both styles are supported. When `mode` is present, `scad_file` is resolved automatically from the manifest.
+All styles are supported. When `mode` is present, `scad_file` is resolved automatically from the manifest. The optional `project` field routes to the correct project in multi-project mode.
 
 **Verify**:
 ```json
 { "mode": "unit" }
+```
+
+**Verify (multi-project)**:
+```json
+{ "mode": "unit", "project": "my-project" }
 ```
 
 **Render Cancel** (no body required):
@@ -147,7 +170,7 @@ Global handlers for 400, 404, and 500 ensure this format even for unhandled Flas
 
 #### Error Handling
 
-- **Manifest loading**: If `scad/project.json` is missing or contains invalid JSON, the backend raises a `RuntimeError` at startup with a descriptive message.
+- **Manifest loading**: If `projects/{slug}/project.json` (or `scad/project.json` in single-project mode) is missing or contains invalid JSON, the backend raises a `RuntimeError` at startup with a descriptive message.
 - **Frontend fallback**: If the `/api/manifest` fetch fails (backend unavailable or network error), `ManifestProvider` logs a warning and uses the bundled `fallback-manifest.json`. This enables GitHub Pages / static deploys.
 - **Render service**: The frontend checks `response.ok` before reading the SSE stream and throws if the backend returns an error status. Malformed SSE lines are logged with `console.warn` and skipped. An empty stream (no parts produced) throws an error.
 - **Verify service**: Client-side verification checks `response.ok` when fetching STL files and reports fetch failures per-part in the verification output.
@@ -175,6 +198,8 @@ src/
 │   │   ├── AnimatedGrid.jsx       # Animated grid preview (Z-rotation per cube)
 │   │   ├── SceneController.jsx    # Camera view switching (data-driven from manifest)
 │   │   └── NumberedAxes.jsx       # Labeled XYZ axis lines with tick marks
+│   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
+│   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
 │   ├── ConfirmRenderDialog.jsx    # Long-render confirmation dialog
 │   ├── ErrorBoundary.jsx          # React error boundary
 │   └── ui/                        # Shadcn UI primitives
@@ -197,7 +222,7 @@ src/
 │   ├── verifyService.js           # STL verification client
 │   └── assemblyFetcher.js         # Assembly STL fetcher for animated preview
 └── config/
-    └── fallback-manifest.json     # Bundled copy of scad/project.json
+    └── fallback-manifest.json     # Bundled copy of projects/tablaco/project.json
 ```
 
 #### Provider Hierarchy
@@ -214,7 +239,7 @@ src/
 
 #### Key Components
 
-- **`ManifestProvider.jsx`**: Fetches `/api/manifest` on mount (via `getApiBase()` from `backendDetection`). On failure, falls back to the bundled `fallback-manifest.json`. All accessor functions are memoized with `useCallback`; the provider `value` is wrapped in `useMemo`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`.
+- **`ManifestProvider.jsx`**: Fetches `/api/projects` on mount to discover available projects, then fetches `/api/projects/{slug}/manifest` for the active project. On failure, falls back to the bundled `fallback-manifest.json`. All accessor functions are memoized with `useCallback`; the provider `value` is wrapped in `useMemo`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`, `projects`, `switchProject()`.
 - **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values. Accessible: sliders carry `aria-label` matching the parameter name; value displays have descriptive `aria-label` with parameter name and current value, `role="button"`, and keyboard support.
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains only UI chrome translations (buttons, log messages, phases, view labels, theme state labels). All parameter labels, tooltips, tab names, and color labels come from the manifest.
@@ -258,7 +283,8 @@ Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SCAD_DIR` | `../../scad` (relative to backend) | Path to SCAD files and `project.json` |
+| `PROJECTS_DIR` | `projects/` (at repo root) | Directory containing project subdirectories (multi-project mode) |
+| `SCAD_DIR` | `../../scad` (relative to backend) | Path to SCAD files and `project.json` (single-project fallback) |
 | `OPENSCAD_PATH` | `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD` | Path to OpenSCAD binary |
 | `VERIFY_SCRIPT` | `../../tests/verify_design.py` | Path to verification script |
 | `FLASK_DEBUG` | `false` | Enable Flask debug mode |

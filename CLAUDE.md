@@ -1,18 +1,22 @@
 # Tablaco — Parametric 3D Print Design Studio
 
-Manifest-driven Flask + React/Vite app for parametric OpenSCAD models with 3D preview.
+Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview.
 
 ## Architecture
 
 ```
-scad/project.json (manifest — single source of truth)
+projects/
+  {slug}/project.json  (manifest — single source of truth per project)
+  {slug}/*.scad        (OpenSCAD geometry)
+  {slug}/exports/      (reference STL exports)
        │
        ├──► web_interface/backend/  (Flask API, renders via OpenSCAD CLI)
-       │        └── routes/  render, verify, health, manifest, config
+       │        ├── routes/  render, verify, health, manifest, config, projects, onboard
+       │        └── services/  openscad, scad_analyzer, manifest_generator
        │
        └──► web_interface/frontend/ (React 19 + Vite + Three.js + Shadcn UI)
-                ├── contexts/  ManifestProvider, Theme, Language
-                ├── components/  Controls, Viewer, ConfirmRenderDialog
+                ├── contexts/  ManifestProvider (multi-project), Theme, Language
+                ├── components/  Controls, Viewer, ProjectSelector, OnboardingWizard
                 └── services/  renderService, verifyService, openscad-worker (WASM)
 ```
 
@@ -20,8 +24,8 @@ scad/project.json (manifest — single source of truth)
 
 | Path | Purpose | Modify? |
 |------|---------|---------|
-| `scad/project.json` | Project manifest — modes, parts, parameters, estimates | **YES** |
-| `scad/*.scad` | OpenSCAD geometry source files | YES |
+| `projects/{slug}/project.json` | Project manifest — modes, parts, parameters, estimates | **YES** |
+| `projects/{slug}/*.scad` | OpenSCAD geometry source files | YES |
 | `web_interface/backend/app.py` | Flask entry point, CORS, static serving | RARELY |
 | `web_interface/backend/routes/render.py` | Render + estimate + cancel + SSE stream | RARELY |
 | `web_interface/backend/routes/verify.py` | STL verification endpoint | RARELY |
@@ -29,13 +33,21 @@ scad/project.json (manifest — single source of truth)
 | `web_interface/frontend/src/components/Controls.jsx` | Data-driven param controls (reads manifest) | RARELY |
 | `web_interface/frontend/src/components/Viewer.jsx` | Three.js 3D STL viewer | RARELY |
 | `web_interface/frontend/src/contexts/ManifestProvider.jsx` | Fetches & provides manifest to app | RARELY |
+| `web_interface/backend/routes/projects.py` | Multi-project listing API | RARELY |
+| `web_interface/backend/routes/onboard.py` | Project onboarding API | RARELY |
+| `web_interface/backend/services/scad_analyzer.py` | SCAD file analysis engine | RARELY |
+| `web_interface/backend/services/manifest_generator.py` | Manifest scaffolding from SCAD analysis | RARELY |
+| `web_interface/frontend/src/components/ProjectSelector.jsx` | Project switcher dropdown | RARELY |
+| `web_interface/frontend/src/components/OnboardingWizard.jsx` | Web-based project onboarding wizard | RARELY |
 | `web_interface/frontend/src/components/ui/*` | Shadcn primitives | **NEVER** |
+| `scripts/tablaco-init` | CLI tool for onboarding external SCAD projects | RARELY |
+| `schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `tests/verify_design.py` | STL quality checker script | RARELY |
 | `docs/*.md` | Deep-dive documentation | YES |
 
 ## Core Pattern: Manifest-Driven Design
 
-`scad/project.json` controls **everything**: modes, parts, parameters, UI controls, colors, and estimates. To add features, **edit the manifest first** — the UI and backend read it dynamically.
+`projects/{slug}/project.json` controls **everything**: modes, parts, parameters, UI controls, colors, and estimates. To add features, **edit the manifest first** — the UI and backend read it dynamically.
 
 **Rule**: Most new parameters or modes require **zero code changes** — only manifest edits.
 
@@ -43,19 +55,30 @@ scad/project.json (manifest — single source of truth)
 
 ## Common Workflows
 
+### Multi-project setup
+1. Projects live in `projects/` — each subdirectory with a `project.json` is auto-discovered
+2. Set `PROJECTS_DIR` env var to override (default: `projects/` at repo root)
+3. Without `PROJECTS_DIR` or `projects/`, falls back to single-project via `SCAD_DIR`
+
+### Onboard an external SCAD project
+```bash
+scripts/tablaco-init ./path/to/scad-dir --slug my-project --install
+```
+Or use the web UI: upload `.scad` files → review analysis → edit manifest → save.
+
 ### Add a parameter
-1. Add entry to `scad/project.json` → `parameters[]` (set name, type, default, min/max, modes)
+1. Add entry to `projects/{slug}/project.json` → `parameters[]` (set name, type, default, min/max, modes)
 2. Use `$name` in relevant `.scad` files
 3. Update `fallback-manifest.json` if deploying to Pages
 
 ### Add a mode
-1. Add entry to `scad/project.json` → `modes[]` (set slug, scad_file, parts, estimate)
-2. Create the `.scad` file in `scad/`
+1. Add entry to `projects/{slug}/project.json` → `modes[]` (set slug, scad_file, parts, estimate)
+2. Create the `.scad` file in `projects/{slug}/`
 3. Update `fallback-manifest.json`
 
 ### Add a new SCAD project
-1. Create new `scad/project.json` following the manifest schema (see `docs/manifest.md`)
-2. Add `.scad` files to `scad/`
+1. Create `projects/{slug}/project.json` following the manifest schema (see `docs/manifest.md`)
+2. Add `.scad` files to `projects/{slug}/`
 
 ### Run tests
 ```bash
@@ -82,7 +105,11 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 
 | Method | Endpoint | Payload | Use Case |
 |--------|----------|---------|----------|
-| GET | `/api/manifest` | — | Fetch full project manifest |
+| GET | `/api/projects` | — | List all available projects |
+| GET | `/api/projects/<slug>/manifest` | — | Fetch manifest for specific project |
+| POST | `/api/projects/analyze` | multipart `.scad` files | Analyze SCAD files, return draft manifest |
+| POST | `/api/projects/create` | multipart manifest + files | Create new project in PROJECTS_DIR |
+| GET | `/api/manifest` | — | Fetch full project manifest (default project) |
 | GET | `/api/health` | — | Health check, OpenSCAD availability |
 | POST | `/api/estimate` | `{mode, scad_file, parameters}` | Estimate render time |
 | POST | `/api/render` | `{mode, scad_file, parameters, parts}` | Synchronous STL render |
@@ -112,6 +139,7 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 | Issue | Detail |
 |-------|--------|
 | Manifest sync | After editing `project.json`, update `fallback-manifest.json` for Pages mode |
+| URL format | Hash changed from `#/preset/mode` to `#/project/preset/mode` — old 2-segment format still supported |
 | Shadcn UI | **Never** hand-edit `components/ui/*` — use shadcn CLI to regenerate |
 | Verify false positives | Verification needs rendered STLs to exist first; render before verifying |
 | Render timeouts | Complex grid renders (high rows×cols) can exceed default timeout; Docker uses 300s |
@@ -122,7 +150,7 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 ## Do NOT Edit
 
 - `web_interface/frontend/src/components/ui/*` — Shadcn managed
-- `node_modules/`, `dist/`, `models/` — generated artifacts
+- `node_modules/`, `dist/` — generated artifacts
 - `.github/workflows/*` — change only with explicit CI/CD intent
 
 ## Deployment

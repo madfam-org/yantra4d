@@ -158,8 +158,9 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
  * Render parts via backend SSE stream.
  * Returns array of { type, url } for each part.
  */
-async function renderBackend(mode, params, onProgress, abortSignal) {
+async function renderBackend(mode, params, onProgress, abortSignal, project) {
   const payload = { ...params, mode }
+  if (project) payload.project = project
 
   const response = await fetch(`${API_BASE}/api/render-stream`, {
     method: 'POST',
@@ -228,10 +229,10 @@ async function renderBackend(mode, params, onProgress, abortSignal) {
 /**
  * Main entry point: render parts for the given mode and parameters.
  */
-export async function renderParts(mode, params, manifest, { onProgress, abortSignal } = {}) {
+export async function renderParts(mode, params, manifest, { onProgress, abortSignal, project } = {}) {
   const currentMode = await detectMode()
   if (currentMode === 'backend') {
-    return renderBackend(mode, params, onProgress, abortSignal)
+    return renderBackend(mode, params, onProgress, abortSignal, project)
   } else {
     return renderWasm(mode, params, manifest, onProgress, abortSignal)
   }

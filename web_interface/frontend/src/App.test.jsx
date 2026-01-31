@@ -67,7 +67,7 @@ describe('App', () => {
     })
   })
 
-  it('verify button calls verify after parts are loaded', async () => {
+  it('verify button calls verify with project slug after parts are loaded', async () => {
     const { verify } = await import('./services/verifyService')
     renderApp()
 
@@ -83,6 +83,10 @@ describe('App', () => {
     fireEvent.click(screen.getByText('Run Verification Suite'))
     await waitFor(() => {
       expect(verify).toHaveBeenCalled()
+      // verify is now called with (parts, mode, projectSlug)
+      const lastCall = verify.mock.calls[verify.mock.calls.length - 1]
+      expect(lastCall).toHaveLength(3)
+      expect(lastCall[2]).toBe('tablaco') // projectSlug from fallback manifest
     })
   })
 
@@ -129,5 +133,14 @@ describe('App', () => {
     fireEvent.click(themeBtn)
     // After click, theme cycles light → dark
     expect(screen.getByTitle('Theme: Dark')).toBeInTheDocument()
+  })
+
+  it('sets 3-segment URL hash with project slug', () => {
+    renderApp()
+    const hash = window.location.hash
+    // Hash should now be #/{projectSlug}/{presetId}/{modeId}
+    const segments = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+    expect(segments.length).toBe(3)
+    expect(segments[0]).toBe('tablaco') // project slug
   })
 })

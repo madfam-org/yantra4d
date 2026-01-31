@@ -10,7 +10,7 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 # Install custom fonts (Allerta Stencil for letter engravings)
-COPY scad/fonts/*.ttf /usr/share/fonts/truetype/custom/
+COPY projects/tablaco/fonts/*.ttf /usr/share/fonts/truetype/custom/
 RUN fc-cache -fv
 
 # Set working directory
@@ -21,7 +21,7 @@ COPY web_interface/backend/requirements.txt ./backend/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
 # Copy application code
-COPY scad/ ./scad/
+COPY projects/ ./projects/
 COPY tests/ ./tests/
 COPY web_interface/backend/ ./backend/
 
@@ -30,7 +30,7 @@ ENV FLASK_DEBUG=false
 ENV OPENSCAD_PATH=/usr/bin/openscad
 ENV PORT=5000
 ENV HOST=0.0.0.0
-ENV SCAD_DIR=/app/scad
+ENV SCAD_DIR=/app/projects/tablaco
 ENV VERIFY_SCRIPT=/app/tests/verify_design.py
 
 # Expose port

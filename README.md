@@ -35,11 +35,13 @@ Full documentation is available in the [`docs/`](./docs/index.md) directory:
 
 ```
 tablaco/
-├── scad/                        # OpenSCAD source files
-│   ├── half_cube.scad           # Single half-cube unit
-│   ├── assembly.scad            # Two-part assembly preview
-│   ├── tablaco.scad             # Full grid assembly
-│   └── project.json             # Project manifest (modes, params, parts)
+├── projects/
+│   └── tablaco/                 # Default project (OpenSCAD source files)
+│       ├── half_cube.scad       # Single half-cube unit
+│       ├── assembly.scad        # Two-part assembly preview
+│       ├── tablaco.scad         # Full grid assembly
+│       ├── project.json         # Project manifest (modes, params, parts)
+│       └── exports/models/      # Reference STL exports
 ├── web_interface/
 │   ├── backend/                 # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration
@@ -83,7 +85,7 @@ tablaco/
 ### Quick Run
 Generate the default model:
 ```bash
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o models/half_cube.stl scad/half_cube.scad
+/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o projects/tablaco/exports/models/half_cube.stl projects/tablaco/half_cube.scad
 ```
 
 ### Launching Tablaco Studio

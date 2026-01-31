@@ -9,6 +9,7 @@ Platform-level documentation for the Tablaco Studio parametric 3D print design p
 -   [Project Manifest](./manifest.md): Extensible manifest schema, how the webapp is data-driven, and how to add new projects.
 -   [Multi-Project Platform](./multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [Developer Experience Guide](./devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
+-   [Competitive Landscape](./competitive-landscape.md): Market research, competitor analysis, and feature roadmap.
 
 ### Per-Project Docs
 

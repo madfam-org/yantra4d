@@ -4,8 +4,15 @@ import sys
 from pathlib import Path
 
 import pytest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "web_interface" / "backend"))
+
+
+@pytest.fixture(autouse=True)
+def disable_auth():
+    with patch("config.Config.AUTH_ENABLED", False):
+        yield
 
 
 @pytest.fixture

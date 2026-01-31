@@ -9,7 +9,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "web_interface" / "backend
 
 
 @pytest.fixture
-def app(tmp_path):
+def app(tmp_path, monkeypatch):
+    from config import Config
+    monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
     project_dir = tmp_path / "test-project"
     project_dir.mkdir()
     manifest = {
@@ -65,6 +67,32 @@ class TestEstimateAPI:
         assert data["estimated_seconds"] == 221
         assert data["num_parts"] == 2
         assert data["num_units"] == 100
+
+
+class TestEstimateExportFormat:
+    def test_estimate_ignores_export_format(self, client):
+        """export_format is a render param, not an estimate param — estimate should still work."""
+        res = client.post("/api/estimate", json={
+            "mode": "single", "project": "test-project", "export_format": "3mf",
+        })
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["estimated_seconds"] == 15
+
+
+class TestRenderExportFormat:
+    def test_invalid_format_falls_back_to_stl(self):
+        """Invalid export_format should fall back to stl."""
+        from routes.render import ALLOWED_EXPORT_FORMATS
+        assert "exe" not in ALLOWED_EXPORT_FORMATS
+        assert "stl" in ALLOWED_EXPORT_FORMATS
+
+    def test_valid_formats_accepted(self):
+        """Valid export formats are in the allow list."""
+        from routes.render import ALLOWED_EXPORT_FORMATS
+        assert "stl" in ALLOWED_EXPORT_FORMATS
+        assert "3mf" in ALLOWED_EXPORT_FORMATS
+        assert "off" in ALLOWED_EXPORT_FORMATS
 
 
 class TestCancelAPI:

@@ -14,10 +14,13 @@
 - **Advanced Visibility**: The Visibility section has a Basic/Advanced toggle. Basic mode shows coarse toggles (Base, Walls, Mechanism, Letters, Bottom Unit, Top Unit). Advanced mode adds sub-component toggles (e.g., Left Wall, Right Wall, Base Ring, Pillars, Snap Beams) indented under their parent. In Assembly/Grid modes, Advanced also shows per-half overrides (e.g., Bottom Base, Bottom Walls). When a parent toggle is unchecked, its children are grayed out.
 - **Theme Toggle**: Switch between Light, Dark, and System (Auto) modes. Preference is persisted.
 - **Bilingual UI**: English and Spanish (Spanish is default). Every user-visible string is translated: buttons, labels, error messages, onboarding wizard, viewer controls, navigation, and accessibility text. Parameter labels and tooltips come from the manifest; all other UI strings come from `LanguageProvider` via the `t()` function.
+- **Shareable Configuration Links**: Encode full parameter state in URL (`?p=` base64url-encoded diff against defaults). Share exact configurations via link — recipients see the same parameter values applied on load.
+- **Parameter Undo/Redo**: History stack (up to 50 entries) with `Cmd+Z` / `Cmd+Shift+Z`. Undo/redo buttons also available in the header toolbar.
 - **Export Capabilities**:
-    - **Download STL**: Save the current model as an STL file (or ZIP for multi-part modes).
+    - **Download STL/3MF/OFF**: Save the current model in the selected format (or ZIP for multi-part modes). Format selector appears when the manifest declares `export_formats`.
     - **Export Images**: Capture screenshots from manifest-defined camera angles (default: Isometric, Top, Front, Right).
-- **Keyboard Shortcuts**: `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel.
+- **Print Estimation**: Overlay on the viewer showing estimated print time, filament weight, filament length, and cost. Material selector (PLA, PETG, ABS, TPU) and infill percentage. Computed from STL geometry volume using slicer heuristics.
+- **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel.
 
 ---
 
@@ -82,6 +85,12 @@ backend/
 ```json
 { "mode": "grid", "rows": 4, "cols": 4, "rod_extension": 10 }
 ```
+
+**Render with export format**:
+```json
+{ "mode": "unit", "export_format": "3mf", "project": "my-project" }
+```
+Supported formats: `stl` (default), `3mf`, `off`. Invalid formats fall back to `stl`.
 
 **Estimate / Render (multi-project)**:
 ```json
@@ -219,6 +228,7 @@ src/
 │   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
 │   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
 │   ├── ConfirmRenderDialog.jsx    # Long-render confirmation dialog
+│   ├── PrintEstimateOverlay.jsx   # Print time/filament/cost overlay on viewer
 │   ├── ErrorBoundary.jsx          # React error boundary (accepts `t` prop for i18n)
 │   └── ui/                        # Shadcn UI primitives
 ├── contexts/
@@ -228,10 +238,13 @@ src/
 ├── hooks/
 │   ├── useRender.js               # Render orchestration (generate, cancel, cache, confirm)
 │   ├── useImageExport.js          # PNG snapshot export for camera views
-│   └── useLocalStoragePersistence.js # Debounced localStorage sync
+│   ├── useLocalStoragePersistence.js # Debounced localStorage sync
+│   ├── useShareableUrl.js         # Shareable URL generation (base64url param encoding)
+│   └── useUndoRedo.js             # Parameter undo/redo with 50-entry history stack
 ├── lib/
 │   ├── openscad-phases.js         # Shared OpenSCAD phase detection (main + worker)
 │   ├── stl-utils.js               # Binary STL parser + bounding box
+│   ├── printEstimator.js          # Print time/filament/cost estimation from STL geometry
 │   └── downloadUtils.js           # File/ZIP download helpers
 ├── services/
 │   ├── renderService.js           # Dual-mode render (backend SSE / WASM worker)

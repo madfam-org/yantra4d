@@ -101,6 +101,26 @@ const translations = {
         // Controls
         "ctrl.wireframe": "Estructura",
         "ctrl.click_to_edit": "Clic para editar",
+        // Share & Undo/Redo
+        "act.share": "Compartir configuración",
+        "act.share_copied": "¡Enlace copiado!",
+        "act.undo": "Deshacer",
+        "act.redo": "Rehacer",
+        "act.format": "Formato",
+        "act.download_scad": "Descargar SCAD",
+        // Auth
+        "auth.sign_in": "Iniciar sesión",
+        "auth.sign_out": "Cerrar sesión",
+        "auth.sign_in_to_download": "Inicia sesión para descargar",
+        "auth.signed_in_as": "Sesión como",
+        // Print estimation
+        "print.title": "Estimación de Impresión",
+        "print.material": "Material",
+        "print.infill": "Relleno",
+        "print.time": "Tiempo",
+        "print.weight": "Peso",
+        "print.length": "Filamento",
+        "print.cost": "Costo",
     },
     en: {
         "btn.gen": "Generate",
@@ -200,6 +220,26 @@ const translations = {
         // Controls
         "ctrl.wireframe": "Wireframe",
         "ctrl.click_to_edit": "Click to edit",
+        // Share & Undo/Redo
+        "act.share": "Share configuration",
+        "act.share_copied": "Link copied!",
+        "act.undo": "Undo",
+        "act.redo": "Redo",
+        "act.format": "Format",
+        "act.download_scad": "Download SCAD",
+        // Auth
+        "auth.sign_in": "Sign in",
+        "auth.sign_out": "Sign out",
+        "auth.sign_in_to_download": "Sign in to download",
+        "auth.signed_in_as": "Signed in as",
+        // Print estimation
+        "print.title": "Print Estimate",
+        "print.material": "Material",
+        "print.infill": "Infill",
+        "print.time": "Time",
+        "print.weight": "Weight",
+        "print.length": "Filament",
+        "print.cost": "Cost",
     }
 }
 

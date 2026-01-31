@@ -14,6 +14,8 @@ from manifest import get_manifest
 from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
 from services.route_helpers import cleanup_old_stl_files, error_response
 
+ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off'}
+
 logger = logging.getLogger(__name__)
 
 render_bp = Blueprint('render', __name__)
@@ -106,6 +108,9 @@ def render_stl():
 
     project_slug = data.get('project', '')
     stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
+    export_format = data.get('export_format', 'stl')
+    if export_format not in ALLOWED_EXPORT_FORMATS:
+        export_format = 'stl'
 
     generated_parts = []
     combined_log = ""
@@ -116,7 +121,7 @@ def render_stl():
 
     try:
         for part in parts_to_render:
-            output_filename = f"{stl_prefix}{part}.stl"
+            output_filename = f"{stl_prefix}{part}.{export_format}"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             render_mode = mode_map.get(part, 0)
@@ -167,6 +172,9 @@ def render_stl_stream():
 
     project_slug = data.get('project', '')
     stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
+    export_format = data.get('export_format', 'stl')
+    if export_format not in ALLOWED_EXPORT_FORMATS:
+        export_format = 'stl'
 
     num_parts = len(parts_to_render)
     host_url = request.host_url
@@ -178,7 +186,7 @@ def render_stl_stream():
         generated_parts = []
 
         for i, part in enumerate(parts_to_render):
-            output_filename = f"{stl_prefix}{part}.stl"
+            output_filename = f"{stl_prefix}{part}.{export_format}"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             part_base = (i / num_parts) * 100

@@ -89,6 +89,13 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default_color": "#e5e7eb"                        // Fallback mesh color
   },
 
+  "export_formats": ["stl", "3mf", "off"],  // Optional: supported export formats (default: ["stl"])
+
+  "print_estimation": {                     // Optional: print estimation defaults
+    "default_material": "pla",              // "pla", "petg", "abs", or "tpu"
+    "default_infill": 0.2                   // 0.0 to 1.0
+  },
+
   "estimate_constants": {
     "base_time": 5,       // Base seconds for any render
     "per_unit": 1.5,      // Added per unit (grid cell or fixed count)
@@ -115,6 +122,8 @@ The `ProjectManifest` class provides:
 | `get_parts_for_mode(mode_id)` | `[str]` | Part IDs for a mode |
 | `calculate_estimate_units(mode_id, params)` | `int` | Unit count for time estimation |
 | `as_json()` | `dict` | Raw data for API serialization |
+
+The render route also accepts an optional `export_format` field (`"stl"`, `"3mf"`, `"off"`) in render payloads. OpenSCAD determines the output format from the file extension.
 
 Module-level functions:
 - `discover_projects()` — Scan `PROJECTS_DIR` for subdirectories with `project.json`
@@ -143,6 +152,18 @@ The `useManifest()` hook provides:
 | `getGroupLabel(groupId, lang)` | Translated label for a parameter group section |
 | `getViewerConfig()` | Viewer settings (e.g., `default_color`) |
 | `getEstimateConstants()` | Estimate constants including `wasm_multiplier`, `warning_threshold_seconds` |
+
+Additional hooks for Phase 1 features:
+
+| Hook / Utility | Location | Description |
+|----------------|----------|-------------|
+| `useShareableUrl({ params, mode, projectSlug, defaultParams })` | `hooks/useShareableUrl.js` | Generates shareable URLs with encoded param diff; `copyShareUrl()` copies to clipboard |
+| `getSharedParams()` | `hooks/useShareableUrl.js` | Reads `?p=` query param and decodes shared parameter state |
+| `useUndoRedo(initialValue)` | `hooks/useUndoRedo.js` | Returns `[value, setValue, { undo, redo, canUndo, canRedo }]` with 50-entry history |
+| `computeVolumeMm3(geometry)` | `lib/printEstimator.js` | Computes STL volume using signed tetrahedra method |
+| `computeBoundingBox(geometry)` | `lib/printEstimator.js` | Computes bounding box from Three.js geometry |
+| `estimatePrint(volumeMm3, bbox, materialId, overrides)` | `lib/printEstimator.js` | Estimates print time, filament weight/length/cost |
+| `getMaterialProfiles()` | `lib/printEstimator.js` | Returns available material profiles (PLA, PETG, ABS, TPU) |
 
 ---
 

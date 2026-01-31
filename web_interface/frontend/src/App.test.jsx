@@ -157,4 +157,25 @@ describe('App', () => {
     expect(segments.length).toBe(3)
     expect(segments[0]).toBe('tablaco') // project slug
   })
+
+  it('renders share button', () => {
+    renderApp()
+    expect(screen.getByTitle('Share configuration')).toBeInTheDocument()
+  })
+
+  it('renders undo and redo buttons', () => {
+    renderApp()
+    expect(screen.getByTitle('Undo')).toBeInTheDocument()
+    expect(screen.getByTitle('Redo')).toBeInTheDocument()
+  })
+
+  it('undo button is disabled initially (no history)', () => {
+    renderApp()
+    expect(screen.getByTitle('Undo')).toBeDisabled()
+  })
+
+  it('redo button is disabled initially (no future)', () => {
+    renderApp()
+    expect(screen.getByTitle('Redo')).toBeDisabled()
+  })
 })

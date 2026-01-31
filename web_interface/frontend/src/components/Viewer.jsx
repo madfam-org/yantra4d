@@ -9,11 +9,15 @@ import { ErrorBoundary } from './ErrorBoundary'
 import SceneController from './viewer/SceneController'
 import NumberedAxes from './viewer/NumberedAxes'
 import AnimatedGrid from './viewer/AnimatedGrid'
+import { computeVolumeMm3, computeBoundingBox } from '../lib/printEstimator'
 
 const AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 
-const Model = ({ url, color, wireframe }) => {
+const Model = ({ url, color, wireframe, onGeometry }) => {
     const geom = useLoader(STLLoader, url)
+    useEffect(() => {
+        if (geom && onGeometry) onGeometry(geom)
+    }, [geom, onGeometry])
     return (
         <mesh geometry={geom}>
             <meshStandardMaterial
@@ -48,7 +52,30 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     )
 })
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, progressPhase, animating, setAnimating, mode, params }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats }, ref) => {
+    const geometriesRef = React.useRef({})
+
+    const handleGeometry = useCallback((partType, geometry) => {
+        geometriesRef.current[partType] = geometry
+        // Aggregate stats across all parts
+        let totalVolume = 0
+        let mergedBox = null
+        for (const geom of Object.values(geometriesRef.current)) {
+            totalVolume += computeVolumeMm3(geom)
+            const bbox = computeBoundingBox(geom)
+            if (!mergedBox) {
+                mergedBox = bbox
+            } else {
+                mergedBox = {
+                    width: Math.max(mergedBox.width, bbox.width),
+                    depth: Math.max(mergedBox.depth, bbox.depth),
+                    height: Math.max(mergedBox.height, bbox.height),
+                }
+            }
+        }
+        onGeometryStats?.({ volumeMm3: totalVolume, boundingBox: mergedBox })
+    }, [onGeometryStats])
+
     const { language } = useLanguage()
     const { t } = useLanguage()
     const { theme } = useTheme()
@@ -176,6 +203,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                                     url={part.url}
                                     color={colors[part.type] || defaultColor}
                                     wireframe={wireframe}
+                                    onGeometry={(geom) => handleGeometry(part.type, geom)}
                                 />
                             ))}
                         </group>
@@ -187,6 +215,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                                     url={part.url}
                                     color={colors[part.type] || defaultColor}
                                     wireframe={wireframe}
+                                    onGeometry={(geom) => handleGeometry(part.type, geom)}
                                 />
                             ))}
                         </group>

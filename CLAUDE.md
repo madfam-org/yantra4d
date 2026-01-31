@@ -40,6 +40,12 @@ projects/
 | `web_interface/backend/services/manifest_generator.py` | Manifest scaffolding from SCAD analysis | RARELY |
 | `web_interface/frontend/src/components/ProjectSelector.jsx` | Project switcher dropdown | RARELY |
 | `web_interface/frontend/src/components/OnboardingWizard.jsx` | Web-based project onboarding wizard | RARELY |
+| `web_interface/frontend/src/components/ExportPanel.jsx` | Export controls with multi-format selector | RARELY |
+| `web_interface/frontend/src/components/PrintEstimateOverlay.jsx` | Print time/filament/cost overlay | RARELY |
+| `web_interface/frontend/src/hooks/useShareableUrl.js` | Shareable URL generation (base64url params) | RARELY |
+| `web_interface/frontend/src/hooks/useUndoRedo.js` | Parameter undo/redo history stack | RARELY |
+| `web_interface/frontend/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
+| `docs/competitive-landscape.md` | Competitive research & feature roadmap | YES |
 | `web_interface/frontend/src/components/ui/*` | Shadcn primitives | **NEVER** |
 | `scripts/tablaco-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
@@ -120,8 +126,8 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 | GET | `/api/manifest` | — | Fetch full project manifest (default project) |
 | GET | `/api/health` | — | Health check, OpenSCAD availability |
 | POST | `/api/estimate` | `{mode, scad_file, parameters}` | Estimate render time |
-| POST | `/api/render` | `{mode, scad_file, parameters, parts}` | Synchronous STL render |
-| POST | `/api/render-stream` | `{mode, scad_file, parameters, parts}` | SSE streaming render |
+| POST | `/api/render` | `{mode, scad_file, parameters, parts, export_format?}` | Synchronous render (stl/3mf/off) |
+| POST | `/api/render-stream` | `{mode, scad_file, parameters, parts, export_format?}` | SSE streaming render (stl/3mf/off) |
 | POST | `/api/render-cancel` | — | Cancel active render |
 | POST | `/api/verify` | `{mode}` | Run STL quality checks |
 
@@ -161,6 +167,10 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: 100/hr, Estimate: 200/hr, Verify: 50/hr |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
+| Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links restore params on load |
+| Undo/Redo | Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z for parameter undo/redo; 50-entry history stack |
+| Export formats | `export_format` in render payloads (stl/3mf/off); format selector only visible when manifest declares `export_formats` |
+| Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 
 ## Do NOT Edit
 

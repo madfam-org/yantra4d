@@ -152,6 +152,31 @@
       },
       "required": ["stages"]
     },
+    "export_formats": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["stl", "3mf", "off"] },
+      "default": ["stl"],
+      "description": "Supported export formats. OpenSCAD determines format from file extension."
+    },
+    "print_estimation": {
+      "type": "object",
+      "description": "Print estimation configuration for slicer heuristics.",
+      "properties": {
+        "default_material": { "type": "string", "enum": ["pla", "petg", "abs", "tpu"], "default": "pla" },
+        "default_infill": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.2 }
+      }
+    },
+    "access_control": {
+      "type": "object",
+      "description": "Per-project access control. Missing = fully public.",
+      "properties": {
+        "view": { "enum": ["public", "authenticated"], "default": "public" },
+        "configure": { "enum": ["public", "authenticated"], "default": "public" },
+        "download_stl": { "enum": ["public", "authenticated"], "default": "public" },
+        "download_scad": { "enum": ["public", "authenticated"], "default": "public" }
+      },
+      "additionalProperties": false
+    },
     "grid_presets": { "type": "object" },
     "estimate_constants": {
       "type": "object",

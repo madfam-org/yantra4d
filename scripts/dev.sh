@@ -25,7 +25,7 @@ echo $! > "$PID_DIR/frontend.pid"
 cd "$PROJECT_ROOT"
 
 echo ""
-echo "Tablaco Studio running:"
+echo "Qubic Studio running:"
 [ "$1" != "--frontend-only" ] && echo "  Backend:  http://localhost:5000"
 echo "  Frontend: http://localhost:5173"
 echo ""

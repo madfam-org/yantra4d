@@ -1,7 +1,9 @@
 /**
  * Auth provider that wraps @janua/react-sdk's JanuaProvider.
  * Falls back to a no-op bypass when VITE_JANUA_BASE_URL is not configured
- * (e.g., GitHub Pages deployment or local dev without Janua).
+ * (e.g., static deployment or local dev without Janua).
+ *
+ * Uses a bridge pattern to avoid conditional hook calls (Rules of Hooks).
  */
 import { createContext, useContext, useMemo } from 'react'
 
@@ -9,7 +11,7 @@ const JANUA_BASE_URL = import.meta.env.VITE_JANUA_BASE_URL
 const JANUA_CLIENT_ID = import.meta.env.VITE_JANUA_CLIENT_ID || 'qubic'
 const JANUA_REDIRECT_URI = import.meta.env.VITE_JANUA_REDIRECT_URI || (typeof window !== 'undefined' ? window.location.origin : '')
 
-const AuthBypassContext = createContext(null)
+const AuthContext = createContext(null)
 
 /** No-op auth context for when Janua is not configured */
 const BYPASS_VALUE = {
@@ -30,9 +32,24 @@ const BYPASS_VALUE = {
 
 function AuthBypassProvider({ children }) {
   return (
-    <AuthBypassContext.Provider value={BYPASS_VALUE}>
+    <AuthContext.Provider value={BYPASS_VALUE}>
       {children}
-    </AuthBypassContext.Provider>
+    </AuthContext.Provider>
+  )
+}
+
+/**
+ * Bridge component: always renders inside JanuaProvider,
+ * always calls useJanua(), and writes the result to AuthContext.
+ */
+function JanuaBridge({ children }) {
+  // eslint-disable-next-line no-undef
+  const { useJanua } = require('@janua/react-sdk')
+  const janua = useJanua()
+  return (
+    <AuthContext.Provider value={janua}>
+      {children}
+    </AuthContext.Provider>
   )
 }
 
@@ -48,7 +65,7 @@ function JanuaAuthProvider({ children }) {
 
   return (
     <JanuaProvider config={config}>
-      {children}
+      <JanuaBridge>{children}</JanuaBridge>
     </JanuaProvider>
   )
 }
@@ -61,22 +78,12 @@ export function AuthProvider({ children }) {
 }
 
 /**
- * Unified auth hook. Uses Janua's useJanua() when configured,
- * or the bypass context when not.
+ * Unified auth hook. Always a single useContext call — no conditional hooks.
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
-  const bypass = useContext(AuthBypassContext)
-  if (bypass) return bypass
-
-  try {
-    // eslint-disable-next-line no-undef
-    const { useJanua } = require('@janua/react-sdk')
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useJanua()
-  } catch {
-    return BYPASS_VALUE
-  }
+  const context = useContext(AuthContext)
+  return context || BYPASS_VALUE
 }
 
 /** Whether auth is configured at all */

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react"
 
 const LanguageProviderContext = createContext()
 
@@ -254,25 +254,25 @@ export function LanguageProvider({
         () => localStorage.getItem(storageKey) || defaultLanguage
     )
 
-    const t = (key) => {
+    const t = useCallback((key) => {
         return translations[language][key] || key
-    }
+    }, [language])
 
     // Sync <html lang> attribute with current language (WCAG 3.1.1)
     useEffect(() => {
         document.documentElement.lang = language
     }, [language])
 
-    const setLang = (lang) => {
+    const setLang = useCallback((lang) => {
         localStorage.setItem(storageKey, lang)
         setLanguage(lang)
-    }
+    }, [storageKey])
 
-    const value = {
+    const value = useMemo(() => ({
         language,
         setLanguage: setLang,
         t,
-    }
+    }), [language, setLang, t])
 
     return (
         <LanguageProviderContext.Provider value={value}>

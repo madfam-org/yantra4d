@@ -1,0 +1,12 @@
+.git/
+node_modules/
+claudedocs/
+docs/
+.DS_Store
+*.stl
+coverage/
+.pytest_cache/
+.serena/
+.playwright-mcp/
+dist/
+*.log

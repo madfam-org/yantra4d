@@ -76,8 +76,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
         onGeometryStats?.({ volumeMm3: totalVolume, boundingBox: mergedBox })
     }, [onGeometryStats])
 
-    const { language } = useLanguage()
-    const { t } = useLanguage()
+    const { language, t } = useLanguage()
     const { theme } = useTheme()
     const { getCameraViews, getViewerConfig, getLabel, getMode } = useManifest()
     const cameraViews = getCameraViews()

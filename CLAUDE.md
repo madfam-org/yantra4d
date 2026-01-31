@@ -59,7 +59,7 @@ projects/
 
 **Rule**: Most new parameters or modes require **zero code changes** — only manifest edits.
 
-**Fallback**: The frontend embeds a fallback manifest (`src/config/fallback-manifest.json`) for offline/GitHub Pages mode. Keep it in sync after manifest changes.
+**Fallback**: The frontend embeds a fallback manifest (`src/config/fallback-manifest.json`) for offline/WASM-only mode. Keep it in sync after manifest changes.
 
 ## Common Workflows
 
@@ -149,7 +149,7 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 - **Backend**: pytest + pytest-cov, coverage threshold 60%, tests in `tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` → ESLint fix + Vitest on changed files
 - **CI**: `.github/workflows/ci.yml` — lint + test + coverage + `npm audit` + `pip-audit` on push/PR to main
-- **Deploy**: `.github/workflows/deploy.yml` — manual trigger, runs tests then builds to GitHub Pages
+- **Deploy**: Enclii PaaS — auto-deploy on push to main (`enclii-backend.yaml`, `enclii-frontend.yaml`)
 - **Accessibility**: `eslint-plugin-jsx-a11y` enforces a11y rules; jest-axe audits in component tests
 
 ## Known Gotchas
@@ -182,8 +182,8 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 
 | Target | Method |
 |--------|--------|
-| Docker | `docker compose up` (backend + frontend) |
-| GitHub Pages | Manual dispatch via `deploy.yml` (frontend-only, WASM rendering) |
+| Enclii PaaS | Auto-deploy on push to main — `qubic-frontend` at qubic.quest, `qubic-backend` at api.qubic.quest |
+| Docker | `docker compose up` (backend + frontend, local) |
 | Local | Flask dev server + Vite dev server (see workflows above) |
 
 ## Further Docs

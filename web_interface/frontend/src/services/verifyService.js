@@ -6,6 +6,7 @@
 
 import { isBackendAvailable, getApiBase } from './backendDetection'
 import { parseSTL, getBoundingBox } from '../lib/stl-utils'
+import { apiFetch } from './apiClient'
 
 const API_BASE = getApiBase()
 
@@ -92,7 +93,7 @@ async function verifyClient(parts) {
 async function verifyBackend(mode, project) {
   const payload = { mode }
   if (project) payload.project = project
-  const res = await fetch(`${API_BASE}/api/verify`, {
+  const res = await apiFetch(`${API_BASE}/api/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)

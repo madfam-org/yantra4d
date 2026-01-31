@@ -30,7 +30,7 @@
           "estimate": {
             "type": "object",
             "properties": {
-              "base_units": {},
+              "base_units": { "type": ["integer", "number", "string"] },
               "formula": { "type": "string", "enum": ["constant", "grid"] },
               "formula_vars": { "type": "array", "items": { "type": "string" } }
             }
@@ -106,7 +106,7 @@
         "properties": {
           "id": { "type": "string" },
           "label": { "$ref": "#/$defs/i18nString" },
-          "levels": { "type": "array" }
+          "levels": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
@@ -177,7 +177,7 @@
       },
       "additionalProperties": false
     },
-    "grid_presets": { "type": "object" },
+    "grid_presets": { "type": "object", "additionalProperties": { "type": "object" } },
     "estimate_constants": {
       "type": "object",
       "required": ["base_time", "per_unit", "per_part"],

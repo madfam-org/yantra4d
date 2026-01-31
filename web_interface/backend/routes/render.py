@@ -11,8 +11,9 @@ from flask import Blueprint, request, jsonify, Response
 from config import Config
 from extensions import limiter
 from manifest import get_manifest
+from middleware.auth import require_auth
 from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
-from services.route_helpers import cleanup_old_stl_files, error_response
+from services.route_helpers import cleanup_old_stl_files, error_response, require_json_body
 
 ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off'}
 
@@ -52,15 +53,40 @@ def _resolve_render_context(data):
     return scad_filename, scad_path, parts, mode_map
 
 
+def _extract_render_payload(data):
+    """Extract common render payload fields from request data."""
+    scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
+
+    if scad_filename is None:
+        return None
+
+    project_slug = data.get('project', '')
+    stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
+    export_format = data.get('export_format', 'stl')
+    if export_format not in ALLOWED_EXPORT_FORMATS:
+        export_format = 'stl'
+
+    params = validate_params(data.get('parameters', data))
+
+    return {
+        'scad_filename': scad_filename,
+        'scad_path': scad_path,
+        'parts': parts_to_render,
+        'mode_map': mode_map,
+        'stl_prefix': stl_prefix,
+        'export_format': export_format,
+        'params': params,
+        'bad_name': scad_path,  # used for error message when scad_filename is None
+    }
+
+
 @render_bp.route('/api/estimate', methods=['POST'])
+@require_auth
 @limiter.limit("200/hour")
+@require_json_body
 def estimate_render_time():
     """Estimate render time based on parameters before actually rendering."""
     data = request.json
-    if not data:
-        return error_response("Request body must be JSON", 400)
-    if not isinstance(data, dict):
-        return error_response("Request body must be a JSON object", 400)
     project_slug = data.get('project')
     manifest = get_manifest(project_slug)
     constants = manifest.estimate_constants
@@ -92,32 +118,29 @@ def estimate_render_time():
 
 
 @render_bp.route('/api/render', methods=['POST'])
+@require_auth
 @limiter.limit("100/hour")
+@require_json_body
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
-    if not data:
-        return error_response("Request body must be JSON", 400)
-    if not isinstance(data, dict):
-        return error_response("Request body must be a JSON object", 400)
-    scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
+    payload = _extract_render_payload(data)
 
-    if scad_filename is None:
-        bad_name = scad_path  # 4th return is the bad filename on error
+    if payload is None:
+        bad_name = _resolve_render_context(data)[3]
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
-    project_slug = data.get('project', '')
-    stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
-    export_format = data.get('export_format', 'stl')
-    if export_format not in ALLOWED_EXPORT_FORMATS:
-        export_format = 'stl'
+    parts_to_render = payload['parts']
+    stl_prefix = payload['stl_prefix']
+    export_format = payload['export_format']
+    params = payload['params']
+    scad_path = payload['scad_path']
+    mode_map = payload['mode_map']
 
     generated_parts = []
     combined_log = ""
 
     cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix)
-
-    params = validate_params(data.get('parameters', data))
 
     try:
         for part in parts_to_render:
@@ -155,30 +178,27 @@ def render_stl():
 
 
 @render_bp.route('/api/render-stream', methods=['POST'])
+@require_auth
 @limiter.limit("100/hour")
+@require_json_body
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
-    if not data:
-        return error_response("Request body must be JSON", 400)
-    if not isinstance(data, dict):
-        return error_response("Request body must be a JSON object", 400)
+    payload = _extract_render_payload(data)
 
-    scad_filename, scad_path, parts_to_render, mode_map = _resolve_render_context(data)
-
-    if scad_filename is None:
-        bad_name = scad_path
+    if payload is None:
+        bad_name = _resolve_render_context(data)[3]
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
-    project_slug = data.get('project', '')
-    stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
-    export_format = data.get('export_format', 'stl')
-    if export_format not in ALLOWED_EXPORT_FORMATS:
-        export_format = 'stl'
+    parts_to_render = payload['parts']
+    stl_prefix = payload['stl_prefix']
+    export_format = payload['export_format']
+    params = payload['params']
+    scad_path = payload['scad_path']
+    mode_map = payload['mode_map']
 
     num_parts = len(parts_to_render)
     host_url = request.host_url
-    params = validate_params(data.get('parameters', data))
 
     cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix)
 
@@ -219,6 +239,7 @@ def render_stl_stream():
 
 
 @render_bp.route('/api/render-cancel', methods=['POST'])
+@require_auth
 def cancel_render_endpoint():
     """Cancel the active render process."""
     cancelled = cancel_render()

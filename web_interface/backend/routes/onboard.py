@@ -12,6 +12,7 @@ from flask import Blueprint, request, jsonify
 
 from config import Config
 from extensions import limiter
+from manifest import invalidate_cache
 from middleware.auth import require_role
 from services.manifest_generator import generate_manifest
 from services.route_helpers import error_response
@@ -110,11 +111,11 @@ def create_project():
             uploaded.save(project_dir / safe_name)
 
         logger.info(f"Created new project: {slug} at {project_dir}")
+        invalidate_cache(slug)
 
         return jsonify({
             "status": "success",
             "slug": slug,
-            "path": str(project_dir),
         }), 201
 
     except Exception as e:

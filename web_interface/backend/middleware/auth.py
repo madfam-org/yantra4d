@@ -6,10 +6,11 @@ import functools
 import logging
 
 import jwt
-from flask import request, jsonify
+from flask import request
 from jwt import PyJWKClient
 
 from config import Config
+from services.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
@@ -61,13 +62,13 @@ def require_auth(f):
 
         token = _extract_bearer_token()
         if not token:
-            return jsonify({"error": "Authentication required"}), 401
+            return error_response("Authentication required", 401)
 
         try:
             claims = decode_token(token)
         except Exception as e:
             logger.debug("JWT validation failed: %s", e)
-            return jsonify({"error": "Invalid or expired token"}), 401
+            return error_response("Invalid or expired token", 401)
 
         request.auth_claims = claims
         return f(*args, **kwargs)
@@ -86,7 +87,7 @@ def require_role(role: str):
 
             claims = getattr(request, "auth_claims", None)
             if not claims:
-                return jsonify({"error": "Authentication required"}), 401
+                return error_response("Authentication required", 401)
 
             # Check role in claims — supports both 'role' string and 'roles' array
             user_roles = claims.get("roles", [])
@@ -97,7 +98,7 @@ def require_role(role: str):
                 user_roles.append(user_role)
 
             if role not in user_roles:
-                return jsonify({"error": "Insufficient permissions"}), 403
+                return error_response("Insufficient permissions", 403)
 
             return f(*args, **kwargs)
         return decorated

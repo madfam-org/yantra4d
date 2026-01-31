@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     process.env.ANALYZE && visualizer({ open: true, gzipSize: true, filename: 'dist/stats.html' }),
   ].filter(Boolean),
-  base: process.env.GITHUB_ACTIONS ? '/qubic/' : '/',
+  base: '/',
   resolve: {
     alias: {
       "@": "/src",

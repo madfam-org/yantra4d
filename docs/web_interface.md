@@ -178,7 +178,7 @@ Global handlers for 400, 404, and 500 ensure this format even for unhandled Flas
 #### Error Handling
 
 - **Manifest loading**: If `projects/{slug}/project.json` (or `scad/project.json` in single-project mode) is missing or contains invalid JSON, the backend raises a `RuntimeError` at startup with a descriptive message.
-- **Frontend fallback**: If the `/api/manifest` fetch fails (backend unavailable or network error), `ManifestProvider` logs a warning and uses the bundled `fallback-manifest.json`. This enables GitHub Pages / static deploys.
+- **Frontend fallback**: If the `/api/manifest` fetch fails (backend unavailable or network error), `ManifestProvider` logs a warning and uses the bundled `fallback-manifest.json`. This enables static/offline deploys.
 - **Render service**: The frontend checks `response.ok` before reading the SSE stream and throws if the backend returns an error status. Malformed SSE lines are logged with `console.warn` and skipped. An empty stream (no parts produced) throws an error.
 - **Verify service**: Client-side verification checks `response.ok` when fetching STL files and reports fetch failures per-part in the verification output.
 
@@ -302,7 +302,7 @@ Run `npm run analyze` to generate an interactive bundle visualization at `dist/s
 ```bash
 ./scripts/dev.sh              # start backend (Flask :5000) + frontend (Vite :5173)
 ./scripts/dev-stop.sh         # stop all dev servers
-./scripts/dev.sh --frontend-only  # frontend only (e.g. for GitHub Pages/WASM mode)
+./scripts/dev.sh --frontend-only  # frontend only (e.g. for WASM-only mode)
 ```
 Access: http://localhost:5173
 

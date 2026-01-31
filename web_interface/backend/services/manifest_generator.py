@@ -1,7 +1,6 @@
 """
 Manifest Generator — produces a draft project.json from SCAD analyzer output.
 """
-import math
 from pathlib import Path
 
 from services.scad_analyzer import analyze_directory

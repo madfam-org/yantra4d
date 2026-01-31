@@ -1,18 +1,18 @@
 # Developer Experience Guide
 
-How to bring your own SCAD project into the Tablaco platform.
+How to bring your own SCAD project into the Qubic platform.
 
 ## Quick Start
 
 ```bash
-# 1. Clone tablaco
-git clone <repo-url> && cd tablaco
+# 1. Clone Qubic
+git clone <repo-url> && cd qubic
 
 # 2. Analyze your SCAD files
-scripts/tablaco-init /path/to/your/scad --slug my-project --analyze-only
+scripts/qubic-init /path/to/your/scad --slug my-project --analyze-only
 
 # 3. Review the output, then generate + install
-scripts/tablaco-init /path/to/your/scad --slug my-project --install
+scripts/qubic-init /path/to/your/scad --slug my-project --install
 
 # 4. Start the platform
 ./scripts/dev.sh

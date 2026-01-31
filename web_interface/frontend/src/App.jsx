@@ -116,6 +116,13 @@ function App() {
     }
   }, [copyShareUrl])
 
+  // Dynamic browser tab title
+  useEffect(() => {
+    document.title = currentView === 'projects'
+      ? 'Qubic'
+      : `${manifest.project.name} — Qubic`
+  }, [currentView, manifest.project.name])
+
   // Handle OAuth callback (?code=&state= query params)
   useEffect(() => {
     const url = new URL(window.location.href)
@@ -363,7 +370,7 @@ function App() {
     return (
       <div className="flex flex-col h-screen w-full bg-background text-foreground">
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-          <h1 className="text-lg font-bold tracking-tight">Tablaco</h1>
+          <h1 className="text-lg font-bold tracking-tight">Qubic</h1>
           <div className="flex items-center gap-2">
             <AuthButton />
             <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
@@ -390,7 +397,10 @@ function App() {
       {/* Header */}
       <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
+            <span className="text-[10px] text-muted-foreground leading-tight">{t('platform.powered_by')}</span>
+          </div>
           <ProjectSelector />
           <a href="#/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</a>
         </div>

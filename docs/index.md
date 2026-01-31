@@ -1,6 +1,6 @@
-# Tablaco Studio — Platform Documentation
+# Qubic — Platform Documentation
 
-Platform-level documentation for the Tablaco Studio parametric 3D print design platform.
+Platform-level documentation for the Qubic parametric 3D print design platform.
 
 ## Documentation Index
 
@@ -23,7 +23,7 @@ Each project carries its own docs in `projects/{slug}/docs/`. For example:
 python3 tests/verify_design.py
 ```
 
-### 3. Launching Tablaco Studio
+### 3. Launching Qubic
 ```bash
 ./scripts/dev.sh          # start backend + frontend
 ./scripts/dev-stop.sh     # stop all dev servers

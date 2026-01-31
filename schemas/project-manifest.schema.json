@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://tablaco.dev/schemas/project-manifest.schema.json",
-  "title": "Tablaco Project Manifest",
-  "description": "Schema for project.json files used by the Tablaco parametric 3D design platform.",
+  "$id": "https://qubic.madfam.io/schemas/project-manifest.schema.json",
+  "title": "Qubic Project Manifest",
+  "description": "Schema for project.json files used by the Qubic parametric 3D design platform.",
   "type": "object",
   "required": ["project", "modes", "parts", "parameters", "estimate_constants"],
   "properties": {

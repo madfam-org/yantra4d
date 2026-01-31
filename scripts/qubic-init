@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-tablaco-init — Onboard an external SCAD project into the Tablaco platform.
+qubic-init — Onboard an external SCAD project into the Qubic platform.
 
 Usage:
-  tablaco-init <directory> [--slug NAME] [--analyze-only] [--install]
+  qubic-init <directory> [--slug NAME] [--analyze-only] [--install]
 
 Examples:
-  tablaco-init ./my-design --slug my-design --analyze-only
-  tablaco-init ./my-design --slug my-design --install
+  qubic-init ./my-design --slug my-design --analyze-only
+  qubic-init ./my-design --slug my-design --install
 """
 import argparse
 import json
@@ -26,7 +26,7 @@ from services.manifest_generator import generate_manifest
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Onboard an external SCAD project into Tablaco."
+        description="Onboard an external SCAD project into Qubic."
     )
     parser.add_argument("directory", type=Path, help="Directory containing .scad files")
     parser.add_argument("--slug", type=str, default=None, help="Project slug (default: directory name)")

@@ -197,7 +197,7 @@ If the estimate exceeds `warning_threshold_seconds` (default: 60), a confirmatio
 4. **Place `.scad` files** in the same directory.
 5. **Restart the backend** — the new project appears in `/api/projects` and the frontend project selector.
 
-Alternatively, use the CLI tool: `scripts/tablaco-init <scad-directory> --slug my-project --install`
+Alternatively, use the CLI tool: `scripts/qubic-init <scad-directory> --slug my-project --install`
 
 See [Multi-Project Platform](./multi-project.md) and [Developer Experience Guide](./devx-guide.md) for details.
 

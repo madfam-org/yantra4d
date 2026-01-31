@@ -1,6 +1,6 @@
 # Web Interface Documentation
 
-**Tablaco Studio** is a local web application for visualizing, customizing, and verifying the design.
+**Qubic** is a local web application for visualizing, customizing, and verifying the design.
 
 ---
 

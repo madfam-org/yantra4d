@@ -12,7 +12,7 @@ services:
       - PORT=5000
       - PROJECTS_DIR=/app/projects
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
-      - JANUA_AUDIENCE=${JANUA_AUDIENCE:-tablaco}
+      - JANUA_AUDIENCE=${JANUA_AUDIENCE:-qubic}
       - AUTH_ENABLED=${AUTH_ENABLED:-true}
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')" ]
@@ -30,4 +30,4 @@ services:
     environment:
       - VITE_API_URL=http://backend:5000
       - VITE_JANUA_BASE_URL=${VITE_JANUA_BASE_URL:-}
-      - VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID:-tablaco}
+      - VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID:-qubic}

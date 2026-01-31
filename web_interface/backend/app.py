@@ -1,5 +1,5 @@
 """
-Tablaco Backend API
+Qubic Backend API
 Production-ready Flask application for OpenSCAD rendering.
 
 Structure:
@@ -77,7 +77,7 @@ def create_app():
     def internal_error(e):
         return jsonify({"status": "error", "error": "Internal server error"}), 500
 
-    logger.info(f"Tablaco Backend initialized - Debug: {Config.DEBUG}")
+    logger.info(f"Qubic Backend initialized - Debug: {Config.DEBUG}")
     logger.info(f"SCAD Directory: {Config.SCAD_DIR}")
     logger.info(f"Projects Directory: {Config.PROJECTS_DIR}")
     logger.info(f"Multi-project mode: {Config.MULTI_PROJECT}")

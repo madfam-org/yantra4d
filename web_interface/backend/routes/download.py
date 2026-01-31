@@ -3,7 +3,6 @@ Download Blueprint
 Provides auth-gated endpoints for downloading STL and SCAD files.
 """
 import logging
-from pathlib import Path
 
 from flask import Blueprint, request, send_file, jsonify
 

@@ -1,9 +1,12 @@
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
+import { axe, toHaveNoViolations } from 'jest-axe'
 import Controls from './Controls'
 import { renderWithProviders } from '../test/render-with-providers'
 // eslint-disable-next-line no-unused-vars
 import fallbackManifest from '../config/fallback-manifest.json'
+
+expect.extend(toHaveNoViolations)
 
 // Wrap with required providers
 function renderControls(props = {}) {
@@ -162,6 +165,12 @@ describe('Controls', () => {
     }})
     // Star should still be present even though size (25) != default (20)
     expect(screen.getByTestId('default-star-size')).toBeInTheDocument()
+  })
+
+  it('has no a11y violations', async () => {
+    const { container } = renderControls()
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
   })
 
   it('checkboxes use boolean checked to avoid controlled/uncontrolled warning', () => {

@@ -9,6 +9,7 @@ import json
 from flask import Blueprint, request, jsonify, Response
 
 from config import Config
+from extensions import limiter
 from manifest import get_manifest
 from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
 from services.route_helpers import cleanup_old_stl_files, error_response
@@ -50,6 +51,7 @@ def _resolve_render_context(data):
 
 
 @render_bp.route('/api/estimate', methods=['POST'])
+@limiter.limit("200/hour")
 def estimate_render_time():
     """Estimate render time based on parameters before actually rendering."""
     data = request.json
@@ -88,6 +90,7 @@ def estimate_render_time():
 
 
 @render_bp.route('/api/render', methods=['POST'])
+@limiter.limit("100/hour")
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
@@ -147,6 +150,7 @@ def render_stl():
 
 
 @render_bp.route('/api/render-stream', methods=['POST'])
+@limiter.limit("100/hour")
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json

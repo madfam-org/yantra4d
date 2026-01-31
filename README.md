@@ -32,6 +32,8 @@ Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./pr
 -   **Backend**: Python 3 (Flask + Blueprints, gunicorn)
 -   **Frontend**: React (Vite), Tailwind CSS, Shadcn UI, Three.js
 -   **Containerization**: Docker + docker-compose
+-   **Testing**: Vitest + RTL (frontend), pytest (backend), jest-axe (a11y)
+-   **Security**: Flask-Limiter (rate limiting), CSP headers (nginx)
 
 ## Project Structure
 
@@ -47,6 +49,7 @@ tablaco/
 ├── web_interface/
 │   ├── backend/                 # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration
+│   │   ├── extensions.py        # Flask extensions (rate limiter)
 │   │   ├── config.py            # Environment config (paths, server settings)
 │   │   ├── manifest.py          # Project manifest loader + typed accessors
 │   │   ├── routes/
@@ -71,7 +74,10 @@ tablaco/
 │           └── config/
 │               └── fallback-manifest.json  # Bundled manifest fallback
 ├── tests/
-│   └── verify_design.py         # STL verification script
+│   ├── verify_design.py         # STL verification script
+│   ├── conftest.py              # Shared pytest fixtures
+│   └── test_*.py                # Backend API + service tests
+├── pyproject.toml              # pytest + coverage configuration
 ├── docs/                        # Project documentation
 ├── Dockerfile
 └── docker-compose.yml
@@ -82,6 +88,7 @@ tablaco/
 ### Prerequisites
 -   OpenSCAD
 -   Python 3.10+ (`pip install -r web_interface/backend/requirements.txt`)
+-   pytest (`pip install pytest pytest-cov` — for running backend tests)
 -   Node.js (v18+)
 
 ### Quick Run

@@ -1,6 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { axe, toHaveNoViolations } from 'jest-axe'
 import { ErrorBoundary } from './ErrorBoundary'
+
+expect.extend(toHaveNoViolations)
 
 // Suppress React error boundary console output during tests
 vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -55,6 +58,16 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     )
     expect(screen.getByText('Recovered')).toBeInTheDocument()
+  })
+
+  it('has no a11y violations', async () => {
+    const { container } = render(
+      <ErrorBoundary t={mockT}>
+        <div>Hello</div>
+      </ErrorBoundary>
+    )
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
   })
 
   it('falls back to key identity when no t prop provided', () => {

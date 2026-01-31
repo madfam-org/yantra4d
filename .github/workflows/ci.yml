@@ -20,8 +20,9 @@ jobs:
           cache: npm
           cache-dependency-path: web_interface/frontend/package-lock.json
       - run: npm ci
+      - run: npm audit --audit-level=high || true
       - run: npm run lint
-      - run: npm test
+      - run: npm run test:coverage
 
   backend:
     runs-on: ubuntu-latest
@@ -34,8 +35,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: pip install ruff
+      - run: pip install ruff pip-audit
+      - run: pip-audit || true
       - run: ruff check .
+      - run: pip install pytest pytest-cov
+      - name: Run backend tests
+        run: pytest --cov=web_interface/backend --cov-report=term-missing
+        working-directory: .
 
   manifest-sync:
     runs-on: ubuntu-latest

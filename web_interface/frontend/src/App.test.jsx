@@ -1,9 +1,12 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { axe, toHaveNoViolations } from 'jest-axe'
 import App from './App'
 import { renderWithProviders } from './test/render-with-providers'
 import fallbackManifest from './config/fallback-manifest.json'
+
+expect.extend(toHaveNoViolations)
 
 // Mock services
 vi.mock('./services/renderService', () => ({
@@ -133,6 +136,17 @@ describe('App', () => {
     fireEvent.click(themeBtn)
     // After click, theme cycles light → dark
     expect(screen.getByTitle('Theme: Dark')).toBeInTheDocument()
+  })
+
+  it('has no a11y violations', async () => {
+    const { container } = renderApp()
+    const results = await axe(container, {
+      rules: {
+        // Radix UI tabs render aria-controls referencing panels not yet in DOM
+        'aria-valid-attr-value': { enabled: false },
+      },
+    })
+    expect(results).toHaveNoViolations()
   })
 
   it('sets 3-segment URL hash with project slug', () => {

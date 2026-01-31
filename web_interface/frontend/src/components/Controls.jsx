@@ -212,9 +212,10 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                     {textInputs.map(param => (
                         <div key={param.id} className="space-y-1">
                             <Tooltip content={getLabel(param, 'tooltip', language)}>
-                                <Label className="cursor-help">{getLabel(param, 'label', language)}</Label>
+                                <Label htmlFor={`text-${param.id}`} className="cursor-help">{getLabel(param, 'label', language)}</Label>
                             </Tooltip>
                             <input
+                                id={`text-${param.id}`}
                                 type="text"
                                 maxLength={param.maxlength || 1}
                                 className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background"
@@ -271,6 +272,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                                     checked={!!params[param.id]}
                                     onCheckedChange={(c) => handleCheckedChange(param.id, c)}
                                     disabled={disabled}
+                                    aria-label={getLabel(param, 'label', language)}
                                 />
                                 <Tooltip content={getLabel(param, 'tooltip', language)}>
                                     <Label
@@ -293,6 +295,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                         id={param.id}
                         checked={!!params[param.id]}
                         onCheckedChange={(c) => handleCheckedChange(param.id, c)}
+                        aria-label={getLabel(param, 'label', language)}
                     />
                     <Tooltip content={getLabel(param, 'tooltip', language)}>
                         <Label htmlFor={param.id} className="cursor-help">
@@ -314,13 +317,15 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             id="wireframe-toggle"
                             checked={wireframe}
                             onCheckedChange={setWireframe}
+                            aria-label={t('ctrl.wireframe')}
                         />
                     </div>
                     <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                         {partColors.map((part) => (
                             <div key={part.id} className="flex flex-col gap-1">
-                                <Label className="text-xs">{getLabel(part, 'label', language)}</Label>
+                                <Label htmlFor={`color-${part.id}`} className="text-xs">{getLabel(part, 'label', language)}</Label>
                                 <input
+                                    id={`color-${part.id}`}
                                     type="color"
                                     className="w-full h-8 cursor-pointer"
                                     value={colors[part.id] || part.default_color}

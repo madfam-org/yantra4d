@@ -12,10 +12,14 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "prepare": "cd ../.. && husky web_interface/frontend/.husky",
-    "check-manifest-sync": "diff ../../scad/project.json src/config/fallback-manifest.json || echo 'WARNING: fallback manifest out of sync'"
+    "check-manifest-sync": "diff ../../scad/project.json src/config/fallback-manifest.json || echo 'WARNING: fallback manifest out of sync'",
+    "analyze": "ANALYZE=true vite build"
   },
   "lint-staged": {
-    "*.{js,jsx}": ["eslint --fix", "vitest related --run"]
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "vitest related --run"
+    ]
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -50,13 +54,16 @@
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.23",
     "eslint": "^9.39.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
+    "jest-axe": "^9.0.0",
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",
     "postcss": "^8.5.6",
+    "rollup-plugin-visualizer": "^5.14.0",
     "tailwindcss": "^3.4.19",
     "vite": "^7.2.4",
     "vitest": "^4.0.18"

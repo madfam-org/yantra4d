@@ -1,8 +1,11 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
+import { axe, toHaveNoViolations } from 'jest-axe'
 import ProjectsView from './ProjectsView'
 import { renderWithProviders } from '../test/render-with-providers'
+
+expect.extend(toHaveNoViolations)
 
 // Mock Viewer (imported transitively by ManifestProvider context)
 vi.mock('./Viewer', () => ({
@@ -114,6 +117,19 @@ describe('ProjectsView', () => {
     })
     expect(screen.getAllByText('Manifiesto').length).toBeGreaterThan(0)
     expect(screen.getByText('Exportaciones')).toBeInTheDocument()
+  })
+
+  it('has no a11y violations', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockProjects),
+    })
+    const { container } = renderWithProviders(<ProjectsView />)
+    await waitFor(() => {
+      expect(screen.getByText('Test Project')).toBeInTheDocument()
+    })
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
   })
 
   it('renders Manifest and Exports badges', async () => {

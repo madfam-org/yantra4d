@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react'
 import Controls from './components/Controls'
 import Viewer from './components/Viewer'
 import ConfirmRenderDialog from './components/ConfirmRenderDialog'
@@ -15,9 +15,11 @@ import { useLocalStoragePersistence } from './hooks/useLocalStoragePersistence'
 import { downloadFile, downloadZip } from './lib/downloadUtils'
 import { verify } from './services/verifyService'
 import ProjectSelector from './components/ProjectSelector'
-import ProjectsView from './components/ProjectsView'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import './index.css'
+
+const ProjectsView = lazy(() => import('./components/ProjectsView'))
+const OnboardingWizard = lazy(() => import('./components/OnboardingWizard'))
 
 const RENDER_DEBOUNCE_MS = 500
 
@@ -327,7 +329,9 @@ function App() {
         </header>
         <div className="flex-1 overflow-y-auto">
           <ErrorBoundary t={t}>
-            <ProjectsView />
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground">Loading...</div>}>
+              <ProjectsView />
+            </Suspense>
           </ErrorBoundary>
         </div>
       </div>

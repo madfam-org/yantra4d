@@ -30,6 +30,7 @@ The app follows a client-server model. Configuration is centralized in a **proje
 ```
 backend/
 ├── app.py                # App factory, blueprint registration
+├── extensions.py        # Flask extensions (rate limiter)
 ├── config.py             # Environment config (paths, server settings, PROJECTS_DIR)
 ├── manifest.py           # Multi-project manifest registry (ProjectManifest class)
 ├── requirements.txt      # Python dependencies
@@ -60,20 +61,20 @@ backend/
 
 ### API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/projects` | GET | List all available projects (multi-project) |
-| `/api/projects/<slug>/manifest` | GET | Full manifest for a specific project |
-| `/api/projects/analyze` | POST | Upload `.scad` files → analysis + draft manifest |
-| `/api/projects/create` | POST | Create new project in `PROJECTS_DIR` |
-| `/api/manifest` | GET | Full project manifest as JSON (default project) |
-| `/api/estimate` | POST | Estimate render time. Accepts `mode` or `scad_file`. Optional `project` slug. |
-| `/api/render` | POST | Synchronous render. Optional `project` slug. |
-| `/api/render-stream` | POST | SSE progress streaming. Optional `project` slug. |
-| `/api/render-cancel` | POST | Cancel active render |
-| `/api/verify` | POST | Run verification suite for a mode. Optional `project` slug. |
-| `/api/health` | GET | Health check |
-| `/api/config` | GET | Legacy config endpoint (delegates to manifest) |
+| Endpoint | Method | Rate Limit | Description |
+|----------|--------|------------|-------------|
+| `/api/projects` | GET | 500/hr | List all available projects (multi-project) |
+| `/api/projects/<slug>/manifest` | GET | 500/hr | Full manifest for a specific project |
+| `/api/projects/analyze` | POST | 20/hr | Upload `.scad` files → analysis + draft manifest |
+| `/api/projects/create` | POST | 10/hr | Create new project in `PROJECTS_DIR` |
+| `/api/manifest` | GET | 500/hr | Full project manifest as JSON (default project) |
+| `/api/estimate` | POST | 200/hr | Estimate render time. Accepts `mode` or `scad_file`. Optional `project` slug. |
+| `/api/render` | POST | 100/hr | Synchronous render. Optional `project` slug. |
+| `/api/render-stream` | POST | 100/hr | SSE progress streaming. Optional `project` slug. |
+| `/api/render-cancel` | POST | 500/hr | Cancel active render |
+| `/api/verify` | POST | 50/hr | Run verification suite for a mode. Optional `project` slug. |
+| `/api/health` | GET | 500/hr | Health check |
+| `/api/config` | GET | 500/hr | Legacy config endpoint (delegates to manifest) |
 
 #### Payload Examples
 
@@ -172,6 +173,26 @@ Global handlers for 400, 404, and 500 ensure this format even for unhandled Flas
 - **Render service**: The frontend checks `response.ok` before reading the SSE stream and throws if the backend returns an error status. Malformed SSE lines are logged with `console.warn` and skipped. An empty stream (no parts produced) throws an error.
 - **Verify service**: Client-side verification checks `response.ok` when fetching STL files and reports fetch failures per-part in the verification output.
 
+#### Rate Limiting
+
+All endpoints enforce per-IP rate limits via Flask-Limiter (`extensions.py`). Default: 500 requests/hour. Expensive endpoints have stricter limits:
+- **Render**: 100/hr (render + render-stream)
+- **Estimate**: 200/hr
+- **Verify**: 50/hr
+- **Project Analysis**: 20/hr
+- **Project Creation**: 10/hr
+
+Rate-limited responses return HTTP 429 with a `Retry-After` header.
+
+#### Security Headers
+
+Production nginx (`nginx.conf`) adds:
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: SAMEORIGIN`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Content-Security-Policy`: restricts sources; allows `wasm-unsafe-eval` (OpenSCAD WASM), `blob:` (web workers), `unsafe-inline` in styles (Tailwind), `data:` images (Three.js textures)
+
 #### Timeout Behavior
 
 - Backend synchronous render: `subprocess.run(timeout=300)` kills OpenSCAD after 300s; gunicorn also enforces 300s
@@ -186,7 +207,7 @@ Global handlers for 400, 404, and 500 ensure this format even for unhandled Flas
 
 ```
 src/
-├── App.jsx                        # Main shell: state, API calls, layout
+├── App.jsx                        # Main shell: state, API calls, layout (lazy-loads ProjectsView, OnboardingWizard)
 ├── main.jsx                       # Entry point: provider hierarchy
 ├── components/
 │   ├── Controls.jsx               # Data-driven parameter + color controls
@@ -242,6 +263,23 @@ src/
 - **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.
 - **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
+
+#### Build Optimization
+
+The frontend build uses Vite with manual chunk splitting:
+- `vendor-react`: React + ReactDOM (~193KB, gzip ~61KB)
+- `vendor-three`: Three.js (~722KB, gzip ~188KB)
+- `vendor-r3f`: React Three Fiber + Drei (~381KB, gzip ~128KB)
+- `vendor-ui`: Radix UI primitives (~60KB, gzip ~19KB)
+- Lazy-loaded routes: `ProjectsView` (~4KB), `OnboardingWizard` (~7KB)
+
+Run `npm run analyze` to generate an interactive bundle visualization at `dist/stats.html`.
+
+#### Accessibility
+
+- **ESLint**: `eslint-plugin-jsx-a11y` enforces WCAG accessibility rules at lint time
+- **Runtime audits**: `jest-axe` runs axe-core accessibility checks in component tests
+- **ARIA**: Sliders carry `aria-label`/`aria-labelledby`; checkboxes have explicit `aria-label`; color inputs linked via `htmlFor`/`id`; form inputs labeled
 
 ---
 

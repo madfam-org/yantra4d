@@ -16,6 +16,7 @@ node_modules/
 dist/
 .npm
 *.log
+coverage/
 
 # Generated STL files (build artifacts)
 *.stl

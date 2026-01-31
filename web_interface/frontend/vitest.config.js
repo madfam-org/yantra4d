@@ -18,6 +18,12 @@ export default defineConfig({
         'src/components/ui/',
         '**/*.test.{js,jsx}',
       ],
+      thresholds: {
+        statements: 65,
+        branches: 55,
+        functions: 60,
+        lines: 65,
+      },
     },
   },
 })

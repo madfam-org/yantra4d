@@ -19,6 +19,7 @@ from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
 from config import Config
+from extensions import limiter
 from routes.render import render_bp
 from routes.health import health_bp
 from routes.verify import verify_bp
@@ -40,10 +41,12 @@ def create_app():
     """Application factory for Flask app."""
     app = Flask(__name__)
     CORS(app, origins=os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(","))
-    
+
+    limiter.init_app(app)
+
     # Ensure static directory exists
     Config.STATIC_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     # Register blueprints
     app.register_blueprint(render_bp)
     app.register_blueprint(health_bp)
@@ -53,12 +56,12 @@ def create_app():
     app.register_blueprint(projects_bp)
     app.register_blueprint(onboard_bp)
     app.register_blueprint(admin_bp)
-    
+
     # Static file serving
     @app.route('/static/<path:filename>')
     def serve_static(filename):
         return send_from_directory(str(Config.STATIC_DIR), filename)
-    
+
     # Global error handlers
     @app.errorhandler(400)
     def bad_request(e):

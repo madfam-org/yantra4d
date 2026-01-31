@@ -11,6 +11,7 @@ from pathlib import Path
 from flask import Blueprint, request, jsonify
 
 from config import Config
+from extensions import limiter
 from services.manifest_generator import generate_manifest
 from services.route_helpers import error_response
 
@@ -20,6 +21,7 @@ onboard_bp = Blueprint('onboard', __name__)
 
 
 @onboard_bp.route('/api/projects/analyze', methods=['POST'])
+@limiter.limit("20/hour")
 def analyze_scad_files():
     """Accept uploaded .scad files, analyze them, and return a draft manifest."""
     if 'files' not in request.files:
@@ -49,6 +51,7 @@ def analyze_scad_files():
 
 
 @onboard_bp.route('/api/projects/create', methods=['POST'])
+@limiter.limit("10/hour")
 def create_project():
     """Accept a manifest and .scad files, write them to PROJECTS_DIR."""
     content_type = request.content_type or ''

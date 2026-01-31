@@ -27,6 +27,7 @@ projects/
 | `projects/{slug}/project.json` | Project manifest — modes, parts, parameters, estimates | **YES** |
 | `projects/{slug}/*.scad` | OpenSCAD geometry source files | YES |
 | `web_interface/backend/app.py` | Flask entry point, CORS, static serving | RARELY |
+| `web_interface/backend/extensions.py` | Flask extensions (rate limiter) | RARELY |
 | `web_interface/backend/routes/render.py` | Render + estimate + cancel + SSE stream | RARELY |
 | `web_interface/backend/routes/verify.py` | STL verification endpoint | RARELY |
 | `web_interface/frontend/src/App.jsx` | Main shell, state management | RARELY |
@@ -43,6 +44,7 @@ projects/
 | `scripts/tablaco-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `tests/verify_design.py` | STL quality checker script | RARELY |
+| `pyproject.toml` | pytest + coverage config | RARELY |
 | `docs/*.md` | Deep-dive documentation | YES |
 
 ## Core Pattern: Manifest-Driven Design
@@ -82,8 +84,14 @@ Or use the web UI: upload `.scad` files → review analysis → edit manifest �
 
 ### Run tests
 ```bash
-cd web_interface/frontend && npm test          # single run
-cd web_interface/frontend && npm run test:watch # watch mode
+# Frontend
+cd web_interface/frontend && npm test              # single run
+cd web_interface/frontend && npm run test:watch     # watch mode
+cd web_interface/frontend && npm run test:coverage  # with coverage thresholds
+
+# Backend
+pytest                    # all backend tests (from repo root)
+pytest --cov              # with coverage report
 ```
 
 ### Local dev
@@ -126,13 +134,17 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 | OpenSCAD | `snake_case`, `render_mode` variable selects part |
 | CSS | Tailwind utility classes, Shadcn tokens |
 | Tests | Co-located (`*.test.js`/`*.test.jsx`), Vitest + RTL |
+| Linting | ESLint + jsx-a11y (frontend), ruff (backend) |
 | Naming | `camelCase` JS, `snake_case` Python/SCAD |
 
 ## Testing Standards
 
+- **Frontend**: Vitest + RTL, coverage thresholds (65% statements/lines, 55% branches, 60% functions), jest-axe accessibility audits
+- **Backend**: pytest + pytest-cov, coverage threshold 60%, tests in `tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` → ESLint fix + Vitest on changed files
-- **CI**: `.github/workflows/ci.yml` — lint + test on push/PR to main (Node 20)
+- **CI**: `.github/workflows/ci.yml` — lint + test + coverage + `npm audit` + `pip-audit` on push/PR to main
 - **Deploy**: `.github/workflows/deploy.yml` — manual trigger, runs tests then builds to GitHub Pages
+- **Accessibility**: `eslint-plugin-jsx-a11y` enforces a11y rules; jest-axe audits in component tests
 
 ## Known Gotchas
 
@@ -146,6 +158,9 @@ POST `/api/verify` with `{mode}` — runs `tests/verify_design.py` on rendered S
 | Env vars | Backend reads `OPENSCAD_PATH`, `SCAD_DIR`, `VERIFY_SCRIPT` — set in Docker or `.env` |
 | CORS origins | Backend restricts CORS via `CORS_ORIGINS` env var; add your domain when deploying |
 | Client-side WASM | `openscad-worker.js` runs in a Web Worker; cannot access DOM |
+| Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: 100/hr, Estimate: 200/hr, Verify: 50/hr |
+| CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
+| Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
 
 ## Do NOT Edit
 

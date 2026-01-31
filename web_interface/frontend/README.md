@@ -50,3 +50,27 @@ cp scad/project.json web_interface/frontend/src/config/fallback-manifest.json
 ```
 
 This ensures the app works even when the backend is unreachable.
+
+## Testing
+
+```bash
+npm test              # Single run (Vitest)
+npm run test:watch    # Watch mode
+npm run test:coverage # With coverage thresholds
+npm run lint          # ESLint + jsx-a11y accessibility rules
+npm run analyze       # Bundle size visualization (opens stats.html)
+```
+
+### Coverage Thresholds
+
+| Metric | Threshold |
+|--------|-----------|
+| Statements | 65% |
+| Branches | 55% |
+| Functions | 60% |
+| Lines | 65% |
+
+### Accessibility
+
+- **Linting**: `eslint-plugin-jsx-a11y` enforces WCAG rules at lint time
+- **Audits**: `jest-axe` runs axe-core checks in component tests (`it('has no a11y violations')`)

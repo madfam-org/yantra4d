@@ -63,7 +63,7 @@ tablaco/
 │   └── landing/                 # Astro marketing site
 │       └── src/
 │           ├── pages/           # index.astro
-│           └── components/      # Header, Hero, DemoViewer (React island)
+│           └── components/      # Header, Hero, InteractiveShowcase (React island)
 ├── packages/
 │   ├── schemas/                 # JSON Schema for project manifests
 │   └── tokens/                  # Shared CSS custom properties

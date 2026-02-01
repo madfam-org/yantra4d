@@ -9,7 +9,6 @@ from manifest import (
     get_manifest,
     invalidate_cache,
     load_manifest,
-    _manifest_cache,
 )
 
 

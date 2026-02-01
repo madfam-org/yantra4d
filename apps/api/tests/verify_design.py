@@ -262,7 +262,7 @@ def main():
     mesh = trimesh.load(mesh_path)
     result = run_verification(mesh, config)
 
-    print(f"===JSON===")
+    print("===JSON===")
     print(json.dumps(result))
 
     sys.exit(0 if result["passed"] else 1)

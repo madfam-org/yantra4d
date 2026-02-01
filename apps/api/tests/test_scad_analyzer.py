@@ -1,6 +1,5 @@
 """Tests for SCAD analyzer."""
 import sys
-import tempfile
 from pathlib import Path
 
 # Add backend to path

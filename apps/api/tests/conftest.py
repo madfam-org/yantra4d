@@ -1,5 +1,4 @@
 """Shared test fixtures for backend API tests."""
-import json
 import sys
 from pathlib import Path
 

@@ -2,7 +2,11 @@
   "project": {
     "name": "Tablaco Studio",
     "slug": "tablaco",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "description": {
+      "en": "Interlocking half-cube construction system with snap-fit mechanism and grid assembly",
+      "es": "Sistema de construcción de medio-cubos entrelazados con mecanismo de ensamble a presión y retícula"
+    }
   },
   "modes": [
     {

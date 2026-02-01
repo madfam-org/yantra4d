@@ -1,6 +1,4 @@
 """Unit tests for openscad service pure functions."""
-import json
-import os
 import pytest
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock

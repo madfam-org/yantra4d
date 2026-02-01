@@ -20,6 +20,9 @@
     - **Download STL/3MF/OFF**: Save the current model in the selected format (or ZIP for multi-part modes). Format selector appears when the manifest declares `export_formats`.
     - **Export Images**: Capture screenshots from manifest-defined camera angles (default: Isometric, Top, Front, Right).
 - **Print Estimation**: Overlay on the viewer showing estimated print time, filament weight, filament length, and cost. Material selector (PLA, PETG, ABS, TPU) and infill percentage. Computed from STL geometry volume using slicer heuristics.
+- **Bill of Materials (BOM)**: Manifest-driven BOM panel (`bom.hardware[]`) with quantity formulas evaluated against current parameter values via `expr-eval`. Displays item labels, computed quantities, units, and optional supplier links. Renders in the sidebar when the manifest declares a `bom` section.
+- **Cross-Parameter Validation**: Manifest-driven constraints (`constraints[]`) with `rule`, `message`, `severity`, and `applies_to` fields. The `useConstraints` hook evaluates rules against current params and returns violations indexed by parameter ID. Supports `warning` and `error` severities.
+- **Grid Presets**: Optional `grid_presets` manifest section provides rendering/manufacturing quality presets that override parameter values (e.g., quick preview vs. large grid).
 - **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel.
 
 ---
@@ -227,6 +230,7 @@ src/
 │   │   └── NumberedAxes.jsx       # Labeled XYZ axis lines with tick marks
 │   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
 │   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
+│   ├── BomPanel.jsx               # Manifest-driven bill of materials panel
 │   ├── ConfirmRenderDialog.jsx    # Long-render confirmation dialog
 │   ├── PrintEstimateOverlay.jsx   # Print time/filament/cost overlay on viewer
 │   ├── ErrorBoundary.jsx          # React error boundary (accepts `t` prop for i18n)
@@ -237,6 +241,7 @@ src/
 │   └── ThemeProvider.jsx          # Light/Dark/System theme
 ├── hooks/
 │   ├── useRender.js               # Render orchestration (generate, cancel, cache, confirm)
+│   ├── useConstraints.js          # Manifest constraint evaluation (rule + severity + applies_to)
 │   ├── useImageExport.js          # PNG snapshot export for camera views
 │   ├── useLocalStoragePersistence.js # Debounced localStorage sync
 │   ├── useShareableUrl.js         # Shareable URL generation (base64url param encoding)

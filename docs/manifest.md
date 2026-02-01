@@ -89,6 +89,41 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default_color": "#e5e7eb"                        // Fallback mesh color
   },
 
+  "constraints": [                            // Optional: cross-parameter validation rules
+    {
+      "rule": "width_units * depth_units <= 24",  // Expression evaluated with current params
+      "message": { "en": "Max 24 grid cells", "es": "Máximo 24 celdas" },
+      "severity": "warning",                 // "warning" or "error" (error blocks render)
+      "applies_to": ["width_units", "depth_units"]  // Params highlighted on violation
+    }
+  ],
+
+  "bom": {                                   // Optional: bill of materials
+    "hardware": [
+      {
+        "id": "magnets_6x2",                // Unique hardware item ID
+        "label": { "en": "N52 6×2mm Magnets", "es": "Imanes N52 6×2mm" },
+        "quantity_formula": "(enable_magnets ? 4 : 0) + (bp_enable_magnets ? 4 * width_units * depth_units : 0)",
+        "unit": "pcs",                       // Display unit
+        "supplier_url": "https://..."        // Optional: link to supplier
+      }
+    ]
+  },
+
+  "grid_presets": {                          // Optional: rendering/manufacturing quality presets
+    "rendering": {
+      "emoji": "🪽",
+      "label": { "en": "Quick Preview", "es": "Vista Rápida" },
+      "values": { "width_units": 2, "depth_units": 1 }  // Param overrides for this preset
+    },
+    "manufacturing": {
+      "emoji": "⭐",
+      "label": { "en": "Large Grid", "es": "Rejilla Grande" },
+      "values": { "width_units": 4, "depth_units": 4 }
+    },
+    "default": "rendering"                   // Which preset to apply by default
+  },
+
   "export_formats": ["stl", "3mf", "off"],  // Optional: supported export formats (default: ["stl"])
 
   "print_estimation": {                     // Optional: print estimation defaults

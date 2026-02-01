@@ -3,6 +3,7 @@ OpenSCAD Service
 Handles all OpenSCAD subprocess interactions.
 """
 import logging
+import os
 import re
 import subprocess
 import json
@@ -12,6 +13,13 @@ from config import Config
 from manifest import get_manifest
 
 logger = logging.getLogger(__name__)
+
+
+def _openscad_env():
+    """Return environment with OPENSCADPATH set for library resolution."""
+    env = os.environ.copy()
+    env["OPENSCADPATH"] = Config.OPENSCADPATH
+    return env
 
 # Track the active render process for cancellation
 _active_process = None
@@ -149,7 +157,7 @@ def run_render(cmd: list) -> tuple[bool, str]:
     """Execute OpenSCAD render synchronously. Returns (success, stderr)."""
     logger.info(f"Running OpenSCAD: {' '.join(cmd)}")
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=300)
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=300, env=_openscad_env())
         return True, result.stderr
     except subprocess.TimeoutExpired:
         logger.error("OpenSCAD render timed out after 300s")
@@ -178,7 +186,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
     
     # Run with Popen to stream stderr
     global _active_process
-    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env())
     with _process_lock:
         _active_process = process
 

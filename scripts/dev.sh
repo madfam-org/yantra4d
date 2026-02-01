@@ -13,6 +13,7 @@ export OPENSCAD_PATH="/Applications/OpenSCAD-Snapshot.app/Contents/MacOS/OpenSCA
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+export OPENSCADPATH="$PROJECT_ROOT/libs"
 PID_DIR="$PROJECT_ROOT/.dev-pids"
 mkdir -p "$PID_DIR"
 

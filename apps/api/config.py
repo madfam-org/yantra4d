@@ -13,6 +13,10 @@ class Config:
     _default_projects = BASE_DIR.parent.parent / "projects"
     PROJECTS_DIR = Path(os.getenv("PROJECTS_DIR", _default_projects))
 
+    _default_libs = BASE_DIR.parent.parent / "libs"
+    LIBS_DIR = Path(os.getenv("LIBS_DIR", _default_libs))
+    OPENSCADPATH = os.getenv("OPENSCADPATH", str(LIBS_DIR))
+
     MULTI_PROJECT = os.getenv("PROJECTS_DIR") is not None or _default_projects.is_dir()
 
     STATIC_DIR = BASE_DIR / "static"

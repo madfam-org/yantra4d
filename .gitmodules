@@ -1,3 +1,12 @@
 [submodule "projects/gridfinity/gridfinity_extended"]
 	path = projects/gridfinity/gridfinity_extended
 	url = https://github.com/ostat/gridfinity_extended_openscad.git
+[submodule "libs/BOSL2"]
+	path = libs/BOSL2
+	url = https://github.com/BelfrySCAD/BOSL2.git
+[submodule "libs/NopSCADlib"]
+	path = libs/NopSCADlib
+	url = https://github.com/nophead/NopSCADlib.git
+[submodule "libs/Round-Anything"]
+	path = libs/Round-Anything
+	url = https://github.com/Irev-Dev/Round-Anything.git

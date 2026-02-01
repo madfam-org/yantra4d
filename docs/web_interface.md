@@ -37,7 +37,7 @@ The app follows a client-server model. Configuration is centralized in a **proje
 backend/
 ├── app.py                # App factory, blueprint registration
 ├── extensions.py        # Flask extensions (rate limiter)
-├── config.py             # Environment config (paths, server settings, PROJECTS_DIR)
+├── config.py             # Environment config (paths, server settings, PROJECTS_DIR, OPENSCADPATH)
 ├── manifest.py           # Multi-project manifest registry (ProjectManifest class)
 ├── requirements.txt      # Python dependencies
 ├── routes/
@@ -49,7 +49,7 @@ backend/
 │   ├── onboard.py        # /api/projects/analyze, /api/projects/create
 │   └── config_route.py   # /api/config (legacy, delegates to manifest)
 ├── services/
-│   ├── openscad.py       # OpenSCAD subprocess wrapper
+│   ├── openscad.py       # OpenSCAD subprocess wrapper (injects OPENSCADPATH env)
 │   ├── scad_analyzer.py  # SCAD file regex analysis engine
 │   └── manifest_generator.py  # Draft manifest scaffolding from analysis
 └── static/               # Generated STL files (runtime, namespaced by project)
@@ -58,7 +58,7 @@ backend/
 #### Key Modules
 
 - **`manifest.py`**: Multi-project manifest registry. `discover_projects()` scans `PROJECTS_DIR` for subdirectories with `project.json`. `get_manifest(slug)` loads and caches per-project `ProjectManifest` instances. Each manifest has a `project_dir` so SCAD paths resolve relative to the project, not a global config. Falls back to `SCAD_DIR` for single-project mode.
-- **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary, `STL_PREFIX`). Adds `PROJECTS_DIR` (default: `projects/`) and `MULTI_PROJECT` boolean. Static methods delegate to the manifest for backward compatibility.
+- **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary, `STL_PREFIX`). Adds `PROJECTS_DIR` (default: `projects/`) and `MULTI_PROJECT` boolean. Adds `LIBS_DIR` / `OPENSCADPATH` for global OpenSCAD library resolution. Static methods delegate to the manifest for backward compatibility.
 - **`routes/render.py`**: Accepts both `mode` (new) and `scad_file` (legacy) fields in payloads. Also accepts optional `project` slug for multi-project routing. The `_resolve_render_context()` helper resolves to the correct SCAD path and part list. STL output is namespaced by project slug.
 - **`routes/projects.py`**: Lists available projects (`GET /api/projects`) and serves per-project manifests (`GET /api/projects/<slug>/manifest`).
 - **`routes/onboard.py`**: Accepts uploaded `.scad` files for analysis (`POST /api/projects/analyze`) and creates new projects (`POST /api/projects/create`).
@@ -339,6 +339,8 @@ Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 | `PROJECTS_DIR` | `projects/` (at repo root) | Directory containing project subdirectories (multi-project mode) |
 | `SCAD_DIR` | `../../scad` (relative to backend) | Path to SCAD files and `project.json` (single-project fallback) |
 | `OPENSCAD_PATH` | `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD` | Path to OpenSCAD binary |
+| `LIBS_DIR` | `libs/` (at repo root) | Directory containing global OpenSCAD libraries (BOSL2, NopSCADlib, etc.) |
+| `OPENSCADPATH` | value of `LIBS_DIR` | OpenSCAD library search path, injected into render subprocesses |
 | `VERIFY_SCRIPT` | `../../tests/verify_design.py` | Path to verification script |
 | `FLASK_DEBUG` | `false` | Enable Flask debug mode |
 | `PORT` | `5000` | Backend server port |

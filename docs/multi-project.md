@@ -21,6 +21,8 @@ scad -> projects/tablaco/   # Backward-compat symlink
 |---------|---------|---------|
 | `PROJECTS_DIR` | `projects/` (repo root) | Directory containing project subdirectories |
 | `SCAD_DIR` | `scad/` (repo root) | Single-project fallback (used when no `PROJECTS_DIR`) |
+| `LIBS_DIR` | `libs/` (repo root) | Global OpenSCAD library directory |
+| `OPENSCADPATH` | value of `LIBS_DIR` | Library search path for OpenSCAD subprocesses |
 
 **Mode detection**: If `PROJECTS_DIR` exists and contains subdirectories with `project.json`, multi-project mode activates. Otherwise, falls back to `SCAD_DIR`.
 

@@ -1,7 +1,9 @@
 """Unit tests for openscad service pure functions."""
+import json
+import os
 import pytest
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 
 # ---------------------------------------------------------------------------
@@ -146,3 +148,49 @@ class TestBuildOpenscadCommand:
         assert cmd[1] == "-o"
         assert cmd[2] == "/out.stl"
         assert cmd[-1] == "/in.scad"
+
+
+# ---------------------------------------------------------------------------
+# _openscad_env
+# ---------------------------------------------------------------------------
+class TestOpenscadEnv:
+    """Tests for _openscad_env() environment construction."""
+
+    @pytest.fixture(autouse=True)
+    def _import(self):
+        from services.openscad import _openscad_env
+        self.openscad_env = _openscad_env
+
+    def test_openscad_env_sets_openscadpath(self):
+        from config import Config
+        env = self.openscad_env()
+        assert env["OPENSCADPATH"] == Config.OPENSCADPATH
+
+    def test_openscad_env_preserves_existing_vars(self):
+        env = self.openscad_env()
+        assert "PATH" in env
+
+    def test_run_render_passes_env(self):
+        from services.openscad import run_render
+        with patch("services.openscad.subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(stderr="")
+            run_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"])
+            mock_run.assert_called_once()
+            call_kwargs = mock_run.call_args[1]
+            assert "OPENSCADPATH" in call_kwargs["env"]
+
+    def test_stream_render_passes_env(self):
+        from services.openscad import stream_render
+        with patch("services.openscad.subprocess.Popen") as mock_popen:
+            mock_proc = MagicMock()
+            mock_proc.stderr = iter([])
+            mock_proc.returncode = 0
+            mock_proc.wait.return_value = 0
+            mock_proc.poll.return_value = 0
+            mock_popen.return_value = mock_proc
+            # Consume the generator
+            list(stream_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"],
+                               "main", 0.0, 100.0, 0, 1))
+            mock_popen.assert_called_once()
+            call_kwargs = mock_popen.call_args[1]
+            assert "OPENSCADPATH" in call_kwargs["env"]

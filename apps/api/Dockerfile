@@ -27,6 +27,7 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 
 # Copy application code
 COPY projects/ ./projects/
+COPY libs/ ./libs/
 COPY apps/api/tests/ ./tests/
 COPY apps/api/ ./backend/
 
@@ -36,6 +37,7 @@ ENV OPENSCAD_PATH=/usr/bin/openscad
 ENV PORT=5000
 ENV HOST=0.0.0.0
 ENV PROJECTS_DIR=/app/projects
+ENV OPENSCADPATH=/app/libs
 ENV VERIFY_SCRIPT=/app/tests/verify_design.py
 
 # Expose port

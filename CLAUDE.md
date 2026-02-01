@@ -23,6 +23,11 @@ projects/
                 ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, DemoViewer
                 └── public/  static assets, pre-exported STL for demo
 
+libs/
+  BOSL2/               (git submodule — BSD-2 — attachments, rounding, math)
+  NopSCADlib/          (git submodule — GPL-3 — real-world hardware models)
+  Round-Anything/      (git submodule — MIT — coordinate-based filleting)
+
 packages/
   schemas/             (JSON Schema for project manifests)
   tokens/              (shared CSS custom properties — colors, spacing)
@@ -59,6 +64,7 @@ packages/
 | `apps/landing/src/components/DemoViewer.tsx` | React island — Three.js STL viewer | RARELY |
 | `packages/tokens/colors.css` | Shared CSS custom properties (both apps import) | RARELY |
 | `docs/competitive-landscape.md` | Competitive research & feature roadmap | YES |
+| `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
 | `apps/studio/src/components/ui/*` | Shadcn primitives | **NEVER** |
 | `tools/qubic-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
@@ -181,6 +187,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | Render timeouts | Complex grid renders (high rows×cols) can exceed default timeout; Docker uses 300s |
 | Env vars | Backend reads `OPENSCAD_PATH`, `SCAD_DIR`, `VERIFY_SCRIPT` — set in Docker or `.env` |
 | CORS origins | Backend restricts CORS via `CORS_ORIGINS` env var; add your domain when deploying |
+| Global SCAD libs | `libs/` are git submodules — run `git submodule update --init --recursive` after clone |
 | Client-side WASM | `openscad-worker.js` runs in a Web Worker; cannot access DOM |
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: 100/hr, Estimate: 200/hr, Verify: 50/hr |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |

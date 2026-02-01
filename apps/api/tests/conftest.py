@@ -15,6 +15,8 @@ def _isolate_config(tmp_path, monkeypatch):
     monkeypatch.setattr(Config, "SCAD_DIR", tmp_path)
     monkeypatch.setattr(Config, "MULTI_PROJECT", True)
     monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+    monkeypatch.setattr(Config, "LIBS_DIR", tmp_path / "libs")
+    monkeypatch.setattr(Config, "OPENSCADPATH", str(tmp_path / "libs"))
 
     import manifest as manifest_mod
     manifest_mod._manifest_cache.clear()

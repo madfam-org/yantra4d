@@ -45,8 +45,8 @@
     "step3Desc": "Download STL, 3MF, or OFF. Ready for your slicer."
   },
   "demo": {
-    "heading": "Live Demo",
-    "description": "Interact with pre-rendered 3D models. Orbit, zoom, and pan to explore each project.",
+    "heading": "Interactive Studio Demo",
+    "description": "Explore parametric 3D models with full controls — adjust parameters, switch modes, and generate renders.",
     "loading": "loaded"
   },
   "techStack": {

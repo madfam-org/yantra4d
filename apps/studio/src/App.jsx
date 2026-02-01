@@ -16,6 +16,8 @@ import './index.css'
 const ProjectsView = lazy(() => import('./components/ProjectsView'))
 const OnboardingWizard = lazy(() => import('./components/OnboardingWizard'))
 
+const isEmbed = new URLSearchParams(window.location.search).get('embed') === 'true'
+
 function App() {
   const state = useAppState()
   const {
@@ -39,7 +41,7 @@ function App() {
     viewerRef, consoleRef,
   } = state
 
-  if (currentView === 'projects') {
+  if (!isEmbed && currentView === 'projects') {
     const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
     return (
       <div className="flex flex-col h-screen w-full bg-background text-foreground">
@@ -70,22 +72,24 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen w-full bg-background text-foreground">
-      <StudioHeader
-        manifest={manifest}
-        t={t}
-        language={language}
-        setLanguage={setLanguage}
-        theme={theme}
-        cycleTheme={cycleTheme}
-        undoParams={undoParams}
-        redoParams={redoParams}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        handleShare={handleShare}
-        shareToast={shareToast}
-      />
+      {!isEmbed && (
+        <StudioHeader
+          manifest={manifest}
+          t={t}
+          language={language}
+          setLanguage={setLanguage}
+          theme={theme}
+          cycleTheme={cycleTheme}
+          undoParams={undoParams}
+          redoParams={redoParams}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          handleShare={handleShare}
+          shareToast={shareToast}
+        />
+      )}
 
-      <RateLimitBanner />
+      {!isEmbed && <RateLimitBanner />}
       <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
         <StudioSidebar
           manifest={manifest}

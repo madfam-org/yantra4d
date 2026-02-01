@@ -1,23 +1,22 @@
 ---
 import type { Translations } from '../lib/i18n';
-import DemoViewer from './DemoViewer';
+import InteractiveShowcase from './InteractiveShowcase';
 
 interface Props {
   t?: Translations;
 }
 
 const { t } = Astro.props;
-const loadingText = t?.demo.loading ?? 'cargado';
 ---
 
 <section id="demo" class="py-24 px-6">
-  <div class="mx-auto max-w-4xl">
+  <div class="mx-auto max-w-6xl">
     <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.demo.heading ?? 'Demo en Vivo'}</h2>
     <p class="mb-8 text-center text-muted-foreground">
-      {t?.demo.description ?? 'Interactúa con modelos 3D pre-renderizados. Orbita, haz zoom y desplázate para explorar cada proyecto.'}
+      {t?.demo.description ?? 'Explora modelos 3D paramétricos con controles completos — ajusta parámetros, cambia modos y genera renders.'}
     </p>
     <div class="overflow-hidden rounded-xl border border-border bg-card">
-      <DemoViewer client:visible loadingText={loadingText} />
+      <InteractiveShowcase client:visible />
     </div>
   </div>
 </section>

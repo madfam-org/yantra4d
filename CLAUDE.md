@@ -20,8 +20,8 @@ projects/
        │        └── services/  renderService, verifyService, openscad-worker (WASM)
        │
        └──► apps/landing/  (Astro + React islands — marketing site)
-                ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, DemoViewer
-                └── public/  static assets, pre-exported STL for demo
+                ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, InteractiveShowcase
+                └── public/  static assets
 
 libs/
   BOSL2/               (git submodule — BSD-2 — attachments, rounding, math)
@@ -61,7 +61,7 @@ packages/
 | `apps/studio/src/hooks/useUndoRedo.js` | Parameter undo/redo history stack | RARELY |
 | `apps/studio/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
 | `apps/landing/src/pages/index.astro` | Landing page (composes all sections) | RARELY |
-| `apps/landing/src/components/DemoViewer.tsx` | React island — Three.js STL viewer | RARELY |
+| `apps/landing/src/components/InteractiveShowcase.tsx` | React island — iframe embed of studio with project tabs | RARELY |
 | `packages/tokens/colors.css` | Shared CSS custom properties (both apps import) | RARELY |
 | `docs/competitive-landscape.md` | Competitive research & feature roadmap | YES |
 | `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
@@ -197,6 +197,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | Export formats | `export_format` in render payloads (stl/3mf/off); format selector only visible when manifest declares `export_formats` |
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` — edit tokens there, not in individual app CSS |
+| Embed mode | `?embed=true` hides studio header/banners for iframe embedding; landing uses `InteractiveShowcase` to embed studio via iframe. Production nginx must allow `frame-ancestors` from `qubic.quest` |
 
 ## Do NOT Edit
 

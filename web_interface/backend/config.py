@@ -38,6 +38,12 @@ class Config:
     JANUA_JWKS_URL = os.getenv("JANUA_JWKS_URL", f"{JANUA_ISSUER}/.well-known/jwks.json")
     JANUA_AUDIENCE = os.getenv("JANUA_AUDIENCE", "qubic")
     AUTH_ENABLED = os.getenv("AUTH_ENABLED", "true").lower() == "true"
+
+    # Tiers
+    TIERS_FILE = Path(os.getenv("TIERS_FILE", BASE_DIR / "tiers.json"))
+
+    # GitHub Import
+    GITHUB_IMPORT_ENABLED = os.getenv("GITHUB_IMPORT_ENABLED", "true").lower() == "true"
     
     # --- Manifest-delegated accessors (backward compat) ---
 

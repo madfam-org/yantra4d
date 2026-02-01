@@ -11,7 +11,8 @@ from flask import Blueprint, request, jsonify, Response
 from config import Config
 from extensions import limiter
 from manifest import get_manifest
-from middleware.auth import require_auth
+from middleware.auth import optional_auth
+from services.tier_service import resolve_tier, get_tier_limits
 from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
 from services.route_helpers import cleanup_old_stl_files, error_response, require_json_body
 
@@ -22,6 +23,23 @@ logger = logging.getLogger(__name__)
 render_bp = Blueprint('render', __name__)
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
+
+
+def _make_rate_limit_headers(tier: str) -> dict:
+    """Build X-RateLimit-* headers for the response."""
+    limits = get_tier_limits(tier)
+    return {
+        "X-RateLimit-Limit": str(limits["renders_per_hour"]),
+        "X-RateLimit-Tier": tier,
+    }
+
+
+def _get_tiered_limit() -> str:
+    """Return dynamic rate limit string based on user tier."""
+    claims = getattr(request, "auth_claims", None)
+    tier = resolve_tier(claims)
+    limits = get_tier_limits(tier)
+    return f"{limits['renders_per_hour']}/hour"
 
 
 def _resolve_render_context(data):
@@ -81,7 +99,7 @@ def _extract_render_payload(data):
 
 
 @render_bp.route('/api/estimate', methods=['POST'])
-@require_auth
+@optional_auth
 @limiter.limit("200/hour")
 @require_json_body
 def estimate_render_time():
@@ -118,12 +136,13 @@ def estimate_render_time():
 
 
 @render_bp.route('/api/render', methods=['POST'])
-@require_auth
-@limiter.limit("100/hour")
+@optional_auth
+@limiter.limit(_get_tiered_limit, key_func=lambda: f"user:{getattr(request, 'auth_claims', {}).get('sub', '')}" if getattr(request, 'auth_claims', None) else f"ip:{request.remote_addr}")
 @require_json_body
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
+    tier = resolve_tier(getattr(request, "auth_claims", None))
     payload = _extract_render_payload(data)
 
     if payload is None:
@@ -165,11 +184,14 @@ def render_stl():
                 "size_bytes": size_bytes
             })
 
-        return jsonify({
+        resp = jsonify({
             "status": "success",
             "parts": generated_parts,
             "log": combined_log
         })
+        for k, v in _make_rate_limit_headers(tier).items():
+            resp.headers[k] = v
+        return resp
     except OSError as e:
         return error_response(str(e))
     except Exception as e:
@@ -178,8 +200,8 @@ def render_stl():
 
 
 @render_bp.route('/api/render-stream', methods=['POST'])
-@require_auth
-@limiter.limit("100/hour")
+@optional_auth
+@limiter.limit(_get_tiered_limit, key_func=lambda: f"user:{getattr(request, 'auth_claims', {}).get('sub', '')}" if getattr(request, 'auth_claims', None) else f"ip:{request.remote_addr}")
 @require_json_body
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
@@ -239,7 +261,7 @@ def render_stl_stream():
 
 
 @render_bp.route('/api/render-cancel', methods=['POST'])
-@require_auth
+@optional_auth
 def cancel_render_endpoint():
     """Cancel the active render process."""
     cancelled = cancel_render()

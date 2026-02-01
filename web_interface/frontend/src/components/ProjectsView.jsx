@@ -1,8 +1,12 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
 import { getApiBase } from '../services/backendDetection'
 import { useLanguage } from '../contexts/LanguageProvider'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
-import { Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Search, Github } from 'lucide-react'
+import AuthGate from './AuthGate'
+
+const GitHubImportWizard = lazy(() => import('./GitHubImportWizard'))
 
 const DIFFICULTY_COLORS = {
   beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
@@ -17,6 +21,7 @@ export default function ProjectsView() {
   const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
   const [activeTag, setActiveTag] = useState(null)
+  const [showImport, setShowImport] = useState(false)
 
   useEffect(() => {
     fetch(`${getApiBase()}/api/admin/projects`)
@@ -87,7 +92,15 @@ export default function ProjectsView() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h2 className="text-2xl font-bold">{t('projects.title')}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">{t('projects.title')}</h2>
+          <AuthGate tier="pro">
+            <Button variant="outline" size="sm" onClick={() => setShowImport(true)} className="gap-1.5">
+              <Github className="h-4 w-4" />
+              Import
+            </Button>
+          </AuthGate>
+        </div>
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -185,6 +198,22 @@ export default function ProjectsView() {
         <div className="flex items-center justify-center h-32 text-muted-foreground">
           {t('projects.no_results')}
         </div>
+      )}
+
+      {showImport && (
+        <Suspense fallback={null}>
+          <GitHubImportWizard
+            onClose={() => setShowImport(false)}
+            onImported={() => {
+              setShowImport(false)
+              // Refresh project list
+              fetch(`${getApiBase()}/api/admin/projects`)
+                .then(res => res.ok ? res.json() : [])
+                .then(setProjects)
+                .catch(() => {})
+            }}
+          />
+        </Suspense>
       )}
     </div>
   )

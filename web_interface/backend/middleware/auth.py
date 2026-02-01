@@ -105,6 +105,26 @@ def require_role(role: str):
     return decorator
 
 
+def require_tier(min_tier: str):
+    """Decorator factory: optional_auth + check tier hierarchy."""
+    from services.tier_service import resolve_tier, has_tier
+
+    def decorator(f):
+        @functools.wraps(f)
+        @optional_auth
+        def decorated(*args, **kwargs):
+            if not Config.AUTH_ENABLED:
+                request.user_tier = "madfam"
+                return f(*args, **kwargs)
+            user_tier = resolve_tier(getattr(request, "auth_claims", None))
+            if not has_tier(user_tier, min_tier):
+                return error_response(f"Requires {min_tier} tier or above", 403)
+            request.user_tier = user_tier
+            return f(*args, **kwargs)
+        return decorated
+    return decorator
+
+
 def optional_auth(f):
     """Decorator: decode token if present, set request.auth_claims (None if anonymous)."""
     @functools.wraps(f)

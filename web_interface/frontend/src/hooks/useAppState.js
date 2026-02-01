@@ -26,9 +26,14 @@ function safeParse(key, fallback) {
   }
 }
 
+function isDemoView(hash) {
+  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+  return parts.length === 1 && parts[0] === 'demo'
+}
+
 function isProjectsView(hash) {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-  return parts.length === 1 && parts[0] === 'projects'
+  return parts.length === 1 && (parts[0] === 'projects' || parts[0] === 'demo')
 }
 
 function parseHash(hash, presets, modes) {
@@ -54,6 +59,7 @@ function buildHash(projectSlug, presetId, modeId) {
 }
 
 export function useAppState() {
+  const [isDemo, setIsDemo] = useState(() => isDemoView(window.location.hash))
   const [currentView, setCurrentView] = useState(() =>
     isProjectsView(window.location.hash) ? 'projects' : 'studio'
   )
@@ -141,6 +147,11 @@ export function useAppState() {
   // Listen for browser back/forward
   useEffect(() => {
     const onHashChange = () => {
+      if (isDemoView(window.location.hash)) {
+        setIsDemo(true)
+        setCurrentView('projects')
+        return
+      }
       if (isProjectsView(window.location.hash)) {
         setCurrentView('projects')
         return
@@ -353,7 +364,7 @@ export function useAppState() {
 
   return {
     // View state
-    currentView,
+    currentView, isDemo,
     // Theme/lang
     theme, cycleTheme,
     language, setLanguage, toggleLanguage, t,

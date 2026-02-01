@@ -257,6 +257,15 @@
         }
       }
     },
+    "source": {
+      "type": "object",
+      "description": "Import source metadata (e.g., GitHub repo origin).",
+      "properties": {
+        "type": { "type": "string", "enum": ["github", "upload", "local"] },
+        "repo_url": { "type": "string", "format": "uri" },
+        "imported_at": { "type": "string", "format": "date-time" }
+      }
+    },
     "grid_presets": { "type": "object", "additionalProperties": { "type": "object" } },
     "estimate_constants": {
       "type": "object",

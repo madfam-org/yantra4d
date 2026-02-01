@@ -303,10 +303,10 @@ State persists across page refreshes.
 
 | File | Change |
 |------|--------|
-| `web_interface/frontend/src/App.jsx` | Line 192: `grid-cols-3` hardcoded (was dynamic `grid-cols-${manifest.modes.length}`) |
-| `web_interface/frontend/src/components/Controls.jsx` | Added `labelId` per param, `<Label id={labelId}>`, `<Slider aria-labelledby={labelId}>` |
-| `web_interface/frontend/src/components/ui/slider.jsx` | Extract `aria-labelledby` and `aria-label` from props, forward to `<SliderPrimitive.Thumb>` |
-| `web_interface/frontend/src/components/Controls.test.jsx` | Updated test description for slider accessibility |
+| `apps/studio/src/App.jsx` | Line 192: `grid-cols-3` hardcoded (was dynamic `grid-cols-${manifest.modes.length}`) |
+| `apps/studio/src/components/Controls.jsx` | Added `labelId` per param, `<Label id={labelId}>`, `<Slider aria-labelledby={labelId}>` |
+| `apps/studio/src/components/ui/slider.jsx` | Extract `aria-labelledby` and `aria-label` from props, forward to `<SliderPrimitive.Thumb>` |
+| `apps/studio/src/components/Controls.test.jsx` | Updated test description for slider accessibility |
 
 ## Verification
 

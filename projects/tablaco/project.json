@@ -662,5 +662,34 @@
         }
       }
     }
-  }
+  },
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": { "en": "Print bottom half", "es": "Imprime la mitad inferior" },
+      "notes": { "en": "Flat side down, 0.2mm layers, 20% infill", "es": "Lado plano abajo, capas de 0.2mm, 20% relleno" },
+      "visible_parts": ["bottom"],
+      "highlight_parts": ["bottom"],
+      "camera": [50, -50, 30],
+      "camera_target": [0, 0, 0]
+    },
+    {
+      "step": 2,
+      "label": { "en": "Print top half", "es": "Imprime la mitad superior" },
+      "notes": { "en": "Same settings. Snap mechanism needs supports.", "es": "Misma configuración. El mecanismo de ensamble necesita soportes." },
+      "visible_parts": ["bottom", "top"],
+      "highlight_parts": ["top"],
+      "camera": [50, -50, 50],
+      "camera_target": [0, 0, 10]
+    },
+    {
+      "step": 3,
+      "label": { "en": "Snap together", "es": "Ensambla a presión" },
+      "notes": { "en": "Align tabs and press firmly until you hear a click.", "es": "Alinea las pestañas y presiona firmemente hasta escuchar un clic." },
+      "visible_parts": ["bottom", "top"],
+      "highlight_parts": ["bottom", "top"],
+      "camera": [30, -30, 25],
+      "camera_target": [0, 0, 10]
+    }
+  ]
 }

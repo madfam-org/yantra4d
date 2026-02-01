@@ -44,9 +44,14 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
       <img
         id="hero-static"
         src="/hero-preview.webp"
+        srcset="/hero-preview-640w.webp 640w, /hero-preview.webp 1280w"
+        sizes="(max-width: 640px) 640px, 1280px"
         alt="Qubic Studio — parametric 3D design interface"
         class="h-full w-full object-cover"
-        loading="eager"
+        width="1280"
+        height="720"
+        decoding="async"
+        loading="lazy"
       />
       <button
         id="hero-play-btn"

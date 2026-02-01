@@ -34,8 +34,8 @@ export default function StudioMainView({
   logs, t,
 }) {
   return (
-    <div className="flex-1 relative flex flex-col min-h-0">
-      <div className="flex-1 relative min-h-0">
+    <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
+      <div className="flex-1 relative min-h-0" aria-busy={loading}>
         <Viewer
           ref={viewerRef}
           parts={parts}
@@ -68,7 +68,7 @@ export default function StudioMainView({
         ref={consoleRef}
         className="h-32 lg:h-48 bg-muted border-t border-border p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap shrink-0"
         role="log"
-        aria-live="polite"
+        aria-live="off"
         aria-label="Render console"
       >
         {logs}

@@ -15,16 +15,81 @@ const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label:
   <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
     <a href={lang === 'en' ? '/en/' : '/'} class="text-xl font-bold tracking-tight">Qubic</a>
     <nav class="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-      <a href="#features" class="hover:text-foreground transition-colors">{t?.nav.features ?? 'Características'}</a>
-      <a href="#demo" class="hover:text-foreground transition-colors">{t?.nav.demo ?? 'Demo'}</a>
-      <a href="#tech" class="hover:text-foreground transition-colors">{t?.nav.tech ?? 'Tecnología'}</a>
-      <a href={switchLang.href} class="hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
+      <a href="#features" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.features ?? 'Características'}</a>
+      <a href="#demo" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.demo ?? 'Demo'}</a>
+      <a href="#tech" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.tech ?? 'Tecnología'}</a>
+      <a href={switchLang.href} class="min-h-[44px] flex items-center hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
     </nav>
+    <div class="flex items-center gap-2">
+      <button
+        id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-md text-foreground"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+      <a
+        href={studioUrl}
+        class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 min-h-[44px] flex items-center"
+      >
+        {t?.nav.openStudio ?? 'Abrir Studio →'}
+      </a>
+    </div>
+  </div>
+</header>
+
+<div
+  id="mobile-menu"
+  class="fixed inset-0 z-[60] flex flex-col bg-background/95 backdrop-blur-sm p-6 hidden"
+  aria-hidden="true"
+>
+  <div class="flex justify-end">
+    <button
+      id="mobile-menu-close"
+      class="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-md text-foreground"
+      aria-label="Close menu"
+    >
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+  <nav class="flex flex-col items-center gap-6 mt-16 text-lg text-muted-foreground">
+    <a href="#features" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.features ?? 'Características'}</a>
+    <a href="#demo" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.demo ?? 'Demo'}</a>
+    <a href="#tech" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.tech ?? 'Tecnología'}</a>
+    <a href={switchLang.href} class="min-h-[44px] flex items-center hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
     <a
       href={studioUrl}
-      class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+      class="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 min-h-[44px] flex items-center"
     >
       {t?.nav.openStudio ?? 'Abrir Studio →'}
     </a>
-  </div>
-</header>
+  </nav>
+</div>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const closeBtn = document.getElementById('mobile-menu-close');
+
+  function openMenu() {
+    menu?.classList.remove('hidden');
+    menu?.setAttribute('aria-hidden', 'false');
+    menuBtn?.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeMenu() {
+    menu?.classList.add('hidden');
+    menu?.setAttribute('aria-hidden', 'true');
+    menuBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  menuBtn?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+  menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+</script>

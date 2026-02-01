@@ -12,4 +12,8 @@
         background-color: hsl(var(--background));
         color: hsl(var(--foreground));
     }
+    :focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+    }
 }

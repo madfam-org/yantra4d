@@ -27,14 +27,20 @@ export default function InteractiveShowcase() {
   const lang = typeof document !== 'undefined' ? document.documentElement.lang : 'en';
   const isEs = lang === 'es';
 
+  const tabpanelId = 'showcase-tabpanel';
+
   return (
     <div>
-      <div className="flex flex-wrap gap-2 justify-center p-3 border-b border-border">
+      <div className="flex flex-wrap gap-2 justify-center p-3 border-b border-border" role="tablist" aria-label="Demo projects">
         {PROJECTS.map(p => (
           <button
             key={p.slug}
+            role="tab"
+            aria-selected={active.slug === p.slug}
+            aria-controls={tabpanelId}
+            id={`tab-${p.slug}`}
             onClick={() => setActive(p)}
-            className={`px-4 py-1.5 text-sm rounded-md border transition-colors ${
+            className={`px-4 py-1.5 text-sm rounded-md border transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
               active.slug === p.slug
                 ? 'bg-primary text-primary-foreground border-primary'
                 : 'bg-background text-muted-foreground border-border hover:text-foreground'
@@ -48,13 +54,22 @@ export default function InteractiveShowcase() {
       <p className="text-center text-sm text-muted-foreground py-2">
         {isEs ? active.descriptionEs : active.description}
       </p>
-      <div className="h-[500px] sm:h-[600px] w-full">
+      <div className="sr-only" aria-live="polite">
+        {isEs ? active.descriptionEs : active.description}
+      </div>
+      <div
+        id={tabpanelId}
+        role="tabpanel"
+        aria-labelledby={`tab-${active.slug}`}
+        className="h-[350px] sm:h-[500px] md:h-[600px] w-full"
+      >
         <iframe
           key={active.slug}
           src={`${STUDIO_BASE}?embed=true#/${active.slug}`}
           className="w-full h-full border-0"
           allow="clipboard-write"
           title={`${active.label} interactive demo`}
+          loading="lazy"
         />
       </div>
       <div className="text-center py-3 border-t border-border">

@@ -1,0 +1,28 @@
+name: qubic-landing
+type: web
+
+build:
+  dockerfile: Dockerfile
+  context: apps/landing
+
+deploy:
+  replicas: 2
+  resources:
+    memory:
+      min: 64Mi
+      max: 128Mi
+
+service:
+  port: 80
+  healthCheck:
+    path: /
+    intervalSeconds: 30
+    timeoutSeconds: 5
+
+domains:
+  - domain: qubic.quest
+    tls:
+      provider: cloudflare
+
+autoDeploy:
+  branch: main

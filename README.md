@@ -46,40 +46,26 @@ tablaco/
 │       ├── tablaco.scad         # Full grid assembly
 │       ├── project.json         # Project manifest (modes, params, parts)
 │       └── exports/models/      # Reference STL exports
-├── web_interface/
-│   ├── backend/                 # Flask API server
+├── apps/
+│   ├── api/                     # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration
-│   │   ├── extensions.py        # Flask extensions (rate limiter)
-│   │   ├── config.py            # Environment config (paths, server settings)
-│   │   ├── manifest.py          # Project manifest loader + typed accessors
-│   │   ├── routes/
-│   │   │   ├── render.py        # /api/estimate, /api/render, /api/render-stream
-│   │   │   ├── verify.py        # /api/verify
-│   │   │   ├── health.py        # /api/health
-│   │   │   ├── manifest_route.py # /api/manifest
-│   │   │   └── config_route.py  # /api/config (legacy)
-│   │   └── services/
-│   │       └── openscad.py      # OpenSCAD subprocess wrapper
-│   └── frontend/                # React SPA
+│   │   ├── routes/              # API endpoints
+│   │   ├── services/            # OpenSCAD, analyzer, manifest generator
+│   │   └── tests/               # Backend tests (pytest)
+│   ├── studio/                  # React SPA (parametric editor)
+│   │   └── src/
+│   │       ├── App.jsx          # Main app shell + state management
+│   │       ├── components/      # Controls, Viewer, UI primitives
+│   │       ├── contexts/        # Manifest, Language, Theme providers
+│   │       └── config/          # Bundled fallback manifest
+│   └── landing/                 # Astro marketing site
 │       └── src/
-│           ├── App.jsx           # Main app shell + state management
-│           ├── components/
-│           │   ├── Controls.jsx  # Data-driven parameter controls
-│           │   ├── Viewer.jsx    # Three.js 3D viewer
-│           │   └── ui/           # Shadcn UI primitives
-│           ├── contexts/
-│           │   ├── ManifestProvider.jsx  # Manifest fetch + fallback
-│           │   ├── LanguageProvider.jsx  # i18n (UI chrome strings)
-│           │   └── ThemeProvider.jsx     # Light/Dark/System theme
-│           └── config/
-│               └── fallback-manifest.json  # Bundled manifest fallback
-├── tests/
-│   ├── verify_design.py         # STL verification script
-│   ├── conftest.py              # Shared pytest fixtures
-│   └── test_*.py                # Backend API + service tests
-├── pyproject.toml              # pytest + coverage configuration
-├── docs/                        # Project documentation
-├── Dockerfile
+│           ├── pages/           # index.astro
+│           └── components/      # Header, Hero, DemoViewer (React island)
+├── packages/
+│   ├── schemas/                 # JSON Schema for project manifests
+│   └── tokens/                  # Shared CSS custom properties
+├── docs/                        # Platform documentation
 └── docker-compose.yml
 ```
 
@@ -87,7 +73,7 @@ tablaco/
 
 ### Prerequisites
 -   OpenSCAD
--   Python 3.10+ (`pip install -r web_interface/backend/requirements.txt`)
+-   Python 3.10+ (`pip install -r apps/api/requirements.txt`)
 -   pytest (`pip install pytest pytest-cov` — for running backend tests)
 -   Node.js (v18+)
 

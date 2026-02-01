@@ -50,7 +50,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
   "parameters": [
     {
       "id": "size",                         // Parameter name (sent to backend)
-      "type": "slider",                     // "slider" or "checkbox"
+      "type": "slider",                     // "slider", "checkbox", or "text"
       "default": 20.0,
       "min": 10, "max": 50, "step": 0.5,   // Slider range (ignored for checkboxes)
       "label": { "en": "Size (mm)", "es": "Tamaño (mm)" },
@@ -59,7 +59,11 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
       "group": "visibility",                // Optional grouping (renders with header)
       "visibility_level": "basic",           // Optional: "basic" (default) or "advanced"
       "parent": "show_walls",               // Optional: parent param ID (for hierarchy)
-      "visible_in_modes": ["unit", "assembly"]  // Which modes show this parameter
+      "visible_in_modes": ["unit", "assembly"],  // Which modes show this parameter
+      "widget": {                            // Optional: custom widget type
+        "type": "color-gradient"             // Renders dual color picker with gradient preview
+      },
+      "maxlength": 30                        // Optional: max characters for text params
     }
     // ... more parameters
   ],
@@ -130,6 +134,37 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default_material": "pla",              // "pla", "petg", "abs", or "tpu"
     "default_infill": 0.2                   // 0.0 to 1.0
   },
+
+  "difficulty": "beginner",               // Optional: "beginner", "intermediate", "advanced"
+
+  "materials": [                           // Optional: material profiles for print estimation
+    { "id": "pla", "label": {"en": "PLA"}, "density_g_cm3": 1.24, "cost_per_kg": 20 },
+    { "id": "petg", "label": {"en": "PETG"}, "density_g_cm3": 1.27, "cost_per_kg": 25 }
+  ],
+
+  "verification": {                        // Optional: multi-stage STL quality checks
+    "stages": [
+      {
+        "id": "geometry",
+        "label": {"en": "Geometry Check"},
+        "checks": ["watertight", "volume_positive", "no_degenerate_faces"]
+      },
+      {
+        "id": "printability",
+        "label": {"en": "Printability Check"},
+        "checks": ["min_wall_thickness", "overhang_angle", "bed_adhesion"]
+      }
+    ]
+  },
+
+  "assembly_steps": [                      // Optional: step-by-step assembly instructions
+    {
+      "step": 1,
+      "label": {"en": "Print all parts", "es": "Imprime todas las piezas"},
+      "visible_parts": ["main"],
+      "camera": {"position": [60, 60, 60], "target": [0, 0, 0]}
+    }
+  ],
 
   "estimate_constants": {
     "base_time": 5,       // Base seconds for any render

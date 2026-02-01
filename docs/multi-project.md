@@ -15,7 +15,7 @@ projects/
   polydice/             # Parametric dice set
     project.json
     *.scad
-  ...                   # 15 built-in projects total
+  ...                   # 20 built-in projects total
   my-custom-project/    # Onboarded project
     project.json
     *.scad
@@ -49,7 +49,7 @@ Render, verify, and estimate endpoints accept an optional `project` field in the
 
 - **URL hash**: `#/{projectSlug}/{presetId}/{modeId}` (3-segment)
 - **Backward compat**: 2-segment hash `#/{presetId}/{modeId}` still works (uses default project)
-- **Project selector**: Dropdown appears in header when multiple projects are available
+- **Project selector**: Dropdown appears in header when multiple projects are available. Includes "Import from GitHub…" option that navigates to the projects gallery.
 - **Per-project localStorage**: Parameters stored as `{slug}-params`, `{slug}-colors`, etc.
 
 ## Onboarding External Projects

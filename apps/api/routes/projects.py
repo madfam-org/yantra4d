@@ -4,6 +4,9 @@ Handles /api/projects endpoints for multi-project support.
 """
 import json
 import logging
+import os
+import sqlite3
+import time
 
 from flask import Blueprint, jsonify, send_from_directory, abort, request
 
@@ -15,11 +18,50 @@ logger = logging.getLogger(__name__)
 
 projects_bp = Blueprint('projects', __name__)
 
+ANALYTICS_DB = os.path.join(Config.PROJECTS_DIR, ".analytics.db")
+
+
+def _get_project_stats():
+    """Fetch aggregate event counts per project from analytics DB."""
+    if not os.path.exists(ANALYTICS_DB):
+        return {}
+    try:
+        conn = sqlite3.connect(ANALYTICS_DB)
+        conn.row_factory = sqlite3.Row
+        since = time.time() - 30 * 86400  # last 30 days
+        rows = conn.execute(
+            "SELECT project, event_type, COUNT(*) as count "
+            "FROM events WHERE created_at > ? GROUP BY project, event_type",
+            (since,),
+        ).fetchall()
+        conn.close()
+        stats = {}
+        for row in rows:
+            slug = row["project"]
+            if slug not in stats:
+                stats[slug] = {}
+            stats[slug][row["event_type"]] = row["count"]
+        return stats
+    except Exception as e:
+        logger.debug(f"Analytics stats unavailable: {e}")
+        return {}
+
 
 @projects_bp.route('/api/projects', methods=['GET'])
 def list_projects():
-    """Return list of available projects."""
+    """Return list of available projects with optional analytics counts."""
     projects = discover_projects()
+    include_stats = request.args.get("stats") == "1"
+    if include_stats:
+        stats = _get_project_stats()
+        for p in projects:
+            slug = p.get("slug", "")
+            project_stats = stats.get(slug, {})
+            p["stats"] = {
+                "renders": project_stats.get("render", 0),
+                "exports": project_stats.get("export", 0),
+                "preset_applies": project_stats.get("preset_apply", 0),
+            }
     return jsonify(projects)
 
 

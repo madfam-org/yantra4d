@@ -4,7 +4,7 @@ A manifest-driven platform for parametric OpenSCAD models with a web-based 3D pr
 
 ![Qubic](/docs/images/half_cube_iso.png)
 
-Ships with 15 built-in projects including **tablaco** (interlocking cubes), **gridfinity** (modular storage), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), and **relief** (text plaques & signs). See [`projects/`](./projects/) for all projects or [`projects/tablaco/README.md`](./projects/tablaco/README.md) for the flagship project.
+Ships with 20 built-in projects including **tablaco** (interlocking cubes), **gridfinity** (modular storage), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), and **motor-mount** (NEMA stepper mounts). See [`projects/`](./projects/) for all projects or [`projects/tablaco/README.md`](./projects/tablaco/README.md) for the flagship project.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
@@ -25,7 +25,7 @@ Platform documentation is available in the [`docs/`](./docs/index.md) directory:
 -   [Multi-Project Platform](./docs/multi-project.md) — Multi-project setup and configuration
 -   [Developer Experience](./docs/devx-guide.md) — Onboarding external SCAD projects
 
-Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./projects/tablaco/README.md) for the flagship project, or browse all 15 built-in projects under [`projects/`](./projects/).
+Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./projects/tablaco/README.md) for the flagship project, or browse all 20 built-in projects under [`projects/`](./projects/).
 
 ## Tech Stack
 -   **CAD**: OpenSCAD
@@ -47,7 +47,7 @@ tablaco/
 │   ├── gridfinity/              # Modular storage bins
 │   ├── polydice/                # Parametric dice set
 │   ├── ultimate-box/            # Parametric box maker
-│   └── ...                      # 15 built-in projects total
+│   └── ...                      # 20 built-in projects total
 ├── apps/
 │   ├── api/                     # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration

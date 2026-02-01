@@ -1,0 +1,234 @@
+{
+  "project": {
+    "name": "NEMA Motor Mount",
+    "slug": "motor-mount",
+    "version": "0.1.0",
+    "description": {
+      "es": "Soporte parametrico para motores NEMA con vista previa del motor real usando NopSCADlib",
+      "en": "Parametric NEMA motor mount with real motor preview using NopSCADlib"
+    },
+    "tags": ["mechanical", "motor", "NEMA", "NopSCADlib", "engineering"],
+    "difficulty": "intermediate"
+  },
+  "modes": [
+    {
+      "id": "mount",
+      "scad_file": "qubic_mount.scad",
+      "label": { "es": "Soporte", "en": "Mount" },
+      "parts": ["mount", "nema_reference"],
+      "estimate": { "base_units": 2, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    { "id": "mount", "render_mode": 0, "label": { "es": "Soporte", "en": "Mount" }, "default_color": "#2c3e50" },
+    { "id": "nema_reference", "render_mode": 1, "static_stl": "exports/nema17_reference.stl", "label": { "es": "Motor NEMA (referencia)", "en": "NEMA Motor (reference)" }, "default_color": "#34495e" }
+  ],
+  "presets": [
+    {
+      "id": "nema17_standard",
+      "label": { "es": "NEMA 17 Estandar", "en": "NEMA 17 Standard" },
+      "values": { "nema_size": 17, "wall_thickness": 4, "base_thickness": 5, "mounting_style": 0 }
+    },
+    {
+      "id": "nema17_compact",
+      "label": { "es": "NEMA 17 Compacto", "en": "NEMA 17 Compact" },
+      "values": { "nema_size": 17, "wall_thickness": 3, "base_thickness": 4, "mounting_style": 0 }
+    },
+    {
+      "id": "nema23_standard",
+      "label": { "es": "NEMA 23 Estandar", "en": "NEMA 23 Standard" },
+      "values": { "nema_size": 23, "wall_thickness": 5, "base_thickness": 6, "mounting_style": 0 }
+    },
+    {
+      "id": "nema23_heavy",
+      "label": { "es": "NEMA 23 Reforzado", "en": "NEMA 23 Heavy Duty" },
+      "values": { "nema_size": 23, "wall_thickness": 6, "base_thickness": 8, "mounting_style": 0 }
+    },
+    {
+      "id": "nema34_standard",
+      "label": { "es": "NEMA 34 Estandar", "en": "NEMA 34 Standard" },
+      "values": { "nema_size": 34, "wall_thickness": 6, "base_thickness": 8, "mounting_style": 0 }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "nema_size",
+      "type": "slider",
+      "default": 17,
+      "min": 17,
+      "max": 34,
+      "step": 6,
+      "label": { "es": "Tamano NEMA", "en": "NEMA Size" },
+      "tooltip": { "es": "Tamano del motor NEMA (17, 23 o 34)", "en": "NEMA motor size (17, 23, or 34)" },
+      "visible_in_modes": ["mount"],
+      "group": "motor"
+    },
+    {
+      "id": "wall_thickness",
+      "type": "slider",
+      "default": 4,
+      "min": 3,
+      "max": 8,
+      "step": 0.5,
+      "label": { "es": "Grosor de pared (mm)", "en": "Wall Thickness (mm)" },
+      "tooltip": { "es": "Grosor de las paredes del soporte", "en": "Thickness of mount walls" },
+      "visible_in_modes": ["mount"],
+      "group": "dimensions"
+    },
+    {
+      "id": "base_thickness",
+      "type": "slider",
+      "default": 5,
+      "min": 3,
+      "max": 10,
+      "step": 0.5,
+      "label": { "es": "Grosor de base (mm)", "en": "Base Thickness (mm)" },
+      "tooltip": { "es": "Grosor de la placa base del soporte", "en": "Thickness of the mount base plate" },
+      "visible_in_modes": ["mount"],
+      "group": "dimensions"
+    },
+    {
+      "id": "mounting_style",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 1,
+      "label": { "es": "Estilo de montaje (0=plano, 1=L)", "en": "Mount Style (0=flat, 1=L-bracket)" },
+      "tooltip": { "es": "Placa plana o soporte en L", "en": "Flat plate or L-bracket mount" },
+      "visible_in_modes": ["mount"],
+      "group": "dimensions"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
+      "tooltip": { "es": "0 = automatico", "en": "0 = auto" },
+      "visible_in_modes": ["mount"],
+      "group": "quality",
+      "visibility_level": "advanced"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "motor", "label": { "es": "Motor", "en": "Motor" } },
+    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
+    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
+    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
+  ],
+  "constraints": [
+    {
+      "rule": "wall_thickness >= 3",
+      "message": { "es": "Grosor minimo de 3mm para rigidez estructural", "en": "Minimum 3mm thickness for structural rigidity" },
+      "severity": "error",
+      "applies_to": ["wall_thickness"]
+    },
+    {
+      "rule": "base_thickness >= 3",
+      "message": { "es": "Base debe ser al menos 3mm para soporte de tornillos", "en": "Base must be at least 3mm for screw support" },
+      "severity": "error",
+      "applies_to": ["base_thickness"]
+    }
+  ],
+  "bom": {
+    "hardware": [
+      {
+        "id": "nema17_motor",
+        "label": { "es": "Motor NEMA 17 (42x42mm)", "en": "NEMA 17 Motor (42x42mm)" },
+        "quantity_formula": 1,
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B00PNEQKC0"
+      },
+      {
+        "id": "m3_screw",
+        "label": { "es": "Tornillo M3x10mm (montaje motor)", "en": "M3x10mm Screw (motor mounting)" },
+        "quantity_formula": 4,
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B01N1VCKFG"
+      },
+      {
+        "id": "m5_bolt",
+        "label": { "es": "Tornillo M5 (montaje base)", "en": "M5 Bolt (base mounting)" },
+        "quantity_formula": 4,
+        "unit": "pcs"
+      }
+    ]
+  },
+  "materials": [
+    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 },
+    { "id": "abs", "name": "ABS", "density": 1.04, "cost_per_kg": 22, "print_speed_factor": 0.9 }
+  ],
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": { "es": "Imprime el soporte", "en": "Print the mount" },
+      "notes": { "es": "0.2mm capas, 50% relleno para rigidez. PETG o ABS recomendado", "en": "0.2mm layers, 50% infill for rigidity. PETG or ABS recommended" },
+      "visible_parts": ["mount"],
+      "highlight_parts": ["mount"],
+      "camera": [100, -80, 50],
+      "camera_target": [0, 0, 0]
+    },
+    {
+      "step": 2,
+      "label": { "es": "Monta el motor en el soporte", "en": "Mount motor to bracket" },
+      "notes": { "es": "Alinea los agujeros y asegura con 4 tornillos M3x10", "en": "Align holes and secure with 4 M3x10 screws" },
+      "visible_parts": ["mount", "nema_reference"],
+      "highlight_parts": ["mount", "nema_reference"],
+      "camera": [80, -60, 40],
+      "camera_target": [0, 0, 10],
+      "hardware": ["nema17_motor", "m3_screw"]
+    },
+    {
+      "step": 3,
+      "label": { "es": "Fija el soporte a la superficie", "en": "Secure mount to surface" },
+      "notes": { "es": "Usa los agujeros de montaje base con tornillos M5", "en": "Use base mounting holes with M5 bolts" },
+      "visible_parts": ["mount", "nema_reference"],
+      "highlight_parts": ["mount"],
+      "camera": [100, -100, 20],
+      "camera_target": [0, 0, 0],
+      "hardware": ["m5_bolt"]
+    }
+  ],
+  "verification": {
+    "stages": {
+      "geometry": {
+        "checks": {
+          "watertight": { "enabled": true },
+          "body_count": { "enabled": true, "expected": 1 },
+          "dimensions": { "enabled": true, "xy_tolerance_mm": 0.3, "z_ratio_min": 0.95, "z_ratio_max": 1.05 },
+          "facet_count": { "enabled": true, "min_facets": 200 }
+        }
+      },
+      "printability": {
+        "checks": {
+          "thin_wall": { "enabled": true, "min_thickness_mm": 1.5 },
+          "overhang": { "enabled": true, "max_angle_deg": 45 },
+          "min_feature_size": { "enabled": true, "min_size_mm": 0.5 }
+        }
+      }
+    },
+    "mode_overrides": {
+      "mount": { "stages": ["geometry", "printability"] }
+    }
+  },
+  "export_formats": ["stl", "3mf", "off"],
+  "print_estimation": { "default_material": "petg", "default_infill": 0.5 },
+  "camera_views": [
+    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [100, 100, 60] },
+    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },
+    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -150, 30] },
+    { "id": "side",  "label": { "es": "Lateral", "en": "Side" },         "position": [150, 0, 30] }
+  ],
+  "viewer": { "default_color": "#2c3e50" },
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 48,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
+}

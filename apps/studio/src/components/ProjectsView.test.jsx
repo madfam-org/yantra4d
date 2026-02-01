@@ -194,6 +194,66 @@ const mockProjects = [
     has_exports: false,
     modified_at: 1701300000,
   },
+  {
+    slug: 'gear-reducer',
+    name: 'Parametric Gear Reducer',
+    version: '0.1.0',
+    description: 'Configurable gear ratio reducer',
+    mode_count: 3,
+    parameter_count: 9,
+    scad_file_count: 3,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701400000,
+  },
+  {
+    slug: 'torus-knot',
+    name: 'Torus Knot Sculpture',
+    version: '0.1.0',
+    description: 'Mathematical torus knot sculptures',
+    mode_count: 1,
+    parameter_count: 6,
+    scad_file_count: 1,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701500000,
+  },
+  {
+    slug: 'superformula',
+    name: 'Superformula Vase',
+    version: '0.1.0',
+    description: 'Generative superformula vases',
+    mode_count: 1,
+    parameter_count: 8,
+    scad_file_count: 1,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701600000,
+  },
+  {
+    slug: 'spiral-planter',
+    name: 'Spiral Planter',
+    version: '0.1.0',
+    description: 'Archimedean spiral planters',
+    mode_count: 1,
+    parameter_count: 7,
+    scad_file_count: 1,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701700000,
+  },
+  {
+    slug: 'motor-mount',
+    name: 'NEMA Motor Mount',
+    version: '0.1.0',
+    description: 'Parametric NEMA stepper motor mount',
+    mode_count: 1,
+    parameter_count: 5,
+    scad_file_count: 1,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701800000,
+  },
 ]
 
 beforeEach(() => {
@@ -218,7 +278,7 @@ describe('ProjectsView', () => {
       expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
     })
     expect(screen.getAllByText('v1.0.0')).toHaveLength(3)
-    expect(screen.getAllByText('3 modes')).toHaveLength(5) // tablaco + stemfie + voronoi + maze + relief
+    expect(screen.getAllByText('3 modes')).toHaveLength(6) // tablaco + stemfie + voronoi + maze + relief + gear-reducer
     expect(screen.getAllByText('8 params').length).toBeGreaterThan(0)
     expect(screen.getByText('Gridfinity')).toBeInTheDocument()
     expect(screen.getByText('Julia Vase')).toBeInTheDocument()
@@ -286,6 +346,22 @@ describe('ProjectsView', () => {
     expect(results).toHaveNoViolations()
   })
 
+  it('renders analytics stats badges when present', async () => {
+    const projectsWithStats = mockProjects.map((p, i) =>
+      i === 0 ? { ...p, stats: { renders: 42, exports: 7 } } : p
+    )
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(projectsWithStats),
+    })
+    renderWithProviders(<ProjectsView />)
+    await waitFor(() => {
+      expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+    })
+    expect(screen.getByText('42 renders')).toBeInTheDocument()
+    expect(screen.getByText('7 exports')).toBeInTheDocument()
+  })
+
   it('renders Manifest and Exports badges', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
@@ -295,8 +371,8 @@ describe('ProjectsView', () => {
     await waitFor(() => {
       expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
     })
-    // All 15 projects have manifest, 3 have exports (tablaco, gridfinity, portacosas)
-    expect(screen.getAllByText('Manifest')).toHaveLength(15)
+    // All 20 projects have manifest, 3 have exports (tablaco, gridfinity, portacosas)
+    expect(screen.getAllByText('Manifest')).toHaveLength(20)
     expect(screen.getAllByText('Exports')).toHaveLength(3)
   })
 })

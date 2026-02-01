@@ -1,0 +1,365 @@
+{
+  "project": {
+    "name": "Parametric Gear Reducer",
+    "slug": "gear-reducer",
+    "version": "0.1.0",
+    "description": {
+      "es": "Reductor de engranajes parametrico con BOSL2 — ratio configurable, tamano de motor y diametro de eje",
+      "en": "Parametric gear reducer with BOSL2 — configurable ratio, motor size, and shaft diameter"
+    },
+    "tags": ["mechanical", "gears", "engineering", "BOSL2"],
+    "difficulty": "advanced"
+  },
+  "modes": [
+    {
+      "id": "assembly",
+      "scad_file": "qubic_gear_reducer.scad",
+      "label": { "es": "Ensamble Completo", "en": "Full Assembly" },
+      "parts": ["housing_bottom", "housing_top", "input_gear", "output_gear", "shaft"],
+      "estimate": { "base_units": 5, "formula": "constant" }
+    },
+    {
+      "id": "housing",
+      "scad_file": "qubic_housing.scad",
+      "label": { "es": "Carcasa", "en": "Housing" },
+      "parts": ["housing_bottom", "housing_top"],
+      "estimate": { "base_units": 3, "formula": "constant" }
+    },
+    {
+      "id": "gears",
+      "scad_file": "qubic_gear_set.scad",
+      "label": { "es": "Engranajes", "en": "Gear Set" },
+      "parts": ["input_gear", "output_gear"],
+      "estimate": { "base_units": 4, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    { "id": "housing_bottom", "render_mode": 0, "label": { "es": "Carcasa Inferior", "en": "Housing Bottom" }, "default_color": "#2c3e50" },
+    { "id": "housing_top", "render_mode": 1, "label": { "es": "Carcasa Superior", "en": "Housing Top" }, "default_color": "#34495e" },
+    { "id": "input_gear", "render_mode": 2, "label": { "es": "Engranaje de Entrada", "en": "Input Gear" }, "default_color": "#e74c3c" },
+    { "id": "output_gear", "render_mode": 3, "label": { "es": "Engranaje de Salida", "en": "Output Gear" }, "default_color": "#f39c12" },
+    { "id": "shaft", "render_mode": 4, "label": { "es": "Eje", "en": "Shaft" }, "default_color": "#95a5a6" }
+  ],
+  "presets": [
+    {
+      "id": "nema17_3to1",
+      "label": { "es": "NEMA 17 — 3:1", "en": "NEMA 17 — 3:1" },
+      "values": { "input_teeth": 12, "output_teeth": 36, "module_size": 1.5, "gear_thickness": 8, "shaft_diameter": 5, "bore_diameter": 5, "wall_thickness": 3 }
+    },
+    {
+      "id": "nema17_4to1",
+      "label": { "es": "NEMA 17 — 4:1", "en": "NEMA 17 — 4:1" },
+      "values": { "input_teeth": 10, "output_teeth": 40, "module_size": 1.5, "gear_thickness": 10, "shaft_diameter": 5, "bore_diameter": 5, "wall_thickness": 3 }
+    },
+    {
+      "id": "nema23_5to1",
+      "label": { "es": "NEMA 23 — 5:1", "en": "NEMA 23 — 5:1" },
+      "values": { "input_teeth": 10, "output_teeth": 50, "module_size": 2, "gear_thickness": 12, "shaft_diameter": 6.35, "bore_diameter": 6.35, "wall_thickness": 4 }
+    },
+    {
+      "id": "compact_2to1",
+      "label": { "es": "Compacto 2:1", "en": "Compact 2:1" },
+      "values": { "input_teeth": 15, "output_teeth": 30, "module_size": 1, "gear_thickness": 6, "shaft_diameter": 5, "bore_diameter": 5, "wall_thickness": 2.5 }
+    },
+    {
+      "id": "heavy_duty",
+      "label": { "es": "Servicio Pesado 6:1", "en": "Heavy Duty 6:1" },
+      "values": { "input_teeth": 10, "output_teeth": 60, "module_size": 2.5, "gear_thickness": 15, "shaft_diameter": 8, "bore_diameter": 8, "wall_thickness": 5 }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "input_teeth",
+      "type": "slider",
+      "default": 12,
+      "min": 8,
+      "max": 30,
+      "step": 1,
+      "label": { "es": "Dientes de entrada", "en": "Input Teeth" },
+      "tooltip": { "es": "Numero de dientes del engranaje de entrada (pinon)", "en": "Number of teeth on the input (pinion) gear" },
+      "visible_in_modes": ["assembly", "gears"],
+      "group": "gears"
+    },
+    {
+      "id": "output_teeth",
+      "type": "slider",
+      "default": 36,
+      "min": 16,
+      "max": 80,
+      "step": 1,
+      "label": { "es": "Dientes de salida", "en": "Output Teeth" },
+      "tooltip": { "es": "Numero de dientes del engranaje de salida", "en": "Number of teeth on the output gear" },
+      "visible_in_modes": ["assembly", "gears"],
+      "group": "gears"
+    },
+    {
+      "id": "module_size",
+      "type": "slider",
+      "default": 1.5,
+      "min": 1,
+      "max": 3,
+      "step": 0.25,
+      "label": { "es": "Modulo (mm)", "en": "Module (mm)" },
+      "tooltip": { "es": "Modulo del engranaje — controla el tamano de los dientes", "en": "Gear module — controls tooth size" },
+      "visible_in_modes": ["assembly", "gears"],
+      "group": "gears"
+    },
+    {
+      "id": "gear_thickness",
+      "type": "slider",
+      "default": 8,
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": { "es": "Espesor del engranaje (mm)", "en": "Gear Thickness (mm)" },
+      "tooltip": { "es": "Grosor de los engranajes", "en": "Thickness of the gears" },
+      "visible_in_modes": ["assembly", "gears"],
+      "group": "gears"
+    },
+    {
+      "id": "shaft_diameter",
+      "type": "slider",
+      "default": 5,
+      "min": 3,
+      "max": 10,
+      "step": 0.5,
+      "label": { "es": "Diametro de eje (mm)", "en": "Shaft Diameter (mm)" },
+      "tooltip": { "es": "Diametro del eje de salida", "en": "Output shaft diameter" },
+      "visible_in_modes": ["assembly", "gears", "housing"],
+      "group": "mechanical"
+    },
+    {
+      "id": "bore_diameter",
+      "type": "slider",
+      "default": 5,
+      "min": 3,
+      "max": 10,
+      "step": 0.5,
+      "label": { "es": "Diametro de perforacion (mm)", "en": "Bore Diameter (mm)" },
+      "tooltip": { "es": "Diametro de la perforacion central del engranaje", "en": "Center bore diameter of the gear" },
+      "visible_in_modes": ["assembly", "gears"],
+      "group": "mechanical"
+    },
+    {
+      "id": "wall_thickness",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 6,
+      "step": 0.5,
+      "label": { "es": "Grosor de carcasa (mm)", "en": "Housing Wall Thickness (mm)" },
+      "tooltip": { "es": "Grosor de las paredes de la carcasa", "en": "Thickness of the housing walls" },
+      "visible_in_modes": ["assembly", "housing"],
+      "group": "mechanical"
+    },
+    {
+      "id": "pressure_angle",
+      "type": "slider",
+      "default": 20,
+      "min": 14,
+      "max": 25,
+      "step": 1,
+      "label": { "es": "Angulo de presion (°)", "en": "Pressure Angle (°)" },
+      "tooltip": { "es": "Angulo de presion del perfil de dientes", "en": "Pressure angle of tooth profile" },
+      "visible_in_modes": ["assembly", "gears"],
+      "group": "gears",
+      "visibility_level": "advanced"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
+      "tooltip": { "es": "0 = automatico; mayor = mas detalle pero mas lento", "en": "0 = auto; higher = more detail but slower" },
+      "visible_in_modes": ["assembly", "housing", "gears"],
+      "group": "quality",
+      "visibility_level": "advanced"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "gears", "label": { "es": "Engranajes", "en": "Gears" } },
+    { "id": "mechanical", "label": { "es": "Mecanico", "en": "Mechanical" } },
+    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
+    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
+  ],
+  "constraints": [
+    {
+      "rule": "output_teeth > input_teeth",
+      "message": { "es": "Engranaje de salida debe tener mas dientes que el de entrada para reduccion", "en": "Output gear must have more teeth than input for reduction" },
+      "severity": "error",
+      "applies_to": ["input_teeth", "output_teeth"]
+    },
+    {
+      "rule": "input_teeth >= 8",
+      "message": { "es": "Minimo 8 dientes para evitar interferencia", "en": "Minimum 8 teeth to avoid undercutting" },
+      "severity": "error",
+      "applies_to": ["input_teeth"]
+    },
+    {
+      "rule": "bore_diameter < input_teeth * module_size * 0.4",
+      "message": { "es": "Perforacion muy grande para el pinon", "en": "Bore too large for the pinion" },
+      "severity": "error",
+      "applies_to": ["bore_diameter", "input_teeth", "module_size"]
+    },
+    {
+      "rule": "wall_thickness >= 2",
+      "message": { "es": "Grosor minimo de carcasa para impresion FDM", "en": "Minimum housing thickness for FDM printing" },
+      "severity": "error",
+      "applies_to": ["wall_thickness"]
+    },
+    {
+      "rule": "output_teeth * module_size <= 150",
+      "message": { "es": "Engranaje de salida puede exceder el tamano de la cama de impresion", "en": "Output gear may exceed print bed size" },
+      "severity": "warning",
+      "applies_to": ["output_teeth", "module_size"]
+    }
+  ],
+  "bom": {
+    "hardware": [
+      {
+        "id": "bearing_608",
+        "label": { "es": "Rodamiento 608ZZ (8x22x7mm)", "en": "608ZZ Bearing (8x22x7mm)" },
+        "quantity_formula": 2,
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B07R7PR72H"
+      },
+      {
+        "id": "m3_bolt",
+        "label": { "es": "Tornillo M3x20mm", "en": "M3x20mm Bolt" },
+        "quantity_formula": 4,
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B01N1VCKFG"
+      },
+      {
+        "id": "m3_nut",
+        "label": { "es": "Tuerca M3", "en": "M3 Nut" },
+        "quantity_formula": 4,
+        "unit": "pcs"
+      },
+      {
+        "id": "grease",
+        "label": { "es": "Grasa para engranajes (opcional)", "en": "Gear grease (optional)" },
+        "quantity_formula": 1,
+        "unit": "tube"
+      }
+    ]
+  },
+  "materials": [
+    { "id": "pla", "name": "PLA", "density": 1.24, "cost_per_kg": 20, "print_speed_factor": 1.0 },
+    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 },
+    { "id": "abs", "name": "ABS", "density": 1.04, "cost_per_kg": 22, "print_speed_factor": 0.9 }
+  ],
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": { "es": "Imprime la carcasa inferior", "en": "Print the bottom housing" },
+      "notes": { "es": "0.2mm capas, 40% relleno para rigidez. Soportes en cavidades de rodamiento", "en": "0.2mm layers, 40% infill for rigidity. Supports in bearing cavities" },
+      "visible_parts": ["housing_bottom"],
+      "highlight_parts": ["housing_bottom"],
+      "camera": [120, -100, 60],
+      "camera_target": [0, 0, 0]
+    },
+    {
+      "step": 2,
+      "label": { "es": "Imprime los engranajes", "en": "Print the gears" },
+      "notes": { "es": "0.16mm capas para precision de dientes. 60% relleno. PETG o ABS recomendado", "en": "0.16mm layers for tooth precision. 60% infill. PETG or ABS recommended" },
+      "visible_parts": ["housing_bottom", "input_gear", "output_gear"],
+      "highlight_parts": ["input_gear", "output_gear"],
+      "camera": [80, -60, 80],
+      "camera_target": [0, 0, 10]
+    },
+    {
+      "step": 3,
+      "label": { "es": "Inserta los rodamientos", "en": "Insert the bearings" },
+      "notes": { "es": "Presiona los rodamientos 608ZZ en las cavidades de la carcasa", "en": "Press-fit the 608ZZ bearings into housing cavities" },
+      "visible_parts": ["housing_bottom"],
+      "highlight_parts": ["housing_bottom"],
+      "camera": [100, -80, 30],
+      "camera_target": [0, 0, 0],
+      "hardware": ["bearing_608"]
+    },
+    {
+      "step": 4,
+      "label": { "es": "Monta los engranajes en los ejes", "en": "Mount gears on shafts" },
+      "notes": { "es": "Aplica grasa en los dientes antes de montar", "en": "Apply grease to teeth before mounting" },
+      "visible_parts": ["housing_bottom", "input_gear", "output_gear", "shaft"],
+      "highlight_parts": ["input_gear", "output_gear", "shaft"],
+      "camera": [80, -80, 50],
+      "camera_target": [0, 0, 10],
+      "hardware": ["grease"]
+    },
+    {
+      "step": 5,
+      "label": { "es": "Coloca la carcasa superior", "en": "Attach top housing" },
+      "notes": { "es": "Alinea los postes de guia y presiona", "en": "Align guide posts and press down" },
+      "visible_parts": ["housing_bottom", "housing_top", "input_gear", "output_gear", "shaft"],
+      "highlight_parts": ["housing_top"],
+      "camera": [120, -100, 80],
+      "camera_target": [0, 0, 20]
+    },
+    {
+      "step": 6,
+      "label": { "es": "Asegura con tornillos", "en": "Secure with bolts" },
+      "notes": { "es": "Inserta los 4 tornillos M3x20 y aprieta las tuercas", "en": "Insert 4 M3x20 bolts and tighten nuts" },
+      "visible_parts": ["housing_bottom", "housing_top", "input_gear", "output_gear", "shaft"],
+      "highlight_parts": ["housing_bottom", "housing_top"],
+      "camera": [120, -120, 40],
+      "camera_target": [0, 0, 10],
+      "hardware": ["m3_bolt", "m3_nut"]
+    }
+  ],
+  "verification": {
+    "stages": {
+      "geometry": {
+        "checks": {
+          "watertight": { "enabled": true },
+          "body_count": { "enabled": true, "expected": 1 },
+          "dimensions": { "enabled": true, "xy_tolerance_mm": 0.5, "z_ratio_min": 0.9, "z_ratio_max": 1.1 },
+          "facet_count": { "enabled": true, "min_facets": 500 }
+        }
+      },
+      "printability": {
+        "checks": {
+          "thin_wall": { "enabled": true, "min_thickness_mm": 1.0 },
+          "overhang": { "enabled": true, "max_angle_deg": 45 },
+          "min_feature_size": { "enabled": true, "min_size_mm": 0.4 }
+        }
+      },
+      "assembly_fit": {
+        "checks": {
+          "collision": { "enabled": true }
+        }
+      }
+    },
+    "mode_overrides": {
+      "assembly": { "stages": ["geometry", "printability", "assembly_fit"] },
+      "housing": { "stages": ["geometry", "printability"] },
+      "gears": { "stages": ["geometry", "printability"] }
+    }
+  },
+  "export_formats": ["stl", "3mf", "off"],
+  "print_estimation": {
+    "default_material": "petg",
+    "default_infill": 0.4
+  },
+  "camera_views": [
+    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [120, 120, 80] },
+    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 200] },
+    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -200, 30] },
+    { "id": "side",  "label": { "es": "Lateral", "en": "Side" },         "position": [200, 0, 30] }
+  ],
+  "viewer": {
+    "default_color": "#2c3e50"
+  },
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 64,
+    "wasm_multiplier": 5,
+    "warning_threshold_seconds": 120
+  }
+}

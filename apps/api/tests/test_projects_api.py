@@ -78,6 +78,28 @@ class TestProjectsAPI:
         )
         assert res.status_code == 404
 
+    def test_list_projects_with_stats(self, client):
+        """stats=1 query param adds stats object to each project."""
+        res = client.get("/api/projects?stats=1")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert len(data) >= 1
+        # Each project should have a stats object (even if all zeros)
+        for project in data:
+            assert "stats" in project
+            assert "renders" in project["stats"]
+            assert "exports" in project["stats"]
+            assert "preset_applies" in project["stats"]
+
+    def test_list_projects_without_stats(self, client):
+        """Without stats=1, projects should not have stats object."""
+        res = client.get("/api/projects")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert len(data) >= 1
+        for project in data:
+            assert "stats" not in project
+
     def test_serve_static_part_404(self, client):
         res = client.get("/api/projects/test-project/parts/missing.stl")
         assert res.status_code == 404

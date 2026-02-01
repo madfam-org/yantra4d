@@ -24,7 +24,7 @@ export default function ProjectsView() {
   const [showImport, setShowImport] = useState(false)
 
   useEffect(() => {
-    fetch(`${getApiBase()}/api/admin/projects`)
+    fetch(`${getApiBase()}/api/admin/projects?stats=1`)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
@@ -183,6 +183,16 @@ export default function ProjectsView() {
                 )}
                 {project.has_manifest && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.manifest')}</span>}
                 {project.has_exports && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
+                {project.stats?.renders > 0 && (
+                  <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900 px-2 py-0.5 text-[10px] font-medium text-blue-800 dark:text-blue-200">
+                    {project.stats.renders} render{project.stats.renders !== 1 ? 's' : ''}
+                  </span>
+                )}
+                {project.stats?.exports > 0 && (
+                  <span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900 px-2 py-0.5 text-[10px] font-medium text-green-800 dark:text-green-200">
+                    {project.stats.exports} export{project.stats.exports !== 1 ? 's' : ''}
+                  </span>
+                )}
                 {project.modified_at && (
                   <span className="text-xs text-muted-foreground ml-auto">
                     {new Date(project.modified_at * 1000).toLocaleDateString()}

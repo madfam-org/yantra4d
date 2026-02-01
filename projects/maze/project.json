@@ -7,7 +7,8 @@
       "es": "Generador de laberintos para posavasos, cubos y cilindros",
       "en": "Maze generator for coasters, cubes, and cylinders"
     },
-    "tags": ["maze", "puzzle", "game"]
+    "tags": ["maze", "puzzle", "game"],
+    "difficulty": "beginner"
   },
   "modes": [
     {
@@ -41,32 +42,37 @@
     {
       "id": "simple_coaster_maze",
       "label": { "es": "Posavasos Simple", "en": "Simple Coaster Maze" },
-      "values": {
-        "rows": 8,
-        "cols": 8,
-        "cell_size": 5,
-        "diameter": 100
-      }
+      "values": { "rows": 8, "cols": 8, "cell_size": 5, "diameter": 100, "wall_thickness": 1.2 }
     },
     {
       "id": "challenging_cube",
       "label": { "es": "Cubo Desafiante", "en": "Challenging Cube" },
-      "values": {
-        "rows": 15,
-        "cols": 15,
-        "cell_size": 4,
-        "wall_height": 5
-      }
+      "values": { "rows": 15, "cols": 15, "cell_size": 4, "wall_height": 5, "wall_thickness": 1.2 }
     },
     {
       "id": "cylinder_puzzle",
       "label": { "es": "Cilindro Puzzle", "en": "Cylinder Puzzle" },
-      "values": {
-        "rows": 12,
-        "cols": 12,
-        "diameter": 80,
-        "wall_height": 4
-      }
+      "values": { "rows": 12, "cols": 12, "diameter": 80, "wall_height": 4, "wall_thickness": 1 }
+    },
+    {
+      "id": "mini_coaster",
+      "label": { "es": "Posavasos Mini", "en": "Mini Coaster" },
+      "values": { "rows": 6, "cols": 6, "cell_size": 4, "diameter": 70, "wall_height": 2, "wall_thickness": 1 }
+    },
+    {
+      "id": "expert_cube",
+      "label": { "es": "Cubo Experto", "en": "Expert Cube" },
+      "values": { "rows": 25, "cols": 25, "cell_size": 3, "wall_height": 4, "wall_thickness": 0.8 }
+    },
+    {
+      "id": "decorative_cylinder",
+      "label": { "es": "Cilindro Decorativo", "en": "Decorative Cylinder" },
+      "values": { "rows": 8, "cols": 20, "diameter": 100, "wall_height": 6, "cell_size": 6, "wall_thickness": 1.5 }
+    },
+    {
+      "id": "kids_maze",
+      "label": { "es": "Laberinto Infantil", "en": "Kids Maze" },
+      "values": { "rows": 5, "cols": 5, "cell_size": 8, "diameter": 100, "wall_height": 5, "wall_thickness": 2 }
     }
   ],
   "parameters": [
@@ -169,9 +175,115 @@
   ],
   "parameter_groups": [
     { "id": "maze", "label": { "es": "Laberinto", "en": "Maze" } },
-    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } }
+    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
+    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
   ],
-  "export_formats": ["stl", "3mf"],
+  "constraints": [
+    {
+      "rule": "wall_thickness >= 0.8",
+      "message": { "es": "Grosor minimo de 0.8mm para impresion FDM", "en": "Minimum 0.8mm thickness for FDM printing" },
+      "severity": "error",
+      "applies_to": ["wall_thickness"]
+    },
+    {
+      "rule": "base_thickness >= 1",
+      "message": { "es": "Base muy delgada para impresion estable", "en": "Base too thin for stable printing" },
+      "severity": "error",
+      "applies_to": ["base_thickness"]
+    },
+    {
+      "rule": "rows * cols <= 500",
+      "message": { "es": "Laberinto muy complejo, el renderizado puede ser lento", "en": "Very complex maze, rendering may be slow" },
+      "severity": "warning",
+      "applies_to": ["rows", "cols"]
+    },
+    {
+      "rule": "cell_size >= wall_thickness * 2",
+      "message": { "es": "Celda debe ser al menos el doble del grosor de pared", "en": "Cell must be at least twice the wall thickness" },
+      "severity": "error",
+      "applies_to": ["cell_size", "wall_thickness"]
+    }
+  ],
+  "bom": {
+    "hardware": [
+      {
+        "id": "steel_ball",
+        "label": { "es": "Bola de acero 3mm (para resolver el laberinto)", "en": "3mm steel ball (to solve the maze)" },
+        "quantity_formula": 1,
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B08Z3BX9ZN"
+      },
+      {
+        "id": "felt_pads",
+        "label": { "es": "Fieltro adhesivo (para posavasos)", "en": "Adhesive felt pads (for coaster)" },
+        "quantity_formula": 1,
+        "unit": "sheet"
+      }
+    ]
+  },
+  "materials": [
+    { "id": "pla", "name": "PLA", "density": 1.24, "cost_per_kg": 20, "print_speed_factor": 1.0 },
+    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 }
+  ],
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": { "es": "Imprime el laberinto", "en": "Print the maze" },
+      "notes": { "es": "Lado plano abajo, 0.2mm capas, 20% relleno", "en": "Flat side down, 0.2mm layers, 20% infill" },
+      "visible_parts": ["coaster", "cube", "cylinder"],
+      "highlight_parts": ["coaster", "cube", "cylinder"],
+      "camera": [80, -80, 60],
+      "camera_target": [0, 0, 10]
+    },
+    {
+      "step": 2,
+      "label": { "es": "Limpia la pieza", "en": "Clean the piece" },
+      "notes": { "es": "Retira soportes si hubo. Verifica que la bola pasa por los pasillos", "en": "Remove supports if any. Verify the ball fits through corridors" },
+      "visible_parts": ["coaster", "cube", "cylinder"],
+      "highlight_parts": ["coaster", "cube", "cylinder"],
+      "camera": [0, -100, 40],
+      "camera_target": [0, 0, 10]
+    },
+    {
+      "step": 3,
+      "label": { "es": "Agrega la bola de acero", "en": "Add the steel ball" },
+      "notes": { "es": "Coloca la bola en la entrada del laberinto", "en": "Place the ball at the maze entrance" },
+      "visible_parts": ["coaster", "cube", "cylinder"],
+      "highlight_parts": ["coaster", "cube", "cylinder"],
+      "camera": [80, -40, 20],
+      "camera_target": [0, 0, 5],
+      "hardware": ["steel_ball"]
+    }
+  ],
+  "verification": {
+    "stages": {
+      "geometry": {
+        "checks": {
+          "watertight": { "enabled": true },
+          "body_count": { "enabled": true, "expected": 1 },
+          "dimensions": { "enabled": true, "xy_tolerance_mm": 1.0, "z_ratio_min": 0.9, "z_ratio_max": 1.1 },
+          "facet_count": { "enabled": true, "min_facets": 100 }
+        }
+      },
+      "printability": {
+        "checks": {
+          "thin_wall": { "enabled": true, "min_thickness_mm": 0.8 },
+          "overhang": { "enabled": true, "max_angle_deg": 60 },
+          "min_feature_size": { "enabled": true, "min_size_mm": 0.4 }
+        }
+      }
+    },
+    "mode_overrides": {
+      "coaster": { "stages": ["geometry", "printability"] },
+      "cube": { "stages": ["geometry", "printability"] },
+      "cylinder": { "stages": ["geometry", "printability"] }
+    }
+  },
+  "export_formats": ["stl", "3mf", "off"],
+  "print_estimation": {
+    "default_material": "pla",
+    "default_infill": 0.2
+  },
   "camera_views": [
     { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [80, 80, 80] },
     { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },

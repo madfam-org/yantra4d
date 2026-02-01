@@ -50,3 +50,8 @@ Thumbs.db
 
 # Dev server PIDs
 .dev-pids/
+
+# Playwright
+playwright-report/
+test-results/
+e2e/screenshots/

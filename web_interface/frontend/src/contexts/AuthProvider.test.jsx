@@ -1,9 +1,17 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { AuthProvider, useAuth } from './AuthProvider'
 import { useEffect, useState } from 'react'
 
-// No VITE_JANUA_BASE_URL set in test env → bypass mode
+// Mock @janua/react-sdk to avoid duplicate-React issues with npm-linked package
+vi.mock('@janua/react-sdk', () => ({
+  JanuaProvider: ({ children }) => children,
+  useJanua: () => ({}),
+}))
+
+// Ensure bypass mode by clearing the env var before importing
+vi.stubEnv('VITE_JANUA_BASE_URL', '')
+
+const { AuthProvider, useAuth } = await import('./AuthProvider')
 
 function AuthConsumer() {
   const auth = useAuth()

@@ -6,6 +6,7 @@
  * Uses a bridge pattern to avoid conditional hook calls (Rules of Hooks).
  */
 import { createContext, useContext, useMemo } from 'react'
+import { JanuaProvider, useJanua } from '@janua/react-sdk'
 
 const JANUA_BASE_URL = import.meta.env.VITE_JANUA_BASE_URL
 const JANUA_CLIENT_ID = import.meta.env.VITE_JANUA_CLIENT_ID || 'qubic'
@@ -43,8 +44,6 @@ function AuthBypassProvider({ children }) {
  * always calls useJanua(), and writes the result to AuthContext.
  */
 function JanuaBridge({ children }) {
-  // eslint-disable-next-line no-undef
-  const { useJanua } = require('@janua/react-sdk')
   const janua = useJanua()
   return (
     <AuthContext.Provider value={janua}>
@@ -59,9 +58,6 @@ function JanuaAuthProvider({ children }) {
     clientId: JANUA_CLIENT_ID,
     redirectUri: JANUA_REDIRECT_URI,
   }), [])
-
-  // eslint-disable-next-line no-undef
-  const { JanuaProvider } = require('@janua/react-sdk')
 
   return (
     <JanuaProvider config={config}>

@@ -18,7 +18,7 @@ def _create_project(tmp_path, slug="bom-test", bom=None, parameters=None):
                     "parts": ["main"], "estimate": {"base_units": 1}}],
         "parts": [{"id": "main", "render_mode": 0, "label": "Main", "default_color": "#fff"}],
         "parameters": parameters or [
-            {"id": "enable_magnets", "type": "checkbox", "default": False},
+            {"id": "enable_magnets", "type": "checkbox", "default": 0},
             {"id": "width_units", "type": "slider", "default": 2, "min": 1, "max": 6},
             {"id": "depth_units", "type": "slider", "default": 1, "min": 1, "max": 6},
         ],

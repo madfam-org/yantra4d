@@ -1,11 +1,10 @@
 """Tests for JWT auth middleware."""
-import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 from flask import Flask
 
-from middleware.auth import require_auth, require_role, optional_auth, decode_token
+from middleware.auth import require_auth, require_role, optional_auth
 
 
 @pytest.fixture(autouse=True)

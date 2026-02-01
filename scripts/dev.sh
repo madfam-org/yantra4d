@@ -1,16 +1,47 @@
 #!/usr/bin/env bash
-# Usage: ./scripts/dev.sh [--frontend-only|--studio-only|--landing-only|--no-landing]
+# Usage: ./scripts/dev.sh [flags]
+#   --api-only      Start backend only
+#   --studio-only   Start studio only
+#   --landing-only  Start landing only
+#   --no-api        Start studio + landing
+#   --no-studio     Start api + landing
+#   --no-landing    Start api + studio
 set -e
+
+# Use OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
+export OPENSCAD_PATH="/Applications/OpenSCAD-Snapshot.app/Contents/MacOS/OpenSCAD"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 PID_DIR="$PROJECT_ROOT/.dev-pids"
 mkdir -p "$PID_DIR"
 
+# Defaults: start everything
+START_API=true
+START_STUDIO=true
+START_LANDING=true
+
+# Parse all flags
+for arg in "$@"; do
+  case "$arg" in
+    --api-only)     START_STUDIO=false; START_LANDING=false ;;
+    --studio-only)  START_API=false;    START_LANDING=false ;;
+    --landing-only) START_API=false;    START_STUDIO=false  ;;
+    --no-api)       START_API=false     ;;
+    --no-studio)    START_STUDIO=false  ;;
+    --no-landing)   START_LANDING=false ;;
+    *)
+      echo "Unknown flag: $arg"
+      echo "Usage: ./scripts/dev.sh [--api-only|--studio-only|--landing-only|--no-api|--no-studio|--no-landing]"
+      exit 1
+      ;;
+  esac
+done
+
 # Kill any existing dev servers
 "$SCRIPT_DIR/dev-stop.sh" 2>/dev/null || true
 
-if [ "$1" != "--frontend-only" ]; then
+if [ "$START_API" = true ]; then
   echo "Starting backend (Flask :5000)..."
   cd "$PROJECT_ROOT/apps/api"
   python3 app.py &
@@ -18,7 +49,7 @@ if [ "$1" != "--frontend-only" ]; then
   cd "$PROJECT_ROOT"
 fi
 
-if [ "$1" != "--landing-only" ]; then
+if [ "$START_STUDIO" = true ]; then
   echo "Starting studio (Vite :5173)..."
   cd "$PROJECT_ROOT/apps/studio"
   npm run dev &
@@ -26,7 +57,7 @@ if [ "$1" != "--landing-only" ]; then
   cd "$PROJECT_ROOT"
 fi
 
-if [ "$1" != "--frontend-only" ] && [ "$1" != "--studio-only" ]; then
+if [ "$START_LANDING" = true ]; then
   echo "Starting landing (Astro :4321)..."
   cd "$PROJECT_ROOT/apps/landing"
   npm run dev &
@@ -36,9 +67,9 @@ fi
 
 echo ""
 echo "Qubic running:"
-[ "$1" != "--frontend-only" ] && [ "$1" != "--studio-only" ] && [ "$1" != "--landing-only" ] && echo "  Backend:  http://localhost:5000"
-[ "$1" != "--landing-only" ] && echo "  Studio:   http://localhost:5173"
-[ "$1" != "--frontend-only" ] && [ "$1" != "--studio-only" ] && echo "  Landing:  http://localhost:4321"
+[ "$START_API" = true ]     && echo "  Backend:  http://localhost:5000"
+[ "$START_STUDIO" = true ]  && echo "  Studio:   http://localhost:5173"
+[ "$START_LANDING" = true ] && echo "  Landing:  http://localhost:4321"
 echo ""
 echo "Stop with: ./scripts/dev-stop.sh"
 

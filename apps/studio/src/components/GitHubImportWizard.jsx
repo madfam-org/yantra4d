@@ -95,7 +95,7 @@ export default function GitHubImportWizard({ onClose, onImported }) {
               <p className="text-xs text-muted-foreground">
                 Paste a public GitHub repo URL containing .scad files.{' '}
                 <a
-                  href="https://github.com/qubic-quest/qubic-template"
+                  href="https://github.com/madfam-org/qubic-template"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline"

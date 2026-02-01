@@ -1,0 +1,488 @@
+{
+  "project": {
+    "name": "Portacosas",
+    "slug": "portacosas",
+    "version": "1.0.0",
+    "description": {
+      "es": "Organizador de escritorio modular con sistema de bandejas a presión",
+      "en": "Modular desk organizer with snap-fit tray system"
+    }
+  },
+  "modes": [
+    {
+      "id": "unit",
+      "scad_file": "desk_organizer.scad",
+      "label": { "es": "Componente", "en": "Component" },
+      "parts": ["tray_base", "pen_holder", "phone_stand", "card_slot", "cable_clip", "label_plate"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "assembly",
+      "scad_file": "assembly.scad",
+      "label": { "es": "Ensamble", "en": "Assembly" },
+      "parts": ["tray_base", "pen_holder", "phone_stand", "card_slot", "cable_clip", "label_plate"],
+      "estimate": { "base_units": 6, "formula": "constant" }
+    },
+    {
+      "id": "grid",
+      "scad_file": "grid.scad",
+      "label": { "es": "Retícula", "en": "Grid" },
+      "parts": ["tray_base"],
+      "estimate": { "base_units": "rows*cols", "formula": "grid", "formula_vars": ["rows", "cols"] }
+    }
+  ],
+  "parts": [
+    { "id": "tray_base",    "render_mode": 0, "label": { "es": "Bandeja Base",       "en": "Tray Base" },    "default_color": "#2d2d2d" },
+    { "id": "pen_holder",   "render_mode": 1, "label": { "es": "Porta Bolígrafos",   "en": "Pen Holder" },   "default_color": "#3b82f6" },
+    { "id": "phone_stand",  "render_mode": 2, "label": { "es": "Soporte de Celular", "en": "Phone Stand" },  "default_color": "#2d2d2d" },
+    { "id": "card_slot",    "render_mode": 3, "label": { "es": "Porta Tarjetas",     "en": "Card Slot" },    "default_color": "#f59e0b" },
+    { "id": "cable_clip",   "render_mode": 4, "label": { "es": "Clip de Cable",      "en": "Cable Clip" },   "default_color": "#10b981" },
+    { "id": "label_plate",  "render_mode": 5, "label": { "es": "Placa Etiqueta",     "en": "Label Plate" },  "default_color": "#ffffff" }
+  ],
+  "presets": [
+    {
+      "id": "minimal",
+      "label": { "es": "Mínimo", "en": "Minimal" },
+      "values": {
+        "tray_width": 140, "tray_depth": 80, "wall_height": 60, "wall_thickness": 2.0,
+        "pen_count": 3, "pen_diameter": 12, "pen_style": false,
+        "phone_width": 75, "phone_angle": 65, "charging_slot": false,
+        "card_width": 90, "card_depth": 60, "card_angle": 10,
+        "clip_count": 1, "clip_diameter": 6,
+        "label_text": "QUBIC", "label_depth": 0.5
+      }
+    },
+    {
+      "id": "oficina",
+      "label": { "es": "Oficina", "en": "Office" },
+      "values": {
+        "tray_width": 200, "tray_depth": 120, "wall_height": 80, "wall_thickness": 2.0,
+        "pen_count": 5, "pen_diameter": 12, "pen_style": false,
+        "phone_width": 75, "phone_angle": 65, "charging_slot": true,
+        "card_width": 90, "card_depth": 60, "card_angle": 10,
+        "clip_count": 2, "clip_diameter": 6,
+        "label_text": "OFICINA", "label_depth": 0.5
+      }
+    },
+    {
+      "id": "developer",
+      "label": { "es": "Desarrollador", "en": "Developer" },
+      "values": {
+        "tray_width": 250, "tray_depth": 140, "wall_height": 80, "wall_thickness": 2.0,
+        "pen_count": 4, "pen_diameter": 10, "pen_style": false,
+        "phone_width": 80, "phone_angle": 70, "charging_slot": true,
+        "card_width": 90, "card_depth": 60, "card_angle": 10,
+        "clip_count": 4, "clip_diameter": 7,
+        "label_text": "DEV", "label_depth": 0.5
+      }
+    },
+    {
+      "id": "artista",
+      "label": { "es": "Artista", "en": "Artist" },
+      "values": {
+        "tray_width": 220, "tray_depth": 130, "wall_height": 90, "wall_thickness": 2.0,
+        "pen_count": 8, "pen_diameter": 14, "pen_style": true,
+        "phone_width": 75, "phone_angle": 65, "charging_slot": false,
+        "card_width": 90, "card_depth": 60, "card_angle": 10,
+        "clip_count": 2, "clip_diameter": 6,
+        "label_text": "ARTE", "label_depth": 0.8
+      }
+    },
+    {
+      "id": "compacto",
+      "label": { "es": "Compacto", "en": "Compact" },
+      "values": {
+        "tray_width": 160, "tray_depth": 100, "wall_height": 70, "wall_thickness": 2.0,
+        "pen_count": 3, "pen_diameter": 12, "pen_style": false,
+        "phone_width": 70, "phone_angle": 60, "charging_slot": true,
+        "card_width": 80, "card_depth": 50, "card_angle": 10,
+        "clip_count": 1, "clip_diameter": 5,
+        "label_text": "QUBIC", "label_depth": 0.5
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "tray_width",
+      "type": "slider",
+      "default": 200,
+      "min": 120,
+      "max": 300,
+      "step": 5,
+      "label": { "es": "Ancho de Bandeja (mm)", "en": "Tray Width (mm)" },
+      "tooltip": { "es": "Ancho total de la bandeja base", "en": "Total width of the base tray" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "tray_depth",
+      "type": "slider",
+      "default": 120,
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "label": { "es": "Profundidad de Bandeja (mm)", "en": "Tray Depth (mm)" },
+      "tooltip": { "es": "Profundidad total de la bandeja base", "en": "Total depth of the base tray" },
+      "visible_in_modes": ["unit", "assembly", "grid"]
+    },
+    {
+      "id": "wall_height",
+      "type": "slider",
+      "default": 80,
+      "min": 40,
+      "max": 120,
+      "step": 5,
+      "label": { "es": "Altura de Pared (mm)", "en": "Wall Height (mm)" },
+      "tooltip": { "es": "Altura máxima de los componentes", "en": "Maximum height of components" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "wall_thickness",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.2,
+      "label": { "es": "Grosor de Pared (mm)", "en": "Wall Thickness (mm)" },
+      "tooltip": { "es": "Grosor de las paredes de los componentes", "en": "Wall thickness of components" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "pen_count",
+      "type": "slider",
+      "default": 5,
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "label": { "es": "Cantidad de Bolígrafos", "en": "Pen Count" },
+      "tooltip": { "es": "Número de orificios para bolígrafos", "en": "Number of pen holes" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "pen_diameter",
+      "type": "slider",
+      "default": 12,
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "label": { "es": "Diámetro de Bolígrafo (mm)", "en": "Pen Diameter (mm)" },
+      "tooltip": { "es": "Diámetro de cada orificio para bolígrafo", "en": "Diameter of each pen hole" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "pen_style",
+      "type": "checkbox",
+      "default": false,
+      "label": { "es": "Estilo Hexagonal", "en": "Hex Style" },
+      "tooltip": { "es": "Orificios hexagonales en vez de redondos", "en": "Hexagonal holes instead of round" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "phone_width",
+      "type": "slider",
+      "default": 75,
+      "min": 60,
+      "max": 90,
+      "step": 1,
+      "label": { "es": "Ancho de Celular (mm)", "en": "Phone Width (mm)" },
+      "tooltip": { "es": "Ancho del soporte para celular", "en": "Width of the phone cradle" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "phone_angle",
+      "type": "slider",
+      "default": 65,
+      "min": 45,
+      "max": 80,
+      "step": 1,
+      "label": { "es": "Ángulo del Celular (°)", "en": "Phone Angle (°)" },
+      "tooltip": { "es": "Ángulo de inclinación del soporte", "en": "Tilt angle of the phone stand" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "charging_slot",
+      "type": "checkbox",
+      "default": true,
+      "label": { "es": "Ranura de Carga", "en": "Charging Slot" },
+      "tooltip": { "es": "Ranura para pasar el cable de carga", "en": "Slot for charging cable pass-through" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "card_width",
+      "type": "slider",
+      "default": 90,
+      "min": 60,
+      "max": 120,
+      "step": 5,
+      "label": { "es": "Ancho de Tarjetas (mm)", "en": "Card Width (mm)" },
+      "tooltip": { "es": "Ancho del porta tarjetas", "en": "Width of the card slot" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "card_depth",
+      "type": "slider",
+      "default": 60,
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "label": { "es": "Profundidad de Tarjetas (mm)", "en": "Card Depth (mm)" },
+      "tooltip": { "es": "Profundidad del porta tarjetas", "en": "Depth of the card slot" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "card_angle",
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "label": { "es": "Ángulo de Tarjetas (°)", "en": "Card Angle (°)" },
+      "tooltip": { "es": "Ángulo de inclinación del porta tarjetas", "en": "Tilt angle of the card holder" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "clip_count",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": { "es": "Cantidad de Clips", "en": "Clip Count" },
+      "tooltip": { "es": "Número de clips para cables", "en": "Number of cable clips" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "clip_diameter",
+      "type": "slider",
+      "default": 6,
+      "min": 4,
+      "max": 10,
+      "step": 1,
+      "label": { "es": "Diámetro de Clip (mm)", "en": "Clip Diameter (mm)" },
+      "tooltip": { "es": "Diámetro interior del clip de cable", "en": "Inner diameter of cable clip" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "label_text",
+      "type": "text",
+      "default": "QUBIC",
+      "maxlength": 12,
+      "label": { "es": "Texto de Etiqueta", "en": "Label Text" },
+      "tooltip": { "es": "Texto personalizado para la placa frontal", "en": "Custom text for the front label plate" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "label_depth",
+      "type": "slider",
+      "default": 0.5,
+      "min": 0.3,
+      "max": 1.5,
+      "step": 0.1,
+      "label": { "es": "Profundidad de Grabado (mm)", "en": "Engraving Depth (mm)" },
+      "tooltip": { "es": "Profundidad del texto grabado en la placa", "en": "Depth of engraved text on label plate" },
+      "visible_in_modes": ["unit", "assembly"]
+    },
+    {
+      "id": "rows",
+      "type": "slider",
+      "default": 1,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": { "es": "Filas", "en": "Rows" },
+      "tooltip": { "es": "Número de filas en la retícula de bandejas", "en": "Number of rows in the tray grid" },
+      "visible_in_modes": ["grid"]
+    },
+    {
+      "id": "cols",
+      "type": "slider",
+      "default": 1,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": { "es": "Columnas", "en": "Columns" },
+      "tooltip": { "es": "Número de columnas en la retícula de bandejas", "en": "Number of columns in the tray grid" },
+      "visible_in_modes": ["grid"]
+    }
+  ],
+  "constraints": [
+    {
+      "rule": "wall_thickness >= 1.2",
+      "message": { "es": "Grosor mínimo para impresión FDM", "en": "Minimum thickness for FDM printing" },
+      "severity": "error",
+      "applies_to": ["wall_thickness"]
+    },
+    {
+      "rule": "pen_diameter > wall_thickness * 2",
+      "message": { "es": "El bolígrafo debe caber en el orificio", "en": "Pen must fit in the hole" },
+      "severity": "error",
+      "applies_to": ["pen_diameter", "wall_thickness"]
+    },
+    {
+      "rule": "phone_angle >= 45",
+      "message": { "es": "Ángulo mínimo de estabilidad", "en": "Minimum stability angle" },
+      "severity": "warning",
+      "applies_to": ["phone_angle"]
+    },
+    {
+      "rule": "rows * cols <= 9",
+      "message": { "es": "Máximo 9 bandejas en retícula", "en": "Maximum 9 trays in grid" },
+      "severity": "error",
+      "applies_to": ["rows", "cols"]
+    }
+  ],
+  "bom": {
+    "hardware": [
+      {
+        "id": "rubber_feet",
+        "label": { "es": "Patas de goma", "en": "Rubber feet" },
+        "quantity_formula": "4 * rows * cols",
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B06XCNM69B"
+      },
+      {
+        "id": "adhesive_pads",
+        "label": { "es": "Almohadillas adhesivas", "en": "Adhesive pads" },
+        "quantity_formula": "clip_count",
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B07RKSPZPF"
+      },
+      {
+        "id": "felt_liner",
+        "label": { "es": "Fieltro protector (opcional)", "en": "Felt liner (optional)" },
+        "quantity_formula": 1,
+        "unit": "sheet"
+      }
+    ]
+  },
+  "export_formats": ["stl", "3mf", "off"],
+  "print_estimation": {
+    "material_profiles": {
+      "PLA": { "density_g_cm3": 1.24, "cost_per_kg": 20 },
+      "PETG": { "density_g_cm3": 1.27, "cost_per_kg": 25 }
+    }
+  },
+  "camera_views": [
+    { "id": "iso",   "label": { "es": "Isométrico", "en": "Isometric" }, "position": [250, 200, 150] },
+    { "id": "top",   "label": { "es": "Superior",   "en": "Top" },       "position": [0, 0, 300] },
+    { "id": "front", "label": { "es": "Frente",     "en": "Front" },     "position": [0, -300, 50] },
+    { "id": "right", "label": { "es": "Derecha",    "en": "Right" },     "position": [300, 0, 50] }
+  ],
+  "parameter_groups": [
+    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
+  ],
+  "viewer": {
+    "default_color": "#2d2d2d"
+  },
+  "grid_presets": {
+    "rendering": {
+      "emoji": "🪽",
+      "label": { "es": "Vista Rápida", "en": "Fast Preview" },
+      "values": { "rows": 1, "cols": 2 }
+    },
+    "manufacturing": {
+      "emoji": "⭐",
+      "label": { "es": "Producción", "en": "Production" },
+      "values": { "rows": 3, "cols": 3 }
+    },
+    "default": "rendering"
+  },
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 2,
+    "fn_factor": 48,
+    "per_part": 6,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  },
+  "verification": {
+    "stages": {
+      "geometry": {
+        "checks": {
+          "watertight": { "enabled": true },
+          "body_count": { "enabled": true, "expected": 1 },
+          "dimensions": { "enabled": true, "xy_tolerance_mm": 1.0, "z_ratio_min": 0.9, "z_ratio_max": 1.1 },
+          "facet_count": { "enabled": true, "min_facets": 200 }
+        }
+      },
+      "printability": {
+        "checks": {
+          "thin_wall": { "enabled": true, "min_thickness_mm": 1.0 },
+          "overhang": { "enabled": true, "max_angle_deg": 50 },
+          "min_feature_size": { "enabled": true, "min_size_mm": 0.5 }
+        }
+      },
+      "assembly_fit": {
+        "checks": {
+          "collision": { "enabled": true }
+        }
+      }
+    },
+    "mode_overrides": {
+      "unit": { "stages": ["geometry", "printability"] },
+      "assembly": { "stages": ["geometry", "printability", "assembly_fit"] },
+      "grid": { "stages": ["geometry", "printability"] }
+    }
+  },
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": { "es": "Imprime la bandeja base", "en": "Print the tray base" },
+      "notes": { "es": "Lado plano abajo, capas de 0.2mm, 20% relleno", "en": "Flat side down, 0.2mm layers, 20% infill" },
+      "visible_parts": ["tray_base"],
+      "highlight_parts": ["tray_base"],
+      "camera": [250, -150, 100],
+      "camera_target": [100, 60, 0]
+    },
+    {
+      "step": 2,
+      "label": { "es": "Imprime el porta bolígrafos", "en": "Print the pen holder" },
+      "notes": { "es": "Soportes necesarios si estilo hexagonal", "en": "Supports needed if hex style" },
+      "visible_parts": ["tray_base", "pen_holder"],
+      "highlight_parts": ["pen_holder"],
+      "camera": [100, -100, 80],
+      "camera_target": [40, 60, 30]
+    },
+    {
+      "step": 3,
+      "label": { "es": "Imprime el soporte de celular", "en": "Print the phone stand" },
+      "notes": { "es": "Soportes en la ranura de carga", "en": "Supports on charging slot" },
+      "visible_parts": ["tray_base", "pen_holder", "phone_stand"],
+      "highlight_parts": ["phone_stand"],
+      "camera": [200, -100, 80],
+      "camera_target": [160, 60, 30]
+    },
+    {
+      "step": 4,
+      "label": { "es": "Encaja el porta bolígrafos en la bandeja", "en": "Snap pen holder into tray" },
+      "notes": { "es": "Alinea los encastres y presiona firmemente", "en": "Align snap-fits and press firmly" },
+      "visible_parts": ["tray_base", "pen_holder"],
+      "highlight_parts": ["tray_base", "pen_holder"],
+      "camera": [100, -80, 50],
+      "camera_target": [40, 60, 10]
+    },
+    {
+      "step": 5,
+      "label": { "es": "Encaja el soporte de celular en la bandeja", "en": "Snap phone stand into tray" },
+      "notes": { "es": "Alinea los encastres y presiona firmemente", "en": "Align snap-fits and press firmly" },
+      "visible_parts": ["tray_base", "pen_holder", "phone_stand"],
+      "highlight_parts": ["tray_base", "phone_stand"],
+      "camera": [200, -80, 50],
+      "camera_target": [160, 60, 10]
+    },
+    {
+      "step": 6,
+      "label": { "es": "Coloca las patas de goma en la base", "en": "Add rubber feet to bottom" },
+      "notes": { "es": "Pega las 4 patas en las esquinas inferiores de la bandeja", "en": "Stick 4 feet on the bottom corners of the tray" },
+      "visible_parts": ["tray_base", "pen_holder", "phone_stand", "card_slot", "cable_clip", "label_plate"],
+      "highlight_parts": ["tray_base"],
+      "camera": [250, -200, 30],
+      "camera_target": [100, 60, 0]
+    }
+  ],
+  "access_control": {
+    "view": "public",
+    "render": "public",
+    "download": "public",
+    "export": "public"
+  }
+}

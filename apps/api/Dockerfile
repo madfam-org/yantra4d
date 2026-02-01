@@ -1,12 +1,17 @@
-# Tablaco Backend - Production Docker Image
+# Qubic API — Production Docker Image
 FROM python:3.12-slim
 
-# Install system dependencies for OpenSCAD
+# Install OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-  openscad \
+  wget \
   fonts-liberation \
-  fontconfig && \
+  fontconfig \
+  libgl1-mesa-glx \
+  libglu1-mesa \
+  xvfb && \
+  wget -q https://files.openscad.org/snapshots/OpenSCAD-2026.02.01-x86_64.AppImage -O /usr/local/bin/openscad && \
+  chmod +x /usr/local/bin/openscad && \
   rm -rf /var/lib/apt/lists/*
 
 # Install custom fonts (Allerta Stencil for letter engravings)
@@ -30,7 +35,7 @@ ENV FLASK_DEBUG=false
 ENV OPENSCAD_PATH=/usr/bin/openscad
 ENV PORT=5000
 ENV HOST=0.0.0.0
-ENV SCAD_DIR=/app/projects/tablaco
+ENV PROJECTS_DIR=/app/projects
 ENV VERIFY_SCRIPT=/app/tests/verify_design.py
 
 # Expose port
@@ -44,7 +49,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 WORKDIR /app/backend
 
 # Create non-root user
-RUN useradd -r -s /bin/false tablaco && chown -R tablaco:tablaco /app
-USER tablaco
+RUN useradd -r -s /bin/false qubic && chown -R qubic:qubic /app
+USER qubic
 
 CMD gunicorn -w 2 -b "0.0.0.0:${PORT}" --timeout 300 app:app

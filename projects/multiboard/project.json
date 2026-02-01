@@ -1,0 +1,128 @@
+{
+  "project": {
+    "name": "Multiboard Wall Storage",
+    "slug": "multiboard",
+    "version": "1.0.0",
+    "description": "Modular wall-mounted storage system with hexagonal peg pattern",
+    "tags": ["storage", "wall-mount", "organization", "modular"]
+  },
+  "modes": [
+    {
+      "id": "tile",
+      "scad_file": "qubic_tile.scad",
+      "label": { "en": "Tile", "es": "Baldosa" },
+      "parts": ["tile"],
+      "estimate": { "base_units": "x_cells*y_cells", "formula": "grid", "formula_vars": ["x_cells", "y_cells"] }
+    }
+  ],
+  "parts": [
+    { "id": "tile", "render_mode": 0, "label": { "en": "Tile", "es": "Baldosa" }, "default_color": "#374151" }
+  ],
+  "presets": [
+    {
+      "id": "small_panel",
+      "label": { "en": "Small Panel (4x4)", "es": "Panel Peque\u00f1o (4x4)" },
+      "values": { "x_cells": 4, "y_cells": 4 }
+    },
+    {
+      "id": "large_wall",
+      "label": { "en": "Large Wall (8x6)", "es": "Pared Grande (8x6)" },
+      "values": { "x_cells": 8, "y_cells": 6 }
+    },
+    {
+      "id": "tool_rack",
+      "label": { "en": "Tool Rack (10x3)", "es": "Porta Herramientas (10x3)" },
+      "values": { "x_cells": 10, "y_cells": 3 }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "x_cells",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "label": { "en": "Columns", "es": "Columnas" },
+      "tooltip": { "en": "Number of cells along the X axis", "es": "N\u00famero de celdas en el eje X" },
+      "group": "grid",
+      "visible_in_modes": ["tile"]
+    },
+    {
+      "id": "y_cells",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Number of cells along the Y axis", "es": "N\u00famero de celdas en el eje Y" },
+      "group": "grid",
+      "visible_in_modes": ["tile"]
+    },
+    {
+      "id": "cell_size",
+      "type": "slider",
+      "default": 25,
+      "min": 20,
+      "max": 35,
+      "step": 1,
+      "label": { "en": "Cell Size (mm)", "es": "Tama\u00f1o de Celda (mm)" },
+      "tooltip": { "en": "Center-to-center distance between pegs", "es": "Distancia centro a centro entre pines" },
+      "group": "grid",
+      "visibility_level": "advanced",
+      "visible_in_modes": ["tile"]
+    },
+    {
+      "id": "height",
+      "type": "slider",
+      "default": 6.4,
+      "min": 4,
+      "max": 10,
+      "step": 0.2,
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Total board thickness including pegs", "es": "Grosor total del tablero incluyendo pines" },
+      "group": "grid",
+      "visibility_level": "advanced",
+      "visible_in_modes": ["tile"]
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "en": "Resolution ($fn)", "es": "Resoluci\u00f3n ($fn)" },
+      "tooltip": { "en": "Circle resolution — 0 uses default (32). Higher = smoother but slower", "es": "Resoluci\u00f3n de c\u00edrculos — 0 usa valor por defecto (32). Mayor = m\u00e1s suave pero m\u00e1s lento" },
+      "group": "quality",
+      "visible_in_modes": ["tile"]
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "x_cells * y_cells <= 96",
+      "severity": "warning",
+      "message": { "en": "Large panels render slowly", "es": "Los paneles grandes se renderizan lentamente" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso",   "label": { "en": "Isometric", "es": "Isom\u00e9trico" }, "position": [120, 120, 40] },
+    { "id": "top",   "label": { "en": "Top", "es": "Superior" },              "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frente" },              "position": [0, -200, 0] },
+    { "id": "right", "label": { "en": "Right", "es": "Derecha" },             "position": [200, 0, 0] }
+  ],
+  "parameter_groups": [
+    { "id": "grid",    "label": { "en": "Grid", "es": "Cuadr\u00edcula" } },
+    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 1.5,
+    "per_part": 8,
+    "fn_factor": 64,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 90
+  }
+}

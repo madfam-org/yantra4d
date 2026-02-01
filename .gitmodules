@@ -10,3 +10,27 @@
 [submodule "libs/Round-Anything"]
 	path = libs/Round-Anything
 	url = https://github.com/Irev-Dev/Round-Anything.git
+[submodule "libs/threads-scad"]
+	path = libs/threads-scad
+	url = https://github.com/rcolyer/threads-scad.git
+[submodule "libs/MCAD"]
+	path = libs/MCAD
+	url = https://github.com/openscad/MCAD.git
+[submodule "projects/ultimate-box/vendor/box-maker"]
+	path = projects/ultimate-box/vendor/box-maker
+	url = https://github.com/M-oster/Advanced-Ultimate-Box-Maker.git
+[submodule "projects/keyv2/vendor/keyv2"]
+	path = projects/keyv2/vendor/keyv2
+	url = https://github.com/rsheldiii/KeyV2.git
+[submodule "projects/multiboard/vendor/multiboard-parametric"]
+	path = projects/multiboard/vendor/multiboard-parametric
+	url = https://github.com/shaggyone/multiboard-parametric.git
+[submodule "projects/yapp-box/vendor/yapp"]
+	path = projects/yapp-box/vendor/yapp
+	url = https://github.com/mrWheel/YAPP_Box.git
+[submodule "projects/stemfie/vendor/stemfie"]
+	path = projects/stemfie/vendor/stemfie
+	url = https://github.com/Cantareus/Stemfie_OpenSCAD.git
+[submodule "projects/polydice/vendor/polydice"]
+	path = projects/polydice/vendor/polydice
+	url = https://github.com/charmaur/PolyDiceGenerator.git

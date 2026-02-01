@@ -1,0 +1,248 @@
+{
+  "project": {
+    "name": "Fastener Generator",
+    "slug": "fasteners",
+    "version": "1.0.0",
+    "description": "Parametric bolts and nuts with real threads",
+    "tags": ["hardware", "fastener", "bolt", "nut", "thread"]
+  },
+  "modes": [
+    {
+      "slug": "bolt",
+      "label": { "en": "Bolt", "es": "Tornillo" },
+      "scad_file": "qubic_bolt.scad",
+      "parts": ["bolt"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "slug": "nut",
+      "label": { "en": "Nut", "es": "Tuerca" },
+      "scad_file": "qubic_nut.scad",
+      "parts": ["nut"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    {
+      "slug": "bolt",
+      "label": { "en": "Bolt", "es": "Tornillo" },
+      "render_mode": 0,
+      "color": "#71717a"
+    },
+    {
+      "slug": "nut",
+      "label": { "en": "Nut", "es": "Tuerca" },
+      "render_mode": 0,
+      "color": "#a1a1aa"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "slug": "dimensions",
+      "label": { "en": "Dimensions", "es": "Dimensiones" }
+    },
+    {
+      "slug": "head_style",
+      "label": { "en": "Head Style", "es": "Estilo de Cabeza" }
+    },
+    {
+      "slug": "nut_style",
+      "label": { "en": "Nut Style", "es": "Estilo de Tuerca" }
+    },
+    {
+      "slug": "thread",
+      "label": { "en": "Thread", "es": "Rosca" }
+    },
+    {
+      "slug": "quality",
+      "label": { "en": "Quality", "es": "Calidad" }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "diameter",
+      "label": { "en": "Diameter (mm)", "es": "Diametro (mm)" },
+      "type": "slider",
+      "default": 5,
+      "min": 2,
+      "max": 20,
+      "step": 0.5,
+      "group": "dimensions",
+      "modes": ["bolt", "nut"]
+    },
+    {
+      "name": "length",
+      "label": { "en": "Length (mm)", "es": "Largo (mm)" },
+      "type": "slider",
+      "default": 20,
+      "min": 5,
+      "max": 80,
+      "step": 1,
+      "group": "dimensions",
+      "modes": ["bolt"]
+    },
+    {
+      "name": "pitch",
+      "label": { "en": "Thread Pitch (mm)", "es": "Paso de Rosca (mm)" },
+      "type": "slider",
+      "default": 0.8,
+      "min": 0.25,
+      "max": 3,
+      "step": 0.05,
+      "group": "thread",
+      "modes": ["bolt", "nut"],
+      "advanced": true
+    },
+    {
+      "name": "head_style_id",
+      "label": { "en": "Head Style (0=Hex, 1=Socket, 2=Button)", "es": "Estilo de Cabeza (0=Hex, 1=Allen, 2=Boton)" },
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "group": "head_style",
+      "modes": ["bolt"]
+    },
+    {
+      "name": "head_diameter",
+      "label": { "en": "Head Diameter (0=Auto)", "es": "Diametro de Cabeza (0=Auto)" },
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 30,
+      "step": 0.5,
+      "group": "head_style",
+      "modes": ["bolt"],
+      "advanced": true
+    },
+    {
+      "name": "head_height",
+      "label": { "en": "Head Height (0=Auto)", "es": "Altura de Cabeza (0=Auto)" },
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 15,
+      "step": 0.5,
+      "group": "head_style",
+      "modes": ["bolt"],
+      "advanced": true
+    },
+    {
+      "name": "nut_style_id",
+      "label": { "en": "Nut Style (0=Hex, 1=Square, 2=Nyloc)", "es": "Estilo de Tuerca (0=Hex, 1=Cuadrada, 2=Nyloc)" },
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "group": "nut_style",
+      "modes": ["nut"]
+    },
+    {
+      "name": "width",
+      "label": { "en": "Nut Width (0=Auto)", "es": "Ancho de Tuerca (0=Auto)" },
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 30,
+      "step": 0.5,
+      "group": "nut_style",
+      "modes": ["nut"],
+      "advanced": true
+    },
+    {
+      "name": "height",
+      "label": { "en": "Nut Height (0=Auto)", "es": "Altura de Tuerca (0=Auto)" },
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 15,
+      "step": 0.5,
+      "group": "nut_style",
+      "modes": ["nut"],
+      "advanced": true
+    },
+    {
+      "name": "thread_enabled",
+      "label": { "en": "Enable Threads", "es": "Habilitar Rosca" },
+      "type": "checkbox",
+      "default": true,
+      "group": "thread",
+      "modes": ["bolt", "nut"]
+    },
+    {
+      "name": "fn",
+      "label": { "en": "Resolution ($fn, 0=Auto)", "es": "Resolucion ($fn, 0=Auto)" },
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "group": "quality",
+      "modes": ["bolt", "nut"]
+    }
+  ],
+  "presets": [
+    {
+      "slug": "m3_socket_20",
+      "label": { "en": "M3 Socket 20mm", "es": "M3 Allen 20mm" },
+      "mode": "bolt",
+      "values": {
+        "diameter": 3,
+        "length": 20,
+        "pitch": 0.5,
+        "head_style_id": 1
+      }
+    },
+    {
+      "slug": "m5_hex_25",
+      "label": { "en": "M5 Hex 25mm", "es": "M5 Hex 25mm" },
+      "mode": "bolt",
+      "values": {
+        "diameter": 5,
+        "length": 25,
+        "pitch": 0.8,
+        "head_style_id": 0
+      }
+    },
+    {
+      "slug": "m8_button_30",
+      "label": { "en": "M8 Button 30mm", "es": "M8 Boton 30mm" },
+      "mode": "bolt",
+      "values": {
+        "diameter": 8,
+        "length": 30,
+        "pitch": 1.25,
+        "head_style_id": 2
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pitch <= diameter",
+      "severity": "error",
+      "message": { "en": "Pitch must be less than diameter", "es": "El paso debe ser menor que el diametro" }
+    },
+    {
+      "expression": "length >= diameter",
+      "severity": "warning",
+      "message": { "en": "Length should be at least 1x diameter", "es": "El largo debe ser al menos 1x el diametro" }
+    }
+  ],
+  "camera_views": {
+    "iso": [40, 40, 40],
+    "top": [0, 0, 80],
+    "front": [0, -80, 0],
+    "right": [80, 0, 0]
+  },
+  "export_formats": ["stl", "3mf"],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 64,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  }
+}

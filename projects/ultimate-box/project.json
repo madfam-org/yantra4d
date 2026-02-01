@@ -1,0 +1,221 @@
+{
+  "project": {
+    "name": "Ultimate Box Maker",
+    "slug": "ultimate-box",
+    "version": "1.0.0",
+    "description": "Parametric electronics enclosure with ventilation, PCB standoffs, and snap-fit lid",
+    "tags": ["enclosure", "electronics", "box", "case"]
+  },
+  "modes": [
+    {
+      "slug": "enclosure",
+      "label": { "en": "Enclosure", "es": "Carcasa" },
+      "scad_file": "qubic_box.scad",
+      "parts": ["enclosure"],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 12,
+        "fn_factor": 64,
+        "wasm_multiplier": 4,
+        "warning_threshold_seconds": 90
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "box_length",
+      "type": "slider",
+      "default": 80,
+      "min": 30,
+      "max": 200,
+      "step": 1,
+      "group": "dimensions",
+      "label": { "en": "Box Length", "es": "Largo de caja" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "box_width",
+      "type": "slider",
+      "default": 60,
+      "min": 30,
+      "max": 150,
+      "step": 1,
+      "group": "dimensions",
+      "label": { "en": "Box Width", "es": "Ancho de caja" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "box_height",
+      "type": "slider",
+      "default": 30,
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "group": "dimensions",
+      "label": { "en": "Box Height", "es": "Alto de caja" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "wall_thickness",
+      "type": "slider",
+      "default": 2.8,
+      "min": 1.5,
+      "max": 5,
+      "step": 0.1,
+      "group": "dimensions",
+      "label": { "en": "Wall Thickness", "es": "Grosor de pared" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "corner_radius",
+      "type": "slider",
+      "default": 2,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "group": "dimensions",
+      "label": { "en": "Corner Radius", "es": "Radio de esquina" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "rounded_corners",
+      "type": "checkbox",
+      "default": true,
+      "group": "features",
+      "label": { "en": "Rounded Corners", "es": "Esquinas redondeadas" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "ventilation",
+      "type": "checkbox",
+      "default": true,
+      "group": "features",
+      "label": { "en": "Ventilation", "es": "Ventilacion" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "vent_width",
+      "type": "slider",
+      "default": 1.7,
+      "min": 0.5,
+      "max": 3,
+      "step": 0.1,
+      "group": "features",
+      "advanced": true,
+      "parent": "ventilation",
+      "label": { "en": "Vent Width", "es": "Ancho de ventilacion" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "pcb_standoffs",
+      "type": "checkbox",
+      "default": false,
+      "group": "mounting",
+      "label": { "en": "PCB Standoffs", "es": "Soportes de PCB" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "case_feet_id",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "group": "mounting",
+      "label": { "en": "Case Feet (0=none, 1=hex, 2=cylinder, 3=snap, 4=snap+hole)", "es": "Patas (0=sin, 1=hex, 2=cilindro, 3=snap, 4=snap+agujero)" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "screw_hole_dia",
+      "type": "slider",
+      "default": 2.2606,
+      "min": 1.5,
+      "max": 4,
+      "step": 0.1,
+      "group": "mounting",
+      "advanced": true,
+      "label": { "en": "Screw Hole Diameter", "es": "Diametro de agujero para tornillo" },
+      "modes": ["enclosure"]
+    },
+    {
+      "name": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "group": "quality",
+      "label": { "en": "Resolution ($fn, 0=auto)", "es": "Resolucion ($fn, 0=auto)" },
+      "modes": ["enclosure"]
+    }
+  ],
+  "parameter_groups": [
+    { "key": "dimensions", "label": { "en": "Dimensions", "es": "Dimensiones" } },
+    { "key": "features", "label": { "en": "Features", "es": "Caracteristicas" } },
+    { "key": "mounting", "label": { "en": "Mounting", "es": "Montaje" } },
+    { "key": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+  ],
+  "presets": [
+    {
+      "slug": "arduino_uno",
+      "label": { "en": "Arduino Uno", "es": "Arduino Uno" },
+      "values": {
+        "box_length": 80,
+        "box_width": 60,
+        "box_height": 30,
+        "pcb_standoffs": true
+      }
+    },
+    {
+      "slug": "raspberry_pi",
+      "label": { "en": "Raspberry Pi", "es": "Raspberry Pi" },
+      "values": {
+        "box_length": 90,
+        "box_width": 65,
+        "box_height": 35,
+        "ventilation": true,
+        "case_feet_id": 2
+      }
+    },
+    {
+      "slug": "generic_small",
+      "label": { "en": "Generic Small", "es": "Generico pequeno" },
+      "values": {
+        "box_length": 50,
+        "box_width": 40,
+        "box_height": 20
+      }
+    }
+  ],
+  "bom": [
+    {
+      "item": { "en": "M3 Standoff Screws", "es": "Tornillos separadores M3" },
+      "qty": 4,
+      "condition": "pcb_standoffs"
+    },
+    {
+      "item": { "en": "Self-tapping Screws", "es": "Tornillos autorroscantes" },
+      "qty": 4,
+      "condition": "case_feet_id > 0"
+    }
+  ],
+  "camera_views": {
+    "iso": [100, 100, 60],
+    "top": [0, 0, 150],
+    "front": [0, -150, 0],
+    "right": [150, 0, 0]
+  },
+  "export_formats": ["stl", "3mf"],
+  "parts": [
+    { "id": "enclosure", "render_mode": 0, "label": { "en": "Enclosure", "es": "Carcasa" }, "default_color": "#6366f1" }
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 64,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  }
+}

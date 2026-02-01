@@ -18,8 +18,8 @@ export default function StudioHeader({
     const handler = (e) => {
       if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false)
     }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('pointerdown', handler)
+    return () => document.removeEventListener('pointerdown', handler)
   }, [])
 
   return (

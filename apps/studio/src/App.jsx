@@ -72,6 +72,9 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen w-full bg-background text-foreground">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:text-sm focus:font-medium">
+        {t('a11y.skip_to_content')}
+      </a>
       {!isEmbed && (
         <StudioHeader
           manifest={manifest}

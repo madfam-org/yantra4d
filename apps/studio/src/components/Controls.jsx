@@ -95,7 +95,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, t }) 
                     />
                 ) : (
                     <span
-                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60"
                         onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
                         role="button"
                         tabIndex={0}

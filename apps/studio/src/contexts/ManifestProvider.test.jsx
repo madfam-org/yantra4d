@@ -206,7 +206,17 @@ describe('ManifestProvider', () => {
   it('fetches projects list from /api/projects on mount', async () => {
     const projectsList = [
       { slug: 'tablaco', name: 'Tablaco Studio', version: '1.0.0' },
-      { slug: 'other', name: 'Other Project', version: '0.1.0' },
+      { slug: 'gridfinity', name: 'Gridfinity', version: '1.0.0' },
+      { slug: 'portacosas', name: 'Portacosas', version: '1.0.0' },
+      { slug: 'ultimate-box', name: 'Ultimate Box', version: '0.1.0' },
+      { slug: 'keyv2', name: 'KeyV2', version: '0.1.0' },
+      { slug: 'multiboard', name: 'Multiboard', version: '0.1.0' },
+      { slug: 'fasteners', name: 'Fasteners', version: '0.1.0' },
+      { slug: 'gears', name: 'Gears', version: '0.1.0' },
+      { slug: 'yapp-box', name: 'YAPP Box', version: '0.1.0' },
+      { slug: 'stemfie', name: 'STEMFIE', version: '0.1.0' },
+      { slug: 'polydice', name: 'Polydice', version: '0.1.0' },
+      { slug: 'julia-vase', name: 'Julia Vase', version: '0.1.0' },
     ]
 
     const fetchMock = vi.fn()
@@ -231,7 +241,7 @@ describe('ManifestProvider', () => {
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
     expect(fetchMock.mock.calls[0][0]).toContain('/api/projects')
-    expect(screen.getByTestId('projects-count').textContent).toBe('2')
+    expect(screen.getByTestId('projects-count').textContent).toBe('12')
     expect(screen.getByTestId('project-slug').textContent).toBe('tablaco')
   })
 })

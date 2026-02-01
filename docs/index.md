@@ -13,8 +13,11 @@ Platform-level documentation for the Qubic parametric 3D print design platform.
 
 ### Per-Project Docs
 
-Each project carries its own docs in `projects/{slug}/docs/`. For example:
--   [Tablaco project docs](../projects/tablaco/docs/index.md) — Interlocking cube mechanical design
+Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 12 built-in projects:
+-   [Tablaco](../projects/tablaco/docs/index.md) — Interlocking cube mechanical design (flagship)
+-   [Gridfinity](../projects/gridfinity/) — Modular storage bins
+-   [Polydice](../projects/polydice/) — Parametric dice set
+-   Browse all projects under [`projects/`](../projects/)
 
 ## Quick Start
 
@@ -41,7 +44,7 @@ Access: http://localhost:3000
 
 The project has three layers:
 
-1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions (e.g., `projects/tablaco/`)
+1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions (e.g., `projects/tablaco/`, `projects/gridfinity/`, `projects/polydice/`)
 2. **Backend API** (`apps/api/`) — Flask server that invokes OpenSCAD and serves STL files
 3. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer
 

@@ -4,7 +4,7 @@ A manifest-driven platform for parametric OpenSCAD models with a web-based 3D pr
 
 ![Qubic](/docs/images/half_cube_iso.png)
 
-Ships with the **tablaco** interlocking cube project. See [`projects/tablaco/README.md`](./projects/tablaco/README.md) for project-specific details.
+Ships with 12 built-in projects including **tablaco** (interlocking cubes), **gridfinity** (modular storage), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), and **portacosas**. See [`projects/`](./projects/) for all projects or [`projects/tablaco/README.md`](./projects/tablaco/README.md) for the flagship project.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
@@ -25,7 +25,7 @@ Platform documentation is available in the [`docs/`](./docs/index.md) directory:
 -   [Multi-Project Platform](./docs/multi-project.md) — Multi-project setup and configuration
 -   [Developer Experience](./docs/devx-guide.md) — Onboarding external SCAD projects
 
-Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./projects/tablaco/README.md) for the built-in project.
+Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./projects/tablaco/README.md) for the flagship project, or browse all 12 built-in projects under [`projects/`](./projects/).
 
 ## Tech Stack
 -   **CAD**: OpenSCAD
@@ -40,12 +40,14 @@ Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./pr
 ```
 tablaco/
 ├── projects/
-│   └── tablaco/                 # Default project (OpenSCAD source files)
-│       ├── half_cube.scad       # Single half-cube unit
-│       ├── assembly.scad        # Two-part assembly preview
-│       ├── tablaco.scad         # Full grid assembly
-│       ├── project.json         # Project manifest (modes, params, parts)
-│       └── exports/models/      # Reference STL exports
+│   ├── tablaco/                 # Flagship project (interlocking cubes)
+│   │   ├── *.scad               # OpenSCAD geometry files
+│   │   ├── project.json         # Project manifest (modes, params, parts)
+│   │   └── exports/models/      # Reference STL exports
+│   ├── gridfinity/              # Modular storage bins
+│   ├── polydice/                # Parametric dice set
+│   ├── ultimate-box/            # Parametric box maker
+│   └── ...                      # 12 built-in projects total
 ├── apps/
 │   ├── api/                     # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration

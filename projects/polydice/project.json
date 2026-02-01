@@ -1,0 +1,182 @@
+{
+  "project": {
+    "name": "PolyDice Generator",
+    "slug": "polydice",
+    "version": "1.0.0",
+    "description": {
+      "es": "Generador parametrico de dados polihedricos para juegos de mesa y RPG",
+      "en": "Parametric polyhedral dice generator for tabletop and RPG gaming"
+    },
+    "tags": ["dice", "tabletop", "gaming"]
+  },
+  "modes": [
+    {
+      "id": "d4",
+      "scad_file": "qubic_die.scad",
+      "label": { "es": "D4 (Tetraedro)", "en": "D4 (Tetrahedron)" },
+      "parts": ["d4"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "d6",
+      "scad_file": "qubic_die.scad",
+      "label": { "es": "D6 (Cubo)", "en": "D6 (Cube)" },
+      "parts": ["d6"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "d8",
+      "scad_file": "qubic_die.scad",
+      "label": { "es": "D8 (Octaedro)", "en": "D8 (Octahedron)" },
+      "parts": ["d8"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "d12",
+      "scad_file": "qubic_die.scad",
+      "label": { "es": "D12 (Dodecaedro)", "en": "D12 (Dodecahedron)" },
+      "parts": ["d12"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "d20",
+      "scad_file": "qubic_die.scad",
+      "label": { "es": "D20 (Icosaedro)", "en": "D20 (Icosahedron)" },
+      "parts": ["d20"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    { "id": "d4", "render_mode": 0, "label": { "es": "D4", "en": "D4" }, "default_color": "#e74c3c" },
+    { "id": "d6", "render_mode": 1, "label": { "es": "D6", "en": "D6" }, "default_color": "#3498db" },
+    { "id": "d8", "render_mode": 2, "label": { "es": "D8", "en": "D8" }, "default_color": "#2ecc71" },
+    { "id": "d12", "render_mode": 3, "label": { "es": "D12", "en": "D12" }, "default_color": "#9b59b6" },
+    { "id": "d20", "render_mode": 4, "label": { "es": "D20", "en": "D20" }, "default_color": "#f39c12" }
+  ],
+  "presets": [
+    {
+      "id": "standard_d20",
+      "label": { "es": "D20 Estandar", "en": "Standard D20" },
+      "values": {
+        "die_size": 20,
+        "font_depth": 0.6,
+        "font_size": 6,
+        "rounding_corner": 0,
+        "rounding_edge": 0
+      }
+    },
+    {
+      "id": "large_d6",
+      "label": { "es": "D6 Grande Redondeado", "en": "Large Rounded D6" },
+      "values": {
+        "die_size": 30,
+        "rounding_corner": 2
+      }
+    },
+    {
+      "id": "mini_d8",
+      "label": { "es": "D8 Mini", "en": "Mini D8" },
+      "values": {
+        "die_size": 12,
+        "font_size": 4
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "die_size",
+      "type": "slider",
+      "default": 20,
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": { "es": "Tamano del dado (mm)", "en": "Die Size (mm)" },
+      "tooltip": { "es": "Tamano general del dado en milimetros", "en": "Overall die size in millimeters" },
+      "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
+      "group": "dimensions"
+    },
+    {
+      "id": "font_depth",
+      "type": "slider",
+      "default": 0.6,
+      "min": 0.2,
+      "max": 1.5,
+      "step": 0.1,
+      "label": { "es": "Profundidad del texto (mm)", "en": "Text Depth (mm)" },
+      "tooltip": { "es": "Profundidad de grabado de los numeros", "en": "Engraving depth of the numbers" },
+      "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
+      "group": "text"
+    },
+    {
+      "id": "font_size",
+      "type": "slider",
+      "default": 6,
+      "min": 3,
+      "max": 12,
+      "step": 0.5,
+      "label": { "es": "Tamano de fuente", "en": "Font Size" },
+      "tooltip": { "es": "Tamano de los numeros en las caras", "en": "Size of the numbers on each face" },
+      "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
+      "group": "text"
+    },
+    {
+      "id": "rounding_corner",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "label": { "es": "Redondeo de esquinas", "en": "Corner Rounding" },
+      "tooltip": { "es": "Radio de redondeo en las esquinas del dado", "en": "Corner rounding radius" },
+      "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
+      "group": "dimensions"
+    },
+    {
+      "id": "rounding_edge",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "label": { "es": "Redondeo de aristas", "en": "Edge Rounding" },
+      "tooltip": { "es": "Radio de redondeo en las aristas del dado", "en": "Edge rounding radius" },
+      "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
+      "group": "dimensions"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
+      "tooltip": { "es": "0 = automatico; mayor = mas detalle pero mas lento", "en": "0 = auto; higher = more detail but slower" },
+      "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
+      "group": "quality"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
+    { "id": "text", "label": { "es": "Texto", "en": "Text" } },
+    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "camera_views": [
+    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [60, 60, 60] },
+    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 120] },
+    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -120, 0] },
+    { "id": "right", "label": { "es": "Derecha", "en": "Right" },        "position": [120, 0, 0] }
+  ],
+  "viewer": {
+    "default_color": "#f39c12"
+  },
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 1,
+    "per_part": 8,
+    "fn_factor": 64,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
+}

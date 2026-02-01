@@ -6,9 +6,16 @@ Qubic supports serving multiple parametric 3D projects from a single instance.
 
 ```
 projects/
-  tablaco/              # Built-in project
+  tablaco/              # Flagship project (interlocking cubes)
     project.json
     *.scad
+  gridfinity/           # Modular storage bins
+    project.json
+    *.scad
+  polydice/             # Parametric dice set
+    project.json
+    *.scad
+  ...                   # 12 built-in projects total
   my-custom-project/    # Onboarded project
     project.json
     *.scad

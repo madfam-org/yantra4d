@@ -1,0 +1,175 @@
+{
+  "project": {
+    "name": "Parametric Gears",
+    "slug": "gears",
+    "version": "1.0.0",
+    "description": "Involute spur and herringbone gears powered by MCAD",
+    "tags": ["mechanical", "gear", "engineering", "transmission"]
+  },
+  "modes": [
+    {
+      "id": "spur_gear",
+      "scad_file": "qubic_spur_gear.scad",
+      "label": { "en": "Spur Gear", "es": "Engranaje Recto" },
+      "parts": ["spur_gear"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "herringbone_gear",
+      "scad_file": "qubic_herringbone_gear.scad",
+      "label": { "en": "Herringbone Gear", "es": "Engranaje Espiga" },
+      "parts": ["herringbone_gear"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    { "id": "spur_gear", "render_mode": 0, "label": { "en": "Spur Gear", "es": "Engranaje Recto" }, "default_color": "#f59e0b" },
+    { "id": "herringbone_gear", "render_mode": 0, "label": { "en": "Herringbone Gear", "es": "Engranaje Espiga" }, "default_color": "#ef4444" }
+  ],
+  "presets": [
+    {
+      "id": "small_motor_20t",
+      "label": { "en": "Small Motor (20T)", "es": "Motor Peque\u00f1o (20T)" },
+      "values": {
+        "teeth_count": 20,
+        "module_size": 1.5,
+        "thickness": 5,
+        "bore_diameter": 3
+      }
+    },
+    {
+      "id": "large_drive_60t",
+      "label": { "en": "Large Drive (60T)", "es": "Transmisi\u00f3n Grande (60T)" },
+      "values": {
+        "teeth_count": 60,
+        "module_size": 2,
+        "thickness": 10,
+        "bore_diameter": 8
+      }
+    },
+    {
+      "id": "gear_pair_5to1",
+      "label": { "en": "Gear Pair 5:1 (50T)", "es": "Par de Engranajes 5:1 (50T)" },
+      "values": {
+        "teeth_count": 50,
+        "module_size": 1,
+        "thickness": 8,
+        "bore_diameter": 5
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "teeth_count",
+      "type": "slider",
+      "default": 20,
+      "min": 8,
+      "max": 80,
+      "step": 1,
+      "label": { "en": "Teeth Count", "es": "N\u00famero de Dientes" },
+      "tooltip": { "en": "Number of teeth on the gear", "es": "N\u00famero de dientes del engranaje" },
+      "group": "gear_geometry",
+      "visible_in_modes": ["spur_gear", "herringbone_gear"]
+    },
+    {
+      "id": "module_size",
+      "type": "slider",
+      "default": 2,
+      "min": 0.5,
+      "max": 5,
+      "step": 0.25,
+      "label": { "en": "Module (mm)", "es": "M\u00f3dulo (mm)" },
+      "tooltip": { "en": "Gear module — pitch diameter = module x teeth", "es": "M\u00f3dulo del engranaje — di\u00e1metro primitivo = m\u00f3dulo x dientes" },
+      "group": "gear_geometry",
+      "visible_in_modes": ["spur_gear", "herringbone_gear"]
+    },
+    {
+      "id": "pressure_angle",
+      "type": "slider",
+      "default": 20,
+      "min": 14,
+      "max": 25,
+      "step": 1,
+      "label": { "en": "Pressure Angle (\u00b0)", "es": "\u00c1ngulo de Presi\u00f3n (\u00b0)" },
+      "tooltip": { "en": "Tooth profile angle — 20\u00b0 is standard, 14.5\u00b0 for legacy gears", "es": "\u00c1ngulo del perfil del diente — 20\u00b0 es est\u00e1ndar, 14.5\u00b0 para engranajes antiguos" },
+      "group": "gear_geometry",
+      "visibility_level": "advanced",
+      "visible_in_modes": ["spur_gear", "herringbone_gear"]
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 5,
+      "min": 2,
+      "max": 30,
+      "step": 1,
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Face width of the gear", "es": "Ancho de cara del engranaje" },
+      "group": "gear_geometry",
+      "visible_in_modes": ["spur_gear", "herringbone_gear"]
+    },
+    {
+      "id": "bore_diameter",
+      "type": "slider",
+      "default": 5,
+      "min": 0,
+      "max": 20,
+      "step": 0.5,
+      "label": { "en": "Bore Diameter (mm)", "es": "Di\u00e1metro del Orificio (mm)" },
+      "tooltip": { "en": "Central shaft bore diameter — 0 for solid center", "es": "Di\u00e1metro del orificio central — 0 para centro s\u00f3lido" },
+      "group": "bore",
+      "visible_in_modes": ["spur_gear", "herringbone_gear"]
+    },
+    {
+      "id": "twist_angle",
+      "type": "slider",
+      "default": 30,
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "label": { "en": "Twist Angle (\u00b0)", "es": "\u00c1ngulo de Torsi\u00f3n (\u00b0)" },
+      "tooltip": { "en": "Helix angle for the herringbone pattern", "es": "\u00c1ngulo helicoidal del patr\u00f3n espiga" },
+      "group": "gear_geometry",
+      "visible_in_modes": ["herringbone_gear"]
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "en": "Resolution ($fn)", "es": "Resoluci\u00f3n ($fn)" },
+      "tooltip": { "en": "Curve resolution — 0 uses default (32)", "es": "Resoluci\u00f3n de curvas — 0 usa el valor por defecto (32)" },
+      "group": "quality",
+      "visible_in_modes": ["spur_gear", "herringbone_gear"]
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bore_diameter < teeth_count * module_size / 3",
+      "severity": "warning",
+      "message": { "en": "Bore too large for pitch circle", "es": "Orificio demasiado grande para el c\u00edrculo primitivo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso",   "label": { "en": "Isometric", "es": "Isom\u00e9trico" }, "position": [60, 60, 30] },
+    { "id": "top",   "label": { "en": "Top", "es": "Superior" },              "position": [0, 0, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frente" },              "position": [0, -80, 0] },
+    { "id": "right", "label": { "en": "Right", "es": "Derecha" },             "position": [80, 0, 0] }
+  ],
+  "parameter_groups": [
+    { "id": "gear_geometry", "label": { "en": "Gear Geometry", "es": "Geometr\u00eda del Engranaje" } },
+    { "id": "bore",          "label": { "en": "Bore",          "es": "Orificio" } },
+    { "id": "quality",       "label": { "en": "Quality",       "es": "Calidad" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "estimate_constants": {
+    "base_time": 6,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 64,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
+}

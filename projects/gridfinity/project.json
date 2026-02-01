@@ -74,6 +74,23 @@
         "width_units": 2, "depth_units": 1,
         "lid_include_magnets": true
       }
+    },
+    {
+      "id": "screw_organizer",
+      "label": { "es": "Organizador de Tornillos (3×2×4)", "en": "Screw Organizer (3×2×4)" },
+      "values": {
+        "width_units": 3, "depth_units": 2, "height_units": 4,
+        "vertical_chambers": 2, "horizontal_chambers": 3,
+        "label_enabled": true, "enable_magnets": true
+      }
+    },
+    {
+      "id": "pen_cup",
+      "label": { "es": "Porta Plumas (1×1×6)", "en": "Pen Cup (1×1×6)" },
+      "values": {
+        "width_units": 1, "depth_units": 1, "height_units": 6,
+        "fingerslide_enabled": false, "enable_magnets": true
+      }
     }
   ],
   "parameters": [

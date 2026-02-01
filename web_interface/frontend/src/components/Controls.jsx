@@ -108,7 +108,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, t }) 
     )
 }
 
-export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, presets = [], onApplyPreset, onToggleGridPreset }) {
+export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {} }) {
     const { language, t } = useLanguage()
     const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
     const [visibilityLevel, setVisibilityLevel] = useState(() => {
@@ -165,7 +165,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                         <button
                             key={p.id}
                             type="button"
-                            className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                            className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                                 activePresetId === p.id
                                     ? 'bg-primary text-primary-foreground border-primary'
                                     : 'bg-background text-muted-foreground border-border hover:text-foreground'
@@ -192,7 +192,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             <button
                                 key={id}
                                 type="button"
-                                className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                                className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                                     activeGp === id
                                         ? 'bg-primary text-primary-foreground border-primary'
                                         : 'bg-background text-muted-foreground border-border hover:text-foreground'
@@ -217,10 +217,11 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             <input
                                 id={`text-${param.id}`}
                                 type="text"
-                                maxLength={param.maxlength || 1}
-                                className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background"
+                                maxLength={param.maxlength || 255}
+                                className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 value={params[param.id] ?? ''}
                                 onChange={(e) => setParams(prev => ({ ...prev, [param.id]: e.target.value }))}
+                                aria-invalid={param.maxlength && (params[param.id]?.length || 0) > param.maxlength ? 'true' : undefined}
                             />
                         </div>
                     ))}
@@ -231,15 +232,21 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
             {sliders.length > 0 && (
                 <div className="space-y-4">
                     {sliders.map(param => (
-                        <SliderControl
-                            key={param.id}
-                            param={param}
-                            value={params[param.id]}
-                            onSliderChange={handleSliderChange}
-                            getLabel={getLabel}
-                            language={language}
-                            t={t}
-                        />
+                        <div key={param.id}>
+                            <SliderControl
+                                param={param}
+                                value={params[param.id]}
+                                onSliderChange={handleSliderChange}
+                                getLabel={getLabel}
+                                language={language}
+                                t={t}
+                            />
+                            {constraintsByParam[param.id]?.map((v, i) => (
+                                <p key={i} className={`text-xs mt-1 ${v.severity === 'error' ? 'text-destructive' : 'text-yellow-600 dark:text-yellow-400'}`} role="alert">
+                                    {typeof v.message === 'string' ? v.message : v.message[language] || v.message.en || v.message}
+                                </p>
+                            ))}
+                        </div>
                     ))}
                 </div>
             )}

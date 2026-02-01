@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
-import { Download, FileCode } from 'lucide-react'
+import { Download, FileCode, FileText } from 'lucide-react'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useManifest } from "../contexts/ManifestProvider"
+import { getApiBase } from "../services/backendDetection"
 import AuthGate from "./AuthGate"
 
 const EXPORT_FORMATS = [
@@ -36,7 +37,7 @@ export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad
               <button
                 key={f.id}
                 type="button"
-                className={`px-2 py-0.5 rounded text-xs border transition-colors ${
+                className={`px-2 py-0.5 rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                   (exportFormat || 'stl') === f.id
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-background text-muted-foreground border-border hover:text-foreground'
@@ -109,6 +110,21 @@ export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad
       >
         {t("act.export_all")}
       </Button>
+
+      {(manifest?.bom || manifest?.assembly_steps) && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const slug = manifest.project?.slug
+            if (slug) window.open(`${getApiBase()}/api/projects/${slug}/datasheet?lang=${language}`, '_blank')
+          }}
+          className="w-full min-h-[44px] gap-2"
+        >
+          <FileText className="h-4 w-4" />
+          {t("datasheet.generate")}
+        </Button>
+      )}
     </div>
   )
 }

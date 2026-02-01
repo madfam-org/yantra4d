@@ -1,14 +1,26 @@
+import { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe, Undo2, Redo2, Share2 } from 'lucide-react'
 import AuthButton from './AuthButton'
 import ProjectSelector from './ProjectSelector'
+import { SUPPORTED_LANGUAGES } from '../config/languages'
 
 export default function StudioHeader({
-  manifest, t, language, toggleLanguage, theme, cycleTheme,
+  manifest, t, language, setLanguage, theme, cycleTheme,
   undoParams, redoParams, canUndo, canRedo,
   handleShare, shareToast,
 }) {
   const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
+  const [langOpen, setLangOpen] = useState(false)
+  const langRef = useRef(null)
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   return (
     <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
@@ -41,10 +53,26 @@ export default function StudioHeader({
             </div>
           )}
         </div>
-        <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
-          <Globe className="h-5 w-5" />
-          <span className="sr-only">{t('sr.toggle_lang')}</span>
-        </Button>
+        <div className="relative" ref={langRef}>
+          <Button variant="ghost" size="icon" onClick={() => setLangOpen(prev => !prev)} title={t('sr.toggle_lang')}>
+            <Globe className="h-5 w-5" />
+            <span className="sr-only">{t('sr.toggle_lang')}</span>
+          </Button>
+          {langOpen && (
+            <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-md shadow-lg py-1 z-50 min-w-[120px]">
+              {SUPPORTED_LANGUAGES.map(lang => (
+                <button
+                  key={lang.id}
+                  type="button"
+                  className={`w-full text-left px-3 py-1.5 text-sm hover:bg-muted transition-colors ${language === lang.id ? 'font-semibold text-primary' : 'text-foreground'}`}
+                  onClick={() => { setLanguage(lang.id); setLangOpen(false) }}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <Button variant="ghost" size="icon" onClick={cycleTheme} title={t(`theme.${theme}`)}>
           <ThemeIcon className="h-5 w-5" />
           <span className="sr-only">{t('sr.toggle_theme')}</span>

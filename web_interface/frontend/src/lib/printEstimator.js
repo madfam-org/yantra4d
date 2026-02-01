@@ -105,8 +105,9 @@ export function computeBoundingBox(geometry) {
  * @param {object} [overrides] - Optional overrides for layer height, infill, etc.
  * @returns {{ time: { hours: number, minutes: number }, filament: { grams: number, meters: number, cost: number }, material: string }}
  */
-export function estimatePrint(volumeMm3, bbox, materialId = 'pla', overrides = {}) {
-  const profile = MATERIAL_PROFILES[materialId] || MATERIAL_PROFILES.pla
+export function estimatePrint(volumeMm3, bbox, materialId = 'pla', overrides = {}, materialLookup = null) {
+  const profiles = materialLookup || MATERIAL_PROFILES
+  const profile = profiles[materialId] || profiles.pla || MATERIAL_PROFILES.pla
   const layerHeight = overrides.layerHeight || profile.layerHeight
   const infill = overrides.infill ?? 0.20  // 20% default
   const speed = overrides.speed || profile.speed
@@ -157,10 +158,39 @@ export function estimatePrint(volumeMm3, bbox, materialId = 'pla', overrides = {
 
 /**
  * Get available material profiles.
+ * If manifestMaterials are provided, they are prepended to the built-in list.
+ * @param {Array|null} manifestMaterials - Optional materials from project manifest
  */
-export function getMaterialProfiles() {
-  return Object.entries(MATERIAL_PROFILES).map(([id, profile]) => ({
+export function getMaterialProfiles(manifestMaterials) {
+  const builtIn = Object.entries(MATERIAL_PROFILES).map(([id, profile]) => ({
     id,
     name: profile.name,
   }))
+  if (!manifestMaterials || manifestMaterials.length === 0) return builtIn
+  const custom = manifestMaterials.map(m => ({ id: m.id, name: m.name }))
+  // Deduplicate by id, custom takes priority
+  const customIds = new Set(custom.map(m => m.id))
+  return [...custom, ...builtIn.filter(m => !customIds.has(m.id))]
+}
+
+/**
+ * Build a merged profile lookup that includes manifest materials.
+ * @param {Array|null} manifestMaterials
+ * @returns {Object} materialId → profile
+ */
+export function buildMaterialLookup(manifestMaterials) {
+  const lookup = { ...MATERIAL_PROFILES }
+  if (manifestMaterials) {
+    for (const m of manifestMaterials) {
+      lookup[m.id] = {
+        name: m.name,
+        density: m.density,
+        speed: 50 * (m.print_speed_factor || 1),
+        layerHeight: 0.2,
+        costPerKg: m.cost_per_kg,
+        nozzleDiameter: 0.4,
+      }
+    }
+  }
+  return lookup
 }

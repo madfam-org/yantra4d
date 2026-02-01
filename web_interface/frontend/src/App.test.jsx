@@ -45,16 +45,20 @@ describe('App', () => {
   it('renders mode tabs for all manifest modes', () => {
     renderApp()
     for (const mode of fallbackManifest.modes) {
-      expect(screen.getByText(mode.label.en)).toBeInTheDocument()
+      const matches = screen.getAllByText(mode.label.en)
+      expect(matches.length).toBeGreaterThanOrEqual(1)
     }
   })
 
   it('all mode tabs render as interactive tab elements', () => {
     renderApp()
     const tabs = screen.getAllByRole('tab')
-    expect(tabs).toHaveLength(fallbackManifest.modes.length)
-    fallbackManifest.modes.forEach((mode, i) => {
-      expect(tabs[i]).toHaveTextContent(mode.label.en)
+    // Desktop sidebar + mobile bar each render mode tabs
+    const modeCount = fallbackManifest.modes.length
+    expect(tabs.length).toBeGreaterThanOrEqual(modeCount)
+    // Check that each mode label appears at least once
+    fallbackManifest.modes.forEach((mode) => {
+      expect(screen.getAllByText(mode.label.en).length).toBeGreaterThanOrEqual(1)
     })
     // First tab is selected by default
     expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
@@ -113,10 +117,14 @@ describe('App', () => {
     })
   })
 
-  it('language toggle switches en to es', async () => {
+  it('language selector switches en to es', async () => {
     renderApp()
-    const langBtn = screen.getByTitle('Español')
+    // Click Globe button to open language dropdown
+    const langBtn = screen.getByTitle('Toggle Language')
     fireEvent.click(langBtn)
+    // Click Español in the dropdown
+    const esOption = screen.getByText('Español')
+    fireEvent.click(esOption)
     await waitFor(() => {
       expect(screen.getByText('Generar')).toBeInTheDocument()
     })

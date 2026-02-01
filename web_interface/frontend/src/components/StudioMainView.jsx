@@ -1,12 +1,36 @@
 import Viewer from './Viewer'
 import PrintEstimateOverlay from './PrintEstimateOverlay'
 
+function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
+  if (loading) {
+    const elapsed = progress > 0 ? `${Math.round(progress)}s` : ''
+    const phase = progressPhase || ''
+    return (
+      <div className="absolute top-2 left-2 z-10 px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
+        {t('status.rendering')}{elapsed ? ` (${elapsed})` : ''}{phase ? ` — ${phase}` : ''}
+      </div>
+    )
+  }
+
+  if (parts.length > 0) {
+    return (
+      <div className="absolute top-2 left-2 z-10 px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-green-500" />
+        {t('status.ready')}
+      </div>
+    )
+  }
+
+  return null
+}
+
 export default function StudioMainView({
   viewerRef, consoleRef,
   parts, colors, wireframe, loading, progress, progressPhase,
   animating, setAnimating, mode, params,
   printEstimate, setPrintEstimate,
-  logs,
+  logs, t,
 }) {
   return (
     <div className="flex-1 relative flex flex-col min-h-0">
@@ -25,10 +49,15 @@ export default function StudioMainView({
           params={params}
           onGeometryStats={setPrintEstimate}
         />
+        <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
         <PrintEstimateOverlay
           volumeMm3={printEstimate?.volumeMm3}
           boundingBox={printEstimate?.boundingBox}
         />
+        {/* Accessible live region for render status */}
+        <div aria-live="polite" className="sr-only">
+          {loading ? 'Rendering in progress' : parts.length > 0 ? 'Render complete' : ''}
+        </div>
       </div>
 
       <div

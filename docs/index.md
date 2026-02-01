@@ -13,7 +13,7 @@ Platform-level documentation for the Qubic parametric 3D print design platform.
 
 ### Per-Project Docs
 
-Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 12 built-in projects:
+Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 15 built-in projects:
 -   [Tablaco](../projects/tablaco/docs/index.md) — Interlocking cube mechanical design (flagship)
 -   [Gridfinity](../projects/gridfinity/) — Modular storage bins
 -   [Polydice](../projects/polydice/) — Parametric dice set

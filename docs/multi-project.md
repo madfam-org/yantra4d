@@ -15,7 +15,7 @@ projects/
   polydice/             # Parametric dice set
     project.json
     *.scad
-  ...                   # 12 built-in projects total
+  ...                   # 15 built-in projects total
   my-custom-project/    # Onboarded project
     project.json
     *.scad

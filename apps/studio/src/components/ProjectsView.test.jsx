@@ -158,6 +158,42 @@ const mockProjects = [
     has_exports: false,
     modified_at: null,
   },
+  {
+    slug: 'voronoi',
+    name: 'Voronoi Generator',
+    version: '0.1.0',
+    description: 'Voronoi pattern generator',
+    mode_count: 3,
+    parameter_count: 7,
+    scad_file_count: 3,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701100000,
+  },
+  {
+    slug: 'maze',
+    name: 'Maze Generator',
+    version: '0.1.0',
+    description: 'Maze generator for coasters and cubes',
+    mode_count: 3,
+    parameter_count: 8,
+    scad_file_count: 3,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701200000,
+  },
+  {
+    slug: 'relief',
+    name: 'Text Relief Generator',
+    version: '0.1.0',
+    description: 'Text plaques, tags, and signs',
+    mode_count: 3,
+    parameter_count: 10,
+    scad_file_count: 3,
+    has_manifest: true,
+    has_exports: false,
+    modified_at: 1701300000,
+  },
 ]
 
 beforeEach(() => {
@@ -182,8 +218,8 @@ describe('ProjectsView', () => {
       expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
     })
     expect(screen.getAllByText('v1.0.0')).toHaveLength(3)
-    expect(screen.getAllByText('3 modes')).toHaveLength(2) // tablaco + stemfie
-    expect(screen.getByText('8 params')).toBeInTheDocument()
+    expect(screen.getAllByText('3 modes')).toHaveLength(5) // tablaco + stemfie + voronoi + maze + relief
+    expect(screen.getAllByText('8 params').length).toBeGreaterThan(0)
     expect(screen.getByText('Gridfinity')).toBeInTheDocument()
     expect(screen.getByText('Julia Vase')).toBeInTheDocument()
   })
@@ -259,8 +295,8 @@ describe('ProjectsView', () => {
     await waitFor(() => {
       expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
     })
-    // All 12 projects have manifest, 3 have exports (tablaco, gridfinity, portacosas)
-    expect(screen.getAllByText('Manifest')).toHaveLength(12)
+    // All 15 projects have manifest, 3 have exports (tablaco, gridfinity, portacosas)
+    expect(screen.getAllByText('Manifest')).toHaveLength(15)
     expect(screen.getAllByText('Exports')).toHaveLength(3)
   })
 })

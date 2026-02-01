@@ -34,3 +34,6 @@
 [submodule "projects/polydice/vendor/polydice"]
 	path = projects/polydice/vendor/polydice
 	url = https://github.com/charmaur/PolyDiceGenerator.git
+[submodule "libs/dotSCAD"]
+	path = libs/dotSCAD
+	url = https://github.com/JustinSDK/dotSCAD.git

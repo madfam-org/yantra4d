@@ -1,0 +1,178 @@
+{
+  "project": {
+    "name": "Voronoi Generator",
+    "slug": "voronoi",
+    "version": "0.1.0",
+    "description": {
+      "es": "Generador de patrones Voronoi para posavasos, jarrones y lamparas",
+      "en": "Voronoi pattern generator for coasters, vases, and lampshades"
+    },
+    "tags": ["voronoi", "organic", "decorative"]
+  },
+  "modes": [
+    {
+      "id": "coaster",
+      "scad_file": "qubic_coaster.scad",
+      "label": { "es": "Posavasos", "en": "Coaster" },
+      "parts": ["coaster"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "vase",
+      "scad_file": "qubic_vase.scad",
+      "label": { "es": "Jarron", "en": "Vase" },
+      "parts": ["vase"],
+      "estimate": { "base_units": 2, "formula": "constant" }
+    },
+    {
+      "id": "lampshade",
+      "scad_file": "qubic_lampshade.scad",
+      "label": { "es": "Lampara", "en": "Lampshade" },
+      "parts": ["lampshade"],
+      "estimate": { "base_units": 3, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    { "id": "coaster", "render_mode": 0, "label": { "es": "Posavasos", "en": "Coaster" }, "default_color": "#3498db" },
+    { "id": "vase", "render_mode": 0, "label": { "es": "Jarron", "en": "Vase" }, "default_color": "#2ecc71" },
+    { "id": "lampshade", "render_mode": 0, "label": { "es": "Lampara", "en": "Lampshade" }, "default_color": "#f39c12" }
+  ],
+  "presets": [
+    {
+      "id": "simple_coaster",
+      "label": { "es": "Posavasos Simple", "en": "Simple Coaster" },
+      "values": {
+        "cell_count": 15,
+        "size": 100,
+        "thickness": 3
+      }
+    },
+    {
+      "id": "organic_vase",
+      "label": { "es": "Jarron Organico", "en": "Organic Vase" },
+      "values": {
+        "cell_count": 30,
+        "size": 80,
+        "height": 150
+      }
+    },
+    {
+      "id": "detailed_lampshade",
+      "label": { "es": "Lampara Detallada", "en": "Detailed Lampshade" },
+      "values": {
+        "cell_count": 40,
+        "size": 120,
+        "height": 100
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cell_count",
+      "type": "slider",
+      "default": 20,
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "label": { "es": "Numero de celdas", "en": "Cell Count" },
+      "tooltip": { "es": "Cantidad de celdas Voronoi", "en": "Number of Voronoi cells" },
+      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "group": "pattern"
+    },
+    {
+      "id": "size",
+      "type": "slider",
+      "default": 100,
+      "min": 50,
+      "max": 200,
+      "step": 5,
+      "label": { "es": "Diametro (mm)", "en": "Diameter (mm)" },
+      "tooltip": { "es": "Diametro exterior del objeto", "en": "Outer diameter of the object" },
+      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "group": "dimensions"
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "label": { "es": "Grosor (mm)", "en": "Thickness (mm)" },
+      "tooltip": { "es": "Grosor de la base o pared", "en": "Base or wall thickness" },
+      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "group": "dimensions"
+    },
+    {
+      "id": "cell_wall",
+      "type": "slider",
+      "default": 2,
+      "min": 0.5,
+      "max": 5,
+      "step": 0.5,
+      "label": { "es": "Ancho de pared (mm)", "en": "Cell Wall Width (mm)" },
+      "tooltip": { "es": "Ancho de las paredes entre celdas", "en": "Width of walls between cells" },
+      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "group": "pattern"
+    },
+    {
+      "id": "seed",
+      "type": "slider",
+      "default": 42,
+      "min": 1,
+      "max": 999,
+      "step": 1,
+      "label": { "es": "Semilla aleatoria", "en": "Random Seed" },
+      "tooltip": { "es": "Semilla para el patron aleatorio", "en": "Seed for random pattern generation" },
+      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "group": "pattern"
+    },
+    {
+      "id": "height",
+      "type": "slider",
+      "default": 120,
+      "min": 50,
+      "max": 250,
+      "step": 5,
+      "label": { "es": "Altura (mm)", "en": "Height (mm)" },
+      "tooltip": { "es": "Altura del jarron o lampara", "en": "Height of vase or lampshade" },
+      "visible_in_modes": ["vase", "lampshade"],
+      "group": "dimensions"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
+      "tooltip": { "es": "0 = automatico; mayor = mas detalle pero mas lento", "en": "0 = auto; higher = more detail but slower" },
+      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "group": "quality"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "pattern", "label": { "es": "Patron", "en": "Pattern" } },
+    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
+    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "camera_views": [
+    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [80, 80, 80] },
+    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },
+    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -150, 0] },
+    { "id": "right", "label": { "es": "Derecha", "en": "Right" },        "position": [150, 0, 0] }
+  ],
+  "viewer": {
+    "default_color": "#3498db"
+  },
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 0.5,
+    "per_part": 10,
+    "fn_factor": 48,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  }
+}

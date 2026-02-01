@@ -217,6 +217,9 @@ describe('ManifestProvider', () => {
       { slug: 'stemfie', name: 'STEMFIE', version: '0.1.0' },
       { slug: 'polydice', name: 'Polydice', version: '0.1.0' },
       { slug: 'julia-vase', name: 'Julia Vase', version: '0.1.0' },
+      { slug: 'voronoi', name: 'Voronoi Generator', version: '0.1.0' },
+      { slug: 'maze', name: 'Maze Generator', version: '0.1.0' },
+      { slug: 'relief', name: 'Text Relief Generator', version: '0.1.0' },
     ]
 
     const fetchMock = vi.fn()
@@ -241,7 +244,7 @@ describe('ManifestProvider', () => {
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
     expect(fetchMock.mock.calls[0][0]).toContain('/api/projects')
-    expect(screen.getByTestId('projects-count').textContent).toBe('12')
+    expect(screen.getByTestId('projects-count').textContent).toBe('15')
     expect(screen.getByTestId('project-slug').textContent).toBe('tablaco')
   })
 })

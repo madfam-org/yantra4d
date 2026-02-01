@@ -37,7 +37,7 @@ ENV OPENSCAD_PATH=/usr/bin/openscad
 ENV PORT=5000
 ENV HOST=0.0.0.0
 ENV PROJECTS_DIR=/app/projects
-ENV OPENSCADPATH=/app/libs
+ENV OPENSCADPATH=/app/libs:/app/libs/dotSCAD/src
 ENV VERIFY_SCRIPT=/app/tests/verify_design.py
 
 # Expose port

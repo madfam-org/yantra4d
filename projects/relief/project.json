@@ -1,0 +1,214 @@
+{
+  "project": {
+    "name": "Text Relief Generator",
+    "slug": "relief",
+    "version": "0.1.0",
+    "description": {
+      "es": "Generador de placas, etiquetas y letreros con texto en relieve",
+      "en": "Generator for plaques, tags, and signs with embossed text"
+    },
+    "tags": ["text", "sign", "gift"]
+  },
+  "modes": [
+    {
+      "id": "plaque",
+      "scad_file": "qubic_plaque.scad",
+      "label": { "es": "Placa", "en": "Plaque" },
+      "parts": ["plaque"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "tag",
+      "scad_file": "qubic_tag.scad",
+      "label": { "es": "Etiqueta", "en": "Tag" },
+      "parts": ["tag"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "sign",
+      "scad_file": "qubic_sign.scad",
+      "label": { "es": "Letrero", "en": "Sign" },
+      "parts": ["sign"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    { "id": "plaque", "render_mode": 0, "label": { "es": "Placa", "en": "Plaque" }, "default_color": "#8e44ad" },
+    { "id": "tag", "render_mode": 0, "label": { "es": "Etiqueta", "en": "Tag" }, "default_color": "#e67e22" },
+    { "id": "sign", "render_mode": 0, "label": { "es": "Letrero", "en": "Sign" }, "default_color": "#2c3e50" }
+  ],
+  "presets": [
+    {
+      "id": "name_plaque",
+      "label": { "es": "Placa de Nombre", "en": "Name Plaque" },
+      "values": {
+        "message": "Your Name",
+        "font_size": 12,
+        "base_width": 80,
+        "base_height": 40,
+        "raised": true
+      }
+    },
+    {
+      "id": "gift_tag",
+      "label": { "es": "Etiqueta de Regalo", "en": "Gift Tag" },
+      "values": {
+        "message": "With Love",
+        "font_size": 8,
+        "base_width": 60,
+        "base_height": 30,
+        "hole_diameter": 4
+      }
+    },
+    {
+      "id": "door_sign",
+      "label": { "es": "Letrero de Puerta", "en": "Door Sign" },
+      "values": {
+        "message": "Welcome",
+        "font_size": 20,
+        "base_width": 150,
+        "base_height": 60,
+        "border_width": 2
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "message",
+      "type": "text",
+      "default": "Hello",
+      "label": { "es": "Mensaje", "en": "Message" },
+      "tooltip": { "es": "Texto a grabar en relieve", "en": "Text to emboss" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "text"
+    },
+    {
+      "id": "font_size",
+      "type": "slider",
+      "default": 12,
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "label": { "es": "Tamano de fuente (mm)", "en": "Font Size (mm)" },
+      "tooltip": { "es": "Tamano del texto", "en": "Size of the text" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "text"
+    },
+    {
+      "id": "text_depth",
+      "type": "slider",
+      "default": 1.5,
+      "min": 0.5,
+      "max": 5,
+      "step": 0.5,
+      "label": { "es": "Profundidad del texto (mm)", "en": "Text Depth (mm)" },
+      "tooltip": { "es": "Altura de extrusion del texto", "en": "Extrusion height of text" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "text"
+    },
+    {
+      "id": "base_width",
+      "type": "slider",
+      "default": 80,
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "label": { "es": "Ancho (mm)", "en": "Width (mm)" },
+      "tooltip": { "es": "Ancho de la base", "en": "Width of the base" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "dimensions"
+    },
+    {
+      "id": "base_height",
+      "type": "slider",
+      "default": 40,
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "label": { "es": "Alto (mm)", "en": "Height (mm)" },
+      "tooltip": { "es": "Alto de la base", "en": "Height of the base" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "dimensions"
+    },
+    {
+      "id": "base_thickness",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 8,
+      "step": 0.5,
+      "label": { "es": "Grosor de base (mm)", "en": "Base Thickness (mm)" },
+      "tooltip": { "es": "Grosor de la placa base", "en": "Thickness of the base plate" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "dimensions"
+    },
+    {
+      "id": "raised",
+      "type": "checkbox",
+      "default": true,
+      "label": { "es": "Texto en relieve", "en": "Raised Text" },
+      "tooltip": { "es": "Texto elevado (true) o hundido (false)", "en": "Raised (true) or inset (false) text" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "text"
+    },
+    {
+      "id": "border_width",
+      "type": "slider",
+      "default": 2,
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "label": { "es": "Ancho del borde (mm)", "en": "Border Width (mm)" },
+      "tooltip": { "es": "Ancho del marco decorativo", "en": "Width of the decorative border frame" },
+      "visible_in_modes": ["sign"],
+      "group": "dimensions"
+    },
+    {
+      "id": "hole_diameter",
+      "type": "slider",
+      "default": 4,
+      "min": 3,
+      "max": 8,
+      "step": 0.5,
+      "label": { "es": "Diametro del agujero (mm)", "en": "Hole Diameter (mm)" },
+      "tooltip": { "es": "Diametro del agujero para colgar", "en": "Diameter of the hanging hole" },
+      "visible_in_modes": ["tag"],
+      "group": "dimensions"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
+      "tooltip": { "es": "0 = automatico; mayor = mas detalle pero mas lento", "en": "0 = auto; higher = more detail but slower" },
+      "visible_in_modes": ["plaque", "tag", "sign"],
+      "group": "quality"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "text", "label": { "es": "Texto", "en": "Text" } },
+    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
+    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "camera_views": [
+    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [60, 60, 60] },
+    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 120] },
+    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -120, 0] },
+    { "id": "right", "label": { "es": "Derecha", "en": "Right" },        "position": [120, 0, 0] }
+  ],
+  "viewer": {
+    "default_color": "#8e44ad"
+  },
+  "estimate_constants": {
+    "base_time": 3,
+    "per_unit": 0.5,
+    "per_part": 5,
+    "fn_factor": 32,
+    "wasm_multiplier": 2,
+    "warning_threshold_seconds": 30
+  }
+}

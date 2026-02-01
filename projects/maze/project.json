@@ -1,0 +1,192 @@
+{
+  "project": {
+    "name": "Maze Generator",
+    "slug": "maze",
+    "version": "0.1.0",
+    "description": {
+      "es": "Generador de laberintos para posavasos, cubos y cilindros",
+      "en": "Maze generator for coasters, cubes, and cylinders"
+    },
+    "tags": ["maze", "puzzle", "game"]
+  },
+  "modes": [
+    {
+      "id": "coaster",
+      "scad_file": "qubic_maze_coaster.scad",
+      "label": { "es": "Posavasos", "en": "Coaster" },
+      "parts": ["coaster"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "cube",
+      "scad_file": "qubic_maze_cube.scad",
+      "label": { "es": "Cubo", "en": "Cube" },
+      "parts": ["cube"],
+      "estimate": { "base_units": 2, "formula": "constant" }
+    },
+    {
+      "id": "cylinder",
+      "scad_file": "qubic_maze_cylinder.scad",
+      "label": { "es": "Cilindro", "en": "Cylinder" },
+      "parts": ["cylinder"],
+      "estimate": { "base_units": 2, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    { "id": "coaster", "render_mode": 0, "label": { "es": "Posavasos", "en": "Coaster" }, "default_color": "#e74c3c" },
+    { "id": "cube", "render_mode": 0, "label": { "es": "Cubo", "en": "Cube" }, "default_color": "#9b59b6" },
+    { "id": "cylinder", "render_mode": 0, "label": { "es": "Cilindro", "en": "Cylinder" }, "default_color": "#1abc9c" }
+  ],
+  "presets": [
+    {
+      "id": "simple_coaster_maze",
+      "label": { "es": "Posavasos Simple", "en": "Simple Coaster Maze" },
+      "values": {
+        "rows": 8,
+        "cols": 8,
+        "cell_size": 5,
+        "diameter": 100
+      }
+    },
+    {
+      "id": "challenging_cube",
+      "label": { "es": "Cubo Desafiante", "en": "Challenging Cube" },
+      "values": {
+        "rows": 15,
+        "cols": 15,
+        "cell_size": 4,
+        "wall_height": 5
+      }
+    },
+    {
+      "id": "cylinder_puzzle",
+      "label": { "es": "Cilindro Puzzle", "en": "Cylinder Puzzle" },
+      "values": {
+        "rows": 12,
+        "cols": 12,
+        "diameter": 80,
+        "wall_height": 4
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "rows",
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "label": { "es": "Filas", "en": "Rows" },
+      "tooltip": { "es": "Numero de filas del laberinto", "en": "Number of maze rows" },
+      "visible_in_modes": ["coaster", "cube", "cylinder"],
+      "group": "maze"
+    },
+    {
+      "id": "cols",
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "label": { "es": "Columnas", "en": "Columns" },
+      "tooltip": { "es": "Numero de columnas del laberinto", "en": "Number of maze columns" },
+      "visible_in_modes": ["coaster", "cube", "cylinder"],
+      "group": "maze"
+    },
+    {
+      "id": "cell_size",
+      "type": "slider",
+      "default": 5,
+      "min": 3,
+      "max": 10,
+      "step": 0.5,
+      "label": { "es": "Tamano de celda (mm)", "en": "Cell Size (mm)" },
+      "tooltip": { "es": "Tamano de cada celda del laberinto", "en": "Size of each maze cell" },
+      "visible_in_modes": ["coaster", "cube", "cylinder"],
+      "group": "maze"
+    },
+    {
+      "id": "wall_thickness",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 3,
+      "step": 0.2,
+      "label": { "es": "Grosor de pared (mm)", "en": "Wall Thickness (mm)" },
+      "tooltip": { "es": "Grosor de las paredes del laberinto", "en": "Thickness of maze walls" },
+      "visible_in_modes": ["coaster", "cube", "cylinder"],
+      "group": "maze"
+    },
+    {
+      "id": "wall_height",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "label": { "es": "Altura de pared (mm)", "en": "Wall Height (mm)" },
+      "tooltip": { "es": "Altura de las paredes del laberinto", "en": "Height of maze walls" },
+      "visible_in_modes": ["coaster", "cube", "cylinder"],
+      "group": "maze"
+    },
+    {
+      "id": "base_thickness",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "label": { "es": "Grosor de base (mm)", "en": "Base Thickness (mm)" },
+      "tooltip": { "es": "Grosor de la placa base", "en": "Thickness of the base plate" },
+      "visible_in_modes": ["coaster", "cube", "cylinder"],
+      "group": "dimensions"
+    },
+    {
+      "id": "seed",
+      "type": "slider",
+      "default": 123,
+      "min": 1,
+      "max": 9999,
+      "step": 1,
+      "label": { "es": "Semilla aleatoria", "en": "Random Seed" },
+      "tooltip": { "es": "Semilla para generar el laberinto", "en": "Seed for maze generation" },
+      "visible_in_modes": ["coaster", "cube", "cylinder"],
+      "group": "maze"
+    },
+    {
+      "id": "diameter",
+      "type": "slider",
+      "default": 100,
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "label": { "es": "Diametro (mm)", "en": "Diameter (mm)" },
+      "tooltip": { "es": "Diametro del posavasos o cilindro", "en": "Diameter of coaster or cylinder" },
+      "visible_in_modes": ["coaster", "cylinder"],
+      "group": "dimensions"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "maze", "label": { "es": "Laberinto", "en": "Maze" } },
+    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "camera_views": [
+    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [80, 80, 80] },
+    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },
+    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -150, 0] },
+    { "id": "right", "label": { "es": "Derecha", "en": "Right" },        "position": [150, 0, 0] }
+  ],
+  "viewer": {
+    "default_color": "#e74c3c"
+  },
+  "estimate_constants": {
+    "base_time": 6,
+    "per_unit": 1,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
+}

@@ -15,7 +15,11 @@ class Config:
 
     _default_libs = BASE_DIR.parent.parent / "libs"
     LIBS_DIR = Path(os.getenv("LIBS_DIR", _default_libs))
-    OPENSCADPATH = os.getenv("OPENSCADPATH", str(LIBS_DIR))
+    _dotscad_src = _default_libs / "dotSCAD" / "src"
+    OPENSCADPATH = os.getenv(
+        "OPENSCADPATH",
+        os.pathsep.join([str(LIBS_DIR), str(_dotscad_src)])
+    )
 
     MULTI_PROJECT = os.getenv("PROJECTS_DIR") is not None or _default_projects.is_dir()
 

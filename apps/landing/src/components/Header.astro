@@ -1,20 +1,30 @@
 ---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  lang?: string;
+  t?: Translations;
+}
+
+const { lang = 'es', t } = Astro.props;
 const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://localhost:5173';
+const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label: 'Español', href: '/' };
 ---
 
 <header class="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm">
   <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-    <a href="/" class="text-xl font-bold tracking-tight">Qubic</a>
+    <a href={lang === 'en' ? '/en/' : '/'} class="text-xl font-bold tracking-tight">Qubic</a>
     <nav class="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-      <a href="#features" class="hover:text-foreground transition-colors">Features</a>
-      <a href="#demo" class="hover:text-foreground transition-colors">Demo</a>
-      <a href="#tech" class="hover:text-foreground transition-colors">Tech</a>
+      <a href="#features" class="hover:text-foreground transition-colors">{t?.nav.features ?? 'Características'}</a>
+      <a href="#demo" class="hover:text-foreground transition-colors">{t?.nav.demo ?? 'Demo'}</a>
+      <a href="#tech" class="hover:text-foreground transition-colors">{t?.nav.tech ?? 'Tecnología'}</a>
+      <a href={switchLang.href} class="hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
     </nav>
     <a
       href={studioUrl}
       class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
     >
-      Open Studio →
+      {t?.nav.openStudio ?? 'Abrir Studio →'}
     </a>
   </div>
 </header>

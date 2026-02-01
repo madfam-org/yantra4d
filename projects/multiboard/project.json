@@ -3,7 +3,10 @@
     "name": "Multiboard Wall Storage",
     "slug": "multiboard",
     "version": "1.0.0",
-    "description": "Modular wall-mounted storage system with hexagonal peg pattern",
+    "description": {
+      "en": "Modular wall-mounted storage system with hexagonal peg pattern",
+      "es": "Sistema modular de almacenamiento de pared con patrón de pines hexagonales"
+    },
     "tags": ["storage", "wall-mount", "organization", "modular"]
   },
   "modes": [

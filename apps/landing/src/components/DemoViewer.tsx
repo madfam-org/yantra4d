@@ -18,9 +18,9 @@ const DEMOS: Demo[] = [
   { id: 'gridfinity', label: 'Gridfinity', url: '/gridfinity-cup.stl', camera: [100, 80, 60], color: '#4a90d9' },
 ];
 
-function Loader() {
+function Loader({ text = 'loaded' }: { text?: string }) {
   const { progress } = useProgress();
-  return <Html center><span style={{ color: '#888' }}>{progress.toFixed(0)}% loaded</span></Html>;
+  return <Html center><span style={{ color: '#888' }}>{progress.toFixed(0)}% {text}</span></Html>;
 }
 
 function Model({ url, color = '#94a3b8' }: { url: string; color?: string }) {
@@ -45,7 +45,7 @@ function Model({ url, color = '#94a3b8' }: { url: string; color?: string }) {
   );
 }
 
-export default function DemoViewer() {
+export default function DemoViewer({ loadingText = 'loaded' }: { loadingText?: string }) {
   const [activeDemo, setActiveDemo] = useState(DEMOS[0]);
 
   return (
@@ -69,7 +69,7 @@ export default function DemoViewer() {
         <Canvas camera={{ position: activeDemo.camera, fov: 45, up: [0, 0, 1] }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[10, 10, 10]} intensity={0.8} />
-          <Suspense fallback={<Loader />}>
+          <Suspense fallback={<Loader text={loadingText} />}>
             <Model url={activeDemo.url} color={activeDemo.color} />
           </Suspense>
           <OrbitControls enableDamping dampingFactor={0.1} />

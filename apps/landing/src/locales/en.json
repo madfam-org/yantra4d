@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "title": "Qubic — Parametric 3D Design for Everyone",
+    "description": "Turn OpenSCAD models into visual configurators. No CAD training required."
+  },
+  "nav": {
+    "features": "Features",
+    "demo": "Demo",
+    "tech": "Tech",
+    "openStudio": "Open Studio →"
+  },
+  "hero": {
+    "titleLine1": "Parametric 3D Design",
+    "titleLine2": "for Everyone",
+    "subtitle": "Turn OpenSCAD models into visual configurators. No CAD training required.",
+    "openStudio": "Open Studio",
+    "viewOnGitHub": "View on GitHub",
+    "interactWithDemo": "Interact with Demo ▶",
+    "scrollToDemo": "Scroll down to the",
+    "liveDemo": "Live Demo",
+    "scrollSuffix": "section for the interactive 3D viewer."
+  },
+  "features": {
+    "heading": "Features",
+    "manifestDriven": "Manifest-Driven",
+    "manifestDrivenDesc": "Define parameters in JSON. UI generates itself.",
+    "dualRendering": "Dual Rendering",
+    "dualRenderingDesc": "Server OpenSCAD + client WASM fallback.",
+    "stlVerification": "STL Verification",
+    "stlVerificationDesc": "Automated quality checks before printing.",
+    "multiFormatExport": "Multi-Format Export",
+    "multiFormatExportDesc": "STL, 3MF, OFF — one click.",
+    "zeroCodeOnboarding": "Zero-Code Onboarding",
+    "zeroCodeOnboardingDesc": "Upload .scad files, get a configurator.",
+    "printEstimation": "Print Estimation",
+    "printEstimationDesc": "Time, filament, cost from geometry."
+  },
+  "howItWorks": {
+    "heading": "How It Works",
+    "step1Title": "Upload .scad files",
+    "step1Desc": "Drop your OpenSCAD source files into Qubic.",
+    "step2Title": "Configure visually",
+    "step2Desc": "Adjust parameters with sliders and toggles — see changes in 3D.",
+    "step3Title": "Export and print",
+    "step3Desc": "Download STL, 3MF, or OFF. Ready for your slicer."
+  },
+  "demo": {
+    "heading": "Live Demo",
+    "description": "Interact with pre-rendered 3D models. Orbit, zoom, and pan to explore each project.",
+    "loading": "loaded"
+  },
+  "techStack": {
+    "heading": "Built With",
+    "openSourceOnGitHub": "Open Source on GitHub"
+  },
+  "cta": {
+    "heading": "Ready to build?",
+    "subtitle": "Upload your OpenSCAD files and get a parametric configurator in minutes.",
+    "openStudio": "Open Studio"
+  },
+  "footer": {
+    "copyright": "Qubic. Open source under AGPLv3."
+  }
+}

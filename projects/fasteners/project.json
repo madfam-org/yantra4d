@@ -3,7 +3,10 @@
     "name": "Fastener Generator",
     "slug": "fasteners",
     "version": "1.0.0",
-    "description": "Parametric bolts and nuts with real threads",
+    "description": {
+      "en": "Parametric bolts and nuts with real threads",
+      "es": "Tornillos y tuercas paramétricas con roscas reales"
+    },
     "tags": ["hardware", "fastener", "bolt", "nut", "thread"]
   },
   "modes": [
@@ -62,6 +65,7 @@
     {
       "name": "diameter",
       "label": { "en": "Diameter (mm)", "es": "Diametro (mm)" },
+      "tooltip": { "en": "Nominal thread diameter", "es": "Diámetro nominal de la rosca" },
       "type": "slider",
       "default": 5,
       "min": 2,
@@ -73,6 +77,7 @@
     {
       "name": "length",
       "label": { "en": "Length (mm)", "es": "Largo (mm)" },
+      "tooltip": { "en": "Bolt shaft length excluding head", "es": "Largo del vástago excluyendo cabeza" },
       "type": "slider",
       "default": 20,
       "min": 5,
@@ -84,6 +89,7 @@
     {
       "name": "pitch",
       "label": { "en": "Thread Pitch (mm)", "es": "Paso de Rosca (mm)" },
+      "tooltip": { "en": "Distance between thread crests", "es": "Distancia entre crestas de la rosca" },
       "type": "slider",
       "default": 0.8,
       "min": 0.25,
@@ -96,6 +102,7 @@
     {
       "name": "head_style_id",
       "label": { "en": "Head Style (0=Hex, 1=Socket, 2=Button)", "es": "Estilo de Cabeza (0=Hex, 1=Allen, 2=Boton)" },
+      "tooltip": { "en": "Bolt head shape", "es": "Forma de la cabeza del tornillo" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -107,6 +114,7 @@
     {
       "name": "head_diameter",
       "label": { "en": "Head Diameter (0=Auto)", "es": "Diametro de Cabeza (0=Auto)" },
+      "tooltip": { "en": "Override head diameter (0=auto)", "es": "Diámetro de cabeza manual (0=auto)" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -119,6 +127,7 @@
     {
       "name": "head_height",
       "label": { "en": "Head Height (0=Auto)", "es": "Altura de Cabeza (0=Auto)" },
+      "tooltip": { "en": "Override head height (0=auto)", "es": "Altura de cabeza manual (0=auto)" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -131,6 +140,7 @@
     {
       "name": "nut_style_id",
       "label": { "en": "Nut Style (0=Hex, 1=Square, 2=Nyloc)", "es": "Estilo de Tuerca (0=Hex, 1=Cuadrada, 2=Nyloc)" },
+      "tooltip": { "en": "Nut shape", "es": "Forma de la tuerca" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -142,6 +152,7 @@
     {
       "name": "width",
       "label": { "en": "Nut Width (0=Auto)", "es": "Ancho de Tuerca (0=Auto)" },
+      "tooltip": { "en": "Override nut width (0=auto)", "es": "Ancho de tuerca manual (0=auto)" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -154,6 +165,7 @@
     {
       "name": "height",
       "label": { "en": "Nut Height (0=Auto)", "es": "Altura de Tuerca (0=Auto)" },
+      "tooltip": { "en": "Override nut height (0=auto)", "es": "Altura de tuerca manual (0=auto)" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -166,6 +178,7 @@
     {
       "name": "thread_enabled",
       "label": { "en": "Enable Threads", "es": "Habilitar Rosca" },
+      "tooltip": { "en": "Generate real threads (slower)", "es": "Generar roscas reales (más lento)" },
       "type": "checkbox",
       "default": true,
       "group": "thread",
@@ -174,6 +187,7 @@
     {
       "name": "fn",
       "label": { "en": "Resolution ($fn, 0=Auto)", "es": "Resolucion ($fn, 0=Auto)" },
+      "tooltip": { "en": "Circle smoothness (0=auto)", "es": "Suavidad de círculos (0=auto)" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -230,12 +244,12 @@
       "message": { "en": "Length should be at least 1x diameter", "es": "El largo debe ser al menos 1x el diametro" }
     }
   ],
-  "camera_views": {
-    "iso": [40, 40, 40],
-    "top": [0, 0, 80],
-    "front": [0, -80, 0],
-    "right": [80, 0, 0]
-  },
+  "camera_views": [
+    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [40, 40, 40] },
+    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -80, 0] },
+    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [80, 0, 0] }
+  ],
   "export_formats": ["stl", "3mf"],
   "estimate_constants": {
     "base_time": 8,

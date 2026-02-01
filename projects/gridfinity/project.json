@@ -2,7 +2,11 @@
   "project": {
     "name": "Gridfinity Extended",
     "slug": "gridfinity",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "description": {
+      "en": "Modular storage system with bins, baseplates, and lids in the Gridfinity grid standard",
+      "es": "Sistema de almacenamiento modular con contenedores, placas base y tapas en el estándar Gridfinity"
+    }
   },
   "modes": [
     {

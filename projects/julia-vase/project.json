@@ -3,7 +3,10 @@
     "name": "Julia Vase",
     "slug": "julia-vase",
     "version": "1.0.0",
-    "description": "Parametric twisted vase with sinusoidal profile modulation inspired by Julia set fractals. Generates decorative vases with configurable twist, wave patterns, and wall thickness.",
+    "description": {
+      "en": "Parametric twisted vase with sinusoidal profile modulation inspired by Julia set fractals",
+      "es": "Jarrón paramétrico con torsión y modulación sinusoidal inspirado en fractales de conjuntos de Julia"
+    },
     "tags": ["vase", "art", "fractal", "decorative"],
     "license": "CC-BY-SA-4.0"
   },
@@ -29,6 +32,7 @@
       "name": "height",
       "type": "slider",
       "label": { "en": "Height", "es": "Altura" },
+      "tooltip": { "en": "Total vase height", "es": "Altura total del jarrón" },
       "default": 150,
       "min": 50,
       "max": 300,
@@ -40,6 +44,7 @@
       "name": "base_radius",
       "type": "slider",
       "label": { "en": "Base Radius", "es": "Radio Base" },
+      "tooltip": { "en": "Radius at the base of the vase", "es": "Radio en la base del jarrón" },
       "default": 40,
       "min": 15,
       "max": 80,
@@ -51,6 +56,7 @@
       "name": "twist_angle",
       "type": "slider",
       "label": { "en": "Twist Angle", "es": "Ángulo de Torsión" },
+      "tooltip": { "en": "Total rotation angle from base to top", "es": "Ángulo de rotación total de base a cima" },
       "default": 360,
       "min": 0,
       "max": 720,
@@ -62,6 +68,7 @@
       "name": "wave_frequency",
       "type": "slider",
       "label": { "en": "Wave Frequency", "es": "Frecuencia de Onda" },
+      "tooltip": { "en": "Number of wave lobes around perimeter", "es": "Número de lóbulos de onda alrededor del perímetro" },
       "default": 5,
       "min": 1,
       "max": 12,
@@ -73,6 +80,7 @@
       "name": "wave_amplitude",
       "type": "slider",
       "label": { "en": "Wave Amplitude", "es": "Amplitud de Onda" },
+      "tooltip": { "en": "Depth of wave modulation", "es": "Profundidad de la modulación de onda" },
       "default": 10,
       "min": 0,
       "max": 25,
@@ -84,6 +92,7 @@
       "name": "wall_thickness",
       "type": "slider",
       "label": { "en": "Wall Thickness", "es": "Grosor de Pared" },
+      "tooltip": { "en": "Vase wall thickness", "es": "Grosor de pared del jarrón" },
       "default": 2,
       "min": 0.8,
       "max": 4,
@@ -95,6 +104,7 @@
       "name": "fn",
       "type": "slider",
       "label": { "en": "Resolution ($fn)", "es": "Resolución ($fn)" },
+      "tooltip": { "en": "Angular resolution for curves", "es": "Resolución angular para curvas" },
       "default": 64,
       "min": 0,
       "max": 128,
@@ -106,6 +116,7 @@
       "name": "resolution",
       "type": "slider",
       "label": { "en": "Layer Resolution", "es": "Resolución de Capas" },
+      "tooltip": { "en": "Number of vertical layers in the mesh", "es": "Número de capas verticales en la malla" },
       "default": 100,
       "min": 20,
       "max": 200,
@@ -188,12 +199,12 @@
       }
     }
   ],
-  "camera_views": {
-    "iso": [100, 100, 100],
-    "top": [0, 0, 250],
-    "front": [0, -200, 75],
-    "right": [200, 0, 75]
-  },
+  "camera_views": [
+    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [100, 100, 100] },
+    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 250] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -200, 75] },
+    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [200, 0, 75] }
+  ],
   "export_formats": ["stl", "3mf"],
   "estimate_constants": {
     "base_time": 10,

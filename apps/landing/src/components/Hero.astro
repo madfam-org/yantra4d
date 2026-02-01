@@ -1,4 +1,12 @@
 ---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  lang?: string;
+  t?: Translations;
+}
+
+const { lang = 'es', t } = Astro.props;
 const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://localhost:5173';
 ---
 
@@ -6,11 +14,11 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
   <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-secondary/20" />
   <div class="mx-auto max-w-4xl text-center">
     <h1 class="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-      Parametric 3D Design<br />
-      <span class="text-primary">for Everyone</span>
+      {t?.hero.titleLine1 ?? 'Diseño 3D Paramétrico'}<br />
+      <span class="text-primary">{t?.hero.titleLine2 ?? 'para Todos'}</span>
     </h1>
     <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-      Turn OpenSCAD models into visual configurators. No CAD training required.
+      {t?.hero.subtitle ?? 'Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD.'}
     </p>
 
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -18,7 +26,7 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
         href={studioUrl}
         class="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
       >
-        Open Studio
+        {t?.hero.openStudio ?? 'Abrir Studio'}
       </a>
       <a
         href="https://github.com/madfam-org/qubic"
@@ -26,7 +34,7 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
         rel="noopener noreferrer"
         class="rounded-md border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
       >
-        View on GitHub
+        {t?.hero.viewOnGitHub ?? 'Ver en GitHub'}
       </a>
     </div>
   </div>
@@ -44,9 +52,12 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
         id="hero-play-btn"
         class="absolute inset-0 flex items-center justify-center bg-black/30 text-white transition-opacity hover:bg-black/40"
         aria-label="Launch interactive 3D demo"
+        data-scroll-text={t?.hero.scrollToDemo ?? 'Desplázate a la sección de'}
+        data-demo-text={t?.hero.liveDemo ?? 'Demo en Vivo'}
+        data-suffix-text={t?.hero.scrollSuffix ?? 'para el visor 3D interactivo.'}
       >
         <span class="rounded-full bg-primary/90 px-6 py-3 text-sm font-medium backdrop-blur-sm">
-          Interact with Demo ▶
+          {t?.hero.interactWithDemo ?? 'Interactuar con Demo ▶'}
         </span>
       </button>
     </div>
@@ -58,15 +69,13 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
   const container = document.getElementById('hero-preview-container');
   if (btn && container) {
     btn.addEventListener('click', async () => {
+      const scrollText = btn.dataset.scrollText || 'Scroll down to the';
+      const demoText = btn.dataset.demoText || 'Live Demo';
+      const suffixText = btn.dataset.suffixText || 'section for the interactive 3D viewer.';
       btn.remove();
       document.getElementById('hero-static')?.remove();
-      const demoDiv = document.createElement('div');
-      demoDiv.id = 'demo-viewer-mount';
-      demoDiv.className = 'h-full w-full';
-      container.appendChild(demoDiv);
-      // React island will hydrate #demo in LiveDemo section; hero just links down
       container.innerHTML = `<div class="flex h-full items-center justify-center text-muted-foreground">
-        <p>Scroll down to the <a href="#demo" class="text-primary underline">Live Demo</a> section for the interactive 3D viewer.</p>
+        <p>${scrollText} <a href="#demo" class="text-primary underline">${demoText}</a> ${suffixText}</p>
       </div>`;
     });
   }

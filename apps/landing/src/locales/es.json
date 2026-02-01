@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "title": "Qubic — Diseño 3D Paramétrico para Todos",
+    "description": "Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD."
+  },
+  "nav": {
+    "features": "Características",
+    "demo": "Demo",
+    "tech": "Tecnología",
+    "openStudio": "Abrir Studio →"
+  },
+  "hero": {
+    "titleLine1": "Diseño 3D Paramétrico",
+    "titleLine2": "para Todos",
+    "subtitle": "Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD.",
+    "openStudio": "Abrir Studio",
+    "viewOnGitHub": "Ver en GitHub",
+    "interactWithDemo": "Interactuar con Demo ▶",
+    "scrollToDemo": "Desplázate a la sección de",
+    "liveDemo": "Demo en Vivo",
+    "scrollSuffix": "para el visor 3D interactivo."
+  },
+  "features": {
+    "heading": "Características",
+    "manifestDriven": "Basado en Manifiesto",
+    "manifestDrivenDesc": "Define parámetros en JSON. La interfaz se genera sola.",
+    "dualRendering": "Renderizado Dual",
+    "dualRenderingDesc": "OpenSCAD en servidor + respaldo WASM en cliente.",
+    "stlVerification": "Verificación STL",
+    "stlVerificationDesc": "Revisiones de calidad automatizadas antes de imprimir.",
+    "multiFormatExport": "Exportación Multi-formato",
+    "multiFormatExportDesc": "STL, 3MF, OFF — un solo clic.",
+    "zeroCodeOnboarding": "Sin Código para Empezar",
+    "zeroCodeOnboardingDesc": "Sube archivos .scad y obtén un configurador.",
+    "printEstimation": "Estimación de Impresión",
+    "printEstimationDesc": "Tiempo, filamento y costo desde la geometría."
+  },
+  "howItWorks": {
+    "heading": "Cómo Funciona",
+    "step1Title": "Sube archivos .scad",
+    "step1Desc": "Arrastra tus archivos fuente de OpenSCAD a Qubic.",
+    "step2Title": "Configura visualmente",
+    "step2Desc": "Ajusta parámetros con deslizadores y botones — ve los cambios en 3D.",
+    "step3Title": "Exporta e imprime",
+    "step3Desc": "Descarga STL, 3MF u OFF. Listo para tu slicer."
+  },
+  "demo": {
+    "heading": "Demo en Vivo",
+    "description": "Interactúa con modelos 3D pre-renderizados. Orbita, haz zoom y desplázate para explorar cada proyecto.",
+    "loading": "cargado"
+  },
+  "techStack": {
+    "heading": "Construido Con",
+    "openSourceOnGitHub": "Código Abierto en GitHub"
+  },
+  "cta": {
+    "heading": "¿Listo para construir?",
+    "subtitle": "Sube tus archivos OpenSCAD y obtén un configurador paramétrico en minutos.",
+    "openStudio": "Abrir Studio"
+  },
+  "footer": {
+    "copyright": "Qubic. Código abierto bajo AGPLv3."
+  }
+}

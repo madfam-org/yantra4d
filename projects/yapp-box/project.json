@@ -3,7 +3,10 @@
     "name": "YAPP Box Generator",
     "slug": "yapp-box",
     "version": "1.0.0",
-    "description": "Yet Another Parametric Projectbox — PCB enclosure with snap-fit lid",
+    "description": {
+      "en": "Yet Another Parametric Projectbox — PCB enclosure with snap-fit lid",
+      "es": "Caja paramétrica para proyectos — carcasa para PCB con tapa a presión"
+    },
     "tags": ["enclosure", "electronics", "pcb", "projectbox"]
   },
   "modes": [
@@ -40,6 +43,7 @@
     {
       "name": "pcbLength",
       "label": { "en": "PCB Length", "es": "Largo del PCB" },
+      "tooltip": { "en": "Length of the PCB board", "es": "Largo de la placa PCB" },
       "type": "slider",
       "default": 80,
       "min": 20,
@@ -51,6 +55,7 @@
     {
       "name": "pcbWidth",
       "label": { "en": "PCB Width", "es": "Ancho del PCB" },
+      "tooltip": { "en": "Width of the PCB board", "es": "Ancho de la placa PCB" },
       "type": "slider",
       "default": 50,
       "min": 15,
@@ -62,6 +67,7 @@
     {
       "name": "pcbThickness",
       "label": { "en": "PCB Thickness", "es": "Grosor del PCB" },
+      "tooltip": { "en": "Thickness of the PCB", "es": "Grosor de la placa PCB" },
       "type": "slider",
       "default": 1.6,
       "min": 0.8,
@@ -74,6 +80,7 @@
     {
       "name": "standoffHeight",
       "label": { "en": "Standoff Height", "es": "Altura de separadores" },
+      "tooltip": { "en": "Height of PCB standoffs from floor", "es": "Altura de separadores desde el piso" },
       "type": "slider",
       "default": 3,
       "min": 1,
@@ -85,6 +92,7 @@
     {
       "name": "wallThickness",
       "label": { "en": "Wall Thickness", "es": "Grosor de pared" },
+      "tooltip": { "en": "Enclosure wall thickness", "es": "Grosor de las paredes de la carcasa" },
       "type": "slider",
       "default": 2,
       "min": 1.2,
@@ -96,6 +104,7 @@
     {
       "name": "baseWallHeight",
       "label": { "en": "Base Wall Height", "es": "Altura de pared base" },
+      "tooltip": { "en": "Height of base enclosure walls", "es": "Altura de las paredes de la base" },
       "type": "slider",
       "default": 25,
       "min": 10,
@@ -107,6 +116,7 @@
     {
       "name": "lidWallHeight",
       "label": { "en": "Lid Wall Height", "es": "Altura de pared tapa" },
+      "tooltip": { "en": "Height of lid walls", "es": "Altura de las paredes de la tapa" },
       "type": "slider",
       "default": 15,
       "min": 5,
@@ -118,6 +128,7 @@
     {
       "name": "roundRadius",
       "label": { "en": "Corner Radius", "es": "Radio de esquinas" },
+      "tooltip": { "en": "Corner rounding radius", "es": "Radio de redondeo de esquinas" },
       "type": "slider",
       "default": 3,
       "min": 0,
@@ -129,6 +140,7 @@
     {
       "name": "paddingFront",
       "label": { "en": "Padding Front", "es": "Relleno frontal" },
+      "tooltip": { "en": "Extra space in front of PCB", "es": "Espacio extra frente al PCB" },
       "type": "slider",
       "default": 2,
       "min": 0,
@@ -141,6 +153,7 @@
     {
       "name": "paddingBack",
       "label": { "en": "Padding Back", "es": "Relleno trasero" },
+      "tooltip": { "en": "Extra space behind PCB", "es": "Espacio extra detrás del PCB" },
       "type": "slider",
       "default": 2,
       "min": 0,
@@ -153,6 +166,7 @@
     {
       "name": "paddingLeft",
       "label": { "en": "Padding Left", "es": "Relleno izquierdo" },
+      "tooltip": { "en": "Extra space left of PCB", "es": "Espacio extra a la izquierda del PCB" },
       "type": "slider",
       "default": 2,
       "min": 0,
@@ -165,6 +179,7 @@
     {
       "name": "paddingRight",
       "label": { "en": "Padding Right", "es": "Relleno derecho" },
+      "tooltip": { "en": "Extra space right of PCB", "es": "Espacio extra a la derecha del PCB" },
       "type": "slider",
       "default": 2,
       "min": 0,
@@ -177,6 +192,7 @@
     {
       "name": "fn",
       "label": { "en": "Resolution ($fn)", "es": "Resolución ($fn)" },
+      "tooltip": { "en": "Circle smoothness (0=auto)", "es": "Suavidad de círculos (0=auto)" },
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -251,12 +267,12 @@
     { "en": "Insert PCB on standoffs", "es": "Insertar PCB en los separadores" },
     { "en": "Snap lid onto base", "es": "Encajar tapa en la base" }
   ],
-  "camera_views": {
-    "iso": [80, 80, 50],
-    "top": [0, 0, 150],
-    "front": [0, -150, 0],
-    "right": [150, 0, 0]
-  },
+  "camera_views": [
+    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 50] },
+    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -150, 0] },
+    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [150, 0, 0] }
+  ],
   "export_formats": ["stl", "3mf"],
   "estimate_constants": {
     "base_time": 8,

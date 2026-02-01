@@ -1,17 +1,23 @@
 ---
+import type { Translations } from '../lib/i18n';
+
 interface Props {
+  lang?: string;
+  t?: Translations;
   title?: string;
   description?: string;
 }
 
 const {
-  title = 'Qubic — Parametric 3D Design for Everyone',
-  description = 'Turn OpenSCAD models into visual configurators. No CAD training required.',
+  lang = 'es',
+  t,
+  title = t?.meta.title ?? 'Qubic — Diseño 3D Paramétrico para Todos',
+  description = t?.meta.description ?? 'Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD.',
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang={lang} class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

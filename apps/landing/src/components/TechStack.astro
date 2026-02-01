@@ -1,0 +1,26 @@
+---
+const techs = ['OpenSCAD', 'React', 'Three.js', 'Flask', 'WASM', 'Tailwind CSS'];
+---
+
+<section id="tech" class="py-24 px-6 bg-secondary/30">
+  <div class="mx-auto max-w-4xl text-center">
+    <h2 class="mb-8 text-3xl font-bold tracking-tight sm:text-4xl">Built With</h2>
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      {techs.map((t) => (
+        <span class="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium">
+          {t}
+        </span>
+      ))}
+    </div>
+    <div class="mt-8">
+      <a
+        href="https://github.com/aldoruizluna/qubic"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+      >
+        Open Source on GitHub
+      </a>
+    </div>
+  </div>
+</section>

@@ -197,14 +197,14 @@ If the estimate exceeds `warning_threshold_seconds` (default: 60), a confirmatio
 4. **Place `.scad` files** in the same directory.
 5. **Restart the backend** — the new project appears in `/api/projects` and the frontend project selector.
 
-Alternatively, use the CLI tool: `scripts/qubic-init <scad-directory> --slug my-project --install`
+Alternatively, use the CLI tool: `tools/qubic-init <scad-directory> --slug my-project --install`
 
 See [Multi-Project Platform](./multi-project.md) and [Developer Experience Guide](./devx-guide.md) for details.
 
 ### Single-Project Mode (legacy)
 
 1. **Set `SCAD_DIR`** environment variable to point at your project directory.
-2. **Copy `project.json`** to `web_interface/frontend/src/config/fallback-manifest.json` for offline mode.
+2. **Copy `project.json`** to `apps/studio/src/config/fallback-manifest.json` for offline mode.
 3. **Restart the backend**.
 
 No frontend or backend code changes are required in either mode.

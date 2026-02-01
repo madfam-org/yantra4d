@@ -17,5 +17,6 @@ done
 # Fallback: kill any stray processes on known ports
 lsof -ti:5000 | xargs kill 2>/dev/null || true
 lsof -ti:5173 | xargs kill 2>/dev/null || true
+lsof -ti:4321 | xargs kill 2>/dev/null || true
 
 echo "All dev servers stopped."

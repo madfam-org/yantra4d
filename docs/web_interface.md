@@ -28,7 +28,7 @@
 
 The app follows a client-server model. Configuration is centralized in a **project manifest** that both backend and frontend consume.
 
-### Backend Structure (`web_interface/backend/`)
+### Backend Structure (`apps/api/`)
 
 ```
 backend/
@@ -212,7 +212,7 @@ Production nginx (`nginx.conf`) adds:
 
 ---
 
-### Frontend Structure (`web_interface/frontend/src/`)
+### Frontend Structure (`apps/studio/src/`)
 
 ```
 src/
@@ -309,11 +309,11 @@ Access: http://localhost:5173
 ### Production Mode
 ```bash
 # Backend with gunicorn
-cd web_interface/backend
+cd apps/api
 gunicorn -w 2 -b 0.0.0.0:5000 --timeout 300 app:app
 
 # Frontend (build + serve)
-cd web_interface/frontend
+cd apps/studio
 npm run build
 npm run preview
 ```

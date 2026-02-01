@@ -1,0 +1,18 @@
+---
+const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://localhost:5173';
+---
+
+<section class="py-24 px-6">
+  <div class="mx-auto max-w-2xl text-center">
+    <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Ready to build?</h2>
+    <p class="mb-8 text-muted-foreground">
+      Upload your OpenSCAD files and get a parametric configurator in minutes.
+    </p>
+    <a
+      href={studioUrl}
+      class="rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+    >
+      Open Studio
+    </a>
+  </div>
+</section>

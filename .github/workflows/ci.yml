@@ -7,28 +7,43 @@ on:
     branches: [main]
 
 jobs:
-  frontend:
+  studio:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: web_interface/frontend
+        working-directory: apps/studio
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: web_interface/frontend/package-lock.json
+          cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci
       - run: npm audit --audit-level=high || true
       - run: npm run lint
       - run: npm run test:coverage
 
+  landing:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/landing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/landing/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
   backend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: web_interface/backend
+        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -40,12 +55,11 @@ jobs:
       - run: ruff check .
       - run: pip install pytest pytest-cov
       - name: Run backend tests
-        run: pytest --cov=web_interface/backend --cov-report=term-missing
-        working-directory: .
+        run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing
 
   manifest-sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Check manifest sync
-        run: diff <(python3 -c "import json; print(json.dumps(json.load(open('projects/tablaco/project.json')), indent=2))") <(python3 -c "import json; print(json.dumps(json.load(open('web_interface/frontend/src/config/fallback-manifest.json')), indent=2))")
+        run: diff <(python3 -c "import json; print(json.dumps(json.load(open('projects/tablaco/project.json')), indent=2))") <(python3 -c "import json; print(json.dumps(json.load(open('apps/studio/src/config/fallback-manifest.json')), indent=2))")

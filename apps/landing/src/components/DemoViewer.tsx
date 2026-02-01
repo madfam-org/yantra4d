@@ -4,12 +4,26 @@ import { Suspense, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 
+type Demo = {
+  id: string;
+  label: string;
+  url: string;
+  camera: [number, number, number];
+  color?: string;
+};
+
+const DEMOS: Demo[] = [
+  { id: 'tablaco', label: 'Tablaco', url: '/tablaco-assembly.stl', camera: [60, 60, 60] },
+  { id: 'portacosas', label: 'Portacosas', url: '/demo-portacosas.stl', camera: [250, 200, 150] },
+  { id: 'gridfinity', label: 'Gridfinity', url: '/gridfinity-cup.stl', camera: [100, 80, 60], color: '#4a90d9' },
+];
+
 function Loader() {
   const { progress } = useProgress();
   return <Html center><span style={{ color: '#888' }}>{progress.toFixed(0)}% loaded</span></Html>;
 }
 
-function Model({ url }: { url: string }) {
+function Model({ url, color = '#94a3b8' }: { url: string; color?: string }) {
   const [geometry, setGeometry] = useState<THREE.BufferGeometry | null>(null);
 
   useEffect(() => {
@@ -25,23 +39,42 @@ function Model({ url }: { url: string }) {
   return (
     <Center>
       <mesh geometry={geometry} rotation={[-Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.1} />
+        <meshStandardMaterial color={color} roughness={0.4} metalness={0.1} />
       </mesh>
     </Center>
   );
 }
 
 export default function DemoViewer() {
+  const [activeDemo, setActiveDemo] = useState(DEMOS[0]);
+
   return (
-    <div className="h-[400px] w-full sm:h-[500px]">
-      <Canvas camera={{ position: [60, 60, 60], fov: 45, up: [0, 0, 1] }}>
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[10, 10, 10]} intensity={0.8} />
-        <Suspense fallback={<Loader />}>
-          <Model url="/tablaco-assembly.stl" />
-        </Suspense>
-        <OrbitControls enableDamping dampingFactor={0.1} />
-      </Canvas>
+    <div>
+      <div className="flex gap-2 justify-center p-3 border-b border-border">
+        {DEMOS.map(d => (
+          <button
+            key={d.id}
+            onClick={() => setActiveDemo(d)}
+            className={`px-4 py-1.5 text-sm rounded-md border transition-colors ${
+              activeDemo.id === d.id
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:text-foreground'
+            }`}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+      <div className="h-[400px] w-full sm:h-[500px]">
+        <Canvas camera={{ position: activeDemo.camera, fov: 45, up: [0, 0, 1] }}>
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[10, 10, 10]} intensity={0.8} />
+          <Suspense fallback={<Loader />}>
+            <Model url={activeDemo.url} color={activeDemo.color} />
+          </Suspense>
+          <OrbitControls enableDamping dampingFactor={0.1} />
+        </Canvas>
+      </div>
     </div>
   );
 }

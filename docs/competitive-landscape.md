@@ -63,22 +63,26 @@
 
 ### Phase 2: Medium-Term
 
-**2.1 Bill of Materials (BOM)**
+**2.1 Bill of Materials (BOM)** ✅ Implemented
 - Manifest-driven BOM (better than NopSCADlib's code-derived approach — editable by non-programmers)
-- New `bom` manifest section: `{ hardware: [{ id, label, quantity_formula, unit }] }`
-- Downloadable CSV/PDF
+- `bom.hardware[]` with `quantity_formula` evaluated via `expr-eval` against current params
+- `BomPanel` component renders table with computed quantities, units, and optional supplier links
+- Live in portacosas and gridfinity projects
 
-**2.2 Assembly Instructions View**
+**2.2 Assembly Instructions View** ✅ Implemented
 - Step-by-step guide with 3D part highlighting per step
-- New `assembly_steps` manifest array: `[{ step, label, highlight_parts, camera_view }]`
+- `assembly_steps[]` manifest array with `visible_parts`, `highlight_parts`, camera positions
+- Live in gridfinity project (3-step baseplate → bins → assembly flow)
 
 **2.3 Project Gallery**
 - Card-based layout with thumbnails, tags, difficulty for project discovery
 - New manifest fields: `project.thumbnail`, `project.tags[]`, `project.difficulty`
 
-**2.4 Cross-Parameter Validation**
-- Manifest-driven constraint rules: `{ rule: "thick < size / 2", message: {...} }`
-- Visual feedback on invalid combinations before render
+**2.4 Cross-Parameter Validation** ✅ Implemented
+- Manifest-driven constraint rules: `{ rule, message, severity, applies_to }`
+- `useConstraints` hook evaluates rules via `expr-eval`, returns violations indexed by param
+- Supports `warning` and `error` severities; `error` blocks render
+- Live in portacosas and gridfinity projects
 
 ### Phase 3: Long-Term
 
@@ -118,7 +122,7 @@
 ## Schema Evolution (All Backward-Compatible)
 
 **Phase 1**: `export_formats[]`, `print_estimation{}`
-**Phase 2**: `bom{}`, `assembly_steps[]`, `constraints[]`, `project.thumbnail`, `project.tags[]`
+**Phase 2**: `bom{}` ✅, `assembly_steps[]` ✅, `constraints[]` ✅, `parameter_groups[]` ✅, `grid_presets{}` ✅, `viewer{}` ✅, `project.thumbnail`, `project.tags[]`
 **Phase 3**: parameter `widget` field for custom controls
 
 All additions are optional — existing projects continue to work unchanged.

@@ -75,6 +75,95 @@ class TestProjectManifest:
         m = ProjectManifest(raw, d)
         assert m.as_json() == raw
 
+    def test_bom_hardware_structure(self, tmp_path):
+        bom = {
+            "hardware": [
+                {
+                    "id": "magnets_6x2",
+                    "label": {"en": "Magnets"},
+                    "quantity_formula": "(enable_magnets ? 4 : 0)",
+                    "unit": "pcs",
+                },
+                {
+                    "id": "screws_m3x6",
+                    "label": {"en": "Screws"},
+                    "quantity_formula": "(enable_screws ? 4 : 0)",
+                    "unit": "pcs",
+                },
+            ]
+        }
+        d = _write_manifest(tmp_path, extra={"bom": bom})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        raw = m.as_json()
+        assert "bom" in raw
+        assert "hardware" in raw["bom"]
+        assert len(raw["bom"]["hardware"]) == 2
+        assert raw["bom"]["hardware"][0]["id"] == "magnets_6x2"
+        assert raw["bom"]["hardware"][0]["quantity_formula"] == "(enable_magnets ? 4 : 0)"
+        assert raw["bom"]["hardware"][0]["unit"] == "pcs"
+
+    def test_constraints_structure(self, tmp_path):
+        constraints = [
+            {
+                "rule": "width * depth <= 24",
+                "message": {"en": "Max 24 cells"},
+                "severity": "warning",
+                "applies_to": ["width", "depth"],
+            }
+        ]
+        d = _write_manifest(tmp_path, extra={"constraints": constraints})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        raw = m.as_json()
+        assert "constraints" in raw
+        assert len(raw["constraints"]) == 1
+        assert raw["constraints"][0]["rule"] == "width * depth <= 24"
+        assert raw["constraints"][0]["severity"] == "warning"
+        assert raw["constraints"][0]["applies_to"] == ["width", "depth"]
+
+    def test_parameter_groups_structure(self, tmp_path):
+        groups = [
+            {"id": "dims", "label": {"en": "Dimensions"}},
+            {
+                "id": "features",
+                "label": {"en": "Features"},
+                "levels": [
+                    {"id": "basic", "label": {"en": "Basic"}},
+                    {"id": "advanced", "label": {"en": "Advanced"}},
+                ],
+            },
+        ]
+        d = _write_manifest(tmp_path, extra={"parameter_groups": groups})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        raw = m.as_json()
+        assert len(raw["parameter_groups"]) == 2
+        assert raw["parameter_groups"][1]["levels"][0]["id"] == "basic"
+
+    def test_grid_presets_structure(self, tmp_path):
+        presets = {
+            "rendering": {
+                "emoji": "🪽",
+                "label": {"en": "Quick Preview"},
+                "values": {"width": 2},
+            },
+            "manufacturing": {
+                "emoji": "⭐",
+                "label": {"en": "Large"},
+                "values": {"width": 4},
+            },
+            "default": "rendering",
+        }
+        d = _write_manifest(tmp_path, extra={"grid_presets": presets})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        raw = m.as_json()
+        assert raw["grid_presets"]["default"] == "rendering"
+        assert raw["grid_presets"]["rendering"]["values"]["width"] == 2
+
+    def test_viewer_config_structure(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={"viewer": {"default_color": "#4a90d9"}})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        raw = m.as_json()
+        assert raw["viewer"]["default_color"] == "#4a90d9"
+
 
 # ---- discover_projects ----
 

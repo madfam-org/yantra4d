@@ -29,6 +29,9 @@ from routes.projects import projects_bp
 from routes.onboard import onboard_bp
 from routes.admin import admin_bp
 from routes.download import download_bp
+from routes.bom import bom_bp
+from routes.datasheet import datasheet_bp
+from routes.analytics import analytics_bp
 
 # Configure logging
 logging.basicConfig(
@@ -58,6 +61,9 @@ def create_app():
     app.register_blueprint(onboard_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(download_bp)
+    app.register_blueprint(bom_bp)
+    app.register_blueprint(datasheet_bp)
+    app.register_blueprint(analytics_bp)
 
     # Static file serving
     @app.route('/static/<path:filename>')

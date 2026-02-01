@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe } from 'lucide-react'
+import { Toaster } from "@/components/ui/sonner"
 import { useAppState } from './hooks/useAppState'
 import StudioHeader from './components/StudioHeader'
 import StudioSidebar from './components/StudioSidebar'
@@ -16,7 +17,7 @@ const OnboardingWizard = lazy(() => import('./components/OnboardingWizard'))
 function App() {
   const state = useAppState()
   const {
-    currentView, manifest, t, language, toggleLanguage, theme, cycleTheme,
+    currentView, manifest, t, language, setLanguage, toggleLanguage, theme, cycleTheme,
     mode, setMode, getLabel, params, setParams, colors, setColors,
     wireframe, setWireframe, animating, setAnimating, presets,
     undoParams, redoParams, canUndo, canRedo,
@@ -28,6 +29,7 @@ function App() {
     handleApplyPreset, handleGridPresetToggle,
     handleExportImage, handleExportAllViews,
     exportFormat, setExportFormat,
+    constraintsByParam, constraintErrors,
     printEstimate, setPrintEstimate,
     viewerRef, consoleRef,
   } = state
@@ -65,7 +67,7 @@ function App() {
         manifest={manifest}
         t={t}
         language={language}
-        toggleLanguage={toggleLanguage}
+        setLanguage={setLanguage}
         theme={theme}
         cycleTheme={cycleTheme}
         undoParams={undoParams}
@@ -104,6 +106,8 @@ function App() {
           handleExportAllViews={handleExportAllViews}
           exportFormat={exportFormat}
           setExportFormat={setExportFormat}
+          constraintsByParam={constraintsByParam}
+          constraintErrors={constraintErrors}
         />
 
         <StudioMainView
@@ -122,6 +126,7 @@ function App() {
           printEstimate={printEstimate}
           setPrintEstimate={setPrintEstimate}
           logs={logs}
+          t={t}
         />
       </div>
 
@@ -131,6 +136,7 @@ function App() {
         onCancel={handleCancelRender}
         estimatedTime={pendingEstimate}
       />
+      <Toaster richColors position="bottom-right" />
     </div>
   )
 }

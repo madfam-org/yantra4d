@@ -1,10 +1,21 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import PrintEstimateOverlay from './PrintEstimateOverlay'
 import { LanguageProvider } from '../contexts/LanguageProvider'
+import { ManifestProvider } from '../contexts/ManifestProvider'
+
+beforeEach(() => {
+  vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
+})
 
 function renderWithProviders(ui) {
-  return render(<LanguageProvider defaultLanguage="en">{ui}</LanguageProvider>)
+  return render(
+    <LanguageProvider defaultLanguage="en">
+      <ManifestProvider>
+        {ui}
+      </ManifestProvider>
+    </LanguageProvider>
+  )
 }
 
 describe('PrintEstimateOverlay', () => {

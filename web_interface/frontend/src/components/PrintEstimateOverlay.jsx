@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useLanguage } from '../contexts/LanguageProvider'
-import { estimatePrint, getMaterialProfiles } from '../lib/printEstimator'
+import { useManifest } from '../contexts/ManifestProvider'
+import { estimatePrint, getMaterialProfiles, buildMaterialLookup } from '../lib/printEstimator'
 
 /**
  * Overlay showing print-time and filament estimates for current model.
@@ -8,21 +9,24 @@ import { estimatePrint, getMaterialProfiles } from '../lib/printEstimator'
  */
 export default function PrintEstimateOverlay({ volumeMm3, boundingBox }) {
   const { t } = useLanguage()
-  const [material, setMaterial] = useState('pla')
-  const [infill, setInfill] = useState(0.20)
-  const materials = getMaterialProfiles()
+  const { manifest } = useManifest()
+  const manifestMaterials = manifest?.materials || null
+  const [material, setMaterial] = useState(manifest?.print_estimation?.default_material || 'pla')
+  const [infill, setInfill] = useState(manifest?.print_estimation?.default_infill ?? 0.20)
+  const materials = useMemo(() => getMaterialProfiles(manifestMaterials), [manifestMaterials])
+  const materialLookup = useMemo(() => buildMaterialLookup(manifestMaterials), [manifestMaterials])
 
   const estimate = useMemo(() => {
     if (!volumeMm3 || volumeMm3 === 0 || !boundingBox) return null
-    return estimatePrint(volumeMm3, boundingBox, material, { infill })
-  }, [volumeMm3, boundingBox, material, infill])
+    return estimatePrint(volumeMm3, boundingBox, material, { infill }, materialLookup)
+  }, [volumeMm3, boundingBox, material, infill, materialLookup])
 
   if (!estimate) return null
 
   const { time, filament } = estimate
 
   return (
-    <div className="absolute bottom-2 right-2 bg-card/90 backdrop-blur border border-border rounded-lg p-3 text-xs space-y-2 min-w-[180px] z-10">
+    <div className="absolute bottom-2 right-2 bg-card border border-border rounded-lg p-3 text-xs space-y-2 min-w-[180px] z-10">
       <div className="font-semibold text-sm">{t('print.title')}</div>
 
       <div className="flex items-center gap-2">

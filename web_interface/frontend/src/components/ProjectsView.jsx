@@ -1,13 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { getApiBase } from '../services/backendDetection'
 import { useLanguage } from '../contexts/LanguageProvider'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
+import { Search } from 'lucide-react'
+
+const DIFFICULTY_COLORS = {
+  beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  advanced: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+}
 
 export default function ProjectsView() {
   const { t } = useLanguage()
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [search, setSearch] = useState('')
+  const [activeTag, setActiveTag] = useState(null)
 
   useEffect(() => {
     fetch(`${getApiBase()}/api/admin/projects`)
@@ -24,6 +33,29 @@ export default function ProjectsView() {
         setLoading(false)
       })
   }, [])
+
+  const allTags = useMemo(() => {
+    const tags = new Set()
+    projects.forEach(p => (p.tags || []).forEach(tag => tags.add(tag)))
+    return [...tags].sort()
+  }, [projects])
+
+  const filtered = useMemo(() => {
+    let result = projects
+    if (search) {
+      const q = search.toLowerCase()
+      result = result.filter(p =>
+        p.name?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.slug?.toLowerCase().includes(q) ||
+        (p.tags || []).some(tag => tag.toLowerCase().includes(q))
+      )
+    }
+    if (activeTag) {
+      result = result.filter(p => (p.tags || []).includes(activeTag))
+    }
+    return result
+  }, [projects, search, activeTag])
 
   if (loading) {
     return (
@@ -54,15 +86,57 @@ export default function ProjectsView() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">{t('projects.title')}</h2>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <h2 className="text-2xl font-bold">{t('projects.title')}</h2>
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="search"
+            placeholder={t('projects.search')}
+            className="w-full pl-9 pr-3 py-2 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {allTags.map(tag => (
+            <button
+              key={tag}
+              type="button"
+              className={`px-2.5 py-1 text-xs rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                activeTag === tag
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background text-muted-foreground border-border hover:text-foreground'
+              }`}
+              onClick={() => setActiveTag(prev => prev === tag ? null : tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map(project => (
+        {filtered.map(project => (
           <a
             key={project.slug}
             href={`#/${project.slug}`}
             className="block hover:ring-2 hover:ring-ring rounded-lg transition-shadow"
           >
             <Card className="h-full flex flex-col">
+              {project.thumbnail && (
+                <div className="aspect-video overflow-hidden rounded-t-lg bg-muted">
+                  <img
+                    src={project.thumbnail}
+                    alt={project.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              )}
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle className="text-lg">{project.name}</CardTitle>
@@ -80,8 +154,20 @@ export default function ProjectsView() {
                   <span>·</span>
                   <span>{project.scad_file_count} .scad</span>
                 </div>
+                {(project.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {project.tags.map(tag => (
+                      <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">{tag}</span>
+                    ))}
+                  </div>
+                )}
               </CardContent>
               <CardFooter className="gap-2 flex-wrap">
+                {project.difficulty && (
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${DIFFICULTY_COLORS[project.difficulty] || ''}`}>
+                    {project.difficulty}
+                  </span>
+                )}
                 {project.has_manifest && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.manifest')}</span>}
                 {project.has_exports && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
                 {project.modified_at && (
@@ -94,6 +180,12 @@ export default function ProjectsView() {
           </a>
         ))}
       </div>
+
+      {filtered.length === 0 && projects.length > 0 && (
+        <div className="flex items-center justify-center h-32 text-muted-foreground">
+          {t('projects.no_results')}
+        </div>
+      )}
     </div>
   )
 }

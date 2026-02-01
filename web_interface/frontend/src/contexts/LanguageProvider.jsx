@@ -1,4 +1,8 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react"
+import ptLocale from '../locales/pt.json'
+import frLocale from '../locales/fr.json'
+import deLocale from '../locales/de.json'
+import zhLocale from '../locales/zh.json'
 
 const LanguageProviderContext = createContext()
 
@@ -51,6 +55,8 @@ const translations = {
         "projects.empty_cta": "Crea tu primer proyecto →",
         "projects.manifest": "Manifiesto",
         "projects.exports": "Exportaciones",
+        "projects.search": "Buscar proyectos…",
+        "projects.no_results": "No se encontraron resultados.",
         // Onboarding
         "onboard.step_upload": "Subir",
         "onboard.step_review": "Revisar",
@@ -83,6 +89,11 @@ const translations = {
         "onboard.saving": "Guardando...",
         "onboard.create_btn": "Crear Proyecto",
         "onboard.cancel": "Cancelar",
+        "onboard.raw_json": "JSON sin formato",
+        "onboard.structured_view": "Vista estructurada",
+        "onboard.modes_label": "Modos",
+        "onboard.params_label": "Parámetros",
+        "onboard.parts_label": "Partes y colores",
         // Error boundary
         "error.title": "Algo salió mal",
         "error.fallback": "Ocurrió un error inesperado",
@@ -122,6 +133,34 @@ const translations = {
         "print.length": "Filamento",
         "print.cost": "Costo",
         "platform.powered_by": "desarrollado con Qubic",
+        // Status chip
+        "status.rendering": "Renderizando…",
+        "status.ready": "Listo",
+        "status.failed": "Falló",
+        "status.retry": "Reintentar",
+        // Toasts
+        "toast.share_failed": "No se pudo copiar el enlace",
+        "toast.cache_hit": "Cargado desde caché",
+        "toast.export_started": "Exportación iniciada…",
+        "toast.export_done": "Exportación completada",
+        "toast.render_failed": "Error al renderizar",
+        // BOM
+        "bom.title": "Lista de Materiales",
+        "bom.item": "Elemento",
+        "bom.qty": "Cant.",
+        "bom.unit": "Unidad",
+        // Assembly
+        "assembly.title": "Instrucciones de Ensamblaje",
+        "assembly.step": "Paso",
+        "assembly.prev": "Paso anterior",
+        "assembly.next": "Siguiente paso",
+        // Comparison
+        "compare.title": "Comparación",
+        "compare.empty": "Sin variaciones para comparar",
+        "compare.add_current": "Agregar actual",
+        "compare.sync_camera": "Sincronizar cámara",
+        // Datasheet
+        "datasheet.generate": "Generar ficha técnica",
     },
     en: {
         "btn.gen": "Generate",
@@ -171,6 +210,8 @@ const translations = {
         "projects.empty_cta": "Create your first project →",
         "projects.manifest": "Manifest",
         "projects.exports": "Exports",
+        "projects.search": "Search projects…",
+        "projects.no_results": "No projects match your search.",
         // Onboarding
         "onboard.step_upload": "Upload",
         "onboard.step_review": "Review",
@@ -203,6 +244,11 @@ const translations = {
         "onboard.saving": "Saving...",
         "onboard.create_btn": "Create Project",
         "onboard.cancel": "Cancel",
+        "onboard.raw_json": "Raw JSON",
+        "onboard.structured_view": "Structured view",
+        "onboard.modes_label": "Modes",
+        "onboard.params_label": "Parameters",
+        "onboard.parts_label": "Parts & Colors",
         // Error boundary
         "error.title": "Something went wrong",
         "error.fallback": "An unexpected error occurred",
@@ -242,7 +288,45 @@ const translations = {
         "print.length": "Filament",
         "print.cost": "Cost",
         "platform.powered_by": "powered by Qubic",
+        // Status chip
+        "status.rendering": "Rendering…",
+        "status.ready": "Ready",
+        "status.failed": "Failed",
+        "status.retry": "Retry",
+        // Toasts
+        "toast.share_failed": "Failed to copy link",
+        "toast.cache_hit": "Loaded from cache",
+        "toast.export_started": "Export started…",
+        "toast.export_done": "Export completed",
+        "toast.render_failed": "Render failed",
+        // BOM
+        "bom.title": "Bill of Materials",
+        "bom.item": "Item",
+        "bom.qty": "Qty",
+        "bom.unit": "Unit",
+        // Assembly
+        "assembly.title": "Assembly Instructions",
+        "assembly.step": "Step",
+        "assembly.prev": "Previous step",
+        "assembly.next": "Next step",
+        // Comparison
+        "compare.title": "Comparison",
+        "compare.empty": "No variations to compare",
+        "compare.add_current": "Add current",
+        "compare.sync_camera": "Sync camera",
+        // Datasheet
+        "datasheet.generate": "Generate Datasheet",
     }
+}
+
+// Supplementary locales — keys missing here fall back to English
+const supplementaryLocales = { pt: ptLocale, fr: frLocale, de: deLocale, zh: zhLocale }
+
+// Merge: inline translations take priority, then supplementary, then fallback to en
+function resolveTranslation(lang, key) {
+    if (translations[lang]?.[key]) return translations[lang][key]
+    if (supplementaryLocales[lang]?.[key]) return supplementaryLocales[lang][key]
+    return translations.en?.[key] || key
 }
 
 export function LanguageProvider({
@@ -255,7 +339,7 @@ export function LanguageProvider({
     )
 
     const t = useCallback((key) => {
-        return translations[language][key] || key
+        return resolveTranslation(language, key)
     }, [language])
 
     // Sync <html lang> attribute with current language (WCAG 3.1.1)

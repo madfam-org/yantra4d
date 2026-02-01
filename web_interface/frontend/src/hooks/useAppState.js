@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { toast } from 'sonner'
 import { useTheme } from '../contexts/ThemeProvider'
 import { useLanguage } from '../contexts/LanguageProvider'
 import { useManifest } from '../contexts/ManifestProvider'
@@ -8,6 +9,7 @@ import { useImageExport } from './useImageExport'
 import { useLocalStoragePersistence } from './useLocalStoragePersistence'
 import { useShareableUrl, getSharedParams } from './useShareableUrl'
 import { useUndoRedo } from './useUndoRedo'
+import { useConstraints } from './useConstraints'
 import { downloadFile, downloadZip } from '../lib/downloadUtils'
 import { verify } from '../services/verifyService'
 import { setTokenGetter } from '../services/apiClient'
@@ -91,6 +93,8 @@ export function useAppState() {
   const [printEstimate, setPrintEstimate] = useState(null)
   const [exportFormat, setExportFormat] = useState('stl')
 
+  const { violations: constraintViolations, byParam: constraintsByParam, hasErrors: constraintErrors } = useConstraints(manifest.constraints, params)
+
   const { copyShareUrl } = useShareableUrl({ params, mode, projectSlug, defaultParams })
 
   const handleShare = useCallback(async () => {
@@ -98,8 +102,11 @@ export function useAppState() {
     if (ok) {
       setShareToast(true)
       setTimeout(() => setShareToast(false), 2000)
+      toast.success(t('act.share_copied'))
+    } else {
+      toast.error(t('toast.share_failed'))
     }
-  }, [copyShareUrl])
+  }, [copyShareUrl, t])
 
   // Dynamic browser tab title
   useEffect(() => {
@@ -291,10 +298,12 @@ export function useAppState() {
     if (visibilityParams.length > 0 && visibilityParams.every(p => !params[p.id])) {
       return
     }
+    if (constraintErrors) return
     const cacheKey = getCacheKey(mode, params)
     const cached = checkCache(cacheKey)
     if (cached) {
       setParts(cached)
+      toast.info(t('toast.cache_hit'), { duration: 1500 })
       return
     }
     const timer = setTimeout(() => {
@@ -347,7 +356,7 @@ export function useAppState() {
     currentView,
     // Theme/lang
     theme, cycleTheme,
-    language, toggleLanguage, t,
+    language, setLanguage, toggleLanguage, t,
     // Manifest data
     manifest, getLabel, projectSlug, presets, cameraViews,
     // Mode & params
@@ -369,6 +378,8 @@ export function useAppState() {
     handleExportImage, handleExportAllViews,
     // Export
     exportFormat, setExportFormat,
+    // Constraints
+    constraintViolations, constraintsByParam, constraintErrors,
     // Print estimate
     printEstimate, setPrintEstimate,
     // Refs

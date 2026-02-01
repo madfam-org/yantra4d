@@ -3,7 +3,10 @@
     "name": "Ultimate Box Maker",
     "slug": "ultimate-box",
     "version": "1.0.0",
-    "description": "Parametric electronics enclosure with ventilation, PCB standoffs, and snap-fit lid",
+    "description": {
+      "en": "Parametric electronics enclosure with ventilation, PCB standoffs, and snap-fit lid",
+      "es": "Carcasa paramétrica para electrónica con ventilación, soportes para PCB y tapa a presión"
+    },
     "tags": ["enclosure", "electronics", "box", "case"]
   },
   "modes": [
@@ -32,6 +35,7 @@
       "step": 1,
       "group": "dimensions",
       "label": { "en": "Box Length", "es": "Largo de caja" },
+      "tooltip": { "en": "Internal length of the box", "es": "Largo interno de la caja" },
       "modes": ["enclosure"]
     },
     {
@@ -43,6 +47,7 @@
       "step": 1,
       "group": "dimensions",
       "label": { "en": "Box Width", "es": "Ancho de caja" },
+      "tooltip": { "en": "Internal width of the box", "es": "Ancho interno de la caja" },
       "modes": ["enclosure"]
     },
     {
@@ -54,6 +59,7 @@
       "step": 1,
       "group": "dimensions",
       "label": { "en": "Box Height", "es": "Alto de caja" },
+      "tooltip": { "en": "Internal height of the box", "es": "Alto interno de la caja" },
       "modes": ["enclosure"]
     },
     {
@@ -65,6 +71,7 @@
       "step": 0.1,
       "group": "dimensions",
       "label": { "en": "Wall Thickness", "es": "Grosor de pared" },
+      "tooltip": { "en": "Thickness of enclosure walls", "es": "Grosor de las paredes de la carcasa" },
       "modes": ["enclosure"]
     },
     {
@@ -76,6 +83,7 @@
       "step": 0.5,
       "group": "dimensions",
       "label": { "en": "Corner Radius", "es": "Radio de esquina" },
+      "tooltip": { "en": "Fillet radius for box corners", "es": "Radio de redondeo para esquinas" },
       "modes": ["enclosure"]
     },
     {
@@ -84,6 +92,7 @@
       "default": true,
       "group": "features",
       "label": { "en": "Rounded Corners", "es": "Esquinas redondeadas" },
+      "tooltip": { "en": "Enable rounded corners on the box", "es": "Habilitar esquinas redondeadas" },
       "modes": ["enclosure"]
     },
     {
@@ -92,6 +101,7 @@
       "default": true,
       "group": "features",
       "label": { "en": "Ventilation", "es": "Ventilacion" },
+      "tooltip": { "en": "Add ventilation slots to walls", "es": "Agregar ranuras de ventilación en las paredes" },
       "modes": ["enclosure"]
     },
     {
@@ -105,6 +115,7 @@
       "advanced": true,
       "parent": "ventilation",
       "label": { "en": "Vent Width", "es": "Ancho de ventilacion" },
+      "tooltip": { "en": "Width of each ventilation slot", "es": "Ancho de cada ranura de ventilación" },
       "modes": ["enclosure"]
     },
     {
@@ -113,6 +124,7 @@
       "default": false,
       "group": "mounting",
       "label": { "en": "PCB Standoffs", "es": "Soportes de PCB" },
+      "tooltip": { "en": "Add mounting standoffs for a PCB", "es": "Agregar soportes de montaje para PCB" },
       "modes": ["enclosure"]
     },
     {
@@ -124,6 +136,7 @@
       "step": 1,
       "group": "mounting",
       "label": { "en": "Case Feet (0=none, 1=hex, 2=cylinder, 3=snap, 4=snap+hole)", "es": "Patas (0=sin, 1=hex, 2=cilindro, 3=snap, 4=snap+agujero)" },
+      "tooltip": { "en": "Style of case feet (0=none)", "es": "Estilo de patas (0=ninguno)" },
       "modes": ["enclosure"]
     },
     {
@@ -136,6 +149,7 @@
       "group": "mounting",
       "advanced": true,
       "label": { "en": "Screw Hole Diameter", "es": "Diametro de agujero para tornillo" },
+      "tooltip": { "en": "Diameter of screw holes for lid", "es": "Diámetro de agujeros para tornillos de tapa" },
       "modes": ["enclosure"]
     },
     {
@@ -147,6 +161,7 @@
       "step": 8,
       "group": "quality",
       "label": { "en": "Resolution ($fn, 0=auto)", "es": "Resolucion ($fn, 0=auto)" },
+      "tooltip": { "en": "Circle smoothness (0=auto)", "es": "Suavidad de círculos (0=auto)" },
       "modes": ["enclosure"]
     }
   ],
@@ -200,12 +215,12 @@
       "condition": "case_feet_id > 0"
     }
   ],
-  "camera_views": {
-    "iso": [100, 100, 60],
-    "top": [0, 0, 150],
-    "front": [0, -150, 0],
-    "right": [150, 0, 0]
-  },
+  "camera_views": [
+    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [100, 100, 60] },
+    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -150, 0] },
+    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [150, 0, 0] }
+  ],
   "export_formats": ["stl", "3mf"],
   "parts": [
     { "id": "enclosure", "render_mode": 0, "label": { "en": "Enclosure", "es": "Carcasa" }, "default_color": "#6366f1" }

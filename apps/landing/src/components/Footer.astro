@@ -1,6 +1,16 @@
+---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+---
+
 <footer class="border-t border-border py-8 px-6">
   <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
-    <p class="text-sm text-muted-foreground">© {new Date().getFullYear()} Qubic. Open source under AGPLv3.</p>
+    <p class="text-sm text-muted-foreground">© {new Date().getFullYear()} {t?.footer.copyright ?? 'Qubic. Código abierto bajo AGPLv3.'}</p>
     <a
       href="https://github.com/madfam-org/qubic"
       target="_blank"

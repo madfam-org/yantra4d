@@ -1,14 +1,22 @@
 ---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+
 const steps = [
-  { num: '1', title: 'Upload .scad files', description: 'Drop your OpenSCAD source files into Qubic.' },
-  { num: '2', title: 'Configure visually', description: 'Adjust parameters with sliders and toggles — see changes in 3D.' },
-  { num: '3', title: 'Export and print', description: 'Download STL, 3MF, or OFF. Ready for your slicer.' },
+  { num: '1', title: t?.howItWorks.step1Title ?? 'Sube archivos .scad', description: t?.howItWorks.step1Desc ?? 'Arrastra tus archivos fuente de OpenSCAD a Qubic.' },
+  { num: '2', title: t?.howItWorks.step2Title ?? 'Configura visualmente', description: t?.howItWorks.step2Desc ?? 'Ajusta parámetros con deslizadores y botones — ve los cambios en 3D.' },
+  { num: '3', title: t?.howItWorks.step3Title ?? 'Exporta e imprime', description: t?.howItWorks.step3Desc ?? 'Descarga STL, 3MF u OFF. Listo para tu slicer.' },
 ];
 ---
 
 <section class="py-24 px-6 bg-secondary/30">
   <div class="mx-auto max-w-4xl">
-    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">How It Works</h2>
+    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.howItWorks.heading ?? 'Cómo Funciona'}</h2>
     <div class="grid gap-8 sm:grid-cols-3">
       {steps.map((s) => (
         <div class="text-center">

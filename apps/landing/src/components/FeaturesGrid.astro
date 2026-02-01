@@ -1,41 +1,25 @@
 ---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+
 const features = [
-  {
-    title: 'Manifest-Driven',
-    description: 'Define parameters in JSON. UI generates itself.',
-    icon: '📋',
-  },
-  {
-    title: 'Dual Rendering',
-    description: 'Server OpenSCAD + client WASM fallback.',
-    icon: '⚡',
-  },
-  {
-    title: 'STL Verification',
-    description: 'Automated quality checks before printing.',
-    icon: '✅',
-  },
-  {
-    title: 'Multi-Format Export',
-    description: 'STL, 3MF, OFF — one click.',
-    icon: '📦',
-  },
-  {
-    title: 'Zero-Code Onboarding',
-    description: 'Upload .scad files, get a configurator.',
-    icon: '🚀',
-  },
-  {
-    title: 'Print Estimation',
-    description: 'Time, filament, cost from geometry.',
-    icon: '🖨️',
-  },
+  { title: t?.features.manifestDriven ?? 'Basado en Manifiesto', description: t?.features.manifestDrivenDesc ?? 'Define parámetros en JSON. La interfaz se genera sola.', icon: '📋' },
+  { title: t?.features.dualRendering ?? 'Renderizado Dual', description: t?.features.dualRenderingDesc ?? 'OpenSCAD en servidor + respaldo WASM en cliente.', icon: '⚡' },
+  { title: t?.features.stlVerification ?? 'Verificación STL', description: t?.features.stlVerificationDesc ?? 'Revisiones de calidad automatizadas antes de imprimir.', icon: '✅' },
+  { title: t?.features.multiFormatExport ?? 'Exportación Multi-formato', description: t?.features.multiFormatExportDesc ?? 'STL, 3MF, OFF — un solo clic.', icon: '📦' },
+  { title: t?.features.zeroCodeOnboarding ?? 'Sin Código para Empezar', description: t?.features.zeroCodeOnboardingDesc ?? 'Sube archivos .scad y obtén un configurador.', icon: '🚀' },
+  { title: t?.features.printEstimation ?? 'Estimación de Impresión', description: t?.features.printEstimationDesc ?? 'Tiempo, filamento y costo desde la geometría.', icon: '🖨️' },
 ];
 ---
 
 <section id="features" class="py-24 px-6">
   <div class="mx-auto max-w-6xl">
-    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">Features</h2>
+    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.features.heading ?? 'Características'}</h2>
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {features.map((f) => (
         <div class="rounded-xl border border-border bg-card p-6 transition-colors hover:bg-accent/50">

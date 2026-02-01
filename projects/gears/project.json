@@ -3,7 +3,10 @@
     "name": "Parametric Gears",
     "slug": "gears",
     "version": "1.0.0",
-    "description": "Involute spur and herringbone gears powered by MCAD",
+    "description": {
+      "en": "Involute spur and herringbone gears powered by MCAD",
+      "es": "Engranajes rectos y de espiga con perfil involuto impulsados por MCAD"
+    },
     "tags": ["mechanical", "gear", "engineering", "transmission"]
   },
   "modes": [

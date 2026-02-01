@@ -8,6 +8,8 @@ import StudioSidebar from './components/StudioSidebar'
 import StudioMainView from './components/StudioMainView'
 import ConfirmRenderDialog from './components/ConfirmRenderDialog'
 import AuthButton from './components/AuthButton'
+import DemoBanner from './components/DemoBanner'
+import RateLimitBanner from './components/RateLimitBanner'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import './index.css'
 
@@ -17,7 +19,7 @@ const OnboardingWizard = lazy(() => import('./components/OnboardingWizard'))
 function App() {
   const state = useAppState()
   const {
-    currentView, manifest, t, language, setLanguage, toggleLanguage, theme, cycleTheme,
+    currentView, isDemo, manifest, t, language, setLanguage, toggleLanguage, theme, cycleTheme,
     mode, setMode, getLabel, params, setParams, colors, setColors,
     wireframe, setWireframe, animating, setAnimating, presets,
     undoParams, redoParams, canUndo, canRedo,
@@ -50,6 +52,8 @@ function App() {
             </Button>
           </div>
         </header>
+        {isDemo && <DemoBanner />}
+        <RateLimitBanner />
         <div className="flex-1 overflow-y-auto">
           <ErrorBoundary t={t}>
             <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground">Loading...</div>}>
@@ -78,6 +82,7 @@ function App() {
         shareToast={shareToast}
       />
 
+      <RateLimitBanner />
       <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
         <StudioSidebar
           manifest={manifest}

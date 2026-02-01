@@ -32,6 +32,8 @@ from routes.download import download_bp
 from routes.bom import bom_bp
 from routes.datasheet import datasheet_bp
 from routes.analytics import analytics_bp
+from routes.user import user_bp
+from routes.github import github_bp
 
 # Configure logging
 logging.basicConfig(
@@ -64,6 +66,8 @@ def create_app():
     app.register_blueprint(bom_bp)
     app.register_blueprint(datasheet_bp)
     app.register_blueprint(analytics_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(github_bp)
 
     # Static file serving
     @app.route('/static/<path:filename>')

@@ -1,0 +1,24 @@
+---
+const steps = [
+  { num: '1', title: 'Upload .scad files', description: 'Drop your OpenSCAD source files into Qubic.' },
+  { num: '2', title: 'Configure visually', description: 'Adjust parameters with sliders and toggles — see changes in 3D.' },
+  { num: '3', title: 'Export and print', description: 'Download STL, 3MF, or OFF. Ready for your slicer.' },
+];
+---
+
+<section class="py-24 px-6 bg-secondary/30">
+  <div class="mx-auto max-w-4xl">
+    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">How It Works</h2>
+    <div class="grid gap-8 sm:grid-cols-3">
+      {steps.map((s) => (
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
+            {s.num}
+          </div>
+          <h3 class="mb-2 text-lg font-semibold">{s.title}</h3>
+          <p class="text-sm text-muted-foreground">{s.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

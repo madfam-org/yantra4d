@@ -1,6 +1,8 @@
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
     ports:
       - "5000:5000"
     volumes:
@@ -9,6 +11,7 @@ services:
       - FLASK_DEBUG=false
       - PORT=5000
       - PROJECTS_DIR=/app/projects
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:4321
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
       - JANUA_AUDIENCE=${JANUA_AUDIENCE:-qubic}
       - AUTH_ENABLED=${AUTH_ENABLED:-true}
@@ -18,9 +21,9 @@ services:
       timeout: 10s
       retries: 3
 
-  frontend:
+  studio:
     build:
-      context: ./web_interface/frontend
+      context: ./apps/studio
       args:
         VITE_API_BASE: http://backend:5000
         VITE_JANUA_BASE_URL: ${VITE_JANUA_BASE_URL:-}
@@ -30,3 +33,9 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+
+  landing:
+    build:
+      context: ./apps/landing
+    ports:
+      - "4321:80"

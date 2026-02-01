@@ -42,7 +42,7 @@ Access: http://localhost:3000
 The project has three layers:
 
 1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions (e.g., `projects/tablaco/`)
-2. **Backend API** (`web_interface/backend/`) — Flask server that invokes OpenSCAD and serves STL files
-3. **Frontend SPA** (`web_interface/frontend/`) — React app with Three.js viewer
+2. **Backend API** (`apps/api/`) — Flask server that invokes OpenSCAD and serves STL files
+3. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer
 
 All three layers are connected through **project manifests** (`projects/{slug}/project.json`), which declare modes, parameters, parts, and labels. The backend's manifest registry discovers projects at startup; the frontend fetches the active project's manifest via `/api/projects/{slug}/manifest` (with a bundled fallback). See [Project Manifest](./manifest.md) and [Multi-Project Platform](./multi-project.md) for details.

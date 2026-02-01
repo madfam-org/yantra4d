@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "--tb=short -q"
+
+[tool.coverage.run]
+source = ["."]
+omit = ["*/test*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+fail_under = 60
+show_missing = true

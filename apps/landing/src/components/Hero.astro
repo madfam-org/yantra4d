@@ -1,0 +1,73 @@
+---
+const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://localhost:5173';
+---
+
+<section class="relative flex min-h-[90vh] flex-col items-center justify-center px-6 pt-16">
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-secondary/20" />
+  <div class="mx-auto max-w-4xl text-center">
+    <h1 class="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+      Parametric 3D Design<br />
+      <span class="text-primary">for Everyone</span>
+    </h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+      Turn OpenSCAD models into visual configurators. No CAD training required.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href={studioUrl}
+        class="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+      >
+        Open Studio
+      </a>
+      <a
+        href="https://github.com/aldoruizluna/qubic"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="rounded-md border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+      >
+        View on GitHub
+      </a>
+    </div>
+  </div>
+
+  <div class="relative mt-16 w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
+    <div id="hero-preview-container" class="aspect-video w-full">
+      <img
+        id="hero-static"
+        src="/hero-preview.webp"
+        alt="Qubic Studio — parametric 3D design interface"
+        class="h-full w-full object-cover"
+        loading="eager"
+      />
+      <button
+        id="hero-play-btn"
+        class="absolute inset-0 flex items-center justify-center bg-black/30 text-white transition-opacity hover:bg-black/40"
+        aria-label="Launch interactive 3D demo"
+      >
+        <span class="rounded-full bg-primary/90 px-6 py-3 text-sm font-medium backdrop-blur-sm">
+          Interact with Demo ▶
+        </span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  const btn = document.getElementById('hero-play-btn');
+  const container = document.getElementById('hero-preview-container');
+  if (btn && container) {
+    btn.addEventListener('click', async () => {
+      btn.remove();
+      document.getElementById('hero-static')?.remove();
+      const demoDiv = document.createElement('div');
+      demoDiv.id = 'demo-viewer-mount';
+      demoDiv.className = 'h-full w-full';
+      container.appendChild(demoDiv);
+      // React island will hydrate #demo in LiveDemo section; hero just links down
+      container.innerHTML = `<div class="flex h-full items-center justify-center text-muted-foreground">
+        <p>Scroll down to the <a href="#demo" class="text-primary underline">Live Demo</a> section for the interactive 3D viewer.</p>
+      </div>`;
+    });
+  }
+</script>

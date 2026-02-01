@@ -1,0 +1,11 @@
+cd apps/studio && npx lint-staged
+
+# Lint staged Python files with ruff (matches CI)
+STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
+if [ -n "$STAGED_PY" ]; then
+  if command -v ruff >/dev/null 2>&1; then
+    echo "$STAGED_PY" | xargs ruff check
+  else
+    echo "Warning: ruff not found, skipping Python lint"
+  fi
+fi

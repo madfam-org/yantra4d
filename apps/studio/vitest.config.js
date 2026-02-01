@@ -1,7 +1,8 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { resolve, dirname } from 'path'
 import { createRequire } from 'module'
+import { fileURLToPath } from 'url'
 
 // Use real @janua/react-sdk if installed, otherwise fall back to test stub
 let januaAlias
@@ -9,6 +10,7 @@ try {
   const require = createRequire(import.meta.url)
   require.resolve('@janua/react-sdk')
 } catch {
+  const __dirname = dirname(fileURLToPath(import.meta.url))
   januaAlias = resolve(__dirname, 'src/test/__mocks__/@janua/react-sdk.js')
 }
 

@@ -51,3 +51,33 @@ class TestProjectsAPI:
     def test_unknown_project_404(self, client):
         res = client.get("/api/projects/nonexistent/manifest")
         assert res.status_code == 404
+
+    def test_update_assembly_steps(self, client, tmp_path):
+        steps = [{"step": 1, "label": {"en": "Print"}, "visible_parts": ["main"]}]
+        res = client.put(
+            "/api/projects/test-project/manifest/assembly-steps",
+            json={"assembly_steps": steps},
+        )
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "success"
+        # Verify persisted
+        res2 = client.get("/api/projects/test-project/manifest")
+        assert res2.get_json()["assembly_steps"] == steps
+
+    def test_update_assembly_steps_missing_body(self, client):
+        res = client.put(
+            "/api/projects/test-project/manifest/assembly-steps",
+            json={},
+        )
+        assert res.status_code == 400
+
+    def test_update_assembly_steps_unknown_project(self, client):
+        res = client.put(
+            "/api/projects/nonexistent/manifest/assembly-steps",
+            json={"assembly_steps": []},
+        )
+        assert res.status_code == 404
+
+    def test_serve_static_part_404(self, client):
+        res = client.get("/api/projects/test-project/parts/missing.stl")
+        assert res.status_code == 404

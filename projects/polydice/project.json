@@ -154,12 +154,26 @@
       "tooltip": { "es": "0 = automatico; mayor = mas detalle pero mas lento", "en": "0 = auto; higher = more detail but slower" },
       "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
       "group": "quality"
+    },
+    {
+      "id": "dice_gradient",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 1,
+      "label": { "es": "Degradado de color", "en": "Color Gradient" },
+      "tooltip": { "es": "Colores de degradado para dados bicolor (requiere impresion multi-material)", "en": "Gradient colors for two-tone dice (requires multi-material printing)" },
+      "visible_in_modes": ["d4", "d6", "d8", "d12", "d20"],
+      "group": "appearance",
+      "widget": { "type": "color-gradient" }
     }
   ],
   "parameter_groups": [
     { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
     { "id": "text", "label": { "es": "Texto", "en": "Text" } },
-    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } }
+    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
+    { "id": "appearance", "label": { "es": "Apariencia", "en": "Appearance" } }
   ],
   "export_formats": ["stl", "3mf"],
   "camera_views": [

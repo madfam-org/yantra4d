@@ -7,7 +7,8 @@
       "es": "Generador de placas, etiquetas y letreros con texto en relieve",
       "en": "Generator for plaques, tags, and signs with embossed text"
     },
-    "tags": ["text", "sign", "gift"]
+    "tags": ["text", "sign", "gift"],
+    "difficulty": "beginner"
   },
   "modes": [
     {
@@ -41,35 +42,37 @@
     {
       "id": "name_plaque",
       "label": { "es": "Placa de Nombre", "en": "Name Plaque" },
-      "values": {
-        "message": "Your Name",
-        "font_size": 12,
-        "base_width": 80,
-        "base_height": 40,
-        "raised": true
-      }
+      "values": { "message": "Your Name", "font_size": 12, "base_width": 80, "base_height": 40, "raised": true, "text_depth": 1.5 }
     },
     {
       "id": "gift_tag",
       "label": { "es": "Etiqueta de Regalo", "en": "Gift Tag" },
-      "values": {
-        "message": "With Love",
-        "font_size": 8,
-        "base_width": 60,
-        "base_height": 30,
-        "hole_diameter": 4
-      }
+      "values": { "message": "With Love", "font_size": 8, "base_width": 60, "base_height": 30, "hole_diameter": 4, "text_depth": 1 }
     },
     {
       "id": "door_sign",
       "label": { "es": "Letrero de Puerta", "en": "Door Sign" },
-      "values": {
-        "message": "Welcome",
-        "font_size": 20,
-        "base_width": 150,
-        "base_height": 60,
-        "border_width": 2
-      }
+      "values": { "message": "Welcome", "font_size": 20, "base_width": 150, "base_height": 60, "border_width": 2, "text_depth": 2 }
+    },
+    {
+      "id": "desk_nameplate",
+      "label": { "es": "Placa de Escritorio", "en": "Desk Nameplate" },
+      "values": { "message": "J. Smith", "font_size": 14, "base_width": 120, "base_height": 35, "base_thickness": 5, "raised": true, "text_depth": 2 }
+    },
+    {
+      "id": "pet_tag",
+      "label": { "es": "Placa de Mascota", "en": "Pet Tag" },
+      "values": { "message": "Max", "font_size": 10, "base_width": 40, "base_height": 40, "hole_diameter": 5, "base_thickness": 3, "text_depth": 1.5 }
+    },
+    {
+      "id": "room_sign",
+      "label": { "es": "Letrero de Habitacion", "en": "Room Sign" },
+      "values": { "message": "Office", "font_size": 16, "base_width": 120, "base_height": 50, "border_width": 3, "raised": true, "text_depth": 1.5 }
+    },
+    {
+      "id": "keychain_tag",
+      "label": { "es": "Llavero", "en": "Keychain" },
+      "values": { "message": "HOME", "font_size": 6, "base_width": 45, "base_height": 25, "hole_diameter": 3, "base_thickness": 2.5, "text_depth": 0.8 }
     }
   ],
   "parameters": [
@@ -77,6 +80,7 @@
       "id": "message",
       "type": "text",
       "default": "Hello",
+      "maxlength": 30,
       "label": { "es": "Mensaje", "en": "Message" },
       "tooltip": { "es": "Texto a grabar en relieve", "en": "Text to emboss" },
       "visible_in_modes": ["plaque", "tag", "sign"],
@@ -161,7 +165,8 @@
       "label": { "es": "Ancho del borde (mm)", "en": "Border Width (mm)" },
       "tooltip": { "es": "Ancho del marco decorativo", "en": "Width of the decorative border frame" },
       "visible_in_modes": ["sign"],
-      "group": "dimensions"
+      "group": "dimensions",
+      "visibility_level": "advanced"
     },
     {
       "id": "hole_diameter",
@@ -185,15 +190,123 @@
       "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
       "tooltip": { "es": "0 = automatico; mayor = mas detalle pero mas lento", "en": "0 = auto; higher = more detail but slower" },
       "visible_in_modes": ["plaque", "tag", "sign"],
-      "group": "quality"
+      "group": "quality",
+      "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
     { "id": "text", "label": { "es": "Texto", "en": "Text" } },
     { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
-    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } }
+    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
+    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
   ],
-  "export_formats": ["stl", "3mf"],
+  "constraints": [
+    {
+      "rule": "base_thickness >= 2",
+      "message": { "es": "Grosor minimo de 2mm para estabilidad", "en": "Minimum 2mm thickness for stability" },
+      "severity": "error",
+      "applies_to": ["base_thickness"]
+    },
+    {
+      "rule": "text_depth <= base_thickness",
+      "message": { "es": "Profundidad del texto no puede exceder grosor de base", "en": "Text depth cannot exceed base thickness" },
+      "severity": "error",
+      "applies_to": ["text_depth", "base_thickness"]
+    },
+    {
+      "rule": "font_size <= base_height * 0.8",
+      "message": { "es": "Texto demasiado grande para la base", "en": "Text too large for the base" },
+      "severity": "warning",
+      "applies_to": ["font_size", "base_height"]
+    },
+    {
+      "rule": "base_width >= 40",
+      "message": { "es": "Ancho minimo de 40mm para texto legible", "en": "Minimum 40mm width for readable text" },
+      "severity": "warning",
+      "applies_to": ["base_width"]
+    }
+  ],
+  "bom": {
+    "hardware": [
+      {
+        "id": "keyring",
+        "label": { "es": "Anillo para llavero (para etiqueta)", "en": "Key ring (for tag)" },
+        "quantity_formula": 1,
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B07FFRJ5JN"
+      },
+      {
+        "id": "mounting_tape",
+        "label": { "es": "Cinta de montaje (para placa/letrero)", "en": "Mounting tape (for plaque/sign)" },
+        "quantity_formula": 1,
+        "unit": "pcs",
+        "supplier_url": "https://www.amazon.com/dp/B00347A8GC"
+      }
+    ]
+  },
+  "materials": [
+    { "id": "pla", "name": "PLA", "density": 1.24, "cost_per_kg": 20, "print_speed_factor": 1.0 },
+    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 }
+  ],
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": { "es": "Imprime la pieza", "en": "Print the piece" },
+      "notes": { "es": "Texto hacia arriba, 0.12mm capas para detalle del texto, 20% relleno", "en": "Text facing up, 0.12mm layers for text detail, 20% infill" },
+      "visible_parts": ["plaque", "tag", "sign"],
+      "highlight_parts": ["plaque", "tag", "sign"],
+      "camera": [60, -60, 40],
+      "camera_target": [0, 0, 5]
+    },
+    {
+      "step": 2,
+      "label": { "es": "Lija y pinta (opcional)", "en": "Sand and paint (optional)" },
+      "notes": { "es": "Lija con 220, pinta el texto con color contrastante", "en": "Sand with 220 grit, paint text with contrasting color" },
+      "visible_parts": ["plaque", "tag", "sign"],
+      "highlight_parts": ["plaque", "tag", "sign"],
+      "camera": [40, -40, 20],
+      "camera_target": [0, 0, 3]
+    },
+    {
+      "step": 3,
+      "label": { "es": "Monta o cuelga", "en": "Mount or hang" },
+      "notes": { "es": "Usa cinta de montaje para placas/letreros, anillo para etiquetas", "en": "Use mounting tape for plaques/signs, key ring for tags" },
+      "visible_parts": ["plaque", "tag", "sign"],
+      "highlight_parts": ["plaque", "tag", "sign"],
+      "camera": [60, -60, 40],
+      "camera_target": [0, 0, 5],
+      "hardware": ["keyring", "mounting_tape"]
+    }
+  ],
+  "verification": {
+    "stages": {
+      "geometry": {
+        "checks": {
+          "watertight": { "enabled": true },
+          "body_count": { "enabled": true, "expected": 1 },
+          "dimensions": { "enabled": true, "xy_tolerance_mm": 0.5, "z_ratio_min": 0.9, "z_ratio_max": 1.1 },
+          "facet_count": { "enabled": true, "min_facets": 50 }
+        }
+      },
+      "printability": {
+        "checks": {
+          "thin_wall": { "enabled": true, "min_thickness_mm": 0.5 },
+          "overhang": { "enabled": false },
+          "min_feature_size": { "enabled": true, "min_size_mm": 0.3 }
+        }
+      }
+    },
+    "mode_overrides": {
+      "plaque": { "stages": ["geometry", "printability"] },
+      "tag": { "stages": ["geometry", "printability"] },
+      "sign": { "stages": ["geometry", "printability"] }
+    }
+  },
+  "export_formats": ["stl", "3mf", "off"],
+  "print_estimation": {
+    "default_material": "pla",
+    "default_infill": 0.2
+  },
   "camera_views": [
     { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [60, 60, 60] },
     { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 120] },

@@ -167,6 +167,12 @@ describe('Controls', () => {
     expect(screen.getByTestId('default-star-size')).toBeInTheDocument()
   })
 
+  it('does not render color-gradient widget when manifest has no gradient params', () => {
+    renderControls()
+    // The fallback manifest (tablaco) has no widget: { type: 'color-gradient' } params
+    expect(screen.queryByLabelText(/Gradient preview/)).not.toBeInTheDocument()
+  })
+
   it('has no a11y violations', async () => {
     const { container } = renderControls()
     const results = await axe(container)

@@ -60,7 +60,7 @@ backend/
 - **`manifest.py`**: Multi-project manifest registry. `discover_projects()` scans `PROJECTS_DIR` for subdirectories with `project.json`. `get_manifest(slug)` loads and caches per-project `ProjectManifest` instances. Each manifest has a `project_dir` so SCAD paths resolve relative to the project, not a global config. Falls back to `SCAD_DIR` for single-project mode.
 - **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary, `STL_PREFIX`). Adds `PROJECTS_DIR` (default: `projects/`) and `MULTI_PROJECT` boolean. Adds `LIBS_DIR` / `OPENSCADPATH` for global OpenSCAD library resolution. Static methods delegate to the manifest for backward compatibility.
 - **`routes/render.py`**: Accepts both `mode` (new) and `scad_file` (legacy) fields in payloads. Also accepts optional `project` slug for multi-project routing. The `_resolve_render_context()` helper resolves to the correct SCAD path and part list. STL output is namespaced by project slug.
-- **`routes/projects.py`**: Lists available projects (`GET /api/projects`) and serves per-project manifests (`GET /api/projects/<slug>/manifest`).
+- **`routes/projects.py`**: Lists available projects (`GET /api/projects`, supports `?stats=1` for 30-day analytics) and serves per-project manifests (`GET /api/projects/<slug>/manifest`).
 - **`routes/onboard.py`**: Accepts uploaded `.scad` files for analysis (`POST /api/projects/analyze`) and creates new projects (`POST /api/projects/create`).
 - **`services/scad_analyzer.py`**: Regex-based extraction of variables, modules, includes/uses, render_mode patterns, and dependency graphs from `.scad` files.
 - **`services/manifest_generator.py`**: Generates draft `project.json` from analyzer output with auto-detected parameter ranges and warnings.
@@ -69,7 +69,7 @@ backend/
 
 | Endpoint | Method | Rate Limit | Description |
 |----------|--------|------------|-------------|
-| `/api/projects` | GET | 500/hr | List all available projects (multi-project) |
+| `/api/projects` | GET | 500/hr | List all available projects. Append `?stats=1` for 30-day analytics counts. |
 | `/api/projects/<slug>/manifest` | GET | 500/hr | Full manifest for a specific project |
 | `/api/projects/analyze` | POST | 20/hr | Upload `.scad` files → analysis + draft manifest |
 | `/api/projects/create` | POST | 10/hr | Create new project in `PROJECTS_DIR` |
@@ -276,7 +276,7 @@ src/
 #### Key Components
 
 - **`ManifestProvider.jsx`**: Fetches `/api/projects` on mount to discover available projects, then fetches `/api/projects/{slug}/manifest` for the active project. On failure, falls back to the bundled `fallback-manifest.json`. All accessor functions are memoized with `useCallback`; the provider `value` is wrapped in `useMemo`. Exposes: `manifest`, `loading`, `getMode()`, `getParametersForMode()`, `getPartColors()`, `getDefaultParams()`, `getDefaultColors()`, `getLabel()`, `getCameraViews()`, `getGroupLabel()`, `getViewerConfig()`, `getEstimateConstants()`, `projectSlug`, `projects`, `switchProject()`.
-- **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), and color pickers dynamically. Supports click-to-edit numeric input on slider values. Accessible: sliders carry `aria-label` matching the parameter name; value displays have descriptive `aria-label` with parameter name and current value, `role="button"`, and keyboard support.
+- **`Controls.jsx`**: Fully data-driven. Reads `getParametersForMode(mode)` and `getPartColors(mode)` from the manifest. Renders sliders, checkboxes (grouped by `param.group`), color pickers, and custom widgets dynamically. Supports `widget: { type: "color-gradient" }` for dual-color picker with gradient preview (used in polydice for two-tone dice). Supports click-to-edit numeric input on slider values. Accessible: sliders carry `aria-label` matching the parameter name; value displays have descriptive `aria-label` with parameter name and current value, `role="button"`, and keyboard support.
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.

@@ -93,9 +93,10 @@
 **3.2 Auto-Generated Project Datasheets**
 - One-click PDF/HTML combining manifest data, renders, BOM, assembly steps
 
-**3.3 Plugin System for Custom Controls**
+**3.3 Plugin System for Custom Controls** ✅ Partially Implemented
 - Extend parameter types beyond slider/checkbox/text with custom widgets
 - Dynamic component loading from manifest `widget` field
+- `color-gradient` widget implemented (dual color picker with gradient preview, live in polydice project)
 
 ---
 

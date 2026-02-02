@@ -4,10 +4,11 @@ import { getApiBase } from "../services/backendDetection"
 
 const ManifestContext = createContext()
 
+
 export function ManifestProvider({ children }) {
   const [manifest, setManifest] = useState(fallbackManifest)
   const [projects, setProjects] = useState([])
-  const [projectSlug, setProjectSlug] = useState(null)
+  const [projectSlug, setProjectSlug] = useState(() => _getProjectSlugFromHash())
   const [loading, setLoading] = useState(true)
 
   // Fetch projects list on mount
@@ -131,8 +132,8 @@ export function ManifestProvider({ children }) {
 function _getProjectSlugFromHash() {
   const hash = window.location.hash.replace(/^#\/?/, '')
   const parts = hash.split('/').filter(Boolean)
-  // 3-segment hash: project/preset/mode
-  return parts.length >= 3 ? parts[0] : null
+  // 1-segment: project, 3-segment: project/preset/mode
+  return parts.length >= 1 ? parts[0] : null
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

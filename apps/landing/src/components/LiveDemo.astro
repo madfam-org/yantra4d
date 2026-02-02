@@ -11,9 +11,9 @@ const { t } = Astro.props;
 
 <section id="demo" class="py-24 px-6">
   <div class="mx-auto max-w-6xl">
-    <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.demo.heading ?? 'Demo en Vivo'}</h2>
+    <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.demo.heading ?? 'Pruébalo Ahora'}</h2>
     <p class="mb-8 text-center text-muted-foreground">
-      {t?.demo.description ?? 'Explora modelos 3D paramétricos con controles completos — ajusta parámetros, cambia modos y genera renders.'}
+      {t?.demo.description ?? 'Studio interactivo completo — ajusta parámetros, cambia modos y exporta renders.'}
     </p>
     <div class="overflow-hidden rounded-xl border border-border bg-card">
       <InteractiveShowcase client:visible />

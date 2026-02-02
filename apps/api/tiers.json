@@ -1,5 +1,5 @@
 {
-  "guest":  { "renders_per_hour": 10, "max_projects": 0, "export_formats": ["stl"], "github_import": false, "github_sync": false },
+  "guest":  { "renders_per_hour": 30, "max_projects": 0, "export_formats": ["stl"], "github_import": false, "github_sync": false },
   "basic":  { "renders_per_hour": 50, "max_projects": 3, "export_formats": ["stl"], "github_import": false, "github_sync": false },
   "pro":    { "renders_per_hour": 200, "max_projects": -1, "export_formats": ["stl", "3mf", "off"], "github_import": true, "github_sync": false },
   "madfam": { "renders_per_hour": 500, "max_projects": -1, "export_formats": ["stl", "3mf", "off"], "github_import": true, "github_sync": true }

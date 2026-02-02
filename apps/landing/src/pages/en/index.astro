@@ -2,10 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Hero from '../../components/Hero.astro';
-import FeaturesGrid from '../../components/FeaturesGrid.astro';
+import ProjectGallery from '../../components/ProjectGallery.astro';
+import BeforeAfter from '../../components/BeforeAfter.astro';
+import ForMakers from '../../components/ForMakers.astro';
+import ForCreators from '../../components/ForCreators.astro';
 import HowItWorks from '../../components/HowItWorks.astro';
 import LiveDemo from '../../components/LiveDemo.astro';
-import TechStack from '../../components/TechStack.astro';
+import OpenSource from '../../components/OpenSource.astro';
 import CallToAction from '../../components/CallToAction.astro';
 import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../lib/i18n';
@@ -18,10 +21,13 @@ const t = getTranslations(lang);
   <Header lang={lang} t={t} />
   <main>
     <Hero lang={lang} t={t} />
-    <FeaturesGrid t={t} />
+    <ProjectGallery lang={lang} t={t} />
+    <BeforeAfter t={t} />
+    <ForMakers t={t} />
+    <ForCreators t={t} />
     <HowItWorks t={t} />
     <LiveDemo t={t} />
-    <TechStack t={t} />
+    <OpenSource t={t} />
     <CallToAction t={t} />
   </main>
   <Footer t={t} />

@@ -1,0 +1,91 @@
+---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+---
+
+<section class="py-24 px-6 bg-secondary/30">
+  <div class="mx-auto max-w-5xl">
+    <h2 class="mb-12 text-center text-2xl font-bold tracking-tight sm:text-3xl">
+      {t?.beforeAfter.tagline ?? 'De código a configurador. Sin curva de aprendizaje.'}
+    </h2>
+    <div class="grid gap-6 md:grid-cols-2">
+      <!-- Code side -->
+      <div class="rounded-xl border border-border bg-card overflow-hidden">
+        <div class="border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground bg-secondary/50">
+          {t?.beforeAfter.codeSide ?? 'Código OpenSCAD'}
+        </div>
+        <pre class="p-4 text-sm font-mono text-muted-foreground overflow-x-auto leading-relaxed"><code><span class="text-primary">module</span> <span class="text-foreground">gridfinity_bin</span>(
+  width    = <span class="text-accent">3</span>,
+  depth    = <span class="text-accent">2</span>,
+  height   = <span class="text-accent">6</span>,
+  dividers = <span class="text-accent">2</span>,
+  lip      = <span class="text-primary">true</span>,
+  magnet   = <span class="text-primary">true</span>
+) &#123;
+  <span class="text-muted-foreground/60">// 200+ lines of geometry...</span>
+&#125;</code></pre>
+      </div>
+
+      <!-- UI side -->
+      <div class="rounded-xl border border-border bg-card overflow-hidden">
+        <div class="border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground bg-secondary/50">
+          {t?.beforeAfter.uiSide ?? 'Configurador Qubic'}
+        </div>
+        <div class="p-4 space-y-4">
+          <!-- Mock sliders -->
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-foreground">Width</span>
+              <span class="text-muted-foreground">3 units</span>
+            </div>
+            <div class="h-2 rounded-full bg-secondary">
+              <div class="h-2 rounded-full bg-primary" style="width: 60%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-foreground">Depth</span>
+              <span class="text-muted-foreground">2 units</span>
+            </div>
+            <div class="h-2 rounded-full bg-secondary">
+              <div class="h-2 rounded-full bg-primary" style="width: 40%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-foreground">Height</span>
+              <span class="text-muted-foreground">6 units</span>
+            </div>
+            <div class="h-2 rounded-full bg-secondary">
+              <div class="h-2 rounded-full bg-primary" style="width: 85%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-foreground">Dividers</span>
+              <span class="text-muted-foreground">2</span>
+            </div>
+            <div class="h-2 rounded-full bg-secondary">
+              <div class="h-2 rounded-full bg-primary" style="width: 33%"></div>
+            </div>
+          </div>
+          <div class="flex gap-4 pt-1">
+            <label class="flex items-center gap-2 text-sm">
+              <div class="h-4 w-4 rounded border border-primary bg-primary"></div>
+              <span class="text-foreground">Lip</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm">
+              <div class="h-4 w-4 rounded border border-primary bg-primary"></div>
+              <span class="text-foreground">Magnets</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

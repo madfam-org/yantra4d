@@ -1,64 +1,127 @@
 {
   "meta": {
     "title": "Qubic — Parametric 3D Design for Everyone",
-    "description": "Turn OpenSCAD models into visual configurators. No CAD training required."
+    "description": "Customize any dimension, export your perfect STL. Or turn your OpenSCAD models into configurators anyone can use."
   },
   "nav": {
-    "features": "Features",
+    "gallery": "Gallery",
+    "forMakers": "For Makers",
+    "forCreators": "For Creators",
     "demo": "Demo",
-    "tech": "Tech",
     "openStudio": "Open Studio →"
   },
   "hero": {
-    "titleLine1": "Parametric 3D Design",
-    "titleLine2": "for Everyone",
-    "subtitle": "Turn OpenSCAD models into visual configurators. No CAD training required.",
-    "openStudio": "Open Studio",
-    "viewOnGitHub": "View on GitHub",
-    "interactWithDemo": "Interact with Demo ▶",
-    "scrollToDemo": "Scroll down to the",
-    "liveDemo": "Live Demo",
-    "scrollSuffix": "section for the interactive 3D viewer."
+    "titleLine1": "Your Designs.",
+    "titleLine2": "Their Dimensions.",
+    "subtitle": "Makers: customize any parameter and export your perfect STL. Creators: turn your OpenSCAD models into configurators anyone can use.",
+    "ctaPrimary": "Browse 20 Projects",
+    "ctaSecondary": "Onboard Your Design"
   },
-  "features": {
-    "heading": "Features",
-    "manifestDriven": "Manifest-Driven",
-    "manifestDrivenDesc": "Define parameters in JSON. UI generates itself.",
-    "dualRendering": "Dual Rendering",
-    "dualRenderingDesc": "Server OpenSCAD + client WASM fallback.",
-    "stlVerification": "STL Verification",
-    "stlVerificationDesc": "Automated quality checks before printing.",
-    "multiFormatExport": "Multi-Format Export",
-    "multiFormatExportDesc": "STL, 3MF, OFF — one click.",
-    "zeroCodeOnboarding": "Zero-Code Onboarding",
-    "zeroCodeOnboardingDesc": "Upload .scad files, get a configurator.",
-    "printEstimation": "Print Estimation",
-    "printEstimationDesc": "Time, filament, cost from geometry."
+  "gallery": {
+    "heading": "Project Gallery",
+    "subtitle": "20 ready-to-customize parametric designs. Open any one in Studio and make it yours.",
+    "categories": {
+      "all": "All",
+      "storage": "Storage",
+      "mechanical": "Mechanical",
+      "art": "Art & Generative",
+      "tabletop": "Tabletop",
+      "education": "Education",
+      "electronics": "Electronics"
+    },
+    "openInStudio": "Open in Studio →"
+  },
+  "beforeAfter": {
+    "tagline": "From code to configurator. Zero learning curve.",
+    "codeSide": "OpenSCAD Code",
+    "uiSide": "Qubic Configurator"
+  },
+  "forMakers": {
+    "heading": "Made for Makers",
+    "subtitle": "Stop printing someone else's dimensions. Customize everything, know the cost, export and print.",
+    "customize": {
+      "title": "Customize Everything",
+      "desc": "Sliders, toggles, color pickers. Change any dimension, see it in real-time 3D."
+    },
+    "estimate": {
+      "title": "Know Before You Print",
+      "desc": "Time, filament, and cost estimates before you waste a gram."
+    },
+    "export": {
+      "title": "Export Your Way",
+      "desc": "STL, 3MF, or OFF. One click. Ready for your slicer."
+    },
+    "assembly": {
+      "title": "Assembly Made Clear",
+      "desc": "Step-by-step 3D instructions. Bill of materials included."
+    },
+    "browser": {
+      "title": "Works in Your Browser",
+      "desc": "No install. No account. Open a link, start customizing."
+    }
+  },
+  "forCreators": {
+    "heading": "Built for Creators",
+    "subtitle": "Your designs deserve an audience beyond coders. Turn .scad files into shareable configurators.",
+    "upload": {
+      "title": "Upload and Done",
+      "desc": "Drop .scad files. Qubic auto-generates a configurator with params, modes, and presets."
+    },
+    "share": {
+      "title": "Share With Anyone",
+      "desc": "Tiny URL for any configuration. Your makerspace, your subreddit, your family."
+    },
+    "control": {
+      "title": "Control Everything",
+      "desc": "Params, presets, assembly steps, BOM, modes — one JSON manifest."
+    },
+    "multiProject": {
+      "title": "Host Unlimited Projects",
+      "desc": "Multi-project dashboard. Every design gets its own configurator."
+    },
+    "openSource": {
+      "title": "Open Source Forever",
+      "desc": "AGPLv3. Self-host, fork, contribute. Your configurators are yours."
+    }
   },
   "howItWorks": {
     "heading": "How It Works",
-    "step1Title": "Upload .scad files",
-    "step1Desc": "Drop your OpenSCAD source files into Qubic.",
-    "step2Title": "Configure visually",
-    "step2Desc": "Adjust parameters with sliders and toggles — see changes in 3D.",
-    "step3Title": "Export and print",
-    "step3Desc": "Download STL, 3MF, or OFF. Ready for your slicer."
+    "makerTrack": {
+      "label": "For Makers",
+      "step1": { "title": "Browse", "desc": "Pick a project from the gallery or follow a shared link." },
+      "step2": { "title": "Customize", "desc": "Adjust dimensions with sliders and toggles. See changes in real-time 3D." },
+      "step3": { "title": "Export & Print", "desc": "Download your STL and send it to your slicer. Done." }
+    },
+    "creatorTrack": {
+      "label": "For Creators",
+      "step1": { "title": "Upload .scad", "desc": "Drop your OpenSCAD source files into Qubic." },
+      "step2": { "title": "Configure", "desc": "Edit the manifest — params, modes, presets, assembly steps." },
+      "step3": { "title": "Share", "desc": "Get a link. Anyone can customize and export your design." }
+    }
   },
   "demo": {
-    "heading": "Interactive Studio Demo",
-    "description": "Explore parametric 3D models with full controls — adjust parameters, switch modes, and generate renders.",
+    "heading": "Try It Now",
+    "description": "Full interactive Studio — adjust parameters, switch modes, and export renders.",
     "loading": "loaded"
   },
-  "techStack": {
-    "heading": "Built With",
-    "openSourceOnGitHub": "Open Source on GitHub"
+  "openSourceSection": {
+    "heading": "Free. Open Source. Forever.",
+    "description": "Self-host, contribute, build on top — own your configurators.",
+    "statProjects": "20 Projects",
+    "statLicense": "AGPLv3",
+    "cta": "View on GitHub",
+    "techNote": "Built with OpenSCAD, React, Three.js, Flask, and WebAssembly."
   },
   "cta": {
-    "heading": "Ready to build?",
-    "subtitle": "Upload your OpenSCAD files and get a parametric configurator in minutes.",
-    "openStudio": "Open Studio"
+    "heading": "Your next print starts here",
+    "subtitle": "No account required. No install. Just open.",
+    "ctaMakers": "Browse Gallery",
+    "ctaCreators": "Onboard Your Design"
   },
   "footer": {
-    "copyright": "Qubic. Open source under AGPLv3."
+    "copyright": "Qubic. Open source under AGPLv3.",
+    "docs": "Docs",
+    "studio": "Studio",
+    "gallery": "Gallery"
   }
 }

@@ -1,0 +1,45 @@
+---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+---
+
+<section id="for-makers" class="py-24 px-6">
+  <div class="mx-auto max-w-5xl">
+    <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t ? t.forMakers.heading : 'Hecho para Makers'}</h2>
+    <p class="mb-12 text-center text-muted-foreground max-w-2xl mx-auto">
+      {t ? t.forMakers.subtitle : 'Deja de imprimir las dimensiones de otros. Personaliza todo, conoce el costo, exporta e imprime.'}
+    </p>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">🎛️</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forMakers.customize.title : 'Personaliza Todo'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forMakers.customize.desc : 'Deslizadores, botones, selectores de color. Cambia cualquier dimensión, míralo en 3D en tiempo real.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">🖨️</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forMakers.estimate.title : 'Anticípate a la Impresión'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forMakers.estimate.desc : 'Tiempo, filamento y costo estimados antes de gastar un gramo.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">📦</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forMakers.export.title : 'Exporta a Tu Manera'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forMakers.export.desc : 'STL, 3MF u OFF. Un clic. Listo para tu slicer.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">🔧</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forMakers.assembly.title : 'Ensamblaje Claro'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forMakers.assembly.desc : 'Instrucciones 3D paso a paso. Lista de materiales incluida.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">🌐</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forMakers.browser.title : 'Funciona en Tu Navegador'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forMakers.browser.desc : 'Sin instalar nada. Sin cuenta. Abre un enlace y empieza a personalizar.'}</p>
+      </div>
+    </div>
+  </div>
+</section>

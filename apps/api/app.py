@@ -34,6 +34,9 @@ from routes.datasheet import datasheet_bp
 from routes.analytics import analytics_bp
 from routes.user import user_bp
 from routes.github import github_bp
+from routes.editor import editor_bp
+from routes.git_ops import git_ops_bp
+from routes.ai import ai_bp
 
 # Configure logging
 logging.basicConfig(
@@ -68,6 +71,9 @@ def create_app():
     app.register_blueprint(analytics_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(github_bp)
+    app.register_blueprint(editor_bp)
+    app.register_blueprint(git_ops_bp)
+    app.register_blueprint(ai_bp)
 
     # Static file serving
     @app.route('/static/<path:filename>')

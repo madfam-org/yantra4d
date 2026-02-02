@@ -1,6 +1,6 @@
 {
-  "guest":  { "renders_per_hour": 30, "max_projects": 0, "export_formats": ["stl"], "github_import": false, "github_sync": false },
-  "basic":  { "renders_per_hour": 50, "max_projects": 3, "export_formats": ["stl"], "github_import": false, "github_sync": false },
-  "pro":    { "renders_per_hour": 200, "max_projects": -1, "export_formats": ["stl", "3mf", "off"], "github_import": true, "github_sync": false },
-  "madfam": { "renders_per_hour": 500, "max_projects": -1, "export_formats": ["stl", "3mf", "off"], "github_import": true, "github_sync": true }
+  "guest":  { "renders_per_hour": 30, "max_projects": 0, "export_formats": ["stl"], "github_import": false, "github_sync": false, "github_editor": false, "github_private": false, "ai_configurator": false, "ai_code_editor": false, "ai_requests_per_hour": 0 },
+  "basic":  { "renders_per_hour": 50, "max_projects": 3, "export_formats": ["stl"], "github_import": false, "github_sync": false, "github_editor": false, "github_private": false, "ai_configurator": true, "ai_code_editor": false, "ai_requests_per_hour": 30 },
+  "pro":    { "renders_per_hour": 200, "max_projects": -1, "export_formats": ["stl", "3mf", "off"], "github_import": true, "github_sync": false, "github_editor": true, "github_private": true, "ai_configurator": true, "ai_code_editor": true, "ai_requests_per_hour": 100 },
+  "madfam": { "renders_per_hour": 500, "max_projects": -1, "export_formats": ["stl", "3mf", "off"], "github_import": true, "github_sync": true, "github_editor": true, "github_private": true, "ai_configurator": true, "ai_code_editor": true, "ai_requests_per_hour": 300 }
 }

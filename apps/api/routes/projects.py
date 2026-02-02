@@ -9,17 +9,24 @@ import os
 import sqlite3
 import time
 
+import re
+import shutil
+
 from flask import Blueprint, jsonify, send_from_directory, abort, request, make_response
 
 from config import Config
+from extensions import limiter
 from manifest import discover_projects, get_manifest, _manifest_cache
-from middleware.auth import optional_auth
+from middleware.auth import optional_auth, require_tier
+from services.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
 projects_bp = Blueprint('projects', __name__)
 
 ANALYTICS_DB = os.path.join(Config.PROJECTS_DIR, ".analytics.db")
+
+SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]{1,48}[a-z0-9]$")
 
 
 def _get_project_stats():
@@ -92,6 +99,20 @@ def get_project_manifest(slug):
         return jsonify({"status": "error", "error": str(e)}), 404
 
 
+@projects_bp.route('/api/projects/<slug>/meta', methods=['GET'])
+def get_project_meta(slug):
+    """Return project.meta.json if it exists."""
+    project_dir = Config.PROJECTS_DIR / slug
+    meta_path = project_dir / "project.meta.json"
+    if not meta_path.is_file():
+        return jsonify(None)
+    try:
+        with open(meta_path) as f:
+            return jsonify(json.load(f))
+    except (json.JSONDecodeError, OSError):
+        return jsonify(None)
+
+
 @projects_bp.route('/api/projects/<slug>/parts/<path:filename>', methods=['GET'])
 def serve_static_part(slug, filename):
     """Serve a pre-existing STL file from a project's parts/ directory."""
@@ -107,6 +128,49 @@ def serve_static_part(slug, filename):
     resp = send_from_directory(str(parts_dir), filename)
     resp.headers["Cache-Control"] = "public, max-age=86400"
     return resp
+
+
+@projects_bp.route('/api/projects/<slug>/fork', methods=['POST'])
+@require_tier("pro")
+@limiter.limit("10/hour")
+def fork_project(slug):
+    """Fork a project: copy files to a new slug owned by the user."""
+    src_dir = Config.PROJECTS_DIR / slug
+    if not src_dir.is_dir() or not (src_dir / "project.json").exists():
+        return error_response(f"Project '{slug}' not found", 404)
+
+    data = request.get_json(silent=True) or {}
+    new_slug = data.get("new_slug", "").strip()
+    if not new_slug or not SLUG_PATTERN.match(new_slug):
+        return error_response("Invalid slug (lowercase alphanumeric, hyphens, 3-50 chars)", 400)
+
+    dest_dir = Config.PROJECTS_DIR / new_slug
+    if dest_dir.exists():
+        return error_response(f"Project '{new_slug}' already exists", 409)
+
+    try:
+        shutil.copytree(
+            src_dir, dest_dir,
+            ignore=shutil.ignore_patterns(".git", ".analytics.db", "__pycache__"),
+        )
+        # Write fork metadata
+        meta = {
+            "source": {
+                "type": "fork",
+                "forked_from": slug,
+            }
+        }
+        with open(dest_dir / "project.meta.json", "w") as f:
+            json.dump(meta, f, indent=2)
+            f.write("\n")
+    except Exception as e:
+        # Clean up partial copy
+        if dest_dir.exists():
+            shutil.rmtree(dest_dir, ignore_errors=True)
+        logger.error("Fork failed %s -> %s: %s", slug, new_slug, e)
+        return error_response(f"Fork failed: {e}", 500)
+
+    return jsonify({"success": True, "slug": new_slug})
 
 
 @projects_bp.route('/api/projects/<slug>/manifest/assembly-steps', methods=['PUT'])

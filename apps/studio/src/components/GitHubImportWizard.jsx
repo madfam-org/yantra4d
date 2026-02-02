@@ -93,7 +93,7 @@ export default function GitHubImportWizard({ onClose, onImported }) {
                 className="w-full px-3 py-2 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               <p className="text-xs text-muted-foreground">
-                Paste a public GitHub repo URL containing .scad files.{' '}
+                Paste a GitHub repo URL containing .scad files. Private repos supported for Pro+ users.{' '}
                 <a
                   href="https://github.com/madfam-org/qubic-template"
                   target="_blank"
@@ -169,8 +169,8 @@ export default function GitHubImportWizard({ onClose, onImported }) {
             </>
           )}
           {step === 2 && (
-            <Button onClick={() => { onClose(); window.location.hash = `#/${slug}` }}>
-              Open Project
+            <Button onClick={() => { onClose(); window.location.hash = `#/${slug}`; sessionStorage.setItem('qubic-editor-open', 'true') }}>
+              Open in Editor
             </Button>
           )}
         </CardFooter>

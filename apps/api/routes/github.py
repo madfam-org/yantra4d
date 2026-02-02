@@ -11,10 +11,17 @@ from extensions import limiter
 from middleware.auth import require_tier
 from services.route_helpers import error_response, require_json_body
 from services.github_import import validate_repo, import_repo, sync_repo
+from services.github_token import get_github_token
 
 logger = logging.getLogger(__name__)
 
 github_bp = Blueprint("github", __name__)
+
+
+def _get_token():
+    """Extract GitHub token from current request's auth claims."""
+    claims = getattr(request, "auth_claims", None)
+    return get_github_token(claims)
 
 
 @github_bp.route("/api/github/validate", methods=["POST"])
@@ -31,7 +38,7 @@ def validate_github_repo():
     if not repo_url:
         return error_response("repo_url is required", 400)
 
-    result = validate_repo(repo_url)
+    result = validate_repo(repo_url, github_token=_get_token())
     if not result["valid"]:
         return error_response(result["error"], 400)
 
@@ -61,7 +68,7 @@ def import_github_repo():
     if not manifest or not isinstance(manifest, dict):
         return error_response("manifest is required", 400)
 
-    result = import_repo(repo_url, slug, manifest)
+    result = import_repo(repo_url, slug, manifest, github_token=_get_token())
     if not result["success"]:
         return error_response(result["error"], 400)
 
@@ -79,7 +86,7 @@ def sync_github_repo():
     if not slug:
         return error_response("slug is required", 400)
 
-    result = sync_repo(slug)
+    result = sync_repo(slug, github_token=_get_token())
     if not result["success"]:
         return error_response(result["error"], 400)
 

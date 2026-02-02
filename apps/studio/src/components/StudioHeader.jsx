@@ -1,18 +1,24 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { Sun, Moon, Monitor, Globe, Undo2, Redo2, Share2 } from 'lucide-react'
+import { Sun, Moon, Monitor, Globe, Undo2, Redo2, Share2, Code2, Sparkles } from 'lucide-react'
 import AuthButton from './AuthButton'
+import AuthGate from './AuthGate'
 import ProjectSelector from './ProjectSelector'
 import { SUPPORTED_LANGUAGES } from '../config/languages'
+import { useProjectMeta } from '../hooks/useProjectMeta'
 
 export default function StudioHeader({
   manifest, t, language, setLanguage, theme, cycleTheme,
   undoParams, redoParams, canUndo, canRedo,
   handleShare, shareToast,
+  editorOpen, toggleEditor, projectSlug,
+  aiPanelOpen, toggleAiPanel, onForkRequest,
 }) {
   const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
   const [langOpen, setLangOpen] = useState(false)
   const langRef = useRef(null)
+  const projectMeta = useProjectMeta(projectSlug)
+  const isBuiltIn = !projectMeta?.source?.type
 
   useEffect(() => {
     const handler = (e) => {
@@ -34,6 +40,28 @@ export default function StudioHeader({
       </div>
       <div className="flex items-center gap-1">
         <AuthButton />
+        <AuthGate tier="basic">
+          <Button
+            variant={aiPanelOpen ? 'secondary' : 'ghost'}
+            size="icon"
+            onClick={toggleAiPanel}
+            title={aiPanelOpen ? 'Close AI configurator' : 'Open AI configurator'}
+          >
+            <Sparkles className="h-4 w-4" />
+            <span className="sr-only">{aiPanelOpen ? 'Close AI configurator' : 'Open AI configurator'}</span>
+          </Button>
+        </AuthGate>
+        <AuthGate tier="pro">
+          <Button
+            variant={editorOpen ? 'secondary' : 'ghost'}
+            size="icon"
+            onClick={isBuiltIn ? onForkRequest : toggleEditor}
+            title={isBuiltIn ? 'Fork & edit code' : editorOpen ? 'Close code editor' : 'Open code editor'}
+          >
+            <Code2 className="h-4 w-4" />
+            <span className="sr-only">{editorOpen ? 'Close code editor' : 'Open code editor'}</span>
+          </Button>
+        </AuthGate>
         <Button variant="ghost" size="icon" onClick={undoParams} disabled={!canUndo} title={t('act.undo')}>
           <Undo2 className="h-4 w-4" />
           <span className="sr-only">{t('act.undo')}</span>

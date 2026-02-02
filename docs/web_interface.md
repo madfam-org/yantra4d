@@ -24,6 +24,11 @@
 - **Cross-Parameter Validation**: Manifest-driven constraints (`constraints[]`) with `rule`, `message`, `severity`, and `applies_to` fields. The `useConstraints` hook evaluates rules against current params and returns violations indexed by parameter ID. Supports `warning` and `error` severities.
 - **Grid Presets**: Optional `grid_presets` manifest section provides rendering/manufacturing quality presets that override parameter values (e.g., quick preview vs. large grid).
 - **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel.
+- **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save and auto-render. Available for user-owned projects (GitHub-imported, forked, onboarded) at pro+ tier.
+- **Git Integration**: Status, diff, commit, push/pull for GitHub-connected projects. Local git auto-initialized on first editor interaction. "Connect to GitHub" for local-only projects.
+- **Fork-to-Edit**: Pro+ users can fork built-in projects to create editable copies with their own slug.
+- **AI Configurator**: Natural language chat that maps to parameter changes. Available at basic+ tier on all projects. Streams responses via SSE with live slider updates.
+- **AI Code Editor**: Natural language chat that generates SCAD code edits (search/replace). Available at pro+ tier in the code editor. Supports apply/reject workflow with Monaco inline diffs.
 
 ---
 
@@ -37,7 +42,7 @@ The app follows a client-server model. Configuration is centralized in a **proje
 backend/
 ├── app.py                # App factory, blueprint registration
 ├── extensions.py        # Flask extensions (rate limiter)
-├── config.py             # Environment config (paths, server settings, PROJECTS_DIR, OPENSCADPATH)
+├── config.py             # Environment config (paths, server, AI provider settings)
 ├── manifest.py           # Multi-project manifest registry (ProjectManifest class)
 ├── requirements.txt      # Python dependencies
 ├── routes/
@@ -45,13 +50,21 @@ backend/
 │   ├── verify.py         # /api/verify
 │   ├── health.py         # /api/health
 │   ├── manifest_route.py # /api/manifest (default project)
-│   ├── projects.py       # /api/projects, /api/projects/<slug>/manifest
+│   ├── projects.py       # /api/projects, /api/projects/<slug>/manifest, /api/projects/<slug>/fork
 │   ├── onboard.py        # /api/projects/analyze, /api/projects/create
+│   ├── editor.py         # SCAD file CRUD (list/read/write/create/delete) with auto git-init
+│   ├── git_ops.py        # Git operations (status/diff/commit/push/pull/connect-remote)
+│   ├── ai.py             # AI chat SSE endpoints (session, chat-stream)
 │   └── config_route.py   # /api/config (legacy, delegates to manifest)
 ├── services/
 │   ├── openscad.py       # OpenSCAD subprocess wrapper (injects OPENSCADPATH env)
 │   ├── scad_analyzer.py  # SCAD file regex analysis engine
-│   └── manifest_generator.py  # Draft manifest scaffolding from analysis
+│   ├── manifest_generator.py  # Draft manifest scaffolding from analysis
+│   ├── git_operations.py # Git CLI wrappers (init/status/diff/commit/push/pull)
+│   ├── ai_provider.py    # Dual LLM provider abstraction (Anthropic + OpenAI)
+│   ├── ai_session.py     # In-memory conversation session store
+│   ├── ai_configurator.py # NL → parameter change mapping
+│   └── ai_code_editor.py # NL → SCAD code edit mapping
 └── static/               # Generated STL files (runtime, namespaced by project)
 ```
 
@@ -81,6 +94,17 @@ backend/
 | `/api/verify` | POST | 50/hr | Run verification suite for a mode. Optional `project` slug. |
 | `/api/health` | GET | 500/hr | Health check |
 | `/api/config` | GET | 500/hr | Legacy config endpoint (delegates to manifest) |
+| `/api/projects/<slug>/fork` | POST | 10/hr | Fork a project (copies files to new slug, pro+) |
+| `/api/projects/<slug>/files` | GET | 120/hr | List SCAD files in a project (pro+) |
+| `/api/projects/<slug>/files/<path>` | GET/PUT/DELETE | 120/hr | Read/write/delete SCAD files (pro+) |
+| `/api/projects/<slug>/git/status` | GET | 60/hr | Git working tree status (pro+) |
+| `/api/projects/<slug>/git/diff` | GET | 60/hr | Unified diff (pro+) |
+| `/api/projects/<slug>/git/commit` | POST | 30/hr | Stage files and commit (pro+) |
+| `/api/projects/<slug>/git/push` | POST | 20/hr | Push to origin (pro+, GitHub token required) |
+| `/api/projects/<slug>/git/pull` | POST | 20/hr | Pull from origin (pro+, GitHub token required) |
+| `/api/projects/<slug>/git/connect-remote` | POST | 10/hr | Add/set GitHub remote URL (pro+) |
+| `/api/ai/session` | POST | 30/hr | Create AI chat session (basic+) |
+| `/api/ai/chat-stream` | POST | dynamic | SSE streaming AI chat (basic+ configurator, pro+ code-editor) |
 
 #### Payload Examples
 
@@ -234,6 +258,10 @@ src/
 │   ├── ConfirmRenderDialog.jsx    # Long-render confirmation dialog
 │   ├── PrintEstimateOverlay.jsx   # Print time/filament/cost overlay on viewer
 │   ├── ErrorBoundary.jsx          # React error boundary (accepts `t` prop for i18n)
+│   ├── ScadEditor.jsx             # Monaco-based SCAD code editor with file tree and tabs
+│   ├── GitPanel.jsx               # Git status, diff, commit, push/pull, connect-remote
+│   ├── AiChatPanel.jsx            # AI chat UI (configurator + code-editor modes)
+│   ├── ForkDialog.jsx             # Fork-to-edit modal for built-in projects
 │   └── ui/                        # Shadcn UI primitives
 ├── contexts/
 │   ├── ManifestProvider.jsx       # Fetches /api/manifest, bundled fallback
@@ -245,7 +273,10 @@ src/
 │   ├── useImageExport.js          # PNG snapshot export for camera views
 │   ├── useLocalStoragePersistence.js # Debounced localStorage sync
 │   ├── useShareableUrl.js         # Shareable URL generation (base64url param encoding)
-│   └── useUndoRedo.js             # Parameter undo/redo with 50-entry history stack
+│   ├── useUndoRedo.js             # Parameter undo/redo with 50-entry history stack
+│   ├── useProjectMeta.js          # Fetch project.meta.json for source type detection
+│   ├── useEditorRender.js         # Debounced save + auto-render for editor changes
+│   └── useAiChat.js               # AI chat state management hook (both modes)
 ├── lib/
 │   ├── openscad-phases.js         # Shared OpenSCAD phase detection (main + worker)
 │   ├── stl-utils.js               # Binary STL parser + bounding box
@@ -256,7 +287,10 @@ src/
 │   ├── backendDetection.js        # Backend availability check + API base URL
 │   ├── openscad-worker.js         # Web Worker for OpenSCAD WASM rendering
 │   ├── verifyService.js           # STL verification client
-│   └── assemblyFetcher.js         # Assembly STL fetcher for animated preview
+│   ├── assemblyFetcher.js         # Assembly STL fetcher for animated preview
+│   ├── editorService.js           # SCAD file CRUD API client
+│   ├── gitService.js              # Git operations API client
+│   └── aiService.js               # AI chat API client (SSE consumer)
 └── config/
     └── fallback-manifest.json     # Bundled copy of projects/tablaco/project.json
 ```
@@ -347,5 +381,9 @@ Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 | `HOST` | `0.0.0.0` | Backend bind address |
 | `VITE_API_BASE` | `http://localhost:5000` | Frontend → backend API base URL |
 | `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3000` | Comma-separated allowed CORS origins for backend |
+| `AI_PROVIDER` | `anthropic` | AI provider: `anthropic` or `openai` |
+| `AI_API_KEY` | (none) | API key for the configured AI provider |
+| `AI_MODEL` | (auto) | Model override (defaults: `claude-sonnet-4-20250514` / `gpt-4o`) |
+| `AI_MAX_TOKENS` | `2048` | Maximum tokens per AI response |
 
 [Back to Index](./index.md)

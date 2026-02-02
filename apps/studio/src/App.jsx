@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe } from 'lucide-react'
 import { Toaster } from "@/components/ui/sonner"
@@ -15,11 +15,38 @@ import './index.css'
 
 const ProjectsView = lazy(() => import('./components/ProjectsView'))
 const OnboardingWizard = lazy(() => import('./components/OnboardingWizard'))
+const ScadEditor = lazy(() => import('./components/ScadEditor'))
+const GitPanel = lazy(() => import('./components/GitPanel'))
+const AiChatPanel = lazy(() => import('./components/AiChatPanel'))
+const ForkDialog = lazy(() => import('./components/ForkDialog'))
 
 const isEmbed = new URLSearchParams(window.location.search).get('embed') === 'true'
 
 function App() {
+  const [editorOpen, setEditorOpen] = useState(() => sessionStorage.getItem('qubic-editor-open') === 'true')
+  const toggleEditor = () => setEditorOpen(prev => {
+    const next = !prev
+    sessionStorage.setItem('qubic-editor-open', String(next))
+    return next
+  })
+
+  const [aiPanelOpen, setAiPanelOpen] = useState(() => sessionStorage.getItem('qubic-ai-panel') === 'true')
+  const toggleAiPanel = () => setAiPanelOpen(prev => {
+    const next = !prev
+    sessionStorage.setItem('qubic-ai-panel', String(next))
+    return next
+  })
+
   const state = useAppState()
+
+  const [forkDialogSlug, setForkDialogSlug] = useState(null)
+  const handleForkRequest = useCallback(() => setForkDialogSlug(state.projectSlug), [state.projectSlug])
+  const handleForked = useCallback((newSlug) => {
+    setForkDialogSlug(null)
+    window.location.hash = `#/${newSlug}`
+    setEditorOpen(true)
+    sessionStorage.setItem('qubic-editor-open', 'true')
+  }, [])
   const {
     currentView, isDemo, manifest, t, language, setLanguage, toggleLanguage, theme, cycleTheme,
     mode, setMode, getLabel, params, setParams, colors, setColors,
@@ -89,12 +116,26 @@ function App() {
           canRedo={canRedo}
           handleShare={handleShare}
           shareToast={shareToast}
+          editorOpen={editorOpen}
+          toggleEditor={toggleEditor}
+          projectSlug={state.projectSlug}
+          aiPanelOpen={aiPanelOpen}
+          toggleAiPanel={toggleAiPanel}
+          onForkRequest={handleForkRequest}
         />
       )}
 
       {!isEmbed && <RateLimitBanner />}
-      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
-        <StudioSidebar
+      <div className={`flex flex-1 overflow-hidden flex-col lg:flex-row ${editorOpen ? 'editor-layout' : ''}`}>
+        {editorOpen && (
+          <div className="w-full lg:w-[40%] flex flex-col min-h-0 border-r border-border">
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
+              <ScadEditor slug={state.projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
+              <GitPanel slug={state.projectSlug} />
+            </Suspense>
+          </div>
+        )}
+        {!editorOpen && <StudioSidebar
           manifest={manifest}
           mode={mode}
           setMode={setMode}
@@ -128,7 +169,7 @@ function App() {
           setAssemblyEditorOpen={setAssemblyEditorOpen}
           viewerRef={viewerRef}
           projectSlug={state.projectSlug}
-        />
+        />}
 
         <StudioMainView
           viewerRef={viewerRef}
@@ -152,6 +193,33 @@ function App() {
           t={t}
         />
       </div>
+
+      {/* AI Configurator overlay */}
+      {aiPanelOpen && !editorOpen && (
+        <div className="fixed right-0 top-12 bottom-0 w-80 z-40 border-l border-border shadow-lg">
+          <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
+            <AiChatPanel
+              mode="configurator"
+              projectSlug={state.projectSlug}
+              manifest={manifest}
+              params={params}
+              setParams={setParams}
+            />
+          </Suspense>
+        </div>
+      )}
+
+      {/* Fork dialog */}
+      {forkDialogSlug && (
+        <Suspense fallback={null}>
+          <ForkDialog
+            slug={forkDialogSlug}
+            projectName={manifest?.project?.name || forkDialogSlug}
+            onClose={() => setForkDialogSlug(null)}
+            onForked={handleForked}
+          />
+        </Suspense>
+      )}
 
       <ConfirmRenderDialog
         open={showConfirmDialog}

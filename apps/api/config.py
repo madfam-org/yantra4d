@@ -52,6 +52,16 @@ class Config:
 
     # GitHub Import
     GITHUB_IMPORT_ENABLED = os.getenv("GITHUB_IMPORT_ENABLED", "true").lower() == "true"
+
+    # AI
+    AI_PROVIDER = os.getenv("AI_PROVIDER", "anthropic")  # "anthropic" | "openai"
+    AI_API_KEY = os.getenv("AI_API_KEY", "")
+    AI_MODEL = os.getenv("AI_MODEL", "")  # defaults per provider
+    AI_MAX_TOKENS = int(os.getenv("AI_MAX_TOKENS", "2048"))
+
+    # Janua API (for GitHub token retrieval fallback)
+    JANUA_API_URL = os.getenv("JANUA_API_URL", f"{JANUA_ISSUER}/api/v1")
+    JANUA_API_KEY = os.getenv("JANUA_API_KEY", "")
     
     # --- Manifest-delegated accessors (backward compat) ---
 

@@ -1,6 +1,4 @@
 """Tests for git operations service (git_init, status with remote)."""
-import json
-import subprocess
 import sys
 from pathlib import Path
 

@@ -48,6 +48,10 @@ def git_init(project_dir: Path) -> dict:
     if result.returncode != 0:
         return {"success": False, "error": f"git init failed: {result.stderr.strip()}"}
 
+    # Configure local user identity (CI runners may lack global config)
+    _run_git(project_dir, ["config", "user.name", "Qubic"], timeout=10)
+    _run_git(project_dir, ["config", "user.email", "noreply@qubic.quest"], timeout=10)
+
     _run_git(project_dir, ["add", "."])
     result = _run_git(project_dir, ["commit", "-m", "Initial commit"])
     if result.returncode != 0:
@@ -64,17 +68,21 @@ def git_status(project_dir: Path) -> dict:
 
     modified, added, deleted, untracked = [], [], [], []
     for line in result.stdout.strip().splitlines():
-        if not line or len(line) < 3:
+        if not line or len(line) < 2:
             continue
-        status = line[:2]
-        filepath = line[3:]
-        if status.strip() == "M":
+        # Porcelain v1: XY PATH — but some git versions omit trailing space in XY
+        # when Y is blank, giving "X PATH" instead of "X  PATH". Use lstrip to be safe.
+        status = line[:2].strip()
+        filepath = line[2:].lstrip()  # strip separator space(s) between XY and path
+        if not filepath:
+            continue
+        if status in ("M", "MM"):
             modified.append(filepath)
-        elif status.strip() == "A":
+        elif status in ("A", "AM"):
             added.append(filepath)
-        elif status.strip() == "D":
+        elif status in ("D",):
             deleted.append(filepath)
-        elif status.strip() == "??":
+        elif status == "??":
             untracked.append(filepath)
 
     # Check if ahead/behind remote

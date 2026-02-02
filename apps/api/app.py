@@ -72,7 +72,9 @@ def create_app():
     # Static file serving
     @app.route('/static/<path:filename>')
     def serve_static(filename):
-        return send_from_directory(str(Config.STATIC_DIR), filename)
+        resp = send_from_directory(str(Config.STATIC_DIR), filename)
+        resp.headers["Cache-Control"] = "public, max-age=3600"
+        return resp
 
     # Global error handlers
     @app.errorhandler(400)

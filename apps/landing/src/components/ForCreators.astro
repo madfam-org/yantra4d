@@ -1,0 +1,45 @@
+---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+---
+
+<section id="for-creators" class="py-24 px-6 bg-secondary/30">
+  <div class="mx-auto max-w-5xl">
+    <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t ? t.forCreators.heading : 'Hecho para Creadores'}</h2>
+    <p class="mb-12 text-center text-muted-foreground max-w-2xl mx-auto">
+      {t ? t.forCreators.subtitle : 'Tus diseños merecen una audiencia más allá de los programadores. Convierte archivos .scad en configuradores compartibles.'}
+    </p>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">⬆️</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forCreators.upload.title : 'Sube y Listo'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forCreators.upload.desc : 'Arrastra archivos .scad. Qubic auto-genera un configurador con parámetros, modos y preajustes.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">🔗</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forCreators.share.title : 'Comparte con Cualquiera'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forCreators.share.desc : 'URL compacto para cualquier configuración. Tu makerspace, tu subreddit, tu familia.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">⚙️</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forCreators.control.title : 'Controla Todo'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forCreators.control.desc : 'Parámetros, preajustes, pasos de ensamblaje, BOM, modos — un solo manifiesto JSON.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">📂</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forCreators.multiProject.title : 'Proyectos Ilimitados'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forCreators.multiProject.desc : 'Panel multi-proyecto. Cada diseño tiene su propio configurador.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">💚</div>
+        <h3 class="mb-2 font-semibold">{t ? t.forCreators.openSource.title : 'Código Abierto para Siempre'}</h3>
+        <p class="text-sm text-muted-foreground">{t ? t.forCreators.openSource.desc : 'AGPLv3. Auto-aloja, haz fork, contribuye. Tus configuradores son tuyos.'}</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -11,15 +11,23 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
 
 <section class="py-24 px-6">
   <div class="mx-auto max-w-2xl text-center">
-    <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">{t?.cta.heading ?? '¿Listo para construir?'}</h2>
+    <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">{t?.cta.heading ?? 'Tu próxima impresión empieza aquí'}</h2>
     <p class="mb-8 text-muted-foreground">
-      {t?.cta.subtitle ?? 'Sube tus archivos OpenSCAD y obtén un configurador paramétrico en minutos.'}
+      {t?.cta.subtitle ?? 'Sin cuenta. Sin instalar nada. Solo abre.'}
     </p>
-    <a
-      href={studioUrl}
-      class="rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-    >
-      {t?.cta.openStudio ?? 'Abrir Studio'}
-    </a>
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="#gallery"
+        class="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+      >
+        {t?.cta.ctaMakers ?? 'Explorar Galería'}
+      </a>
+      <a
+        href={studioUrl}
+        class="rounded-md border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+      >
+        {t?.cta.ctaCreators ?? 'Sube Tu Diseño'}
+      </a>
+    </div>
   </div>
 </section>

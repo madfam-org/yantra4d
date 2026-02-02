@@ -14,27 +14,25 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
   <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-secondary/20" />
   <div class="mx-auto max-w-4xl text-center">
     <h1 class="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-      {t?.hero.titleLine1 ?? 'Diseño 3D Paramétrico'}<br />
-      <span class="text-primary">{t?.hero.titleLine2 ?? 'para Todos'}</span>
+      {t?.hero.titleLine1 ?? 'Tus Diseños.'}<br />
+      <span class="text-primary">{t?.hero.titleLine2 ?? 'Sus Dimensiones.'}</span>
     </h1>
     <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-      {t?.hero.subtitle ?? 'Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD.'}
+      {t?.hero.subtitle ?? 'Makers: personaliza cualquier parámetro y exporta tu STL perfecto. Creadores: convierte tus modelos OpenSCAD en configuradores que cualquiera puede usar.'}
     </p>
 
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <a
-        href={studioUrl}
+        href="#gallery"
         class="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
       >
-        {t?.hero.openStudio ?? 'Abrir Studio'}
+        {t?.hero.ctaPrimary ?? 'Explorar 20 Proyectos'}
       </a>
       <a
-        href="https://github.com/madfam-org/qubic"
-        target="_blank"
-        rel="noopener noreferrer"
+        href={studioUrl}
         class="rounded-md border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
       >
-        {t?.hero.viewOnGitHub ?? 'Ver en GitHub'}
+        {t?.hero.ctaSecondary ?? 'Sube Tu Diseño'}
       </a>
     </div>
   </div>
@@ -56,13 +54,10 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
       <button
         id="hero-play-btn"
         class="absolute inset-0 flex items-center justify-center bg-black/30 text-white transition-opacity hover:bg-black/40"
-        aria-label="Launch interactive 3D demo"
-        data-scroll-text={t?.hero.scrollToDemo ?? 'Desplázate a la sección de'}
-        data-demo-text={t?.hero.liveDemo ?? 'Demo en Vivo'}
-        data-suffix-text={t?.hero.scrollSuffix ?? 'para el visor 3D interactivo.'}
+        aria-label="Scroll to interactive demo"
       >
         <span class="rounded-full bg-primary/90 px-6 py-3 text-sm font-medium backdrop-blur-sm">
-          {t?.hero.interactWithDemo ?? 'Interactuar con Demo ▶'}
+          ▶
         </span>
       </button>
     </div>
@@ -71,17 +66,9 @@ const studioUrl = import.meta.env.PROD ? 'https://studio.qubic.quest' : 'http://
 
 <script>
   const btn = document.getElementById('hero-play-btn');
-  const container = document.getElementById('hero-preview-container');
-  if (btn && container) {
-    btn.addEventListener('click', async () => {
-      const scrollText = btn.dataset.scrollText || 'Scroll down to the';
-      const demoText = btn.dataset.demoText || 'Live Demo';
-      const suffixText = btn.dataset.suffixText || 'section for the interactive 3D viewer.';
-      btn.remove();
-      document.getElementById('hero-static')?.remove();
-      container.innerHTML = `<div class="flex h-full items-center justify-center text-muted-foreground">
-        <p>${scrollText} <a href="#demo" class="text-primary underline">${demoText}</a> ${suffixText}</p>
-      </div>`;
+  if (btn) {
+    btn.addEventListener('click', () => {
+      document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' });
     });
   }
 </script>

@@ -2,13 +2,14 @@
 Projects Blueprint
 Handles /api/projects endpoints for multi-project support.
 """
+import hashlib
 import json
 import logging
 import os
 import sqlite3
 import time
 
-from flask import Blueprint, jsonify, send_from_directory, abort, request
+from flask import Blueprint, jsonify, send_from_directory, abort, request, make_response
 
 from config import Config
 from manifest import discover_projects, get_manifest, _manifest_cache
@@ -62,20 +63,31 @@ def list_projects():
                 "exports": project_stats.get("export", 0),
                 "preset_applies": project_stats.get("preset_apply", 0),
             }
-    return jsonify(projects)
+    resp = jsonify(projects)
+    resp.headers["Cache-Control"] = "public, max-age=300"
+    return resp
 
 
 @projects_bp.route('/api/projects/<slug>/manifest', methods=['GET'])
 def get_project_manifest(slug):
     """Return full manifest for a specific project."""
-    # Strict check: slug must exist as a subdirectory in PROJECTS_DIR
     project_dir = Config.PROJECTS_DIR / slug
     if not project_dir.is_dir() or not (project_dir / "project.json").exists():
         return jsonify({"status": "error", "error": f"Project '{slug}' not found"}), 404
 
     try:
         manifest = get_manifest(slug)
-        return jsonify(manifest.as_json())
+        body = json.dumps(manifest.as_json(), sort_keys=True)
+        etag = hashlib.md5(body.encode()).hexdigest()
+
+        if request.if_none_match and etag in request.if_none_match:
+            return make_response("", 304)
+
+        resp = make_response(body)
+        resp.headers["Content-Type"] = "application/json"
+        resp.headers["Cache-Control"] = "public, max-age=300"
+        resp.headers["ETag"] = etag
+        return resp
     except RuntimeError as e:
         return jsonify({"status": "error", "error": str(e)}), 404
 
@@ -87,13 +99,14 @@ def serve_static_part(slug, filename):
     parts_dir = project_dir / "parts"
     if not parts_dir.is_dir():
         abort(404)
-    # Security: ensure filename doesn't escape parts_dir
     requested = (parts_dir / filename).resolve()
     if not str(requested).startswith(str(parts_dir.resolve())):
         abort(403)
     if not requested.is_file():
         abort(404)
-    return send_from_directory(str(parts_dir), filename)
+    resp = send_from_directory(str(parts_dir), filename)
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
 
 
 @projects_bp.route('/api/projects/<slug>/manifest/assembly-steps', methods=['PUT'])

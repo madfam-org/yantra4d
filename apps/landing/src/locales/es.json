@@ -1,64 +1,127 @@
 {
   "meta": {
     "title": "Qubic — Diseño 3D Paramétrico para Todos",
-    "description": "Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD."
+    "description": "Personaliza cualquier dimensión y exporta tu STL perfecto. O convierte tus modelos OpenSCAD en configuradores que cualquiera puede usar."
   },
   "nav": {
-    "features": "Características",
+    "gallery": "Galería",
+    "forMakers": "Para Makers",
+    "forCreators": "Para Creadores",
     "demo": "Demo",
-    "tech": "Tecnología",
     "openStudio": "Abrir Studio →"
   },
   "hero": {
-    "titleLine1": "Diseño 3D Paramétrico",
-    "titleLine2": "para Todos",
-    "subtitle": "Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD.",
-    "openStudio": "Abrir Studio",
-    "viewOnGitHub": "Ver en GitHub",
-    "interactWithDemo": "Interactuar con Demo ▶",
-    "scrollToDemo": "Desplázate a la sección de",
-    "liveDemo": "Demo en Vivo",
-    "scrollSuffix": "para el visor 3D interactivo."
+    "titleLine1": "Tus Diseños.",
+    "titleLine2": "Sus Dimensiones.",
+    "subtitle": "Makers: personaliza cualquier parámetro y exporta tu STL perfecto. Creadores: convierte tus modelos OpenSCAD en configuradores que cualquiera puede usar.",
+    "ctaPrimary": "Explorar 20 Proyectos",
+    "ctaSecondary": "Sube Tu Diseño"
   },
-  "features": {
-    "heading": "Características",
-    "manifestDriven": "Basado en Manifiesto",
-    "manifestDrivenDesc": "Define parámetros en JSON. La interfaz se genera sola.",
-    "dualRendering": "Renderizado Dual",
-    "dualRenderingDesc": "OpenSCAD en servidor + respaldo WASM en cliente.",
-    "stlVerification": "Verificación STL",
-    "stlVerificationDesc": "Revisiones de calidad automatizadas antes de imprimir.",
-    "multiFormatExport": "Exportación Multi-formato",
-    "multiFormatExportDesc": "STL, 3MF, OFF — un solo clic.",
-    "zeroCodeOnboarding": "Sin Código para Empezar",
-    "zeroCodeOnboardingDesc": "Sube archivos .scad y obtén un configurador.",
-    "printEstimation": "Estimación de Impresión",
-    "printEstimationDesc": "Tiempo, filamento y costo desde la geometría."
+  "gallery": {
+    "heading": "Galería de Proyectos",
+    "subtitle": "20 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.",
+    "categories": {
+      "all": "Todos",
+      "storage": "Almacenamiento",
+      "mechanical": "Mecánico",
+      "art": "Arte y Generativo",
+      "tabletop": "Mesa de Juego",
+      "education": "Educación",
+      "electronics": "Electrónica"
+    },
+    "openInStudio": "Abrir en Studio →"
+  },
+  "beforeAfter": {
+    "tagline": "De código a configurador. Sin curva de aprendizaje.",
+    "codeSide": "Código OpenSCAD",
+    "uiSide": "Configurador Qubic"
+  },
+  "forMakers": {
+    "heading": "Hecho para Makers",
+    "subtitle": "Deja de imprimir las dimensiones de otros. Personaliza todo, conoce el costo, exporta e imprime.",
+    "customize": {
+      "title": "Personaliza Todo",
+      "desc": "Deslizadores, botones, selectores de color. Cambia cualquier dimensión, míralo en 3D en tiempo real."
+    },
+    "estimate": {
+      "title": "Anticípate a la Impresión",
+      "desc": "Tiempo, filamento y costo estimados antes de gastar un gramo."
+    },
+    "export": {
+      "title": "Exporta a Tu Manera",
+      "desc": "STL, 3MF u OFF. Un clic. Listo para tu slicer."
+    },
+    "assembly": {
+      "title": "Ensamblaje Claro",
+      "desc": "Instrucciones 3D paso a paso. Lista de materiales incluida."
+    },
+    "browser": {
+      "title": "Funciona en Tu Navegador",
+      "desc": "Sin instalar nada. Sin cuenta. Abre un enlace y empieza a personalizar."
+    }
+  },
+  "forCreators": {
+    "heading": "Hecho para Creadores",
+    "subtitle": "Tus diseños merecen una audiencia más allá de los programadores. Convierte archivos .scad en configuradores compartibles.",
+    "upload": {
+      "title": "Sube y Listo",
+      "desc": "Arrastra archivos .scad. Qubic auto-genera un configurador con parámetros, modos y preajustes."
+    },
+    "share": {
+      "title": "Comparte con Cualquiera",
+      "desc": "URL compacto para cualquier configuración. Tu makerspace, tu subreddit, tu familia."
+    },
+    "control": {
+      "title": "Controla Todo",
+      "desc": "Parámetros, preajustes, pasos de ensamblaje, BOM, modos — un solo manifiesto JSON."
+    },
+    "multiProject": {
+      "title": "Proyectos Ilimitados",
+      "desc": "Panel multi-proyecto. Cada diseño tiene su propio configurador."
+    },
+    "openSource": {
+      "title": "Código Abierto para Siempre",
+      "desc": "AGPLv3. Auto-aloja, haz fork, contribuye. Tus configuradores son tuyos."
+    }
   },
   "howItWorks": {
     "heading": "Cómo Funciona",
-    "step1Title": "Sube archivos .scad",
-    "step1Desc": "Arrastra tus archivos fuente de OpenSCAD a Qubic.",
-    "step2Title": "Configura visualmente",
-    "step2Desc": "Ajusta parámetros con deslizadores y botones — ve los cambios en 3D.",
-    "step3Title": "Exporta e imprime",
-    "step3Desc": "Descarga STL, 3MF u OFF. Listo para tu slicer."
+    "makerTrack": {
+      "label": "Para Makers",
+      "step1": { "title": "Explora", "desc": "Elige un proyecto de la galería o sigue un enlace compartido." },
+      "step2": { "title": "Personaliza", "desc": "Ajusta dimensiones con deslizadores y botones. Ve los cambios en 3D en tiempo real." },
+      "step3": { "title": "Exporta e Imprime", "desc": "Descarga tu STL y envíalo a tu slicer. Listo." }
+    },
+    "creatorTrack": {
+      "label": "Para Creadores",
+      "step1": { "title": "Sube .scad", "desc": "Arrastra tus archivos fuente de OpenSCAD a Qubic." },
+      "step2": { "title": "Configura", "desc": "Edita el manifiesto — parámetros, modos, preajustes, pasos de ensamblaje." },
+      "step3": { "title": "Comparte", "desc": "Obtén un enlace. Cualquiera puede personalizar y exportar tu diseño." }
+    }
   },
   "demo": {
-    "heading": "Demo Interactivo del Studio",
-    "description": "Explora modelos 3D paramétricos con controles completos — ajusta parámetros, cambia modos y genera renders.",
+    "heading": "Pruébalo Ahora",
+    "description": "Studio interactivo completo — ajusta parámetros, cambia modos y exporta renders.",
     "loading": "cargado"
   },
-  "techStack": {
-    "heading": "Construido Con",
-    "openSourceOnGitHub": "Código Abierto en GitHub"
+  "openSourceSection": {
+    "heading": "Gratis. Código Abierto. Para Siempre.",
+    "description": "Auto-aloja, contribuye, construye encima — tus configuradores son tuyos.",
+    "statProjects": "20 Proyectos",
+    "statLicense": "AGPLv3",
+    "cta": "Ver en GitHub",
+    "techNote": "Construido con OpenSCAD, React, Three.js, Flask y WebAssembly."
   },
   "cta": {
-    "heading": "¿Listo para construir?",
-    "subtitle": "Sube tus archivos OpenSCAD y obtén un configurador paramétrico en minutos.",
-    "openStudio": "Abrir Studio"
+    "heading": "Tu próxima impresión empieza aquí",
+    "subtitle": "Sin cuenta. Sin instalar nada. Solo abre.",
+    "ctaMakers": "Explorar Galería",
+    "ctaCreators": "Sube Tu Diseño"
   },
   "footer": {
-    "copyright": "Qubic. Código abierto bajo AGPLv3."
+    "copyright": "Qubic. Código abierto bajo AGPLv3.",
+    "docs": "Docs",
+    "studio": "Studio",
+    "gallery": "Galería"
   }
 }

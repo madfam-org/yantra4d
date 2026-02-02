@@ -6,27 +6,68 @@ interface Props {
 }
 
 const { t } = Astro.props;
-
-const steps = [
-  { num: '1', title: t?.howItWorks.step1Title ?? 'Sube archivos .scad', description: t?.howItWorks.step1Desc ?? 'Arrastra tus archivos fuente de OpenSCAD a Qubic.' },
-  { num: '2', title: t?.howItWorks.step2Title ?? 'Configura visualmente', description: t?.howItWorks.step2Desc ?? 'Ajusta parámetros con deslizadores y botones — ve los cambios en 3D.' },
-  { num: '3', title: t?.howItWorks.step3Title ?? 'Exporta e imprime', description: t?.howItWorks.step3Desc ?? 'Descarga STL, 3MF u OFF. Listo para tu slicer.' },
-];
 ---
 
 <section class="py-24 px-6 bg-secondary/30">
-  <div class="mx-auto max-w-4xl">
-    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.howItWorks.heading ?? 'Cómo Funciona'}</h2>
-    <div class="grid gap-8 sm:grid-cols-3">
-      {steps.map((s) => (
-        <div class="text-center">
-          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
-            {s.num}
+  <div class="mx-auto max-w-5xl">
+    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t ? t.howItWorks.heading : 'Cómo Funciona'}</h2>
+
+    <div class="grid gap-12 md:grid-cols-2">
+      <!-- Maker Track -->
+      <div>
+        <h3 class="mb-6 text-center text-lg font-semibold text-primary">{t ? t.howItWorks.makerTrack.label : 'Para Makers'}</h3>
+        <div class="space-y-6">
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</div>
+            <div>
+              <h4 class="font-semibold">{t ? t.howItWorks.makerTrack.step1.title : 'Explora'}</h4>
+              <p class="text-sm text-muted-foreground">{t ? t.howItWorks.makerTrack.step1.desc : 'Elige un proyecto de la galería o sigue un enlace compartido.'}</p>
+            </div>
           </div>
-          <h3 class="mb-2 text-lg font-semibold">{s.title}</h3>
-          <p class="text-sm text-muted-foreground">{s.description}</p>
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</div>
+            <div>
+              <h4 class="font-semibold">{t ? t.howItWorks.makerTrack.step2.title : 'Personaliza'}</h4>
+              <p class="text-sm text-muted-foreground">{t ? t.howItWorks.makerTrack.step2.desc : 'Ajusta dimensiones con deslizadores y botones. Ve los cambios en 3D en tiempo real.'}</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">3</div>
+            <div>
+              <h4 class="font-semibold">{t ? t.howItWorks.makerTrack.step3.title : 'Exporta e Imprime'}</h4>
+              <p class="text-sm text-muted-foreground">{t ? t.howItWorks.makerTrack.step3.desc : 'Descarga tu STL y envíalo a tu slicer. Listo.'}</p>
+            </div>
+          </div>
         </div>
-      ))}
+      </div>
+
+      <!-- Creator Track -->
+      <div>
+        <h3 class="mb-6 text-center text-lg font-semibold text-primary">{t ? t.howItWorks.creatorTrack.label : 'Para Creadores'}</h3>
+        <div class="space-y-6">
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</div>
+            <div>
+              <h4 class="font-semibold">{t ? t.howItWorks.creatorTrack.step1.title : 'Sube .scad'}</h4>
+              <p class="text-sm text-muted-foreground">{t ? t.howItWorks.creatorTrack.step1.desc : 'Arrastra tus archivos fuente de OpenSCAD a Qubic.'}</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</div>
+            <div>
+              <h4 class="font-semibold">{t ? t.howItWorks.creatorTrack.step2.title : 'Configura'}</h4>
+              <p class="text-sm text-muted-foreground">{t ? t.howItWorks.creatorTrack.step2.desc : 'Edita el manifiesto — parámetros, modos, preajustes, pasos de ensamblaje.'}</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">3</div>
+            <div>
+              <h4 class="font-semibold">{t ? t.howItWorks.creatorTrack.step3.title : 'Comparte'}</h4>
+              <p class="text-sm text-muted-foreground">{t ? t.howItWorks.creatorTrack.step3.desc : 'Obtén un enlace. Cualquiera puede personalizar y exportar tu diseño.'}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

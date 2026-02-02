@@ -14,6 +14,7 @@ from manifest import get_manifest
 from middleware.auth import optional_auth
 from services.tier_service import resolve_tier, get_tier_limits
 from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
+from services.render_cache import render_cache
 from services.route_helpers import cleanup_old_stl_files, error_response, require_json_body
 
 ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off'}
@@ -161,6 +162,9 @@ def render_stl():
 
     generated_parts = []
     combined_log = ""
+    project_slug = data.get('project', '')
+    cache_hits = 0
+    cache_total = 0
 
     cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix)
 
@@ -170,7 +174,6 @@ def render_stl():
             if part in static_stl_map:
                 static_path = static_stl_map[part]
                 if static_path.is_file():
-                    project_slug = data.get('project', '')
                     combined_log += f"[{part}] static STL: {static_path.name}\n"
                     try:
                         size_bytes = os.path.getsize(static_path)
@@ -182,11 +185,22 @@ def render_stl():
                         "size_bytes": size_bytes
                     })
                     continue
-                else:
-                    combined_log += f"[{part}] WARNING: static_stl not found at {static_path}\n"
 
             output_filename = f"{stl_prefix}{part}.{export_format}"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
+            cache_total += 1
+
+            # Check render cache
+            cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
+            if cached:
+                cache_hits += 1
+                combined_log += f"[{part}] cache HIT\n"
+                generated_parts.append({
+                    "type": part,
+                    "url": f"{request.host_url}static/{output_filename}",
+                    "size_bytes": cached["size_bytes"]
+                })
+                continue
 
             render_mode = mode_map.get(part, 0)
             cmd = build_openscad_command(output_path, scad_path, params, render_mode)
@@ -200,6 +214,9 @@ def render_stl():
                 size_bytes = os.path.getsize(output_path)
             except OSError:
                 size_bytes = None
+
+            render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, output_path, size_bytes)
+
             generated_parts.append({
                 "type": part,
                 "url": f"{request.host_url}static/{output_filename}",
@@ -213,6 +230,7 @@ def render_stl():
         })
         for k, v in _make_rate_limit_headers(tier).items():
             resp.headers[k] = v
+        resp.headers["X-Cache"] = "HIT" if (cache_total > 0 and cache_hits == cache_total) else "MISS"
         return resp
     except OSError as e:
         return error_response(str(e))

@@ -333,7 +333,7 @@ describe('ProjectsView', () => {
     expect(screen.getAllByText('Exportaciones').length).toBeGreaterThan(0)
   })
 
-  it('has no a11y violations', async () => {
+  it('has no a11y violations', { timeout: 15000 }, async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockProjects),

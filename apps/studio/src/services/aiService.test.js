@@ -97,6 +97,69 @@ describe('streamChat', () => {
     expect(onResult).toHaveBeenCalledWith({ event: 'params', changes: { width: 50 } })
   })
 
+  it('calls onError for SSE error event', async () => {
+    const sseData = 'data: {"event":"error","error":"Model overloaded"}\n\n'
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(sseData))
+        controller.close()
+      },
+    })
+    apiFetch.mockResolvedValue({ ok: true, body: stream })
+    const onError = vi.fn()
+    const onDone = vi.fn()
+    streamChat('sid-1', 'hi', {}, { onError, onDone })
+    await new Promise(r => setTimeout(r, 50))
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'Model overloaded' }))
+  })
+
+  it('calls onResult for edits event', async () => {
+    const sseData = 'data: {"event":"edits","edits":[{"file":"a.scad"}]}\n\ndata: {"event":"done"}\n\n'
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(sseData))
+        controller.close()
+      },
+    })
+    apiFetch.mockResolvedValue({ ok: true, body: stream })
+    const onResult = vi.fn()
+    streamChat('sid-1', 'edit', {}, { onResult })
+    await new Promise(r => setTimeout(r, 50))
+    expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ event: 'edits' }))
+  })
+
+  it('does not call onError for AbortError', async () => {
+    apiFetch.mockRejectedValue(new DOMException('Aborted', 'AbortError'))
+    const onError = vi.fn()
+    streamChat('sid-1', 'hi', {}, { onError })
+    await new Promise(r => setTimeout(r, 50))
+    expect(onError).not.toHaveBeenCalled()
+  })
+
+  it('skips malformed SSE lines', async () => {
+    const sseData = 'data: INVALID JSON\n\ndata: {"event":"done"}\n\n'
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(sseData))
+        controller.close()
+      },
+    })
+    apiFetch.mockResolvedValue({ ok: true, body: stream })
+    const onDone = vi.fn()
+    streamChat('sid-1', 'hi', {}, { onDone })
+    await new Promise(r => setTimeout(r, 50))
+    expect(onDone).toHaveBeenCalled()
+  })
+
+  it('returns abort function', () => {
+    apiFetch.mockResolvedValue({ ok: true, body: new ReadableStream() })
+    const abort = streamChat('sid-1', 'hi', {}, {})
+    expect(typeof abort).toBe('function')
+  })
+
   it('calls onError on HTTP failure', async () => {
     apiFetch.mockResolvedValue({
       ok: false,

@@ -7,14 +7,26 @@
       "en": "Parametric electronics enclosure with ventilation, PCB standoffs, and snap-fit lid",
       "es": "Carcasa paramétrica para electrónica con ventilación, soportes para PCB y tapa a presión"
     },
-    "tags": ["enclosure", "electronics", "box", "case"]
+    "thumbnail": "/projects/ultimate-box.webp",
+    "tags": [
+      "enclosure",
+      "electronics",
+      "box",
+      "case"
+    ],
+    "difficulty": "intermediate"
   },
   "modes": [
     {
       "slug": "enclosure",
-      "label": { "en": "Enclosure", "es": "Carcasa" },
+      "label": {
+        "en": "Enclosure",
+        "es": "Carcasa"
+      },
       "scad_file": "qubic_box.scad",
-      "parts": ["enclosure"],
+      "parts": [
+        "enclosure"
+      ],
       "estimate": {
         "base_time": 8,
         "per_unit": 2,
@@ -34,9 +46,17 @@
       "max": 200,
       "step": 1,
       "group": "dimensions",
-      "label": { "en": "Box Length", "es": "Largo de caja" },
-      "tooltip": { "en": "Internal length of the box", "es": "Largo interno de la caja" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Box Length",
+        "es": "Largo de caja"
+      },
+      "tooltip": {
+        "en": "Internal length of the box",
+        "es": "Largo interno de la caja"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "box_width",
@@ -46,9 +66,17 @@
       "max": 150,
       "step": 1,
       "group": "dimensions",
-      "label": { "en": "Box Width", "es": "Ancho de caja" },
-      "tooltip": { "en": "Internal width of the box", "es": "Ancho interno de la caja" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Box Width",
+        "es": "Ancho de caja"
+      },
+      "tooltip": {
+        "en": "Internal width of the box",
+        "es": "Ancho interno de la caja"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "box_height",
@@ -58,9 +86,17 @@
       "max": 100,
       "step": 1,
       "group": "dimensions",
-      "label": { "en": "Box Height", "es": "Alto de caja" },
-      "tooltip": { "en": "Internal height of the box", "es": "Alto interno de la caja" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Box Height",
+        "es": "Alto de caja"
+      },
+      "tooltip": {
+        "en": "Internal height of the box",
+        "es": "Alto interno de la caja"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "wall_thickness",
@@ -70,9 +106,17 @@
       "max": 5,
       "step": 0.1,
       "group": "dimensions",
-      "label": { "en": "Wall Thickness", "es": "Grosor de pared" },
-      "tooltip": { "en": "Thickness of enclosure walls", "es": "Grosor de las paredes de la carcasa" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Wall Thickness",
+        "es": "Grosor de pared"
+      },
+      "tooltip": {
+        "en": "Thickness of enclosure walls",
+        "es": "Grosor de las paredes de la carcasa"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "corner_radius",
@@ -82,27 +126,51 @@
       "max": 10,
       "step": 0.5,
       "group": "dimensions",
-      "label": { "en": "Corner Radius", "es": "Radio de esquina" },
-      "tooltip": { "en": "Fillet radius for box corners", "es": "Radio de redondeo para esquinas" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Corner Radius",
+        "es": "Radio de esquina"
+      },
+      "tooltip": {
+        "en": "Fillet radius for box corners",
+        "es": "Radio de redondeo para esquinas"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "rounded_corners",
       "type": "checkbox",
       "default": true,
       "group": "features",
-      "label": { "en": "Rounded Corners", "es": "Esquinas redondeadas" },
-      "tooltip": { "en": "Enable rounded corners on the box", "es": "Habilitar esquinas redondeadas" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Rounded Corners",
+        "es": "Esquinas redondeadas"
+      },
+      "tooltip": {
+        "en": "Enable rounded corners on the box",
+        "es": "Habilitar esquinas redondeadas"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "ventilation",
       "type": "checkbox",
       "default": true,
       "group": "features",
-      "label": { "en": "Ventilation", "es": "Ventilacion" },
-      "tooltip": { "en": "Add ventilation slots to walls", "es": "Agregar ranuras de ventilación en las paredes" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Ventilation",
+        "es": "Ventilacion"
+      },
+      "tooltip": {
+        "en": "Add ventilation slots to walls",
+        "es": "Agregar ranuras de ventilación en las paredes"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "vent_width",
@@ -114,18 +182,34 @@
       "group": "features",
       "advanced": true,
       "parent": "ventilation",
-      "label": { "en": "Vent Width", "es": "Ancho de ventilacion" },
-      "tooltip": { "en": "Width of each ventilation slot", "es": "Ancho de cada ranura de ventilación" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Vent Width",
+        "es": "Ancho de ventilacion"
+      },
+      "tooltip": {
+        "en": "Width of each ventilation slot",
+        "es": "Ancho de cada ranura de ventilación"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "pcb_standoffs",
       "type": "checkbox",
       "default": false,
       "group": "mounting",
-      "label": { "en": "PCB Standoffs", "es": "Soportes de PCB" },
-      "tooltip": { "en": "Add mounting standoffs for a PCB", "es": "Agregar soportes de montaje para PCB" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "PCB Standoffs",
+        "es": "Soportes de PCB"
+      },
+      "tooltip": {
+        "en": "Add mounting standoffs for a PCB",
+        "es": "Agregar soportes de montaje para PCB"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "case_feet_id",
@@ -135,9 +219,17 @@
       "max": 4,
       "step": 1,
       "group": "mounting",
-      "label": { "en": "Case Feet (0=none, 1=hex, 2=cylinder, 3=snap, 4=snap+hole)", "es": "Patas (0=sin, 1=hex, 2=cilindro, 3=snap, 4=snap+agujero)" },
-      "tooltip": { "en": "Style of case feet (0=none)", "es": "Estilo de patas (0=ninguno)" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Case Feet (0=none, 1=hex, 2=cylinder, 3=snap, 4=snap+hole)",
+        "es": "Patas (0=sin, 1=hex, 2=cilindro, 3=snap, 4=snap+agujero)"
+      },
+      "tooltip": {
+        "en": "Style of case feet (0=none)",
+        "es": "Estilo de patas (0=ninguno)"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "screw_hole_dia",
@@ -148,9 +240,17 @@
       "step": 0.1,
       "group": "mounting",
       "advanced": true,
-      "label": { "en": "Screw Hole Diameter", "es": "Diametro de agujero para tornillo" },
-      "tooltip": { "en": "Diameter of screw holes for lid", "es": "Diámetro de agujeros para tornillos de tapa" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Screw Hole Diameter",
+        "es": "Diametro de agujero para tornillo"
+      },
+      "tooltip": {
+        "en": "Diameter of screw holes for lid",
+        "es": "Diámetro de agujeros para tornillos de tapa"
+      },
+      "modes": [
+        "enclosure"
+      ]
     },
     {
       "name": "fn",
@@ -160,21 +260,56 @@
       "max": 64,
       "step": 8,
       "group": "quality",
-      "label": { "en": "Resolution ($fn, 0=auto)", "es": "Resolucion ($fn, 0=auto)" },
-      "tooltip": { "en": "Circle smoothness (0=auto)", "es": "Suavidad de círculos (0=auto)" },
-      "modes": ["enclosure"]
+      "label": {
+        "en": "Resolution ($fn, 0=auto)",
+        "es": "Resolucion ($fn, 0=auto)"
+      },
+      "tooltip": {
+        "en": "Circle smoothness (0=auto)",
+        "es": "Suavidad de círculos (0=auto)"
+      },
+      "modes": [
+        "enclosure"
+      ]
     }
   ],
   "parameter_groups": [
-    { "key": "dimensions", "label": { "en": "Dimensions", "es": "Dimensiones" } },
-    { "key": "features", "label": { "en": "Features", "es": "Caracteristicas" } },
-    { "key": "mounting", "label": { "en": "Mounting", "es": "Montaje" } },
-    { "key": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+    {
+      "key": "dimensions",
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
+    },
+    {
+      "key": "features",
+      "label": {
+        "en": "Features",
+        "es": "Caracteristicas"
+      }
+    },
+    {
+      "key": "mounting",
+      "label": {
+        "en": "Mounting",
+        "es": "Montaje"
+      }
+    },
+    {
+      "key": "quality",
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
+    }
   ],
   "presets": [
     {
       "slug": "arduino_uno",
-      "label": { "en": "Arduino Uno", "es": "Arduino Uno" },
+      "label": {
+        "en": "Arduino Uno",
+        "es": "Arduino Uno"
+      },
       "values": {
         "box_length": 80,
         "box_width": 60,
@@ -184,7 +319,10 @@
     },
     {
       "slug": "raspberry_pi",
-      "label": { "en": "Raspberry Pi", "es": "Raspberry Pi" },
+      "label": {
+        "en": "Raspberry Pi",
+        "es": "Raspberry Pi"
+      },
       "values": {
         "box_length": 90,
         "box_width": 65,
@@ -195,7 +333,10 @@
     },
     {
       "slug": "generic_small",
-      "label": { "en": "Generic Small", "es": "Generico pequeno" },
+      "label": {
+        "en": "Generic Small",
+        "es": "Generico pequeno"
+      },
       "values": {
         "box_length": 50,
         "box_width": 40,
@@ -205,25 +346,86 @@
   ],
   "bom": [
     {
-      "item": { "en": "M3 Standoff Screws", "es": "Tornillos separadores M3" },
+      "item": {
+        "en": "M3 Standoff Screws",
+        "es": "Tornillos separadores M3"
+      },
       "qty": 4,
       "condition": "pcb_standoffs"
     },
     {
-      "item": { "en": "Self-tapping Screws", "es": "Tornillos autorroscantes" },
+      "item": {
+        "en": "Self-tapping Screws",
+        "es": "Tornillos autorroscantes"
+      },
       "qty": 4,
       "condition": "case_feet_id > 0"
     }
   ],
   "camera_views": [
-    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [100, 100, 60] },
-    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 150] },
-    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -150, 0] },
-    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [150, 0, 0] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        100,
+        100,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -150,
+        0
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "en": "Right",
+        "es": "Derecha"
+      },
+      "position": [
+        150,
+        0,
+        0
+      ]
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "parts": [
-    { "id": "enclosure", "render_mode": 0, "label": { "en": "Enclosure", "es": "Carcasa" }, "default_color": "#6366f1" }
+    {
+      "id": "enclosure",
+      "render_mode": 0,
+      "label": {
+        "en": "Enclosure",
+        "es": "Carcasa"
+      },
+      "default_color": "#6366f1"
+    }
   ],
   "estimate_constants": {
     "base_time": 8,

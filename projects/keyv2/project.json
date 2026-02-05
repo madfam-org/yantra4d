@@ -7,14 +7,26 @@
       "en": "Customizable mechanical keyboard keycaps with multiple profiles and stems",
       "es": "Teclas personalizables para teclados mecánicos con múltiples perfiles y vástagos"
     },
-    "tags": ["keyboard", "keycap", "mechanical", "cherry-mx"]
+    "thumbnail": "/projects/keyv2.webp",
+    "tags": [
+      "keyboard",
+      "keycap",
+      "mechanical",
+      "cherry-mx"
+    ],
+    "difficulty": "intermediate"
   },
   "modes": [
     {
       "slug": "keycap",
-      "label": { "en": "Keycap", "es": "Tecla" },
+      "label": {
+        "en": "Keycap",
+        "es": "Tecla"
+      },
       "scad_file": "qubic_keycap.scad",
-      "parts": ["keycap"],
+      "parts": [
+        "keycap"
+      ],
       "estimate": {
         "base_time": 5,
         "per_unit": 1,
@@ -34,9 +46,17 @@
       "max": 4,
       "step": 1,
       "group": "profile",
-      "label": { "en": "Profile (0=DCS, 1=DSA, 2=SA, 3=OEM, 4=Cherry)", "es": "Perfil (0=DCS, 1=DSA, 2=SA, 3=OEM, 4=Cherry)" },
-      "tooltip": { "en": "Keycap profile family", "es": "Familia de perfil de tecla" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Profile (0=DCS, 1=DSA, 2=SA, 3=OEM, 4=Cherry)",
+        "es": "Perfil (0=DCS, 1=DSA, 2=SA, 3=OEM, 4=Cherry)"
+      },
+      "tooltip": {
+        "en": "Keycap profile family",
+        "es": "Familia de perfil de tecla"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "row_id",
@@ -46,9 +66,17 @@
       "max": 4,
       "step": 1,
       "group": "profile",
-      "label": { "en": "Row (1-4)", "es": "Fila (1-4)" },
-      "tooltip": { "en": "Sculpted row number (affects tilt)", "es": "Número de fila esculpida (afecta inclinación)" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Row (1-4)",
+        "es": "Fila (1-4)"
+      },
+      "tooltip": {
+        "en": "Sculpted row number (affects tilt)",
+        "es": "Número de fila esculpida (afecta inclinación)"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "key_size_id",
@@ -58,9 +86,17 @@
       "max": 3,
       "step": 1,
       "group": "profile",
-      "label": { "en": "Key Size (0=1u, 1=1.25u, 2=1.5u, 3=2u)", "es": "Tamano (0=1u, 1=1.25u, 2=1.5u, 3=2u)" },
-      "tooltip": { "en": "Keycap width in standard units", "es": "Ancho de tecla en unidades estándar" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Key Size (0=1u, 1=1.25u, 2=1.5u, 3=2u)",
+        "es": "Tamano (0=1u, 1=1.25u, 2=1.5u, 3=2u)"
+      },
+      "tooltip": {
+        "en": "Keycap width in standard units",
+        "es": "Ancho de tecla en unidades estándar"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "stem_type_id",
@@ -70,18 +106,34 @@
       "max": 2,
       "step": 1,
       "group": "stem",
-      "label": { "en": "Stem (0=Cherry MX, 1=Alps, 2=Box Cherry)", "es": "Vastago (0=Cherry MX, 1=Alps, 2=Box Cherry)" },
-      "tooltip": { "en": "Switch stem type", "es": "Tipo de vástago del switch" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Stem (0=Cherry MX, 1=Alps, 2=Box Cherry)",
+        "es": "Vastago (0=Cherry MX, 1=Alps, 2=Box Cherry)"
+      },
+      "tooltip": {
+        "en": "Switch stem type",
+        "es": "Tipo de vástago del switch"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "legend_enabled",
       "type": "checkbox",
       "default": false,
       "group": "legend",
-      "label": { "en": "Enable Legend", "es": "Activar leyenda" },
-      "tooltip": { "en": "Add text legend to keycap top", "es": "Agregar leyenda de texto en la parte superior" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Enable Legend",
+        "es": "Activar leyenda"
+      },
+      "tooltip": {
+        "en": "Add text legend to keycap top",
+        "es": "Agregar leyenda de texto en la parte superior"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "legend_text",
@@ -89,9 +141,17 @@
       "default": "A",
       "group": "legend",
       "parent": "legend_enabled",
-      "label": { "en": "Legend Text", "es": "Texto de leyenda" },
-      "tooltip": { "en": "Character or text for the legend", "es": "Carácter o texto para la leyenda" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Legend Text",
+        "es": "Texto de leyenda"
+      },
+      "tooltip": {
+        "en": "Character or text for the legend",
+        "es": "Carácter o texto para la leyenda"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "font_size",
@@ -102,9 +162,17 @@
       "step": 0.5,
       "group": "legend",
       "advanced": true,
-      "label": { "en": "Font Size", "es": "Tamano de fuente" },
-      "tooltip": { "en": "Legend font size in mm", "es": "Tamaño de fuente de leyenda en mm" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Font Size",
+        "es": "Tamano de fuente"
+      },
+      "tooltip": {
+        "en": "Legend font size in mm",
+        "es": "Tamaño de fuente de leyenda en mm"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "dish_depth",
@@ -115,9 +183,17 @@
       "step": 0.25,
       "group": "geometry",
       "advanced": true,
-      "label": { "en": "Dish Depth", "es": "Profundidad del plato" },
-      "tooltip": { "en": "Depth of the concave top dish", "es": "Profundidad del plato cóncavo superior" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Dish Depth",
+        "es": "Profundidad del plato"
+      },
+      "tooltip": {
+        "en": "Depth of the concave top dish",
+        "es": "Profundidad del plato cóncavo superior"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "wall_thickness",
@@ -128,9 +204,17 @@
       "step": 0.25,
       "group": "geometry",
       "advanced": true,
-      "label": { "en": "Wall Thickness", "es": "Grosor de pared" },
-      "tooltip": { "en": "Shell wall thickness", "es": "Grosor de pared de la carcasa" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Wall Thickness",
+        "es": "Grosor de pared"
+      },
+      "tooltip": {
+        "en": "Shell wall thickness",
+        "es": "Grosor de pared de la carcasa"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "keytop_thickness",
@@ -141,9 +225,17 @@
       "step": 0.25,
       "group": "geometry",
       "advanced": true,
-      "label": { "en": "Keytop Thickness", "es": "Grosor superior" },
-      "tooltip": { "en": "Thickness of keycap top surface", "es": "Grosor de la superficie superior de la tecla" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Keytop Thickness",
+        "es": "Grosor superior"
+      },
+      "tooltip": {
+        "en": "Thickness of keycap top surface",
+        "es": "Grosor de la superficie superior de la tecla"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "stem_slop",
@@ -154,9 +246,17 @@
       "step": 0.05,
       "group": "stem",
       "advanced": true,
-      "label": { "en": "Stem Tolerance", "es": "Tolerancia del vastago" },
-      "tooltip": { "en": "Extra clearance for stem fit", "es": "Holgura extra para ajuste del vástago" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Stem Tolerance",
+        "es": "Tolerancia del vastago"
+      },
+      "tooltip": {
+        "en": "Extra clearance for stem fit",
+        "es": "Holgura extra para ajuste del vástago"
+      },
+      "modes": [
+        "keycap"
+      ]
     },
     {
       "name": "fn",
@@ -166,22 +266,63 @@
       "max": 64,
       "step": 8,
       "group": "quality",
-      "label": { "en": "Resolution ($fn, 0=auto)", "es": "Resolucion ($fn, 0=auto)" },
-      "tooltip": { "en": "Circle smoothness (0=auto)", "es": "Suavidad de círculos (0=auto)" },
-      "modes": ["keycap"]
+      "label": {
+        "en": "Resolution ($fn, 0=auto)",
+        "es": "Resolucion ($fn, 0=auto)"
+      },
+      "tooltip": {
+        "en": "Circle smoothness (0=auto)",
+        "es": "Suavidad de círculos (0=auto)"
+      },
+      "modes": [
+        "keycap"
+      ]
     }
   ],
   "parameter_groups": [
-    { "key": "profile", "label": { "en": "Profile", "es": "Perfil" } },
-    { "key": "stem", "label": { "en": "Stem", "es": "Vastago" } },
-    { "key": "legend", "label": { "en": "Legend", "es": "Leyenda" } },
-    { "key": "geometry", "label": { "en": "Geometry", "es": "Geometria" } },
-    { "key": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+    {
+      "key": "profile",
+      "label": {
+        "en": "Profile",
+        "es": "Perfil"
+      }
+    },
+    {
+      "key": "stem",
+      "label": {
+        "en": "Stem",
+        "es": "Vastago"
+      }
+    },
+    {
+      "key": "legend",
+      "label": {
+        "en": "Legend",
+        "es": "Leyenda"
+      }
+    },
+    {
+      "key": "geometry",
+      "label": {
+        "en": "Geometry",
+        "es": "Geometria"
+      }
+    },
+    {
+      "key": "quality",
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
+    }
   ],
   "presets": [
     {
       "slug": "cherry_r3_1u",
-      "label": { "en": "Cherry Row 3 (1u)", "es": "Cherry Fila 3 (1u)" },
+      "label": {
+        "en": "Cherry Row 3 (1u)",
+        "es": "Cherry Fila 3 (1u)"
+      },
       "values": {
         "profile_id": 0,
         "row_id": 3,
@@ -190,7 +331,10 @@
     },
     {
       "slug": "dsa_uniform",
-      "label": { "en": "DSA Uniform", "es": "DSA Uniforme" },
+      "label": {
+        "en": "DSA Uniform",
+        "es": "DSA Uniforme"
+      },
       "values": {
         "profile_id": 1,
         "row_id": 1,
@@ -199,7 +343,10 @@
     },
     {
       "slug": "sa_sculpted",
-      "label": { "en": "SA Sculpted Row 3", "es": "SA Esculpido Fila 3" },
+      "label": {
+        "en": "SA Sculpted Row 3",
+        "es": "SA Esculpido Fila 3"
+      },
       "values": {
         "profile_id": 2,
         "row_id": 3,
@@ -208,14 +355,69 @@
     }
   ],
   "camera_views": [
-    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [25, 25, 25] },
-    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 40] },
-    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -40, 10] },
-    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [40, 0, 10] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        25,
+        25,
+        25
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        40
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -40,
+        10
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "en": "Right",
+        "es": "Derecha"
+      },
+      "position": [
+        40,
+        0,
+        10
+      ]
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "parts": [
-    { "id": "keycap", "render_mode": 0, "label": { "en": "Keycap", "es": "Tecla" }, "default_color": "#e879f9" }
+    {
+      "id": "keycap",
+      "render_mode": 0,
+      "label": {
+        "en": "Keycap",
+        "es": "Tecla"
+      },
+      "default_color": "#e879f9"
+    }
   ],
   "estimate_constants": {
     "base_time": 5,

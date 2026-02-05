@@ -7,51 +7,123 @@
       "en": "Modular construction system for education and prototyping",
       "es": "Sistema de construccion modular para educacion y prototipado"
     },
-    "tags": ["education", "construction", "modular", "stem"]
+    "thumbnail": "/projects/stemfie.webp",
+    "tags": [
+      "education",
+      "construction",
+      "modular",
+      "stem"
+    ],
+    "difficulty": "advanced"
   },
   "modes": [
     {
       "id": "beam",
       "scad_file": "qubic_beam.scad",
-      "label": { "en": "Beam", "es": "Viga" },
-      "parts": ["beam"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "en": "Beam",
+        "es": "Viga"
+      },
+      "parts": [
+        "beam"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     },
     {
       "id": "brace",
       "scad_file": "qubic_brace.scad",
-      "label": { "en": "Brace", "es": "Escuadra" },
-      "parts": ["brace"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "en": "Brace",
+        "es": "Escuadra"
+      },
+      "parts": [
+        "brace"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     },
     {
       "id": "fastener",
       "scad_file": "qubic_fastener.scad",
-      "label": { "en": "Fastener", "es": "Sujetador" },
-      "parts": ["fastener"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "en": "Fastener",
+        "es": "Sujetador"
+      },
+      "parts": [
+        "fastener"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
-    { "id": "beam", "render_mode": 0, "label": { "en": "Beam", "es": "Viga" }, "default_color": "#4ade80" },
-    { "id": "brace", "render_mode": 0, "label": { "en": "Brace", "es": "Escuadra" }, "default_color": "#facc15" },
-    { "id": "fastener", "render_mode": 0, "label": { "en": "Fastener", "es": "Sujetador" }, "default_color": "#94a3b8" }
+    {
+      "id": "beam",
+      "render_mode": 0,
+      "label": {
+        "en": "Beam",
+        "es": "Viga"
+      },
+      "default_color": "#4ade80"
+    },
+    {
+      "id": "brace",
+      "render_mode": 0,
+      "label": {
+        "en": "Brace",
+        "es": "Escuadra"
+      },
+      "default_color": "#facc15"
+    },
+    {
+      "id": "fastener",
+      "render_mode": 0,
+      "label": {
+        "en": "Fastener",
+        "es": "Sujetador"
+      },
+      "default_color": "#94a3b8"
+    }
   ],
   "presets": [
     {
       "id": "beam_5u",
-      "label": { "en": "5-Unit Beam", "es": "Viga de 5 unidades" },
-      "values": { "length_units": 5 }
+      "label": {
+        "en": "5-Unit Beam",
+        "es": "Viga de 5 unidades"
+      },
+      "values": {
+        "length_units": 5
+      }
     },
     {
       "id": "brace_90deg",
-      "label": { "en": "90-Degree Brace", "es": "Escuadra a 90 grados" },
-      "values": { "arm_a_units": 3, "arm_b_units": 3 }
+      "label": {
+        "en": "90-Degree Brace",
+        "es": "Escuadra a 90 grados"
+      },
+      "values": {
+        "arm_a_units": 3,
+        "arm_b_units": 3
+      }
     },
     {
       "id": "fastener_standard",
-      "label": { "en": "Standard Pin", "es": "Pin estandar" },
-      "values": { "length_units": 2, "fastener_type_id": 0 }
+      "label": {
+        "en": "Standard Pin",
+        "es": "Pin estandar"
+      },
+      "values": {
+        "length_units": 2,
+        "fastener_type_id": 0
+      }
     }
   ],
   "parameters": [
@@ -62,9 +134,18 @@
       "min": 1,
       "max": 20,
       "step": 1,
-      "label": { "en": "Length (BU)", "es": "Largo (BU)" },
-      "tooltip": { "en": "Length in block units (1 BU = 12.5 mm)", "es": "Largo en unidades de bloque (1 BU = 12.5 mm)" },
-      "visible_in_modes": ["beam", "fastener"],
+      "label": {
+        "en": "Length (BU)",
+        "es": "Largo (BU)"
+      },
+      "tooltip": {
+        "en": "Length in block units (1 BU = 12.5 mm)",
+        "es": "Largo en unidades de bloque (1 BU = 12.5 mm)"
+      },
+      "visible_in_modes": [
+        "beam",
+        "fastener"
+      ],
       "group": "dimensions"
     },
     {
@@ -74,9 +155,17 @@
       "min": 1,
       "max": 4,
       "step": 1,
-      "label": { "en": "Width (BU)", "es": "Ancho (BU)" },
-      "tooltip": { "en": "Width in block units", "es": "Ancho en unidades de bloque" },
-      "visible_in_modes": ["beam"],
+      "label": {
+        "en": "Width (BU)",
+        "es": "Ancho (BU)"
+      },
+      "tooltip": {
+        "en": "Width in block units",
+        "es": "Ancho en unidades de bloque"
+      },
+      "visible_in_modes": [
+        "beam"
+      ],
       "group": "dimensions"
     },
     {
@@ -86,18 +175,34 @@
       "min": 1,
       "max": 4,
       "step": 1,
-      "label": { "en": "Height (BU)", "es": "Alto (BU)" },
-      "tooltip": { "en": "Height in block units", "es": "Alto en unidades de bloque" },
-      "visible_in_modes": ["beam"],
+      "label": {
+        "en": "Height (BU)",
+        "es": "Alto (BU)"
+      },
+      "tooltip": {
+        "en": "Height in block units",
+        "es": "Alto en unidades de bloque"
+      },
+      "visible_in_modes": [
+        "beam"
+      ],
       "group": "dimensions"
     },
     {
       "id": "holes_x",
       "type": "checkbox",
       "default": true,
-      "label": { "en": "Holes X-axis", "es": "Agujeros eje X" },
-      "tooltip": { "en": "Enable holes along X axis", "es": "Habilitar agujeros en el eje X" },
-      "visible_in_modes": ["beam"],
+      "label": {
+        "en": "Holes X-axis",
+        "es": "Agujeros eje X"
+      },
+      "tooltip": {
+        "en": "Enable holes along X axis",
+        "es": "Habilitar agujeros en el eje X"
+      },
+      "visible_in_modes": [
+        "beam"
+      ],
       "group": "features",
       "advanced": true
     },
@@ -105,9 +210,17 @@
       "id": "holes_y",
       "type": "checkbox",
       "default": true,
-      "label": { "en": "Holes Y-axis", "es": "Agujeros eje Y" },
-      "tooltip": { "en": "Enable holes along Y axis", "es": "Habilitar agujeros en el eje Y" },
-      "visible_in_modes": ["beam"],
+      "label": {
+        "en": "Holes Y-axis",
+        "es": "Agujeros eje Y"
+      },
+      "tooltip": {
+        "en": "Enable holes along Y axis",
+        "es": "Habilitar agujeros en el eje Y"
+      },
+      "visible_in_modes": [
+        "beam"
+      ],
       "group": "features",
       "advanced": true
     },
@@ -115,9 +228,17 @@
       "id": "holes_z",
       "type": "checkbox",
       "default": true,
-      "label": { "en": "Holes Z-axis", "es": "Agujeros eje Z" },
-      "tooltip": { "en": "Enable holes along Z axis", "es": "Habilitar agujeros en el eje Z" },
-      "visible_in_modes": ["beam"],
+      "label": {
+        "en": "Holes Z-axis",
+        "es": "Agujeros eje Z"
+      },
+      "tooltip": {
+        "en": "Enable holes along Z axis",
+        "es": "Habilitar agujeros en el eje Z"
+      },
+      "visible_in_modes": [
+        "beam"
+      ],
       "group": "features",
       "advanced": true
     },
@@ -128,9 +249,17 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": { "en": "Arm A Length (BU)", "es": "Largo brazo A (BU)" },
-      "tooltip": { "en": "Length of first arm in block units", "es": "Largo del primer brazo en unidades de bloque" },
-      "visible_in_modes": ["brace"],
+      "label": {
+        "en": "Arm A Length (BU)",
+        "es": "Largo brazo A (BU)"
+      },
+      "tooltip": {
+        "en": "Length of first arm in block units",
+        "es": "Largo del primer brazo en unidades de bloque"
+      },
+      "visible_in_modes": [
+        "brace"
+      ],
       "group": "dimensions"
     },
     {
@@ -140,9 +269,17 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": { "en": "Arm B Length (BU)", "es": "Largo brazo B (BU)" },
-      "tooltip": { "en": "Length of second arm in block units", "es": "Largo del segundo brazo en unidades de bloque" },
-      "visible_in_modes": ["brace"],
+      "label": {
+        "en": "Arm B Length (BU)",
+        "es": "Largo brazo B (BU)"
+      },
+      "tooltip": {
+        "en": "Length of second arm in block units",
+        "es": "Largo del segundo brazo en unidades de bloque"
+      },
+      "visible_in_modes": [
+        "brace"
+      ],
       "group": "dimensions"
     },
     {
@@ -152,18 +289,34 @@
       "min": 1,
       "max": 2,
       "step": 1,
-      "label": { "en": "Thickness", "es": "Grosor" },
-      "tooltip": { "en": "Brace thickness multiplier (1 = 0.25 BU)", "es": "Multiplicador de grosor (1 = 0.25 BU)" },
-      "visible_in_modes": ["brace"],
+      "label": {
+        "en": "Thickness",
+        "es": "Grosor"
+      },
+      "tooltip": {
+        "en": "Brace thickness multiplier (1 = 0.25 BU)",
+        "es": "Multiplicador de grosor (1 = 0.25 BU)"
+      },
+      "visible_in_modes": [
+        "brace"
+      ],
       "group": "dimensions"
     },
     {
       "id": "holes_enabled",
       "type": "checkbox",
       "default": true,
-      "label": { "en": "Holes Enabled", "es": "Agujeros habilitados" },
-      "tooltip": { "en": "Enable connection holes in the brace", "es": "Habilitar agujeros de conexion en la escuadra" },
-      "visible_in_modes": ["brace"],
+      "label": {
+        "en": "Holes Enabled",
+        "es": "Agujeros habilitados"
+      },
+      "tooltip": {
+        "en": "Enable connection holes in the brace",
+        "es": "Habilitar agujeros de conexion en la escuadra"
+      },
+      "visible_in_modes": [
+        "brace"
+      ],
       "group": "features"
     },
     {
@@ -173,9 +326,17 @@
       "min": 0,
       "max": 1,
       "step": 1,
-      "label": { "en": "Type (0=Pin, 1=Shaft)", "es": "Tipo (0=Pin, 1=Eje)" },
-      "tooltip": { "en": "0 = Pin fastener, 1 = Shaft fastener", "es": "0 = Sujetador tipo pin, 1 = Sujetador tipo eje" },
-      "visible_in_modes": ["fastener"],
+      "label": {
+        "en": "Type (0=Pin, 1=Shaft)",
+        "es": "Tipo (0=Pin, 1=Eje)"
+      },
+      "tooltip": {
+        "en": "0 = Pin fastener, 1 = Shaft fastener",
+        "es": "0 = Sujetador tipo pin, 1 = Sujetador tipo eje"
+      },
+      "visible_in_modes": [
+        "fastener"
+      ],
       "group": "features"
     },
     {
@@ -185,23 +346,98 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
-      "tooltip": { "en": "0 = auto; higher = more detail but slower", "es": "0 = automatico; mayor = mas detalle pero mas lento" },
-      "visible_in_modes": ["beam", "brace", "fastener"],
+      "label": {
+        "en": "Quality ($fn)",
+        "es": "Calidad ($fn)"
+      },
+      "tooltip": {
+        "en": "0 = auto; higher = more detail but slower",
+        "es": "0 = automatico; mayor = mas detalle pero mas lento"
+      },
+      "visible_in_modes": [
+        "beam",
+        "brace",
+        "fastener"
+      ],
       "group": "quality"
     }
   ],
   "parameter_groups": [
-    { "id": "dimensions", "label": { "en": "Dimensions", "es": "Dimensiones" } },
-    { "id": "features", "label": { "en": "Features", "es": "Caracteristicas" } },
-    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
+    },
+    {
+      "id": "features",
+      "label": {
+        "en": "Features",
+        "es": "Caracteristicas"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "camera_views": [
-    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [50, 50, 50] },
-    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 100] },
-    { "id": "front", "label": { "en": "Front", "es": "Frente" }, "position": [0, -100, 0] },
-    { "id": "right", "label": { "en": "Right", "es": "Derecha" }, "position": [100, 0, 0] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isometrico"
+      },
+      "position": [
+        50,
+        50,
+        50
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        100
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frente"
+      },
+      "position": [
+        0,
+        -100,
+        0
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "en": "Right",
+        "es": "Derecha"
+      },
+      "position": [
+        100,
+        0,
+        0
+      ]
+    }
   ],
   "viewer": {
     "default_color": "#4ade80"

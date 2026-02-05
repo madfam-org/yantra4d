@@ -6,94 +6,187 @@
     "description": {
       "en": "Modular storage system with bins, baseplates, and lids in the Gridfinity grid standard",
       "es": "Sistema de almacenamiento modular con contenedores, placas base y tapas en el estándar Gridfinity"
-    }
+    },
+    "thumbnail": "/projects/gridfinity.webp",
+    "tags": [
+      "storage",
+      "modular",
+      "snap-fit"
+    ],
+    "difficulty": "advanced"
   },
   "modes": [
     {
       "id": "cup",
       "scad_file": "qubic_cup.scad",
-      "label": { "es": "Contenedor", "en": "Bin" },
-      "parts": ["cup"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "es": "Contenedor",
+        "en": "Bin"
+      },
+      "parts": [
+        "cup"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     },
     {
       "id": "baseplate",
       "scad_file": "qubic_baseplate.scad",
-      "label": { "es": "Placa Base", "en": "Baseplate" },
-      "parts": ["baseplate"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "es": "Placa Base",
+        "en": "Baseplate"
+      },
+      "parts": [
+        "baseplate"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     },
     {
       "id": "lid",
       "scad_file": "qubic_lid.scad",
-      "label": { "es": "Tapa", "en": "Lid" },
-      "parts": ["lid"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "es": "Tapa",
+        "en": "Lid"
+      },
+      "parts": [
+        "lid"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
-    { "id": "cup", "render_mode": 0, "label": { "es": "Contenedor", "en": "Bin" }, "default_color": "#4a90d9" },
-    { "id": "baseplate", "render_mode": 0, "label": { "es": "Placa Base", "en": "Baseplate" }, "default_color": "#2d2d2d" },
-    { "id": "lid", "render_mode": 0, "label": { "es": "Tapa", "en": "Lid" }, "default_color": "#6b7280" }
+    {
+      "id": "cup",
+      "render_mode": 0,
+      "label": {
+        "es": "Contenedor",
+        "en": "Bin"
+      },
+      "default_color": "#4a90d9"
+    },
+    {
+      "id": "baseplate",
+      "render_mode": 0,
+      "label": {
+        "es": "Placa Base",
+        "en": "Baseplate"
+      },
+      "default_color": "#2d2d2d"
+    },
+    {
+      "id": "lid",
+      "render_mode": 0,
+      "label": {
+        "es": "Tapa",
+        "en": "Lid"
+      },
+      "default_color": "#6b7280"
+    }
   ],
   "presets": [
     {
       "id": "small_bin",
-      "label": { "es": "Contenedor Pequeño (2×1×3)", "en": "Small Parts Bin (2×1×3)" },
+      "label": {
+        "es": "Contenedor Pequeño (2×1×3)",
+        "en": "Small Parts Bin (2×1×3)"
+      },
       "values": {
-        "width_units": 2, "depth_units": 1, "height_units": 3,
-        "enable_magnets": true, "fingerslide_enabled": true
+        "width_units": 2,
+        "depth_units": 1,
+        "height_units": 3,
+        "enable_magnets": true,
+        "fingerslide_enabled": true
       }
     },
     {
       "id": "battery_holder",
-      "label": { "es": "Porta Baterías (3×2×3)", "en": "Battery Holder (3×2×3)" },
+      "label": {
+        "es": "Porta Baterías (3×2×3)",
+        "en": "Battery Holder (3×2×3)"
+      },
       "values": {
-        "width_units": 3, "depth_units": 2, "height_units": 3,
-        "vertical_chambers": 3, "horizontal_chambers": 2,
+        "width_units": 3,
+        "depth_units": 2,
+        "height_units": 3,
+        "vertical_chambers": 3,
+        "horizontal_chambers": 2,
         "label_enabled": true
       }
     },
     {
       "id": "tool_drawer",
-      "label": { "es": "Cajón de Herramientas (4×2×2)", "en": "Tool Drawer (4×2×2)" },
+      "label": {
+        "es": "Cajón de Herramientas (4×2×2)",
+        "en": "Tool Drawer (4×2×2)"
+      },
       "values": {
-        "width_units": 4, "depth_units": 2, "height_units": 2,
+        "width_units": 4,
+        "depth_units": 2,
+        "height_units": 2,
         "horizontal_chambers": 4,
         "wallpattern_enabled": true
       }
     },
     {
       "id": "baseplate_std",
-      "label": { "es": "Placa Base Estándar (2×2)", "en": "Standard Baseplate (2×2)" },
+      "label": {
+        "es": "Placa Base Estándar (2×2)",
+        "en": "Standard Baseplate (2×2)"
+      },
       "values": {
-        "width_units": 2, "depth_units": 2,
+        "width_units": 2,
+        "depth_units": 2,
         "bp_enable_magnets": true
       }
     },
     {
       "id": "lid_std",
-      "label": { "es": "Tapa Estándar (2×1)", "en": "Standard Lid (2×1)" },
+      "label": {
+        "es": "Tapa Estándar (2×1)",
+        "en": "Standard Lid (2×1)"
+      },
       "values": {
-        "width_units": 2, "depth_units": 1,
+        "width_units": 2,
+        "depth_units": 1,
         "lid_include_magnets": true
       }
     },
     {
       "id": "screw_organizer",
-      "label": { "es": "Organizador de Tornillos (3×2×4)", "en": "Screw Organizer (3×2×4)" },
+      "label": {
+        "es": "Organizador de Tornillos (3×2×4)",
+        "en": "Screw Organizer (3×2×4)"
+      },
       "values": {
-        "width_units": 3, "depth_units": 2, "height_units": 4,
-        "vertical_chambers": 2, "horizontal_chambers": 3,
-        "label_enabled": true, "enable_magnets": true
+        "width_units": 3,
+        "depth_units": 2,
+        "height_units": 4,
+        "vertical_chambers": 2,
+        "horizontal_chambers": 3,
+        "label_enabled": true,
+        "enable_magnets": true
       }
     },
     {
       "id": "pen_cup",
-      "label": { "es": "Porta Plumas (1×1×6)", "en": "Pen Cup (1×1×6)" },
+      "label": {
+        "es": "Porta Plumas (1×1×6)",
+        "en": "Pen Cup (1×1×6)"
+      },
       "values": {
-        "width_units": 1, "depth_units": 1, "height_units": 6,
-        "fingerslide_enabled": false, "enable_magnets": true
+        "width_units": 1,
+        "depth_units": 1,
+        "height_units": 6,
+        "fingerslide_enabled": false,
+        "enable_magnets": true
       }
     }
   ],
@@ -105,9 +198,19 @@
       "min": 1,
       "max": 6,
       "step": 1,
-      "label": { "es": "Ancho (unidades)", "en": "Width (units)" },
-      "tooltip": { "es": "Unidades de rejilla en X (múltiplos de 42mm)", "en": "Grid units in X (multiples of 42mm)" },
-      "visible_in_modes": ["cup", "baseplate", "lid"],
+      "label": {
+        "es": "Ancho (unidades)",
+        "en": "Width (units)"
+      },
+      "tooltip": {
+        "es": "Unidades de rejilla en X (múltiplos de 42mm)",
+        "en": "Grid units in X (multiples of 42mm)"
+      },
+      "visible_in_modes": [
+        "cup",
+        "baseplate",
+        "lid"
+      ],
       "group": "dimensions"
     },
     {
@@ -117,9 +220,19 @@
       "min": 1,
       "max": 6,
       "step": 1,
-      "label": { "es": "Profundidad (unidades)", "en": "Depth (units)" },
-      "tooltip": { "es": "Unidades de rejilla en Y (múltiplos de 42mm)", "en": "Grid units in Y (multiples of 42mm)" },
-      "visible_in_modes": ["cup", "baseplate", "lid"],
+      "label": {
+        "es": "Profundidad (unidades)",
+        "en": "Depth (units)"
+      },
+      "tooltip": {
+        "es": "Unidades de rejilla en Y (múltiplos de 42mm)",
+        "en": "Grid units in Y (multiples of 42mm)"
+      },
+      "visible_in_modes": [
+        "cup",
+        "baseplate",
+        "lid"
+      ],
       "group": "dimensions"
     },
     {
@@ -129,9 +242,17 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": { "es": "Altura (unidades)", "en": "Height (units)" },
-      "tooltip": { "es": "Unidades de altura (múltiplos de 7mm)", "en": "Height units (multiples of 7mm)" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Altura (unidades)",
+        "en": "Height (units)"
+      },
+      "tooltip": {
+        "es": "Unidades de altura (múltiplos de 7mm)",
+        "en": "Height units (multiples of 7mm)"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "dimensions"
     },
     {
@@ -141,9 +262,17 @@
       "min": 0,
       "max": 3,
       "step": 0.2,
-      "label": { "es": "Grosor de Pared (mm)", "en": "Wall Thickness (mm)" },
-      "tooltip": { "es": "0 = automático según altura", "en": "0 = auto based on height" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Grosor de Pared (mm)",
+        "en": "Wall Thickness (mm)"
+      },
+      "tooltip": {
+        "es": "0 = automático según altura",
+        "en": "0 = auto based on height"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_structure",
       "visibility_level": "advanced"
     },
@@ -154,9 +283,17 @@
       "min": 0.4,
       "max": 2,
       "step": 0.1,
-      "label": { "es": "Grosor del Piso (mm)", "en": "Floor Thickness (mm)" },
-      "tooltip": { "es": "Grosor mínimo del piso sobre los imanes", "en": "Minimum floor thickness above magnets" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Grosor del Piso (mm)",
+        "en": "Floor Thickness (mm)"
+      },
+      "tooltip": {
+        "es": "Grosor mínimo del piso sobre los imanes",
+        "en": "Minimum floor thickness above magnets"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_structure",
       "visibility_level": "advanced"
     },
@@ -167,9 +304,17 @@
       "min": 1,
       "max": 6,
       "step": 1,
-      "label": { "es": "Divisiones Verticales", "en": "Vertical Chambers" },
-      "tooltip": { "es": "Número de divisiones a lo largo del eje Y", "en": "Number of compartments along Y axis" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Divisiones Verticales",
+        "en": "Vertical Chambers"
+      },
+      "tooltip": {
+        "es": "Número de divisiones a lo largo del eje Y",
+        "en": "Number of compartments along Y axis"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_structure"
     },
     {
@@ -179,9 +324,17 @@
       "min": 1,
       "max": 6,
       "step": 1,
-      "label": { "es": "Divisiones Horizontales", "en": "Horizontal Chambers" },
-      "tooltip": { "es": "Número de divisiones a lo largo del eje X", "en": "Number of compartments along X axis" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Divisiones Horizontales",
+        "en": "Horizontal Chambers"
+      },
+      "tooltip": {
+        "es": "Número de divisiones a lo largo del eje X",
+        "en": "Number of compartments along X axis"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_structure"
     },
     {
@@ -191,9 +344,17 @@
       "min": 0,
       "max": 3,
       "step": 1,
-      "label": { "es": "Estilo del Labio", "en": "Lip Style" },
-      "tooltip": { "es": "0=normal, 1=reducido, 2=mínimo, 3=sin labio", "en": "0=normal, 1=reduced, 2=minimum, 3=none" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Estilo del Labio",
+        "en": "Lip Style"
+      },
+      "tooltip": {
+        "es": "0=normal, 1=reducido, 2=mínimo, 3=sin labio",
+        "en": "0=normal, 1=reduced, 2=minimum, 3=none"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_structure",
       "visibility_level": "advanced"
     },
@@ -204,9 +365,17 @@
       "min": 0,
       "max": 2,
       "step": 0.1,
-      "label": { "es": "Holgura Superior (mm)", "en": "Headroom (mm)" },
-      "tooltip": { "es": "Reducción del borde superior para mejor apilamiento", "en": "Top undersizing for better stacking" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Holgura Superior (mm)",
+        "en": "Headroom (mm)"
+      },
+      "tooltip": {
+        "es": "Reducción del borde superior para mejor apilamiento",
+        "en": "Top undersizing for better stacking"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_structure",
       "visibility_level": "advanced"
     },
@@ -217,9 +386,17 @@
       "min": 0,
       "max": 3,
       "step": 1,
-      "label": { "es": "Piso Eficiente", "en": "Efficient Floor" },
-      "tooltip": { "es": "0=desactivado, 1=activado, 2=redondeado, 3=suave — ahorra 30-40% material", "en": "0=off, 1=on, 2=rounded, 3=smooth — saves 30-40% material" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Piso Eficiente",
+        "en": "Efficient Floor"
+      },
+      "tooltip": {
+        "es": "0=desactivado, 1=activado, 2=redondeado, 3=suave — ahorra 30-40% material",
+        "en": "0=off, 1=on, 2=rounded, 3=smooth — saves 30-40% material"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_structure",
       "visibility_level": "advanced"
     },
@@ -227,36 +404,68 @@
       "id": "fingerslide_enabled",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Rampa para Dedos", "en": "Finger Slide" },
-      "tooltip": { "es": "Agrega rampa frontal para acceso fácil", "en": "Add front ramp for easy access" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Rampa para Dedos",
+        "en": "Finger Slide"
+      },
+      "tooltip": {
+        "es": "Agrega rampa frontal para acceso fácil",
+        "en": "Add front ramp for easy access"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_features"
     },
     {
       "id": "label_enabled",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Etiqueta", "en": "Label" },
-      "tooltip": { "es": "Agrega superficie para etiqueta", "en": "Add label surface" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Etiqueta",
+        "en": "Label"
+      },
+      "tooltip": {
+        "es": "Agrega superficie para etiqueta",
+        "en": "Add label surface"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_features"
     },
     {
       "id": "sliding_lid_enabled",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Tapa Deslizante", "en": "Sliding Lid" },
-      "tooltip": { "es": "Habilita soporte para tapa deslizante", "en": "Enable sliding lid support" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Tapa Deslizante",
+        "en": "Sliding Lid"
+      },
+      "tooltip": {
+        "es": "Habilita soporte para tapa deslizante",
+        "en": "Enable sliding lid support"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_features"
     },
     {
       "id": "wallpattern_enabled",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Patrón de Pared", "en": "Wall Pattern" },
-      "tooltip": { "es": "Habilitar patrón decorativo en las paredes", "en": "Enable decorative wall pattern" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Patrón de Pared",
+        "en": "Wall Pattern"
+      },
+      "tooltip": {
+        "es": "Habilitar patrón decorativo en las paredes",
+        "en": "Enable decorative wall pattern"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_features"
     },
     {
@@ -266,9 +475,17 @@
       "min": 0,
       "max": 3,
       "step": 1,
-      "label": { "es": "Estilo de Patrón", "en": "Pattern Style" },
-      "tooltip": { "es": "0=hexagonal, 1=rejilla, 2=voronoi, 3=ladrillo", "en": "0=hexgrid, 1=grid, 2=voronoi, 3=brick" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Estilo de Patrón",
+        "en": "Pattern Style"
+      },
+      "tooltip": {
+        "es": "0=hexagonal, 1=rejilla, 2=voronoi, 3=ladrillo",
+        "en": "0=hexgrid, 1=grid, 2=voronoi, 3=brick"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_features",
       "visibility_level": "advanced",
       "parent": "wallpattern_enabled"
@@ -280,9 +497,17 @@
       "min": 0,
       "max": 2,
       "step": 1,
-      "label": { "es": "Esquina Cónica", "en": "Tapered Corner" },
-      "tooltip": { "es": "0=ninguno, 1=redondeado, 2=achaflanado", "en": "0=none, 1=rounded, 2=chamfered" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Esquina Cónica",
+        "en": "Tapered Corner"
+      },
+      "tooltip": {
+        "es": "0=ninguno, 1=redondeado, 2=achaflanado",
+        "en": "0=none, 1=rounded, 2=chamfered"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_features",
       "visibility_level": "advanced"
     },
@@ -293,9 +518,17 @@
       "min": 5,
       "max": 20,
       "step": 1,
-      "label": { "es": "Tamaño de Esquina Cónica (mm)", "en": "Tapered Corner Size (mm)" },
-      "tooltip": { "es": "Radio/tamaño del chaflán de esquina", "en": "Corner taper radius/size" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Tamaño de Esquina Cónica (mm)",
+        "en": "Tapered Corner Size (mm)"
+      },
+      "tooltip": {
+        "es": "Radio/tamaño del chaflán de esquina",
+        "en": "Corner taper radius/size"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "cup_features",
       "visibility_level": "advanced",
       "parent": "tapered_corner_id"
@@ -304,36 +537,68 @@
       "id": "enable_magnets",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Imanes (Contenedor)", "en": "Magnets (Bin)" },
-      "tooltip": { "es": "Agregar cavidades para imanes 6×2mm en las esquinas", "en": "Add 6×2mm magnet cavities in corners" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Imanes (Contenedor)",
+        "en": "Magnets (Bin)"
+      },
+      "tooltip": {
+        "es": "Agregar cavidades para imanes 6×2mm en las esquinas",
+        "en": "Add 6×2mm magnet cavities in corners"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "mounting"
     },
     {
       "id": "enable_screws",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Tornillos (Contenedor)", "en": "Screws (Bin)" },
-      "tooltip": { "es": "Agregar orificios para tornillos M3×6 en las esquinas", "en": "Add M3×6 screw holes in corners" },
-      "visible_in_modes": ["cup"],
+      "label": {
+        "es": "Tornillos (Contenedor)",
+        "en": "Screws (Bin)"
+      },
+      "tooltip": {
+        "es": "Agregar orificios para tornillos M3×6 en las esquinas",
+        "en": "Add M3×6 screw holes in corners"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
       "group": "mounting"
     },
     {
       "id": "bp_enable_magnets",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Imanes (Placa)", "en": "Magnets (Plate)" },
-      "tooltip": { "es": "Agregar cavidades para imanes en la placa base", "en": "Add magnet cavities in baseplate" },
-      "visible_in_modes": ["baseplate"],
+      "label": {
+        "es": "Imanes (Placa)",
+        "en": "Magnets (Plate)"
+      },
+      "tooltip": {
+        "es": "Agregar cavidades para imanes en la placa base",
+        "en": "Add magnet cavities in baseplate"
+      },
+      "visible_in_modes": [
+        "baseplate"
+      ],
       "group": "mounting"
     },
     {
       "id": "bp_enable_screws",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Tornillos (Placa)", "en": "Screws (Plate)" },
-      "tooltip": { "es": "Agregar orificios para tornillos en las esquinas de la placa", "en": "Add screw holes in baseplate corners" },
-      "visible_in_modes": ["baseplate"],
+      "label": {
+        "es": "Tornillos (Placa)",
+        "en": "Screws (Plate)"
+      },
+      "tooltip": {
+        "es": "Agregar orificios para tornillos en las esquinas de la placa",
+        "en": "Add screw holes in baseplate corners"
+      },
+      "visible_in_modes": [
+        "baseplate"
+      ],
       "group": "mounting"
     },
     {
@@ -343,9 +608,17 @@
       "min": 0,
       "max": 10,
       "step": 0.25,
-      "label": { "es": "Radio de Esquina (mm)", "en": "Corner Radius (mm)" },
-      "tooltip": { "es": "Radio de las esquinas de la placa base", "en": "Baseplate corner radius" },
-      "visible_in_modes": ["baseplate"],
+      "label": {
+        "es": "Radio de Esquina (mm)",
+        "en": "Corner Radius (mm)"
+      },
+      "tooltip": {
+        "es": "Radio de las esquinas de la placa base",
+        "en": "Baseplate corner radius"
+      },
+      "visible_in_modes": [
+        "baseplate"
+      ],
       "group": "baseplate"
     },
     {
@@ -355,18 +628,34 @@
       "min": -1,
       "max": 10,
       "step": 0.5,
-      "label": { "es": "Pared Reducida (mm)", "en": "Reduced Wall (mm)" },
-      "tooltip": { "es": "-1 = altura completa", "en": "-1 = full height" },
-      "visible_in_modes": ["baseplate"],
+      "label": {
+        "es": "Pared Reducida (mm)",
+        "en": "Reduced Wall (mm)"
+      },
+      "tooltip": {
+        "es": "-1 = altura completa",
+        "en": "-1 = full height"
+      },
+      "visible_in_modes": [
+        "baseplate"
+      ],
       "group": "baseplate"
     },
     {
       "id": "bp_reduced_wall_taper",
       "type": "checkbox",
       "default": false,
-      "label": { "es": "Afinamiento de Pared Reducida", "en": "Reduced Wall Taper" },
-      "tooltip": { "es": "Afina el borde de la pared reducida", "en": "Taper the reduced wall edge" },
-      "visible_in_modes": ["baseplate"],
+      "label": {
+        "es": "Afinamiento de Pared Reducida",
+        "en": "Reduced Wall Taper"
+      },
+      "tooltip": {
+        "es": "Afina el borde de la pared reducida",
+        "en": "Taper the reduced wall edge"
+      },
+      "visible_in_modes": [
+        "baseplate"
+      ],
       "group": "baseplate",
       "visibility_level": "advanced"
     },
@@ -374,9 +663,17 @@
       "id": "lid_include_magnets",
       "type": "checkbox",
       "default": true,
-      "label": { "es": "Imanes (Tapa)", "en": "Magnets (Lid)" },
-      "tooltip": { "es": "Incluir cavidades para imanes en la tapa", "en": "Include magnet cavities in lid" },
-      "visible_in_modes": ["lid"],
+      "label": {
+        "es": "Imanes (Tapa)",
+        "en": "Magnets (Lid)"
+      },
+      "tooltip": {
+        "es": "Incluir cavidades para imanes en la tapa",
+        "en": "Include magnet cavities in lid"
+      },
+      "visible_in_modes": [
+        "lid"
+      ],
       "group": "lid"
     },
     {
@@ -386,9 +683,17 @@
       "min": 0.4,
       "max": 2,
       "step": 0.1,
-      "label": { "es": "Piso Eficiente (mm)", "en": "Efficient Floor (mm)" },
-      "tooltip": { "es": "Grosor del piso eficiente de la tapa", "en": "Lid efficient floor thickness" },
-      "visible_in_modes": ["lid"],
+      "label": {
+        "es": "Piso Eficiente (mm)",
+        "en": "Efficient Floor (mm)"
+      },
+      "tooltip": {
+        "es": "Grosor del piso eficiente de la tapa",
+        "en": "Lid efficient floor thickness"
+      },
+      "visible_in_modes": [
+        "lid"
+      ],
       "group": "lid"
     },
     {
@@ -398,9 +703,17 @@
       "min": 0,
       "max": 3,
       "step": 1,
-      "label": { "es": "Tipo de Tapa", "en": "Lid Type" },
-      "tooltip": { "es": "0=predeterminado, 1=plano, 2=medio paso, 3=eficiente", "en": "0=default, 1=flat, 2=halfpitch, 3=efficient" },
-      "visible_in_modes": ["lid"],
+      "label": {
+        "es": "Tipo de Tapa",
+        "en": "Lid Type"
+      },
+      "tooltip": {
+        "es": "0=predeterminado, 1=plano, 2=medio paso, 3=eficiente",
+        "en": "0=default, 1=flat, 2=halfpitch, 3=efficient"
+      },
+      "visible_in_modes": [
+        "lid"
+      ],
       "group": "lid",
       "visibility_level": "advanced"
     },
@@ -411,73 +724,238 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
-      "tooltip": { "es": "0 = automático; mayor = más detalle pero más lento", "en": "0 = auto; higher = more detail but slower" },
-      "visible_in_modes": ["cup", "baseplate", "lid"],
+      "label": {
+        "es": "Calidad ($fn)",
+        "en": "Quality ($fn)"
+      },
+      "tooltip": {
+        "es": "0 = automático; mayor = más detalle pero más lento",
+        "en": "0 = auto; higher = more detail but slower"
+      },
+      "visible_in_modes": [
+        "cup",
+        "baseplate",
+        "lid"
+      ],
       "group": "rendering"
     }
   ],
   "constraints": [
     {
       "rule": "width_units * depth_units <= 24",
-      "message": { "es": "Máximo 24 celdas (riesgo de timeout)", "en": "Max 24 grid cells (render timeout risk)" },
+      "message": {
+        "es": "Máximo 24 celdas (riesgo de timeout)",
+        "en": "Max 24 grid cells (render timeout risk)"
+      },
       "severity": "warning",
-      "applies_to": ["width_units", "depth_units"]
+      "applies_to": [
+        "width_units",
+        "depth_units"
+      ]
     },
     {
       "rule": "vertical_chambers * horizontal_chambers <= 12",
-      "message": { "es": "Máximo 12 compartimentos", "en": "Max 12 compartments" },
+      "message": {
+        "es": "Máximo 12 compartimentos",
+        "en": "Max 12 compartments"
+      },
       "severity": "warning",
-      "applies_to": ["vertical_chambers", "horizontal_chambers"]
+      "applies_to": [
+        "vertical_chambers",
+        "horizontal_chambers"
+      ]
     }
   ],
   "bom": {
     "hardware": [
       {
         "id": "magnets_6x2",
-        "label": { "es": "Imanes N52 6×2mm", "en": "N52 6×2mm Magnets" },
+        "label": {
+          "es": "Imanes N52 6×2mm",
+          "en": "N52 6×2mm Magnets"
+        },
         "quantity_formula": "(enable_magnets ? 4 : 0) + (bp_enable_magnets ? 4 * width_units * depth_units : 0) + (lid_include_magnets ? 4 * width_units * depth_units : 0)",
         "unit": "pcs"
       },
       {
         "id": "screws_m3x6",
-        "label": { "es": "Tornillos M3×6", "en": "M3×6 Screws" },
+        "label": {
+          "es": "Tornillos M3×6",
+          "en": "M3×6 Screws"
+        },
         "quantity_formula": "(enable_screws ? 4 : 0) + (bp_enable_screws ? 4 : 0)",
         "unit": "pcs"
       }
     ]
   },
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "camera_views": [
-    { "id": "iso",   "label": { "es": "Isométrico", "en": "Isometric" }, "position": [80, 80, 80] },
-    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },
-    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -150, 0] },
-    { "id": "right", "label": { "es": "Derecha", "en": "Right" },        "position": [150, 0, 0] }
+    {
+      "id": "iso",
+      "label": {
+        "es": "Isométrico",
+        "en": "Isometric"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "es": "Superior",
+        "en": "Top"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "es": "Frente",
+        "en": "Front"
+      },
+      "position": [
+        0,
+        -150,
+        0
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "es": "Derecha",
+        "en": "Right"
+      },
+      "position": [
+        150,
+        0,
+        0
+      ]
+    }
   ],
   "parameter_groups": [
-    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
-    { "id": "cup_structure", "label": { "es": "Estructura del Contenedor", "en": "Bin Structure" }, "levels": [
-        { "id": "basic", "label": { "es": "Básico", "en": "Basic" } },
-        { "id": "advanced", "label": { "es": "Avanzado", "en": "Advanced" } }
+    {
+      "id": "dimensions",
+      "label": {
+        "es": "Dimensiones",
+        "en": "Dimensions"
+      }
+    },
+    {
+      "id": "cup_structure",
+      "label": {
+        "es": "Estructura del Contenedor",
+        "en": "Bin Structure"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
       ]
     },
-    { "id": "cup_features", "label": { "es": "Características del Contenedor", "en": "Bin Features" }, "levels": [
-        { "id": "basic", "label": { "es": "Básico", "en": "Basic" } },
-        { "id": "advanced", "label": { "es": "Avanzado", "en": "Advanced" } }
+    {
+      "id": "cup_features",
+      "label": {
+        "es": "Características del Contenedor",
+        "en": "Bin Features"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
       ]
     },
-    { "id": "mounting", "label": { "es": "Montaje", "en": "Mounting" } },
-    { "id": "baseplate", "label": { "es": "Placa Base", "en": "Baseplate" }, "levels": [
-        { "id": "basic", "label": { "es": "Básico", "en": "Basic" } },
-        { "id": "advanced", "label": { "es": "Avanzado", "en": "Advanced" } }
+    {
+      "id": "mounting",
+      "label": {
+        "es": "Montaje",
+        "en": "Mounting"
+      }
+    },
+    {
+      "id": "baseplate",
+      "label": {
+        "es": "Placa Base",
+        "en": "Baseplate"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
       ]
     },
-    { "id": "lid", "label": { "es": "Tapa", "en": "Lid" }, "levels": [
-        { "id": "basic", "label": { "es": "Básico", "en": "Basic" } },
-        { "id": "advanced", "label": { "es": "Avanzado", "en": "Advanced" } }
+    {
+      "id": "lid",
+      "label": {
+        "es": "Tapa",
+        "en": "Lid"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
       ]
     },
-    { "id": "rendering", "label": { "es": "Renderizado", "en": "Rendering" } }
+    {
+      "id": "rendering",
+      "label": {
+        "es": "Renderizado",
+        "en": "Rendering"
+      }
+    }
   ],
   "viewer": {
     "default_color": "#4a90d9"
@@ -485,43 +963,112 @@
   "grid_presets": {
     "rendering": {
       "emoji": "🪽",
-      "label": { "en": "Quick Preview", "es": "Vista Rápida" },
-      "values": { "width_units": 2, "depth_units": 1 }
+      "label": {
+        "en": "Quick Preview",
+        "es": "Vista Rápida"
+      },
+      "values": {
+        "width_units": 2,
+        "depth_units": 1
+      }
     },
     "manufacturing": {
       "emoji": "⭐",
-      "label": { "en": "Large Grid", "es": "Rejilla Grande" },
-      "values": { "width_units": 4, "depth_units": 4 }
+      "label": {
+        "en": "Large Grid",
+        "es": "Rejilla Grande"
+      },
+      "values": {
+        "width_units": 4,
+        "depth_units": 4
+      }
     },
     "default": "rendering"
   },
   "assembly_steps": [
     {
       "step": 1,
-      "label": { "es": "Imprime la placa base", "en": "Print the baseplate" },
-      "notes": { "es": "Lado plano abajo, 0.2mm capas, 20% relleno", "en": "Flat side down, 0.2mm layers, 20% infill" },
-      "visible_parts": ["baseplate"],
-      "highlight_parts": ["baseplate"],
-      "camera": [80, -80, 30],
-      "camera_target": [0, 0, 0]
+      "label": {
+        "es": "Imprime la placa base",
+        "en": "Print the baseplate"
+      },
+      "notes": {
+        "es": "Lado plano abajo, 0.2mm capas, 20% relleno",
+        "en": "Flat side down, 0.2mm layers, 20% infill"
+      },
+      "visible_parts": [
+        "baseplate"
+      ],
+      "highlight_parts": [
+        "baseplate"
+      ],
+      "camera": [
+        80,
+        -80,
+        30
+      ],
+      "camera_target": [
+        0,
+        0,
+        0
+      ]
     },
     {
       "step": 2,
-      "label": { "es": "Imprime los contenedores", "en": "Print the bins" },
-      "notes": { "es": "Boca arriba, sin soportes necesarios para diseño estándar", "en": "Opening up, no supports needed for standard design" },
-      "visible_parts": ["baseplate", "cup"],
-      "highlight_parts": ["cup"],
-      "camera": [80, -80, 60],
-      "camera_target": [0, 0, 15]
+      "label": {
+        "es": "Imprime los contenedores",
+        "en": "Print the bins"
+      },
+      "notes": {
+        "es": "Boca arriba, sin soportes necesarios para diseño estándar",
+        "en": "Opening up, no supports needed for standard design"
+      },
+      "visible_parts": [
+        "baseplate",
+        "cup"
+      ],
+      "highlight_parts": [
+        "cup"
+      ],
+      "camera": [
+        80,
+        -80,
+        60
+      ],
+      "camera_target": [
+        0,
+        0,
+        15
+      ]
     },
     {
       "step": 3,
-      "label": { "es": "Coloca los contenedores en la placa", "en": "Place bins on baseplate" },
-      "notes": { "es": "Los contenedores encajan a presión en la rejilla. Los imanes son opcionales para mayor sujeción.", "en": "Bins snap into the grid. Magnets are optional for extra hold." },
-      "visible_parts": ["baseplate", "cup"],
-      "highlight_parts": ["baseplate", "cup"],
-      "camera": [60, -60, 40],
-      "camera_target": [0, 0, 15]
+      "label": {
+        "es": "Coloca los contenedores en la placa",
+        "en": "Place bins on baseplate"
+      },
+      "notes": {
+        "es": "Los contenedores encajan a presión en la rejilla. Los imanes son opcionales para mayor sujeción.",
+        "en": "Bins snap into the grid. Magnets are optional for extra hold."
+      },
+      "visible_parts": [
+        "baseplate",
+        "cup"
+      ],
+      "highlight_parts": [
+        "baseplate",
+        "cup"
+      ],
+      "camera": [
+        60,
+        -60,
+        40
+      ],
+      "camera_target": [
+        0,
+        0,
+        15
+      ]
     }
   ],
   "estimate_constants": {

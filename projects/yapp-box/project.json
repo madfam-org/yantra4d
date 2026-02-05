@@ -7,34 +7,57 @@
       "en": "Yet Another Parametric Projectbox — PCB enclosure with snap-fit lid",
       "es": "Caja paramétrica para proyectos — carcasa para PCB con tapa a presión"
     },
-    "tags": ["enclosure", "electronics", "pcb", "projectbox"]
+    "thumbnail": "/projects/yapp-box.webp",
+    "tags": [
+      "enclosure",
+      "electronics",
+      "pcb",
+      "projectbox"
+    ],
+    "difficulty": "advanced"
   },
   "modes": [
     {
       "slug": "base",
-      "label": { "en": "Base", "es": "Base" },
+      "label": {
+        "en": "Base",
+        "es": "Base"
+      },
       "scad_file": "qubic_yapp_base.scad",
-      "parts": ["base"],
+      "parts": [
+        "base"
+      ],
       "estimate": "base"
     },
     {
       "slug": "lid",
-      "label": { "en": "Lid", "es": "Tapa" },
+      "label": {
+        "en": "Lid",
+        "es": "Tapa"
+      },
       "scad_file": "qubic_yapp_lid.scad",
-      "parts": ["lid"],
+      "parts": [
+        "lid"
+      ],
       "estimate": "lid"
     }
   ],
   "parts": [
     {
       "id": "base",
-      "label": { "en": "Base", "es": "Base" },
+      "label": {
+        "en": "Base",
+        "es": "Base"
+      },
       "render_mode": 0,
       "color": "#3b82f6"
     },
     {
       "id": "lid",
-      "label": { "en": "Lid", "es": "Tapa" },
+      "label": {
+        "en": "Lid",
+        "es": "Tapa"
+      },
       "render_mode": 0,
       "color": "#60a5fa"
     }
@@ -42,188 +65,318 @@
   "parameters": [
     {
       "name": "pcbLength",
-      "label": { "en": "PCB Length", "es": "Largo del PCB" },
-      "tooltip": { "en": "Length of the PCB board", "es": "Largo de la placa PCB" },
+      "label": {
+        "en": "PCB Length",
+        "es": "Largo del PCB"
+      },
+      "tooltip": {
+        "en": "Length of the PCB board",
+        "es": "Largo de la placa PCB"
+      },
       "type": "slider",
       "default": 80,
       "min": 20,
       "max": 200,
       "step": 1,
       "group": "pcb",
-      "modes": ["base", "lid"]
+      "modes": [
+        "base",
+        "lid"
+      ]
     },
     {
       "name": "pcbWidth",
-      "label": { "en": "PCB Width", "es": "Ancho del PCB" },
-      "tooltip": { "en": "Width of the PCB board", "es": "Ancho de la placa PCB" },
+      "label": {
+        "en": "PCB Width",
+        "es": "Ancho del PCB"
+      },
+      "tooltip": {
+        "en": "Width of the PCB board",
+        "es": "Ancho de la placa PCB"
+      },
       "type": "slider",
       "default": 50,
       "min": 15,
       "max": 150,
       "step": 1,
       "group": "pcb",
-      "modes": ["base", "lid"]
+      "modes": [
+        "base",
+        "lid"
+      ]
     },
     {
       "name": "pcbThickness",
-      "label": { "en": "PCB Thickness", "es": "Grosor del PCB" },
-      "tooltip": { "en": "Thickness of the PCB", "es": "Grosor de la placa PCB" },
+      "label": {
+        "en": "PCB Thickness",
+        "es": "Grosor del PCB"
+      },
+      "tooltip": {
+        "en": "Thickness of the PCB",
+        "es": "Grosor de la placa PCB"
+      },
       "type": "slider",
       "default": 1.6,
       "min": 0.8,
       "max": 3.2,
       "step": 0.1,
       "group": "pcb",
-      "modes": ["base", "lid"],
+      "modes": [
+        "base",
+        "lid"
+      ],
       "advanced": true
     },
     {
       "name": "standoffHeight",
-      "label": { "en": "Standoff Height", "es": "Altura de separadores" },
-      "tooltip": { "en": "Height of PCB standoffs from floor", "es": "Altura de separadores desde el piso" },
+      "label": {
+        "en": "Standoff Height",
+        "es": "Altura de separadores"
+      },
+      "tooltip": {
+        "en": "Height of PCB standoffs from floor",
+        "es": "Altura de separadores desde el piso"
+      },
       "type": "slider",
       "default": 3,
       "min": 1,
       "max": 10,
       "step": 0.5,
       "group": "pcb",
-      "modes": ["base", "lid"]
+      "modes": [
+        "base",
+        "lid"
+      ]
     },
     {
       "name": "wallThickness",
-      "label": { "en": "Wall Thickness", "es": "Grosor de pared" },
-      "tooltip": { "en": "Enclosure wall thickness", "es": "Grosor de las paredes de la carcasa" },
+      "label": {
+        "en": "Wall Thickness",
+        "es": "Grosor de pared"
+      },
+      "tooltip": {
+        "en": "Enclosure wall thickness",
+        "es": "Grosor de las paredes de la carcasa"
+      },
       "type": "slider",
       "default": 2,
       "min": 1.2,
       "max": 4,
       "step": 0.2,
       "group": "enclosure",
-      "modes": ["base", "lid"]
+      "modes": [
+        "base",
+        "lid"
+      ]
     },
     {
       "name": "baseWallHeight",
-      "label": { "en": "Base Wall Height", "es": "Altura de pared base" },
-      "tooltip": { "en": "Height of base enclosure walls", "es": "Altura de las paredes de la base" },
+      "label": {
+        "en": "Base Wall Height",
+        "es": "Altura de pared base"
+      },
+      "tooltip": {
+        "en": "Height of base enclosure walls",
+        "es": "Altura de las paredes de la base"
+      },
       "type": "slider",
       "default": 25,
       "min": 10,
       "max": 60,
       "step": 1,
       "group": "enclosure",
-      "modes": ["base"]
+      "modes": [
+        "base"
+      ]
     },
     {
       "name": "lidWallHeight",
-      "label": { "en": "Lid Wall Height", "es": "Altura de pared tapa" },
-      "tooltip": { "en": "Height of lid walls", "es": "Altura de las paredes de la tapa" },
+      "label": {
+        "en": "Lid Wall Height",
+        "es": "Altura de pared tapa"
+      },
+      "tooltip": {
+        "en": "Height of lid walls",
+        "es": "Altura de las paredes de la tapa"
+      },
       "type": "slider",
       "default": 15,
       "min": 5,
       "max": 40,
       "step": 1,
       "group": "enclosure",
-      "modes": ["lid"]
+      "modes": [
+        "lid"
+      ]
     },
     {
       "name": "roundRadius",
-      "label": { "en": "Corner Radius", "es": "Radio de esquinas" },
-      "tooltip": { "en": "Corner rounding radius", "es": "Radio de redondeo de esquinas" },
+      "label": {
+        "en": "Corner Radius",
+        "es": "Radio de esquinas"
+      },
+      "tooltip": {
+        "en": "Corner rounding radius",
+        "es": "Radio de redondeo de esquinas"
+      },
       "type": "slider",
       "default": 3,
       "min": 0,
       "max": 8,
       "step": 0.5,
       "group": "enclosure",
-      "modes": ["base", "lid"]
+      "modes": [
+        "base",
+        "lid"
+      ]
     },
     {
       "name": "paddingFront",
-      "label": { "en": "Padding Front", "es": "Relleno frontal" },
-      "tooltip": { "en": "Extra space in front of PCB", "es": "Espacio extra frente al PCB" },
+      "label": {
+        "en": "Padding Front",
+        "es": "Relleno frontal"
+      },
+      "tooltip": {
+        "en": "Extra space in front of PCB",
+        "es": "Espacio extra frente al PCB"
+      },
       "type": "slider",
       "default": 2,
       "min": 0,
       "max": 10,
       "step": 0.5,
       "group": "padding",
-      "modes": ["base", "lid"],
+      "modes": [
+        "base",
+        "lid"
+      ],
       "advanced": true
     },
     {
       "name": "paddingBack",
-      "label": { "en": "Padding Back", "es": "Relleno trasero" },
-      "tooltip": { "en": "Extra space behind PCB", "es": "Espacio extra detrás del PCB" },
+      "label": {
+        "en": "Padding Back",
+        "es": "Relleno trasero"
+      },
+      "tooltip": {
+        "en": "Extra space behind PCB",
+        "es": "Espacio extra detrás del PCB"
+      },
       "type": "slider",
       "default": 2,
       "min": 0,
       "max": 10,
       "step": 0.5,
       "group": "padding",
-      "modes": ["base", "lid"],
+      "modes": [
+        "base",
+        "lid"
+      ],
       "advanced": true
     },
     {
       "name": "paddingLeft",
-      "label": { "en": "Padding Left", "es": "Relleno izquierdo" },
-      "tooltip": { "en": "Extra space left of PCB", "es": "Espacio extra a la izquierda del PCB" },
+      "label": {
+        "en": "Padding Left",
+        "es": "Relleno izquierdo"
+      },
+      "tooltip": {
+        "en": "Extra space left of PCB",
+        "es": "Espacio extra a la izquierda del PCB"
+      },
       "type": "slider",
       "default": 2,
       "min": 0,
       "max": 10,
       "step": 0.5,
       "group": "padding",
-      "modes": ["base", "lid"],
+      "modes": [
+        "base",
+        "lid"
+      ],
       "advanced": true
     },
     {
       "name": "paddingRight",
-      "label": { "en": "Padding Right", "es": "Relleno derecho" },
-      "tooltip": { "en": "Extra space right of PCB", "es": "Espacio extra a la derecha del PCB" },
+      "label": {
+        "en": "Padding Right",
+        "es": "Relleno derecho"
+      },
+      "tooltip": {
+        "en": "Extra space right of PCB",
+        "es": "Espacio extra a la derecha del PCB"
+      },
       "type": "slider",
       "default": 2,
       "min": 0,
       "max": 10,
       "step": 0.5,
       "group": "padding",
-      "modes": ["base", "lid"],
+      "modes": [
+        "base",
+        "lid"
+      ],
       "advanced": true
     },
     {
       "name": "fn",
-      "label": { "en": "Resolution ($fn)", "es": "Resolución ($fn)" },
-      "tooltip": { "en": "Circle smoothness (0=auto)", "es": "Suavidad de círculos (0=auto)" },
+      "label": {
+        "en": "Resolution ($fn)",
+        "es": "Resolución ($fn)"
+      },
+      "tooltip": {
+        "en": "Circle smoothness (0=auto)",
+        "es": "Suavidad de círculos (0=auto)"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 64,
       "step": 8,
       "group": "quality",
-      "modes": ["base", "lid"]
+      "modes": [
+        "base",
+        "lid"
+      ]
     }
   ],
   "parameter_groups": [
     {
       "id": "pcb",
-      "label": { "en": "PCB Dimensions", "es": "Dimensiones del PCB" }
+      "label": {
+        "en": "PCB Dimensions",
+        "es": "Dimensiones del PCB"
+      }
     },
     {
       "id": "enclosure",
-      "label": { "en": "Enclosure", "es": "Carcasa" }
+      "label": {
+        "en": "Enclosure",
+        "es": "Carcasa"
+      }
     },
     {
       "id": "padding",
-      "label": { "en": "Padding", "es": "Relleno" }
+      "label": {
+        "en": "Padding",
+        "es": "Relleno"
+      }
     },
     {
       "id": "quality",
-      "label": { "en": "Quality", "es": "Calidad" }
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
     }
   ],
   "presets": [
     {
       "slug": "esp32_dev",
-      "label": { "en": "ESP32 Dev Board", "es": "Placa ESP32 Dev" },
+      "label": {
+        "en": "ESP32 Dev Board",
+        "es": "Placa ESP32 Dev"
+      },
       "values": {
         "pcbLength": 56,
         "pcbWidth": 28,
@@ -234,7 +387,10 @@
     },
     {
       "slug": "sensor_node",
-      "label": { "en": "Sensor Node", "es": "Nodo Sensor" },
+      "label": {
+        "en": "Sensor Node",
+        "es": "Nodo Sensor"
+      },
       "values": {
         "pcbLength": 40,
         "pcbWidth": 25,
@@ -244,7 +400,10 @@
     },
     {
       "slug": "display_box",
-      "label": { "en": "Display Box", "es": "Caja para Display" },
+      "label": {
+        "en": "Display Box",
+        "es": "Caja para Display"
+      },
       "values": {
         "pcbLength": 100,
         "pcbWidth": 60,
@@ -256,24 +415,89 @@
   ],
   "bom": [
     {
-      "item": { "en": "M3 screws", "es": "Tornillos M3" },
+      "item": {
+        "en": "M3 screws",
+        "es": "Tornillos M3"
+      },
       "quantity_formula": "4",
-      "conditional": { "en": "If using screw-mount lid option", "es": "Si se usa opción de tapa atornillada" }
+      "conditional": {
+        "en": "If using screw-mount lid option",
+        "es": "Si se usa opción de tapa atornillada"
+      }
     }
   ],
   "assembly_steps": [
-    { "en": "Print base shell", "es": "Imprimir base" },
-    { "en": "Print lid shell", "es": "Imprimir tapa" },
-    { "en": "Insert PCB on standoffs", "es": "Insertar PCB en los separadores" },
-    { "en": "Snap lid onto base", "es": "Encajar tapa en la base" }
+    {
+      "en": "Print base shell",
+      "es": "Imprimir base"
+    },
+    {
+      "en": "Print lid shell",
+      "es": "Imprimir tapa"
+    },
+    {
+      "en": "Insert PCB on standoffs",
+      "es": "Insertar PCB en los separadores"
+    },
+    {
+      "en": "Snap lid onto base",
+      "es": "Encajar tapa en la base"
+    }
   ],
   "camera_views": [
-    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 50] },
-    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 150] },
-    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -150, 0] },
-    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [150, 0, 0] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        50
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -150,
+        0
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "en": "Right",
+        "es": "Derecha"
+      },
+      "position": [
+        150,
+        0,
+        0
+      ]
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "estimate_constants": {
     "base_time": 8,
     "per_unit": 2,

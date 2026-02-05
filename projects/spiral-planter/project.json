@@ -7,47 +7,128 @@
       "es": "Maceta espiral generativa con drenaje parametrico usando dotSCAD",
       "en": "Generative spiral planter with parametric drainage using dotSCAD"
     },
-    "tags": ["planter", "garden", "spiral", "dotSCAD"],
+    "thumbnail": "/projects/spiral-planter.webp",
+    "tags": [
+      "planter",
+      "garden",
+      "spiral",
+      "dotSCAD"
+    ],
     "difficulty": "beginner"
   },
   "modes": [
     {
       "id": "planter",
       "scad_file": "qubic_spiral_planter.scad",
-      "label": { "es": "Maceta", "en": "Planter" },
-      "parts": ["planter", "saucer"],
-      "estimate": { "base_units": 2, "formula": "constant" }
+      "label": {
+        "es": "Maceta",
+        "en": "Planter"
+      },
+      "parts": [
+        "planter",
+        "saucer"
+      ],
+      "estimate": {
+        "base_units": 2,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
-    { "id": "planter", "render_mode": 0, "label": { "es": "Maceta", "en": "Planter" }, "default_color": "#27ae60" },
-    { "id": "saucer", "render_mode": 1, "label": { "es": "Plato", "en": "Saucer" }, "default_color": "#795548" }
+    {
+      "id": "planter",
+      "render_mode": 0,
+      "label": {
+        "es": "Maceta",
+        "en": "Planter"
+      },
+      "default_color": "#27ae60"
+    },
+    {
+      "id": "saucer",
+      "render_mode": 1,
+      "label": {
+        "es": "Plato",
+        "en": "Saucer"
+      },
+      "default_color": "#795548"
+    }
   ],
   "presets": [
     {
       "id": "desktop",
-      "label": { "es": "Escritorio", "en": "Desktop" },
-      "values": { "turns": 3, "spacing": 8, "wall_thickness": 2, "base_diameter": 60, "height": 80, "drainage": true }
+      "label": {
+        "es": "Escritorio",
+        "en": "Desktop"
+      },
+      "values": {
+        "turns": 3,
+        "spacing": 8,
+        "wall_thickness": 2,
+        "base_diameter": 60,
+        "height": 80,
+        "drainage": true
+      }
     },
     {
       "id": "hanging",
-      "label": { "es": "Colgante", "en": "Hanging" },
-      "values": { "turns": 4, "spacing": 6, "wall_thickness": 2.5, "base_diameter": 50, "height": 100, "drainage": true }
+      "label": {
+        "es": "Colgante",
+        "en": "Hanging"
+      },
+      "values": {
+        "turns": 4,
+        "spacing": 6,
+        "wall_thickness": 2.5,
+        "base_diameter": 50,
+        "height": 100,
+        "drainage": true
+      }
     },
     {
       "id": "succulent",
-      "label": { "es": "Suculentas", "en": "Succulent" },
-      "values": { "turns": 2, "spacing": 10, "wall_thickness": 2, "base_diameter": 70, "height": 50, "drainage": true }
+      "label": {
+        "es": "Suculentas",
+        "en": "Succulent"
+      },
+      "values": {
+        "turns": 2,
+        "spacing": 10,
+        "wall_thickness": 2,
+        "base_diameter": 70,
+        "height": 50,
+        "drainage": true
+      }
     },
     {
       "id": "herb_garden",
-      "label": { "es": "Jardin de Hierbas", "en": "Herb Garden" },
-      "values": { "turns": 3, "spacing": 12, "wall_thickness": 3, "base_diameter": 100, "height": 120, "drainage": true }
+      "label": {
+        "es": "Jardin de Hierbas",
+        "en": "Herb Garden"
+      },
+      "values": {
+        "turns": 3,
+        "spacing": 12,
+        "wall_thickness": 3,
+        "base_diameter": 100,
+        "height": 120,
+        "drainage": true
+      }
     },
     {
       "id": "mini",
-      "label": { "es": "Mini", "en": "Mini" },
-      "values": { "turns": 2, "spacing": 5, "wall_thickness": 1.5, "base_diameter": 40, "height": 50, "drainage": false }
+      "label": {
+        "es": "Mini",
+        "en": "Mini"
+      },
+      "values": {
+        "turns": 2,
+        "spacing": 5,
+        "wall_thickness": 1.5,
+        "base_diameter": 40,
+        "height": 50,
+        "drainage": false
+      }
     }
   ],
   "parameters": [
@@ -58,9 +139,17 @@
       "min": 1,
       "max": 6,
       "step": 1,
-      "label": { "es": "Vueltas de espiral", "en": "Spiral Turns" },
-      "tooltip": { "es": "Numero de vueltas de la espiral", "en": "Number of spiral turns" },
-      "visible_in_modes": ["planter"],
+      "label": {
+        "es": "Vueltas de espiral",
+        "en": "Spiral Turns"
+      },
+      "tooltip": {
+        "es": "Numero de vueltas de la espiral",
+        "en": "Number of spiral turns"
+      },
+      "visible_in_modes": [
+        "planter"
+      ],
       "group": "spiral"
     },
     {
@@ -70,9 +159,17 @@
       "min": 4,
       "max": 15,
       "step": 1,
-      "label": { "es": "Espaciado (mm)", "en": "Spacing (mm)" },
-      "tooltip": { "es": "Distancia entre vueltas de la espiral", "en": "Distance between spiral turns" },
-      "visible_in_modes": ["planter"],
+      "label": {
+        "es": "Espaciado (mm)",
+        "en": "Spacing (mm)"
+      },
+      "tooltip": {
+        "es": "Distancia entre vueltas de la espiral",
+        "en": "Distance between spiral turns"
+      },
+      "visible_in_modes": [
+        "planter"
+      ],
       "group": "spiral"
     },
     {
@@ -82,9 +179,17 @@
       "min": 1.2,
       "max": 4,
       "step": 0.2,
-      "label": { "es": "Grosor de pared (mm)", "en": "Wall Thickness (mm)" },
-      "tooltip": { "es": "Grosor de la pared de la maceta", "en": "Thickness of the planter wall" },
-      "visible_in_modes": ["planter"],
+      "label": {
+        "es": "Grosor de pared (mm)",
+        "en": "Wall Thickness (mm)"
+      },
+      "tooltip": {
+        "es": "Grosor de la pared de la maceta",
+        "en": "Thickness of the planter wall"
+      },
+      "visible_in_modes": [
+        "planter"
+      ],
       "group": "dimensions"
     },
     {
@@ -94,9 +199,17 @@
       "min": 30,
       "max": 150,
       "step": 5,
-      "label": { "es": "Diametro base (mm)", "en": "Base Diameter (mm)" },
-      "tooltip": { "es": "Diametro de la base de la maceta", "en": "Diameter of the planter base" },
-      "visible_in_modes": ["planter"],
+      "label": {
+        "es": "Diametro base (mm)",
+        "en": "Base Diameter (mm)"
+      },
+      "tooltip": {
+        "es": "Diametro de la base de la maceta",
+        "en": "Diameter of the planter base"
+      },
+      "visible_in_modes": [
+        "planter"
+      ],
       "group": "dimensions"
     },
     {
@@ -106,18 +219,34 @@
       "min": 40,
       "max": 200,
       "step": 5,
-      "label": { "es": "Altura (mm)", "en": "Height (mm)" },
-      "tooltip": { "es": "Altura de la maceta", "en": "Height of the planter" },
-      "visible_in_modes": ["planter"],
+      "label": {
+        "es": "Altura (mm)",
+        "en": "Height (mm)"
+      },
+      "tooltip": {
+        "es": "Altura de la maceta",
+        "en": "Height of the planter"
+      },
+      "visible_in_modes": [
+        "planter"
+      ],
       "group": "dimensions"
     },
     {
       "id": "drainage",
       "type": "checkbox",
       "default": true,
-      "label": { "es": "Agujeros de drenaje", "en": "Drainage Holes" },
-      "tooltip": { "es": "Agujeros en la base para drenaje de agua", "en": "Holes in the base for water drainage" },
-      "visible_in_modes": ["planter"],
+      "label": {
+        "es": "Agujeros de drenaje",
+        "en": "Drainage Holes"
+      },
+      "tooltip": {
+        "es": "Agujeros en la base para drenaje de agua",
+        "en": "Holes in the base for water drainage"
+      },
+      "visible_in_modes": [
+        "planter"
+      ],
       "group": "features"
     },
     {
@@ -127,127 +256,335 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
-      "tooltip": { "es": "0 = automatico", "en": "0 = auto" },
-      "visible_in_modes": ["planter"],
+      "label": {
+        "es": "Calidad ($fn)",
+        "en": "Quality ($fn)"
+      },
+      "tooltip": {
+        "es": "0 = automatico",
+        "en": "0 = auto"
+      },
+      "visible_in_modes": [
+        "planter"
+      ],
       "group": "quality",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "spiral", "label": { "es": "Espiral", "en": "Spiral" } },
-    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
-    { "id": "features", "label": { "es": "Caracteristicas", "en": "Features" } },
-    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
-    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
+    {
+      "id": "spiral",
+      "label": {
+        "es": "Espiral",
+        "en": "Spiral"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "es": "Dimensiones",
+        "en": "Dimensions"
+      }
+    },
+    {
+      "id": "features",
+      "label": {
+        "es": "Caracteristicas",
+        "en": "Features"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "es": "Calidad",
+        "en": "Quality"
+      }
+    },
+    {
+      "id": "colors",
+      "label": {
+        "es": "Colores",
+        "en": "Colors"
+      }
+    }
   ],
   "constraints": [
     {
       "rule": "wall_thickness >= 1.2",
-      "message": { "es": "Grosor minimo de 1.2mm para impresion FDM", "en": "Minimum 1.2mm thickness for FDM printing" },
+      "message": {
+        "es": "Grosor minimo de 1.2mm para impresion FDM",
+        "en": "Minimum 1.2mm thickness for FDM printing"
+      },
       "severity": "error",
-      "applies_to": ["wall_thickness"]
+      "applies_to": [
+        "wall_thickness"
+      ]
     },
     {
       "rule": "base_diameter >= 30",
-      "message": { "es": "Diametro minimo para estabilidad", "en": "Minimum diameter for stability" },
+      "message": {
+        "es": "Diametro minimo para estabilidad",
+        "en": "Minimum diameter for stability"
+      },
       "severity": "error",
-      "applies_to": ["base_diameter"]
+      "applies_to": [
+        "base_diameter"
+      ]
     },
     {
       "rule": "height <= 200",
-      "message": { "es": "Alturas mayores a 200mm requieren impresora grande", "en": "Heights over 200mm require a large printer" },
+      "message": {
+        "es": "Alturas mayores a 200mm requieren impresora grande",
+        "en": "Heights over 200mm require a large printer"
+      },
       "severity": "warning",
-      "applies_to": ["height"]
+      "applies_to": [
+        "height"
+      ]
     }
   ],
   "bom": {
     "hardware": [
       {
         "id": "drainage_mesh",
-        "label": { "es": "Malla de drenaje (para agujeros)", "en": "Drainage mesh (for holes)" },
+        "label": {
+          "es": "Malla de drenaje (para agujeros)",
+          "en": "Drainage mesh (for holes)"
+        },
         "quantity_formula": 1,
         "unit": "pcs"
       },
       {
         "id": "saucer_felt",
-        "label": { "es": "Fieltro para plato (protege superficies)", "en": "Saucer felt (protects surfaces)" },
+        "label": {
+          "es": "Fieltro para plato (protege superficies)",
+          "en": "Saucer felt (protects surfaces)"
+        },
         "quantity_formula": 1,
         "unit": "sheet"
       }
     ]
   },
   "materials": [
-    { "id": "pla", "name": "PLA", "density": 1.24, "cost_per_kg": 20, "print_speed_factor": 1.0 },
-    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 }
+    {
+      "id": "pla",
+      "name": "PLA",
+      "density": 1.24,
+      "cost_per_kg": 20,
+      "print_speed_factor": 1.0
+    },
+    {
+      "id": "petg",
+      "name": "PETG",
+      "density": 1.27,
+      "cost_per_kg": 25,
+      "print_speed_factor": 0.85
+    }
   ],
   "assembly_steps": [
     {
       "step": 1,
-      "label": { "es": "Imprime la maceta", "en": "Print the planter" },
-      "notes": { "es": "0.2mm capas, 20% relleno. PETG recomendado para resistencia al agua", "en": "0.2mm layers, 20% infill. PETG recommended for water resistance" },
-      "visible_parts": ["planter"],
-      "highlight_parts": ["planter"],
-      "camera": [80, -80, 60],
-      "camera_target": [0, 0, 30]
+      "label": {
+        "es": "Imprime la maceta",
+        "en": "Print the planter"
+      },
+      "notes": {
+        "es": "0.2mm capas, 20% relleno. PETG recomendado para resistencia al agua",
+        "en": "0.2mm layers, 20% infill. PETG recommended for water resistance"
+      },
+      "visible_parts": [
+        "planter"
+      ],
+      "highlight_parts": [
+        "planter"
+      ],
+      "camera": [
+        80,
+        -80,
+        60
+      ],
+      "camera_target": [
+        0,
+        0,
+        30
+      ]
     },
     {
       "step": 2,
-      "label": { "es": "Imprime el plato", "en": "Print the saucer" },
-      "notes": { "es": "0.2mm capas, 20% relleno", "en": "0.2mm layers, 20% infill" },
-      "visible_parts": ["planter", "saucer"],
-      "highlight_parts": ["saucer"],
-      "camera": [80, -80, 20],
-      "camera_target": [0, 0, 0]
+      "label": {
+        "es": "Imprime el plato",
+        "en": "Print the saucer"
+      },
+      "notes": {
+        "es": "0.2mm capas, 20% relleno",
+        "en": "0.2mm layers, 20% infill"
+      },
+      "visible_parts": [
+        "planter",
+        "saucer"
+      ],
+      "highlight_parts": [
+        "saucer"
+      ],
+      "camera": [
+        80,
+        -80,
+        20
+      ],
+      "camera_target": [
+        0,
+        0,
+        0
+      ]
     },
     {
       "step": 3,
-      "label": { "es": "Agrega malla de drenaje", "en": "Add drainage mesh" },
-      "notes": { "es": "Coloca malla sobre los agujeros de drenaje para evitar que la tierra salga", "en": "Place mesh over drainage holes to prevent soil from escaping" },
-      "visible_parts": ["planter"],
-      "highlight_parts": ["planter"],
-      "camera": [0, -100, 10],
-      "camera_target": [0, 0, 0],
-      "hardware": ["drainage_mesh"]
+      "label": {
+        "es": "Agrega malla de drenaje",
+        "en": "Add drainage mesh"
+      },
+      "notes": {
+        "es": "Coloca malla sobre los agujeros de drenaje para evitar que la tierra salga",
+        "en": "Place mesh over drainage holes to prevent soil from escaping"
+      },
+      "visible_parts": [
+        "planter"
+      ],
+      "highlight_parts": [
+        "planter"
+      ],
+      "camera": [
+        0,
+        -100,
+        10
+      ],
+      "camera_target": [
+        0,
+        0,
+        0
+      ],
+      "hardware": [
+        "drainage_mesh"
+      ]
     },
     {
       "step": 4,
-      "label": { "es": "Planta!", "en": "Plant!" },
-      "notes": { "es": "Agrega tierra y tu planta favorita", "en": "Add soil and your favorite plant" },
-      "visible_parts": ["planter", "saucer"],
-      "highlight_parts": ["planter", "saucer"],
-      "camera": [80, -80, 60],
-      "camera_target": [0, 0, 30]
+      "label": {
+        "es": "Planta!",
+        "en": "Plant!"
+      },
+      "notes": {
+        "es": "Agrega tierra y tu planta favorita",
+        "en": "Add soil and your favorite plant"
+      },
+      "visible_parts": [
+        "planter",
+        "saucer"
+      ],
+      "highlight_parts": [
+        "planter",
+        "saucer"
+      ],
+      "camera": [
+        80,
+        -80,
+        60
+      ],
+      "camera_target": [
+        0,
+        0,
+        30
+      ]
     }
   ],
   "verification": {
     "stages": {
       "geometry": {
         "checks": {
-          "watertight": { "enabled": true },
-          "body_count": { "enabled": true, "expected": 1 },
-          "facet_count": { "enabled": true, "min_facets": 200 }
+          "watertight": {
+            "enabled": true
+          },
+          "body_count": {
+            "enabled": true,
+            "expected": 1
+          },
+          "facet_count": {
+            "enabled": true,
+            "min_facets": 200
+          }
         }
       },
       "printability": {
         "checks": {
-          "thin_wall": { "enabled": true, "min_thickness_mm": 1.0 },
-          "overhang": { "enabled": true, "max_angle_deg": 55 }
+          "thin_wall": {
+            "enabled": true,
+            "min_thickness_mm": 1.0
+          },
+          "overhang": {
+            "enabled": true,
+            "max_angle_deg": 55
+          }
         }
       }
     },
     "mode_overrides": {
-      "planter": { "stages": ["geometry", "printability"] }
+      "planter": {
+        "stages": [
+          "geometry",
+          "printability"
+        ]
+      }
     }
   },
-  "export_formats": ["stl", "3mf"],
-  "print_estimation": { "default_material": "petg", "default_infill": 0.2 },
-  "camera_views": [
-    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [80, 80, 60] },
-    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },
-    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -150, 30] }
+  "export_formats": [
+    "stl",
+    "3mf"
   ],
-  "viewer": { "default_color": "#27ae60" },
+  "print_estimation": {
+    "default_material": "petg",
+    "default_infill": 0.2
+  },
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "es": "Isometrico",
+        "en": "Isometric"
+      },
+      "position": [
+        80,
+        80,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "es": "Superior",
+        "en": "Top"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "es": "Frente",
+        "en": "Front"
+      },
+      "position": [
+        0,
+        -150,
+        30
+      ]
+    }
+  ],
+  "viewer": {
+    "default_color": "#27ae60"
+  },
   "estimate_constants": {
     "base_time": 8,
     "per_unit": 1.5,

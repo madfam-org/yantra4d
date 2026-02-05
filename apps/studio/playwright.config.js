@@ -49,7 +49,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'cd ../.. && ./scripts/dev.sh',
+    command: process.env.CI ? 'npm run dev' : 'cd ../.. && ./scripts/dev.sh',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,

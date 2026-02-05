@@ -54,7 +54,13 @@ Thumbs.db
 # Dev server PIDs
 .dev-pids/
 
-# Playwright
-playwright-report/
-test-results/
+# Playwright (match at any depth)
+**/playwright-report/
+**/test-results/
 e2e/screenshots/
+
+# Husky internals (legacy v4 hooks)
+.husky/_/
+
+# Rendered STL artifacts in API static dir
+apps/api/static/*.stl

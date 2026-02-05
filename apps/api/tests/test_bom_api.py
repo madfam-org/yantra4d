@@ -116,3 +116,48 @@ class TestBomAPI:
         assert res.status_code == 404
         data = res.get_json()
         assert "No BOM" in data["error"]
+
+
+class TestSafeEvalFormula:
+    """Tests for AST-based formula evaluator security."""
+
+    @pytest.fixture(autouse=True)
+    def _import(self):
+        from routes.bom import _safe_eval_formula
+        self.eval_formula = _safe_eval_formula
+
+    def test_rejects_import(self):
+        with pytest.raises(ValueError, match="Unsafe"):
+            self.eval_formula("__import__('os').system('rm -rf /')", {})
+
+    def test_rejects_builtins(self):
+        with pytest.raises(ValueError, match="Unsafe"):
+            self.eval_formula("eval('1+1')", {})
+
+    def test_rejects_attribute_access(self):
+        with pytest.raises(ValueError, match="Unsafe"):
+            self.eval_formula("(1).__class__", {})
+
+    def test_rejects_string_literals(self):
+        with pytest.raises(ValueError, match="Unsafe"):
+            self.eval_formula("'malicious'", {})
+
+    def test_nested_parens(self):
+        result = self.eval_formula("((2 + 3) * (4 - 1))", {})
+        assert result == 15
+
+    def test_division(self):
+        result = self.eval_formula("10 / 2", {})
+        assert result == 5.0
+
+    def test_unary_negative(self):
+        result = self.eval_formula("-5 + 10", {})
+        assert result == 5
+
+    def test_param_substitution(self):
+        result = self.eval_formula("x * y + 1", {"x": 3, "y": 4})
+        assert result == 13
+
+    def test_numeric_passthrough(self):
+        assert self.eval_formula(42, {}) == 42
+        assert self.eval_formula(3.14, {}) == 3.14

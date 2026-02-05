@@ -2,12 +2,13 @@
 BOM Blueprint
 Handles /api/projects/<slug>/bom endpoint for bill of materials export.
 """
+import ast
 import csv
 import io
 import json
 import logging
+import operator
 import os
-import re
 
 from flask import Blueprint, request, jsonify, Response
 
@@ -16,26 +17,54 @@ from config import Config
 bom_bp = Blueprint("bom", __name__)
 logger = logging.getLogger(__name__)
 
+_SAFE_OPS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.USub: operator.neg,
+    ast.UAdd: operator.pos,
+}
+
 
 def _safe_eval_formula(formula, params: dict):
     """Evaluate a simple arithmetic formula with parameter substitution.
 
-    Only supports: +, -, *, /, (), integers, floats, and parameter names.
-    No builtins, no imports — deliberately restrictive for safety.
+    Uses an AST-based evaluator that only permits numeric constants and
+    basic arithmetic operators (+, -, *, /). No builtins, no attribute
+    access, no function calls.
     """
     if isinstance(formula, (int, float)):
         return formula
 
     expr = str(formula)
-    # Substitute parameter names with their values
+    # Substitute parameter names with their values (longest-first to avoid partial matches)
     for key, value in sorted(params.items(), key=lambda x: -len(x[0])):
         expr = expr.replace(key, str(value))
 
-    # Validate: only allow digits, operators, parens, whitespace, dots
-    if not re.match(r'^[\d\s\+\-\*\/\(\)\.]+$', expr):
+    try:
+        tree = ast.parse(expr, mode="eval")
+    except SyntaxError:
         raise ValueError(f"Unsafe expression: {formula}")
 
-    return eval(expr)  # noqa: S307 — validated safe subset above
+    return _eval_node(tree.body, formula)
+
+
+def _eval_node(node, original_formula):
+    """Recursively evaluate an AST node, allowing only safe operations."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+        return node.value
+    if isinstance(node, ast.BinOp):
+        op = _SAFE_OPS.get(type(node.op))
+        if op is None:
+            raise ValueError(f"Unsafe expression: {original_formula}")
+        return op(_eval_node(node.left, original_formula), _eval_node(node.right, original_formula))
+    if isinstance(node, ast.UnaryOp):
+        op = _SAFE_OPS.get(type(node.op))
+        if op is None:
+            raise ValueError(f"Unsafe expression: {original_formula}")
+        return op(_eval_node(node.operand, original_formula))
+    raise ValueError(f"Unsafe expression: {original_formula}")
 
 
 def _load_manifest(slug: str):

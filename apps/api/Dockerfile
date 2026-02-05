@@ -33,7 +33,7 @@ COPY apps/api/ ./backend/
 
 # Environment configuration
 ENV FLASK_DEBUG=false
-ENV OPENSCAD_PATH=/usr/bin/openscad
+ENV OPENSCAD_PATH=/usr/local/bin/openscad
 ENV PORT=5000
 ENV HOST=0.0.0.0
 ENV PROJECTS_DIR=/app/projects

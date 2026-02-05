@@ -26,7 +26,7 @@ domains:
 
 env:
   - key: CORS_ORIGINS
-    value: "https://qubic.quest"
+    value: "https://qubic.quest,https://studio.qubic.quest"
   - key: JANUA_ISSUER
     secret: janua_issuer
   - key: JANUA_AUDIENCE

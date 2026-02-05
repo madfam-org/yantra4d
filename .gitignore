@@ -43,6 +43,7 @@ Thumbs.db
 # Python caches
 .pytest_cache/
 .ruff_cache/
+.coverage
 
 # MCP tool caches
 .playwright-mcp/

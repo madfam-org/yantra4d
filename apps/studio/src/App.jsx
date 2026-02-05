@@ -129,10 +129,12 @@ function App() {
       <div className={`flex flex-1 overflow-hidden flex-col lg:flex-row ${editorOpen ? 'editor-layout' : ''}`}>
         {editorOpen && (
           <div className="w-full lg:w-[40%] flex flex-col min-h-0 border-r border-border">
-            <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
-              <ScadEditor slug={state.projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
-              <GitPanel slug={state.projectSlug} />
-            </Suspense>
+            <ErrorBoundary t={t}>
+              <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
+                <ScadEditor slug={state.projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
+                <GitPanel slug={state.projectSlug} />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         )}
         {!editorOpen && <StudioSidebar
@@ -171,41 +173,45 @@ function App() {
           projectSlug={state.projectSlug}
         />}
 
-        <StudioMainView
-          viewerRef={viewerRef}
-          consoleRef={consoleRef}
-          parts={parts}
-          colors={colors}
-          wireframe={wireframe}
-          loading={loading}
-          progress={progress}
-          progressPhase={progressPhase}
-          animating={animating}
-          setAnimating={setAnimating}
-          mode={mode}
-          params={params}
-          printEstimate={printEstimate}
-          setPrintEstimate={setPrintEstimate}
-          assemblyActive={assemblyActive}
-          highlightedParts={highlightedParts}
-          visibleParts={visibleParts}
-          logs={logs}
-          t={t}
-        />
+        <ErrorBoundary t={t}>
+          <StudioMainView
+            viewerRef={viewerRef}
+            consoleRef={consoleRef}
+            parts={parts}
+            colors={colors}
+            wireframe={wireframe}
+            loading={loading}
+            progress={progress}
+            progressPhase={progressPhase}
+            animating={animating}
+            setAnimating={setAnimating}
+            mode={mode}
+            params={params}
+            printEstimate={printEstimate}
+            setPrintEstimate={setPrintEstimate}
+            assemblyActive={assemblyActive}
+            highlightedParts={highlightedParts}
+            visibleParts={visibleParts}
+            logs={logs}
+            t={t}
+          />
+        </ErrorBoundary>
       </div>
 
       {/* AI Configurator overlay */}
       {aiPanelOpen && !editorOpen && (
         <div className="fixed right-0 top-12 bottom-0 w-80 z-40 border-l border-border shadow-lg">
-          <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
-            <AiChatPanel
-              mode="configurator"
-              projectSlug={state.projectSlug}
-              manifest={manifest}
-              params={params}
-              setParams={setParams}
-            />
-          </Suspense>
+          <ErrorBoundary t={t}>
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
+              <AiChatPanel
+                mode="configurator"
+                projectSlug={state.projectSlug}
+                manifest={manifest}
+                params={params}
+                setParams={setParams}
+              />
+            </Suspense>
+          </ErrorBoundary>
         </div>
       )}
 

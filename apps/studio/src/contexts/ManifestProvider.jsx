@@ -38,22 +38,28 @@ export function ManifestProvider({ children }) {
   useEffect(() => {
     if (!projectSlug) return
 
+    const controller = new AbortController()
     setLoading(true) // eslint-disable-line react-hooks/set-state-in-effect -- intentional loading indicator before async fetch
     const url = projects.length > 0
       ? `${getApiBase()}/api/projects/${projectSlug}/manifest`
       : `${getApiBase()}/api/manifest`
 
-    fetch(url, { signal: AbortSignal.timeout(2000) })
+    fetch(url, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
       })
       .then((data) => setManifest(data))
       .catch((err) => {
+        if (err.name === 'AbortError') return
         console.warn('Manifest fetch failed, using fallback:', err)
         setManifest(fallbackManifest)
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false)
+      })
+
+    return () => controller.abort()
   }, [projectSlug, projects.length])
 
   const switchProject = useCallback((slug) => {

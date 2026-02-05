@@ -334,9 +334,9 @@ export function LanguageProvider({
     defaultLanguage = "es",
     storageKey = "qubic-lang",
 }) {
-    const [language, setLanguage] = useState(
-        () => localStorage.getItem(storageKey) || defaultLanguage
-    )
+    const [language, setLanguage] = useState(() => {
+        try { return localStorage.getItem(storageKey) || defaultLanguage } catch { return defaultLanguage }
+    })
 
     const t = useCallback((key) => {
         return resolveTranslation(language, key)
@@ -348,7 +348,7 @@ export function LanguageProvider({
     }, [language])
 
     const setLang = useCallback((lang) => {
-        localStorage.setItem(storageKey, lang)
+        try { localStorage.setItem(storageKey, lang) } catch { /* quota exceeded or private browsing */ }
         setLanguage(lang)
     }, [storageKey])
 

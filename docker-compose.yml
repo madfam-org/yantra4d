@@ -1,4 +1,14 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   backend:
     build:
       context: .
@@ -15,6 +25,10 @@ services:
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
       - JANUA_AUDIENCE=${JANUA_AUDIENCE:-qubic}
       - AUTH_ENABLED=${AUTH_ENABLED:-true}
+      - RATE_LIMIT_STORAGE=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')" ]
       interval: 30s

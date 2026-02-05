@@ -49,6 +49,7 @@ logger = logging.getLogger(__name__)
 def create_app():
     """Application factory for Flask app."""
     app = Flask(__name__)
+    app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB upload limit
     CORS(app, origins=[o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")])
 
     limiter.init_app(app)

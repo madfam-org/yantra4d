@@ -190,6 +190,10 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
     with _process_lock:
         _active_process = process
 
+    # Kill process if it exceeds the timeout (matches run_render's 300s limit)
+    kill_timer = threading.Timer(300, lambda: process.kill())
+    kill_timer.start()
+
     try:
         for line in process.stderr:
             line = line.strip()
@@ -214,6 +218,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
 
         process.wait()
     finally:
+        kill_timer.cancel()
         with _process_lock:
             _active_process = None
 

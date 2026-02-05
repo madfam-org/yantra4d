@@ -31,8 +31,8 @@ def _check_access(manifest_data, action: str, claims) -> tuple | None:
 @optional_auth
 def download_stl(slug, filename):
     """Download an STL file for a project."""
-    # Validate filename
-    if '..' in filename or filename.startswith('/'):
+    # Early path-traversal check using safe_join_path against project dir
+    if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):
         return error_response("Invalid filename", 400)
 
     try:
@@ -59,8 +59,8 @@ def download_stl(slug, filename):
 @optional_auth
 def download_scad(slug, filename):
     """Download a SCAD source file for a project."""
-    # Validate filename
-    if '..' in filename or filename.startswith('/'):
+    # Early path-traversal check using safe_join_path against project dir
+    if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):
         return error_response("Invalid filename", 400)
 
     try:

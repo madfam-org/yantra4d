@@ -192,3 +192,34 @@ class TestOpenscadEnv:
             mock_popen.assert_called_once()
             call_kwargs = mock_popen.call_args[1]
             assert "OPENSCADPATH" in call_kwargs["env"]
+
+
+# ---------------------------------------------------------------------------
+# stream_render timeout
+# ---------------------------------------------------------------------------
+class TestStreamRenderTimeout:
+    """Tests for stream_render kill timer."""
+
+    def test_stream_render_starts_and_cancels_timer(self):
+        from services.openscad import stream_render
+        with patch("services.openscad.subprocess.Popen") as mock_popen, \
+             patch("services.openscad.threading.Timer") as mock_timer_cls:
+            mock_proc = MagicMock()
+            mock_proc.stderr = iter([])
+            mock_proc.returncode = 0
+            mock_proc.wait.return_value = 0
+            mock_proc.poll.return_value = 0
+            mock_popen.return_value = mock_proc
+
+            mock_timer = MagicMock()
+            mock_timer_cls.return_value = mock_timer
+
+            list(stream_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"],
+                               "main", 0.0, 100.0, 0, 1))
+
+            # Timer should have been created with 300s and started
+            mock_timer_cls.assert_called_once()
+            assert mock_timer_cls.call_args[0][0] == 300
+            mock_timer.start.assert_called_once()
+            # Timer should be cancelled in the finally block
+            mock_timer.cancel.assert_called_once()

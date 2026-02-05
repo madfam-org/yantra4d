@@ -50,6 +50,8 @@ jobs:
         working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -91,5 +93,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Check manifest sync
         run: diff <(python3 -c "import json; print(json.dumps(json.load(open('projects/tablaco/project.json')), indent=2))") <(python3 -c "import json; print(json.dumps(json.load(open('apps/studio/src/config/fallback-manifest.json')), indent=2))")

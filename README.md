@@ -1,6 +1,6 @@
 # Tablaco: Parametric Interlocking Cube
 
-A generative design project creating a 3-walled interlocking cube system optimized for FDM 3D printing.
+A parametric design project creating a 3-walled interlocking cube system optimized for FDM 3D printing.
 
 ![Tablaco Studio](/docs/images/half_cube_iso.png)
 
@@ -20,5 +20,3 @@ Generate the default model:
 ## Documentation
 
 - [Mechanical Design](./docs/mechanical_design.md) — OpenSCAD geometry, parameters, snap-fit modules
-- [Platform README](../../README.md) — Platform usage, Docker, dev setup
-- [Platform Docs](../../docs/index.md) — Manifest schema, web interface, verification

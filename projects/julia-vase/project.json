@@ -7,22 +7,37 @@
       "en": "Parametric twisted vase with sinusoidal profile modulation inspired by Julia set fractals",
       "es": "Jarrón paramétrico con torsión y modulación sinusoidal inspirado en fractales de conjuntos de Julia"
     },
-    "tags": ["vase", "art", "fractal", "decorative"],
+    "thumbnail": "/projects/julia-vase.webp",
+    "tags": [
+      "vase",
+      "art",
+      "fractal",
+      "decorative"
+    ],
+    "difficulty": "beginner",
     "license": "CC-BY-SA-4.0"
   },
   "modes": [
     {
       "slug": "vase",
-      "label": { "en": "Vase", "es": "Jarrón" },
+      "label": {
+        "en": "Vase",
+        "es": "Jarrón"
+      },
       "scad_file": "qubic_vase.scad",
       "render_mode": 0,
-      "parts": ["vase"]
+      "parts": [
+        "vase"
+      ]
     }
   ],
   "parts": [
     {
       "id": "vase",
-      "label": { "en": "Vase", "es": "Jarrón" },
+      "label": {
+        "en": "Vase",
+        "es": "Jarrón"
+      },
       "render_mode": 0,
       "color": "#8b5cf6"
     }
@@ -31,119 +46,195 @@
     {
       "name": "height",
       "type": "slider",
-      "label": { "en": "Height", "es": "Altura" },
-      "tooltip": { "en": "Total vase height", "es": "Altura total del jarrón" },
+      "label": {
+        "en": "Height",
+        "es": "Altura"
+      },
+      "tooltip": {
+        "en": "Total vase height",
+        "es": "Altura total del jarrón"
+      },
       "default": 150,
       "min": 50,
       "max": 300,
       "step": 5,
       "group": "dimensions",
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     },
     {
       "name": "base_radius",
       "type": "slider",
-      "label": { "en": "Base Radius", "es": "Radio Base" },
-      "tooltip": { "en": "Radius at the base of the vase", "es": "Radio en la base del jarrón" },
+      "label": {
+        "en": "Base Radius",
+        "es": "Radio Base"
+      },
+      "tooltip": {
+        "en": "Radius at the base of the vase",
+        "es": "Radio en la base del jarrón"
+      },
       "default": 40,
       "min": 15,
       "max": 80,
       "step": 1,
       "group": "dimensions",
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     },
     {
       "name": "twist_angle",
       "type": "slider",
-      "label": { "en": "Twist Angle", "es": "Ángulo de Torsión" },
-      "tooltip": { "en": "Total rotation angle from base to top", "es": "Ángulo de rotación total de base a cima" },
+      "label": {
+        "en": "Twist Angle",
+        "es": "Ángulo de Torsión"
+      },
+      "tooltip": {
+        "en": "Total rotation angle from base to top",
+        "es": "Ángulo de rotación total de base a cima"
+      },
       "default": 360,
       "min": 0,
       "max": 720,
       "step": 15,
       "group": "style",
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     },
     {
       "name": "wave_frequency",
       "type": "slider",
-      "label": { "en": "Wave Frequency", "es": "Frecuencia de Onda" },
-      "tooltip": { "en": "Number of wave lobes around perimeter", "es": "Número de lóbulos de onda alrededor del perímetro" },
+      "label": {
+        "en": "Wave Frequency",
+        "es": "Frecuencia de Onda"
+      },
+      "tooltip": {
+        "en": "Number of wave lobes around perimeter",
+        "es": "Número de lóbulos de onda alrededor del perímetro"
+      },
       "default": 5,
       "min": 1,
       "max": 12,
       "step": 1,
       "group": "style",
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     },
     {
       "name": "wave_amplitude",
       "type": "slider",
-      "label": { "en": "Wave Amplitude", "es": "Amplitud de Onda" },
-      "tooltip": { "en": "Depth of wave modulation", "es": "Profundidad de la modulación de onda" },
+      "label": {
+        "en": "Wave Amplitude",
+        "es": "Amplitud de Onda"
+      },
+      "tooltip": {
+        "en": "Depth of wave modulation",
+        "es": "Profundidad de la modulación de onda"
+      },
       "default": 10,
       "min": 0,
       "max": 25,
       "step": 1,
       "group": "style",
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     },
     {
       "name": "wall_thickness",
       "type": "slider",
-      "label": { "en": "Wall Thickness", "es": "Grosor de Pared" },
-      "tooltip": { "en": "Vase wall thickness", "es": "Grosor de pared del jarrón" },
+      "label": {
+        "en": "Wall Thickness",
+        "es": "Grosor de Pared"
+      },
+      "tooltip": {
+        "en": "Vase wall thickness",
+        "es": "Grosor de pared del jarrón"
+      },
       "default": 2,
       "min": 0.8,
       "max": 4,
       "step": 0.2,
       "group": "dimensions",
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     },
     {
       "name": "fn",
       "type": "slider",
-      "label": { "en": "Resolution ($fn)", "es": "Resolución ($fn)" },
-      "tooltip": { "en": "Angular resolution for curves", "es": "Resolución angular para curvas" },
+      "label": {
+        "en": "Resolution ($fn)",
+        "es": "Resolución ($fn)"
+      },
+      "tooltip": {
+        "en": "Angular resolution for curves",
+        "es": "Resolución angular para curvas"
+      },
       "default": 64,
       "min": 0,
       "max": 128,
       "step": 8,
       "group": "quality",
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     },
     {
       "name": "resolution",
       "type": "slider",
-      "label": { "en": "Layer Resolution", "es": "Resolución de Capas" },
-      "tooltip": { "en": "Number of vertical layers in the mesh", "es": "Número de capas verticales en la malla" },
+      "label": {
+        "en": "Layer Resolution",
+        "es": "Resolución de Capas"
+      },
+      "tooltip": {
+        "en": "Number of vertical layers in the mesh",
+        "es": "Número de capas verticales en la malla"
+      },
       "default": 100,
       "min": 20,
       "max": 200,
       "step": 10,
       "group": "quality",
       "advanced": true,
-      "modes": ["vase"]
+      "modes": [
+        "vase"
+      ]
     }
   ],
   "parameter_groups": [
     {
       "id": "dimensions",
-      "label": { "en": "Dimensions", "es": "Dimensiones" }
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
     },
     {
       "id": "style",
-      "label": { "en": "Style", "es": "Estilo" }
+      "label": {
+        "en": "Style",
+        "es": "Estilo"
+      }
     },
     {
       "id": "quality",
-      "label": { "en": "Quality", "es": "Calidad" }
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
     }
   ],
   "presets": [
     {
       "slug": "smooth_cylinder",
-      "label": { "en": "Smooth Cylinder", "es": "Cilindro Liso" },
+      "label": {
+        "en": "Smooth Cylinder",
+        "es": "Cilindro Liso"
+      },
       "values": {
         "twist_angle": 0,
         "wave_amplitude": 0
@@ -151,7 +242,10 @@
     },
     {
       "slug": "twisted_spiral",
-      "label": { "en": "Twisted Spiral", "es": "Espiral Torcida" },
+      "label": {
+        "en": "Twisted Spiral",
+        "es": "Espiral Torcida"
+      },
       "values": {
         "twist_angle": 360,
         "wave_amplitude": 5
@@ -159,7 +253,10 @@
     },
     {
       "slug": "ripple_vase",
-      "label": { "en": "Ripple Vase", "es": "Jarrón Ondulado" },
+      "label": {
+        "en": "Ripple Vase",
+        "es": "Jarrón Ondulado"
+      },
       "values": {
         "twist_angle": 90,
         "wave_frequency": 8,
@@ -168,7 +265,10 @@
     },
     {
       "slug": "fractal_complex",
-      "label": { "en": "Fractal Complex", "es": "Fractal Complejo" },
+      "label": {
+        "en": "Fractal Complex",
+        "es": "Fractal Complejo"
+      },
       "values": {
         "twist_angle": 540,
         "wave_frequency": 6,
@@ -200,12 +300,59 @@
     }
   ],
   "camera_views": [
-    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [100, 100, 100] },
-    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 250] },
-    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -200, 75] },
-    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [200, 0, 75] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        250
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        75
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "en": "Right",
+        "es": "Derecha"
+      },
+      "position": [
+        200,
+        0,
+        75
+      ]
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "estimate_constants": {
     "base_time": 10,
     "per_unit": 2,

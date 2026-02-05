@@ -7,34 +7,66 @@
       "en": "Parametric bolts and nuts with real threads",
       "es": "Tornillos y tuercas paramétricas con roscas reales"
     },
-    "tags": ["hardware", "fastener", "bolt", "nut", "thread"]
+    "thumbnail": "/projects/fasteners.webp",
+    "tags": [
+      "hardware",
+      "fastener",
+      "bolt",
+      "nut",
+      "thread"
+    ],
+    "difficulty": "intermediate"
   },
   "modes": [
     {
       "slug": "bolt",
-      "label": { "en": "Bolt", "es": "Tornillo" },
+      "label": {
+        "en": "Bolt",
+        "es": "Tornillo"
+      },
       "scad_file": "qubic_bolt.scad",
-      "parts": ["bolt"],
-      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+      "parts": [
+        "bolt"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
     },
     {
       "slug": "nut",
-      "label": { "en": "Nut", "es": "Tuerca" },
+      "label": {
+        "en": "Nut",
+        "es": "Tuerca"
+      },
       "scad_file": "qubic_nut.scad",
-      "parts": ["nut"],
-      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+      "parts": [
+        "nut"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
     }
   ],
   "parts": [
     {
       "slug": "bolt",
-      "label": { "en": "Bolt", "es": "Tornillo" },
+      "label": {
+        "en": "Bolt",
+        "es": "Tornillo"
+      },
       "render_mode": 0,
       "color": "#71717a"
     },
     {
       "slug": "nut",
-      "label": { "en": "Nut", "es": "Tuerca" },
+      "label": {
+        "en": "Nut",
+        "es": "Tuerca"
+      },
       "render_mode": 0,
       "color": "#a1a1aa"
     }
@@ -42,165 +74,275 @@
   "parameter_groups": [
     {
       "slug": "dimensions",
-      "label": { "en": "Dimensions", "es": "Dimensiones" }
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
     },
     {
       "slug": "head_style",
-      "label": { "en": "Head Style", "es": "Estilo de Cabeza" }
+      "label": {
+        "en": "Head Style",
+        "es": "Estilo de Cabeza"
+      }
     },
     {
       "slug": "nut_style",
-      "label": { "en": "Nut Style", "es": "Estilo de Tuerca" }
+      "label": {
+        "en": "Nut Style",
+        "es": "Estilo de Tuerca"
+      }
     },
     {
       "slug": "thread",
-      "label": { "en": "Thread", "es": "Rosca" }
+      "label": {
+        "en": "Thread",
+        "es": "Rosca"
+      }
     },
     {
       "slug": "quality",
-      "label": { "en": "Quality", "es": "Calidad" }
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
     }
   ],
   "parameters": [
     {
       "name": "diameter",
-      "label": { "en": "Diameter (mm)", "es": "Diametro (mm)" },
-      "tooltip": { "en": "Nominal thread diameter", "es": "Diámetro nominal de la rosca" },
+      "label": {
+        "en": "Diameter (mm)",
+        "es": "Diametro (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal thread diameter",
+        "es": "Diámetro nominal de la rosca"
+      },
       "type": "slider",
       "default": 5,
       "min": 2,
       "max": 20,
       "step": 0.5,
       "group": "dimensions",
-      "modes": ["bolt", "nut"]
+      "modes": [
+        "bolt",
+        "nut"
+      ]
     },
     {
       "name": "length",
-      "label": { "en": "Length (mm)", "es": "Largo (mm)" },
-      "tooltip": { "en": "Bolt shaft length excluding head", "es": "Largo del vástago excluyendo cabeza" },
+      "label": {
+        "en": "Length (mm)",
+        "es": "Largo (mm)"
+      },
+      "tooltip": {
+        "en": "Bolt shaft length excluding head",
+        "es": "Largo del vástago excluyendo cabeza"
+      },
       "type": "slider",
       "default": 20,
       "min": 5,
       "max": 80,
       "step": 1,
       "group": "dimensions",
-      "modes": ["bolt"]
+      "modes": [
+        "bolt"
+      ]
     },
     {
       "name": "pitch",
-      "label": { "en": "Thread Pitch (mm)", "es": "Paso de Rosca (mm)" },
-      "tooltip": { "en": "Distance between thread crests", "es": "Distancia entre crestas de la rosca" },
+      "label": {
+        "en": "Thread Pitch (mm)",
+        "es": "Paso de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Distance between thread crests",
+        "es": "Distancia entre crestas de la rosca"
+      },
       "type": "slider",
       "default": 0.8,
       "min": 0.25,
       "max": 3,
       "step": 0.05,
       "group": "thread",
-      "modes": ["bolt", "nut"],
+      "modes": [
+        "bolt",
+        "nut"
+      ],
       "advanced": true
     },
     {
       "name": "head_style_id",
-      "label": { "en": "Head Style (0=Hex, 1=Socket, 2=Button)", "es": "Estilo de Cabeza (0=Hex, 1=Allen, 2=Boton)" },
-      "tooltip": { "en": "Bolt head shape", "es": "Forma de la cabeza del tornillo" },
+      "label": {
+        "en": "Head Style (0=Hex, 1=Socket, 2=Button)",
+        "es": "Estilo de Cabeza (0=Hex, 1=Allen, 2=Boton)"
+      },
+      "tooltip": {
+        "en": "Bolt head shape",
+        "es": "Forma de la cabeza del tornillo"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 2,
       "step": 1,
       "group": "head_style",
-      "modes": ["bolt"]
+      "modes": [
+        "bolt"
+      ]
     },
     {
       "name": "head_diameter",
-      "label": { "en": "Head Diameter (0=Auto)", "es": "Diametro de Cabeza (0=Auto)" },
-      "tooltip": { "en": "Override head diameter (0=auto)", "es": "Diámetro de cabeza manual (0=auto)" },
+      "label": {
+        "en": "Head Diameter (0=Auto)",
+        "es": "Diametro de Cabeza (0=Auto)"
+      },
+      "tooltip": {
+        "en": "Override head diameter (0=auto)",
+        "es": "Diámetro de cabeza manual (0=auto)"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 30,
       "step": 0.5,
       "group": "head_style",
-      "modes": ["bolt"],
+      "modes": [
+        "bolt"
+      ],
       "advanced": true
     },
     {
       "name": "head_height",
-      "label": { "en": "Head Height (0=Auto)", "es": "Altura de Cabeza (0=Auto)" },
-      "tooltip": { "en": "Override head height (0=auto)", "es": "Altura de cabeza manual (0=auto)" },
+      "label": {
+        "en": "Head Height (0=Auto)",
+        "es": "Altura de Cabeza (0=Auto)"
+      },
+      "tooltip": {
+        "en": "Override head height (0=auto)",
+        "es": "Altura de cabeza manual (0=auto)"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 15,
       "step": 0.5,
       "group": "head_style",
-      "modes": ["bolt"],
+      "modes": [
+        "bolt"
+      ],
       "advanced": true
     },
     {
       "name": "nut_style_id",
-      "label": { "en": "Nut Style (0=Hex, 1=Square, 2=Nyloc)", "es": "Estilo de Tuerca (0=Hex, 1=Cuadrada, 2=Nyloc)" },
-      "tooltip": { "en": "Nut shape", "es": "Forma de la tuerca" },
+      "label": {
+        "en": "Nut Style (0=Hex, 1=Square, 2=Nyloc)",
+        "es": "Estilo de Tuerca (0=Hex, 1=Cuadrada, 2=Nyloc)"
+      },
+      "tooltip": {
+        "en": "Nut shape",
+        "es": "Forma de la tuerca"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 2,
       "step": 1,
       "group": "nut_style",
-      "modes": ["nut"]
+      "modes": [
+        "nut"
+      ]
     },
     {
       "name": "width",
-      "label": { "en": "Nut Width (0=Auto)", "es": "Ancho de Tuerca (0=Auto)" },
-      "tooltip": { "en": "Override nut width (0=auto)", "es": "Ancho de tuerca manual (0=auto)" },
+      "label": {
+        "en": "Nut Width (0=Auto)",
+        "es": "Ancho de Tuerca (0=Auto)"
+      },
+      "tooltip": {
+        "en": "Override nut width (0=auto)",
+        "es": "Ancho de tuerca manual (0=auto)"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 30,
       "step": 0.5,
       "group": "nut_style",
-      "modes": ["nut"],
+      "modes": [
+        "nut"
+      ],
       "advanced": true
     },
     {
       "name": "height",
-      "label": { "en": "Nut Height (0=Auto)", "es": "Altura de Tuerca (0=Auto)" },
-      "tooltip": { "en": "Override nut height (0=auto)", "es": "Altura de tuerca manual (0=auto)" },
+      "label": {
+        "en": "Nut Height (0=Auto)",
+        "es": "Altura de Tuerca (0=Auto)"
+      },
+      "tooltip": {
+        "en": "Override nut height (0=auto)",
+        "es": "Altura de tuerca manual (0=auto)"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 15,
       "step": 0.5,
       "group": "nut_style",
-      "modes": ["nut"],
+      "modes": [
+        "nut"
+      ],
       "advanced": true
     },
     {
       "name": "thread_enabled",
-      "label": { "en": "Enable Threads", "es": "Habilitar Rosca" },
-      "tooltip": { "en": "Generate real threads (slower)", "es": "Generar roscas reales (más lento)" },
+      "label": {
+        "en": "Enable Threads",
+        "es": "Habilitar Rosca"
+      },
+      "tooltip": {
+        "en": "Generate real threads (slower)",
+        "es": "Generar roscas reales (más lento)"
+      },
       "type": "checkbox",
       "default": true,
       "group": "thread",
-      "modes": ["bolt", "nut"]
+      "modes": [
+        "bolt",
+        "nut"
+      ]
     },
     {
       "name": "fn",
-      "label": { "en": "Resolution ($fn, 0=Auto)", "es": "Resolucion ($fn, 0=Auto)" },
-      "tooltip": { "en": "Circle smoothness (0=auto)", "es": "Suavidad de círculos (0=auto)" },
+      "label": {
+        "en": "Resolution ($fn, 0=Auto)",
+        "es": "Resolucion ($fn, 0=Auto)"
+      },
+      "tooltip": {
+        "en": "Circle smoothness (0=auto)",
+        "es": "Suavidad de círculos (0=auto)"
+      },
       "type": "slider",
       "default": 0,
       "min": 0,
       "max": 64,
       "step": 8,
       "group": "quality",
-      "modes": ["bolt", "nut"]
+      "modes": [
+        "bolt",
+        "nut"
+      ]
     }
   ],
   "presets": [
     {
       "slug": "m3_socket_20",
-      "label": { "en": "M3 Socket 20mm", "es": "M3 Allen 20mm" },
+      "label": {
+        "en": "M3 Socket 20mm",
+        "es": "M3 Allen 20mm"
+      },
       "mode": "bolt",
       "values": {
         "diameter": 3,
@@ -211,7 +353,10 @@
     },
     {
       "slug": "m5_hex_25",
-      "label": { "en": "M5 Hex 25mm", "es": "M5 Hex 25mm" },
+      "label": {
+        "en": "M5 Hex 25mm",
+        "es": "M5 Hex 25mm"
+      },
       "mode": "bolt",
       "values": {
         "diameter": 5,
@@ -222,7 +367,10 @@
     },
     {
       "slug": "m8_button_30",
-      "label": { "en": "M8 Button 30mm", "es": "M8 Boton 30mm" },
+      "label": {
+        "en": "M8 Button 30mm",
+        "es": "M8 Boton 30mm"
+      },
       "mode": "bolt",
       "values": {
         "diameter": 8,
@@ -236,21 +384,74 @@
     {
       "expression": "pitch <= diameter",
       "severity": "error",
-      "message": { "en": "Pitch must be less than diameter", "es": "El paso debe ser menor que el diametro" }
+      "message": {
+        "en": "Pitch must be less than diameter",
+        "es": "El paso debe ser menor que el diametro"
+      }
     },
     {
       "expression": "length >= diameter",
       "severity": "warning",
-      "message": { "en": "Length should be at least 1x diameter", "es": "El largo debe ser al menos 1x el diametro" }
+      "message": {
+        "en": "Length should be at least 1x diameter",
+        "es": "El largo debe ser al menos 1x el diametro"
+      }
     }
   ],
   "camera_views": [
-    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [40, 40, 40] },
-    { "id": "top",   "label": { "en": "Top", "es": "Superior" },         "position": [0, 0, 80] },
-    { "id": "front", "label": { "en": "Front", "es": "Frontal" },        "position": [0, -80, 0] },
-    { "id": "right", "label": { "en": "Right", "es": "Derecha" },        "position": [80, 0, 0] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        80
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -80,
+        0
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "en": "Right",
+        "es": "Derecha"
+      },
+      "position": [
+        80,
+        0,
+        0
+      ]
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "estimate_constants": {
     "base_time": 8,
     "per_unit": 2,

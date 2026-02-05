@@ -7,72 +7,184 @@
       "es": "Generador de patrones Voronoi para posavasos, jarrones y lamparas",
       "en": "Voronoi pattern generator for coasters, vases, and lampshades"
     },
-    "tags": ["voronoi", "organic", "decorative"],
+    "thumbnail": "/projects/voronoi.webp",
+    "tags": [
+      "voronoi",
+      "organic",
+      "decorative"
+    ],
     "difficulty": "intermediate"
   },
   "modes": [
     {
       "id": "coaster",
       "scad_file": "qubic_coaster.scad",
-      "label": { "es": "Posavasos", "en": "Coaster" },
-      "parts": ["coaster"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "es": "Posavasos",
+        "en": "Coaster"
+      },
+      "parts": [
+        "coaster"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     },
     {
       "id": "vase",
       "scad_file": "qubic_vase.scad",
-      "label": { "es": "Jarron", "en": "Vase" },
-      "parts": ["vase"],
-      "estimate": { "base_units": 2, "formula": "constant" }
+      "label": {
+        "es": "Jarron",
+        "en": "Vase"
+      },
+      "parts": [
+        "vase"
+      ],
+      "estimate": {
+        "base_units": 2,
+        "formula": "constant"
+      }
     },
     {
       "id": "lampshade",
       "scad_file": "qubic_lampshade.scad",
-      "label": { "es": "Lampara", "en": "Lampshade" },
-      "parts": ["lampshade"],
-      "estimate": { "base_units": 3, "formula": "constant" }
+      "label": {
+        "es": "Lampara",
+        "en": "Lampshade"
+      },
+      "parts": [
+        "lampshade"
+      ],
+      "estimate": {
+        "base_units": 3,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
-    { "id": "coaster", "render_mode": 0, "label": { "es": "Posavasos", "en": "Coaster" }, "default_color": "#3498db" },
-    { "id": "vase", "render_mode": 0, "label": { "es": "Jarron", "en": "Vase" }, "default_color": "#2ecc71" },
-    { "id": "lampshade", "render_mode": 0, "label": { "es": "Lampara", "en": "Lampshade" }, "default_color": "#f39c12" }
+    {
+      "id": "coaster",
+      "render_mode": 0,
+      "label": {
+        "es": "Posavasos",
+        "en": "Coaster"
+      },
+      "default_color": "#3498db"
+    },
+    {
+      "id": "vase",
+      "render_mode": 0,
+      "label": {
+        "es": "Jarron",
+        "en": "Vase"
+      },
+      "default_color": "#2ecc71"
+    },
+    {
+      "id": "lampshade",
+      "render_mode": 0,
+      "label": {
+        "es": "Lampara",
+        "en": "Lampshade"
+      },
+      "default_color": "#f39c12"
+    }
   ],
   "presets": [
     {
       "id": "simple_coaster",
-      "label": { "es": "Posavasos Simple", "en": "Simple Coaster" },
-      "values": { "cell_count": 15, "size": 100, "thickness": 3, "cell_wall": 2 }
+      "label": {
+        "es": "Posavasos Simple",
+        "en": "Simple Coaster"
+      },
+      "values": {
+        "cell_count": 15,
+        "size": 100,
+        "thickness": 3,
+        "cell_wall": 2
+      }
     },
     {
       "id": "organic_vase",
-      "label": { "es": "Jarron Organico", "en": "Organic Vase" },
-      "values": { "cell_count": 30, "size": 80, "thickness": 2, "height": 150 }
+      "label": {
+        "es": "Jarron Organico",
+        "en": "Organic Vase"
+      },
+      "values": {
+        "cell_count": 30,
+        "size": 80,
+        "thickness": 2,
+        "height": 150
+      }
     },
     {
       "id": "detailed_lampshade",
-      "label": { "es": "Lampara Detallada", "en": "Detailed Lampshade" },
-      "values": { "cell_count": 40, "size": 120, "thickness": 1.5, "height": 100 }
+      "label": {
+        "es": "Lampara Detallada",
+        "en": "Detailed Lampshade"
+      },
+      "values": {
+        "cell_count": 40,
+        "size": 120,
+        "thickness": 1.5,
+        "height": 100
+      }
     },
     {
       "id": "dense_coaster",
-      "label": { "es": "Posavasos Denso", "en": "Dense Coaster" },
-      "values": { "cell_count": 40, "size": 90, "thickness": 4, "cell_wall": 1 }
+      "label": {
+        "es": "Posavasos Denso",
+        "en": "Dense Coaster"
+      },
+      "values": {
+        "cell_count": 40,
+        "size": 90,
+        "thickness": 4,
+        "cell_wall": 1
+      }
     },
     {
       "id": "tall_vase",
-      "label": { "es": "Jarron Alto", "en": "Tall Vase" },
-      "values": { "cell_count": 25, "size": 60, "thickness": 2.5, "height": 250, "cell_wall": 1.5 }
+      "label": {
+        "es": "Jarron Alto",
+        "en": "Tall Vase"
+      },
+      "values": {
+        "cell_count": 25,
+        "size": 60,
+        "thickness": 2.5,
+        "height": 250,
+        "cell_wall": 1.5
+      }
     },
     {
       "id": "wide_lampshade",
-      "label": { "es": "Lampara Ancha", "en": "Wide Lampshade" },
-      "values": { "cell_count": 50, "size": 200, "thickness": 1.5, "height": 80, "cell_wall": 1 }
+      "label": {
+        "es": "Lampara Ancha",
+        "en": "Wide Lampshade"
+      },
+      "values": {
+        "cell_count": 50,
+        "size": 200,
+        "thickness": 1.5,
+        "height": 80,
+        "cell_wall": 1
+      }
     },
     {
       "id": "minimal_vase",
-      "label": { "es": "Jarron Minimalista", "en": "Minimal Vase" },
-      "values": { "cell_count": 10, "size": 70, "thickness": 3, "height": 120, "cell_wall": 3 }
+      "label": {
+        "es": "Jarron Minimalista",
+        "en": "Minimal Vase"
+      },
+      "values": {
+        "cell_count": 10,
+        "size": 70,
+        "thickness": 3,
+        "height": 120,
+        "cell_wall": 3
+      }
     }
   ],
   "parameters": [
@@ -83,9 +195,19 @@
       "min": 5,
       "max": 50,
       "step": 1,
-      "label": { "es": "Numero de celdas", "en": "Cell Count" },
-      "tooltip": { "es": "Cantidad de celdas Voronoi", "en": "Number of Voronoi cells" },
-      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "label": {
+        "es": "Numero de celdas",
+        "en": "Cell Count"
+      },
+      "tooltip": {
+        "es": "Cantidad de celdas Voronoi",
+        "en": "Number of Voronoi cells"
+      },
+      "visible_in_modes": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
       "group": "pattern"
     },
     {
@@ -95,9 +217,19 @@
       "min": 50,
       "max": 200,
       "step": 5,
-      "label": { "es": "Diametro (mm)", "en": "Diameter (mm)" },
-      "tooltip": { "es": "Diametro exterior del objeto", "en": "Outer diameter of the object" },
-      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "label": {
+        "es": "Diametro (mm)",
+        "en": "Diameter (mm)"
+      },
+      "tooltip": {
+        "es": "Diametro exterior del objeto",
+        "en": "Outer diameter of the object"
+      },
+      "visible_in_modes": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
       "group": "dimensions"
     },
     {
@@ -107,9 +239,19 @@
       "min": 1,
       "max": 10,
       "step": 0.5,
-      "label": { "es": "Grosor (mm)", "en": "Thickness (mm)" },
-      "tooltip": { "es": "Grosor de la base o pared", "en": "Base or wall thickness" },
-      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "label": {
+        "es": "Grosor (mm)",
+        "en": "Thickness (mm)"
+      },
+      "tooltip": {
+        "es": "Grosor de la base o pared",
+        "en": "Base or wall thickness"
+      },
+      "visible_in_modes": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
       "group": "dimensions"
     },
     {
@@ -119,9 +261,19 @@
       "min": 0.5,
       "max": 5,
       "step": 0.5,
-      "label": { "es": "Ancho de pared (mm)", "en": "Cell Wall Width (mm)" },
-      "tooltip": { "es": "Ancho de las paredes entre celdas", "en": "Width of walls between cells" },
-      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "label": {
+        "es": "Ancho de pared (mm)",
+        "en": "Cell Wall Width (mm)"
+      },
+      "tooltip": {
+        "es": "Ancho de las paredes entre celdas",
+        "en": "Width of walls between cells"
+      },
+      "visible_in_modes": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
       "group": "pattern"
     },
     {
@@ -131,9 +283,19 @@
       "min": 1,
       "max": 999,
       "step": 1,
-      "label": { "es": "Semilla aleatoria", "en": "Random Seed" },
-      "tooltip": { "es": "Semilla para el patron aleatorio", "en": "Seed for random pattern generation" },
-      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "label": {
+        "es": "Semilla aleatoria",
+        "en": "Random Seed"
+      },
+      "tooltip": {
+        "es": "Semilla para el patron aleatorio",
+        "en": "Seed for random pattern generation"
+      },
+      "visible_in_modes": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
       "group": "pattern"
     },
     {
@@ -143,9 +305,18 @@
       "min": 50,
       "max": 250,
       "step": 5,
-      "label": { "es": "Altura (mm)", "en": "Height (mm)" },
-      "tooltip": { "es": "Altura del jarron o lampara", "en": "Height of vase or lampshade" },
-      "visible_in_modes": ["vase", "lampshade"],
+      "label": {
+        "es": "Altura (mm)",
+        "en": "Height (mm)"
+      },
+      "tooltip": {
+        "es": "Altura del jarron o lampara",
+        "en": "Height of vase or lampshade"
+      },
+      "visible_in_modes": [
+        "vase",
+        "lampshade"
+      ],
       "group": "dimensions"
     },
     {
@@ -155,147 +326,393 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
-      "tooltip": { "es": "0 = automatico; mayor = mas detalle pero mas lento", "en": "0 = auto; higher = more detail but slower" },
-      "visible_in_modes": ["coaster", "vase", "lampshade"],
+      "label": {
+        "es": "Calidad ($fn)",
+        "en": "Quality ($fn)"
+      },
+      "tooltip": {
+        "es": "0 = automatico; mayor = mas detalle pero mas lento",
+        "en": "0 = auto; higher = more detail but slower"
+      },
+      "visible_in_modes": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
       "group": "quality",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "pattern", "label": { "es": "Patron", "en": "Pattern" } },
-    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
-    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
-    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
+    {
+      "id": "pattern",
+      "label": {
+        "es": "Patron",
+        "en": "Pattern"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "es": "Dimensiones",
+        "en": "Dimensions"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "es": "Calidad",
+        "en": "Quality"
+      }
+    },
+    {
+      "id": "colors",
+      "label": {
+        "es": "Colores",
+        "en": "Colors"
+      }
+    }
   ],
   "constraints": [
     {
       "rule": "thickness >= 1",
-      "message": { "es": "Grosor minimo de 1mm para impresion FDM", "en": "Minimum 1mm thickness for FDM printing" },
+      "message": {
+        "es": "Grosor minimo de 1mm para impresion FDM",
+        "en": "Minimum 1mm thickness for FDM printing"
+      },
       "severity": "error",
-      "applies_to": ["thickness"]
+      "applies_to": [
+        "thickness"
+      ]
     },
     {
       "rule": "cell_wall >= 0.8",
-      "message": { "es": "Pared de celda muy delgada para impresion", "en": "Cell wall too thin for printing" },
+      "message": {
+        "es": "Pared de celda muy delgada para impresion",
+        "en": "Cell wall too thin for printing"
+      },
       "severity": "error",
-      "applies_to": ["cell_wall"]
+      "applies_to": [
+        "cell_wall"
+      ]
     },
     {
       "rule": "cell_count <= 40 or size >= 80",
-      "message": { "es": "Muchas celdas en tamano pequeno pueden fallar", "en": "Many cells at small size may fail to print" },
+      "message": {
+        "es": "Muchas celdas en tamano pequeno pueden fallar",
+        "en": "Many cells at small size may fail to print"
+      },
       "severity": "warning",
-      "applies_to": ["cell_count", "size"]
+      "applies_to": [
+        "cell_count",
+        "size"
+      ]
     },
     {
       "rule": "height <= 200",
-      "message": { "es": "Alturas mayores a 200mm requieren impresora grande", "en": "Heights over 200mm require a large printer" },
+      "message": {
+        "es": "Alturas mayores a 200mm requieren impresora grande",
+        "en": "Heights over 200mm require a large printer"
+      },
       "severity": "warning",
-      "applies_to": ["height"]
+      "applies_to": [
+        "height"
+      ]
     }
   ],
   "bom": {
     "hardware": [
       {
         "id": "led_strip",
-        "label": { "es": "Tira LED (para lampara)", "en": "LED strip (for lampshade)" },
+        "label": {
+          "es": "Tira LED (para lampara)",
+          "en": "LED strip (for lampshade)"
+        },
         "quantity_formula": 1,
         "unit": "pcs",
         "supplier_url": "https://www.amazon.com/dp/B01CDTEG1O"
       },
       {
         "id": "e27_socket",
-        "label": { "es": "Portalamparas E27 (para lampara)", "en": "E27 bulb socket (for lampshade)" },
+        "label": {
+          "es": "Portalamparas E27 (para lampara)",
+          "en": "E27 bulb socket (for lampshade)"
+        },
         "quantity_formula": 1,
         "unit": "pcs",
         "supplier_url": "https://www.amazon.com/dp/B07QN8S1GN"
       },
       {
         "id": "felt_pads",
-        "label": { "es": "Fieltro adhesivo (para posavasos)", "en": "Adhesive felt pads (for coaster)" },
+        "label": {
+          "es": "Fieltro adhesivo (para posavasos)",
+          "en": "Adhesive felt pads (for coaster)"
+        },
         "quantity_formula": 1,
         "unit": "sheet"
       }
     ]
   },
   "materials": [
-    { "id": "pla", "name": "PLA", "density": 1.24, "cost_per_kg": 20, "print_speed_factor": 1.0 },
-    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 }
+    {
+      "id": "pla",
+      "name": "PLA",
+      "density": 1.24,
+      "cost_per_kg": 20,
+      "print_speed_factor": 1.0
+    },
+    {
+      "id": "petg",
+      "name": "PETG",
+      "density": 1.27,
+      "cost_per_kg": 25,
+      "print_speed_factor": 0.85
+    }
   ],
   "assembly_steps": [
     {
       "step": 1,
-      "label": { "es": "Imprime la pieza principal", "en": "Print the main piece" },
-      "notes": { "es": "Lado plano abajo, 0.2mm capas, 15% relleno. Para lampara usar material translucido", "en": "Flat side down, 0.2mm layers, 15% infill. For lampshade use translucent material" },
-      "visible_parts": ["coaster", "vase", "lampshade"],
-      "highlight_parts": ["coaster", "vase", "lampshade"],
-      "camera": [80, -80, 60],
-      "camera_target": [0, 0, 30]
+      "label": {
+        "es": "Imprime la pieza principal",
+        "en": "Print the main piece"
+      },
+      "notes": {
+        "es": "Lado plano abajo, 0.2mm capas, 15% relleno. Para lampara usar material translucido",
+        "en": "Flat side down, 0.2mm layers, 15% infill. For lampshade use translucent material"
+      },
+      "visible_parts": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
+      "highlight_parts": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
+      "camera": [
+        80,
+        -80,
+        60
+      ],
+      "camera_target": [
+        0,
+        0,
+        30
+      ]
     },
     {
       "step": 2,
-      "label": { "es": "Retira soportes y lija", "en": "Remove supports and sand" },
-      "notes": { "es": "Lija suavemente las paredes de las celdas con lija de 220", "en": "Lightly sand cell walls with 220 grit sandpaper" },
-      "visible_parts": ["coaster", "vase", "lampshade"],
-      "highlight_parts": ["coaster", "vase", "lampshade"],
-      "camera": [60, -60, 40],
-      "camera_target": [0, 0, 20]
+      "label": {
+        "es": "Retira soportes y lija",
+        "en": "Remove supports and sand"
+      },
+      "notes": {
+        "es": "Lija suavemente las paredes de las celdas con lija de 220",
+        "en": "Lightly sand cell walls with 220 grit sandpaper"
+      },
+      "visible_parts": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
+      "highlight_parts": [
+        "coaster",
+        "vase",
+        "lampshade"
+      ],
+      "camera": [
+        60,
+        -60,
+        40
+      ],
+      "camera_target": [
+        0,
+        0,
+        20
+      ]
     },
     {
       "step": 3,
-      "label": { "es": "Instala iluminacion (solo lampara)", "en": "Install lighting (lampshade only)" },
-      "notes": { "es": "Inserta portalamparas E27 o tira LED por la base abierta", "en": "Insert E27 socket or LED strip through the open base" },
-      "visible_parts": ["lampshade"],
-      "highlight_parts": ["lampshade"],
-      "camera": [0, -100, 30],
-      "camera_target": [0, 0, 50],
-      "hardware": ["led_strip", "e27_socket"]
+      "label": {
+        "es": "Instala iluminacion (solo lampara)",
+        "en": "Install lighting (lampshade only)"
+      },
+      "notes": {
+        "es": "Inserta portalamparas E27 o tira LED por la base abierta",
+        "en": "Insert E27 socket or LED strip through the open base"
+      },
+      "visible_parts": [
+        "lampshade"
+      ],
+      "highlight_parts": [
+        "lampshade"
+      ],
+      "camera": [
+        0,
+        -100,
+        30
+      ],
+      "camera_target": [
+        0,
+        0,
+        50
+      ],
+      "hardware": [
+        "led_strip",
+        "e27_socket"
+      ]
     },
     {
       "step": 4,
-      "label": { "es": "Agrega fieltro (posavasos)", "en": "Add felt pads (coaster)" },
-      "notes": { "es": "Pega fieltro adhesivo en la base para proteger superficies", "en": "Stick adhesive felt on the bottom to protect surfaces" },
-      "visible_parts": ["coaster"],
-      "highlight_parts": ["coaster"],
-      "camera": [80, -80, -20],
-      "camera_target": [0, 0, 0],
-      "hardware": ["felt_pads"]
+      "label": {
+        "es": "Agrega fieltro (posavasos)",
+        "en": "Add felt pads (coaster)"
+      },
+      "notes": {
+        "es": "Pega fieltro adhesivo en la base para proteger superficies",
+        "en": "Stick adhesive felt on the bottom to protect surfaces"
+      },
+      "visible_parts": [
+        "coaster"
+      ],
+      "highlight_parts": [
+        "coaster"
+      ],
+      "camera": [
+        80,
+        -80,
+        -20
+      ],
+      "camera_target": [
+        0,
+        0,
+        0
+      ],
+      "hardware": [
+        "felt_pads"
+      ]
     }
   ],
   "verification": {
     "stages": {
       "geometry": {
         "checks": {
-          "watertight": { "enabled": true },
-          "body_count": { "enabled": true, "expected": 1 },
-          "dimensions": { "enabled": true, "xy_tolerance_mm": 1.0, "z_ratio_min": 0.9, "z_ratio_max": 1.1 },
-          "facet_count": { "enabled": true, "min_facets": 200 }
+          "watertight": {
+            "enabled": true
+          },
+          "body_count": {
+            "enabled": true,
+            "expected": 1
+          },
+          "dimensions": {
+            "enabled": true,
+            "xy_tolerance_mm": 1.0,
+            "z_ratio_min": 0.9,
+            "z_ratio_max": 1.1
+          },
+          "facet_count": {
+            "enabled": true,
+            "min_facets": 200
+          }
         }
       },
       "printability": {
         "checks": {
-          "thin_wall": { "enabled": true, "min_thickness_mm": 0.8 },
-          "overhang": { "enabled": true, "max_angle_deg": 55 },
-          "min_feature_size": { "enabled": true, "min_size_mm": 0.5 }
+          "thin_wall": {
+            "enabled": true,
+            "min_thickness_mm": 0.8
+          },
+          "overhang": {
+            "enabled": true,
+            "max_angle_deg": 55
+          },
+          "min_feature_size": {
+            "enabled": true,
+            "min_size_mm": 0.5
+          }
         }
       }
     },
     "mode_overrides": {
-      "coaster": { "stages": ["geometry", "printability"] },
-      "vase": { "stages": ["geometry", "printability"] },
-      "lampshade": { "stages": ["geometry", "printability"] }
+      "coaster": {
+        "stages": [
+          "geometry",
+          "printability"
+        ]
+      },
+      "vase": {
+        "stages": [
+          "geometry",
+          "printability"
+        ]
+      },
+      "lampshade": {
+        "stages": [
+          "geometry",
+          "printability"
+        ]
+      }
     }
   },
-  "export_formats": ["stl", "3mf", "off"],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "off"
+  ],
   "print_estimation": {
     "default_material": "pla",
     "default_infill": 0.15
   },
   "camera_views": [
-    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [80, 80, 80] },
-    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },
-    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -150, 0] },
-    { "id": "right", "label": { "es": "Derecha", "en": "Right" },        "position": [150, 0, 0] }
+    {
+      "id": "iso",
+      "label": {
+        "es": "Isometrico",
+        "en": "Isometric"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "es": "Superior",
+        "en": "Top"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "es": "Frente",
+        "en": "Front"
+      },
+      "position": [
+        0,
+        -150,
+        0
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "es": "Derecha",
+        "en": "Right"
+      },
+      "position": [
+        150,
+        0,
+        0
+      ]
+    }
   ],
   "viewer": {
     "default_color": "#3498db"

@@ -7,46 +7,113 @@
       "es": "Esculturas de nudos toroidales generativas usando dotSCAD y BOSL2",
       "en": "Generative torus knot sculptures using dotSCAD and BOSL2"
     },
-    "tags": ["generative", "art", "mathematical", "dotSCAD"],
+    "thumbnail": "/projects/torus-knot.webp",
+    "tags": [
+      "generative",
+      "art",
+      "mathematical",
+      "dotSCAD"
+    ],
     "difficulty": "intermediate"
   },
   "modes": [
     {
       "id": "sculpture",
       "scad_file": "qubic_torus_knot.scad",
-      "label": { "es": "Escultura", "en": "Sculpture" },
-      "parts": ["knot"],
-      "estimate": { "base_units": 4, "formula": "constant" }
+      "label": {
+        "es": "Escultura",
+        "en": "Sculpture"
+      },
+      "parts": [
+        "knot"
+      ],
+      "estimate": {
+        "base_units": 4,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
-    { "id": "knot", "render_mode": 0, "label": { "es": "Nudo", "en": "Knot" }, "default_color": "#e74c3c" }
+    {
+      "id": "knot",
+      "render_mode": 0,
+      "label": {
+        "es": "Nudo",
+        "en": "Knot"
+      },
+      "default_color": "#e74c3c"
+    }
   ],
   "presets": [
     {
       "id": "trefoil",
-      "label": { "es": "Trebol", "en": "Trefoil" },
-      "values": { "p": 2, "q": 3, "tube_radius": 4, "torus_radius": 30, "segments": 120 }
+      "label": {
+        "es": "Trebol",
+        "en": "Trefoil"
+      },
+      "values": {
+        "p": 2,
+        "q": 3,
+        "tube_radius": 4,
+        "torus_radius": 30,
+        "segments": 120
+      }
     },
     {
       "id": "cinquefoil",
-      "label": { "es": "Cinquefolio", "en": "Cinquefoil" },
-      "values": { "p": 2, "q": 5, "tube_radius": 3, "torus_radius": 35, "segments": 180 }
+      "label": {
+        "es": "Cinquefolio",
+        "en": "Cinquefoil"
+      },
+      "values": {
+        "p": 2,
+        "q": 5,
+        "tube_radius": 3,
+        "torus_radius": 35,
+        "segments": 180
+      }
     },
     {
       "id": "solomons_seal",
-      "label": { "es": "Sello de Salomon", "en": "Solomon's Seal" },
-      "values": { "p": 2, "q": 7, "tube_radius": 2.5, "torus_radius": 40, "segments": 200 }
+      "label": {
+        "es": "Sello de Salomon",
+        "en": "Solomon's Seal"
+      },
+      "values": {
+        "p": 2,
+        "q": 7,
+        "tube_radius": 2.5,
+        "torus_radius": 40,
+        "segments": 200
+      }
     },
     {
       "id": "figure_eight",
-      "label": { "es": "Figura Ocho", "en": "Figure Eight" },
-      "values": { "p": 3, "q": 5, "tube_radius": 3.5, "torus_radius": 30, "segments": 160 }
+      "label": {
+        "es": "Figura Ocho",
+        "en": "Figure Eight"
+      },
+      "values": {
+        "p": 3,
+        "q": 5,
+        "tube_radius": 3.5,
+        "torus_radius": 30,
+        "segments": 160
+      }
     },
     {
       "id": "thick_trefoil",
-      "label": { "es": "Trebol Grueso", "en": "Thick Trefoil" },
-      "values": { "p": 2, "q": 3, "tube_radius": 8, "torus_radius": 40, "segments": 100 }
+      "label": {
+        "es": "Trebol Grueso",
+        "en": "Thick Trefoil"
+      },
+      "values": {
+        "p": 2,
+        "q": 3,
+        "tube_radius": 8,
+        "torus_radius": 40,
+        "segments": 100
+      }
     }
   ],
   "parameters": [
@@ -57,9 +124,17 @@
       "min": 1,
       "max": 7,
       "step": 1,
-      "label": { "es": "P (vueltas longitudinales)", "en": "P (longitudinal windings)" },
-      "tooltip": { "es": "Numero de veces que el nudo rodea el agujero del toro", "en": "Number of times the knot winds around the torus hole" },
-      "visible_in_modes": ["sculpture"],
+      "label": {
+        "es": "P (vueltas longitudinales)",
+        "en": "P (longitudinal windings)"
+      },
+      "tooltip": {
+        "es": "Numero de veces que el nudo rodea el agujero del toro",
+        "en": "Number of times the knot winds around the torus hole"
+      },
+      "visible_in_modes": [
+        "sculpture"
+      ],
       "group": "knot"
     },
     {
@@ -69,9 +144,17 @@
       "min": 2,
       "max": 11,
       "step": 1,
-      "label": { "es": "Q (vueltas meridionales)", "en": "Q (meridional windings)" },
-      "tooltip": { "es": "Numero de veces que el nudo rodea el eje de rotacion", "en": "Number of times the knot winds around the axis of rotation" },
-      "visible_in_modes": ["sculpture"],
+      "label": {
+        "es": "Q (vueltas meridionales)",
+        "en": "Q (meridional windings)"
+      },
+      "tooltip": {
+        "es": "Numero de veces que el nudo rodea el eje de rotacion",
+        "en": "Number of times the knot winds around the axis of rotation"
+      },
+      "visible_in_modes": [
+        "sculpture"
+      ],
       "group": "knot"
     },
     {
@@ -81,9 +164,17 @@
       "min": 1,
       "max": 12,
       "step": 0.5,
-      "label": { "es": "Radio del tubo (mm)", "en": "Tube Radius (mm)" },
-      "tooltip": { "es": "Radio de la seccion transversal del nudo", "en": "Cross-section radius of the knot" },
-      "visible_in_modes": ["sculpture"],
+      "label": {
+        "es": "Radio del tubo (mm)",
+        "en": "Tube Radius (mm)"
+      },
+      "tooltip": {
+        "es": "Radio de la seccion transversal del nudo",
+        "en": "Cross-section radius of the knot"
+      },
+      "visible_in_modes": [
+        "sculpture"
+      ],
       "group": "dimensions"
     },
     {
@@ -93,9 +184,17 @@
       "min": 15,
       "max": 60,
       "step": 5,
-      "label": { "es": "Radio del toro (mm)", "en": "Torus Radius (mm)" },
-      "tooltip": { "es": "Radio principal del toro que define el nudo", "en": "Main radius of the torus defining the knot" },
-      "visible_in_modes": ["sculpture"],
+      "label": {
+        "es": "Radio del toro (mm)",
+        "en": "Torus Radius (mm)"
+      },
+      "tooltip": {
+        "es": "Radio principal del toro que define el nudo",
+        "en": "Main radius of the torus defining the knot"
+      },
+      "visible_in_modes": [
+        "sculpture"
+      ],
       "group": "dimensions"
     },
     {
@@ -105,9 +204,17 @@
       "min": 40,
       "max": 300,
       "step": 10,
-      "label": { "es": "Segmentos", "en": "Segments" },
-      "tooltip": { "es": "Suavidad de la curva — mas segmentos = mas suave pero mas lento", "en": "Curve smoothness — more segments = smoother but slower" },
-      "visible_in_modes": ["sculpture"],
+      "label": {
+        "es": "Segmentos",
+        "en": "Segments"
+      },
+      "tooltip": {
+        "es": "Suavidad de la curva — mas segmentos = mas suave pero mas lento",
+        "en": "Curve smoothness — more segments = smoother but slower"
+      },
+      "visible_in_modes": [
+        "sculpture"
+      ],
       "group": "quality"
     },
     {
@@ -117,91 +224,247 @@
       "min": 0.5,
       "max": 2.0,
       "step": 0.1,
-      "label": { "es": "Escala", "en": "Scale" },
-      "tooltip": { "es": "Factor de escala global", "en": "Global scale factor" },
-      "visible_in_modes": ["sculpture"],
+      "label": {
+        "es": "Escala",
+        "en": "Scale"
+      },
+      "tooltip": {
+        "es": "Factor de escala global",
+        "en": "Global scale factor"
+      },
+      "visible_in_modes": [
+        "sculpture"
+      ],
       "group": "dimensions",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "knot", "label": { "es": "Tipo de Nudo", "en": "Knot Type" } },
-    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
-    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
-    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
+    {
+      "id": "knot",
+      "label": {
+        "es": "Tipo de Nudo",
+        "en": "Knot Type"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "es": "Dimensiones",
+        "en": "Dimensions"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "es": "Calidad",
+        "en": "Quality"
+      }
+    },
+    {
+      "id": "colors",
+      "label": {
+        "es": "Colores",
+        "en": "Colors"
+      }
+    }
   ],
   "constraints": [
     {
       "rule": "tube_radius >= 1.5",
-      "message": { "es": "Radio del tubo minimo para impresion FDM", "en": "Minimum tube radius for FDM printing" },
+      "message": {
+        "es": "Radio del tubo minimo para impresion FDM",
+        "en": "Minimum tube radius for FDM printing"
+      },
       "severity": "error",
-      "applies_to": ["tube_radius"]
+      "applies_to": [
+        "tube_radius"
+      ]
     },
     {
       "rule": "tube_radius < torus_radius * 0.3",
-      "message": { "es": "Tubo muy grueso para el radio del toro — puede auto-intersectar", "en": "Tube too thick for torus radius — may self-intersect" },
+      "message": {
+        "es": "Tubo muy grueso para el radio del toro — puede auto-intersectar",
+        "en": "Tube too thick for torus radius — may self-intersect"
+      },
       "severity": "error",
-      "applies_to": ["tube_radius", "torus_radius"]
+      "applies_to": [
+        "tube_radius",
+        "torus_radius"
+      ]
     },
     {
       "rule": "segments >= 80",
-      "message": { "es": "Pocos segmentos pueden causar aristas visibles", "en": "Few segments may cause visible edges" },
+      "message": {
+        "es": "Pocos segmentos pueden causar aristas visibles",
+        "en": "Few segments may cause visible edges"
+      },
       "severity": "warning",
-      "applies_to": ["segments"]
+      "applies_to": [
+        "segments"
+      ]
     }
   ],
   "materials": [
-    { "id": "pla", "name": "PLA", "density": 1.24, "cost_per_kg": 20, "print_speed_factor": 1.0 },
-    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 }
+    {
+      "id": "pla",
+      "name": "PLA",
+      "density": 1.24,
+      "cost_per_kg": 20,
+      "print_speed_factor": 1.0
+    },
+    {
+      "id": "petg",
+      "name": "PETG",
+      "density": 1.27,
+      "cost_per_kg": 25,
+      "print_speed_factor": 0.85
+    }
   ],
   "assembly_steps": [
     {
       "step": 1,
-      "label": { "es": "Imprime la escultura", "en": "Print the sculpture" },
-      "notes": { "es": "Requiere soportes. 0.2mm capas, 15% relleno. Orientar para minimizar soportes", "en": "Requires supports. 0.2mm layers, 15% infill. Orient to minimize supports" },
-      "visible_parts": ["knot"],
-      "highlight_parts": ["knot"],
-      "camera": [80, -80, 60],
-      "camera_target": [0, 0, 0]
+      "label": {
+        "es": "Imprime la escultura",
+        "en": "Print the sculpture"
+      },
+      "notes": {
+        "es": "Requiere soportes. 0.2mm capas, 15% relleno. Orientar para minimizar soportes",
+        "en": "Requires supports. 0.2mm layers, 15% infill. Orient to minimize supports"
+      },
+      "visible_parts": [
+        "knot"
+      ],
+      "highlight_parts": [
+        "knot"
+      ],
+      "camera": [
+        80,
+        -80,
+        60
+      ],
+      "camera_target": [
+        0,
+        0,
+        0
+      ]
     },
     {
       "step": 2,
-      "label": { "es": "Retira soportes y lija", "en": "Remove supports and sand" },
-      "notes": { "es": "Lija las marcas de soporte. Lija de 220 luego 400 para acabado suave", "en": "Sand support marks. 220 grit then 400 grit for smooth finish" },
-      "visible_parts": ["knot"],
-      "highlight_parts": ["knot"],
-      "camera": [60, -60, 40],
-      "camera_target": [0, 0, 0]
+      "label": {
+        "es": "Retira soportes y lija",
+        "en": "Remove supports and sand"
+      },
+      "notes": {
+        "es": "Lija las marcas de soporte. Lija de 220 luego 400 para acabado suave",
+        "en": "Sand support marks. 220 grit then 400 grit for smooth finish"
+      },
+      "visible_parts": [
+        "knot"
+      ],
+      "highlight_parts": [
+        "knot"
+      ],
+      "camera": [
+        60,
+        -60,
+        40
+      ],
+      "camera_target": [
+        0,
+        0,
+        0
+      ]
     }
   ],
   "verification": {
     "stages": {
       "geometry": {
         "checks": {
-          "watertight": { "enabled": true },
-          "body_count": { "enabled": true, "expected": 1 },
-          "facet_count": { "enabled": true, "min_facets": 500 }
+          "watertight": {
+            "enabled": true
+          },
+          "body_count": {
+            "enabled": true,
+            "expected": 1
+          },
+          "facet_count": {
+            "enabled": true,
+            "min_facets": 500
+          }
         }
       },
       "printability": {
         "checks": {
-          "thin_wall": { "enabled": true, "min_thickness_mm": 1.0 },
-          "overhang": { "enabled": true, "max_angle_deg": 60 }
+          "thin_wall": {
+            "enabled": true,
+            "min_thickness_mm": 1.0
+          },
+          "overhang": {
+            "enabled": true,
+            "max_angle_deg": 60
+          }
         }
       }
     },
     "mode_overrides": {
-      "sculpture": { "stages": ["geometry", "printability"] }
+      "sculpture": {
+        "stages": [
+          "geometry",
+          "printability"
+        ]
+      }
     }
   },
-  "export_formats": ["stl", "3mf"],
-  "print_estimation": { "default_material": "pla", "default_infill": 0.15 },
-  "camera_views": [
-    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [100, 100, 60] },
-    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 150] },
-    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -150, 0] }
+  "export_formats": [
+    "stl",
+    "3mf"
   ],
-  "viewer": { "default_color": "#e74c3c" },
+  "print_estimation": {
+    "default_material": "pla",
+    "default_infill": 0.15
+  },
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "es": "Isometrico",
+        "en": "Isometric"
+      },
+      "position": [
+        100,
+        100,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "es": "Superior",
+        "en": "Top"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "es": "Frente",
+        "en": "Front"
+      },
+      "position": [
+        0,
+        -150,
+        0
+      ]
+    }
+  ],
+  "viewer": {
+    "default_color": "#e74c3c"
+  },
   "estimate_constants": {
     "base_time": 15,
     "per_unit": 2,

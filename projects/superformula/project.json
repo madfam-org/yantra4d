@@ -7,46 +7,123 @@
       "es": "Jarrones generativos basados en superformulas matematicas usando dotSCAD",
       "en": "Generative vases based on mathematical superformulas using dotSCAD"
     },
-    "tags": ["generative", "vase", "mathematical", "dotSCAD"],
+    "thumbnail": "/projects/superformula.webp",
+    "tags": [
+      "generative",
+      "vase",
+      "mathematical",
+      "dotSCAD"
+    ],
     "difficulty": "intermediate"
   },
   "modes": [
     {
       "id": "vase",
       "scad_file": "qubic_superformula.scad",
-      "label": { "es": "Jarron", "en": "Vase" },
-      "parts": ["vase"],
-      "estimate": { "base_units": 3, "formula": "constant" }
+      "label": {
+        "es": "Jarron",
+        "en": "Vase"
+      },
+      "parts": [
+        "vase"
+      ],
+      "estimate": {
+        "base_units": 3,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
-    { "id": "vase", "render_mode": 0, "label": { "es": "Jarron", "en": "Vase" }, "default_color": "#9b59b6" }
+    {
+      "id": "vase",
+      "render_mode": 0,
+      "label": {
+        "es": "Jarron",
+        "en": "Vase"
+      },
+      "default_color": "#9b59b6"
+    }
   ],
   "presets": [
     {
       "id": "starfish",
-      "label": { "es": "Estrella de Mar", "en": "Starfish" },
-      "values": { "m1": 5, "m2": 5, "n1": 2, "n2": 7, "n3": 7, "height": 100, "wall_thickness": 2 }
+      "label": {
+        "es": "Estrella de Mar",
+        "en": "Starfish"
+      },
+      "values": {
+        "m1": 5,
+        "m2": 5,
+        "n1": 2,
+        "n2": 7,
+        "n3": 7,
+        "height": 100,
+        "wall_thickness": 2
+      }
     },
     {
       "id": "flower",
-      "label": { "es": "Flor", "en": "Flower" },
-      "values": { "m1": 8, "m2": 8, "n1": 0.5, "n2": 0.5, "n3": 8, "height": 120, "wall_thickness": 2 }
+      "label": {
+        "es": "Flor",
+        "en": "Flower"
+      },
+      "values": {
+        "m1": 8,
+        "m2": 8,
+        "n1": 0.5,
+        "n2": 0.5,
+        "n3": 8,
+        "height": 120,
+        "wall_thickness": 2
+      }
     },
     {
       "id": "alien_egg",
-      "label": { "es": "Huevo Alien", "en": "Alien Egg" },
-      "values": { "m1": 3, "m2": 3, "n1": 4.5, "n2": 10, "n3": 10, "height": 80, "wall_thickness": 2.5 }
+      "label": {
+        "es": "Huevo Alien",
+        "en": "Alien Egg"
+      },
+      "values": {
+        "m1": 3,
+        "m2": 3,
+        "n1": 4.5,
+        "n2": 10,
+        "n3": 10,
+        "height": 80,
+        "wall_thickness": 2.5
+      }
     },
     {
       "id": "sea_urchin",
-      "label": { "es": "Erizo de Mar", "en": "Sea Urchin" },
-      "values": { "m1": 12, "m2": 12, "n1": 1, "n2": 1, "n3": 1, "height": 60, "wall_thickness": 1.5 }
+      "label": {
+        "es": "Erizo de Mar",
+        "en": "Sea Urchin"
+      },
+      "values": {
+        "m1": 12,
+        "m2": 12,
+        "n1": 1,
+        "n2": 1,
+        "n3": 1,
+        "height": 60,
+        "wall_thickness": 1.5
+      }
     },
     {
       "id": "organic_blob",
-      "label": { "es": "Forma Organica", "en": "Organic Blob" },
-      "values": { "m1": 6, "m2": 6, "n1": 1, "n2": 3, "n3": 5, "height": 90, "wall_thickness": 2 }
+      "label": {
+        "es": "Forma Organica",
+        "en": "Organic Blob"
+      },
+      "values": {
+        "m1": 6,
+        "m2": 6,
+        "n1": 1,
+        "n2": 3,
+        "n3": 5,
+        "height": 90,
+        "wall_thickness": 2
+      }
     }
   ],
   "parameters": [
@@ -57,9 +134,17 @@
       "min": 1,
       "max": 20,
       "step": 1,
-      "label": { "es": "M1 (simetria)", "en": "M1 (symmetry)" },
-      "tooltip": { "es": "Numero de lobulos/puntas de la forma", "en": "Number of lobes/points in the shape" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "M1 (simetria)",
+        "en": "M1 (symmetry)"
+      },
+      "tooltip": {
+        "es": "Numero de lobulos/puntas de la forma",
+        "en": "Number of lobes/points in the shape"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "shape"
     },
     {
@@ -69,9 +154,17 @@
       "min": 1,
       "max": 20,
       "step": 1,
-      "label": { "es": "M2 (simetria vertical)", "en": "M2 (vertical symmetry)" },
-      "tooltip": { "es": "Simetria vertical de la forma", "en": "Vertical symmetry of the shape" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "M2 (simetria vertical)",
+        "en": "M2 (vertical symmetry)"
+      },
+      "tooltip": {
+        "es": "Simetria vertical de la forma",
+        "en": "Vertical symmetry of the shape"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "shape"
     },
     {
@@ -81,9 +174,17 @@
       "min": 0.1,
       "max": 10,
       "step": 0.1,
-      "label": { "es": "N1", "en": "N1" },
-      "tooltip": { "es": "Parametro N1 de la superformula — controla la curvatura", "en": "Superformula N1 parameter — controls curvature" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "N1",
+        "en": "N1"
+      },
+      "tooltip": {
+        "es": "Parametro N1 de la superformula — controla la curvatura",
+        "en": "Superformula N1 parameter — controls curvature"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "shape"
     },
     {
@@ -93,9 +194,17 @@
       "min": 0.1,
       "max": 20,
       "step": 0.1,
-      "label": { "es": "N2", "en": "N2" },
-      "tooltip": { "es": "Parametro N2 de la superformula", "en": "Superformula N2 parameter" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "N2",
+        "en": "N2"
+      },
+      "tooltip": {
+        "es": "Parametro N2 de la superformula",
+        "en": "Superformula N2 parameter"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "shape"
     },
     {
@@ -105,9 +214,17 @@
       "min": 0.1,
       "max": 20,
       "step": 0.1,
-      "label": { "es": "N3", "en": "N3" },
-      "tooltip": { "es": "Parametro N3 de la superformula", "en": "Superformula N3 parameter" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "N3",
+        "en": "N3"
+      },
+      "tooltip": {
+        "es": "Parametro N3 de la superformula",
+        "en": "Superformula N3 parameter"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "shape"
     },
     {
@@ -117,9 +234,17 @@
       "min": 40,
       "max": 200,
       "step": 5,
-      "label": { "es": "Altura (mm)", "en": "Height (mm)" },
-      "tooltip": { "es": "Altura del jarron", "en": "Height of the vase" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "Altura (mm)",
+        "en": "Height (mm)"
+      },
+      "tooltip": {
+        "es": "Altura del jarron",
+        "en": "Height of the vase"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "dimensions"
     },
     {
@@ -129,9 +254,17 @@
       "min": 1,
       "max": 5,
       "step": 0.5,
-      "label": { "es": "Grosor de pared (mm)", "en": "Wall Thickness (mm)" },
-      "tooltip": { "es": "Grosor de la pared del jarron", "en": "Vase wall thickness" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "Grosor de pared (mm)",
+        "en": "Wall Thickness (mm)"
+      },
+      "tooltip": {
+        "es": "Grosor de la pared del jarron",
+        "en": "Vase wall thickness"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "dimensions"
     },
     {
@@ -141,9 +274,17 @@
       "min": 20,
       "max": 80,
       "step": 5,
-      "label": { "es": "Radio (mm)", "en": "Radius (mm)" },
-      "tooltip": { "es": "Radio base de la superformula", "en": "Base radius of the superformula" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "Radio (mm)",
+        "en": "Radius (mm)"
+      },
+      "tooltip": {
+        "es": "Radio base de la superformula",
+        "en": "Base radius of the superformula"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "dimensions",
       "visibility_level": "advanced"
     },
@@ -154,85 +295,235 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "es": "Calidad ($fn)", "en": "Quality ($fn)" },
-      "tooltip": { "es": "0 = automatico", "en": "0 = auto" },
-      "visible_in_modes": ["vase"],
+      "label": {
+        "es": "Calidad ($fn)",
+        "en": "Quality ($fn)"
+      },
+      "tooltip": {
+        "es": "0 = automatico",
+        "en": "0 = auto"
+      },
+      "visible_in_modes": [
+        "vase"
+      ],
       "group": "quality",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "shape", "label": { "es": "Forma", "en": "Shape" } },
-    { "id": "dimensions", "label": { "es": "Dimensiones", "en": "Dimensions" } },
-    { "id": "quality", "label": { "es": "Calidad", "en": "Quality" } },
-    { "id": "colors", "label": { "es": "Colores", "en": "Colors" } }
+    {
+      "id": "shape",
+      "label": {
+        "es": "Forma",
+        "en": "Shape"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "es": "Dimensiones",
+        "en": "Dimensions"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "es": "Calidad",
+        "en": "Quality"
+      }
+    },
+    {
+      "id": "colors",
+      "label": {
+        "es": "Colores",
+        "en": "Colors"
+      }
+    }
   ],
   "constraints": [
     {
       "rule": "wall_thickness >= 1",
-      "message": { "es": "Grosor minimo de 1mm para impresion FDM", "en": "Minimum 1mm wall thickness for FDM" },
+      "message": {
+        "es": "Grosor minimo de 1mm para impresion FDM",
+        "en": "Minimum 1mm wall thickness for FDM"
+      },
       "severity": "error",
-      "applies_to": ["wall_thickness"]
+      "applies_to": [
+        "wall_thickness"
+      ]
     },
     {
       "rule": "height >= 40",
-      "message": { "es": "Altura minima para estabilidad", "en": "Minimum height for stability" },
+      "message": {
+        "es": "Altura minima para estabilidad",
+        "en": "Minimum height for stability"
+      },
       "severity": "warning",
-      "applies_to": ["height"]
+      "applies_to": [
+        "height"
+      ]
     }
   ],
   "materials": [
-    { "id": "pla", "name": "PLA", "density": 1.24, "cost_per_kg": 20, "print_speed_factor": 1.0 },
-    { "id": "petg", "name": "PETG", "density": 1.27, "cost_per_kg": 25, "print_speed_factor": 0.85 }
+    {
+      "id": "pla",
+      "name": "PLA",
+      "density": 1.24,
+      "cost_per_kg": 20,
+      "print_speed_factor": 1.0
+    },
+    {
+      "id": "petg",
+      "name": "PETG",
+      "density": 1.27,
+      "cost_per_kg": 25,
+      "print_speed_factor": 0.85
+    }
   ],
   "assembly_steps": [
     {
       "step": 1,
-      "label": { "es": "Imprime el jarron", "en": "Print the vase" },
-      "notes": { "es": "Modo jarron (spiralize) recomendado en el slicer. 0.2mm capas", "en": "Vase (spiralize) mode recommended in slicer. 0.2mm layers" },
-      "visible_parts": ["vase"],
-      "highlight_parts": ["vase"],
-      "camera": [80, -80, 60],
-      "camera_target": [0, 0, 40]
+      "label": {
+        "es": "Imprime el jarron",
+        "en": "Print the vase"
+      },
+      "notes": {
+        "es": "Modo jarron (spiralize) recomendado en el slicer. 0.2mm capas",
+        "en": "Vase (spiralize) mode recommended in slicer. 0.2mm layers"
+      },
+      "visible_parts": [
+        "vase"
+      ],
+      "highlight_parts": [
+        "vase"
+      ],
+      "camera": [
+        80,
+        -80,
+        60
+      ],
+      "camera_target": [
+        0,
+        0,
+        40
+      ]
     },
     {
       "step": 2,
-      "label": { "es": "Lija y sella (opcional)", "en": "Sand and seal (optional)" },
-      "notes": { "es": "Para uso con agua, sella el interior con resina epoxi", "en": "For water use, seal interior with epoxy resin" },
-      "visible_parts": ["vase"],
-      "highlight_parts": ["vase"],
-      "camera": [60, -60, 40],
-      "camera_target": [0, 0, 30]
+      "label": {
+        "es": "Lija y sella (opcional)",
+        "en": "Sand and seal (optional)"
+      },
+      "notes": {
+        "es": "Para uso con agua, sella el interior con resina epoxi",
+        "en": "For water use, seal interior with epoxy resin"
+      },
+      "visible_parts": [
+        "vase"
+      ],
+      "highlight_parts": [
+        "vase"
+      ],
+      "camera": [
+        60,
+        -60,
+        40
+      ],
+      "camera_target": [
+        0,
+        0,
+        30
+      ]
     }
   ],
   "verification": {
     "stages": {
       "geometry": {
         "checks": {
-          "watertight": { "enabled": true },
-          "body_count": { "enabled": true, "expected": 1 },
-          "facet_count": { "enabled": true, "min_facets": 300 }
+          "watertight": {
+            "enabled": true
+          },
+          "body_count": {
+            "enabled": true,
+            "expected": 1
+          },
+          "facet_count": {
+            "enabled": true,
+            "min_facets": 300
+          }
         }
       },
       "printability": {
         "checks": {
-          "thin_wall": { "enabled": true, "min_thickness_mm": 0.8 },
-          "overhang": { "enabled": true, "max_angle_deg": 60 }
+          "thin_wall": {
+            "enabled": true,
+            "min_thickness_mm": 0.8
+          },
+          "overhang": {
+            "enabled": true,
+            "max_angle_deg": 60
+          }
         }
       }
     },
     "mode_overrides": {
-      "vase": { "stages": ["geometry", "printability"] }
+      "vase": {
+        "stages": [
+          "geometry",
+          "printability"
+        ]
+      }
     }
   },
-  "export_formats": ["stl", "3mf"],
-  "print_estimation": { "default_material": "pla", "default_infill": 0.0 },
-  "camera_views": [
-    { "id": "iso",   "label": { "es": "Isometrico", "en": "Isometric" }, "position": [100, 100, 80] },
-    { "id": "top",   "label": { "es": "Superior", "en": "Top" },         "position": [0, 0, 180] },
-    { "id": "front", "label": { "es": "Frente", "en": "Front" },         "position": [0, -180, 40] }
+  "export_formats": [
+    "stl",
+    "3mf"
   ],
-  "viewer": { "default_color": "#9b59b6" },
+  "print_estimation": {
+    "default_material": "pla",
+    "default_infill": 0.0
+  },
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "es": "Isometrico",
+        "en": "Isometric"
+      },
+      "position": [
+        100,
+        100,
+        80
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "es": "Superior",
+        "en": "Top"
+      },
+      "position": [
+        0,
+        0,
+        180
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "es": "Frente",
+        "en": "Front"
+      },
+      "position": [
+        0,
+        -180,
+        40
+      ]
+    }
+  ],
+  "viewer": {
+    "default_color": "#9b59b6"
+  },
   "estimate_constants": {
     "base_time": 12,
     "per_unit": 2,

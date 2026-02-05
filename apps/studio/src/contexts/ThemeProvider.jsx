@@ -7,9 +7,9 @@ export function ThemeProvider({
     defaultTheme = "system",
     storageKey = "qubic-theme",
 }) {
-    const [theme, setTheme] = useState(
-        () => localStorage.getItem(storageKey) || defaultTheme
-    )
+    const [theme, setTheme] = useState(() => {
+        try { return localStorage.getItem(storageKey) || defaultTheme } catch { return defaultTheme }
+    })
 
     useEffect(() => {
         const root = window.document.documentElement
@@ -30,7 +30,7 @@ export function ThemeProvider({
     }, [theme])
 
     const handleSetTheme = useCallback((newTheme) => {
-        localStorage.setItem(storageKey, newTheme)
+        try { localStorage.setItem(storageKey, newTheme) } catch { /* quota exceeded or private browsing */ }
         setTheme(newTheme)
     }, [storageKey])
 

@@ -1,6 +1,7 @@
 services:
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
     healthcheck:
@@ -13,6 +14,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
     ports:
       - "5000:5000"
     volumes:
@@ -42,6 +44,7 @@ services:
         VITE_API_BASE: http://backend:5000
         VITE_JANUA_BASE_URL: ${VITE_JANUA_BASE_URL:-}
         VITE_JANUA_CLIENT_ID: ${VITE_JANUA_CLIENT_ID:-qubic}
+    restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
@@ -51,5 +54,11 @@ services:
   landing:
     build:
       context: ./apps/landing
+    restart: unless-stopped
     ports:
       - "4321:80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

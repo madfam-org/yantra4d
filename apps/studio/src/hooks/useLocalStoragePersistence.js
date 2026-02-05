@@ -8,9 +8,11 @@ export function useLocalStoragePersistence(key, value, { debounce = 300, seriali
   useEffect(() => {
     const stored = serialize ? JSON.stringify(value) : value
     if (debounce > 0) {
-      const id = setTimeout(() => localStorage.setItem(key, stored), debounce)
+      const id = setTimeout(() => {
+        try { localStorage.setItem(key, stored) } catch { /* quota exceeded or private browsing */ }
+      }, debounce)
       return () => clearTimeout(id)
     }
-    localStorage.setItem(key, stored)
+    try { localStorage.setItem(key, stored) } catch { /* quota exceeded or private browsing */ }
   }, [key, value, debounce, serialize])
 }

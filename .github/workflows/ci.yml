@@ -9,6 +9,7 @@ on:
 jobs:
   studio:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/studio
@@ -20,12 +21,13 @@ jobs:
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci
-      - run: npm audit --audit-level=high || true
+      - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run test:coverage
 
   landing:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/landing
@@ -42,6 +44,7 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/api
@@ -52,14 +55,15 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: pip install ruff pip-audit
-      - run: pip-audit || true
+      - run: pip-audit
       - run: ruff check .
       - run: pip install pytest pytest-cov
       - name: Run backend tests
-        run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing
+        run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing --cov-fail-under=80
 
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/studio
@@ -84,6 +88,7 @@ jobs:
 
   manifest-sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Check manifest sync

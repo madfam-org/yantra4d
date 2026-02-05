@@ -11,3 +11,4 @@ PyJWT[crypto]>=2.8.0
 requests~=2.31
 anthropic>=0.40
 openai>=1.50
+redis~=5.0

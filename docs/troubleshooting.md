@@ -129,10 +129,14 @@ JSON.parse(atob(new URLSearchParams(location.search).get('p').replace(/-/g,'+').
 | `/api/verify` | 50/hour |
 | `/api/ai/*` | Tier-dependent (30–300/hour) |
 
-**Fix for development**: Rate limits use in-memory storage by default. Restart the backend to reset. For production with Redis:
+**Fix for development**: Rate limits use in-memory storage by default (`memory://`). Restart the backend to reset.
+
+**Production with Redis**: Docker Compose automatically uses Redis for shared rate limiting across workers. To configure manually:
 ```bash
 export RATE_LIMIT_STORAGE=redis://redis:6379
 ```
+
+If Redis is unreachable, Flask-Limiter will log a warning and fall back to in-memory storage. Ensure the `redis` Python package is installed (`pip install redis~=5.0`).
 
 ## Docker
 

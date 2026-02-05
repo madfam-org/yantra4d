@@ -1,4 +1,6 @@
 """Shared Flask extensions (initialized in app factory)."""
+import os
+
 from flask import request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -11,11 +13,13 @@ def tiered_rate_key():
         return f"user:{claims['sub']}"
     return f"ip:{get_remote_address()}"
 
-# NOTE: "memory://" storage is per-process — limits are not shared across
-# gunicorn workers. For accurate multi-worker rate limiting, switch to a
-# shared backend, e.g. storage_uri="redis://localhost:6379".
+# RATE_LIMIT_STORAGE controls the rate-limiter backend:
+#   "memory://"          — per-process (default, not shared across workers)
+#   "redis://host:port"  — shared across workers via Redis
+_storage_uri = os.environ.get("RATE_LIMIT_STORAGE", "memory://")
+
 limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["500 per hour"],
-    storage_uri="memory://",
+    storage_uri=_storage_uri,
 )

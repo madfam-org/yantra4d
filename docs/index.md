@@ -9,6 +9,9 @@ Platform-level documentation for the Qubic parametric 3D print design platform.
 -   [Project Manifest](./manifest.md): Extensible manifest schema, how the webapp is data-driven, and how to add new projects.
 -   [Multi-Project Platform](./multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [Developer Experience Guide](./devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
+-   [WASM Mode](./wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
+-   [AI Features](./ai-features.md): AI Configurator and Code Editor — setup, API reference, tier access.
+-   [Troubleshooting](./troubleshooting.md): Common issues — render timeouts, CORS, git submodules, Docker env vars.
 -   [Competitive Landscape](./competitive-landscape.md): Market research, competitor analysis, and feature roadmap.
 -   [Roadmap](./roadmap.md): Strategic features planned for future implementation.
 

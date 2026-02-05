@@ -1,0 +1,31 @@
+name: Update Submodules
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Weekly Monday 9am UTC
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Update all submodules to latest
+        run: git submodule update --remote --merge
+      - name: Create PR if changed
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore(deps): update submodules"
+          title: "chore(deps): update submodules"
+          body: |
+            Automated weekly submodule update.
+            Review and merge after CI passes to ensure no breaking changes.
+          branch: chore/update-submodules
+          delete-branch: true

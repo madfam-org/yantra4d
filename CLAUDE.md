@@ -33,7 +33,7 @@ packages/
   tokens/              (shared CSS custom properties — colors, spacing)
 ```
 
-**Domains**: `qubic.quest` (landing), `studio.qubic.quest` (studio), `api.qubic.quest` (api)
+**Domains**: `4d.madfam.io` (landing), `app.4d.madfam.io` (studio), `api.4d.madfam.io` (api)
 
 ## Critical File Map
 
@@ -197,7 +197,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | Export formats | `export_format` in render payloads (stl/3mf/off); format selector only visible when manifest declares `export_formats` |
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` — edit tokens there, not in individual app CSS |
-| Embed mode | `?embed=true` hides studio header/banners for iframe embedding; landing uses `InteractiveShowcase` to embed studio via iframe. Production nginx must allow `frame-ancestors` from `qubic.quest` |
+| Embed mode | `?embed=true` hides studio header/banners for iframe embedding; landing uses `InteractiveShowcase` to embed studio via iframe. Production nginx must allow `frame-ancestors` from `4d.madfam.io` |
 
 ## Do NOT Edit
 
@@ -209,7 +209,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 
 | Target | Method |
 |--------|--------|
-| Enclii PaaS | Auto-deploy on push to main — `qubic-landing` at qubic.quest, `qubic-studio` at studio.qubic.quest, `qubic-backend` at api.qubic.quest |
+| Enclii PaaS | Auto-deploy on push to main — `qubic-landing` at 4d.madfam.io, `qubic-studio` at app.4d.madfam.io, `qubic-backend` at api.4d.madfam.io |
 | Docker | `docker compose up` (backend + studio + landing, local) |
 | Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) |
 

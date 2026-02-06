@@ -48,7 +48,7 @@ brew install openscad
 
 **Fix**: Set `CORS_ORIGINS` on the backend:
 ```bash
-export CORS_ORIGINS="http://localhost:5173,https://studio.qubic.quest"
+export CORS_ORIGINS="http://localhost:5173,https://app.4d.madfam.io"
 ```
 
 Multiple origins are comma-separated. The backend reads this in `app.py` to configure Flask-CORS.

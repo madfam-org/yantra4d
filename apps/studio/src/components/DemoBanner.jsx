@@ -17,7 +17,7 @@ export default function DemoBanner() {
       <span className="text-foreground">
         You&apos;re in demo mode — rendering is limited to 10/hr.{' '}
         <a
-          href="https://qubic.quest/#pricing"
+          href="https://4d.madfam.io/#pricing"
           className="font-medium text-primary underline underline-offset-2"
         >
           Sign up

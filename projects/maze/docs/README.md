@@ -11,9 +11,9 @@ Maze generator for coasters, cubes, and cylinders
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `coaster` | Coaster | `qubic_maze_coaster.scad` | coaster |
-| `cube` | Cube | `qubic_maze_cube.scad` | cube |
-| `cylinder` | Cylinder | `qubic_maze_cylinder.scad` | cylinder |
+| `coaster` | Coaster | `yantra4d_maze_coaster.scad` | coaster |
+| `cube` | Cube | `yantra4d_maze_cube.scad` | cube |
+| `cylinder` | Cylinder | `yantra4d_maze_cylinder.scad` | cylinder |
 
 ## Parameters
 

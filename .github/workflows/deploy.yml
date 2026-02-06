@@ -20,7 +20,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_BASE: madfam-org/qubic
+  IMAGE_BASE: madfam-org/yantra4d
   NAMESPACE: enclii-production
 
 concurrency:
@@ -268,33 +268,33 @@ jobs:
       - name: Deploy backend
         if: needs.build-backend.outputs.image_digest != ''
         run: |
-          kubectl set image deployment/qubic-backend \
-            qubic-backend=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend@${{ needs.build-backend.outputs.image_digest }} \
+          kubectl set image deployment/yantra4d-backend \
+            yantra4d-backend=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend@${{ needs.build-backend.outputs.image_digest }} \
             -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/qubic-backend -n ${{ env.NAMESPACE }} --timeout=300s
+          kubectl rollout status deployment/yantra4d-backend -n ${{ env.NAMESPACE }} --timeout=300s
 
       - name: Deploy studio
         if: needs.build-studio.outputs.image_digest != ''
         run: |
-          kubectl set image deployment/qubic-studio \
-            qubic-studio=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio@${{ needs.build-studio.outputs.image_digest }} \
+          kubectl set image deployment/yantra4d-studio \
+            yantra4d-studio=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio@${{ needs.build-studio.outputs.image_digest }} \
             -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/qubic-studio -n ${{ env.NAMESPACE }} --timeout=300s
+          kubectl rollout status deployment/yantra4d-studio -n ${{ env.NAMESPACE }} --timeout=300s
 
       - name: Deploy landing
         if: needs.build-landing.outputs.image_digest != ''
         run: |
-          kubectl set image deployment/qubic-landing \
-            qubic-landing=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${{ needs.build-landing.outputs.image_digest }} \
+          kubectl set image deployment/yantra4d-landing \
+            yantra4d-landing=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${{ needs.build-landing.outputs.image_digest }} \
             -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/qubic-landing -n ${{ env.NAMESPACE }} --timeout=300s
+          kubectl rollout status deployment/yantra4d-landing -n ${{ env.NAMESPACE }} --timeout=300s
 
       - name: Verify health
         if: needs.build-backend.outputs.image_digest != ''
         run: |
           echo "Waiting for rollout to stabilize..."
           sleep 10
-          PODS=$(kubectl get pods -n ${{ env.NAMESPACE }} -l app=qubic-backend -o jsonpath='{.items[*].status.podIP}')
+          PODS=$(kubectl get pods -n ${{ env.NAMESPACE }} -l app=yantra4d-backend -o jsonpath='{.items[*].status.podIP}')
           for POD_IP in $PODS; do
             echo "Checking health of pod at $POD_IP..."
             curl -sf "http://$POD_IP:5000/api/health" || exit 1
@@ -325,7 +325,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Rollback commands**:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "kubectl rollout undo deployment/qubic-backend -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
-          echo "kubectl rollout undo deployment/qubic-studio -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
-          echo "kubectl rollout undo deployment/qubic-landing -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl rollout undo deployment/yantra4d-backend -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl rollout undo deployment/yantra4d-studio -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl rollout undo deployment/yantra4d-landing -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

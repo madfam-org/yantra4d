@@ -1,5 +1,5 @@
 // Julia Fractal Vase — Parametric twisted vase with sinusoidal profile
-// Vendored for Qubic — inspired by mathematical art vases
+// Vendored for Yantra4D — inspired by mathematical art vases
 // Original concept from Thingiverse community
 
 julia_height = 150;

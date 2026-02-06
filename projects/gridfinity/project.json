@@ -18,7 +18,7 @@
   "modes": [
     {
       "id": "cup",
-      "scad_file": "qubic_cup.scad",
+      "scad_file": "yantra4d_cup.scad",
       "label": {
         "es": "Contenedor",
         "en": "Bin"
@@ -33,7 +33,7 @@
     },
     {
       "id": "baseplate",
-      "scad_file": "qubic_baseplate.scad",
+      "scad_file": "yantra4d_baseplate.scad",
       "label": {
         "es": "Placa Base",
         "en": "Baseplate"
@@ -48,7 +48,7 @@
     },
     {
       "id": "lid",
-      "scad_file": "qubic_lid.scad",
+      "scad_file": "yantra4d_lid.scad",
       "label": {
         "es": "Tapa",
         "en": "Lid"

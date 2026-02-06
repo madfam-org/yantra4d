@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Qubic — Parametric 3D Design for Everyone",
+    "title": "Yantra4D — Parametric 3D Design for Everyone",
     "description": "Customize any dimension, export your perfect STL. Or turn your OpenSCAD models into configurators anyone can use."
   },
   "nav": {
@@ -34,7 +34,7 @@
   "beforeAfter": {
     "tagline": "From code to configurator. Zero learning curve.",
     "codeSide": "OpenSCAD Code",
-    "uiSide": "Qubic Configurator"
+    "uiSide": "Yantra4D Configurator"
   },
   "forMakers": {
     "heading": "Made for Makers",
@@ -65,7 +65,7 @@
     "subtitle": "Your designs deserve an audience beyond coders. Turn .scad files into shareable configurators.",
     "upload": {
       "title": "Upload and Done",
-      "desc": "Drop .scad files. Qubic auto-generates a configurator with params, modes, and presets."
+      "desc": "Drop .scad files. Yantra4D auto-generates a configurator with params, modes, and presets."
     },
     "share": {
       "title": "Share With Anyone",
@@ -94,7 +94,7 @@
     },
     "creatorTrack": {
       "label": "For Creators",
-      "step1": { "title": "Upload .scad", "desc": "Drop your OpenSCAD source files into Qubic." },
+      "step1": { "title": "Upload .scad", "desc": "Drop your OpenSCAD source files into Yantra4D." },
       "step2": { "title": "Configure", "desc": "Edit the manifest — params, modes, presets, assembly steps." },
       "step3": { "title": "Share", "desc": "Get a link. Anyone can customize and export your design." }
     }
@@ -119,7 +119,7 @@
     "ctaCreators": "Onboard Your Design"
   },
   "footer": {
-    "copyright": "Qubic. Open source under AGPLv3.",
+    "copyright": "Yantra4D. Open source under AGPLv3.",
     "docs": "Docs",
     "studio": "Studio",
     "gallery": "Gallery"

@@ -11,11 +11,11 @@ Parametric polyhedral dice generator for tabletop and RPG gaming
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `d4` | D4 (Tetrahedron) | `qubic_die.scad` | d4 |
-| `d6` | D6 (Cube) | `qubic_die.scad` | d6 |
-| `d8` | D8 (Octahedron) | `qubic_die.scad` | d8 |
-| `d12` | D12 (Dodecahedron) | `qubic_die.scad` | d12 |
-| `d20` | D20 (Icosahedron) | `qubic_die.scad` | d20 |
+| `d4` | D4 (Tetrahedron) | `yantra4d_die.scad` | d4 |
+| `d6` | D6 (Cube) | `yantra4d_die.scad` | d6 |
+| `d8` | D8 (Octahedron) | `yantra4d_die.scad` | d8 |
+| `d12` | D12 (Dodecahedron) | `yantra4d_die.scad` | d12 |
+| `d20` | D20 (Icosahedron) | `yantra4d_die.scad` | d20 |
 
 ## Parameters
 

@@ -11,9 +11,9 @@ Modular construction system for education and prototyping
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `beam` | Beam | `qubic_beam.scad` | beam |
-| `brace` | Brace | `qubic_brace.scad` | brace |
-| `fastener` | Fastener | `qubic_fastener.scad` | fastener |
+| `beam` | Beam | `yantra4d_beam.scad` | beam |
+| `brace` | Brace | `yantra4d_brace.scad` | brace |
+| `fastener` | Fastener | `yantra4d_fastener.scad` | fastener |
 
 ## Parameters
 

@@ -18,7 +18,7 @@
   "modes": [
     {
       "id": "d4",
-      "scad_file": "qubic_die.scad",
+      "scad_file": "yantra4d_die.scad",
       "label": {
         "es": "D4 (Tetraedro)",
         "en": "D4 (Tetrahedron)"
@@ -33,7 +33,7 @@
     },
     {
       "id": "d6",
-      "scad_file": "qubic_die.scad",
+      "scad_file": "yantra4d_die.scad",
       "label": {
         "es": "D6 (Cubo)",
         "en": "D6 (Cube)"
@@ -48,7 +48,7 @@
     },
     {
       "id": "d8",
-      "scad_file": "qubic_die.scad",
+      "scad_file": "yantra4d_die.scad",
       "label": {
         "es": "D8 (Octaedro)",
         "en": "D8 (Octahedron)"
@@ -63,7 +63,7 @@
     },
     {
       "id": "d12",
-      "scad_file": "qubic_die.scad",
+      "scad_file": "yantra4d_die.scad",
       "label": {
         "es": "D12 (Dodecaedro)",
         "en": "D12 (Dodecahedron)"
@@ -78,7 +78,7 @@
     },
     {
       "id": "d20",
-      "scad_file": "qubic_die.scad",
+      "scad_file": "yantra4d_die.scad",
       "label": {
         "es": "D20 (Icosaedro)",
         "en": "D20 (Icosahedron)"

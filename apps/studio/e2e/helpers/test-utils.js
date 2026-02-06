@@ -66,7 +66,7 @@ export async function setLanguage(page, lang) {
   await page.addInitScript((l) => {
     // The app uses `${projectSlug}-lang` as the storage key.
     // Set all likely keys so language works regardless of which project loads.
-    localStorage.setItem('qubic-lang', l)
+    localStorage.setItem('yantra4d-lang', l)
     localStorage.setItem('test-lang', l)
     localStorage.setItem('demo-lang', l)
     localStorage.setItem('tablaco-lang', l)

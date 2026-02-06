@@ -20,7 +20,7 @@
   "modes": [
     {
       "id": "mount",
-      "scad_file": "qubic_mount.scad",
+      "scad_file": "yantra4d_mount.scad",
       "label": {
         "es": "Soporte",
         "en": "Mount"

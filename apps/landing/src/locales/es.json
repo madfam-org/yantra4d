@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Qubic — Diseño 3D Paramétrico para Todos",
+    "title": "Yantra4D — Diseño 3D Paramétrico para Todos",
     "description": "Personaliza cualquier dimensión y exporta tu STL perfecto. O convierte tus modelos OpenSCAD en configuradores que cualquiera puede usar."
   },
   "nav": {
@@ -34,7 +34,7 @@
   "beforeAfter": {
     "tagline": "De código a configurador. Sin curva de aprendizaje.",
     "codeSide": "Código OpenSCAD",
-    "uiSide": "Configurador Qubic"
+    "uiSide": "Configurador Yantra4D"
   },
   "forMakers": {
     "heading": "Hecho para Makers",
@@ -65,7 +65,7 @@
     "subtitle": "Tus diseños merecen una audiencia más allá de los programadores. Convierte archivos .scad en configuradores compartibles.",
     "upload": {
       "title": "Sube y Listo",
-      "desc": "Arrastra archivos .scad. Qubic auto-genera un configurador con parámetros, modos y preajustes."
+      "desc": "Arrastra archivos .scad. Yantra4D auto-genera un configurador con parámetros, modos y preajustes."
     },
     "share": {
       "title": "Comparte con Cualquiera",
@@ -94,7 +94,7 @@
     },
     "creatorTrack": {
       "label": "Para Creadores",
-      "step1": { "title": "Sube .scad", "desc": "Arrastra tus archivos fuente de OpenSCAD a Qubic." },
+      "step1": { "title": "Sube .scad", "desc": "Arrastra tus archivos fuente de OpenSCAD a Yantra4D." },
       "step2": { "title": "Configura", "desc": "Edita el manifiesto — parámetros, modos, preajustes, pasos de ensamblaje." },
       "step3": { "title": "Comparte", "desc": "Obtén un enlace. Cualquiera puede personalizar y exportar tu diseño." }
     }
@@ -119,7 +119,7 @@
     "ctaCreators": "Sube Tu Diseño"
   },
   "footer": {
-    "copyright": "Qubic. Código abierto bajo AGPLv3.",
+    "copyright": "Yantra4D. Código abierto bajo AGPLv3.",
     "docs": "Docs",
     "studio": "Studio",
     "gallery": "Galería"

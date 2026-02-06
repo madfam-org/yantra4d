@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "sculpture",
-      "scad_file": "qubic_torus_knot.scad",
+      "scad_file": "yantra4d_torus_knot.scad",
       "label": {
         "es": "Escultura",
         "en": "Sculpture"

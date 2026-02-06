@@ -1,18 +1,18 @@
 # Developer Experience Guide
 
-How to bring your own SCAD project into the Qubic platform.
+How to bring your own SCAD project into the Yantra4D platform.
 
 ## Quick Start
 
 ```bash
-# 1. Clone Qubic
-git clone <repo-url> && cd qubic
+# 1. Clone Yantra4D
+git clone <repo-url> && cd yantra4d
 
 # 2. Analyze your SCAD files
-scripts/qubic-init /path/to/your/scad --slug my-project --analyze-only
+scripts/yantra4d-init /path/to/your/scad --slug my-project --analyze-only
 
 # 3. Review the output, then generate + install
-scripts/qubic-init /path/to/your/scad --slug my-project --install
+scripts/yantra4d-init /path/to/your/scad --slug my-project --install
 
 # 4. Start the platform
 ./scripts/dev.sh

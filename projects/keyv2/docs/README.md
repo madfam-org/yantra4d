@@ -11,7 +11,7 @@ Customizable mechanical keyboard keycaps with multiple profiles and stems
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Keycap | `qubic_keycap.scad` | keycap |
+| `` | Keycap | `yantra4d_keycap.scad` | keycap |
 
 ## Parameters
 

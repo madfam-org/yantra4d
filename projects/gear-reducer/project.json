@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "assembly",
-      "scad_file": "qubic_gear_reducer.scad",
+      "scad_file": "yantra4d_gear_reducer.scad",
       "label": {
         "es": "Ensamble Completo",
         "en": "Full Assembly"
@@ -38,7 +38,7 @@
     },
     {
       "id": "housing",
-      "scad_file": "qubic_housing.scad",
+      "scad_file": "yantra4d_housing.scad",
       "label": {
         "es": "Carcasa",
         "en": "Housing"
@@ -54,7 +54,7 @@
     },
     {
       "id": "gears",
-      "scad_file": "qubic_gear_set.scad",
+      "scad_file": "yantra4d_gear_set.scad",
       "label": {
         "es": "Engranajes",
         "en": "Gear Set"

@@ -146,8 +146,8 @@ export function useAppState() {
   // Dynamic browser tab title
   useEffect(() => {
     document.title = currentView === 'projects'
-      ? 'Qubic'
-      : `${manifest.project.name} — Qubic`
+      ? 'Yantra4D'
+      : `${manifest.project.name} — Yantra4D`
   }, [currentView, manifest.project.name])
 
   // Handle OAuth callback

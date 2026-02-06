@@ -132,7 +132,7 @@ const translations = {
         "print.weight": "Peso",
         "print.length": "Filamento",
         "print.cost": "Costo",
-        "platform.powered_by": "desarrollado con Qubic",
+        "platform.powered_by": "desarrollado con Yantra4D",
         // Status chip
         "status.rendering": "Renderizando…",
         "status.ready": "Listo",
@@ -287,7 +287,7 @@ const translations = {
         "print.weight": "Weight",
         "print.length": "Filament",
         "print.cost": "Cost",
-        "platform.powered_by": "powered by Qubic",
+        "platform.powered_by": "powered by Yantra4D",
         // Status chip
         "status.rendering": "Rendering…",
         "status.ready": "Ready",
@@ -332,7 +332,7 @@ function resolveTranslation(lang, key) {
 export function LanguageProvider({
     children,
     defaultLanguage = "es",
-    storageKey = "qubic-lang",
+    storageKey = "yantra4d-lang",
 }) {
     const [language, setLanguage] = useState(() => {
         try { return localStorage.getItem(storageKey) || defaultLanguage } catch { return defaultLanguage }

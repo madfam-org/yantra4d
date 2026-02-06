@@ -13,8 +13,8 @@ test.describe('Studio Header', () => {
     expect(name).toContain('Test Project')
   })
 
-  test('shows "powered by Qubic" tagline', async ({ page }) => {
-    await expect(page.locator('text=powered by Qubic')).toBeVisible()
+  test('shows "powered by Yantra4D" tagline', async ({ page }) => {
+    await expect(page.locator('text=powered by Yantra4D')).toBeVisible()
   })
 
   test('ProjectSelector is visible when multiple projects exist', async ({ header }) => {
@@ -92,7 +92,7 @@ test.describe('Studio Header', () => {
   test('language persists to localStorage', async ({ page, header }) => {
     await header.toggleLanguage()
     const lang = await page.evaluate(() =>
-      localStorage.getItem('qubic-lang') ||
+      localStorage.getItem('yantra4d-lang') ||
       localStorage.getItem('test-lang') ||
       localStorage.getItem('tablaco-lang')
     )

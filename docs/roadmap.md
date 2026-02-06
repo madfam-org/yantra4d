@@ -1,4 +1,4 @@
-# Qubic Platform Roadmap
+# Yantra4D Platform Roadmap
 
 Strategic features for future implementation, documented for planning and prioritization.
 
@@ -6,7 +6,7 @@ Strategic features for future implementation, documented for planning and priori
 
 ## 3.1 — Product Configurator Storefront Mode
 
-**Goal**: Turn Qubic into a micro-SaaS for 3D-printed product businesses.
+**Goal**: Turn Yantra4D into a micro-SaaS for 3D-printed product businesses.
 
 **Combines existing features**:
 - `access_control` (manifest schema already supports tiers: public/free/pro/admin)

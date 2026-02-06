@@ -18,7 +18,7 @@
   "modes": [
     {
       "id": "coaster",
-      "scad_file": "qubic_maze_coaster.scad",
+      "scad_file": "yantra4d_maze_coaster.scad",
       "label": {
         "es": "Posavasos",
         "en": "Coaster"
@@ -33,7 +33,7 @@
     },
     {
       "id": "cube",
-      "scad_file": "qubic_maze_cube.scad",
+      "scad_file": "yantra4d_maze_cube.scad",
       "label": {
         "es": "Cubo",
         "en": "Cube"
@@ -48,7 +48,7 @@
     },
     {
       "id": "cylinder",
-      "scad_file": "qubic_maze_cylinder.scad",
+      "scad_file": "yantra4d_maze_cylinder.scad",
       "label": {
         "es": "Cilindro",
         "en": "Cylinder"

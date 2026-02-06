@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common issues and their solutions when working with the Qubic platform.
+Common issues and their solutions when working with the Yantra4D platform.
 
 ## Render Issues
 

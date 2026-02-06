@@ -1,4 +1,4 @@
-# Qubic — Parametric 3D Print Design Platform
+# Yantra4D — Parametric 3D Print Design Platform
 
 Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview.
 
@@ -66,7 +66,7 @@ packages/
 | `docs/competitive-landscape.md` | Competitive research & feature roadmap | YES |
 | `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
 | `apps/studio/src/components/ui/*` | Shadcn primitives | **NEVER** |
-| `tools/qubic-init` | CLI tool for onboarding external SCAD projects | RARELY |
+| `tools/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
@@ -89,7 +89,7 @@ packages/
 
 ### Onboard an external SCAD project
 ```bash
-tools/qubic-init ./path/to/scad-dir --slug my-project --install
+tools/yantra4d-init ./path/to/scad-dir --slug my-project --install
 ```
 Or use the web UI: upload `.scad` files → review analysis → edit manifest → save.
 
@@ -209,7 +209,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 
 | Target | Method |
 |--------|--------|
-| Enclii PaaS | Auto-deploy on push to main — `qubic-landing` at 4d.madfam.io, `qubic-studio` at app.4d.madfam.io, `qubic-backend` at api.4d.madfam.io |
+| Enclii PaaS | Auto-deploy on push to main — `yantra4d-landing` at 4d.madfam.io, `yantra4d-studio` at app.4d.madfam.io, `yantra4d-backend` at api.4d.madfam.io |
 | Docker | `docker compose up` (backend + studio + landing, local) |
 | Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) |
 

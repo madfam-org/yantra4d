@@ -11,9 +11,9 @@ Parametric gear reducer with BOSL2 — configurable ratio, motor size, and shaft
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `assembly` | Full Assembly | `qubic_gear_reducer.scad` | housing_bottom, housing_top, input_gear, output_gear, shaft |
-| `housing` | Housing | `qubic_housing.scad` | housing_bottom, housing_top |
-| `gears` | Gear Set | `qubic_gear_set.scad` | input_gear, output_gear |
+| `assembly` | Full Assembly | `yantra4d_gear_reducer.scad` | housing_bottom, housing_top, input_gear, output_gear, shaft |
+| `housing` | Housing | `yantra4d_housing.scad` | housing_bottom, housing_top |
+| `gears` | Gear Set | `yantra4d_gear_set.scad` | input_gear, output_gear |
 
 ## Parameters
 

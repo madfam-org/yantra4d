@@ -23,17 +23,17 @@ const ForkDialog = lazy(() => import('./components/ForkDialog'))
 const isEmbed = new URLSearchParams(window.location.search).get('embed') === 'true'
 
 function App() {
-  const [editorOpen, setEditorOpen] = useState(() => sessionStorage.getItem('qubic-editor-open') === 'true')
+  const [editorOpen, setEditorOpen] = useState(() => sessionStorage.getItem('yantra4d-editor-open') === 'true')
   const toggleEditor = () => setEditorOpen(prev => {
     const next = !prev
-    sessionStorage.setItem('qubic-editor-open', String(next))
+    sessionStorage.setItem('yantra4d-editor-open', String(next))
     return next
   })
 
-  const [aiPanelOpen, setAiPanelOpen] = useState(() => sessionStorage.getItem('qubic-ai-panel') === 'true')
+  const [aiPanelOpen, setAiPanelOpen] = useState(() => sessionStorage.getItem('yantra4d-ai-panel') === 'true')
   const toggleAiPanel = () => setAiPanelOpen(prev => {
     const next = !prev
-    sessionStorage.setItem('qubic-ai-panel', String(next))
+    sessionStorage.setItem('yantra4d-ai-panel', String(next))
     return next
   })
 
@@ -45,7 +45,7 @@ function App() {
     setForkDialogSlug(null)
     window.location.hash = `#/${newSlug}`
     setEditorOpen(true)
-    sessionStorage.setItem('qubic-editor-open', 'true')
+    sessionStorage.setItem('yantra4d-editor-open', 'true')
   }, [])
   const {
     currentView, isDemo, manifest, t, language, setLanguage, toggleLanguage, theme, cycleTheme,
@@ -73,7 +73,7 @@ function App() {
     return (
       <div className="flex flex-col h-screen w-full bg-background text-foreground">
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-          <h1 className="text-lg font-bold tracking-tight">Qubic</h1>
+          <h1 className="text-lg font-bold tracking-tight">Yantra4D</h1>
           <div className="flex items-center gap-2">
             <AuthButton />
             <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>

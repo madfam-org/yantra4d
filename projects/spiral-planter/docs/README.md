@@ -11,7 +11,7 @@ Generative spiral planter with parametric drainage using dotSCAD
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `planter` | Planter | `qubic_spiral_planter.scad` | planter, saucer |
+| `planter` | Planter | `yantra4d_spiral_planter.scad` | planter, saucer |
 
 ## Parameters
 

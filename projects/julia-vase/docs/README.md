@@ -11,7 +11,7 @@ Parametric twisted vase with sinusoidal profile modulation inspired by Julia set
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Vase | `qubic_vase.scad` | vase |
+| `` | Vase | `yantra4d_vase.scad` | vase |
 
 ## Parameters
 

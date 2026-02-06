@@ -9,7 +9,7 @@ import { createContext, useContext, useMemo } from 'react'
 import { JanuaProvider, useJanua } from '@janua/react-sdk'
 
 const JANUA_BASE_URL = import.meta.env.VITE_JANUA_BASE_URL
-const JANUA_CLIENT_ID = import.meta.env.VITE_JANUA_CLIENT_ID || 'qubic'
+const JANUA_CLIENT_ID = import.meta.env.VITE_JANUA_CLIENT_ID || 'yantra4d'
 const JANUA_REDIRECT_URI = import.meta.env.VITE_JANUA_REDIRECT_URI || (typeof window !== 'undefined' ? window.location.origin : '')
 
 const AuthContext = createContext(null)

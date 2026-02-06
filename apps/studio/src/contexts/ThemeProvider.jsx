@@ -5,7 +5,7 @@ const ThemeProviderContext = createContext()
 export function ThemeProvider({
     children,
     defaultTheme = "system",
-    storageKey = "qubic-theme",
+    storageKey = "yantra4d-theme",
 }) {
     const [theme, setTheme] = useState(() => {
         try { return localStorage.getItem(storageKey) || defaultTheme } catch { return defaultTheme }

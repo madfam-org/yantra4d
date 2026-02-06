@@ -50,7 +50,7 @@ def validate_github_repo():
 @limiter.limit("10/hour")
 @require_json_body
 def import_github_repo():
-    """Import a GitHub repo as a new Qubic project."""
+    """Import a GitHub repo as a new Yantra4D project."""
     if not Config.GITHUB_IMPORT_ENABLED:
         return error_response("GitHub import is disabled", 403)
 

@@ -1,15 +1,15 @@
-# Qubic — Parametric 3D Print Design Platform
+# Yantra4D — Parametric 3D Print Design Platform
 
 A manifest-driven platform for parametric OpenSCAD models with a web-based 3D preview studio.
 
-![Qubic](/docs/images/half_cube_iso.png)
+![Yantra4D](/docs/images/half_cube_iso.png)
 
 Ships with 20 built-in projects including **tablaco** (interlocking cubes), **gridfinity** (modular storage), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), and **motor-mount** (NEMA stepper mounts). See [`projects/`](./projects/) for all projects or [`projects/tablaco/README.md`](./projects/tablaco/README.md) for the flagship project.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
 -   **Multi-Project**: Serve and switch between multiple SCAD projects from a single instance.
--   **White-Label Studio**: Each project white-labels the studio header with its own name via `manifest.project.name`, with a "powered by Qubic" tagline.
+-   **White-Label Studio**: Each project white-labels the studio header with its own name via `manifest.project.name`, with a "powered by Yantra4D" tagline.
     -   **Theme Toggle**: Light, Dark, and System (Auto) modes.
     -   **Bilingual UI**: Spanish (default) and English.
     -   **Export**: Download STL files and capture images (Iso, Top, Front, Right).
@@ -85,7 +85,7 @@ Generate the default model:
 /Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o projects/tablaco/exports/models/half_cube.stl projects/tablaco/half_cube.scad
 ```
 
-### Launching Qubic
+### Launching Yantra4D
 
 #### Development
 ```bash

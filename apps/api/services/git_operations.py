@@ -49,7 +49,7 @@ def git_init(project_dir: Path) -> dict:
         return {"success": False, "error": f"git init failed: {result.stderr.strip()}"}
 
     # Configure local user identity (CI runners may lack global config)
-    _run_git(project_dir, ["config", "user.name", "Qubic"], timeout=10)
+    _run_git(project_dir, ["config", "user.name", "Yantra4D"], timeout=10)
     _run_git(project_dir, ["config", "user.email", "noreply@4d.madfam.io"], timeout=10)
 
     _run_git(project_dir, ["add", "."])

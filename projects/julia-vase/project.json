@@ -24,7 +24,7 @@
         "en": "Vase",
         "es": "Jarrón"
       },
-      "scad_file": "qubic_vase.scad",
+      "scad_file": "yantra4d_vase.scad",
       "render_mode": 0,
       "parts": [
         "vase"

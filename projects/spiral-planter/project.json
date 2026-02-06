@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "planter",
-      "scad_file": "qubic_spiral_planter.scad",
+      "scad_file": "yantra4d_spiral_planter.scad",
       "label": {
         "es": "Maceta",
         "en": "Planter"

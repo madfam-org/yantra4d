@@ -32,7 +32,7 @@ clip_count = 2;
 clip_diameter = 6;
 
 // Personalization
-label_text = "QUBIC";
+label_text = "YANTRA4D";
 label_depth = 0.5;
 
 // Grid (used by grid.scad)

@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "vase",
-      "scad_file": "qubic_superformula.scad",
+      "scad_file": "yantra4d_superformula.scad",
       "label": {
         "es": "Jarron",
         "en": "Vase"

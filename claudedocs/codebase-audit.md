@@ -1,4 +1,4 @@
-# Qubic Platform — Full Codebase Audit
+# Yantra4D Platform — Full Codebase Audit
 
 > **Date**: 2026-02-05
 > **Scope**: Complete platform assessment — architecture, components, tests, quality, roadmap
@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-**Qubic** is a manifest-driven parametric 3D print design platform that turns OpenSCAD models into interactive web configurators. End-users adjust sliders, pick presets, and export production-ready STL/3MF files — with zero code required.
+**Yantra4D** is a manifest-driven parametric 3D print design platform that turns OpenSCAD models into interactive web configurators. End-users adjust sliders, pick presets, and export production-ready STL/3MF files — with zero code required.
 
 The platform currently ships **20 built-in parametric projects** across three web applications (API backend, Studio frontend, marketing landing page), with dual rendering (server-side OpenSCAD CLI + client-side WASM fallback), integrated STL verification, AI-assisted editing, multi-language UI (6 languages), and a full CI/CD pipeline deploying to three subdomains.
 
@@ -34,7 +34,7 @@ The platform currently ships **20 built-in parametric projects** across three we
 | **Libraries** | `libs/` | Git submodules | 6 global SCAD libraries |
 | **Infrastructure** | `.github/`, Docker, Enclii | GitHub Actions, Docker Compose | 1 CI workflow (4 jobs), 3 Dockerfiles, 3 deploy configs |
 
-**Domains**: `qubic.quest` (landing) · `studio.qubic.quest` (studio) · `api.qubic.quest` (API)
+**Domains**: `yantra4d.quest` (landing) · `studio.yantra4d.quest` (studio) · `api.yantra4d.quest` (API)
 
 ---
 
@@ -282,7 +282,7 @@ The platform currently ships **20 built-in parametric projects** across three we
 | `scripts/dev.sh` | Start all dev servers (API :5000, Studio :5173, Landing :4321) |
 | `scripts/dev-stop.sh` | Kill all dev processes and clean PID files |
 | `scripts/generate-thumbnails.js` | Generate project thumbnails from STL files |
-| `tools/qubic-init` | CLI for onboarding external SCAD projects |
+| `tools/yantra4d-init` | CLI for onboarding external SCAD projects |
 
 ### 3.6 Locales
 
@@ -554,7 +554,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 
 18+ open-source projects analyzed across 8 categories. Key findings:
 
-| Competitor | Strengths | Weaknesses vs Qubic |
+| Competitor | Strengths | Weaknesses vs Yantra4D |
 |-----------|-----------|----------------------|
 | OpenSCAD Playground | Monaco editor, community | Code-centric, no configurator UX |
 | OpenJSCAD | Native JS, modular | Dev-focused, not a platform |
@@ -660,7 +660,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 | `CORS_ORIGINS` | `localhost:5173,localhost:3000` | Allowed CORS origins |
 | `AUTH_ENABLED` | `true` | Enable JWT authentication |
 | `JANUA_ISSUER` | `https://auth.madfam.io` | Auth provider URL |
-| `JANUA_AUDIENCE` | `qubic` | JWT audience |
+| `JANUA_AUDIENCE` | `yantra4d` | JWT audience |
 | `FLASK_DEBUG` | `false` | Flask debug mode |
 | `PORT` | `5000` | API server port |
 
@@ -710,7 +710,7 @@ cd apps/api && ruff check .
 docker compose up --build
 
 # Onboard external SCAD project
-tools/qubic-init ./path/to/scad-dir --slug my-project --install
+tools/yantra4d-init ./path/to/scad-dir --slug my-project --install
 ```
 
 ### Rate Limits

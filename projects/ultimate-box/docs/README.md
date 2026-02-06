@@ -11,7 +11,7 @@ Parametric electronics enclosure with ventilation, PCB standoffs, and snap-fit l
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Enclosure | `qubic_box.scad` | enclosure |
+| `` | Enclosure | `yantra4d_box.scad` | enclosure |
 
 ## Parameters
 

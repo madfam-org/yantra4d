@@ -34,7 +34,7 @@ Modular desk organizer with snap-fit tray system
 | `card_angle` | slider | 10 | 5–20 | Tilt angle of the card holder |
 | `clip_count` | slider | 2 | 1–4 | Number of cable clips |
 | `clip_diameter` | slider | 6 | 4–10 | Inner diameter of cable clip |
-| `label_text` | text | QUBIC |  | Custom text for the front label plate |
+| `label_text` | text | YANTRA4D |  | Custom text for the front label plate |
 | `label_depth` | slider | 0.5 | 0.3–1.5 (step 0.1) | Depth of engraved text on label plate |
 | `rows` | slider | 1 | 1–5 | Number of rows in the tray grid |
 | `cols` | slider | 1 | 1–5 | Number of columns in the tray grid |
@@ -42,7 +42,7 @@ Modular desk organizer with snap-fit tray system
 ## Presets
 
 - **Minimal**
-  `tray_width`=140, `tray_depth`=80, `wall_height`=60, `wall_thickness`=2.0, `pen_count`=3, `pen_diameter`=12, `pen_style`=No, `phone_width`=75, `phone_angle`=65, `charging_slot`=No, `card_width`=90, `card_depth`=60, `card_angle`=10, `clip_count`=1, `clip_diameter`=6, `label_text`=QUBIC, `label_depth`=0.5
+  `tray_width`=140, `tray_depth`=80, `wall_height`=60, `wall_thickness`=2.0, `pen_count`=3, `pen_diameter`=12, `pen_style`=No, `phone_width`=75, `phone_angle`=65, `charging_slot`=No, `card_width`=90, `card_depth`=60, `card_angle`=10, `clip_count`=1, `clip_diameter`=6, `label_text`=YANTRA4D, `label_depth`=0.5
 - **Office**
   `tray_width`=200, `tray_depth`=120, `wall_height`=80, `wall_thickness`=2.0, `pen_count`=5, `pen_diameter`=12, `pen_style`=No, `phone_width`=75, `phone_angle`=65, `charging_slot`=Yes, `card_width`=90, `card_depth`=60, `card_angle`=10, `clip_count`=2, `clip_diameter`=6, `label_text`=OFICINA, `label_depth`=0.5
 - **Developer**
@@ -50,7 +50,7 @@ Modular desk organizer with snap-fit tray system
 - **Artist**
   `tray_width`=220, `tray_depth`=130, `wall_height`=90, `wall_thickness`=2.0, `pen_count`=8, `pen_diameter`=14, `pen_style`=Yes, `phone_width`=75, `phone_angle`=65, `charging_slot`=No, `card_width`=90, `card_depth`=60, `card_angle`=10, `clip_count`=2, `clip_diameter`=6, `label_text`=ARTE, `label_depth`=0.8
 - **Compact**
-  `tray_width`=160, `tray_depth`=100, `wall_height`=70, `wall_thickness`=2.0, `pen_count`=3, `pen_diameter`=12, `pen_style`=No, `phone_width`=70, `phone_angle`=60, `charging_slot`=Yes, `card_width`=80, `card_depth`=50, `card_angle`=10, `clip_count`=1, `clip_diameter`=5, `label_text`=QUBIC, `label_depth`=0.5
+  `tray_width`=160, `tray_depth`=100, `wall_height`=70, `wall_thickness`=2.0, `pen_count`=3, `pen_diameter`=12, `pen_style`=No, `phone_width`=70, `phone_angle`=60, `charging_slot`=Yes, `card_width`=80, `card_depth`=50, `card_angle`=10, `clip_count`=1, `clip_diameter`=5, `label_text`=YANTRA4D, `label_depth`=0.5
 
 ## Parts
 

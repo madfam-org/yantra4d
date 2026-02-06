@@ -11,8 +11,8 @@ Parametric bolts and nuts with real threads
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Bolt | `qubic_bolt.scad` | bolt |
-| `` | Nut | `qubic_nut.scad` | nut |
+| `` | Bolt | `yantra4d_bolt.scad` | bolt |
+| `` | Nut | `yantra4d_nut.scad` | nut |
 
 ## Parameters
 

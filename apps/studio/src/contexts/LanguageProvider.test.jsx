@@ -99,12 +99,12 @@ describe('LanguageProvider', () => {
       </LanguageProvider>
     )
     act(() => screen.getByText('EN').click())
-    expect(localStorage.getItem('qubic-lang')).toBe('en')
+    expect(localStorage.getItem('yantra4d-lang')).toBe('en')
     expect(screen.getByTestId('text').textContent).toBe('Generate')
   })
 
   it('reads default language from localStorage', () => {
-    localStorage.setItem('qubic-lang', 'en')
+    localStorage.setItem('yantra4d-lang', 'en')
     render(
       <LanguageProvider>
         <TestConsumer />

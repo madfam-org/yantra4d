@@ -44,7 +44,7 @@ class Config:
     # Janua Auth
     JANUA_ISSUER = os.getenv("JANUA_ISSUER", "https://auth.madfam.io")
     JANUA_JWKS_URL = os.getenv("JANUA_JWKS_URL", f"{JANUA_ISSUER}/.well-known/jwks.json")
-    JANUA_AUDIENCE = os.getenv("JANUA_AUDIENCE", "qubic")
+    JANUA_AUDIENCE = os.getenv("JANUA_AUDIENCE", "yantra4d")
     AUTH_ENABLED = os.getenv("AUTH_ENABLED", "true").lower() == "true"
 
     # Tiers

@@ -155,7 +155,7 @@
         "card_angle": 10,
         "clip_count": 1,
         "clip_diameter": 6,
-        "label_text": "QUBIC",
+        "label_text": "YANTRA4D",
         "label_depth": 0.5
       }
     },
@@ -259,7 +259,7 @@
         "card_angle": 10,
         "clip_count": 1,
         "clip_diameter": 5,
-        "label_text": "QUBIC",
+        "label_text": "YANTRA4D",
         "label_depth": 0.5
       }
     }
@@ -564,7 +564,7 @@
     {
       "id": "label_text",
       "type": "text",
-      "default": "QUBIC",
+      "default": "YANTRA4D",
       "maxlength": 12,
       "label": {
         "es": "Texto de Etiqueta",

@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "tile",
-      "scad_file": "qubic_tile.scad",
+      "scad_file": "yantra4d_tile.scad",
       "label": {
         "en": "Tile",
         "es": "Baldosa"

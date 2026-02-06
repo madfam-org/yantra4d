@@ -25,16 +25,16 @@ export default function RateLimitBanner() {
         <>
           Render limit reached ({limit}/hr for {tier} tier).{' '}
           {!canAccess('basic') ? (
-            <a href="https://qubic.quest/#pricing" className="underline font-medium">Sign up for more</a>
+            <a href="https://4d.madfam.io/#pricing" className="underline font-medium">Sign up for more</a>
           ) : !canAccess('pro') ? (
-            <a href="https://qubic.quest/#pricing" className="underline font-medium">Upgrade to Pro</a>
+            <a href="https://4d.madfam.io/#pricing" className="underline font-medium">Upgrade to Pro</a>
           ) : null}
         </>
       ) : (
         <>
           {remaining} render{remaining !== 1 ? 's' : ''} remaining this hour.{' '}
           {!canAccess('pro') && (
-            <a href="https://qubic.quest/#pricing" className="underline font-medium">Upgrade for more</a>
+            <a href="https://4d.madfam.io/#pricing" className="underline font-medium">Upgrade for more</a>
           )}
         </>
       )}

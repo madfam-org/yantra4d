@@ -1,0 +1,15 @@
+apiVersion: enclii.dev/v1
+kind: Service
+metadata:
+  name: qubic
+  project: qubic
+spec:
+  domains:
+    - name: 4d.madfam.io
+      environment: production
+    - name: api.4d.madfam.io
+      environment: production
+    - name: app.4d.madfam.io
+      environment: production
+  runtime:
+    port: 5000

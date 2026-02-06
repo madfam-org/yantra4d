@@ -24,7 +24,7 @@ const PROJECTS: DemoProject[] = [
 
 const STUDIO_BASE = import.meta.env.DEV
   ? 'http://localhost:5173'
-  : 'https://studio.qubic.quest';
+  : 'https://app.4d.madfam.io';
 
 export default function InteractiveShowcase() {
   const [active, setActive] = useState(PROJECTS[0]);

@@ -1,0 +1,331 @@
+name: Deploy to K8s (GHCR)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'apps/studio/**'
+      - 'apps/landing/**'
+      - 'projects/**'
+      - 'libs/**'
+      - 'packages/**'
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: 'Force deployment of all services'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_BASE: madfam-org/qubic
+  NAMESPACE: enclii-production
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Preflight Check
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      skip: ${{ steps.check-secret.outputs.skip }}
+    steps:
+      - name: Check KUBECONFIG secret
+        id: check-secret
+        run: |
+          if [ -z "${{ secrets.KUBECONFIG_PRODUCTION }}" ]; then
+            echo "::notice::KUBECONFIG_PRODUCTION secret not configured - skipping deployment"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.skip != 'true'
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      studio: ${{ steps.filter.outputs.studio }}
+      landing: ${{ steps.filter.outputs.landing }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Path filter
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'apps/api/**'
+              - 'projects/**'
+              - 'libs/**'
+              - 'packages/schemas/**'
+            studio:
+              - 'apps/studio/**'
+              - 'packages/**'
+            landing:
+              - 'apps/landing/**'
+              - 'packages/**'
+
+      - name: Force all on workflow_dispatch
+        if: github.event.inputs.force_deploy == 'true'
+        run: |
+          echo "backend=true" >> $GITHUB_OUTPUT
+          echo "studio=true" >> $GITHUB_OUTPUT
+          echo "landing=true" >> $GITHUB_OUTPUT
+
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true' || github.event.inputs.force_deploy == 'true'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend
+          tags: |
+            type=sha,prefix=
+            type=raw,value=main,enable={{is_default_branch}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max
+          provenance: false
+          sbom: false
+
+  build-studio:
+    name: Build Studio
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.studio == 'true' || github.event.inputs.force_deploy == 'true'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio
+          tags: |
+            type=sha,prefix=
+            type=raw,value=main,enable={{is_default_branch}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/studio
+          file: ./apps/studio/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=studio
+          cache-to: type=gha,scope=studio,mode=max
+          provenance: false
+          sbom: false
+          build-args: |
+            VITE_API_BASE=https://api.4d.madfam.io
+            VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
+            VITE_JANUA_CLIENT_ID=${{ secrets.JANUA_CLIENT_ID }}
+            VITE_JANUA_REDIRECT_URI=https://app.4d.madfam.io
+
+  build-landing:
+    name: Build Landing
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.landing == 'true' || github.event.inputs.force_deploy == 'true'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing
+          tags: |
+            type=sha,prefix=
+            type=raw,value=main,enable={{is_default_branch}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/landing
+          file: ./apps/landing/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=landing
+          cache-to: type=gha,scope=landing,mode=max
+          provenance: false
+          sbom: false
+
+  deploy:
+    name: Deploy to K8s
+    runs-on: ubuntu-latest
+    needs: [detect-changes, build-backend, build-studio, build-landing]
+    if: |
+      always() &&
+      needs.detect-changes.result == 'success' &&
+      (needs.build-backend.result == 'success' || needs.build-backend.result == 'skipped') &&
+      (needs.build-studio.result == 'success' || needs.build-studio.result == 'skipped') &&
+      (needs.build-landing.result == 'success' || needs.build-landing.result == 'skipped')
+    environment: production
+
+    steps:
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.29.0'
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_PRODUCTION }}" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
+          kubectl cluster-info
+
+      - name: Update GHCR credentials
+        run: |
+          kubectl delete secret ghcr-credentials -n ${{ env.NAMESPACE }} --ignore-not-found
+          kubectl create secret docker-registry ghcr-credentials \
+            --namespace=${{ env.NAMESPACE }} \
+            --docker-server=ghcr.io \
+            --docker-username=madfam-bot \
+            --docker-password=${{ secrets.MADFAM_BOT_PAT }} \
+            --docker-email=ci@madfam.io
+
+      - name: Deploy backend
+        if: needs.build-backend.outputs.image_digest != ''
+        run: |
+          kubectl set image deployment/qubic-backend \
+            qubic-backend=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend@${{ needs.build-backend.outputs.image_digest }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/qubic-backend -n ${{ env.NAMESPACE }} --timeout=300s
+
+      - name: Deploy studio
+        if: needs.build-studio.outputs.image_digest != ''
+        run: |
+          kubectl set image deployment/qubic-studio \
+            qubic-studio=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio@${{ needs.build-studio.outputs.image_digest }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/qubic-studio -n ${{ env.NAMESPACE }} --timeout=300s
+
+      - name: Deploy landing
+        if: needs.build-landing.outputs.image_digest != ''
+        run: |
+          kubectl set image deployment/qubic-landing \
+            qubic-landing=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${{ needs.build-landing.outputs.image_digest }} \
+            -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/qubic-landing -n ${{ env.NAMESPACE }} --timeout=300s
+
+      - name: Verify health
+        if: needs.build-backend.outputs.image_digest != ''
+        run: |
+          echo "Waiting for rollout to stabilize..."
+          sleep 10
+          PODS=$(kubectl get pods -n ${{ env.NAMESPACE }} -l app=qubic-backend -o jsonpath='{.items[*].status.podIP}')
+          for POD_IP in $PODS; do
+            echo "Checking health of pod at $POD_IP..."
+            curl -sf "http://$POD_IP:5000/api/health" || exit 1
+          done
+          echo "All backend pods healthy!"
+
+      - name: Generate deploy summary
+        if: success()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: Success" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace**: ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Services deployed**:" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ needs.build-backend.outputs.image_digest }}" ]; then echo "- Backend: \`${{ needs.build-backend.outputs.image_digest }}\`" >> $GITHUB_STEP_SUMMARY; fi
+          if [ -n "${{ needs.build-studio.outputs.image_digest }}" ]; then echo "- Studio: \`${{ needs.build-studio.outputs.image_digest }}\`" >> $GITHUB_STEP_SUMMARY; fi
+          if [ -n "${{ needs.build-landing.outputs.image_digest }}" ]; then echo "- Landing: \`${{ needs.build-landing.outputs.image_digest }}\`" >> $GITHUB_STEP_SUMMARY; fi
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "## Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check the logs above for details." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Rollback commands**:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl rollout undo deployment/qubic-backend -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl rollout undo deployment/qubic-studio -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl rollout undo deployment/qubic-landing -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

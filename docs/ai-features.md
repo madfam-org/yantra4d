@@ -1,6 +1,6 @@
 # AI Features — Configurator & Code Editor
 
-Qubic includes two AI-powered features that use LLMs to assist with parametric design.
+Yantra4D includes two AI-powered features that use LLMs to assist with parametric design.
 
 ## Overview
 

@@ -163,14 +163,14 @@ def format_markdown(results):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Benchmark Qubic project render times")
+    parser = argparse.ArgumentParser(description="Benchmark Yantra4D project render times")
     parser.add_argument("--url", default="http://localhost:5000", help="Backend base URL")
     parser.add_argument("--project", help="Benchmark a single project by slug")
     parser.add_argument("--output", help="Write results to a Markdown file (e.g. docs/benchmarks.md)")
     parser.add_argument("--timeout", type=int, default=300, help="Per-render timeout in seconds")
     args = parser.parse_args()
 
-    print(f"Qubic Render Benchmarks\n{'=' * 40}")
+    print(f"Yantra4D Render Benchmarks\n{'=' * 40}")
     results = run_benchmarks(args.url, args.project, args.timeout)
 
     md = format_markdown(results)

@@ -1,6 +1,6 @@
-# Qubic — Platform Documentation
+# Yantra4D — Platform Documentation
 
-Platform-level documentation for the Qubic parametric 3D print design platform.
+Platform-level documentation for the Yantra4D parametric 3D print design platform.
 
 ## Documentation Index
 
@@ -30,7 +30,7 @@ Each project carries its own docs in `projects/{slug}/docs/`. The platform ships
 python3 tests/verify_design.py
 ```
 
-### 3. Launching Qubic
+### 3. Launching Yantra4D
 ```bash
 ./scripts/dev.sh          # start backend + frontend
 ./scripts/dev-stop.sh     # stop all dev servers

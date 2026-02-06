@@ -11,9 +11,9 @@ Modular storage system with bins, baseplates, and lids in the Gridfinity grid st
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `cup` | Bin | `qubic_cup.scad` | cup |
-| `baseplate` | Baseplate | `qubic_baseplate.scad` | baseplate |
-| `lid` | Lid | `qubic_lid.scad` | lid |
+| `cup` | Bin | `yantra4d_cup.scad` | cup |
+| `baseplate` | Baseplate | `yantra4d_baseplate.scad` | baseplate |
+| `lid` | Lid | `yantra4d_lid.scad` | lid |
 
 ## Parameters
 

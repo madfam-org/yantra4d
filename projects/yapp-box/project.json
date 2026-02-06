@@ -23,7 +23,7 @@
         "en": "Base",
         "es": "Base"
       },
-      "scad_file": "qubic_yapp_base.scad",
+      "scad_file": "yantra4d_yapp_base.scad",
       "parts": [
         "base"
       ],
@@ -35,7 +35,7 @@
         "en": "Lid",
         "es": "Tapa"
       },
-      "scad_file": "qubic_yapp_lid.scad",
+      "scad_file": "yantra4d_yapp_lid.scad",
       "parts": [
         "lid"
       ],

@@ -11,9 +11,9 @@ Generator for plaques, tags, and signs with embossed text
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `plaque` | Plaque | `qubic_plaque.scad` | plaque |
-| `tag` | Tag | `qubic_tag.scad` | tag |
-| `sign` | Sign | `qubic_sign.scad` | sign |
+| `plaque` | Plaque | `yantra4d_plaque.scad` | plaque |
+| `tag` | Tag | `yantra4d_tag.scad` | tag |
+| `sign` | Sign | `yantra4d_sign.scad` | sign |
 
 ## Parameters
 

@@ -25,7 +25,7 @@ services:
       - PROJECTS_DIR=/app/projects
       - CORS_ORIGINS=http://localhost:3000,http://localhost:4321
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
-      - JANUA_AUDIENCE=${JANUA_AUDIENCE:-qubic}
+      - JANUA_AUDIENCE=${JANUA_AUDIENCE:-yantra4d}
       - AUTH_ENABLED=${AUTH_ENABLED:-true}
       - RATE_LIMIT_STORAGE=redis://redis:6379
     depends_on:
@@ -43,7 +43,7 @@ services:
       args:
         VITE_API_BASE: http://backend:5000
         VITE_JANUA_BASE_URL: ${VITE_JANUA_BASE_URL:-}
-        VITE_JANUA_CLIENT_ID: ${VITE_JANUA_CLIENT_ID:-qubic}
+        VITE_JANUA_CLIENT_ID: ${VITE_JANUA_CLIENT_ID:-yantra4d}
     restart: unless-stopped
     ports:
       - "3000:80"

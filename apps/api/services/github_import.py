@@ -126,7 +126,7 @@ def validate_repo(repo_url: str, github_token: str | None = None) -> dict:
     if not check_repo_exists(repo_url, github_token):
         return {"valid": False, "error": "Repository not found or not accessible"}
 
-    with tempfile.TemporaryDirectory(prefix="qubic_import_") as tmpdir:
+    with tempfile.TemporaryDirectory(prefix="yantra4d_import_") as tmpdir:
         dest = Path(tmpdir) / "repo"
         if not clone_repo(repo_url, dest, github_token, shallow=True):
             return {"valid": False, "error": "Failed to clone repository"}
@@ -221,7 +221,7 @@ def sync_repo(slug: str, github_token: str | None = None) -> dict:
 
     # Legacy: re-clone approach for old imports without .git
     import shutil
-    with tempfile.TemporaryDirectory(prefix="qubic_sync_") as tmpdir:
+    with tempfile.TemporaryDirectory(prefix="yantra4d_sync_") as tmpdir:
         dest = Path(tmpdir) / "repo"
         if not clone_repo(repo_url, dest, github_token, shallow=True):
             return {"success": False, "error": "Failed to clone repository"}

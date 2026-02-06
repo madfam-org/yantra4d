@@ -23,7 +23,7 @@
         "en": "Enclosure",
         "es": "Carcasa"
       },
-      "scad_file": "qubic_box.scad",
+      "scad_file": "yantra4d_box.scad",
       "parts": [
         "enclosure"
       ],

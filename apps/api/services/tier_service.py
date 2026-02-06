@@ -29,12 +29,12 @@ def resolve_tier(auth_claims: dict | None) -> str:
     """Resolve tier string from JWT claims.
 
     - No claims (anonymous) -> "guest"
-    - Claims without qubic_tier -> "basic"
-    - Claims with qubic_tier -> that value (validated against known tiers)
+    - Claims without yantra4d_tier -> "basic"
+    - Claims with yantra4d_tier -> that value (validated against known tiers)
     """
     if not auth_claims:
         return "guest"
-    tier = auth_claims.get("qubic_tier", "basic")
+    tier = auth_claims.get("yantra4d_tier", "basic")
     if tier not in TIER_HIERARCHY:
         logger.warning("Unknown tier '%s' in JWT, falling back to basic", tier)
         return "basic"

@@ -23,7 +23,7 @@
         "en": "Keycap",
         "es": "Tecla"
       },
-      "scad_file": "qubic_keycap.scad",
+      "scad_file": "yantra4d_keycap.scad",
       "parts": [
         "keycap"
       ],

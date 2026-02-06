@@ -1,6 +1,6 @@
 # Multi-Project Platform Guide
 
-Qubic supports serving multiple parametric 3D projects from a single instance.
+Yantra4D supports serving multiple parametric 3D projects from a single instance.
 
 ## Directory Structure
 
@@ -58,10 +58,10 @@ Render, verify, and estimate endpoints accept an optional `project` field in the
 
 ```bash
 # Analyze without writing
-scripts/qubic-init ./path/to/scad --slug my-project --analyze-only
+scripts/yantra4d-init ./path/to/scad --slug my-project --analyze-only
 
 # Generate manifest and install
-scripts/qubic-init ./path/to/scad --slug my-project --install
+scripts/yantra4d-init ./path/to/scad --slug my-project --install
 ```
 
 ### Web UI

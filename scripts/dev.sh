@@ -67,7 +67,7 @@ if [ "$START_LANDING" = true ]; then
 fi
 
 echo ""
-echo "Qubic running:"
+echo "Yantra4D running:"
 [ "$START_API" = true ]     && echo "  Backend:  http://localhost:5000"
 [ "$START_STUDIO" = true ]  && echo "  Studio:   http://localhost:5173"
 [ "$START_LANDING" = true ] && echo "  Landing:  http://localhost:4321"

@@ -11,7 +11,7 @@ Generative torus knot sculptures using dotSCAD and BOSL2
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `sculpture` | Sculpture | `qubic_torus_knot.scad` | knot |
+| `sculpture` | Sculpture | `yantra4d_torus_knot.scad` | knot |
 
 ## Parameters
 

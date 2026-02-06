@@ -95,7 +95,7 @@ export default function GitHubImportWizard({ onClose, onImported }) {
               <p className="text-xs text-muted-foreground">
                 Paste a GitHub repo URL containing .scad files. Private repos supported for Pro+ users.{' '}
                 <a
-                  href="https://github.com/madfam-org/qubic-template"
+                  href="https://github.com/madfam-org/yantra4d-template"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline"
@@ -169,7 +169,7 @@ export default function GitHubImportWizard({ onClose, onImported }) {
             </>
           )}
           {step === 2 && (
-            <Button onClick={() => { onClose(); window.location.hash = `#/${slug}`; sessionStorage.setItem('qubic-editor-open', 'true') }}>
+            <Button onClick={() => { onClose(); window.location.hash = `#/${slug}`; sessionStorage.setItem('yantra4d-editor-open', 'true') }}>
               Open in Editor
             </Button>
           )}

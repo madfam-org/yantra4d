@@ -11,8 +11,8 @@ Yet Another Parametric Projectbox — PCB enclosure with snap-fit lid
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Base | `qubic_yapp_base.scad` | base |
-| `` | Lid | `qubic_yapp_lid.scad` | lid |
+| `` | Base | `yantra4d_yapp_base.scad` | base |
+| `` | Lid | `yantra4d_yapp_lid.scad` | lid |
 
 ## Parameters
 

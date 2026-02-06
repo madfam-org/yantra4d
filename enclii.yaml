@@ -1,8 +1,8 @@
 apiVersion: enclii.dev/v1
 kind: Service
 metadata:
-  name: qubic
-  project: qubic
+  name: yantra4d
+  project: yantra4d
 spec:
   domains:
     - name: 4d.madfam.io

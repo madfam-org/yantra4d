@@ -11,8 +11,8 @@ Involute spur and herringbone gears powered by MCAD
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `spur_gear` | Spur Gear | `qubic_spur_gear.scad` | spur_gear |
-| `herringbone_gear` | Herringbone Gear | `qubic_herringbone_gear.scad` | herringbone_gear |
+| `spur_gear` | Spur Gear | `yantra4d_spur_gear.scad` | spur_gear |
+| `herringbone_gear` | Herringbone Gear | `yantra4d_herringbone_gear.scad` | herringbone_gear |
 
 ## Parameters
 

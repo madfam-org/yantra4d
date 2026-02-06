@@ -17,13 +17,13 @@ class TestResolveTier:
         assert resolve_tier({}) == "guest"
 
     def test_explicit_tier(self):
-        assert resolve_tier({"qubic_tier": "pro"}) == "pro"
+        assert resolve_tier({"yantra4d_tier": "pro"}) == "pro"
 
     def test_madfam_tier(self):
-        assert resolve_tier({"qubic_tier": "madfam"}) == "madfam"
+        assert resolve_tier({"yantra4d_tier": "madfam"}) == "madfam"
 
     def test_unknown_tier_fallback(self):
-        assert resolve_tier({"qubic_tier": "enterprise"}) == "basic"
+        assert resolve_tier({"yantra4d_tier": "enterprise"}) == "basic"
 
 
 class TestHasTier:

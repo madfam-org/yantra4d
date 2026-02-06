@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "spur_gear",
-      "scad_file": "qubic_spur_gear.scad",
+      "scad_file": "yantra4d_spur_gear.scad",
       "label": {
         "en": "Spur Gear",
         "es": "Engranaje Recto"
@@ -34,7 +34,7 @@
     },
     {
       "id": "herringbone_gear",
-      "scad_file": "qubic_herringbone_gear.scad",
+      "scad_file": "yantra4d_herringbone_gear.scad",
       "label": {
         "en": "Herringbone Gear",
         "es": "Engranaje Espiga"

@@ -24,7 +24,7 @@
         "en": "Bolt",
         "es": "Tornillo"
       },
-      "scad_file": "qubic_bolt.scad",
+      "scad_file": "yantra4d_bolt.scad",
       "parts": [
         "bolt"
       ],
@@ -40,7 +40,7 @@
         "en": "Nut",
         "es": "Tuerca"
       },
-      "scad_file": "qubic_nut.scad",
+      "scad_file": "yantra4d_nut.scad",
       "parts": [
         "nut"
       ],

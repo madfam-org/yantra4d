@@ -11,7 +11,7 @@ Parametric NEMA motor mount with real motor preview using NopSCADlib
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `mount` | Mount | `qubic_mount.scad` | mount, nema_reference |
+| `mount` | Mount | `yantra4d_mount.scad` | mount, nema_reference |
 
 ## Parameters
 

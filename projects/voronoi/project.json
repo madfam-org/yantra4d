@@ -18,7 +18,7 @@
   "modes": [
     {
       "id": "coaster",
-      "scad_file": "qubic_coaster.scad",
+      "scad_file": "yantra4d_coaster.scad",
       "label": {
         "es": "Posavasos",
         "en": "Coaster"
@@ -33,7 +33,7 @@
     },
     {
       "id": "vase",
-      "scad_file": "qubic_vase.scad",
+      "scad_file": "yantra4d_vase.scad",
       "label": {
         "es": "Jarron",
         "en": "Vase"
@@ -48,7 +48,7 @@
     },
     {
       "id": "lampshade",
-      "scad_file": "qubic_lampshade.scad",
+      "scad_file": "yantra4d_lampshade.scad",
       "label": {
         "es": "Lampara",
         "en": "Lampshade"

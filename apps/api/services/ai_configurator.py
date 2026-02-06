@@ -34,7 +34,7 @@ def build_configurator_prompt(manifest: dict, current_params: dict) -> str:
 
     params_text = "\n".join(params_desc) if params_desc else "(no parameters)"
 
-    return f"""You are an AI assistant for a parametric 3D design tool called Qubic.
+    return f"""You are an AI assistant for a parametric 3D design tool called Yantra4D.
 The user is adjusting parameters on a 3D model: "{manifest.get('project', {}).get('name', 'Unknown')}".
 
 Available parameters:

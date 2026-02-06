@@ -1,6 +1,6 @@
 # Web Interface Documentation
 
-**Qubic** is a local web application for visualizing, customizing, and verifying the design.
+**Yantra4D** is a local web application for visualizing, customizing, and verifying the design.
 
 ---
 

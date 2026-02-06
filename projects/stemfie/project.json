@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "beam",
-      "scad_file": "qubic_beam.scad",
+      "scad_file": "yantra4d_beam.scad",
       "label": {
         "en": "Beam",
         "es": "Viga"
@@ -34,7 +34,7 @@
     },
     {
       "id": "brace",
-      "scad_file": "qubic_brace.scad",
+      "scad_file": "yantra4d_brace.scad",
       "label": {
         "en": "Brace",
         "es": "Escuadra"
@@ -49,7 +49,7 @@
     },
     {
       "id": "fastener",
-      "scad_file": "qubic_fastener.scad",
+      "scad_file": "yantra4d_fastener.scad",
       "label": {
         "en": "Fastener",
         "es": "Sujetador"

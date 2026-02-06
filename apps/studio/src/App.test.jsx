@@ -187,8 +187,8 @@ describe('App', () => {
     expect(screen.getByTitle('Redo')).toBeDisabled()
   })
 
-  it('studio view renders "powered by Qubic" tagline', () => {
+  it('studio view renders "powered by Yantra4D" tagline', () => {
     renderApp()
-    expect(screen.getByText('powered by Qubic')).toBeInTheDocument()
+    expect(screen.getByText('powered by Yantra4D')).toBeInTheDocument()
   })
 })

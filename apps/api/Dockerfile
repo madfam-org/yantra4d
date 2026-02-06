@@ -1,4 +1,4 @@
-# Qubic API — Production Docker Image
+# Yantra4D API — Production Docker Image
 FROM python:3.12-slim
 
 # Install OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
@@ -51,7 +51,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 WORKDIR /app/backend
 
 # Create non-root user
-RUN useradd -r -s /bin/false qubic && chown -R qubic:qubic /app
-USER qubic
+RUN useradd -r -s /bin/false yantra4d && chown -R yantra4d:yantra4d /app
+USER yantra4d
 
 CMD gunicorn -w 2 -b "0.0.0.0:${PORT}" --timeout 300 app:app

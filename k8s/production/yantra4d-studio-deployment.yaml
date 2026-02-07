@@ -26,6 +26,7 @@ spec:
       containers:
         - name: studio
           image: ghcr.io/madfam-org/yantra4d/studio
+          imagePullPolicy: Always
           securityContext:
             privileged: false
             allowPrivilegeEscalation: false

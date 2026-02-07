@@ -149,7 +149,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ./apps/studio
+          context: .
           file: ./apps/studio/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -159,10 +159,10 @@ jobs:
           provenance: false
           sbom: false
           build-args: |
-            VITE_API_BASE=https://api.4d.madfam.io
+            VITE_API_BASE=https://4d-api.madfam.io
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
             VITE_JANUA_CLIENT_ID=${{ secrets.JANUA_CLIENT_ID }}
-            VITE_JANUA_REDIRECT_URI=https://app.4d.madfam.io
+            VITE_JANUA_REDIRECT_URI=https://4d-app.madfam.io
 
   build-landing:
     name: Build Landing
@@ -201,7 +201,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ./apps/landing
+          context: .
           file: ./apps/landing/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}

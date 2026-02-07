@@ -33,7 +33,7 @@ packages/
   tokens/              (shared CSS custom properties — colors, spacing)
 ```
 
-**Domains**: `4d.madfam.io` (landing), `app.4d.madfam.io` (studio), `api.4d.madfam.io` (api)
+**Domains**: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api)
 
 ## Critical File Map
 
@@ -209,7 +209,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 
 | Target | Method |
 |--------|--------|
-| Enclii PaaS | Auto-deploy on push to main — `yantra4d-landing` at 4d.madfam.io, `yantra4d-studio` at app.4d.madfam.io, `yantra4d-backend` at api.4d.madfam.io |
+| Enclii PaaS | Auto-deploy on push to main — `yantra4d-landing` at 4d.madfam.io, `yantra4d-studio` at 4d-app.madfam.io, `yantra4d-backend` at 4d-api.madfam.io |
 | Docker | `docker compose up` (backend + studio + landing, local) |
 | Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) |
 

@@ -20,7 +20,7 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run test:coverage
@@ -76,7 +76,7 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test --project=chromium
         env:

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yantra4d-redis-data
+  labels:
+    app.kubernetes.io/name: yantra4d-redis
+    app.kubernetes.io/part-of: yantra4d
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

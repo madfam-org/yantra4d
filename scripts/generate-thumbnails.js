@@ -6,7 +6,7 @@
  *   node scripts/generate-thumbnails.js [--base-url URL]
  *
  * Defaults to http://localhost:5173 (local studio dev server).
- * Pass --base-url https://app.4d.madfam.io for production.
+ * Pass --base-url https://4d-app.madfam.io for production.
  */
 
 const { chromium } = require('playwright');

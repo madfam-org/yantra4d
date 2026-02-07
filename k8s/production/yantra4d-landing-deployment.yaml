@@ -26,6 +26,7 @@ spec:
       containers:
         - name: landing
           image: ghcr.io/madfam-org/yantra4d/landing
+          imagePullPolicy: Always
           securityContext:
             privileged: false
             allowPrivilegeEscalation: false

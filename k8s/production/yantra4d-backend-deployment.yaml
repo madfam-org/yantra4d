@@ -26,6 +26,7 @@ spec:
       containers:
         - name: backend
           image: ghcr.io/madfam-org/yantra4d/backend
+          imagePullPolicy: Always
           securityContext:
             privileged: false
             allowPrivilegeEscalation: false
@@ -46,7 +47,7 @@ spec:
             - name: RATE_LIMIT_STORAGE
               value: "redis://yantra4d-redis:6379/1"
             - name: CORS_ORIGINS
-              value: "https://app.4d.madfam.io,https://4d.madfam.io"
+              value: "https://4d-app.madfam.io,https://4d.madfam.io"
             - name: AUTH_ENABLED
               value: "true"
             - name: JANUA_ISSUER

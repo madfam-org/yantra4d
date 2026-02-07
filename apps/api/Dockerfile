@@ -7,7 +7,7 @@ RUN apt-get update && \
   wget \
   fonts-liberation \
   fontconfig \
-  libgl1-mesa-glx \
+  libgl1 \
   libglu1-mesa \
   xvfb && \
   wget -q https://files.openscad.org/snapshots/OpenSCAD-2026.02.01-x86_64.AppImage -O /usr/local/bin/openscad && \

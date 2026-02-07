@@ -9,8 +9,8 @@ Run this after deploying Yantra4D to the `enclii-production` namespace to verify
 | Service | Domain | Internal Port | Health Path |
 |---------|--------|---------------|-------------|
 | Landing | `4d.madfam.io` | 80 | `/` (200 + HTML) |
-| API | `api.4d.madfam.io` | 5000 | `/api/health` (200 + JSON) |
-| Studio | `app.4d.madfam.io` | 80 | `/` (200 + HTML) |
+| API | `4d-api.madfam.io` | 5000 | `/api/health` (200 + JSON) |
+| Studio | `4d-app.madfam.io` | 80 | `/` (200 + HTML) |
 
 ---
 
@@ -22,8 +22,8 @@ Verify all three domains resolve via Cloudflare Tunnel CNAME:
 
 ```bash
 dig 4d.madfam.io CNAME +short
-dig api.4d.madfam.io CNAME +short
-dig app.4d.madfam.io CNAME +short
+dig 4d-api.madfam.io CNAME +short
+dig 4d-app.madfam.io CNAME +short
 ```
 
 **Expected**: Each returns a `*.cfargotunnel.com` or `tunnel.enclii.dev` CNAME.
@@ -35,8 +35,8 @@ dig app.4d.madfam.io CNAME +short
 
 ```bash
 echo | openssl s_client -servername 4d.madfam.io -connect 4d.madfam.io:443 2>/dev/null | openssl x509 -noout -dates -subject
-echo | openssl s_client -servername api.4d.madfam.io -connect api.4d.madfam.io:443 2>/dev/null | openssl x509 -noout -dates -subject
-echo | openssl s_client -servername app.4d.madfam.io -connect app.4d.madfam.io:443 2>/dev/null | openssl x509 -noout -dates -subject
+echo | openssl s_client -servername 4d-api.madfam.io -connect 4d-api.madfam.io:443 2>/dev/null | openssl x509 -noout -dates -subject
+echo | openssl s_client -servername 4d-app.madfam.io -connect 4d-app.madfam.io:443 2>/dev/null | openssl x509 -noout -dates -subject
 ```
 
 **Expected**: Valid cert covering each domain, `notAfter` in the future.
@@ -47,8 +47,8 @@ echo | openssl s_client -servername app.4d.madfam.io -connect app.4d.madfam.io:4
 ### 3. API Health Check
 
 ```bash
-curl -sS -o /dev/null -w '%{http_code}' https://api.4d.madfam.io/api/health
-curl -sS https://api.4d.madfam.io/api/health | python3 -m json.tool
+curl -sS -o /dev/null -w '%{http_code}' https://4d-api.madfam.io/api/health
+curl -sS https://4d-api.madfam.io/api/health | python3 -m json.tool
 ```
 
 **Expected response**:
@@ -68,13 +68,13 @@ curl -sS https://api.4d.madfam.io/api/health | python3 -m json.tool
 
 #### 4a. Project listing
 ```bash
-curl -sS https://api.4d.madfam.io/api/projects | python3 -m json.tool | head -20
+curl -sS https://4d-api.madfam.io/api/projects | python3 -m json.tool | head -20
 ```
 **Expected**: JSON array with 20 project entries (slugs like `tablaco`, `gridfinity`, `voronoi`, etc.).
 
 #### 4b. Single project manifest
 ```bash
-curl -sS https://api.4d.madfam.io/api/projects/tablaco/manifest | python3 -m json.tool | head -5
+curl -sS https://4d-api.madfam.io/api/projects/tablaco/manifest | python3 -m json.tool | head -5
 ```
 **Expected**: 200 with JSON containing `name`, `modes`, `parameters` keys.
 
@@ -83,14 +83,14 @@ curl -sS https://api.4d.madfam.io/api/projects/tablaco/manifest | python3 -m jso
 ### 5. Studio Serves SPA
 
 ```bash
-curl -sS -o /dev/null -w '%{http_code}' https://app.4d.madfam.io
-curl -sS https://app.4d.madfam.io | head -5
+curl -sS -o /dev/null -w '%{http_code}' https://4d-app.madfam.io
+curl -sS https://4d-app.madfam.io | head -5
 ```
 
 **Expected**: 200 with `<!doctype html>` (Vite SPA shell). Non-root paths like `/nonexistent` should also return 200 (SPA fallback).
 
 ```bash
-curl -sS -o /dev/null -w '%{http_code}' https://app.4d.madfam.io/nonexistent
+curl -sS -o /dev/null -w '%{http_code}' https://4d-app.madfam.io/nonexistent
 ```
 
 **Expected**: 200 (nginx `try_files` → `/index.html`).
@@ -112,11 +112,11 @@ curl -sS https://4d.madfam.io | grep -o '<title>[^<]*</title>'
 
 #### 7a. Studio CSP
 ```bash
-curl -sI https://app.4d.madfam.io | grep -i content-security-policy
+curl -sI https://4d-app.madfam.io | grep -i content-security-policy
 ```
 
 **Expected CSP must contain**:
-- `connect-src 'self' https://api.4d.madfam.io https://auth.madfam.io blob:`
+- `connect-src 'self' https://4d-api.madfam.io https://auth.madfam.io blob:`
 - `frame-ancestors 'self' https://4d.madfam.io`
 - `wasm-unsafe-eval` in `script-src` (required for OpenSCAD WASM)
 
@@ -126,12 +126,12 @@ curl -sI https://4d.madfam.io | grep -i content-security-policy
 ```
 
 **Expected CSP must contain**:
-- `frame-src https://app.4d.madfam.io`
-- `connect-src 'self' https://api.4d.madfam.io`
+- `frame-src https://4d-app.madfam.io`
+- `connect-src 'self' https://4d-api.madfam.io`
 
 #### 7c. Common security headers (all 3 services)
 ```bash
-for domain in 4d.madfam.io api.4d.madfam.io app.4d.madfam.io; do
+for domain in 4d.madfam.io 4d-api.madfam.io 4d-app.madfam.io; do
   echo "=== $domain ==="
   curl -sI "https://$domain" | grep -iE 'x-content-type|x-frame-options|referrer-policy'
 done
@@ -147,18 +147,18 @@ done
 ### 8. CORS Validation
 
 ```bash
-curl -sI -H "Origin: https://app.4d.madfam.io" https://api.4d.madfam.io/api/health | grep -i access-control
+curl -sI -H "Origin: https://4d-app.madfam.io" https://4d-api.madfam.io/api/health | grep -i access-control
 ```
 
-**Expected**: `Access-Control-Allow-Origin: https://app.4d.madfam.io`
+**Expected**: `Access-Control-Allow-Origin: https://4d-app.madfam.io`
 
 ```bash
-curl -sI -H "Origin: https://evil.com" https://api.4d.madfam.io/api/health | grep -i access-control
+curl -sI -H "Origin: https://evil.com" https://4d-api.madfam.io/api/health | grep -i access-control
 ```
 
 **Expected**: No `Access-Control-Allow-Origin` header (origin rejected).
 
-**Note**: The backend `CORS_ORIGINS` env var must be set to `https://4d.madfam.io,https://app.4d.madfam.io` in the K8s deployment.
+**Note**: The backend `CORS_ORIGINS` env var must be set to `https://4d.madfam.io,https://4d-app.madfam.io` in the K8s deployment.
 
 ---
 
@@ -173,14 +173,14 @@ curl -sS https://auth.madfam.io/.well-known/jwks.json | python3 -m json.tool | h
 
 #### 9b. Unauthenticated API access (tier-gated endpoints)
 ```bash
-curl -sS -o /dev/null -w '%{http_code}' https://api.4d.madfam.io/api/projects/tablaco/git/status
+curl -sS -o /dev/null -w '%{http_code}' https://4d-api.madfam.io/api/projects/tablaco/git/status
 ```
 
 **Expected**: 401 (requires valid JWT).
 
 #### 9c. Studio OAuth redirect
 ```bash
-curl -sS https://app.4d.madfam.io | grep -o 'VITE_JANUA_BASE_URL[^"]*"[^"]*"'
+curl -sS https://4d-app.madfam.io | grep -o 'VITE_JANUA_BASE_URL[^"]*"[^"]*"'
 ```
 
 **Expected**: Embedded env var pointing to `https://auth.madfam.io`.
@@ -191,14 +191,14 @@ curl -sS https://app.4d.madfam.io | grep -o 'VITE_JANUA_BASE_URL[^"]*"[^"]*"'
 
 #### 10a. Landing embeds Studio (iframe)
 ```bash
-curl -sS https://4d.madfam.io | grep -o 'app\.4d\.madfam\.io'
+curl -sS https://4d.madfam.io | grep -o '4d-app\.madfam\.io'
 ```
 
 **Expected**: At least one match (InteractiveShowcase iframe src or link href).
 
 #### 10b. Studio connects to API
 ```bash
-curl -sS https://app.4d.madfam.io | grep -o 'api\.4d\.madfam\.io'
+curl -sS https://4d-app.madfam.io | grep -o '4d-api\.madfam\.io'
 ```
 
 **Expected**: At least one match (VITE_API_BASE baked into JS bundle).

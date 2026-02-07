@@ -24,7 +24,7 @@ const PROJECTS: DemoProject[] = [
 
 const STUDIO_BASE = import.meta.env.DEV
   ? 'http://localhost:5173'
-  : 'https://app.4d.madfam.io';
+  : 'https://4d-app.madfam.io';
 
 export default function InteractiveShowcase() {
   const [active, setActive] = useState(PROJECTS[0]);

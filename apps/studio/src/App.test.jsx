@@ -93,7 +93,7 @@ describe('App', () => {
       // verify is now called with (parts, mode, projectSlug)
       const lastCall = verify.mock.calls[verify.mock.calls.length - 1]
       expect(lastCall).toHaveLength(3)
-      expect(lastCall[2]).toBe('tablaco') // projectSlug from fallback manifest
+      expect(lastCall[2]).toBe('gridfinity') // projectSlug from fallback manifest
     })
   })
 
@@ -101,8 +101,8 @@ describe('App', () => {
     renderApp()
     const resetBtn = screen.getByText('Reset to Defaults')
     fireEvent.click(resetBtn)
-    // After reset, slider values should show defaults — check size=20
-    expect(screen.getByText('20')).toBeInTheDocument()
+    // After reset, slider values should show defaults — check width_units=2
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 
   it('long render estimate shows ConfirmRenderDialog', async () => {
@@ -163,7 +163,7 @@ describe('App', () => {
     // Hash should now be #/{projectSlug}/{presetId}/{modeId}
     const segments = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
     expect(segments.length).toBe(3)
-    expect(segments[0]).toBe('tablaco') // project slug
+    expect(segments[0]).toBe('gridfinity') // project slug
   })
 
   it('renders share button', () => {

@@ -1,4 +1,4 @@
-# Tablaco Studio — Browser-Based Usability Audit (Round 2)
+# Yantra4D Studio — Browser-Based Usability Audit (Round 2)
 
 **Date**: 2026-01-29
 **Tool**: Playwright MCP (automated browser testing)
@@ -23,7 +23,7 @@
 
 **Status**: ✅ PASS
 
-- Page title: "Tablaco Studio"
+- Page title: project name from manifest
 - Header: project name, language toggle, theme toggle
 - Sidebar: mode tabs, parameter sliders, visibility, colors, action buttons
 - Viewer: 3D canvas with camera toolbar
@@ -59,7 +59,7 @@
   - Export: Download STL→Descargar STL, Export Images→Exportar Imágenes
   - Camera views: Isometric→Isométrico, Top→Superior, Front→Frente, Right→Derecha
 - No truncation, layout intact
-- Language persisted in `tablaco-lang` localStorage key
+- Language persisted in `yantra4d-lang` localStorage key
 
 ---
 
@@ -196,9 +196,9 @@
 **Status**: ✅ PASS
 
 - Individual export buttons (Isometric, Top, Front, Right) trigger PNG downloads
-- "Export All Views" → downloads `tablaco_unit_all_views.zip`
+- "Export All Views" → downloads `{slug}_mode_all_views.zip`
 - Buttons disabled before render, enabled after
-- Verified: `tablaco_unit_iso.png` downloaded successfully
+- Verified: PNG downloads work successfully
 
 ---
 
@@ -252,11 +252,11 @@
 **Status**: ✅ PASS
 
 All 5 localStorage keys present and functional:
-- `tablaco-params` — parameter values
-- `tablaco-colors` — color picker values
-- `tablaco-lang` — language selection (en/es)
+- `yantra4d-params` — parameter values
+- `yantra4d-colors` — color picker values
+- `yantra4d-lang` — language selection (en/es)
 - `vite-ui-theme` — theme selection (light/dark/system)
-- `tablaco-mode` — active mode (unit/assembly/grid)
+- `yantra4d-mode` — active mode
 
 State persists across page refreshes.
 

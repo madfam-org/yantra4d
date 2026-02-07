@@ -4,7 +4,7 @@ A manifest-driven platform for parametric OpenSCAD models with a web-based 3D pr
 
 ![Yantra4D](/docs/images/half_cube_iso.png)
 
-Ships with 20 built-in projects including **tablaco** (interlocking cubes), **gridfinity** (modular storage), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), and **motor-mount** (NEMA stepper mounts). See [`projects/`](./projects/) for all projects or [`projects/tablaco/README.md`](./projects/tablaco/README.md) for the flagship project.
+Ships with 19 built-in projects including **gridfinity** (modular storage), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), and **motor-mount** (NEMA stepper mounts). See [`projects/`](./projects/) for all projects.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
@@ -25,7 +25,7 @@ Platform documentation is available in the [`docs/`](./docs/index.md) directory:
 -   [Multi-Project Platform](./docs/multi-project.md) — Multi-project setup and configuration
 -   [Developer Experience](./docs/devx-guide.md) — Onboarding external SCAD projects
 
-Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./projects/tablaco/README.md) for the flagship project, or browse all 20 built-in projects under [`projects/`](./projects/).
+Per-project docs live in `projects/{slug}/docs/`. Browse all 19 built-in projects under [`projects/`](./projects/).
 
 ## Tech Stack
 -   **CAD**: OpenSCAD
@@ -38,16 +38,15 @@ Per-project docs live in `projects/{slug}/docs/`. See [`projects/tablaco/`](./pr
 ## Project Structure
 
 ```
-tablaco/
+yantra4d/
 ├── projects/
-│   ├── tablaco/                 # Flagship project (interlocking cubes)
+│   ├── gridfinity/              # Flagship project (modular storage bins)
 │   │   ├── *.scad               # OpenSCAD geometry files
 │   │   ├── project.json         # Project manifest (modes, params, parts)
 │   │   └── exports/models/      # Reference STL exports
-│   ├── gridfinity/              # Modular storage bins
 │   ├── polydice/                # Parametric dice set
 │   ├── ultimate-box/            # Parametric box maker
-│   └── ...                      # 20 built-in projects total
+│   └── ...                      # 19 built-in projects total
 ├── apps/
 │   ├── api/                     # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration
@@ -82,7 +81,7 @@ tablaco/
 ### Quick Run
 Generate the default model:
 ```bash
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o projects/tablaco/exports/models/half_cube.stl projects/tablaco/half_cube.scad
+/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o projects/gridfinity/exports/models/cup.stl projects/gridfinity/yantra4d_cup.scad
 ```
 
 ### Launching Yantra4D

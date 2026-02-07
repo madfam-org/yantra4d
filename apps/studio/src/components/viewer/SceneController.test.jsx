@@ -36,24 +36,24 @@ describe('SceneController view positions (Z-up convention)', () => {
     }
   })
 
-  it('iso view: camera at (50, 50, 50)', () => {
+  it('iso view: camera at (80, 80, 80)', () => {
     setCameraView('iso')
-    expect(camera.position.set).toHaveBeenCalledWith(50, 50, 50)
+    expect(camera.position.set).toHaveBeenCalledWith(80, 80, 80)
   })
 
-  it('top view: looks down Z axis from (0, 0, 100)', () => {
+  it('top view: looks down Z axis from (0, 0, 150)', () => {
     setCameraView('top')
-    expect(camera.position.set).toHaveBeenCalledWith(0, 0, 100)
+    expect(camera.position.set).toHaveBeenCalledWith(0, 0, 150)
   })
 
-  it('front view: looks along +Y from (0, -100, 0)', () => {
+  it('front view: looks along +Y from (0, -150, 0)', () => {
     setCameraView('front')
-    expect(camera.position.set).toHaveBeenCalledWith(0, -100, 0)
+    expect(camera.position.set).toHaveBeenCalledWith(0, -150, 0)
   })
 
-  it('right view: looks along -X from (100, 0, 0)', () => {
+  it('right view: looks along -X from (150, 0, 0)', () => {
     setCameraView('right')
-    expect(camera.position.set).toHaveBeenCalledWith(100, 0, 0)
+    expect(camera.position.set).toHaveBeenCalledWith(150, 0, 0)
   })
 
   it('all views call lookAt(0,0,0) and updateProjectionMatrix', () => {

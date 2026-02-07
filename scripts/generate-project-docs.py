@@ -192,7 +192,6 @@ def main():
     parser = argparse.ArgumentParser(description="Generate project docs from manifests")
     parser.add_argument("--slug", help="Generate docs for a single project")
     parser.add_argument("--dry-run", action="store_true", help="Print output without writing files")
-    parser.add_argument("--force", action="store_true", help="Include tablaco (skipped by default)")
     args = parser.parse_args()
 
     if not PROJECTS_DIR.is_dir():
@@ -206,10 +205,6 @@ def main():
 
     generated = 0
     for slug in slugs:
-        if slug == "tablaco" and not args.force:
-            print(f"  skip  {slug} (has manual docs; use --force to override)")
-            continue
-
         manifest_path = PROJECTS_DIR / slug / "project.json"
         if not manifest_path.exists():
             print(f"  skip  {slug} (no project.json)")

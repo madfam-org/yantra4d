@@ -94,7 +94,7 @@ test.describe('Studio Header', () => {
     const lang = await page.evaluate(() =>
       localStorage.getItem('yantra4d-lang') ||
       localStorage.getItem('test-lang') ||
-      localStorage.getItem('tablaco-lang')
+      localStorage.getItem('gridfinity-lang')
     )
     expect(['en', 'es']).toContain(lang)
   })

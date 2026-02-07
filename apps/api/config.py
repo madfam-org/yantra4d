@@ -7,7 +7,7 @@ class Config:
     # Paths
     BASE_DIR = Path(__file__).parent
 
-    _default_scad = BASE_DIR.parent.parent / "projects" / "tablaco"
+    _default_scad = BASE_DIR.parent.parent / "projects" / "gridfinity"
     SCAD_DIR = Path(os.getenv("SCAD_DIR", _default_scad))
 
     _default_projects = BASE_DIR.parent.parent / "projects"

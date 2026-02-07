@@ -69,7 +69,7 @@ export async function setLanguage(page, lang) {
     localStorage.setItem('yantra4d-lang', l)
     localStorage.setItem('test-lang', l)
     localStorage.setItem('demo-lang', l)
-    localStorage.setItem('tablaco-lang', l)
+    localStorage.setItem('gridfinity-lang', l)
     localStorage.setItem('null-lang', l)
     localStorage.setItem('undefined-lang', l)
   }, lang)

@@ -18,7 +18,7 @@ const PROJECTS = [
   'fasteners', 'gear-reducer', 'gears', 'gridfinity', 'julia-vase',
   'keyv2', 'maze', 'motor-mount', 'multiboard', 'polydice',
   'portacosas', 'relief', 'spiral-planter', 'stemfie', 'superformula',
-  'tablaco', 'torus-knot', 'ultimate-box', 'voronoi', 'yapp-box',
+  'torus-knot', 'ultimate-box', 'voronoi', 'yapp-box',
 ];
 
 const OUT_DIR = path.resolve(__dirname, '../apps/landing/public/projects');

@@ -44,15 +44,15 @@ Three.js viewer renders STL
 
 ## Fallback Manifest
 
-WASM mode uses an embedded fallback manifest (`apps/studio/src/config/fallback-manifest.json`) that mirrors `projects/tablaco/project.json`. This means:
+WASM mode uses an embedded fallback manifest (`apps/studio/src/config/fallback-manifest.json`) that mirrors `projects/gridfinity/project.json`. This means:
 
-- **Only the Tablaco project** is available in WASM mode
+- **Only the Gridfinity project** is available in WASM mode
 - Other projects require the backend API for manifest delivery
-- CI enforces sync between the fallback manifest and `projects/tablaco/project.json`
+- CI enforces sync between the fallback manifest and `projects/gridfinity/project.json`
 
-**After editing the Tablaco manifest**, update the fallback:
+**After editing the Gridfinity manifest**, update the fallback:
 ```bash
-cp projects/tablaco/project.json apps/studio/src/config/fallback-manifest.json
+cp projects/gridfinity/project.json apps/studio/src/config/fallback-manifest.json
 ```
 
 ## Limitations
@@ -61,7 +61,7 @@ cp projects/tablaco/project.json apps/studio/src/config/fallback-manifest.json
 |------------|--------|
 | Performance | ~4x slower than server-side OpenSCAD CLI |
 | Memory | ~200MB peak per render |
-| Single project | Only Tablaco available without backend |
+| Single project | Only Gridfinity available without backend |
 | No external libs | WASM build includes BOSL2 but not all global libs |
 | Sequential renders | Single worker thread — renders queue, not parallelize |
 | WASM binary size | ~15MB gzipped on first load |

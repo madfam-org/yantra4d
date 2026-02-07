@@ -4,7 +4,7 @@ import React from 'react'
 
 const mockSwitchProject = vi.fn()
 let mockProjects = []
-let mockProjectSlug = 'tablaco'
+let mockProjectSlug = 'gridfinity'
 
 vi.mock('../contexts/ManifestProvider', () => ({
   useManifest: () => ({
@@ -24,25 +24,25 @@ describe('ProjectSelector', () => {
   })
 
   it('returns null when single project', () => {
-    mockProjects = [{ slug: 'tablaco', name: 'Tablaco' }]
+    mockProjects = [{ slug: 'gridfinity', name: 'Gridfinity Extended' }]
     const { container } = render(<ProjectSelector />)
     expect(container.firstChild).toBeNull()
   })
 
   it('renders select with projects', () => {
     mockProjects = [
-      { slug: 'tablaco', name: 'Tablaco' },
+      { slug: 'gridfinity', name: 'Gridfinity Extended' },
       { slug: 'demo', name: 'Demo' },
     ]
     render(<ProjectSelector />)
     expect(screen.getByLabelText('Select project')).toBeInTheDocument()
-    expect(screen.getByText('Tablaco')).toBeInTheDocument()
+    expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     expect(screen.getByText('Demo')).toBeInTheDocument()
   })
 
   it('calls switchProject on change', () => {
     mockProjects = [
-      { slug: 'tablaco', name: 'Tablaco' },
+      { slug: 'gridfinity', name: 'Gridfinity Extended' },
       { slug: 'demo', name: 'Demo' },
     ]
     render(<ProjectSelector />)
@@ -52,7 +52,7 @@ describe('ProjectSelector', () => {
 
   it('sets hash for github import option', () => {
     mockProjects = [
-      { slug: 'tablaco', name: 'Tablaco' },
+      { slug: 'gridfinity', name: 'Gridfinity Extended' },
       { slug: 'demo', name: 'Demo' },
     ]
     render(<ProjectSelector />)

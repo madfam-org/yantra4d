@@ -84,9 +84,9 @@ The `libs/` directory contains three submodules: BOSL2, NopSCADlib, and Round-An
 
 **Symptom**: CI `manifest-sync` job fails.
 
-**Fix**: Copy the Tablaco manifest to the fallback location:
+**Fix**: Copy the Gridfinity manifest to the fallback location:
 ```bash
-cp projects/tablaco/project.json apps/studio/src/config/fallback-manifest.json
+cp projects/gridfinity/project.json apps/studio/src/config/fallback-manifest.json
 ```
 
 The CI workflow runs `diff` between these two files. They must be byte-identical.

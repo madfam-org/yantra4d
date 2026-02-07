@@ -219,6 +219,4 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 - [`docs/manifest.md`](docs/manifest.md) — Manifest schema and extension guide
 - [`docs/web_interface.md`](docs/web_interface.md) — Full-stack architecture details
 - [`docs/verification.md`](docs/verification.md) — STL quality verification system
-- [`projects/tablaco/docs/mechanical_design.md`](projects/tablaco/docs/mechanical_design.md) — OpenSCAD geometry and parameters
-
 Per-project docs live in `projects/{slug}/docs/`.

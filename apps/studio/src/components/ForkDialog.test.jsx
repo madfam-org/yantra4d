@@ -13,8 +13,8 @@ vi.mock('../services/apiClient', () => ({
 import { apiFetch } from '../services/apiClient'
 
 const defaultProps = {
-  slug: 'tablaco',
-  projectName: 'Tablaco',
+  slug: 'gridfinity',
+  projectName: 'Gridfinity Extended',
   onClose: vi.fn(),
   onForked: vi.fn(),
 }
@@ -22,13 +22,13 @@ const defaultProps = {
 describe('ForkDialog', () => {
   it('renders with project name', () => {
     render(<ForkDialog {...defaultProps} />)
-    expect(screen.getByText(/Tablaco/)).toBeInTheDocument()
+    expect(screen.getByText(/Gridfinity Extended/)).toBeInTheDocument()
   })
 
   it('pre-fills slug with my- prefix', () => {
     render(<ForkDialog {...defaultProps} />)
     const input = screen.getByLabelText(/project slug/i)
-    expect(input.value).toBe('my-tablaco')
+    expect(input.value).toBe('my-gridfinity')
   })
 
   it('has fork button', () => {
@@ -46,7 +46,7 @@ describe('ForkDialog', () => {
   it('calls API and onForked on success', async () => {
     apiFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ success: true, slug: 'my-tablaco' }),
+      json: () => Promise.resolve({ success: true, slug: 'my-gridfinity' }),
     })
 
     render(<ForkDialog {...defaultProps} />)
@@ -54,7 +54,7 @@ describe('ForkDialog', () => {
 
     // Wait for async
     await vi.waitFor(() => {
-      expect(defaultProps.onForked).toHaveBeenCalledWith('my-tablaco')
+      expect(defaultProps.onForked).toHaveBeenCalledWith('my-gridfinity')
     })
   })
 

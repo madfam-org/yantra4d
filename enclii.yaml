@@ -7,9 +7,12 @@ spec:
   domains:
     - name: 4d.madfam.io
       environment: production
+      port: 80
     - name: api.4d.madfam.io
       environment: production
+      port: 5000
     - name: app.4d.madfam.io
       environment: production
+      port: 80
   runtime:
     port: 5000

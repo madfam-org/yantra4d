@@ -10,6 +10,7 @@ on:
       - 'projects/**'
       - 'libs/**'
       - 'packages/**'
+      - '!k8s/production/kustomization.yaml'
   workflow_dispatch:
     inputs:
       force_deploy:
@@ -21,35 +22,15 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_BASE: madfam-org/yantra4d
-  NAMESPACE: enclii-production
 
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  preflight:
-    name: Preflight Check
-    runs-on: ubuntu-latest
-    environment: production
-    outputs:
-      skip: ${{ steps.check-secret.outputs.skip }}
-    steps:
-      - name: Check KUBECONFIG secret
-        id: check-secret
-        run: |
-          if [ -z "${{ secrets.KUBECONFIG_PRODUCTION }}" ]; then
-            echo "::notice::KUBECONFIG_PRODUCTION secret not configured - skipping deployment"
-            echo "skip=true" >> $GITHUB_OUTPUT
-          else
-            echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-
   detect-changes:
     name: Detect Changes
     runs-on: ubuntu-latest
-    needs: preflight
-    if: needs.preflight.outputs.skip != 'true'
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       studio: ${{ steps.filter.outputs.studio }}
@@ -105,8 +86,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: madfam-bot
+          password: ${{ secrets.MADFAM_BOT_PAT }}
 
       - name: Extract metadata
         id: meta
@@ -152,8 +133,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: madfam-bot
+          password: ${{ secrets.MADFAM_BOT_PAT }}
 
       - name: Extract metadata
         id: meta
@@ -204,8 +185,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: madfam-bot
+          password: ${{ secrets.MADFAM_BOT_PAT }}
 
       - name: Extract metadata
         id: meta
@@ -230,8 +211,8 @@ jobs:
           provenance: false
           sbom: false
 
-  deploy:
-    name: Deploy to K8s
+  commit-digests:
+    name: Commit Image Digests
     runs-on: ubuntu-latest
     needs: [detect-changes, build-backend, build-studio, build-landing]
     if: |
@@ -239,93 +220,142 @@ jobs:
       needs.detect-changes.result == 'success' &&
       (needs.build-backend.result == 'success' || needs.build-backend.result == 'skipped') &&
       (needs.build-studio.result == 'success' || needs.build-studio.result == 'skipped') &&
-      (needs.build-landing.result == 'success' || needs.build-landing.result == 'skipped')
-    environment: production
-
+      (needs.build-landing.result == 'success' || needs.build-landing.result == 'skipped') &&
+      (needs.build-backend.outputs.image_digest != '' || needs.build-studio.outputs.image_digest != '' || needs.build-landing.outputs.image_digest != '')
+    permissions:
+      contents: write
     steps:
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          version: 'v1.29.0'
+          token: ${{ secrets.MADFAM_BOT_PAT }}
 
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_PRODUCTION }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config
-          kubectl cluster-info
+      - name: Setup kustomize
+        uses: imranismail/setup-kustomize@v2
 
-      - name: Update GHCR credentials
+      - name: Commit image digests
         run: |
-          kubectl delete secret ghcr-credentials -n ${{ env.NAMESPACE }} --ignore-not-found
-          kubectl create secret docker-registry ghcr-credentials \
-            --namespace=${{ env.NAMESPACE }} \
-            --docker-server=ghcr.io \
-            --docker-username=madfam-bot \
-            --docker-password=${{ secrets.MADFAM_BOT_PAT }} \
-            --docker-email=ci@madfam.io
+          git config user.name "madfam-bot"
+          git config user.email "bot@madfam.dev"
 
-      - name: Deploy backend
-        if: needs.build-backend.outputs.image_digest != ''
-        run: |
-          kubectl set image deployment/yantra4d-backend \
-            yantra4d-backend=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend@${{ needs.build-backend.outputs.image_digest }} \
-            -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/yantra4d-backend -n ${{ env.NAMESPACE }} --timeout=300s
+          BACKEND_DIGEST="${{ needs.build-backend.outputs.image_digest }}"
+          STUDIO_DIGEST="${{ needs.build-studio.outputs.image_digest }}"
+          LANDING_DIGEST="${{ needs.build-landing.outputs.image_digest }}"
 
-      - name: Deploy studio
-        if: needs.build-studio.outputs.image_digest != ''
-        run: |
-          kubectl set image deployment/yantra4d-studio \
-            yantra4d-studio=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio@${{ needs.build-studio.outputs.image_digest }} \
-            -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/yantra4d-studio -n ${{ env.NAMESPACE }} --timeout=300s
+          for ATTEMPT in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
 
-      - name: Deploy landing
-        if: needs.build-landing.outputs.image_digest != ''
-        run: |
-          kubectl set image deployment/yantra4d-landing \
-            yantra4d-landing=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${{ needs.build-landing.outputs.image_digest }} \
-            -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/yantra4d-landing -n ${{ env.NAMESPACE }} --timeout=300s
+            cd k8s/production
 
-      - name: Verify health
-        if: needs.build-backend.outputs.image_digest != ''
-        run: |
-          echo "Waiting for rollout to stabilize..."
-          sleep 10
-          PODS=$(kubectl get pods -n ${{ env.NAMESPACE }} -l app=yantra4d-backend -o jsonpath='{.items[*].status.podIP}')
-          for POD_IP in $PODS; do
-            echo "Checking health of pod at $POD_IP..."
-            curl -sf "http://$POD_IP:5000/api/health" || exit 1
+            if [ -n "$BACKEND_DIGEST" ]; then
+              kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend@${BACKEND_DIGEST}
+            fi
+            if [ -n "$STUDIO_DIGEST" ]; then
+              kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio@${STUDIO_DIGEST}
+            fi
+            if [ -n "$LANDING_DIGEST" ]; then
+              kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${LANDING_DIGEST}
+            fi
+
+            cd ../..
+
+            git add k8s/production/kustomization.yaml
+            git diff --staged --quiet && echo "No changes to commit" && exit 0
+            git commit -m "deploy(yantra4d): update digests to ${GITHUB_SHA::8}"
+            git push origin main && exit 0
+            echo "Retry $ATTEMPT..."
+            sleep $((ATTEMPT * 2))
           done
-          echo "All backend pods healthy!"
+          echo "Failed after 3 attempts"
+          exit 1
 
-      - name: Generate deploy summary
-        if: success()
+  lifecycle-events:
+    name: Report Lifecycle Events
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-studio, build-landing]
+    if: always()
+    steps:
+      - name: Report backend event
+        if: needs.build-backend.result == 'success' || needs.build-backend.result == 'failure'
         run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Status**: Success" >> $GITHUB_STEP_SUMMARY
-          echo "**Namespace**: ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Services deployed**:" >> $GITHUB_STEP_SUMMARY
-          if [ -n "${{ needs.build-backend.outputs.image_digest }}" ]; then echo "- Backend: \`${{ needs.build-backend.outputs.image_digest }}\`" >> $GITHUB_STEP_SUMMARY; fi
-          if [ -n "${{ needs.build-studio.outputs.image_digest }}" ]; then echo "- Studio: \`${{ needs.build-studio.outputs.image_digest }}\`" >> $GITHUB_STEP_SUMMARY; fi
-          if [ -n "${{ needs.build-landing.outputs.image_digest }}" ]; then echo "- Landing: \`${{ needs.build-landing.outputs.image_digest }}\`" >> $GITHUB_STEP_SUMMARY; fi
+          if [ "${{ needs.build-backend.result }}" = "success" ]; then
+            EVENT_TYPE="image_pushed"
+          else
+            EVENT_TYPE="build_failed"
+          fi
+          curl -s -X POST "https://api.enclii.dev/v1/callbacks/lifecycle-event" \
+            -H "Authorization: Bearer ${{ secrets.ENCLII_CALLBACK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"repo_full_name\": \"madfam-org/yantra4d\",
+              \"commit_sha\": \"${{ github.sha }}\",
+              \"branch\": \"${{ github.ref_name }}\",
+              \"ref\": \"${{ github.ref }}\",
+              \"event_type\": \"${EVENT_TYPE}\",
+              \"source\": \"ci_callback\",
+              \"message\": \"yantra4d-backend ${EVENT_TYPE} (digest: ${{ needs.build-backend.outputs.image_digest }})\",
+              \"metadata\": {
+                \"service\": \"yantra4d-backend\",
+                \"image\": \"${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend\",
+                \"digest\": \"${{ needs.build-backend.outputs.image_digest }}\",
+                \"workflow\": \"deploy\",
+                \"actor\": \"${{ github.actor }}\"
+              }
+            }" || true
 
-      - name: Notify failure
-        if: failure()
+      - name: Report studio event
+        if: needs.build-studio.result == 'success' || needs.build-studio.result == 'failure'
         run: |
-          echo "## Deployment Failed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check the logs above for details." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Rollback commands**:" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "kubectl rollout undo deployment/yantra4d-backend -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
-          echo "kubectl rollout undo deployment/yantra4d-studio -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
-          echo "kubectl rollout undo deployment/yantra4d-landing -n ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.build-studio.result }}" = "success" ]; then
+            EVENT_TYPE="image_pushed"
+          else
+            EVENT_TYPE="build_failed"
+          fi
+          curl -s -X POST "https://api.enclii.dev/v1/callbacks/lifecycle-event" \
+            -H "Authorization: Bearer ${{ secrets.ENCLII_CALLBACK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"repo_full_name\": \"madfam-org/yantra4d\",
+              \"commit_sha\": \"${{ github.sha }}\",
+              \"branch\": \"${{ github.ref_name }}\",
+              \"ref\": \"${{ github.ref }}\",
+              \"event_type\": \"${EVENT_TYPE}\",
+              \"source\": \"ci_callback\",
+              \"message\": \"yantra4d-studio ${EVENT_TYPE} (digest: ${{ needs.build-studio.outputs.image_digest }})\",
+              \"metadata\": {
+                \"service\": \"yantra4d-studio\",
+                \"image\": \"${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio\",
+                \"digest\": \"${{ needs.build-studio.outputs.image_digest }}\",
+                \"workflow\": \"deploy\",
+                \"actor\": \"${{ github.actor }}\"
+              }
+            }" || true
+
+      - name: Report landing event
+        if: needs.build-landing.result == 'success' || needs.build-landing.result == 'failure'
+        run: |
+          if [ "${{ needs.build-landing.result }}" = "success" ]; then
+            EVENT_TYPE="image_pushed"
+          else
+            EVENT_TYPE="build_failed"
+          fi
+          curl -s -X POST "https://api.enclii.dev/v1/callbacks/lifecycle-event" \
+            -H "Authorization: Bearer ${{ secrets.ENCLII_CALLBACK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"repo_full_name\": \"madfam-org/yantra4d\",
+              \"commit_sha\": \"${{ github.sha }}\",
+              \"branch\": \"${{ github.ref_name }}\",
+              \"ref\": \"${{ github.ref }}\",
+              \"event_type\": \"${EVENT_TYPE}\",
+              \"source\": \"ci_callback\",
+              \"message\": \"yantra4d-landing ${EVENT_TYPE} (digest: ${{ needs.build-landing.outputs.image_digest }})\",
+              \"metadata\": {
+                \"service\": \"yantra4d-landing\",
+                \"image\": \"${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing\",
+                \"digest\": \"${{ needs.build-landing.outputs.image_digest }}\",
+                \"workflow\": \"deploy\",
+                \"actor\": \"${{ github.actor }}\"
+              }
+            }" || true

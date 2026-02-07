@@ -4,7 +4,7 @@ Provides auth-gated endpoints for downloading STL and SCAD files.
 """
 import logging
 
-from flask import Blueprint, request, send_file
+from flask import Blueprint, request, send_file, Response
 
 from config import Config
 from manifest import get_manifest
@@ -29,7 +29,7 @@ def _check_access(manifest_data, action: str, claims) -> tuple | None:
 
 @download_bp.route('/api/projects/<slug>/download/stl/<filename>', methods=['GET'])
 @optional_auth
-def download_stl(slug, filename):
+def download_stl(slug: str, filename: str) -> Response | tuple[Response, int]:
     """Download an STL file for a project."""
     # Early path-traversal check using safe_join_path against project dir
     if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):
@@ -57,7 +57,7 @@ def download_stl(slug, filename):
 
 @download_bp.route('/api/projects/<slug>/download/scad/<filename>', methods=['GET'])
 @optional_auth
-def download_scad(slug, filename):
+def download_scad(slug: str, filename: str) -> Response | tuple[Response, int]:
     """Download a SCAD source file for a project."""
     # Early path-traversal check using safe_join_path against project dir
     if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):

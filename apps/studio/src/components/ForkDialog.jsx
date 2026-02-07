@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Loader2, GitFork } from 'lucide-react'
 import { getApiBase } from '../services/backendDetection'
 import { apiFetch } from '../services/apiClient'
+import { validateSlug, sanitizeSlug } from '../lib/slugUtils'
 
 /**
  * Fork-to-edit modal for built-in projects.
@@ -17,7 +18,8 @@ export default function ForkDialog({ slug, projectName, onClose, onForked }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const isValid = /^[a-z0-9][a-z0-9_-]{1,48}[a-z0-9]$/.test(newSlug)
+  const slugError = validateSlug(newSlug)
+  const isValid = !slugError
 
   const handleFork = async () => {
     if (!isValid || loading) return
@@ -57,7 +59,7 @@ export default function ForkDialog({ slug, projectName, onClose, onForked }) {
           id="fork-slug"
           type="text"
           value={newSlug}
-          onChange={e => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+          onChange={e => setNewSlug(sanitizeSlug(e.target.value))}
           className="w-full px-3 py-2 text-sm rounded border border-border bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mb-1"
           placeholder="my-project-name"
         />

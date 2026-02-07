@@ -23,7 +23,8 @@ services:
       - FLASK_DEBUG=false
       - PORT=5000
       - PROJECTS_DIR=/app/projects
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:4321
+      # Covers studio (5173 dev / 3000 docker), landing (4321), and additional dev ports
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:4321
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
       - JANUA_AUDIENCE=${JANUA_AUDIENCE:-yantra4d}
       - AUTH_ENABLED=${AUTH_ENABLED:-true}

@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button'
 import { GitBranch, GitCommit, ArrowUp, ArrowDown, RefreshCw, Loader2, Check, Link } from 'lucide-react'
 import { getStatus, getDiff, commit, push, pull, connectRemote } from '../services/gitService'
 
+const SUCCESS_TOAST_DURATION_MS = 2000
+
 /**
  * Git panel: status, diff, commit, push, pull for GitHub-imported projects.
  */
@@ -69,7 +71,7 @@ export default function GitPanel({ slug }) {
       await commit(slug, commitMsg.trim(), selectedFiles)
       setCommitMsg('')
       setSuccess('Committed')
-      setTimeout(() => setSuccess(null), 2000)
+      setTimeout(() => setSuccess(null), SUCCESS_TOAST_DURATION_MS)
       refresh()
     } catch (e) {
       setError(e.message)
@@ -83,7 +85,7 @@ export default function GitPanel({ slug }) {
     try {
       await push(slug)
       setSuccess('Pushed')
-      setTimeout(() => setSuccess(null), 2000)
+      setTimeout(() => setSuccess(null), SUCCESS_TOAST_DURATION_MS)
       refresh()
     } catch (e) {
       setError(e.message)
@@ -97,7 +99,7 @@ export default function GitPanel({ slug }) {
     try {
       await pull(slug)
       setSuccess('Pulled')
-      setTimeout(() => setSuccess(null), 2000)
+      setTimeout(() => setSuccess(null), SUCCESS_TOAST_DURATION_MS)
       refresh()
     } catch (e) {
       setError(e.message)
@@ -115,7 +117,7 @@ export default function GitPanel({ slug }) {
       await connectRemote(slug, remoteUrl.trim())
       setSuccess('Remote connected')
       setRemoteUrl('')
-      setTimeout(() => setSuccess(null), 2000)
+      setTimeout(() => setSuccess(null), SUCCESS_TOAST_DURATION_MS)
       refresh()
     } catch (e) {
       setError(e.message)
@@ -218,7 +220,7 @@ export default function GitPanel({ slug }) {
 
       {/* Changed files */}
       {allChanged.length > 0 && (
-        <div className="max-h-28 overflow-y-auto">
+        <div className="max-h-48 overflow-y-auto">
           {allChanged.map(file => (
             <label key={file} className="flex items-center gap-2 px-3 py-0.5 text-xs hover:bg-muted cursor-pointer">
               <input

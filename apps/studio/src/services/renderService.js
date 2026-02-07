@@ -92,7 +92,10 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
     if (abortSignal?.aborted) throw new DOMException('Aborted', 'AbortError')
     const partId = modeConfig.parts[i]
     const partDef = manifest.parts.find(p => p.id === partId)
-    if (!partDef) continue
+    if (!partDef) {
+      console.warn(`Part definition not found for: ${partId}`)
+      continue
+    }
 
     const basePercent = Math.round((i / totalParts) * 100)
     onProgress?.({

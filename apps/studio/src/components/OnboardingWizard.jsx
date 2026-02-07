@@ -17,6 +17,7 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showRawJson, setShowRawJson] = useState(false)
+  const [jsonError, setJsonError] = useState(null)
 
   const handleFileDrop = useCallback((e) => {
     e.preventDefault()
@@ -44,6 +45,9 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
         throw new Error(data.error || `HTTP ${res.status}`)
       }
       const data = await res.json()
+      if (!data.manifest?.project || !data.manifest?.modes) {
+        throw new Error('Server returned an incomplete manifest (missing project or modes)')
+      }
       setAnalysis(data.analysis)
       setManifest(data.manifest)
       setWarnings(data.warnings || [])
@@ -234,15 +238,20 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
                 value={JSON.stringify(manifest, null, 2)}
                 onChange={(e) => {
                   try {
-                    setManifest(JSON.parse(e.target.value))
-                    setError(null)
-                  } catch {
-                    setError(t("onboard.invalid_json"))
+                    const parsed = JSON.parse(e.target.value)
+                    setManifest(parsed)
+                    setJsonError(null)
+                  } catch (err) {
+                    setJsonError(`Invalid JSON: ${err.message}`)
                   }
                 }}
                 rows={20}
-                className="w-full mt-1 px-3 py-2 rounded-md border border-border bg-background font-mono text-xs"
+                className={`w-full mt-1 px-3 py-2 rounded-md border bg-background font-mono text-xs ${jsonError ? 'border-destructive' : 'border-border'}`}
+                aria-invalid={!!jsonError}
               />
+              {jsonError && (
+                <p className="text-xs text-destructive mt-1">{jsonError}</p>
+              )}
             </div>
           ) : (
             <div className="flex flex-col gap-4">

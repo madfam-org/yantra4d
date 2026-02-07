@@ -8,6 +8,7 @@ from flask import Blueprint, request, jsonify, Response
 
 from config import Config
 from extensions import limiter
+import rate_limits
 from middleware.auth import require_tier
 from services.route_helpers import error_response, require_json_body
 from services.tier_service import resolve_tier, get_tier_limits
@@ -30,7 +31,7 @@ def _get_ai_rate_limit() -> str:
 
 @ai_bp.route("/api/ai/session", methods=["POST"])
 @require_tier("basic")
-@limiter.limit("30/hour")
+@limiter.limit(rate_limits.AI_SESSION)
 @require_json_body
 def create_ai_session():
     """Create a new AI chat session."""
@@ -70,6 +71,8 @@ def chat_stream():
 
     if not session_id or not message:
         return error_response("session_id and message are required", 400)
+    if len(message) > 5000:
+        return error_response("Message must be 5000 characters or less", 400)
 
     session = get_session(session_id)
     if not session:

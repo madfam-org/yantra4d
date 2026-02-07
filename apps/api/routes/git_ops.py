@@ -9,6 +9,7 @@ from flask import Blueprint, request, jsonify
 
 from config import Config
 from extensions import limiter
+import rate_limits
 from middleware.auth import require_tier
 from services.route_helpers import error_response, require_json_body
 from services.git_operations import git_status, git_diff, git_commit, git_push, git_pull
@@ -71,7 +72,7 @@ GITHUB_URL_PATTERN = re.compile(r"^https://github\.com/[\w.-]+/[\w.-]+(\.git)?$"
 
 @git_ops_bp.route("/api/projects/<slug>/git/connect-remote", methods=["POST"])
 @require_tier("pro")
-@limiter.limit("10/hour")
+@limiter.limit(rate_limits.GIT_CONNECT)
 @require_json_body
 def connect_remote(slug):
     """Add or update origin remote URL and update project metadata."""
@@ -118,7 +119,7 @@ def connect_remote(slug):
 
 @git_ops_bp.route("/api/projects/<slug>/git/status", methods=["GET"])
 @require_tier("pro")
-@limiter.limit("60/hour")
+@limiter.limit(rate_limits.GIT_STATUS)
 def get_status(slug):
     """Get git working tree status."""
     project_dir, err = _get_git_project(slug)
@@ -133,7 +134,7 @@ def get_status(slug):
 
 @git_ops_bp.route("/api/projects/<slug>/git/diff", methods=["GET"])
 @require_tier("pro")
-@limiter.limit("60/hour")
+@limiter.limit(rate_limits.GIT_DIFF)
 def get_diff(slug):
     """Get unified diff for working tree or a specific file."""
     project_dir, err = _get_git_project(slug)
@@ -149,7 +150,7 @@ def get_diff(slug):
 
 @git_ops_bp.route("/api/projects/<slug>/git/commit", methods=["POST"])
 @require_tier("pro")
-@limiter.limit("30/hour")
+@limiter.limit(rate_limits.GIT_COMMIT)
 @require_json_body
 def commit(slug):
     """Stage files and commit."""
@@ -163,6 +164,8 @@ def commit(slug):
 
     if not message:
         return error_response("message is required", 400)
+    if len(message) > 1000:
+        return error_response("Commit message must be 1000 characters or less", 400)
     if not files:
         return error_response("files list is required", 400)
 
@@ -179,7 +182,7 @@ def commit(slug):
 
 @git_ops_bp.route("/api/projects/<slug>/git/push", methods=["POST"])
 @require_tier("pro")
-@limiter.limit("20/hour")
+@limiter.limit(rate_limits.GIT_PUSH)
 def push(slug):
     """Push commits to origin."""
     project_dir, err = _get_github_project(slug)
@@ -199,7 +202,7 @@ def push(slug):
 
 @git_ops_bp.route("/api/projects/<slug>/git/pull", methods=["POST"])
 @require_tier("pro")
-@limiter.limit("20/hour")
+@limiter.limit(rate_limits.GIT_PULL)
 def pull(slug):
     """Pull latest from origin."""
     project_dir, err = _get_github_project(slug)

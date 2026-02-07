@@ -16,6 +16,7 @@ from flask import Blueprint, jsonify, send_from_directory, abort, request, make_
 
 from config import Config
 from extensions import limiter
+import rate_limits
 from manifest import discover_projects, get_manifest, _manifest_cache
 from middleware.auth import optional_auth, require_tier
 from services.route_helpers import error_response
@@ -132,7 +133,7 @@ def serve_static_part(slug, filename):
 
 @projects_bp.route('/api/projects/<slug>/fork', methods=['POST'])
 @require_tier("pro")
-@limiter.limit("10/hour")
+@limiter.limit(rate_limits.PROJECT_FORK)
 def fork_project(slug):
     """Fork a project: copy files to a new slug owned by the user."""
     src_dir = Config.PROJECTS_DIR / slug

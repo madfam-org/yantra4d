@@ -13,6 +13,7 @@ import os
 from flask import Blueprint, request, jsonify, Response
 
 from config import Config
+from services.route_helpers import error_response
 
 bom_bp = Blueprint("bom", __name__)
 logger = logging.getLogger(__name__)
@@ -77,15 +78,15 @@ def _load_manifest(slug: str):
 
 
 @bom_bp.route("/api/projects/<slug>/bom", methods=["GET"])
-def get_bom(slug: str):
+def get_bom(slug: str) -> Response | tuple[Response, int]:
     """Return BOM as JSON or CSV based on Accept header / format query param."""
     manifest = _load_manifest(slug)
     if not manifest:
-        return jsonify({"error": "Project not found"}), 404
+        return error_response("Project not found", 404)
 
     hardware = (manifest.get("bom") or {}).get("hardware")
     if not hardware:
-        return jsonify({"error": "No BOM defined for this project"}), 404
+        return error_response("No BOM defined for this project", 404)
 
     # Get parameter values from query string
     params = {}

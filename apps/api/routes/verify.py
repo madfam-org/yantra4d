@@ -11,6 +11,7 @@ from flask import Blueprint, request, jsonify
 
 from config import Config
 from extensions import limiter
+import rate_limits
 from manifest import get_manifest, resolve_part_config
 from middleware.auth import require_auth
 from services.route_helpers import safe_join_path
@@ -25,7 +26,7 @@ VERIFY_SCRIPT = str(Config.VERIFY_SCRIPT)
 
 @verify_bp.route('/api/verify', methods=['POST'])
 @require_auth
-@limiter.limit("50/hour")
+@limiter.limit(rate_limits.VERIFY)
 def verify_design():
     """Run verification on rendered STL parts for the current mode."""
     data = request.json or {}

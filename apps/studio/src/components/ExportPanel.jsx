@@ -65,7 +65,7 @@ export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad
           onClick={onDownloadStl}
           disabled={disabled}
           className="w-full gap-2"
-          title={t("tooltip.download")}
+          title={disabled ? "Render model first" : t("tooltip.download")}
         >
           <Download className="h-4 w-4" />
           {t("act.download_stl")}{isZip ? ' (ZIP)' : ''}
@@ -86,6 +86,7 @@ export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad
           onClick={onDownloadScad}
           disabled={disabled}
           className="w-full gap-2"
+          title={disabled ? "Render model first" : undefined}
         >
           <FileCode className="h-4 w-4" />
           {t("act.download_scad")}
@@ -95,7 +96,7 @@ export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad
       <div className="text-xs text-muted-foreground mb-1">{t("act.export_img")}</div>
       <div className="grid grid-cols-2 gap-2">
         {cameraViews.map(view => (
-          <Button key={view.id} variant="outline" size="sm" className="min-h-[44px]" onClick={() => onExportImage(view.id)} disabled={disabled}>
+          <Button key={view.id} variant="outline" size="sm" className="min-h-[44px]" onClick={() => onExportImage(view.id)} disabled={disabled} title={disabled ? "Render model first" : undefined}>
             {getLabel(view, 'label', language)}
           </Button>
         ))}
@@ -107,6 +108,7 @@ export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad
         onClick={onExportAllViews}
         disabled={disabled}
         className="w-full min-h-[44px]"
+        title={disabled ? "Render model first" : undefined}
       >
         {t("act.export_all")}
       </Button>

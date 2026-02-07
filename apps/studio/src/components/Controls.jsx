@@ -8,6 +8,9 @@ import { useManifest } from "../contexts/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Star } from 'lucide-react'
 
+const MAX_TICK_MARK_STEPS = 30
+const DEFAULT_TEXT_MAX_LENGTH = 255
+
 function ColorGradientControl({ param, value, onChange, getLabel, language }) {
     const current = value || { start: '#ff0000', end: '#0000ff' }
     const handleChange = (key, hex) => {
@@ -95,7 +98,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, t }) 
                     />
                 ) : (
                     <span
-                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60"
+                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded-sm"
                         onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
                         role="button"
                         tabIndex={0}
@@ -116,7 +119,7 @@ function SliderControl({ param, value, onSliderChange, getLabel, language, t }) 
             <div className="relative w-full h-4 -mt-1" aria-hidden="true">
                 {(() => {
                     const stepCount = Math.round((param.max - param.min) / param.step) + 1
-                    const showTicks = stepCount <= 30
+                    const showTicks = stepCount <= MAX_TICK_MARK_STEPS
                     const starValue = param.star ?? param.default
                     const starPct = ((starValue - param.min) / (param.max - param.min)) * 100
 
@@ -197,6 +200,8 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
     const partColors = getPartColors(mode)
 
+    const hasNoParameters = parametersForMode.length === 0
+
     const isParentUnchecked = (param) => {
         if (!param.parent) return false
         return params[param.parent] === false
@@ -208,6 +213,10 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
     return (
         <div className="flex flex-col gap-6">
+            {hasNoParameters && presets.length === 0 && partColors.length === 0 && (
+                <p className="text-sm text-muted-foreground px-4 py-6 text-center">No parameters available for this mode.</p>
+            )}
+
             {/* Size Presets */}
             {presets.length > 0 && (
                 <div className="flex gap-2">
@@ -267,7 +276,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             <input
                                 id={`text-${param.id}`}
                                 type="text"
-                                maxLength={param.maxlength || 255}
+                                maxLength={param.maxlength || DEFAULT_TEXT_MAX_LENGTH}
                                 className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 value={params[param.id] ?? ''}
                                 onChange={(e) => setParams(prev => ({ ...prev, [param.id]: e.target.value }))}
@@ -326,6 +335,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             type="button"
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                             onClick={() => setVisibilityLevel(prev => prev === 'basic' ? 'advanced' : 'basic')}
+                            aria-pressed={visibilityLevel !== 'basic'}
                         >
                             {(() => {
                                 const visGroup = manifest.parameter_groups?.find(g => g.id === 'visibility')

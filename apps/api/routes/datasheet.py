@@ -3,6 +3,7 @@ Datasheet Blueprint
 Handles /api/projects/<slug>/datasheet endpoint for PDF generation.
 Uses reportlab if available, falls back to HTML.
 """
+import html
 import io
 import json
 import logging
@@ -11,6 +12,7 @@ import os
 from flask import Blueprint, request, jsonify, Response
 
 from config import Config
+from services.route_helpers import error_response
 
 datasheet_bp = Blueprint("datasheet", __name__)
 logger = logging.getLogger(__name__)
@@ -116,38 +118,42 @@ def _generate_pdf(manifest: dict, params: dict, lang: str = "en") -> bytes:
 
 def _generate_html(manifest: dict, params: dict, lang: str = "en") -> str:
     """Generate a simple HTML datasheet as fallback."""
+    esc = html.escape
     project = manifest.get("project", {})
-    html = f"<html><head><title>{project.get('name', '')} Datasheet</title></head><body>"
-    html += f"<h1>{project.get('name', '')} — Datasheet</h1>"
+    name = esc(str(project.get("name", "")))
+    out = f"<html><head><title>{name} Datasheet</title></head><body>"
+    out += f"<h1>{name} — Datasheet</h1>"
 
     if project.get("description"):
-        html += f"<p>{project['description']}</p>"
+        out += f"<p>{esc(str(project['description']))}</p>"
 
-    html += "<h2>Parameters</h2><table border='1' cellpadding='4'><tr><th>Parameter</th><th>Value</th></tr>"
+    out += "<h2>Parameters</h2><table border='1' cellpadding='4'><tr><th>Parameter</th><th>Value</th></tr>"
     for p in manifest.get("parameters", []):
-        label = _get_label(p, "label", lang)
-        value = params.get(p["id"], p.get("default", ""))
-        html += f"<tr><td>{label}</td><td>{value}</td></tr>"
-    html += "</table>"
+        label = esc(str(_get_label(p, "label", lang)))
+        value = esc(str(params.get(p["id"], p.get("default", ""))))
+        out += f"<tr><td>{label}</td><td>{value}</td></tr>"
+    out += "</table>"
 
     hardware = (manifest.get("bom") or {}).get("hardware")
     if hardware:
-        html += "<h2>Bill of Materials</h2><table border='1' cellpadding='4'><tr><th>Item</th><th>Qty</th><th>Unit</th></tr>"
+        out += "<h2>Bill of Materials</h2><table border='1' cellpadding='4'><tr><th>Item</th><th>Qty</th><th>Unit</th></tr>"
         for item in hardware:
-            label = _get_label(item, "label", lang)
-            html += f"<tr><td>{label}</td><td>{item.get('quantity_formula', '')}</td><td>{item.get('unit', 'pcs')}</td></tr>"
-        html += "</table>"
+            label = esc(str(_get_label(item, "label", lang)))
+            qty = esc(str(item.get("quantity_formula", "")))
+            unit = esc(str(item.get("unit", "pcs")))
+            out += f"<tr><td>{label}</td><td>{qty}</td><td>{unit}</td></tr>"
+        out += "</table>"
 
-    html += "</body></html>"
-    return html
+    out += "</body></html>"
+    return out
 
 
 @datasheet_bp.route("/api/projects/<slug>/datasheet", methods=["GET"])
-def generate_datasheet(slug: str):
+def generate_datasheet(slug: str) -> Response | tuple[Response, int]:
     """Generate a project datasheet as PDF (if reportlab available) or HTML."""
     manifest = _load_manifest(slug)
     if not manifest:
-        return jsonify({"error": "Project not found"}), 404
+        return error_response("Project not found", 404)
 
     lang = request.args.get("lang", "en")
     params = {}

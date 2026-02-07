@@ -10,7 +10,7 @@ import sqlite3
 import time
 from contextlib import contextmanager
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
 
 from config import Config
 
@@ -50,7 +50,7 @@ _init_db()
 
 
 @analytics_bp.route("/api/analytics/track", methods=["POST"])
-def track_event():
+def track_event() -> tuple[Response, int]:
     """Record an analytics event. No PII collected."""
     data = request.get_json(silent=True) or {}
     project = data.get("project", "unknown")
@@ -58,11 +58,22 @@ def track_event():
     event_data = data.get("data")
 
     if not event_type:
-        return jsonify({"error": "Missing event type"}), 400
+        return jsonify({"status": "error", "error": "Missing event type"}), 400
 
     allowed_events = {"render", "export", "preset_apply", "mode_switch", "share", "verify"}
     if event_type not in allowed_events:
-        return jsonify({"error": f"Unknown event type: {event_type}"}), 400
+        return jsonify({"status": "error", "error": f"Unknown event type: {event_type}"}), 400
+
+    # Sanitize event_data: whitelist known keys, limit size
+    ALLOWED_DATA_KEYS = {"mode", "preset", "format", "parts", "project", "duration_ms", "params"}
+    if event_data:
+        if not isinstance(event_data, dict):
+            return jsonify({"status": "error", "error": "event data must be an object"}), 400
+        event_data = {k: v for k, v in event_data.items() if k in ALLOWED_DATA_KEYS}
+        # Ensure string values are bounded
+        for k, v in event_data.items():
+            if isinstance(v, str) and len(v) > 200:
+                event_data[k] = v[:200]
 
     with get_db() as conn:
         conn.execute(
@@ -74,7 +85,7 @@ def track_event():
 
 
 @analytics_bp.route("/api/analytics/<slug>/summary", methods=["GET"])
-def get_summary(slug: str):
+def get_summary(slug: str) -> Response:
     """Return aggregate analytics for a project."""
     days = int(request.args.get("days", 30))
     since = time.time() - (days * 86400)

@@ -10,8 +10,8 @@ import threading
 import time
 from collections import OrderedDict
 
-DEFAULT_TTL = 3600  # 1 hour
-DEFAULT_MAX_ENTRIES = 200
+DEFAULT_TTL = int(os.getenv("RENDER_CACHE_TTL", "3600"))
+DEFAULT_MAX_ENTRIES = int(os.getenv("RENDER_CACHE_MAX_ENTRIES", "200"))
 
 
 class RenderCache:

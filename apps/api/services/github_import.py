@@ -69,7 +69,9 @@ def clone_repo(repo_url: str, dest: Path, github_token: str | None = None, shall
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
         if result.returncode != 0:
-            logger.error("git clone failed: %s", result.stderr)
+            import re
+            safe_stderr = re.sub(r"https://[^@]+@", "https://***@", result.stderr)
+            logger.error("git clone failed: %s", safe_stderr)
             return False
 
         # If token was used, reset remote to clean URL (no credentials)
@@ -220,6 +222,7 @@ def sync_repo(slug: str, github_token: str | None = None) -> dict:
         return {"success": True, "updated_files": ["(pulled from remote)"]}
 
     # Legacy: re-clone approach for old imports without .git
+    logger.warning("Using legacy re-clone sync for project '%s'. Consider re-importing with git support.", slug)
     import shutil
     with tempfile.TemporaryDirectory(prefix="yantra4d_sync_") as tmpdir:
         dest = Path(tmpdir) / "repo"

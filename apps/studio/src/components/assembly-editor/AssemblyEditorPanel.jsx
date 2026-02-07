@@ -7,6 +7,8 @@ import PartVisibilityPicker from './PartVisibilityPicker'
 import CameraCaptureButton from './CameraCaptureButton'
 import AssemblyEditorToolbar from './AssemblyEditorToolbar'
 
+const ASSEMBLY_STEP_DELAY_MS = 2000
+
 export default function AssemblyEditorPanel({ onStepChange, onClose, viewerRef, projectSlug }) {
   const { manifest } = useManifest()
   const { language } = useLanguage()
@@ -74,7 +76,7 @@ export default function AssemblyEditorPanel({ onStepChange, onClose, viewerRef, 
             if (i >= steps.length) return
             editor.selectStep(i)
             i++
-            if (i < steps.length) setTimeout(play, 2000)
+            if (i < steps.length) setTimeout(play, ASSEMBLY_STEP_DELAY_MS)
           }
           play()
         }}

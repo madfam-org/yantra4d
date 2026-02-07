@@ -1,6 +1,17 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react'
 import Editor from '@monaco-editor/react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog'
 import { FileCode, Plus, X, Loader2, Sparkles } from 'lucide-react'
 
 const AiChatPanel = lazy(() => import('./AiChatPanel'))
@@ -21,6 +32,8 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
   const [aiOpen, setAiOpen] = useState(false)
+  const [showNewFileDialog, setShowNewFileDialog] = useState(false)
+  const [newFileName, setNewFileName] = useState('')
   const editorRef = useRef(null)
   const monacoRef = useRef(null)
 
@@ -103,8 +116,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
     return () => window.removeEventListener('keydown', handler)
   }, [handleSave])
 
-  const handleNewFile = useCallback(async () => {
-    const name = prompt('New file name (e.g. part.scad):')
+  const handleNewFile = useCallback(async (name) => {
     if (!name || !name.endsWith('.scad')) return
     try {
       await createFile(slug, name)
@@ -115,6 +127,15 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
       setError(e.message)
     }
   }, [slug, openFile])
+
+  const handleNewFileConfirm = useCallback(() => {
+    const name = newFileName.trim()
+    if (!name) return
+    const finalName = name.endsWith('.scad') ? name : `${name}.scad`
+    setShowNewFileDialog(false)
+    setNewFileName('')
+    handleNewFile(finalName)
+  }, [newFileName, handleNewFile])
 
   const handleDeleteFile = useCallback(async (path, e) => {
     if (e) e.stopPropagation()
@@ -168,7 +189,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
       <div className="flex-none border-b border-border">
         <div className="flex items-center justify-between px-3 py-1.5">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Files</span>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleNewFile} title="New file">
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setNewFileName(''); setShowNewFileDialog(true) }} title="New file">
             <Plus className="h-3.5 w-3.5" />
             <span className="sr-only">New file</span>
           </Button>
@@ -289,6 +310,29 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
           </Suspense>
         </div>
       )}
+
+      {/* New file dialog */}
+      <AlertDialog open={showNewFileDialog} onOpenChange={setShowNewFileDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>New SCAD File</AlertDialogTitle>
+            <AlertDialogDescription>
+              Enter a name for the new file. It will be created with a .scad extension.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            value={newFileName}
+            onChange={e => setNewFileName(e.target.value)}
+            placeholder="e.g. part.scad"
+            onKeyDown={e => { if (e.key === 'Enter') handleNewFileConfirm() }}
+            autoFocus
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setShowNewFileDialog(false); setNewFileName('') }}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleNewFileConfirm} disabled={!newFileName.trim()}>Create</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

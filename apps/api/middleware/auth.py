@@ -14,6 +14,9 @@ from services.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
+JWKS_CACHE_LIFESPAN = 3600  # seconds
+JWT_ALGORITHMS = ["RS256", "ES256"]
+
 # Lazy-initialized JWKS client (created on first use)
 _jwk_client = None
 
@@ -21,7 +24,7 @@ _jwk_client = None
 def _get_jwk_client():
     global _jwk_client
     if _jwk_client is None:
-        _jwk_client = PyJWKClient(Config.JANUA_JWKS_URL, cache_keys=True, lifespan=3600)
+        _jwk_client = PyJWKClient(Config.JANUA_JWKS_URL, cache_keys=True, lifespan=JWKS_CACHE_LIFESPAN)
     return _jwk_client
 
 
@@ -36,7 +39,7 @@ def decode_token(token: str) -> dict:
     claims = jwt.decode(
         token,
         signing_key.key,
-        algorithms=["RS256", "ES256"],
+        algorithms=JWT_ALGORITHMS,
         issuer=Config.JANUA_ISSUER,
         audience=Config.JANUA_AUDIENCE,
         options={"require": ["exp", "iss", "sub"]},
@@ -67,7 +70,7 @@ def require_auth(f):
         try:
             claims = decode_token(token)
         except Exception as e:
-            logger.debug("JWT validation failed: %s", e)
+            logger.warning("JWT validation failed: %s", e)
             return error_response("Invalid or expired token", 401)
 
         request.auth_claims = claims

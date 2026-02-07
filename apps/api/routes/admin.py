@@ -4,7 +4,7 @@ Provides /api/admin/* endpoints for project management and monitoring.
 """
 import os
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, Response
 
 from config import Config
 from manifest import discover_projects, get_manifest
@@ -48,7 +48,7 @@ def _enrich_project(proj):
 
 @admin_bp.route('/api/admin/projects', methods=['GET'])
 @require_role("admin")
-def admin_list_projects():
+def admin_list_projects() -> Response:
     """Return enriched list of all projects."""
     projects = discover_projects()
     enriched = [_enrich_project(p) for p in projects]
@@ -57,7 +57,7 @@ def admin_list_projects():
 
 @admin_bp.route('/api/admin/projects/<slug>', methods=['GET'])
 @require_role("admin")
-def admin_project_detail(slug):
+def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
     """Return detailed info for a single project."""
     project_dir = Config.PROJECTS_DIR / slug
     manifest_path = project_dir / "project.json"

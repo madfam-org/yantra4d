@@ -112,6 +112,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
     loading,
     progress,
     progressPhase,
+    /** Look up cached render result by cache key. Returns part array or undefined. */
     checkCache: (key) => partsCacheRef.current[key],
     showConfirmDialog,
     pendingEstimate,

@@ -14,6 +14,8 @@ from manifest import get_manifest
 
 logger = logging.getLogger(__name__)
 
+RENDER_TIMEOUT_S = 300
+
 
 def _openscad_env():
     """Return environment with OPENSCADPATH set for library resolution."""
@@ -92,11 +94,11 @@ def validate_params(params: dict) -> dict:
             cleaned[key] = num_val
         elif param_type == "text":
             str_val = str(value)
-            if not re.match(r'^[a-zA-Z0-9 _.!?-]*$', str_val):
-                logger.warning(f"Rejecting unsafe text value for {key}: {value}")
+            if not re.match(r'^[a-zA-Z0-9 _.-]*$', str_val):
+                logger.warning(f"Rejecting unsafe text value for {key}")
                 continue
-            maxlen = defn.get("maxlength")
-            if maxlen and len(str_val) > maxlen:
+            maxlen = defn.get("maxlength", 255)
+            if len(str_val) > maxlen:
                 str_val = str_val[:maxlen]
             cleaned[key] = str_val
         elif param_type == "checkbox":
@@ -153,15 +155,36 @@ def build_openscad_command(output_path: str, scad_path: str, params: dict, mode_
     return cmd
 
 
+def _sanitize_cmd_for_log(cmd: list) -> str:
+    """Redact -D parameter values from command for safe logging."""
+    sanitized = []
+    skip_next = False
+    for i, arg in enumerate(cmd):
+        if skip_next:
+            # Redact the value part after '=' in -D args
+            if "=" in arg:
+                key = arg.split("=", 1)[0]
+                sanitized.append(f"{key}=<redacted>")
+            else:
+                sanitized.append("<redacted>")
+            skip_next = False
+        elif arg == "-D":
+            sanitized.append(arg)
+            skip_next = True
+        else:
+            sanitized.append(arg)
+    return " ".join(sanitized)
+
+
 def run_render(cmd: list) -> tuple[bool, str]:
     """Execute OpenSCAD render synchronously. Returns (success, stderr)."""
-    logger.info(f"Running OpenSCAD: {' '.join(cmd)}")
+    logger.info(f"Running OpenSCAD: {_sanitize_cmd_for_log(cmd)}")
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=300, env=_openscad_env())
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=RENDER_TIMEOUT_S, env=_openscad_env())
         return True, result.stderr
     except subprocess.TimeoutExpired:
-        logger.error("OpenSCAD render timed out after 300s")
-        return False, "Render timed out after 300 seconds"
+        logger.error("OpenSCAD render timed out after %ds", RENDER_TIMEOUT_S)
+        return False, f"Render timed out after {RENDER_TIMEOUT_S} seconds"
     except subprocess.CalledProcessError as e:
         logger.error(f"OpenSCAD failed: {e.stderr}")
         return False, e.stderr
@@ -190,8 +213,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
     with _process_lock:
         _active_process = process
 
-    # Kill process if it exceeds the timeout (matches run_render's 300s limit)
-    kill_timer = threading.Timer(300, lambda: process.kill())
+    kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
     kill_timer.start()
 
     try:

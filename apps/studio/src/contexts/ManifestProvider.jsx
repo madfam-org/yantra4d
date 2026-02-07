@@ -4,6 +4,7 @@ import { getApiBase } from "../services/backendDetection"
 
 const ManifestContext = createContext()
 
+const PROJECTS_FETCH_TIMEOUT_MS = 2000
 
 export function ManifestProvider({ children }) {
   const [manifest, setManifest] = useState(fallbackManifest)
@@ -13,7 +14,7 @@ export function ManifestProvider({ children }) {
 
   // Fetch projects list on mount
   useEffect(() => {
-    fetch(`${getApiBase()}/api/projects`, { signal: AbortSignal.timeout(2000) })
+    fetch(`${getApiBase()}/api/projects`, { signal: AbortSignal.timeout(PROJECTS_FETCH_TIMEOUT_MS) })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()

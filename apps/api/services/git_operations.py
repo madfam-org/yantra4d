@@ -13,15 +13,25 @@ logger = logging.getLogger(__name__)
 GIT_TIMEOUT = 60
 
 
+def _sanitize_git_output(text: str) -> str:
+    """Strip embedded credentials from git output before logging."""
+    import re
+    return re.sub(r"https://[^@]+@", "https://***@", text)
+
+
 def _run_git(project_dir: Path, args: list[str], timeout: int = GIT_TIMEOUT) -> subprocess.CompletedProcess:
     """Run a git command in the project directory."""
-    return subprocess.run(
-        ["git"] + args,
-        cwd=str(project_dir),
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-    )
+    try:
+        return subprocess.run(
+            ["git"] + args,
+            cwd=str(project_dir),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        logger.warning("Git command timed out after %ds: %s", timeout, " ".join(args[:2]))
+        raise
 
 
 def _get_remote_url(project_dir: Path) -> str | None:
@@ -184,7 +194,7 @@ def git_push(project_dir: Path, github_token: str) -> dict:
 
         result = _run_git(project_dir, ["push", "origin", "HEAD"])
         if result.returncode != 0:
-            return {"success": False, "error": f"git push failed: {result.stderr.strip()}"}
+            return {"success": False, "error": f"git push failed: {_sanitize_git_output(result.stderr.strip())}"}
         return {"success": True}
     finally:
         # Always restore clean URL
@@ -203,7 +213,7 @@ def git_pull(project_dir: Path, github_token: str) -> dict:
 
         result = _run_git(project_dir, ["pull", "--ff-only", "origin"])
         if result.returncode != 0:
-            return {"success": False, "error": f"git pull failed: {result.stderr.strip()}"}
+            return {"success": False, "error": f"git pull failed: {_sanitize_git_output(result.stderr.strip())}"}
         return {"success": True}
     finally:
         _run_git(project_dir, ["remote", "set-url", "origin", original_url], timeout=10)

@@ -8,10 +8,12 @@ from flask import Blueprint, request, jsonify
 
 from config import Config
 from extensions import limiter
+import rate_limits
 from middleware.auth import require_tier
 from services.route_helpers import error_response, require_json_body
 from services.github_import import validate_repo, import_repo, sync_repo
 from services.github_token import get_github_token
+from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ def _get_token():
 
 @github_bp.route("/api/github/validate", methods=["POST"])
 @require_tier("pro")
-@limiter.limit("30/hour")
+@limiter.limit(rate_limits.GITHUB_VALIDATE)
 @require_json_body
 def validate_github_repo():
     """Validate a GitHub repo URL and return detected SCAD files."""
@@ -47,7 +49,7 @@ def validate_github_repo():
 
 @github_bp.route("/api/github/import", methods=["POST"])
 @require_tier("pro")
-@limiter.limit("10/hour")
+@limiter.limit(rate_limits.GITHUB_IMPORT)
 @require_json_body
 def import_github_repo():
     """Import a GitHub repo as a new Yantra4D project."""
@@ -61,10 +63,9 @@ def import_github_repo():
 
     if not repo_url:
         return error_response("repo_url is required", 400)
-    if not slug:
-        return error_response("slug is required", 400)
-    if not re.match(r"^[a-z0-9][a-z0-9-_]*$", slug):
-        return error_response("Invalid slug format", 400)
+    slug_err = validate_project_slug(slug)
+    if slug_err:
+        return error_response(slug_err, 400)
     if not manifest or not isinstance(manifest, dict):
         return error_response("manifest is required", 400)
 
@@ -77,7 +78,7 @@ def import_github_repo():
 
 @github_bp.route("/api/github/sync", methods=["POST"])
 @require_tier("madfam")
-@limiter.limit("20/hour")
+@limiter.limit(rate_limits.GITHUB_SYNC)
 @require_json_body
 def sync_github_repo():
     """Sync an imported project with its GitHub source."""

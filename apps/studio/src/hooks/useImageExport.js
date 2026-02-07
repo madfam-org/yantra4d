@@ -26,7 +26,13 @@ export function useImageExport({ viewerRef, projectSlug, mode, parts, setLogs, t
         viewerRef.current.setCameraView(view)
         await new Promise(r => setTimeout(r, SCREENSHOT_DELAY_MS))
         const dataUrl = viewerRef.current.captureSnapshot()
-        const data = atob(dataUrl.split(',')[1])
+        let data
+        try {
+          data = atob(dataUrl.split(',')[1])
+        } catch (decodeErr) {
+          console.warn(`Failed to decode snapshot for view "${view}":`, decodeErr.message)
+          continue
+        }
         const arr = new Uint8Array(data.length)
         for (let i = 0; i < data.length; i++) arr[i] = data.charCodeAt(i)
         items.push({ filename: `${projectSlug}_${mode}_${view}.png`, data: arr })

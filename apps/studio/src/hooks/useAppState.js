@@ -10,11 +10,14 @@ import { useLocalStoragePersistence } from './useLocalStoragePersistence'
 import { useShareableUrl, getSharedParams } from './useShareableUrl'
 import { useUndoRedo } from './useUndoRedo'
 import { useConstraints } from './useConstraints'
+import { useHashNavigation, parseHash, buildHash } from './useHashNavigation'
+import { useKeyboardShortcuts } from './useKeyboardShortcuts'
 import { downloadFile, downloadZip } from '../lib/downloadUtils'
 import { verify } from '../services/verifyService'
 import { setTokenGetter } from '../services/apiClient'
 
 const RENDER_DEBOUNCE_MS = 500
+const TOAST_DURATION_MS = 2000
 
 function safeParse(key, fallback) {
   try {
@@ -26,43 +29,7 @@ function safeParse(key, fallback) {
   }
 }
 
-function isDemoView(hash) {
-  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-  return parts.length === 1 && parts[0] === 'demo'
-}
-
-function isProjectsView(hash) {
-  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-  return parts.length === 1 && (parts[0] === 'projects' || parts[0] === 'demo')
-}
-
-function parseHash(hash, presets, modes) {
-  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-  let presetId, modeId
-  if (parts.length >= 3) {
-    presetId = parts[1]
-    modeId = parts[2]
-  } else {
-    presetId = parts[0]
-    modeId = parts[1]
-  }
-  const preset = presets.find(p => p.id === presetId)
-  const mode = modes.find(m => m.id === modeId)
-  return {
-    preset: preset || presets[0] || null,
-    mode: mode || modes[0],
-  }
-}
-
-function buildHash(projectSlug, presetId, modeId) {
-  return `#/${projectSlug}/${presetId}/${modeId}`
-}
-
 export function useAppState() {
-  const [isDemo, setIsDemo] = useState(() => isDemoView(window.location.hash))
-  const [currentView, setCurrentView] = useState(() =>
-    isProjectsView(window.location.hash) ? 'projects' : 'studio'
-  )
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
   const { handleOAuthCallback: handleOAuth, getAccessToken } = useAuth()
@@ -76,10 +43,11 @@ export function useAppState() {
   const defaultParams = getDefaultParams()
   const defaultColors = getDefaultColors()
 
-  const initialHash = parseHash(window.location.hash, presets, manifest.modes)
+  const modes = manifest.modes
+  const initialHash = parseHash(window.location.hash, presets, modes)
   const initialPresetValues = initialHash.preset?.values || {}
 
-  const [mode, setModeState] = useState(() => initialHash.mode.id)
+  const [mode, setModeState] = useState(() => initialHash.mode?.id || (modes.length > 0 ? modes[0].id : null))
 
   const sharedParams = getSharedParams()
 
@@ -104,6 +72,9 @@ export function useAppState() {
   const [highlightedParts, setHighlightedParts] = useState([])
   const [visibleParts, setVisibleParts] = useState([])
   const [assemblyEditorOpen, setAssemblyEditorOpen] = useState(false)
+
+  const viewerRef = useRef(null)
+  const consoleRef = useRef(null)
 
   const handleHighlightParts = useCallback((parts) => {
     setHighlightedParts(parts || [])
@@ -136,12 +107,28 @@ export function useAppState() {
     const ok = await copyShareUrl()
     if (ok) {
       setShareToast(true)
-      setTimeout(() => setShareToast(false), 2000)
+      setTimeout(() => setShareToast(false), TOAST_DURATION_MS)
       toast.success(t('act.share_copied'))
     } else {
       toast.error(t('toast.share_failed'))
     }
   }, [copyShareUrl, t])
+
+  // Hash navigation (extracted hook)
+  const handleHashChange = useCallback((parsed) => {
+    if (parsed.mode) setModeState(parsed.mode.id)
+    if (parsed.preset) {
+      setActivePresetId(parsed.preset.id)
+      setParams(prev => ({ ...prev, ...parsed.preset.values }))
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const { currentView, isDemo } = useHashNavigation({
+    presets,
+    modes,
+    projectSlug,
+    onHashChange: handleHashChange,
+  })
 
   // Dynamic browser tab title
   useEffect(() => {
@@ -163,42 +150,9 @@ export function useAppState() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Set initial hash if missing or invalid
-  useEffect(() => {
-    const parsed = parseHash(window.location.hash, presets, manifest.modes)
-    const presetId = parsed.preset?.id || presets[0]?.id
-    const modeId = parsed.mode.id
-    if (presetId) {
-      window.location.hash = buildHash(projectSlug, presetId, modeId)
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Listen for browser back/forward
-  useEffect(() => {
-    const onHashChange = () => {
-      if (isDemoView(window.location.hash)) {
-        setIsDemo(true)
-        setCurrentView('projects')
-        return
-      }
-      if (isProjectsView(window.location.hash)) {
-        setCurrentView('projects')
-        return
-      }
-      setCurrentView('studio')
-      const parsed = parseHash(window.location.hash, presets, manifest.modes)
-      setModeState(parsed.mode.id)
-      if (parsed.preset) {
-        setActivePresetId(parsed.preset.id)
-        setParams(prev => ({ ...prev, ...parsed.preset.values }))
-      }
-    }
-    window.addEventListener('hashchange', onHashChange)
-    return () => window.removeEventListener('hashchange', onHashChange)
-  }, [presets, manifest.modes]) // eslint-disable-line react-hooks/exhaustive-deps
-
   const isGridMode = (modeId) => {
-    const m = manifest.modes.find(md => md.id === modeId)
+    if (!modes || modes.length === 0) return false
+    const m = modes.find(md => md.id === modeId)
     return m?.estimate?.formula === 'grid'
   }
 
@@ -218,9 +172,6 @@ export function useAppState() {
       window.location.hash = buildHash(projectSlug, presetId, newMode)
     }
   }, [activePresetId, presets, manifest, projectSlug]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const viewerRef = useRef(null)
-  const consoleRef = useRef(null)
 
   // Persistence
   useLocalStoragePersistence(`${projectSlug}-params`, params)
@@ -332,6 +283,7 @@ export function useAppState() {
 
   // Debounced auto-generate with cache check
   useEffect(() => {
+    if (!modes || modes.length === 0) return
     const visibilityParams = manifest.parameters.filter(
       p => p.group === 'visibility' && (p.visible_in_modes || []).includes(mode)
     )
@@ -352,34 +304,16 @@ export function useAppState() {
     return () => clearTimeout(timer)
   }, [params, mode, getCacheKey, manifest]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handler = (e) => {
-      const mod = e.metaKey || e.ctrlKey
-      if (mod && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault()
-        undoParams()
-        return
-      } else if (mod && e.key === 'z' && e.shiftKey) {
-        e.preventDefault()
-        redoParams()
-        return
-      } else if (mod && e.key === 'Enter') {
-        e.preventDefault()
-        handleGenerate()
-      } else if (e.key === 'Escape' && loading) {
-        handleCancelGenerate()
-      } else if (mod) {
-        const num = parseInt(e.key, 10)
-        if (num >= 1 && num <= manifest.modes.length) {
-          e.preventDefault()
-          setMode(manifest.modes[num - 1].id)
-        }
-      }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [loading, params, mode, manifest]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Keyboard shortcuts (extracted hook)
+  useKeyboardShortcuts({
+    onUndo: undoParams,
+    onRedo: redoParams,
+    onRender: handleGenerate,
+    onCancelRender: handleCancelGenerate,
+    onSwitchMode: setMode,
+    loading,
+    modes,
+  })
 
   const cycleTheme = () => {
     const themes = ['light', 'dark', 'system']

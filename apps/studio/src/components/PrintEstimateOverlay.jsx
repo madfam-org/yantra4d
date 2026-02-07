@@ -17,10 +17,11 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox }) {
   const materialLookup = useMemo(() => buildMaterialLookup(manifestMaterials), [manifestMaterials])
 
   const estimate = useMemo(() => {
-    if (!volumeMm3 || volumeMm3 === 0 || !boundingBox) return null
+    if (!volumeMm3 || volumeMm3 <= 0 || !boundingBox) return null
     return estimatePrint(volumeMm3, boundingBox, material, { infill }, materialLookup)
   }, [volumeMm3, boundingBox, material, infill, materialLookup])
 
+  if (!volumeMm3 || volumeMm3 <= 0) return null
   if (!estimate) return null
 
   const { time, filament } = estimate

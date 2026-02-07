@@ -16,6 +16,7 @@ from services.tier_service import resolve_tier, get_tier_limits
 from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
 from services.render_cache import render_cache
 from services.route_helpers import cleanup_old_stl_files, error_response, require_json_body
+import rate_limits
 
 ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off'}
 
@@ -58,7 +59,9 @@ def _resolve_render_context(data):
         scad_filename = manifest.get_scad_file_for_mode(mode_id)
         parts = manifest.get_parts_for_mode(mode_id)
     else:
-        if not scad_filename:
+        if scad_filename:
+            logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
+        else:
             scad_filename = manifest.modes[0]["scad_file"]
         parts_map = manifest.get_parts_map()
         parts = parts_map.get(scad_filename, manifest.modes[0]["parts"])
@@ -103,7 +106,7 @@ def _extract_render_payload(data):
 
 @render_bp.route('/api/estimate', methods=['POST'])
 @optional_auth
-@limiter.limit("200/hour")
+@limiter.limit(rate_limits.ESTIMATE)
 @require_json_body
 def estimate_render_time():
     """Estimate render time based on parameters before actually rendering."""

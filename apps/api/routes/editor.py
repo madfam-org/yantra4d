@@ -8,6 +8,7 @@ from flask import Blueprint, request, jsonify
 
 from config import Config
 from extensions import limiter
+import rate_limits
 from middleware.auth import require_tier
 from services.route_helpers import error_response, safe_join_path
 from services.git_operations import git_init
@@ -44,7 +45,7 @@ def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
 
 @editor_bp.route("/api/projects/<slug>/files", methods=["GET"])
 @require_tier("pro")
-@limiter.limit("120/hour")
+@limiter.limit(rate_limits.EDITOR_READ)
 def list_files(slug):
     """List .scad files in a project."""
     project_dir = _get_project_dir(slug)
@@ -68,7 +69,7 @@ def list_files(slug):
 
 @editor_bp.route("/api/projects/<slug>/files/<path:filepath>", methods=["GET"])
 @require_tier("pro")
-@limiter.limit("120/hour")
+@limiter.limit(rate_limits.EDITOR_READ)
 def read_file(slug, filepath):
     """Read a .scad file's content."""
     project_dir = _get_project_dir(slug)
@@ -91,7 +92,7 @@ def read_file(slug, filepath):
 
 @editor_bp.route("/api/projects/<slug>/files/<path:filepath>", methods=["PUT"])
 @require_tier("pro")
-@limiter.limit("120/hour")
+@limiter.limit(rate_limits.EDITOR_WRITE)
 def write_file(slug, filepath):
     """Write content to a .scad file."""
     project_dir = _get_project_dir(slug, auto_git=True)
@@ -122,7 +123,7 @@ def write_file(slug, filepath):
 
 @editor_bp.route("/api/projects/<slug>/files", methods=["POST"])
 @require_tier("pro")
-@limiter.limit("30/hour")
+@limiter.limit(rate_limits.EDITOR_CREATE)
 def create_file(slug):
     """Create a new .scad file."""
     project_dir = _get_project_dir(slug, auto_git=True)
@@ -156,7 +157,7 @@ def create_file(slug):
 
 @editor_bp.route("/api/projects/<slug>/files/<path:filepath>", methods=["DELETE"])
 @require_tier("pro")
-@limiter.limit("30/hour")
+@limiter.limit(rate_limits.EDITOR_DELETE)
 def delete_file(slug, filepath):
     """Delete a .scad file."""
     project_dir = _get_project_dir(slug, auto_git=True)

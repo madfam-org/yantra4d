@@ -11,7 +11,9 @@ import NumberedAxes from './viewer/NumberedAxes'
 import AnimatedGrid from './viewer/AnimatedGrid'
 import { computeVolumeMm3, computeBoundingBox } from '../lib/printEstimator'
 
-const AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
+const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
+const GRID_SECTION_COLOR = '#4b5563'
+const GRID_CELL_COLOR = '#374151'
 
 const Model = ({ url, color, wireframe, onGeometry, highlightMode }) => {
     const geom = useLoader(STLLoader, url)
@@ -91,7 +93,10 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
 
     const { language, t } = useLanguage()
     const { theme } = useTheme()
-    const { getCameraViews, getViewerConfig, getLabel, getMode } = useManifest()
+    const { getCameraViews, getViewerConfig, getLabel, getMode, manifest } = useManifest()
+    const axisColors = manifest?.viewer?.axis_colors
+        ? [manifest.viewer.axis_colors.x || DEFAULT_AXIS_COLORS[0], manifest.viewer.axis_colors.y || DEFAULT_AXIS_COLORS[1], manifest.viewer.axis_colors.z || DEFAULT_AXIS_COLORS[2]]
+        : DEFAULT_AXIS_COLORS
     const cameraViews = getCameraViews()
     const viewerConfig = getViewerConfig()
     const defaultColor = viewerConfig.default_color || "#e5e7eb"
@@ -147,7 +152,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
             {animating && mode === 'grid' && !animReady && (
-                <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
+                <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none" aria-live="polite">
                     <div className="flex flex-col items-center gap-2 rounded-lg bg-background backdrop-blur-sm px-6 py-4 opacity-90">
                         <div className="text-sm font-medium">{t("anim.preparing")}</div>
                         <div className="h-1.5 w-32 overflow-hidden rounded-full bg-secondary">
@@ -161,6 +166,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                 onClick={() => setShowAxes(s => !s)}
                 className="absolute top-2 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-xs font-bold hover:bg-background/90 backdrop-blur-sm"
                 title={showAxes ? t("viewer.hide_axes") : t("viewer.show_axes")}
+                aria-pressed={showAxes}
             >
                 {showAxes ? "⊞" : "⊟"}
             </button>
@@ -203,17 +209,17 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                 <OrbitControls makeDefault up={[0, 0, 1]} />
                 <Grid
                     infiniteGrid
-                    sectionColor="#4b5563"
-                    cellColor="#374151"
+                    sectionColor={GRID_SECTION_COLOR}
+                    cellColor={GRID_CELL_COLOR}
                     fadeDistance={500}
                     args={[10, 10]}
                     rotation={[Math.PI / 2, 0, 0]}
                 />
                 <GizmoHelper alignment="bottom-left" margin={[60, 60]}>
-                    <GizmoViewport axisColors={AXIS_COLORS} labelColor="white" />
+                    <GizmoViewport axisColors={axisColors} labelColor="white" />
                 </GizmoHelper>
 
-                {showAxes && <NumberedAxes axisColors={AXIS_COLORS} />}
+                {showAxes && <NumberedAxes axisColors={axisColors} />}
 
                 <Suspense fallback={null}>
                     <Bounds fit clip observe margin={1.2}>

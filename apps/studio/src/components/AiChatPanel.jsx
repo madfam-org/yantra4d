@@ -95,7 +95,7 @@ export default function AiChatPanel({ mode, projectSlug, manifest, params, setPa
           </div>
         )}
         {isStreaming && !streamingText && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground" role="status" aria-live="polite">
             <Loader2 className="h-3 w-3 animate-spin" /> Thinking...
           </div>
         )}

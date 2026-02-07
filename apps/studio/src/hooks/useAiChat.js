@@ -71,10 +71,20 @@ export function useAiChat({ projectSlug, mode, params, setParams }) {
     }
   }, [isStreaming, initSession, mode, params, setParams])
 
+  /**
+   * Accept a pending code edit at the given index and remove it from the queue.
+   * Used by the SCAD code editor to apply AI-suggested search/replace edits.
+   * @param {number} index - index of the edit in the pendingEdits array
+   */
   const applyEdit = useCallback((index) => {
     setPendingEdits(prev => prev.filter((_, i) => i !== index))
   }, [])
 
+  /**
+   * Reject a pending code edit at the given index and remove it from the queue.
+   * Used by the SCAD code editor to dismiss AI-suggested edits.
+   * @param {number} index - index of the edit in the pendingEdits array
+   */
   const rejectEdit = useCallback((index) => {
     setPendingEdits(prev => prev.filter((_, i) => i !== index))
   }, [])

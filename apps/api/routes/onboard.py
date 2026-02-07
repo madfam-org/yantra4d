@@ -12,10 +12,12 @@ from flask import Blueprint, request, jsonify
 
 from config import Config
 from extensions import limiter
+import rate_limits
 from manifest import invalidate_cache
 from middleware.auth import require_role
 from services.manifest_generator import generate_manifest
 from services.route_helpers import error_response
+from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ onboard_bp = Blueprint('onboard', __name__)
 
 @onboard_bp.route('/api/projects/analyze', methods=['POST'])
 @require_role("admin")
-@limiter.limit("20/hour")
+@limiter.limit(rate_limits.ONBOARD_ANALYZE)
 def analyze_scad_files():
     """Accept uploaded .scad files, analyze them, and return a draft manifest."""
     if 'files' not in request.files:
@@ -55,7 +57,7 @@ def analyze_scad_files():
 
 @onboard_bp.route('/api/projects/create', methods=['POST'])
 @require_role("admin")
-@limiter.limit("10/hour")
+@limiter.limit(rate_limits.ONBOARD_CREATE)
 def create_project():
     """Accept a manifest and .scad files, write them to PROJECTS_DIR."""
     content_type = request.content_type or ''
@@ -87,9 +89,9 @@ def create_project():
     if not slug:
         return error_response("Manifest must contain project.slug.", 400)
 
-    # Validate slug (alphanumeric + hyphens only)
-    if not all(c.isalnum() or c in ('-', '_') for c in slug):
-        return error_response("Project slug must be alphanumeric (hyphens/underscores allowed).", 400)
+    slug_err = validate_project_slug(slug)
+    if slug_err:
+        return error_response(slug_err, 400)
 
     project_dir = Config.PROJECTS_DIR / slug
     if project_dir.exists():

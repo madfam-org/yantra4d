@@ -30,7 +30,7 @@ spec:
           securityContext:
             privileged: false
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             runAsUser: 1001
             capabilities:
               drop: ["ALL"]
@@ -76,6 +76,11 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: render-output
+              mountPath: /app/backend/static
           resources:
             requests:
               cpu: 250m
@@ -83,3 +88,10 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+        - name: render-output
+          emptyDir:
+            sizeLimit: 512Mi

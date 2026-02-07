@@ -61,4 +61,5 @@ spec:
               mountPath: /data
       volumes:
         - name: redis-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: yantra4d-redis-data

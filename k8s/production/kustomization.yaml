@@ -11,6 +11,7 @@ resources:
 - yantra4d-studio-service.yaml
 - yantra4d-landing-deployment.yaml
 - yantra4d-landing-service.yaml
+- yantra4d-redis-pvc.yaml
 - yantra4d-redis-deployment.yaml
 - yantra4d-redis-service.yaml
 

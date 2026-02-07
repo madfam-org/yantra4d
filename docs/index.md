@@ -15,6 +15,17 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Competitive Landscape](./competitive-landscape.md): Market research, competitor analysis, and feature roadmap.
 -   [Roadmap](./roadmap.md): Strategic features planned for future implementation.
 
+### LLM Context
+
+-   [llms.txt](../llms.txt): LLM-optimized project overview following [llmstxt.org](https://llmstxt.org/) spec.
+-   [llms-full.txt](../llms-full.txt): Comprehensive single-file LLM context with all docs inlined.
+
+### Internal Audits
+
+-   [Codebase Audit](../claudedocs/codebase-audit.md): Full platform assessment — stability, coverage, architecture.
+-   [Usability Audit](../claudedocs/usability-audit.md): Browser-based UX testing results.
+-   [Production Verification](../claudedocs/enclii-verification-prompt.md): Deployment verification steps.
+
 ### Per-Project Docs
 
 Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 19 built-in projects:

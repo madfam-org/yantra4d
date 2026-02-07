@@ -13,6 +13,10 @@ Ships with 19 built-in projects including **gridfinity** (modular storage), **ul
     -   **Theme Toggle**: Light, Dark, and System (Auto) modes.
     -   **Bilingual UI**: Spanish (default) and English.
     -   **Export**: Download STL files and capture images (Iso, Top, Front, Right).
+-   **AI-Assisted Design**: Natural language chat adjusts parameters (AI Configurator, basic+) or generates SCAD code edits (AI Code Editor, pro+).
+-   **GitHub Integration**: Import repos, edit SCAD files in a Monaco editor, git status/diff/commit/push/pull.
+-   **Tiered Access Control**: Four tiers (guest, basic, pro, madfam) gating export formats, project limits, GitHub, and AI features.
+-   **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save, and auto-render.
 -   **Onboarding**: CLI tool and web wizard for onboarding external SCAD projects.
 
 ## Documentation
@@ -24,6 +28,8 @@ Platform documentation is available in the [`docs/`](./docs/index.md) directory:
 -   [Project Manifest](./docs/manifest.md) — Extensible manifest schema and how to add new projects
 -   [Multi-Project Platform](./docs/multi-project.md) — Multi-project setup and configuration
 -   [Developer Experience](./docs/devx-guide.md) — Onboarding external SCAD projects
+-   [AI Features](./docs/ai-features.md) — AI Configurator and Code Editor
+-   [llms.txt](./llms.txt) — LLM-optimized project overview for AI agents
 
 Per-project docs live in `projects/{slug}/docs/`. Browse all 19 built-in projects under [`projects/`](./projects/).
 

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yantra4d-backend
+  labels:
+    app.kubernetes.io/name: yantra4d-backend
+    app.kubernetes.io/part-of: yantra4d
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: yantra4d-backend
+  ports:
+    - port: 80
+      targetPort: 5000
+      protocol: TCP

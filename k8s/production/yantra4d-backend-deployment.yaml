@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yantra4d-backend
+  labels:
+    app.kubernetes.io/name: yantra4d-backend
+    app.kubernetes.io/part-of: yantra4d
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: yantra4d-backend
+        app.kubernetes.io/part-of: yantra4d
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: backend
+          image: ghcr.io/madfam-org/yantra4d/backend
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 1001
+            capabilities:
+              drop: ["ALL"]
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          env:
+            - name: FLASK_DEBUG
+              value: "false"
+            - name: PORT
+              value: "5000"
+            - name: REDIS_URL
+              value: "redis://yantra4d-redis:6379/0"
+            - name: RATE_LIMIT_STORAGE
+              value: "redis://yantra4d-redis:6379/1"
+            - name: CORS_ORIGINS
+              value: "https://app.4d.madfam.io,https://4d.madfam.io"
+            - name: AUTH_ENABLED
+              value: "true"
+            - name: JANUA_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: JANUA_ISSUER
+            - name: JANUA_AUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: JANUA_AUDIENCE
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi

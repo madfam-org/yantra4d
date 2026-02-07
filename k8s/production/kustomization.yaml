@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: yantra4d
+
+resources:
+- namespace.yaml
+- yantra4d-backend-deployment.yaml
+- yantra4d-backend-service.yaml
+- yantra4d-studio-deployment.yaml
+- yantra4d-studio-service.yaml
+- yantra4d-landing-deployment.yaml
+- yantra4d-landing-service.yaml
+- yantra4d-redis-deployment.yaml
+- yantra4d-redis-service.yaml
+
+images:
+- name: ghcr.io/madfam-org/yantra4d/backend
+  newName: ghcr.io/madfam-org/yantra4d/backend
+  newTag: main
+- name: ghcr.io/madfam-org/yantra4d/studio
+  newName: ghcr.io/madfam-org/yantra4d/studio
+  newTag: main
+- name: ghcr.io/madfam-org/yantra4d/landing
+  newName: ghcr.io/madfam-org/yantra4d/landing
+  newTag: main

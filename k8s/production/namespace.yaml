@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: yantra4d
+  labels:
+    app.kubernetes.io/part-of: yantra4d
+    enclii.dev/type: project

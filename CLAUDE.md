@@ -11,12 +11,13 @@ projects/
   {slug}/exports/      (reference STL exports)
        │
        ├──► apps/api/      (Flask API, renders via OpenSCAD CLI)
-       │        ├── routes/  render, verify, health, manifest, config, projects, onboard
-       │        └── services/  openscad, scad_analyzer, manifest_generator
+       │        ├── routes/  render, verify, health, manifest, config, projects, onboard, editor, git_ops, github, ai, admin, download, bom, datasheet, analytics, user
+       │        ├── services/  openscad, scad_analyzer, manifest_generator, ai_provider, ai_configurator, ai_code_editor, ai_session, git_operations, github_import, github_token, tier_service, render_cache, route_helpers
+       │        └── middleware/  auth (JWT + tier gating)
        │
        ├──► apps/studio/   (React 19 + Vite + Three.js + Shadcn UI)
-       │        ├── contexts/  ManifestProvider (multi-project), Theme, Language
-       │        ├── components/  Controls, Viewer, ProjectSelector, OnboardingWizard
+       │        ├── contexts/  ManifestProvider (multi-project), Theme, Language, Auth, Tier
+       │        ├── components/  Controls, Viewer, ProjectSelector, OnboardingWizard, ScadEditor, GitPanel, AiChatPanel, ForkDialog, BomPanel
        │        └── services/  renderService, verifyService, openscad-worker (WASM)
        │
        └──► apps/landing/  (Astro + React islands — marketing site)
@@ -70,6 +71,31 @@ packages/
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
+| `apps/api/tiers.json` | Tier definitions (renders, exports, features per tier) | RARELY |
+| `apps/api/middleware/auth.py` | JWT auth + tier gating middleware | RARELY |
+| `apps/api/routes/ai.py` | AI chat SSE endpoints (session, chat-stream) | RARELY |
+| `apps/api/routes/github.py` | GitHub validate, import, sync endpoints | RARELY |
+| `apps/api/routes/git_ops.py` | Git status, diff, commit, push, pull, connect-remote | RARELY |
+| `apps/api/routes/editor.py` | SCAD file CRUD (list/read/write/create/delete) | RARELY |
+| `apps/api/routes/admin.py` | Admin project listing and detail endpoints | RARELY |
+| `apps/api/routes/download.py` | STL and SCAD file download endpoints | RARELY |
+| `apps/api/routes/bom.py` | Bill of materials API (JSON/CSV) | RARELY |
+| `apps/api/routes/datasheet.py` | Project datasheet generation (PDF/HTML) | RARELY |
+| `apps/api/routes/analytics.py` | Usage analytics tracking and summaries | RARELY |
+| `apps/api/routes/user.py` | User tier info and tier definitions | RARELY |
+| `apps/api/services/ai_configurator.py` | NL → parameter change mapping | RARELY |
+| `apps/api/services/ai_code_editor.py` | NL → SCAD code edit mapping | RARELY |
+| `apps/api/services/github_import.py` | GitHub repo clone and project creation | RARELY |
+| `apps/api/services/tier_service.py` | Tier lookup and feature gating | RARELY |
+| `apps/studio/src/contexts/AuthProvider.jsx` | JWT auth context + login/logout | RARELY |
+| `apps/studio/src/contexts/TierProvider.jsx` | User tier context + feature flags | RARELY |
+| `apps/studio/src/components/AiChatPanel.jsx` | AI chat UI (configurator + code-editor modes) | RARELY |
+| `apps/studio/src/components/GitPanel.jsx` | Git status, diff, commit, push/pull UI | RARELY |
+| `apps/studio/src/components/ScadEditor.jsx` | Monaco-based SCAD code editor | RARELY |
+| `apps/studio/src/components/ForkDialog.jsx` | Fork-to-edit modal for built-in projects | RARELY |
+| `claudedocs/*.md` | Internal audits (codebase, usability, deployment) | YES |
+| `llms.txt` | LLM-optimized project overview (llmstxt.org spec) | RARELY |
+| `llms-full.txt` | Comprehensive LLM context (all docs inlined) | RARELY |
 | `docs/*.md` | Deep-dive documentation | YES |
 
 ## Core Pattern: Manifest-Driven Design
@@ -141,17 +167,84 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 
 | Method | Endpoint | Payload | Use Case |
 |--------|----------|---------|----------|
-| GET | `/api/projects` | — | List all available projects |
+| GET | `/api/health` | — | Health check, OpenSCAD availability |
+| GET | `/api/config` | — | Legacy config (delegates to manifest) |
+| GET | `/api/manifest` | — | Fetch manifest (default project) |
+| GET | `/api/projects` | — | List all projects (append `?stats=1` for analytics) |
 | GET | `/api/projects/<slug>/manifest` | — | Fetch manifest for specific project |
+| POST | `/api/projects/<slug>/fork` | — | Fork project to editable copy (pro+) |
 | POST | `/api/projects/analyze` | multipart `.scad` files | Analyze SCAD files, return draft manifest |
 | POST | `/api/projects/create` | multipart manifest + files | Create new project in PROJECTS_DIR |
-| GET | `/api/manifest` | — | Fetch full project manifest (default project) |
-| GET | `/api/health` | — | Health check, OpenSCAD availability |
-| POST | `/api/estimate` | `{mode, scad_file, parameters}` | Estimate render time |
-| POST | `/api/render` | `{mode, scad_file, parameters, parts, export_format?}` | Synchronous render (stl/3mf/off) |
-| POST | `/api/render-stream` | `{mode, scad_file, parameters, parts, export_format?}` | SSE streaming render (stl/3mf/off) |
+| POST | `/api/estimate` | `{mode, parameters, project?}` | Estimate render time |
+| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (stl/3mf/off) |
+| POST | `/api/render-stream` | `{mode, parameters, parts, export_format?, project?}` | SSE streaming render |
 | POST | `/api/render-cancel` | — | Cancel active render |
-| POST | `/api/verify` | `{mode}` | Run STL quality checks |
+| POST | `/api/verify` | `{mode, project?}` | Run STL quality checks |
+| GET | `/api/projects/<slug>/files` | — | List SCAD files in project (pro+) |
+| GET | `/api/projects/<slug>/files/<path>` | — | Read SCAD file content (pro+) |
+| PUT | `/api/projects/<slug>/files/<path>` | `{content}` | Write SCAD file (pro+) |
+| DELETE | `/api/projects/<slug>/files/<path>` | — | Delete SCAD file (pro+) |
+| GET | `/api/projects/<slug>/git/status` | — | Git working tree status (pro+) |
+| GET | `/api/projects/<slug>/git/diff` | — | Unified diff (pro+) |
+| POST | `/api/projects/<slug>/git/commit` | `{message, files?}` | Stage and commit (pro+) |
+| POST | `/api/projects/<slug>/git/push` | — | Push to origin (pro+) |
+| POST | `/api/projects/<slug>/git/pull` | — | Pull from origin (pro+) |
+| POST | `/api/projects/<slug>/git/connect-remote` | `{url}` | Set GitHub remote (pro+) |
+| POST | `/api/github/validate` | `{url}` | Validate GitHub repo URL (pro+) |
+| POST | `/api/github/import` | `{url, slug?, private?}` | Import GitHub repo as project (pro+) |
+| POST | `/api/github/sync` | `{slug}` | Sync project with GitHub source (madfam) |
+| POST | `/api/ai/session` | `{project, mode}` | Create AI chat session (basic+) |
+| POST | `/api/ai/chat-stream` | `{session_id, message, current_params}` | SSE streaming AI chat (basic+/pro+) |
+| GET | `/api/projects/<slug>/bom` | query params | Bill of materials as JSON/CSV |
+| GET | `/api/projects/<slug>/datasheet` | `?format=pdf&lang=en` | Project datasheet (PDF/HTML) |
+| GET | `/api/projects/<slug>/download/stl/<file>` | — | Download STL file |
+| GET | `/api/projects/<slug>/download/scad/<file>` | — | Download SCAD source file |
+| POST | `/api/analytics/track` | `{event, slug, ...}` | Record analytics event |
+| GET | `/api/analytics/<slug>/summary` | `?days=30` | Aggregate analytics for project |
+| GET | `/api/tiers` | — | Public tier definitions |
+| GET | `/api/me` | — | Current user info and tier |
+| GET | `/api/admin/projects` | — | Admin: all projects with metadata (admin) |
+| GET | `/api/admin/projects/<slug>` | — | Admin: detailed project info (admin) |
+
+## Tiered Access Control
+
+Access is gated by user tier. Tier definitions live in `apps/api/tiers.json`; enforcement is in `middleware/auth.py`.
+
+| Tier | Renders/hr | Projects | Export | GitHub | AI Config | AI Code | AI Req/hr |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| guest | 30 | 0 | STL | — | — | — | 0 |
+| basic | 50 | 3 | STL | — | Yes | — | 30 |
+| pro | 200 | unlimited | STL/3MF/OFF | import, editor, private | Yes | Yes | 100 |
+| madfam | 500 | unlimited | STL/3MF/OFF | import, sync, editor, private | Yes | Yes | 300 |
+
+Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/services/tier_service.py`, `apps/studio/src/contexts/AuthProvider.jsx`, `apps/studio/src/contexts/TierProvider.jsx`.
+
+**Note**: Set `AUTH_ENABLED=false` to bypass auth in development (all users get madfam tier).
+
+## AI Features
+
+Two AI-powered features use LLMs to assist with parametric design:
+
+- **AI Configurator** (basic+): Chat-based parameter adjustment — describe what you want and the AI adjusts slider values. Lives in `AiChatPanel.jsx` (mode: configurator) + `services/ai_configurator.py`.
+- **AI Code Editor** (pro+): Natural language SCAD editing — describe changes and the AI generates search/replace edits. Lives in `ScadEditor.jsx` + `services/ai_code_editor.py`.
+
+Both stream responses via SSE. Env vars: `AI_PROVIDER` (anthropic|openai), `AI_API_KEY` (required), `AI_MODEL` (optional override). Sessions are in-memory, expire after 1 hour.
+
+See [`docs/ai-features.md`](docs/ai-features.md) for full API reference and SSE event format.
+
+## GitHub Integration
+
+GitHub features are tier-gated:
+
+| Endpoint | Method | Tier | Purpose |
+|----------|--------|------|---------|
+| `/api/github/validate` | POST | pro+ | Validate GitHub repo URL, detect SCAD files |
+| `/api/github/import` | POST | pro+ | Clone repo as new project |
+| `/api/github/sync` | POST | madfam | Sync imported project with upstream |
+| `/api/projects/<slug>/git/*` | GET/POST | pro+ | Git status, diff, commit, push, pull, connect-remote |
+| `/api/projects/<slug>/files/*` | GET/PUT/DELETE | pro+ | SCAD file CRUD with auto git-init |
+
+Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `services/github_import.py`, `services/github_token.py`, `services/git_operations.py`. Frontend: `GitPanel.jsx`, `ForkDialog.jsx`, `ScadEditor.jsx`.
 
 ## Code Conventions
 
@@ -215,8 +308,17 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 
 ## Further Docs
 
+- [`llms.txt`](llms.txt) — LLM-optimized project overview (llmstxt.org spec)
+- [`llms-full.txt`](llms-full.txt) — Comprehensive LLM context (all docs inlined)
 - [`docs/index.md`](docs/index.md) — Platform documentation hub
 - [`docs/manifest.md`](docs/manifest.md) — Manifest schema and extension guide
 - [`docs/web_interface.md`](docs/web_interface.md) — Full-stack architecture details
+- [`docs/ai-features.md`](docs/ai-features.md) — AI Configurator and Code Editor
 - [`docs/verification.md`](docs/verification.md) — STL quality verification system
+- [`docs/wasm-mode.md`](docs/wasm-mode.md) — Client-side rendering fallback
+- [`docs/devx-guide.md`](docs/devx-guide.md) — Onboarding external SCAD projects
+- [`docs/troubleshooting.md`](docs/troubleshooting.md) — Common issues and solutions
+- [`claudedocs/codebase-audit.md`](claudedocs/codebase-audit.md) — Full platform assessment
+- [`claudedocs/usability-audit.md`](claudedocs/usability-audit.md) — Browser-based UX testing
+- [`claudedocs/enclii-verification-prompt.md`](claudedocs/enclii-verification-prompt.md) — Deployment verification steps
 Per-project docs live in `projects/{slug}/docs/`.

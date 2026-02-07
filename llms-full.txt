@@ -1,0 +1,679 @@
+# Yantra4D — Comprehensive LLM Context
+
+> Manifest-driven parametric 3D print design platform. Flask API + React/Vite
+> studio + Astro landing page. 19 built-in OpenSCAD projects with dual rendering
+> (server-side CLI + client-side WASM), tiered access control, AI-assisted
+> design, and GitHub integration.
+
+---
+
+## Architecture
+
+```
+projects/
+  {slug}/project.json  (manifest — single source of truth per project)
+  {slug}/*.scad        (OpenSCAD geometry)
+  {slug}/exports/      (reference STL exports)
+       │
+       ├──► apps/api/      (Flask API, renders via OpenSCAD CLI)
+       │        ├── routes/  render, verify, health, manifest, config, projects, onboard, editor, git_ops, github, ai, admin, download, bom, datasheet, analytics, user
+       │        ├── services/  openscad, scad_analyzer, manifest_generator, ai_provider, ai_configurator, ai_code_editor, ai_session, git_operations, github_import, github_token, tier_service, render_cache, route_helpers
+       │        └── middleware/  auth (JWT + tier gating)
+       │
+       ├──► apps/studio/   (React 19 + Vite + Three.js + Shadcn UI)
+       │        ├── contexts/  ManifestProvider (multi-project), Theme, Language, Auth, Tier
+       │        ├── components/  Controls, Viewer, ProjectSelector, OnboardingWizard, ScadEditor, GitPanel, AiChatPanel, ForkDialog, BomPanel
+       │        └── services/  renderService, verifyService, openscad-worker (WASM), editorService, gitService, aiService
+       │
+       └──► apps/landing/  (Astro + React islands — marketing site)
+                ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, InteractiveShowcase
+                └── public/  static assets
+
+libs/
+  BOSL2/               (git submodule — BSD-2 — attachments, rounding, math)
+  NopSCADlib/          (git submodule — GPL-3 — real-world hardware models)
+  Round-Anything/      (git submodule — MIT — coordinate-based filleting)
+
+packages/
+  schemas/             (JSON Schema for project manifests)
+  tokens/              (shared CSS custom properties — colors, spacing)
+```
+
+**Domains**: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api)
+
+---
+
+## Critical File Map
+
+| Path | Purpose | Modify? |
+|------|---------|---------|
+| `projects/{slug}/project.json` | Project manifest — modes, parts, parameters, estimates | **YES** |
+| `projects/{slug}/*.scad` | OpenSCAD geometry source files | YES |
+| `apps/api/app.py` | Flask entry point, CORS, static serving | RARELY |
+| `apps/api/extensions.py` | Flask extensions (rate limiter) | RARELY |
+| `apps/api/tiers.json` | Tier definitions (renders, exports, features per tier) | RARELY |
+| `apps/api/middleware/auth.py` | JWT auth + tier gating middleware | RARELY |
+| `apps/api/routes/render.py` | Render + estimate + cancel + SSE stream | RARELY |
+| `apps/api/routes/verify.py` | STL verification endpoint | RARELY |
+| `apps/api/routes/projects.py` | Multi-project listing API | RARELY |
+| `apps/api/routes/onboard.py` | Project onboarding API | RARELY |
+| `apps/api/routes/ai.py` | AI chat SSE endpoints (session, chat-stream) | RARELY |
+| `apps/api/routes/github.py` | GitHub validate, import, sync endpoints | RARELY |
+| `apps/api/routes/git_ops.py` | Git status, diff, commit, push, pull, connect-remote | RARELY |
+| `apps/api/routes/editor.py` | SCAD file CRUD (list/read/write/create/delete) | RARELY |
+| `apps/api/routes/admin.py` | Admin project listing and detail endpoints | RARELY |
+| `apps/api/routes/download.py` | STL and SCAD file download endpoints | RARELY |
+| `apps/api/routes/bom.py` | Bill of materials API (JSON/CSV) | RARELY |
+| `apps/api/routes/datasheet.py` | Project datasheet generation (PDF/HTML) | RARELY |
+| `apps/api/routes/analytics.py` | Usage analytics tracking and summaries | RARELY |
+| `apps/api/routes/user.py` | User tier info and tier definitions | RARELY |
+| `apps/api/services/openscad.py` | OpenSCAD subprocess wrapper | RARELY |
+| `apps/api/services/scad_analyzer.py` | SCAD file analysis engine | RARELY |
+| `apps/api/services/manifest_generator.py` | Manifest scaffolding from SCAD analysis | RARELY |
+| `apps/api/services/ai_configurator.py` | NL → parameter change mapping | RARELY |
+| `apps/api/services/ai_code_editor.py` | NL → SCAD code edit mapping | RARELY |
+| `apps/api/services/github_import.py` | GitHub repo clone and project creation | RARELY |
+| `apps/api/services/tier_service.py` | Tier lookup and feature gating | RARELY |
+| `apps/studio/src/App.jsx` | Main shell, state management | RARELY |
+| `apps/studio/src/components/Controls.jsx` | Data-driven param controls (reads manifest) | RARELY |
+| `apps/studio/src/components/Viewer.jsx` | Three.js 3D STL viewer | RARELY |
+| `apps/studio/src/components/ScadEditor.jsx` | Monaco-based SCAD code editor | RARELY |
+| `apps/studio/src/components/AiChatPanel.jsx` | AI chat UI (configurator + code-editor modes) | RARELY |
+| `apps/studio/src/components/GitPanel.jsx` | Git status, diff, commit, push/pull UI | RARELY |
+| `apps/studio/src/components/ForkDialog.jsx` | Fork-to-edit modal for built-in projects | RARELY |
+| `apps/studio/src/components/BomPanel.jsx` | Manifest-driven bill of materials panel | RARELY |
+| `apps/studio/src/components/ProjectSelector.jsx` | Project switcher dropdown | RARELY |
+| `apps/studio/src/components/OnboardingWizard.jsx` | Web-based project onboarding wizard | RARELY |
+| `apps/studio/src/components/ExportPanel.jsx` | Export controls with multi-format selector | RARELY |
+| `apps/studio/src/components/PrintEstimateOverlay.jsx` | Print time/filament/cost overlay | RARELY |
+| `apps/studio/src/contexts/ManifestProvider.jsx` | Fetches & provides manifest to app | RARELY |
+| `apps/studio/src/contexts/AuthProvider.jsx` | JWT auth context + login/logout | RARELY |
+| `apps/studio/src/contexts/TierProvider.jsx` | User tier context + feature flags | RARELY |
+| `apps/studio/src/hooks/useShareableUrl.js` | Shareable URL generation (base64url params) | RARELY |
+| `apps/studio/src/hooks/useUndoRedo.js` | Parameter undo/redo history stack | RARELY |
+| `apps/studio/src/hooks/useAiChat.js` | AI chat state management hook | RARELY |
+| `apps/studio/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
+| `apps/landing/src/pages/index.astro` | Landing page (composes all sections) | RARELY |
+| `apps/landing/src/components/InteractiveShowcase.tsx` | React island — iframe embed of studio | RARELY |
+| `packages/tokens/colors.css` | Shared CSS custom properties (both apps import) | RARELY |
+| `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
+| `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
+| `apps/studio/src/components/ui/*` | Shadcn primitives | **NEVER** |
+
+---
+
+## Manifest Schema
+
+The project manifest (`projects/{slug}/project.json`) is the single source of truth. Both backend and frontend consume it, making the webapp fully data-driven.
+
+### Top-Level Fields
+
+```jsonc
+{
+  "project": {
+    "name": "Gridfinity Extended",   // Display name (used in header)
+    "slug": "gridfinity",            // Used for localStorage keys, export filenames
+    "version": "1.0.0"
+  },
+
+  "modes": [
+    {
+      "id": "unit",                           // Unique mode identifier
+      "scad_file": "half_cube.scad",          // Which SCAD file to render
+      "label": { "en": "Unit", "es": "Unidad" },
+      "parts": ["main"],                      // Part IDs rendered in this mode
+      "estimate": {
+        "base_units": 1,                      // Fixed unit count, or formula
+        "formula": "constant",                // "constant" or "grid"
+        "formula_vars": ["rows", "cols"]      // Optional: param names multiplied
+      }
+    }
+  ],
+
+  "parts": [
+    {
+      "id": "main",
+      "render_mode": 0,                       // Integer passed to OpenSCAD
+      "label": { "en": "Color", "es": "Color" },
+      "default_color": "#e5e7eb"
+    }
+  ],
+
+  "parameters": [
+    {
+      "id": "size",
+      "type": "slider",                       // "slider", "checkbox", or "text"
+      "default": 20.0,
+      "min": 10, "max": 50, "step": 0.5,
+      "label": { "en": "Size (mm)", "es": "Tamano (mm)" },
+      "tooltip": { "en": "...", "es": "..." },
+      "group": "dimensions",
+      "visibility_level": "basic",            // "basic" (default) or "advanced"
+      "parent": "show_walls",                 // Optional parent param ID
+      "visible_in_modes": ["unit", "assembly"],
+      "widget": { "type": "color-gradient" }, // Optional custom widget
+      "maxlength": 30                         // For text params
+    }
+  ],
+
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric" }, "position": [50, 50, 50] }
+  ],
+
+  "parameter_groups": [
+    {
+      "id": "dimensions",
+      "label": { "en": "Dimensions" },
+      "levels": [
+        { "id": "basic", "label": { "en": "Basic" } },
+        { "id": "advanced", "label": { "en": "Advanced" } }
+      ]
+    }
+  ],
+
+  "constraints": [
+    {
+      "rule": "width_units * depth_units <= 24",
+      "message": { "en": "Max 24 grid cells" },
+      "severity": "warning",                  // "warning" or "error"
+      "applies_to": ["width_units", "depth_units"]
+    }
+  ],
+
+  "bom": {
+    "hardware": [
+      {
+        "id": "magnets_6x2",
+        "label": { "en": "N52 6x2mm Magnets" },
+        "quantity_formula": "(enable_magnets ? 4 : 0)",
+        "unit": "pcs",
+        "supplier_url": "https://..."
+      }
+    ]
+  },
+
+  "grid_presets": {
+    "rendering": {
+      "emoji": "...", "label": { "en": "Quick Preview" },
+      "values": { "width_units": 2, "depth_units": 1 }
+    },
+    "default": "rendering"
+  },
+
+  "export_formats": ["stl", "3mf", "off"],
+  "print_estimation": { "default_material": "pla", "default_infill": 0.2 },
+  "difficulty": "beginner",
+  "viewer": { "default_color": "#e5e7eb" },
+
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 1.5,
+    "fn_factor": 64,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
+}
+```
+
+### Estimation Formula
+
+```
+estimated_seconds = base_time + (num_units * per_unit) + (num_parts * per_part)
+```
+
+In WASM mode, multiply by `wasm_multiplier` (default: 3). If estimate exceeds `warning_threshold_seconds`, a confirmation dialog is shown.
+
+### Backend Manifest API (`manifest.py`)
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `get_allowed_files()` | `{filename: Path}` | All SCAD files referenced by modes |
+| `get_parts_map()` | `{scad_filename: [part_ids]}` | Parts per SCAD file |
+| `get_mode_map()` | `{part_id: render_mode_int}` | Render mode integers for OpenSCAD |
+| `get_scad_file_for_mode(mode_id)` | `str | None` | SCAD filename for a mode |
+| `get_parts_for_mode(mode_id)` | `[str]` | Part IDs for a mode |
+| `calculate_estimate_units(mode_id, params)` | `int` | Unit count for time estimation |
+
+Module-level: `discover_projects()` scans `PROJECTS_DIR`, `get_manifest(slug)` loads and caches.
+
+### Frontend Manifest API (`ManifestProvider.jsx`)
+
+Provides via `useManifest()` hook: `manifest`, `loading`, `projectSlug`, `projects`, `switchProject(slug)`, `getMode(id)`, `getParametersForMode(id)`, `getPartColors(id)`, `getDefaultParams()`, `getDefaultColors()`, `getLabel(obj, key, lang)`, `getCameraViews()`, `getGroupLabel(groupId, lang)`, `getViewerConfig()`, `getEstimateConstants()`.
+
+---
+
+## API Reference
+
+### Core Endpoints
+
+| Method | Endpoint | Payload | Use Case |
+|--------|----------|---------|----------|
+| GET | `/api/health` | — | Health check, OpenSCAD availability |
+| GET | `/api/config` | — | Legacy config (delegates to manifest) |
+| GET | `/api/manifest` | — | Fetch manifest (default project) |
+| GET | `/api/projects` | — | List all projects (`?stats=1` for analytics) |
+| GET | `/api/projects/<slug>/manifest` | — | Fetch manifest for specific project |
+| POST | `/api/projects/<slug>/fork` | — | Fork project to editable copy (pro+) |
+| POST | `/api/projects/analyze` | multipart `.scad` | Analyze SCAD files, return draft manifest |
+| POST | `/api/projects/create` | multipart manifest + files | Create new project |
+| POST | `/api/estimate` | `{mode, parameters, project?}` | Estimate render time |
+| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (stl/3mf/off) |
+| POST | `/api/render-stream` | `{mode, parameters, parts, export_format?, project?}` | SSE streaming render |
+| POST | `/api/render-cancel` | — | Cancel active render |
+| POST | `/api/verify` | `{mode, project?}` | Run STL quality checks |
+
+### Editor & Git Endpoints (pro+)
+
+| Method | Endpoint | Payload | Use Case |
+|--------|----------|---------|----------|
+| GET | `/api/projects/<slug>/files` | — | List SCAD files |
+| GET | `/api/projects/<slug>/files/<path>` | — | Read file content |
+| PUT | `/api/projects/<slug>/files/<path>` | `{content}` | Write file |
+| DELETE | `/api/projects/<slug>/files/<path>` | — | Delete file |
+| GET | `/api/projects/<slug>/git/status` | — | Git working tree status |
+| GET | `/api/projects/<slug>/git/diff` | — | Unified diff |
+| POST | `/api/projects/<slug>/git/commit` | `{message, files?}` | Stage and commit |
+| POST | `/api/projects/<slug>/git/push` | — | Push to origin |
+| POST | `/api/projects/<slug>/git/pull` | — | Pull from origin |
+| POST | `/api/projects/<slug>/git/connect-remote` | `{url}` | Set GitHub remote |
+
+### GitHub Endpoints
+
+| Method | Endpoint | Payload | Tier | Use Case |
+|--------|----------|---------|------|----------|
+| POST | `/api/github/validate` | `{url}` | pro+ | Validate repo URL, detect SCAD files |
+| POST | `/api/github/import` | `{url, slug?, private?}` | pro+ | Import repo as project |
+| POST | `/api/github/sync` | `{slug}` | madfam | Sync with upstream |
+
+### AI Endpoints (basic+)
+
+| Method | Endpoint | Payload | Use Case |
+|--------|----------|---------|----------|
+| POST | `/api/ai/session` | `{project, mode}` | Create chat session |
+| POST | `/api/ai/chat-stream` | `{session_id, message, current_params}` | SSE streaming chat |
+
+SSE events: `chunk` (incremental text), `params` (validated parameter changes), `edits` (code edits), `done`, `error`.
+
+### Download & BOM Endpoints
+
+| Method | Endpoint | Use Case |
+|--------|----------|----------|
+| GET | `/api/projects/<slug>/download/stl/<file>` | Download STL file |
+| GET | `/api/projects/<slug>/download/scad/<file>` | Download SCAD source |
+| GET | `/api/projects/<slug>/bom` | Bill of materials (JSON/CSV) |
+| GET | `/api/projects/<slug>/datasheet` | Project datasheet (PDF/HTML) |
+
+### Analytics & User Endpoints
+
+| Method | Endpoint | Use Case |
+|--------|----------|----------|
+| POST | `/api/analytics/track` | Record analytics event |
+| GET | `/api/analytics/<slug>/summary` | Aggregate analytics |
+| GET | `/api/tiers` | Public tier definitions |
+| GET | `/api/me` | Current user info and tier |
+
+### Admin Endpoints (admin role)
+
+| Method | Endpoint | Use Case |
+|--------|----------|----------|
+| GET | `/api/admin/projects` | All projects with metadata |
+| GET | `/api/admin/projects/<slug>` | Detailed project info |
+
+### Rate Limits
+
+Default 500/hr. Stricter: Render 100/hr, Estimate 200/hr, Verify 50/hr, Analysis 20/hr, Creation 10/hr. Returns HTTP 429 with `Retry-After`.
+
+### Error Format
+
+All errors use: `{ "status": "error", "error": "Human-readable message" }`. Global handlers for 400, 404, 500.
+
+---
+
+## Tiered Access Control
+
+Tier definitions live in `apps/api/tiers.json`. Enforcement in `middleware/auth.py`.
+
+| Tier | Renders/hr | Projects | Export | GitHub | AI Config | AI Code | AI Req/hr |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| guest | 30 | 0 | STL | — | — | — | 0 |
+| basic | 50 | 3 | STL | — | Yes | — | 30 |
+| pro | 200 | unlimited | STL/3MF/OFF | import, editor, private | Yes | Yes | 100 |
+| madfam | 500 | unlimited | STL/3MF/OFF | import, sync, editor, private | Yes | Yes | 300 |
+
+Set `AUTH_ENABLED=false` to bypass auth in development (all users get madfam tier).
+
+---
+
+## AI Features
+
+### AI Configurator (basic+)
+
+Chat-based parameter adjustment. User describes what they want ("make it wider and shorter"), the LLM returns explanation + JSON parameter changes, backend validates against manifest constraints (min/max/step), validated changes stream back as SSE `params` events.
+
+Frontend: `AiChatPanel.jsx` (mode: configurator), `useAiChat.js` hook, `aiService.js`.
+Backend: `services/ai_configurator.py`, `services/ai_provider.py`, `services/ai_session.py`.
+
+### AI Code Editor (pro+)
+
+Natural language SCAD editing. User describes changes in the Monaco editor's AI panel, LLM returns explanation + search/replace edits, backend validates each edit (file exists, search string found), validated edits stream back as SSE `edits` events.
+
+Edit format uses exact string matching (not line numbers):
+```json
+{ "edits": [{ "file": "main.scad", "search": "cube([10, 10, 10])", "replace": "cube([20, 10, 15])" }] }
+```
+
+Frontend: `ScadEditor.jsx` (AI toggle button), `AiChatPanel.jsx` (mode: code-editor).
+Backend: `services/ai_code_editor.py`.
+
+### Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AI_PROVIDER` | `anthropic` | LLM provider: `anthropic` or `openai` |
+| `AI_API_KEY` | — | Required for AI features |
+| `AI_MODEL` | Provider default | Optional model override |
+| `AI_MAX_TOKENS` | `2048` | Max response tokens |
+
+Sessions are in-memory, expire after 1 hour. If `AI_API_KEY` is not set, AI endpoints return 503.
+
+---
+
+## GitHub Integration
+
+### Endpoints
+
+| Feature | Endpoint | Tier |
+|---------|----------|------|
+| Validate repo | `POST /api/github/validate` | pro+ |
+| Import repo | `POST /api/github/import` | pro+ |
+| Sync upstream | `POST /api/github/sync` | madfam |
+| File CRUD | `/api/projects/<slug>/files/*` | pro+ |
+| Git operations | `/api/projects/<slug>/git/*` | pro+ |
+
+### Workflow
+
+1. User validates a GitHub URL (detects SCAD files, checks access)
+2. Import clones repo into `projects/` with auto-generated manifest
+3. Monaco editor provides file tree, tabs, syntax highlighting, auto-save
+4. Git panel shows status/diff, supports commit/push/pull
+5. Madfam users can sync to pull upstream changes
+
+Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `services/github_import.py`, `services/github_token.py`, `services/git_operations.py`, `GitPanel.jsx`, `ForkDialog.jsx`, `ScadEditor.jsx`.
+
+---
+
+## Frontend Architecture
+
+### Provider Hierarchy
+
+```
+<ThemeProvider>
+  <ManifestProvider>
+    <ManifestAwareLanguageProvider>
+      <App />
+    </ManifestAwareLanguageProvider>
+  </ManifestProvider>
+</ThemeProvider>
+```
+
+### Key Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Controls.jsx` | Data-driven parameter sliders, checkboxes, color pickers from manifest |
+| `Viewer.jsx` | Three.js 3D STL viewer, Z-up convention, orientation gizmo |
+| `ProjectSelector.jsx` | Multi-project dropdown (visible when >1 project) |
+| `OnboardingWizard.jsx` | 4-step SCAD project onboarding wizard |
+| `ScadEditor.jsx` | Monaco-based SCAD editor with file tree, tabs, AI toggle |
+| `GitPanel.jsx` | Git status, diff, commit, push/pull, connect-remote |
+| `AiChatPanel.jsx` | AI chat UI for configurator and code-editor modes |
+| `ForkDialog.jsx` | Fork-to-edit modal for built-in projects |
+| `BomPanel.jsx` | Manifest-driven bill of materials |
+| `ExportPanel.jsx` | Export controls with format selector |
+| `PrintEstimateOverlay.jsx` | Print time/filament/cost overlay |
+| `ConfirmRenderDialog.jsx` | Long-render confirmation dialog |
+
+### Hooks
+
+| Hook | Purpose |
+|------|---------|
+| `useRender` | Render orchestration (generate, cancel, cache, confirm) |
+| `useConstraints` | Manifest constraint evaluation (rule + severity) |
+| `useImageExport` | PNG snapshot export for camera views |
+| `useLocalStoragePersistence` | Debounced localStorage sync |
+| `useShareableUrl` | Shareable URL generation (base64url param encoding) |
+| `useUndoRedo` | Parameter undo/redo with 50-entry history stack |
+| `useProjectMeta` | Fetch project.meta.json for source type detection |
+| `useEditorRender` | Debounced save + auto-render for editor changes |
+| `useAiChat` | AI chat state management (SSE streaming) |
+
+### Services
+
+| Service | Purpose |
+|---------|---------|
+| `renderService.js` | Dual-mode render (backend SSE / WASM worker) |
+| `backendDetection.js` | Backend availability check + API base URL |
+| `openscad-worker.js` | Web Worker for OpenSCAD WASM rendering |
+| `verifyService.js` | STL verification client |
+| `editorService.js` | SCAD file CRUD API client |
+| `gitService.js` | Git operations API client |
+| `aiService.js` | AI chat API client (SSE consumer) |
+
+### Build Optimization
+
+Vite manual chunk splitting: `vendor-react` (~193KB gzip ~61KB), `vendor-three` (~722KB gzip ~188KB), `vendor-r3f` (~381KB gzip ~128KB), `vendor-ui` (~60KB gzip ~19KB). `ProjectsView` and `OnboardingWizard` are lazy-loaded.
+
+---
+
+## WASM Mode
+
+When the backend API is unreachable, the studio falls back to client-side rendering via OpenSCAD WASM.
+
+Detection: `isBackendAvailable()` sends `GET /api/health` with 2-second timeout. Pass → backend mode; fail → WASM mode. Result cached per session.
+
+Architecture: Main thread sends params to Web Worker → Worker creates fresh Emscripten instance per render → builds CLI args → `callMain(args)` → STL output sent back. Fresh instance needed because `callMain()` corrupts internal state.
+
+Limitations: ~4x slower, ~200MB peak memory, only Gridfinity project available (uses bundled fallback manifest), no external libs beyond BOSL2, sequential renders only, ~15MB WASM binary.
+
+Browser support: WebAssembly + Web Workers + `AbortSignal.timeout()` (Chrome 120+, Firefox 123+, Safari 17.4+).
+
+CSP: Requires `wasm-unsafe-eval` in Content-Security-Policy.
+
+---
+
+## Verification
+
+The verification engine (`tests/verify_design.py`) uses `trimesh` to analyze exported STL geometry. Checks are organized into manufacturing stages.
+
+### Stages
+
+**geometry** — Structural integrity:
+- `watertight`: Mesh is a closed manifold
+- `body_count`: Single continuous solid (configurable `expected`)
+- `dimensions`: Bounding box within range
+- `facet_count`: Complexity above threshold (default: 400)
+
+**printability** — FDM manufacturability:
+- `thin_wall`: Min wall thickness (default: 0.8mm)
+- `overhang`: Max unsupported angle (default: 45 deg)
+- `min_feature_size`: Min feature (default: 0.4mm)
+
+**assembly_fit** — Assembly validation:
+- `collision`: Parts don't collide after transform
+
+### Configuration
+
+Add `verification` section to `project.json` with `stages` (global defaults) and `mode_overrides` (per-mode stage selection + per-part threshold tweaks).
+
+Output: Human-readable lines + `===JSON===` marker + structured JSON. Backend parses JSON for API response; human text goes to UI `output` field.
+
+---
+
+## Code Conventions
+
+| Area | Convention |
+|------|-----------|
+| Python | PEP 8, type hints, Flask blueprints |
+| JS/JSX | ESLint, functional components, hooks, ES modules |
+| Astro | `.astro` components, React islands via `client:visible` |
+| OpenSCAD | `snake_case`, `render_mode` variable selects part |
+| CSS | Tailwind utility classes, shared tokens from `packages/tokens/` |
+| Tests | Co-located (`*.test.js`/`*.test.jsx`), Vitest + RTL |
+| Linting | ESLint + jsx-a11y (studio), ruff (backend) |
+| Naming | `camelCase` JS, `snake_case` Python/SCAD |
+
+---
+
+## Common Workflows
+
+### Multi-project setup
+1. Projects live in `projects/` — each subdirectory with a `project.json` is auto-discovered
+2. Set `PROJECTS_DIR` env var to override (default: `projects/` at repo root)
+3. Without `PROJECTS_DIR` or `projects/`, falls back to single-project via `SCAD_DIR`
+
+### Onboard an external SCAD project
+```bash
+tools/yantra4d-init ./path/to/scad-dir --slug my-project --install
+```
+Or use the web UI: upload `.scad` files -> review analysis -> edit manifest -> save.
+
+### Add a parameter
+1. Add entry to `projects/{slug}/project.json` -> `parameters[]`
+2. Use `$name` in relevant `.scad` files
+3. Update `fallback-manifest.json` if deploying to Pages
+
+### Add a mode
+1. Add entry to `projects/{slug}/project.json` -> `modes[]`
+2. Create the `.scad` file in `projects/{slug}/`
+3. Update `fallback-manifest.json`
+
+### Run tests
+```bash
+cd apps/studio && npm test              # Studio (Vitest + RTL)
+cd apps/studio && npm run test:coverage  # with coverage thresholds
+cd apps/landing && npm run build         # Landing (Astro static build)
+cd apps/api && pytest                    # Backend (pytest)
+cd apps/api && pytest --cov             # with coverage
+```
+
+### Local dev
+```bash
+./scripts/dev.sh          # start backend + studio + landing
+./scripts/dev-stop.sh     # stop all dev servers
+```
+
+### Docker
+```bash
+docker compose up --build   # start
+docker compose down         # stop
+```
+
+---
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PROJECTS_DIR` | `projects/` | Directory containing project subdirectories |
+| `SCAD_DIR` | `../../scad` | SCAD files path (single-project fallback) |
+| `OPENSCAD_PATH` | `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD` | OpenSCAD binary |
+| `LIBS_DIR` | `libs/` | Global OpenSCAD libraries directory |
+| `VERIFY_SCRIPT` | `../../tests/verify_design.py` | Verification script path |
+| `PORT` | `5000` | Backend server port |
+| `HOST` | `0.0.0.0` | Backend bind address |
+| `VITE_API_BASE` | `http://localhost:5000` | Frontend API base URL |
+| `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3000` | Allowed CORS origins |
+| `AUTH_ENABLED` | `true` | Enable JWT auth (false = all users get madfam) |
+| `AI_PROVIDER` | `anthropic` | AI provider: `anthropic` or `openai` |
+| `AI_API_KEY` | — | Required for AI features |
+| `AI_MODEL` | auto | Model override |
+| `AI_MAX_TOKENS` | `2048` | Max AI response tokens |
+
+---
+
+## Known Gotchas
+
+| Issue | Detail |
+|-------|--------|
+| Manifest sync | After editing `project.json`, update `fallback-manifest.json` for Pages mode |
+| URL format | Hash changed from `#/preset/mode` to `#/project/preset/mode` — old format still supported |
+| Shadcn UI | Never hand-edit `components/ui/*` — use shadcn CLI |
+| Verify false positives | Verification needs rendered STLs first; render before verifying |
+| Render timeouts | Complex grids can exceed default timeout; Docker uses 300s |
+| Env vars | Backend reads `OPENSCAD_PATH`, `SCAD_DIR`, `VERIFY_SCRIPT` |
+| CORS origins | Backend restricts CORS via `CORS_ORIGINS`; add your domain |
+| Global SCAD libs | `libs/` are git submodules — `git submodule update --init --recursive` |
+| Client-side WASM | `openscad-worker.js` runs in Web Worker; no DOM access |
+| Rate limiting | Flask-Limiter: Render 100/hr, Estimate 200/hr, Verify 50/hr |
+| CSP headers | Production nginx requires `wasm-unsafe-eval` for WASM |
+| Bundle splitting | Vite splits vendor chunks; `ProjectsView` and `OnboardingWizard` lazy-loaded |
+| Shareable URLs | `?p=` encodes non-default params as base64url JSON diff |
+| Undo/Redo | Cmd+Z / Cmd+Shift+Z; 50-entry history stack |
+| Export formats | `export_format` in render payloads (stl/3mf/off) |
+| Print estimation | Volume-based heuristic; not slicer-accurate |
+| Shared tokens | Both apps import `packages/tokens/colors.css` |
+| Embed mode | `?embed=true` hides header; `frame-ancestors` needed for iframes |
+
+---
+
+## Projects Catalog
+
+19 built-in parametric SCAD projects in `projects/`:
+
+| Slug | Name | Description |
+|------|------|-------------|
+| `gridfinity` | Gridfinity Extended | Modular storage bins (flagship project) |
+| `polydice` | PolyDice Generator | Parametric dice set |
+| `ultimate-box` | Ultimate Box Maker | Parametric enclosure box |
+| `yapp-box` | YAPP Box Generator | Yet Another Parametric Project box |
+| `keyv2` | KeyV2 Keycaps | Parametric mechanical keyboard keycaps |
+| `multiboard` | Multiboard Wall Storage | Pegboard wall storage system |
+| `gears` | Parametric Gears | Configurable gear generator |
+| `gear-reducer` | Parametric Gear Reducer | BOSL2-based gear reduction system |
+| `fasteners` | Fastener Generator | Screws, bolts, nuts, washers |
+| `stemfie` | STEMFIE | STEM education construction kit |
+| `voronoi` | Voronoi Generator | Organic Voronoi patterns |
+| `maze` | Maze Generator | Parametric puzzle mazes |
+| `relief` | Text Relief Generator | Text plaques and signs |
+| `julia-vase` | Julia Vase | Fractal Julia set vases |
+| `superformula` | Superformula Vase | Generative superformula vases |
+| `torus-knot` | Torus Knot Sculpture | Mathematical torus knot sculptures |
+| `spiral-planter` | Spiral Planter | Archimedean spiral planters |
+| `motor-mount` | NEMA Motor Mount | NEMA stepper motor mounts |
+| `portacosas` | Portacosas | Customizable container/holder |
+
+Each project has: `project.json` (manifest), `*.scad` (geometry files), optional `exports/` (reference STLs) and `docs/` (project-specific docs).
+
+---
+
+## Deployment
+
+| Target | Method |
+|--------|--------|
+| Enclii PaaS | Auto-deploy on push to main |
+| Docker | `docker compose up` (backend + studio + landing) |
+| Local | Flask (5000) + Vite (5173) + Astro (4321) |
+
+Production domains: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api).
+
+---
+
+## Testing Standards
+
+- **Studio**: Vitest + RTL, coverage thresholds (65% statements/lines, 55% branches, 60% functions), jest-axe accessibility audits
+- **Landing**: `npm run build` (Astro static build)
+- **Backend**: pytest + pytest-cov, coverage threshold 60%
+- **Pre-commit**: Husky runs lint-staged (ESLint fix + Vitest on changed files)
+- **CI**: `.github/workflows/ci.yml` — studio (lint+test+coverage), landing (build), backend (lint+test+coverage), manifest-sync
+
+---
+
+## Optional
+
+- [Codebase Audit](./claudedocs/codebase-audit.md): Full platform assessment — stability, coverage, architecture
+- [Usability Audit](./claudedocs/usability-audit.md): Browser-based UX testing results
+- [Production Verification](./claudedocs/enclii-verification-prompt.md): Deployment verification steps
+- [Competitive Landscape](./docs/competitive-landscape.md): Market research, competitor analysis
+- [Roadmap](./docs/roadmap.md): Planned features for future implementation
+- [Troubleshooting](./docs/troubleshooting.md): Common issues and solutions

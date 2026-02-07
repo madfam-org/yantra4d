@@ -1,0 +1,42 @@
+# Yantra4D
+
+> Manifest-driven parametric 3D print design platform. Flask API + React/Vite
+> studio + Astro landing page. 19 built-in OpenSCAD projects with dual rendering
+> (server-side CLI + client-side WASM), tiered access control, AI-assisted
+> design, and GitHub integration.
+
+Yantra4D is a multi-project platform for parametric OpenSCAD models with a web-based 3D preview studio. Each project is defined by a `project.json` manifest that declares modes, parameters, parts, colors, labels, estimation formulas, verification checks, and bill of materials. The UI and backend are fully data-driven from this manifest — most new features require only manifest edits with zero code changes.
+
+The architecture has three layers: a Flask API backend that renders models via the OpenSCAD CLI, a React 19 + Vite + Three.js frontend studio with Shadcn UI components, and an Astro marketing landing page with React islands. When the backend is unreachable, the studio falls back to client-side rendering via OpenSCAD compiled to WebAssembly.
+
+The platform supports four user tiers (guest, basic, pro, madfam) that gate features like export formats (STL/3MF/OFF), GitHub import and sync, AI-assisted parameter configuration, AI-powered SCAD code editing, and project limits. AI features use streaming SSE with support for Anthropic and OpenAI providers. GitHub integration enables repo import, file editing via a Monaco-based SCAD editor, and git operations (status, diff, commit, push, pull).
+
+The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite, Tailwind CSS, Shadcn UI, Three.js), Astro, Docker, Vitest + RTL + jest-axe (frontend testing), and pytest (backend testing). The platform ships with 19 built-in projects including gridfinity (modular storage), polydice (dice), gears, voronoi, maze, relief, and more.
+
+## Documentation
+
+- [CLAUDE.md](./CLAUDE.md): Primary agent guide — architecture, file map, API reference, conventions, gotchas
+- [Project Manifest](./docs/manifest.md): Schema, parameter types, modes, estimation formulas, BOM, constraints
+- [Web Interface](./docs/web_interface.md): Full-stack architecture, all endpoints, component and hook maps
+- [AI Features](./docs/ai-features.md): AI Configurator + Code Editor — setup, API, SSE protocol, tier access
+- [Multi-Project](./docs/multi-project.md): Multi-project setup, discovery, onboarding, Docker configuration
+- [WASM Mode](./docs/wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations
+- [Developer Experience](./docs/devx-guide.md): Onboarding external SCAD projects, CLI tool, analyzer
+- [Verification](./docs/verification.md): Automated STL quality checks — watertightness, printability, assembly fit
+- [Manifest Schema](./packages/schemas/project-manifest.schema.json): JSON Schema for project.json validation
+- [Troubleshooting](./docs/troubleshooting.md): Render timeouts, CORS, git submodules, Docker env vars
+
+## Projects
+
+- [projects/](./projects/): 19 built-in parametric SCAD projects (gridfinity, polydice, gears, voronoi, maze, relief, and more)
+
+## Internal Audits
+
+- [Codebase Audit](./claudedocs/codebase-audit.md): Full platform assessment — stability, coverage, architecture
+- [Usability Audit](./claudedocs/usability-audit.md): Browser-based UX testing results
+- [Production Verification](./claudedocs/enclii-verification-prompt.md): Deployment verification steps
+
+## Optional
+
+- [Competitive Landscape](./docs/competitive-landscape.md): Market research, competitor analysis, feature roadmap
+- [Roadmap](./docs/roadmap.md): Planned features for future implementation

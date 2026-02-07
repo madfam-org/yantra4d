@@ -44,18 +44,16 @@ describe('ExportPanel', () => {
     expect(onDownloadStl).toHaveBeenCalled()
   })
 
-  it('does not show format selector when manifest has no export_formats', () => {
+  it('shows format selector when manifest has export_formats', () => {
     renderPanel()
-    expect(screen.queryByText('Format:')).not.toBeInTheDocument()
+    // Gridfinity fallback manifest includes export_formats: ["stl", "3mf"]
+    expect(screen.queryByText('Format:')).toBeInTheDocument()
   })
 
   it('calls onExportFormatChange when format button clicked', () => {
     const onExportFormatChange = vi.fn()
-    // ExportPanel reads manifest.export_formats — the fallback manifest doesn't have it,
-    // so we test the prop passthrough directly
     renderPanel({ exportFormat: 'stl', onExportFormatChange })
-    // Without export_formats in manifest, selector won't render
-    // This verifies the prop is accepted without error
+    // Gridfinity manifest has export_formats, so format selector renders
     expect(screen.getByText(/Download STL/i)).toBeInTheDocument()
   })
 })

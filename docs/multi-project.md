@@ -6,20 +6,16 @@ Yantra4D supports serving multiple parametric 3D projects from a single instance
 
 ```
 projects/
-  tablaco/              # Flagship project (interlocking cubes)
-    project.json
-    *.scad
-  gridfinity/           # Modular storage bins
+  gridfinity/           # Flagship project (modular storage bins)
     project.json
     *.scad
   polydice/             # Parametric dice set
     project.json
     *.scad
-  ...                   # 20 built-in projects total
+  ...                   # 19 built-in projects total
   my-custom-project/    # Onboarded project
     project.json
     *.scad
-scad -> projects/tablaco/   # Backward-compat symlink
 ```
 
 ## Configuration

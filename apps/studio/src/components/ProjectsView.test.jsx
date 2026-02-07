@@ -15,20 +15,8 @@ vi.mock('./Viewer', () => ({
 
 const mockProjects = [
   {
-    slug: 'tablaco',
-    name: 'Tablaco Studio',
-    version: '1.0.0',
-    description: 'Interlocking cube system',
-    mode_count: 3,
-    parameter_count: 8,
-    scad_file_count: 4,
-    has_manifest: true,
-    has_exports: true,
-    modified_at: 1700000000,
-  },
-  {
     slug: 'gridfinity',
-    name: 'Gridfinity',
+    name: 'Gridfinity Extended',
     version: '1.0.0',
     description: 'Modular storage bins',
     mode_count: 2,
@@ -275,12 +263,12 @@ describe('ProjectsView', () => {
     })
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
-      expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+      expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
-    expect(screen.getAllByText('v1.0.0')).toHaveLength(3)
-    expect(screen.getAllByText('3 modes')).toHaveLength(6) // tablaco + stemfie + voronoi + maze + relief + gear-reducer
-    expect(screen.getAllByText('8 params').length).toBeGreaterThan(0)
-    expect(screen.getByText('Gridfinity')).toBeInTheDocument()
+    expect(screen.getAllByText('v1.0.0')).toHaveLength(2)
+    expect(screen.getAllByText('3 modes')).toHaveLength(5) // stemfie + voronoi + maze + relief + gear-reducer
+    expect(screen.getAllByText('6 params').length).toBeGreaterThan(0)
+    expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     expect(screen.getByText('Julia Vase')).toBeInTheDocument()
   })
 
@@ -312,11 +300,11 @@ describe('ProjectsView', () => {
     })
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
-      expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+      expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
     const links = screen.getAllByRole('link')
     const projectLinks = links.filter(l => l.getAttribute('href')?.startsWith('#/'))
-    expect(projectLinks.some(l => l.getAttribute('href') === '#/tablaco')).toBe(true)
+    expect(projectLinks.some(l => l.getAttribute('href') === '#/gridfinity')).toBe(true)
     expect(projectLinks.some(l => l.getAttribute('href') === '#/julia-vase')).toBe(true)
   })
 
@@ -340,7 +328,7 @@ describe('ProjectsView', () => {
     })
     const { container } = renderWithProviders(<ProjectsView />)
     await waitFor(() => {
-      expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+      expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
     const results = await axe(container)
     expect(results).toHaveNoViolations()
@@ -356,7 +344,7 @@ describe('ProjectsView', () => {
     })
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
-      expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+      expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
     expect(screen.getByText('42 renders')).toBeInTheDocument()
     expect(screen.getByText('7 exports')).toBeInTheDocument()
@@ -369,10 +357,10 @@ describe('ProjectsView', () => {
     })
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
-      expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+      expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
-    // All 20 projects have manifest, 3 have exports (tablaco, gridfinity, portacosas)
-    expect(screen.getAllByText('Manifest')).toHaveLength(20)
-    expect(screen.getAllByText('Exports')).toHaveLength(3)
+    // All 19 projects have manifest, 2 have exports (gridfinity, portacosas)
+    expect(screen.getAllByText('Manifest')).toHaveLength(19)
+    expect(screen.getAllByText('Exports')).toHaveLength(2)
   })
 })

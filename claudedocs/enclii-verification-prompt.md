@@ -70,11 +70,11 @@ curl -sS https://4d-api.madfam.io/api/health | python3 -m json.tool
 ```bash
 curl -sS https://4d-api.madfam.io/api/projects | python3 -m json.tool | head -20
 ```
-**Expected**: JSON array with 20 project entries (slugs like `tablaco`, `gridfinity`, `voronoi`, etc.).
+**Expected**: JSON array with 19 project entries (slugs like `gridfinity`, `voronoi`, `polydice`, etc.).
 
 #### 4b. Single project manifest
 ```bash
-curl -sS https://4d-api.madfam.io/api/projects/tablaco/manifest | python3 -m json.tool | head -5
+curl -sS https://4d-api.madfam.io/api/projects/gridfinity/manifest | python3 -m json.tool | head -5
 ```
 **Expected**: 200 with JSON containing `name`, `modes`, `parameters` keys.
 
@@ -173,7 +173,7 @@ curl -sS https://auth.madfam.io/.well-known/jwks.json | python3 -m json.tool | h
 
 #### 9b. Unauthenticated API access (tier-gated endpoints)
 ```bash
-curl -sS -o /dev/null -w '%{http_code}' https://4d-api.madfam.io/api/projects/tablaco/git/status
+curl -sS -o /dev/null -w '%{http_code}' https://4d-api.madfam.io/api/projects/gridfinity/git/status
 ```
 
 **Expected**: 401 (requires valid JWT).

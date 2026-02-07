@@ -12,14 +12,16 @@ expect.extend(toHaveNoViolations)
 function renderControls(props = {}) {
   const defaultProps = {
     params: {
-      size: 20, thick: 2.5, rod_D: 3,
-      show_base: true, show_walls: true, show_mech: true, show_letter: true,
-      show_wall_left: true, show_wall_right: true,
-      show_mech_base_ring: true, show_mech_pillars: true, show_mech_snap_beams: true,
+      width_units: 2, depth_units: 1, height_units: 3,
+      cup_wall_thickness: 0, cup_floor_thickness: 0.7,
+      vertical_chambers: 1, horizontal_chambers: 1,
+      fingerslide_enabled: false, label_enabled: false,
+      enable_magnets: false, enable_screws: false,
+      fn: 0,
     },
     setParams: vi.fn(),
-    mode: 'unit',
-    colors: { main: '#e5e7eb' },
+    mode: 'cup',
+    colors: { cup: '#4a90d9' },
     setColors: vi.fn(),
   }
 
@@ -30,23 +32,16 @@ function renderControls(props = {}) {
 }
 
 describe('Controls', () => {
-  it('renders slider labels for unit mode parameters', () => {
+  it('renders slider labels for cup mode parameters', () => {
     renderControls()
-    expect(screen.getByText('Size (mm)')).toBeInTheDocument()
-    expect(screen.getByText('Thickness (mm)')).toBeInTheDocument()
-    expect(screen.getByText('Rod Diameter (mm)')).toBeInTheDocument()
+    expect(screen.getByText('Width (units)')).toBeInTheDocument()
+    expect(screen.getByText('Depth (units)')).toBeInTheDocument()
+    expect(screen.getByText('Height (units)')).toBeInTheDocument()
   })
 
-  it('renders visibility checkboxes', () => {
+  it('renders color picker for cup mode (cup part)', () => {
     renderControls()
-    expect(screen.getByText('Base')).toBeInTheDocument()
-    expect(screen.getByText('Walls')).toBeInTheDocument()
-    expect(screen.getByText('Mechanism')).toBeInTheDocument()
-  })
-
-  it('renders color picker for unit mode (main part)', () => {
-    renderControls()
-    const colorInput = screen.getByDisplayValue('#e5e7eb')
+    const colorInput = screen.getByDisplayValue('#4a90d9')
     expect(colorInput).toBeInTheDocument()
     expect(colorInput).toHaveAttribute('type', 'color')
   })
@@ -54,95 +49,43 @@ describe('Controls', () => {
   it('color change calls setColors', () => {
     const setColors = vi.fn()
     renderControls({ setColors })
-    const colorInput = screen.getByDisplayValue('#e5e7eb')
+    const colorInput = screen.getByDisplayValue('#4a90d9')
     fireEvent.change(colorInput, { target: { value: '#ff0000' } })
     expect(setColors).toHaveBeenCalled()
   })
 
-  it('renders grid parameters when mode is grid', () => {
+  it('renders baseplate parameters when mode is baseplate', () => {
     renderControls({
-      mode: 'grid',
+      mode: 'baseplate',
       params: {
-        rows: 8, cols: 8, rod_extension: 10,
-        show_base: true, show_walls: true, show_mech: true, show_letter: true,
-        show_bottom: true, show_top: true, show_rods: true, show_stoppers: true,
-        show_wall_left: true, show_wall_right: true,
-        show_mech_base_ring: true, show_mech_pillars: true, show_mech_snap_beams: true,
-        show_bottom_base: true, show_bottom_walls: true, show_bottom_mech: true, show_bottom_letter: true,
-        show_bottom_wall_left: true, show_bottom_wall_right: true,
-        show_bottom_mech_base_ring: true, show_bottom_mech_pillars: true, show_bottom_mech_snap_beams: true,
-        show_top_base: true, show_top_walls: true, show_top_mech: true, show_top_letter: true,
-        show_top_wall_left: true, show_top_wall_right: true,
-        show_top_mech_base_ring: true, show_top_mech_pillars: true, show_top_mech_snap_beams: true,
+        width_units: 2, depth_units: 2,
+        bp_enable_magnets: false, bp_enable_screws: false,
+        bp_corner_radius: 3.75, bp_reduced_wall: -1,
+        bp_reduced_wall_taper: false,
+        fn: 0,
       },
     })
-    expect(screen.getByText('Rows')).toBeInTheDocument()
-    expect(screen.getByText('Cols')).toBeInTheDocument()
+    expect(screen.getByText('Width (units)')).toBeInTheDocument()
+    expect(screen.getByText('Depth (units)')).toBeInTheDocument()
+    expect(screen.getByText('Corner Radius (mm)')).toBeInTheDocument()
   })
 
-  it('renders manifest-driven group labels for visibility and colors', () => {
+  it('renders colors group label for part color controls', () => {
     renderControls()
-    // These labels now come from manifest.parameter_groups, not hardcoded ternaries
-    expect(screen.getByText('Visibility')).toBeInTheDocument()
-    expect(screen.getByText('Colors')).toBeInTheDocument()
-  })
-
-  it('does not show advanced visibility params in basic mode', () => {
-    renderControls()
-    // Advanced params should be hidden by default (basic mode)
-    expect(screen.queryByText('Left Wall')).not.toBeInTheDocument()
-    expect(screen.queryByText('Right Wall')).not.toBeInTheDocument()
-    expect(screen.queryByText('Base Ring')).not.toBeInTheDocument()
-    expect(screen.queryByText('Pillars')).not.toBeInTheDocument()
-    expect(screen.queryByText('Snap Beams')).not.toBeInTheDocument()
-  })
-
-  it('shows advanced visibility params after toggling to Advanced', () => {
-    renderControls()
-    // Click the "Advanced" toggle button
-    const advancedBtn = screen.getByText('Advanced')
-    fireEvent.click(advancedBtn)
-
-    // Now advanced params should be visible
-    expect(screen.getByText('Left Wall')).toBeInTheDocument()
-    expect(screen.getByText('Right Wall')).toBeInTheDocument()
-    expect(screen.getByText('Base Ring')).toBeInTheDocument()
-    expect(screen.getByText('Pillars')).toBeInTheDocument()
-    expect(screen.getByText('Snap Beams')).toBeInTheDocument()
-  })
-
-  it('disables child checkboxes when parent is unchecked', () => {
-    renderControls({
-      params: {
-        size: 20, thick: 2.5, rod_D: 3,
-        show_base: true, show_walls: false, show_mech: true, show_letter: true,
-        show_wall_left: true, show_wall_right: true,
-        show_mech_base_ring: true, show_mech_pillars: true, show_mech_snap_beams: true,
-      },
-    })
-
-    // Toggle to advanced mode
-    const advancedBtn = screen.getByText('Advanced')
-    fireEvent.click(advancedBtn)
-
-    // Left Wall and Right Wall should be disabled since show_walls is false
-    const leftWallCheckbox = screen.getByRole('checkbox', { name: 'Left Wall' })
-    expect(leftWallCheckbox).toBeDisabled()
-    const rightWallCheckbox = screen.getByRole('checkbox', { name: 'Right Wall' })
-    expect(rightWallCheckbox).toBeDisabled()
+    // Gridfinity has no "colors" parameter_group, so getGroupLabel returns raw id
+    expect(screen.getByText('colors')).toBeInTheDocument()
   })
 
   it('sliders are labelled via aria-labelledby pointing to the parameter label', () => {
     renderControls()
-    // aria-labelledby on Slider Root is forwarded to the Thumb (role="slider") by Radix
-    expect(screen.getByLabelText('Size (mm)')).toBeInTheDocument()
-    expect(screen.getByLabelText('Thickness (mm)')).toBeInTheDocument()
-    expect(screen.getByLabelText('Rod Diameter (mm)')).toBeInTheDocument()
+    expect(screen.getByLabelText('Width (units)')).toBeInTheDocument()
+    expect(screen.getByLabelText('Depth (units)')).toBeInTheDocument()
+    expect(screen.getByLabelText('Height (units)')).toBeInTheDocument()
   })
 
   it('value displays have descriptive aria-label', () => {
     renderControls()
-    const valueDisplay = screen.getByLabelText(/Size \(mm\): 20\. (Click to edit|Clic para editar)/)
+    const valueDisplay = screen.getByLabelText(/Width \(units\): 2\. (Click to edit|Clic para editar)/)
     expect(valueDisplay).toBeInTheDocument()
     expect(valueDisplay).toHaveAttribute('role', 'button')
     expect(valueDisplay).toHaveAttribute('tabIndex', '0')
@@ -150,26 +93,27 @@ describe('Controls', () => {
 
   it('renders default star indicators on slider tracks', () => {
     renderControls()
-    // Stars should always be present as default position indicators, not conditional on value
-    expect(screen.getByTestId('default-star-size')).toBeInTheDocument()
-    expect(screen.getByTestId('default-star-thick')).toBeInTheDocument()
-    expect(screen.getByTestId('default-star-rod_D')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-width_units')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-depth_units')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-height_units')).toBeInTheDocument()
   })
 
   it('default star remains when value differs from default', () => {
     renderControls({ params: {
-      size: 25, thick: 2.5, rod_D: 3,
-      show_base: true, show_walls: true, show_mech: true, show_letter: true,
-      show_wall_left: true, show_wall_right: true,
-      show_mech_base_ring: true, show_mech_pillars: true, show_mech_snap_beams: true,
+      width_units: 4, depth_units: 1, height_units: 3,
+      cup_wall_thickness: 0, cup_floor_thickness: 0.7,
+      vertical_chambers: 1, horizontal_chambers: 1,
+      fingerslide_enabled: false, label_enabled: false,
+      enable_magnets: false, enable_screws: false,
+      fn: 0,
     }})
-    // Star should still be present even though size (25) != default (20)
-    expect(screen.getByTestId('default-star-size')).toBeInTheDocument()
+    // Star should still be present even though width_units (4) != default (2)
+    expect(screen.getByTestId('default-star-width_units')).toBeInTheDocument()
   })
 
   it('does not render color-gradient widget when manifest has no gradient params', () => {
     renderControls()
-    // The fallback manifest (tablaco) has no widget: { type: 'color-gradient' } params
+    // The fallback manifest (gridfinity) has no widget: { type: 'color-gradient' } params
     expect(screen.queryByLabelText(/Gradient preview/)).not.toBeInTheDocument()
   })
 
@@ -177,21 +121,5 @@ describe('Controls', () => {
     const { container } = renderControls()
     const results = await axe(container)
     expect(results).toHaveNoViolations()
-  })
-
-  it('checkboxes use boolean checked to avoid controlled/uncontrolled warning', () => {
-    // Pass undefined for a checkbox param — should render without error
-    renderControls({
-      params: {
-        size: 20, thick: 2.5, rod_D: 3,
-        show_base: undefined, show_walls: true, show_mech: true, show_letter: true,
-        show_wall_left: true, show_wall_right: true,
-        show_mech_base_ring: true, show_mech_pillars: true, show_mech_snap_beams: true,
-      },
-    })
-    // Base checkbox should render as unchecked (!!undefined === false), not crash
-    const baseCheckbox = screen.getByRole('checkbox', { name: 'Base' })
-    expect(baseCheckbox).toBeInTheDocument()
-    expect(baseCheckbox).toHaveAttribute('aria-checked', 'false')
   })
 })

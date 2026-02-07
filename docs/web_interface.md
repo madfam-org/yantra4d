@@ -5,7 +5,7 @@
 ---
 
 ## Key Features
-- **Mode-Based Workflow**: Modes are defined per-project in `project.json`. The built-in tablaco project defines Unit, Assembly, and Grid modes — see [`projects/tablaco/docs/`](../projects/tablaco/docs/index.md).
+- **Mode-Based Workflow**: Modes are defined per-project in `project.json`. For example, the gridfinity project defines Bin, Baseplate, and Lid modes.
 - **Multi-Project Platform**: Serve and switch between multiple SCAD projects. See [Multi-Project Platform](./multi-project.md).
 - **Data-Driven UI**: All modes, parameters, parts, camera views, parameter group labels, viewer defaults, and estimation constants are declared in a [project manifest](./manifest.md) (`projects/{slug}/project.json`). No hardcoded control definitions, camera positions, or UI labels in the frontend.
 - **Interactive 3D Viewer**: Real-time rendering of generated STL files with loading progress. Uses Z-up axis convention (matching OpenSCAD) with an orientation gizmo widget.
@@ -126,7 +126,7 @@ Supported formats: `stl` (default), `3mf`, `off`. Invalid formats fall back to `
 
 **Estimate / Render (legacy)**:
 ```json
-{ "scad_file": "tablaco.scad", "rows": 4, "cols": 4, "rod_extension": 10 }
+{ "scad_file": "yantra4d_cup.scad", "width_units": 2, "depth_units": 1, "height_units": 3 }
 ```
 
 All styles are supported. When `mode` is present, `scad_file` is resolved automatically from the manifest. The optional `project` field routes to the correct project in multi-project mode.
@@ -292,7 +292,7 @@ src/
 │   ├── gitService.js              # Git operations API client
 │   └── aiService.js               # AI chat API client (SSE consumer)
 └── config/
-    └── fallback-manifest.json     # Bundled copy of projects/tablaco/project.json
+    └── fallback-manifest.json     # Bundled copy of projects/gridfinity/project.json
 ```
 
 #### Provider Hierarchy

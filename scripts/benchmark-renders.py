@@ -6,7 +6,7 @@ Renders each project's first mode with default parameters and records timing.
 
 Usage:
     python scripts/benchmark-renders.py                    # all projects
-    python scripts/benchmark-renders.py --project tablaco  # single project
+    python scripts/benchmark-renders.py --project gridfinity  # single project
     python scripts/benchmark-renders.py --url http://api:5000 --output docs/benchmarks.md
 """
 import argparse

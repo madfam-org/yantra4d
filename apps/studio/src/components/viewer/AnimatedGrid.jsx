@@ -26,7 +26,7 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
   const size = params.size
   const rotationClearance = params.rotation_clearance
   const tubingH = params.tubing_H ?? 0
-  // Grid pitch formula mirrors tablaco.scad: pitch = size * sqrt(2) + rotation_clearance
+  // Grid pitch formula: pitch = size * sqrt(2) + rotation_clearance
   const gridPitch = size * Math.SQRT2 + rotationClearance
   const defaultColor = getViewerConfig().default_color || '#e5e7eb'
 
@@ -129,8 +129,8 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const idx = r * cols + c
-      const yPos = c * gridPitch    // columns spread along Y (mirrors tablaco.scad)
-      const zPos = r * (size + tubingH) + tubingH  // rows stack along Z with tubing spacers (mirrors tablaco.scad)
+      const yPos = c * gridPitch    // columns spread along Y
+      const zPos = r * (size + tubingH) + tubingH  // rows stack along Z with tubing spacers
       cubes.push(
         <group key={idx} position={[cx, yPos + cy, zPos + cz]}>
           <group ref={groupRefs[idx]}>

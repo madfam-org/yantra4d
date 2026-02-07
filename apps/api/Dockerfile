@@ -21,10 +21,6 @@ RUN apt-get update && \
   chmod +x /usr/local/bin/openscad && \
   rm -rf /var/lib/apt/lists/*
 
-# Install custom fonts (Allerta Stencil for letter engravings)
-COPY projects/tablaco/fonts/*.ttf /usr/share/fonts/truetype/custom/
-RUN fc-cache -fv
-
 # Set working directory
 WORKDIR /app
 

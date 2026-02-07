@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "prepare": "cd ../.. && husky apps/studio/.husky",
-    "check-manifest-sync": "diff ../../projects/tablaco/project.json src/config/fallback-manifest.json || echo 'WARNING: fallback manifest out of sync'",
+    "check-manifest-sync": "diff ../../projects/gridfinity/project.json src/config/fallback-manifest.json || echo 'WARNING: fallback manifest out of sync'",
     "analyze": "ANALYZE=true vite build",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

@@ -386,7 +386,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 | `studio` | npm ci → npm audit → lint → test:coverage | ESLint, Vitest coverage thresholds |
 | `landing` | npm ci → npm run build | Astro build succeeds |
 | `backend` | pip install → pip-audit → ruff check → pytest --cov | ruff linting, 80% coverage |
-| `manifest-sync` | JSON diff of tablaco manifest vs fallback | Manifests in sync |
+| `manifest-sync` | JSON diff of gridfinity manifest vs fallback | Manifests in sync |
 
 ### 4.6 Code Quality Summary
 
@@ -401,7 +401,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 | Dependency audit | npm audit + pip-audit (warnings only) |
 | Accessibility | jest-axe audits + ESLint jsx-a11y |
 | Pre-commit hooks | Husky + lint-staged (ESLint fix + Vitest on changed files) |
-| Manifest validation | CI diff check (tablaco ↔ fallback) |
+| Manifest validation | CI diff check (gridfinity ↔ fallback) |
 
 ### 4.7 Health Score
 
@@ -418,13 +418,12 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 
 ## 5. Project Catalog
 
-### 20 Built-in Projects
+### 19 Built-in Projects
 
 | # | Slug | Description | SCAD Files | Exports | Vendor | Docs | Features |
 |---|------|-------------|-----------|---------|--------|------|----------|
-| 1 | `tablaco` | Parametric modular furniture system | 3 | Yes | — | Yes | BOM, assembly, constraints, presets, featured |
-| 2 | `portacosas` | Portable container system | 3 | Yes | — | — | BOM, constraints |
-| 3 | `gridfinity` | Grid-based storage system | 3 | Yes | Yes | — | BOM, assembly, constraints |
+| 1 | `portacosas` | Portable container system | 3 | Yes | — | — | BOM, constraints |
+| 2 | `gridfinity` | Grid-based storage system | 3 | Yes | Yes | — | BOM, assembly, constraints |
 | 4 | `gear-reducer` | Gear reduction system | 3 | — | — | — | Multi-mode |
 | 5 | `gears` | Basic gear generation | 2 | Yes | — | — | — |
 | 6 | `voronoi` | Voronoi pattern generator | 3 | — | — | — | Multi-mode |
@@ -479,8 +478,6 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 
 | Project | File | Content |
 |---------|------|---------|
-| tablaco | `projects/tablaco/docs/mechanical_design.md` | Detailed parametric geometry, OpenSCAD structure, parameter guide |
-
 ### Other Documentation
 
 | File | Purpose |
@@ -655,7 +652,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `PROJECTS_DIR` | `projects/` | Multi-project root directory |
-| `SCAD_DIR` | `projects/tablaco` | Single-project fallback |
+| `SCAD_DIR` | `projects/gridfinity` | Single-project fallback |
 | `OPENSCAD_PATH` | Auto-detected | OpenSCAD binary path |
 | `CORS_ORIGINS` | `localhost:5173,localhost:3000` | Allowed CORS origins |
 | `AUTH_ENABLED` | `true` | Enable JWT authentication |

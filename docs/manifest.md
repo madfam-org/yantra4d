@@ -17,8 +17,8 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
 ```jsonc
 {
   "project": {
-    "name": "Tablaco Studio",     // Display name (used in header)
-    "slug": "tablaco",            // Used for localStorage keys, export filenames
+    "name": "Gridfinity Extended", // Display name (used in header)
+    "slug": "gridfinity",         // Used for localStorage keys, export filenames
     "version": "1.0.0"
   },
 
@@ -283,7 +283,6 @@ No frontend or backend code changes are required in either mode.
 
 ## Relationship to Other Docs
 
-- The manifest defines the modes documented in [Mechanical Design](../projects/tablaco/docs/mechanical_design.md)
 - The backend loader is part of the architecture described in [Web Interface](./web_interface.md)
 - Verification modes map to manifest mode IDs, as described in [Verification Suite](./verification.md)
 

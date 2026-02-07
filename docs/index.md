@@ -17,9 +17,8 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 
 ### Per-Project Docs
 
-Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 20 built-in projects:
--   [Tablaco](../projects/tablaco/docs/index.md) — Interlocking cube mechanical design (flagship)
--   [Gridfinity](../projects/gridfinity/) — Modular storage bins
+Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 19 built-in projects:
+-   [Gridfinity](../projects/gridfinity/) — Modular storage bins (flagship)
 -   [Polydice](../projects/polydice/) — Parametric dice set
 -   Browse all projects under [`projects/`](../projects/)
 
@@ -48,7 +47,7 @@ Access: http://localhost:3000
 
 The project has three layers:
 
-1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions (e.g., `projects/tablaco/`, `projects/gridfinity/`, `projects/polydice/`)
+1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions (e.g., `projects/gridfinity/`, `projects/polydice/`, `projects/ultimate-box/`)
 2. **Backend API** (`apps/api/`) — Flask server that invokes OpenSCAD and serves STL files
 3. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer
 

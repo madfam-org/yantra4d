@@ -38,10 +38,10 @@ describe('useShareableUrl', () => {
     it('generates URL with encoded param diff', () => {
       const params = { ...defaultParams, size: 60 }
       const { result } = renderHook(() =>
-        useShareableUrl({ params, mode: 'single', projectSlug: 'tablaco', defaultParams })
+        useShareableUrl({ params, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
       const url = result.current.generateShareUrl()
-      expect(url).toContain('#/tablaco/share/single')
+      expect(url).toContain('#/gridfinity/share/single')
       expect(url).toContain('p=')
 
       // Decode and verify
@@ -55,10 +55,10 @@ describe('useShareableUrl', () => {
 
     it('omits ?p= when params match defaults', () => {
       const { result } = renderHook(() =>
-        useShareableUrl({ params: defaultParams, mode: 'single', projectSlug: 'tablaco', defaultParams })
+        useShareableUrl({ params: defaultParams, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
       const url = result.current.generateShareUrl()
-      expect(url).toContain('#/tablaco/share/single')
+      expect(url).toContain('#/gridfinity/share/single')
       expect(url).not.toContain('p=')
     })
 
@@ -83,21 +83,21 @@ describe('useShareableUrl', () => {
       Object.assign(navigator, { clipboard: { writeText } })
 
       const { result } = renderHook(() =>
-        useShareableUrl({ params: { ...defaultParams, size: 50 }, mode: 'single', projectSlug: 'tablaco', defaultParams })
+        useShareableUrl({ params: { ...defaultParams, size: 50 }, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
 
       let ok
       await act(async () => { ok = await result.current.copyShareUrl() })
       expect(ok).toBe(true)
       expect(writeText).toHaveBeenCalledOnce()
-      expect(writeText.mock.calls[0][0]).toContain('#/tablaco/share/single')
+      expect(writeText.mock.calls[0][0]).toContain('#/gridfinity/share/single')
     })
 
     it('returns false when clipboard fails', async () => {
       Object.assign(navigator, { clipboard: { writeText: vi.fn().mockRejectedValue(new Error('denied')) } })
 
       const { result } = renderHook(() =>
-        useShareableUrl({ params: defaultParams, mode: 'single', projectSlug: 'tablaco', defaultParams })
+        useShareableUrl({ params: defaultParams, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
 
       let ok

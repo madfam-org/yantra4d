@@ -32,7 +32,6 @@ export const PROJECTS: Project[] = [
 
   // Tabletop
   { slug: 'polydice', name: 'PolyDice Generator', description: 'Polyhedral dice for tabletop and RPG gaming — D4 through D20', descriptionEs: 'Dados poliédricos para juegos de mesa y RPG — D4 a D20', category: 'tabletop', thumbnail: '/projects/polydice.webp' },
-  { slug: 'tablaco', name: 'Tablaco Studio', description: 'Interlocking half-cube construction system with snap-fit assembly', descriptionEs: 'Sistema de construcción de medio-cubos con ensamblaje a presión', category: 'tabletop', thumbnail: '/projects/tablaco.webp' },
 
   // Education
   { slug: 'stemfie', name: 'STEMFIE', description: 'Modular construction system for education and prototyping', descriptionEs: 'Sistema de construcción modular para educación y prototipado', category: 'education', thumbnail: '/projects/stemfie.webp' },

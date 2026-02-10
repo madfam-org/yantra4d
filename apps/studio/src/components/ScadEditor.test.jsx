@@ -7,7 +7,7 @@ vi.mock('@monaco-editor/react', () => ({
   default: function MockEditor({ value, onChange, onMount }) {
     React.useEffect(() => {
       if (onMount) onMount({ current: null }, { languages: { register: vi.fn(), setMonarchTokensProvider: vi.fn(), registerCompletionItemProvider: vi.fn() } })
-    }, [])
+    }, [onMount])
     return (
       <textarea
         data-testid="monaco-editor"

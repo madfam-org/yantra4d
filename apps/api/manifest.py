@@ -148,92 +148,105 @@ def resolve_part_config(base_config: dict, part_id: str) -> dict:
     return {"stages": result}
 
 
-def discover_projects() -> list[dict]:
-    """Scan PROJECTS_DIR for projects, return metadata list."""
-    projects = []
-    projects_dir = Config.PROJECTS_DIR
 
-    if projects_dir.is_dir():
-        for child in sorted(projects_dir.iterdir()):
-            manifest_path = child / "project.json"
-            if child.is_dir() and manifest_path.exists():
+class ManifestService:
+    """Service for managing project manifests."""
+
+    def __init__(self):
+        self._manifest_cache: dict[str, "ProjectManifest"] = {}
+
+    def discover_projects(self) -> list[dict]:
+        """Scan PROJECTS_DIR for projects, return metadata list."""
+        projects = []
+        projects_dir = Config.PROJECTS_DIR
+
+        if projects_dir.is_dir():
+            for child in sorted(projects_dir.iterdir()):
+                manifest_path = child / "project.json"
+                if child.is_dir() and manifest_path.exists():
+                    try:
+                        with open(manifest_path, "r") as f:
+                            data = json.load(f)
+                        proj = data.get("project", {})
+                        projects.append({
+                            "slug": proj.get("slug", child.name),
+                            "name": proj.get("name", child.name),
+                            "version": proj.get("version", "0.0.0"),
+                            "description": proj.get("description", ""),
+                        })
+                    except (json.JSONDecodeError, KeyError) as e:
+                        logger.warning(f"Skipping invalid project at {child}: {e}")
+
+        # Fallback: single-project mode via SCAD_DIR
+        if not projects:
+            manifest_path = Config.SCAD_DIR / "project.json"
+            if manifest_path.exists():
                 try:
                     with open(manifest_path, "r") as f:
                         data = json.load(f)
                     proj = data.get("project", {})
                     projects.append({
-                        "slug": proj.get("slug", child.name),
-                        "name": proj.get("name", child.name),
+                        "slug": proj.get("slug", "default"),
+                        "name": proj.get("name", "Default Project"),
                         "version": proj.get("version", "0.0.0"),
                         "description": proj.get("description", ""),
                     })
                 except (json.JSONDecodeError, KeyError) as e:
-                    logger.warning(f"Skipping invalid project at {child}: {e}")
+                    logger.error(f"Failed to load fallback manifest: {e}")
 
-    # Fallback: single-project mode via SCAD_DIR
-    if not projects:
-        manifest_path = Config.SCAD_DIR / "project.json"
-        if manifest_path.exists():
-            try:
-                with open(manifest_path, "r") as f:
-                    data = json.load(f)
-                proj = data.get("project", {})
-                projects.append({
-                    "slug": proj.get("slug", "default"),
-                    "name": proj.get("name", "Default Project"),
-                    "version": proj.get("version", "0.0.0"),
-                    "description": proj.get("description", ""),
-                })
-            except (json.JSONDecodeError, KeyError) as e:
-                logger.error(f"Failed to load fallback manifest: {e}")
+        return projects
 
-    return projects
+    def _resolve_project_dir(self, slug: str | None) -> Path:
+        """Resolve the project directory for a given slug."""
+        if slug:
+            # Try PROJECTS_DIR first
+            candidate = Config.PROJECTS_DIR / slug
+            if candidate.is_dir() and (candidate / "project.json").exists():
+                return candidate
 
+        # Fallback to SCAD_DIR (single-project mode)
+        return Config.SCAD_DIR
 
-def _resolve_project_dir(slug: str | None) -> Path:
-    """Resolve the project directory for a given slug."""
-    if slug:
-        # Try PROJECTS_DIR first
-        candidate = Config.PROJECTS_DIR / slug
-        if candidate.is_dir() and (candidate / "project.json").exists():
-            return candidate
+    def load_manifest(self, slug: str | None = None) -> ProjectManifest:
+        """Load and cache the project manifest for a given slug."""
+        project_dir = self._resolve_project_dir(slug)
+        cache_key = str(project_dir)
 
-    # Fallback to SCAD_DIR (single-project mode)
-    return Config.SCAD_DIR
+        if cache_key in self._manifest_cache:
+            return self._manifest_cache[cache_key]
 
+        manifest_path = project_dir / "project.json"
+        logger.info(f"Loading project manifest from {manifest_path}")
 
-def load_manifest(slug: str | None = None) -> ProjectManifest:
-    """Load and cache the project manifest for a given slug."""
-    project_dir = _resolve_project_dir(slug)
-    cache_key = str(project_dir)
+        try:
+            with open(manifest_path, "r") as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            logger.error(f"Manifest not found: {manifest_path}")
+            raise RuntimeError(f"Project manifest not found at {manifest_path}")
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in manifest {manifest_path}: {e}")
+            raise RuntimeError(f"Project manifest contains invalid JSON: {e}")
 
-    if cache_key in _manifest_cache:
-        return _manifest_cache[cache_key]
+        manifest = ProjectManifest(data, project_dir)
+        self._manifest_cache[cache_key] = manifest
+        return manifest
 
-    manifest_path = project_dir / "project.json"
-    logger.info(f"Loading project manifest from {manifest_path}")
+    def invalidate_cache(self, slug: str | None = None) -> None:
+        """Remove a cached manifest so the next load_manifest() re-reads disk."""
+        project_dir = self._resolve_project_dir(slug)
+        self._manifest_cache.pop(str(project_dir), None)
 
-    try:
-        with open(manifest_path, "r") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        logger.error(f"Manifest not found: {manifest_path}")
-        raise RuntimeError(f"Project manifest not found at {manifest_path}")
-    except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON in manifest {manifest_path}: {e}")
-        raise RuntimeError(f"Project manifest contains invalid JSON: {e}")
-
-    manifest = ProjectManifest(data, project_dir)
-    _manifest_cache[cache_key] = manifest
-    return manifest
+    def get_manifest(self, slug: str | None = None) -> ProjectManifest:
+        """Get the cached manifest (loads on first call)."""
+        return self.load_manifest(slug)
 
 
-def invalidate_cache(slug: str | None = None) -> None:
-    """Remove a cached manifest so the next load_manifest() re-reads disk."""
-    project_dir = _resolve_project_dir(slug)
-    _manifest_cache.pop(str(project_dir), None)
+# Singleton instance
+manifest_service = ManifestService()
 
-
-def get_manifest(slug: str | None = None) -> ProjectManifest:
-    """Get the cached manifest (loads on first call)."""
-    return load_manifest(slug)
+# --- Module-level aliases for backward compatibility ---
+discover_projects = manifest_service.discover_projects
+load_manifest = manifest_service.load_manifest
+invalidate_cache = manifest_service.invalidate_cache
+get_manifest = manifest_service.get_manifest

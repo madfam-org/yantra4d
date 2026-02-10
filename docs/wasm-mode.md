@@ -1,94 +1,58 @@
-# WASM Mode — Client-Side Rendering Fallback
+# Yantra4D WASM / Offline Mode
 
-When the backend API is unreachable, the studio automatically falls back to client-side rendering using OpenSCAD compiled to WebAssembly.
+Yantra4D features a robust **dual-rendering architecture** that allows the application to function even when the backend API is unavailable or unreachable. This is achieved through a client-side OpenSCAD WebAssembly (WASM) implementation.
 
-## How Detection Works
+## Overview
 
-On startup, the studio calls `isBackendAvailable()` from `backendDetection.js`:
+The system automatically detects backend availability and switches modes seamlessly:
 
-1. **Health check**: `GET /api/health` with a **2-second timeout** (`AbortSignal.timeout(2000)`)
-2. **Pass**: HTTP 200 → backend mode (server-side rendering via OpenSCAD CLI)
-3. **Fail**: Any error (network, CORS, timeout, non-200) → WASM fallback mode
-4. **Caching**: The result is cached for the entire session — no retries. Refresh the page to re-check.
-
-The API base URL is read from `VITE_API_BASE` (defaults to `http://localhost:5000`).
+1.  **Backend Mode (Default)**: Sends parameters to the Python/Flask API, which runs the native OpenSCAD CLI. This is typically faster for complex models.
+2.  **WASM Mode (Fallback)**: Runs OpenSCAD entirely within the browser using a Web Worker. This enables zero-latency offline usage and static deployments (e.g., GitHub Pages).
 
 ## Architecture
 
-```
-Main Thread                          Web Worker (openscad-worker.js)
-─────────────                        ──────────────────────────────
-ManifestProvider
-  └─ isBackendAvailable() ──fail──►  Worker initialized
-                                       └─ Fetches SCAD files from /scad/
-                                       └─ Caches files in memory
-                                       └─ Creates OpenSCAD WASM instance
+The logic resides principally in `apps/studio/src/services/renderService.js` and `apps/studio/src/services/openscad-worker.js`.
 
-User adjusts params ────────────────►  { type: 'render', scadFile, params }
-                                       └─ Creates FRESH Emscripten instance
-                                       └─ Builds CLI args: -D param=value
-                                       └─ callMain(args) → STL output
-                     ◄────────────── { type: 'progress', phase, percent }
-                     ◄────────────── { type: 'result', stl: Uint8Array }
-Three.js viewer renders STL
+### Detection Mechanism
+On application start (and before renders), `renderService.js` probes the backend health endpoint:
+```javascript
+// apps/studio/src/services/backendDetection.js
+export async function isBackendAvailable() {
+  try {
+    const res = await fetch(`${API_BASE}/api/health`, { method: 'HEAD', timeout: 2000 })
+    return res.ok
+  } catch {
+    return false
+  }
+}
 ```
 
-**Fresh instance per render**: Emscripten's `callMain()` corrupts internal state after first invocation. The worker creates a new WASM module for each render, reusing cached SCAD source files.
+### The Web Worker
+The WASM worker (`openscad-worker.js`) manages the OpenSCAD instance to prevent the main thread from freezing during heavy computations.
 
-## When It Activates
+-   **Library**: Uses `openscad-wasm` (based on OpenSCAD master branch).
+-   **Isolation**: Every render spins up a *fresh* WASM instance to avoid memory corruption issues (a known quirk of the EMSCRIPTEN build).
+-   **File System**: Source `.scad` files are fetched once, cached in memory, and written to the worker's virtual filesystem for each render.
 
-- Backend server is down or unreachable
-- Network connectivity is lost (offline mode)
-- CORS misconfiguration prevents health check
-- Deployed as a static site without a backend (e.g., GitHub Pages)
+## Enabling WASM Mode
 
-## Fallback Manifest
+### Automatic Fallback
+Simply stop the backend server. The Studio will visually indicate offline mode (often by hiding backend-specific features like GitHub sync) but rendering will continue to work.
 
-WASM mode uses an embedded fallback manifest (`apps/studio/src/config/fallback-manifest.json`) that mirrors `projects/gridfinity/project.json`. This means:
-
-- **Only the Gridfinity project** is available in WASM mode
-- Other projects require the backend API for manifest delivery
-- CI enforces sync between the fallback manifest and `projects/gridfinity/project.json`
-
-**After editing the Gridfinity manifest**, update the fallback:
-```bash
-cp projects/gridfinity/project.json apps/studio/src/config/fallback-manifest.json
-```
+### Forcing WASM Mode
+You can force WASM mode for testing by blocking the API rendering or building a static version of the site without `VITE_API_BASE_URL`.
 
 ## Limitations
 
-| Limitation | Detail |
-|------------|--------|
-| Performance | ~4x slower than server-side OpenSCAD CLI |
-| Memory | ~200MB peak per render |
-| Single project | Only Gridfinity available without backend |
-| No external libs | WASM build includes BOSL2 but not all global libs |
-| Sequential renders | Single worker thread — renders queue, not parallelize |
-| WASM binary size | ~15MB gzipped on first load |
-| No retry | Detection result cached per session |
+| Feature | Backend Mode | WASM Mode |
+| :--- | :--- | :--- |
+| **Performance** | Native speed (fast) | ~3-5x slower |
+| **Memory** | Server RAM limit | Browser tab limit (~4GB) |
+| **Libraries** | Full system access | Virtual FS only |
+| **Export** | STL, 3MF, OFF, PNG | STL only (currently) |
+| **Caching** | Persistent Redis/Disk | Ephemeral (Session) |
 
-## Browser Support
+## Troubleshooting
 
-WASM mode requires:
-
-- **WebAssembly** support (all modern browsers)
-- **Web Workers** for off-main-thread rendering
-- **`AbortSignal.timeout()`** — Chrome 120+, Firefox 123+, Safari 17.4+
-
-Unsupported: IE11, Safari < 17.4.
-
-## CSP Requirements
-
-Production servers must include `wasm-unsafe-eval` in the Content-Security-Policy header:
-
-```
-Content-Security-Policy: script-src 'self' 'wasm-unsafe-eval';
-```
-
-This is required for Emscripten's dynamic WASM compilation. Without it, the WASM module fails to load silently.
-
-## Debugging
-
-- **Worker console**: Open DevTools → Sources → Workers panel to see `openscad-worker.js` logs
-- **Progress phases**: The worker reports `compiling`, `rendering`, `meshing` phases parsed from OpenSCAD stderr
-- **Common errors**: "Module not found" → SCAD files missing from `/scad/` public path; "Memory allocation failed" → model too complex for browser memory limit
+-   **"Out of Memory"**: Complex models with high `fn` (smoothness) may crash the browser tab. Reduce `fn` or switch to backend mode.
+-   **"SharedArrayBuffer"**: Ensure your server sends `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` headers, which are required for high-performance WASM threading (though `openscad-wasm` single-threaded builds work without them).

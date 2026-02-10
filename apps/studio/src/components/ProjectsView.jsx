@@ -14,6 +14,15 @@ const DIFFICULTY_COLORS = {
   advanced: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 }
 
+const getRenderSpeed = (constants) => {
+  if (!constants) return null
+  // Heuristic: base_time + (per_part * 5 parts)
+  const score = constants.base_time + (constants.per_part * 5)
+  if (score < 5) return { label: 'Fast Render', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' }
+  if (score < 15) return { label: 'Medium Render', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' }
+  return { label: 'Slow Render', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' }
+}
+
 export default function ProjectsView() {
   const { t } = useLanguage()
   const [projects, setProjects] = useState([])
@@ -181,6 +190,15 @@ export default function ProjectsView() {
                     {project.difficulty}
                   </span>
                 )}
+                {(() => {
+                  const speed = getRenderSpeed(project.estimate_constants)
+                  if (!speed) return null
+                  return (
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${speed.color}`}>
+                      {speed.label}
+                    </span>
+                  )
+                })()}
                 {project.has_manifest && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.manifest')}</span>}
                 {project.has_exports && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
                 {project.stats?.renders > 0 && (

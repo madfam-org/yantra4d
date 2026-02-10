@@ -71,27 +71,6 @@ jobs:
         working-directory: apps/studio
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openscad
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: 'pip'
-      - name: Install Backend Dependencies
-        run: |
-          pip install -r ../../apps/api/requirements.txt
-      - name: Start Backend
-        run: |
-          cd ../../apps/api
-          # Start api in background
-          python3 app.py &
-          echo $! > ../../backend.pid
-          # Wait for it to be ready
-          timeout 30s bash -c 'until curl -s http://localhost:5000/api/health; do sleep 1; done'
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -102,8 +81,6 @@ jobs:
       - run: npx playwright test --project=chromium
         env:
           CI: true
-          # Point studio to the local backend we just started
-          VITE_API_BASE_URL: http://localhost:5000
       - uses: actions/upload-artifact@v4
         if: always()
         with:

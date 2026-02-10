@@ -2,6 +2,7 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { ThemeProvider } from '../contexts/ThemeProvider'
 import { LanguageProvider } from '../contexts/LanguageProvider'
+import { AuthProvider } from '../contexts/AuthProvider'
 import { ManifestProvider } from '../contexts/ManifestProvider'
 
 /**
@@ -18,11 +19,14 @@ export function renderWithProviders(ui, { language = 'en', theme = 'light', ...r
   return render(
     <ThemeProvider defaultTheme={theme} storageKey="test-theme">
       <LanguageProvider defaultLanguage={language} storageKey="test-lang">
-        <ManifestProvider>
-          {ui}
-        </ManifestProvider>
+        <AuthProvider>
+          <ManifestProvider>
+            {ui}
+          </ManifestProvider>
+        </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>,
     renderOptions
   )
 }
+

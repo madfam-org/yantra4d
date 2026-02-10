@@ -113,7 +113,7 @@ export function useHashNavigation({ presets, modes, projectSlug, onHashChange })
     }
     window.addEventListener('hashchange', handler)
     return () => window.removeEventListener('hashchange', handler)
-  }, [presets, modes, onHashChange]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [presets, modes, onHashChange])
 
   return { currentView, isDemo }
 }

@@ -4,6 +4,7 @@ import './index.css'
 import { ThemeProvider } from "./contexts/ThemeProvider.jsx"
 import { AuthProvider } from "./contexts/AuthProvider.jsx"
 import { ManifestProvider } from "./contexts/ManifestProvider.jsx"
+import { ProjectProvider } from "./contexts/ProjectProvider.jsx"
 import { TierProvider } from "./contexts/TierProvider.jsx"
 import ManifestAwareLanguageProvider from "./contexts/ManifestAwareLanguageProvider.jsx"
 import { ErrorBoundary } from "./components/feedback/ErrorBoundary.jsx"
@@ -17,7 +18,9 @@ createRoot(document.getElementById('root')).render(
           <TierProvider>
             <ManifestProvider>
               <ManifestAwareLanguageProvider>
-                <App />
+                <ProjectProvider>
+                  <App />
+                </ProjectProvider>
               </ManifestAwareLanguageProvider>
             </ManifestProvider>
           </TierProvider>

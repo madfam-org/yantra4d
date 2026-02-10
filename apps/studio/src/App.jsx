@@ -2,7 +2,8 @@ import { lazy, Suspense, useState, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe } from 'lucide-react'
 import { Toaster } from "@/components/ui/sonner"
-import { useAppState } from './hooks/useAppState'
+import { useProject } from './contexts/ProjectProvider'
+import { useThemeAndLanguage } from './hooks/useThemeAndLanguage'
 import StudioHeader from './components/studio/StudioHeader'
 import StudioSidebar from './components/studio/StudioSidebar'
 import StudioMainView from './components/studio/StudioMainView'
@@ -14,7 +15,6 @@ import { ErrorBoundary } from './components/feedback/ErrorBoundary'
 import './index.css'
 
 const ProjectsView = lazy(() => import('./components/project/ProjectsView'))
-const OnboardingWizard = lazy(() => import('./components/onboarding/OnboardingWizard'))
 const ScadEditor = lazy(() => import('./components/editor/ScadEditor'))
 const GitPanel = lazy(() => import('./components/editor/GitPanel'))
 const AiChatPanel = lazy(() => import('./components/ai/AiChatPanel'))
@@ -37,36 +37,28 @@ function App() {
     return next
   })
 
-  const state = useAppState()
+  // Get state from ProjectContext
+  const {
+    currentView, isDemo, manifest, projectSlug,
+    handleGenerate, handleConfirmRender, handleCancelRender,
+    showConfirmDialog, pendingEstimate,
+    params, setParams,
+  } = useProject()
+
+  // Initialize theme/lang/auth side effects
+  const { t, language, toggleLanguage, theme, cycleTheme } = useThemeAndLanguage({
+    currentView,
+    projectName: manifest?.project?.name,
+  })
 
   const [forkDialogSlug, setForkDialogSlug] = useState(null)
-  const handleForkRequest = useCallback(() => setForkDialogSlug(state.projectSlug), [state.projectSlug])
+  const handleForkRequest = useCallback(() => setForkDialogSlug(projectSlug), [projectSlug])
   const handleForked = useCallback((newSlug) => {
     setForkDialogSlug(null)
     window.location.hash = `#/${newSlug}`
     setEditorOpen(true)
     sessionStorage.setItem('yantra4d-editor-open', 'true')
   }, [])
-  const {
-    currentView, isDemo, manifest, t, language, setLanguage, toggleLanguage, theme, cycleTheme,
-    mode, setMode, getLabel, params, setParams, colors, setColors,
-    wireframe, setWireframe, animating, setAnimating, presets,
-    undoParams, redoParams, canUndo, canRedo,
-    handleShare, shareToast,
-    parts, logs, loading, progress, progressPhase,
-    showConfirmDialog, pendingEstimate,
-    handleGenerate, handleCancelGenerate, handleConfirmRender, handleCancelRender,
-    handleVerify, handleDownloadStl, handleReset,
-    handleApplyPreset, handleGridPresetToggle,
-    handleExportImage, handleExportAllViews,
-    exportFormat, setExportFormat,
-    constraintsByParam, constraintErrors,
-    printEstimate, setPrintEstimate,
-    assemblyActive, highlightedParts, visibleParts,
-    handleAssemblyStepChange,
-    assemblyEditorOpen, setAssemblyEditorOpen,
-    viewerRef, consoleRef,
-  } = state
 
   if (!isEmbed && currentView === 'projects') {
     const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
@@ -104,21 +96,8 @@ function App() {
       </a>
       {!isEmbed && (
         <StudioHeader
-          manifest={manifest}
-          t={t}
-          language={language}
-          setLanguage={setLanguage}
-          theme={theme}
-          cycleTheme={cycleTheme}
-          undoParams={undoParams}
-          redoParams={redoParams}
-          canUndo={canUndo}
-          canRedo={canRedo}
-          handleShare={handleShare}
-          shareToast={shareToast}
           editorOpen={editorOpen}
           toggleEditor={toggleEditor}
-          projectSlug={state.projectSlug}
           aiPanelOpen={aiPanelOpen}
           toggleAiPanel={toggleAiPanel}
           onForkRequest={handleForkRequest}
@@ -131,70 +110,16 @@ function App() {
           <div className="w-full lg:w-[40%] flex flex-col min-h-0 border-r border-border">
             <ErrorBoundary t={t}>
               <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
-                <ScadEditor slug={state.projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
-                <GitPanel slug={state.projectSlug} />
+                <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
+                <GitPanel slug={projectSlug} />
               </Suspense>
             </ErrorBoundary>
           </div>
         )}
-        {!editorOpen && <StudioSidebar
-          manifest={manifest}
-          mode={mode}
-          setMode={setMode}
-          getLabel={getLabel}
-          language={language}
-          t={t}
-          params={params}
-          setParams={setParams}
-          colors={colors}
-          setColors={setColors}
-          wireframe={wireframe}
-          setWireframe={setWireframe}
-          presets={presets}
-          handleApplyPreset={handleApplyPreset}
-          handleGridPresetToggle={handleGridPresetToggle}
-          loading={loading}
-          parts={parts}
-          handleGenerate={handleGenerate}
-          handleCancelGenerate={handleCancelGenerate}
-          handleVerify={handleVerify}
-          handleReset={handleReset}
-          handleDownloadStl={handleDownloadStl}
-          handleExportImage={handleExportImage}
-          handleExportAllViews={handleExportAllViews}
-          exportFormat={exportFormat}
-          setExportFormat={setExportFormat}
-          constraintsByParam={constraintsByParam}
-          constraintErrors={constraintErrors}
-          onAssemblyStepChange={handleAssemblyStepChange}
-          assemblyEditorOpen={assemblyEditorOpen}
-          setAssemblyEditorOpen={setAssemblyEditorOpen}
-          viewerRef={viewerRef}
-          projectSlug={state.projectSlug}
-        />}
+        {!editorOpen && <StudioSidebar />}
 
         <ErrorBoundary t={t}>
-          <StudioMainView
-            viewerRef={viewerRef}
-            consoleRef={consoleRef}
-            parts={parts}
-            colors={colors}
-            wireframe={wireframe}
-            loading={loading}
-            progress={progress}
-            progressPhase={progressPhase}
-            animating={animating}
-            setAnimating={setAnimating}
-            mode={mode}
-            params={params}
-            printEstimate={printEstimate}
-            setPrintEstimate={setPrintEstimate}
-            assemblyActive={assemblyActive}
-            highlightedParts={highlightedParts}
-            visibleParts={visibleParts}
-            logs={logs}
-            t={t}
-          />
+          <StudioMainView />
         </ErrorBoundary>
       </div>
 
@@ -205,7 +130,7 @@ function App() {
             <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
               <AiChatPanel
                 mode="configurator"
-                projectSlug={state.projectSlug}
+                projectSlug={projectSlug}
                 manifest={manifest}
                 params={params}
                 setParams={setParams}

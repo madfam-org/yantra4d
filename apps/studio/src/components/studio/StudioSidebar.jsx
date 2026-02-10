@@ -8,25 +8,31 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Square, RotateCcw, Menu, Wrench } from 'lucide-react'
+import { useProject } from '../../contexts/ProjectProvider'
+import { useLanguage } from '../../contexts/LanguageProvider'
 
-function SidebarContent({
-  manifest, mode, setMode, getLabel, language, t,
-  params, setParams, colors, setColors, wireframe, setWireframe,
-  presets, handleApplyPreset, handleGridPresetToggle,
-  loading, parts,
-  handleGenerate, handleCancelGenerate, handleVerify, handleReset,
-  handleDownloadStl, handleExportImage, handleExportAllViews,
-  exportFormat, setExportFormat,
-  constraintsByParam, constraintErrors,
-  onAssemblyStepChange,
-  assemblyEditorOpen, setAssemblyEditorOpen,
-  viewerRef, projectSlug,
-}) {
+function SidebarContent() {
+  const {
+    manifest, mode, setMode, getLabel,
+    params, setParams, colors, setColors, wireframe, setWireframe,
+    presets, handleApplyPreset, handleGridPresetToggle,
+    loading, parts,
+    handleGenerate, handleCancelGenerate, handleVerify, handleReset,
+    handleDownloadStl, handleExportImage, handleExportAllViews,
+    exportFormat, setExportFormat,
+    constraintsByParam, constraintErrors,
+    handleAssemblyStepChange,
+    assemblyEditorOpen, setAssemblyEditorOpen,
+    viewerRef, projectSlug,
+  } = useProject()
+
+  const { language, t } = useLanguage()
+
   // Show editor panel instead of normal sidebar
   if (assemblyEditorOpen) {
     return (
       <AssemblyEditorPanel
-        onStepChange={onAssemblyStepChange}
+        onStepChange={handleAssemblyStepChange}
         onClose={() => setAssemblyEditorOpen(false)}
         viewerRef={viewerRef}
         projectSlug={projectSlug}
@@ -109,7 +115,7 @@ function SidebarContent({
       />
 
       <BomPanel params={params} />
-      <AssemblyView onStepChange={onAssemblyStepChange} />
+      <AssemblyView onStepChange={handleAssemblyStepChange} />
 
       {/* Assembly editor toggle */}
       {(hasAssemblySteps || mode === 'assembly') && (
@@ -127,14 +133,16 @@ function SidebarContent({
   )
 }
 
-export default function StudioSidebar(props) {
+export default function StudioSidebar() {
   const [open, setOpen] = useState(false)
+  const { manifest, mode, setMode, getLabel } = useProject()
+  const { language } = useLanguage()
 
   return (
     <>
       {/* Desktop sidebar */}
       <div className="hidden lg:flex w-80 min-w-[20rem] border-r border-border bg-card p-4 flex-col gap-4 overflow-y-auto shrink-0">
-        <SidebarContent {...props} />
+        <SidebarContent />
       </div>
 
       {/* Mobile bottom sheet */}
@@ -148,15 +156,15 @@ export default function StudioSidebar(props) {
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto p-4 flex flex-col gap-4">
             <SheetTitle className="sr-only">Controls</SheetTitle>
-            <SidebarContent {...props} />
+            <SidebarContent />
           </SheetContent>
         </Sheet>
         {/* Quick mode tabs visible on mobile bar */}
-        <Tabs value={props.mode} onValueChange={props.setMode} className="flex-1">
-          <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${props.manifest.modes.length}, minmax(0, 1fr))` }}>
-            {props.manifest.modes.map(m => (
+        <Tabs value={mode} onValueChange={setMode} className="flex-1">
+          <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
+            {manifest.modes.map(m => (
               <TabsTrigger key={m.id} value={m.id} className="min-h-[44px] text-xs">
-                {props.getLabel(m, 'label', props.language)}
+                {getLabel(m, 'label', language)}
               </TabsTrigger>
             ))}
           </TabsList>

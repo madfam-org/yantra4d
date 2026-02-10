@@ -28,7 +28,18 @@ vi.mock('./components/Viewer', () => ({
 
 // Mock fetch for ManifestProvider
 beforeEach(() => {
-  vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
+  vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+    if (url.toString().includes('/api/projects') && !url.toString().includes('/manifest')) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([fallbackManifest.project]),
+      })
+    }
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(fallbackManifest),
+    })
+  })
   localStorage.clear()
   sessionStorage.clear()
   window.location.hash = ''

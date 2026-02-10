@@ -1,5 +1,7 @@
 import Viewer from '../Viewer'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
+import { useProject } from '../../contexts/ProjectProvider'
+import { useLanguage } from '../../contexts/LanguageProvider'
 
 function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
   if (loading) {
@@ -25,14 +27,18 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
   return null
 }
 
-export default function StudioMainView({
-  viewerRef, consoleRef,
-  parts, colors, wireframe, loading, progress, progressPhase,
-  animating, setAnimating, mode, params,
-  printEstimate, setPrintEstimate,
-  assemblyActive, highlightedParts, visibleParts,
-  logs, t,
-}) {
+export default function StudioMainView() {
+  const {
+    viewerRef, consoleRef,
+    parts, colors, wireframe, loading, progress, progressPhase,
+    animating, setAnimating, mode, params,
+    printEstimate, setPrintEstimate,
+    assemblyActive, highlightedParts, visibleParts,
+    logs,
+  } = useProject()
+
+  const { t } = useLanguage()
+
   return (
     <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
       <div className="flex-1 relative min-h-0" aria-busy={loading}>

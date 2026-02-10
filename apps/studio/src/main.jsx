@@ -6,7 +6,7 @@ import { AuthProvider } from "./contexts/AuthProvider.jsx"
 import { ManifestProvider } from "./contexts/ManifestProvider.jsx"
 import { TierProvider } from "./contexts/TierProvider.jsx"
 import ManifestAwareLanguageProvider from "./contexts/ManifestAwareLanguageProvider.jsx"
-import { ErrorBoundary } from "./components/ErrorBoundary.jsx"
+import { ErrorBoundary } from "./components/feedback/ErrorBoundary.jsx"
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(

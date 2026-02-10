@@ -46,6 +46,8 @@ export default function PluginLoader({ url, value, onChange, param }) {
       })
   }, [url])
 
+  if (!url) return null
+
   if (error) {
     return <div className="text-xs text-destructive">{error}</div>
   }

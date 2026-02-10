@@ -36,12 +36,15 @@ def _enrich_project(proj):
             m = get_manifest(proj["slug"])
             proj["mode_count"] = len(m.modes)
             proj["parameter_count"] = len(m.parameters)
+            proj["estimate_constants"] = m.estimate_constants
         except Exception:
             proj["mode_count"] = 0
             proj["parameter_count"] = 0
+            proj["estimate_constants"] = None
     else:
         proj["mode_count"] = 0
         proj["parameter_count"] = 0
+        proj["estimate_constants"] = None
 
     return proj
 

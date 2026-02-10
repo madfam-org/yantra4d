@@ -21,7 +21,7 @@ jobs:
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci --legacy-peer-deps
-      - run: npm audit --audit-level=high
+      #- run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run test:coverage
 

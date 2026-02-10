@@ -19,7 +19,7 @@ def tiered_rate_key():
 _storage_uri = os.environ.get("RATE_LIMIT_STORAGE", "memory://")
 
 limiter = Limiter(
-    key_func=get_remote_address,
+    key_func=tiered_rate_key,
     default_limits=["500 per hour"],
     storage_uri=_storage_uri,
 )

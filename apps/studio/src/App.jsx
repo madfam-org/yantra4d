@@ -3,22 +3,22 @@ import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe } from 'lucide-react'
 import { Toaster } from "@/components/ui/sonner"
 import { useAppState } from './hooks/useAppState'
-import StudioHeader from './components/StudioHeader'
-import StudioSidebar from './components/StudioSidebar'
-import StudioMainView from './components/StudioMainView'
-import ConfirmRenderDialog from './components/ConfirmRenderDialog'
-import AuthButton from './components/AuthButton'
-import DemoBanner from './components/DemoBanner'
-import RateLimitBanner from './components/RateLimitBanner'
-import { ErrorBoundary } from './components/ErrorBoundary'
+import StudioHeader from './components/studio/StudioHeader'
+import StudioSidebar from './components/studio/StudioSidebar'
+import StudioMainView from './components/studio/StudioMainView'
+import ConfirmRenderDialog from './components/feedback/ConfirmRenderDialog'
+import AuthButton from './components/auth/AuthButton'
+import DemoBanner from './components/feedback/DemoBanner'
+import RateLimitBanner from './components/feedback/RateLimitBanner'
+import { ErrorBoundary } from './components/feedback/ErrorBoundary'
 import './index.css'
 
-const ProjectsView = lazy(() => import('./components/ProjectsView'))
-const OnboardingWizard = lazy(() => import('./components/OnboardingWizard'))
-const ScadEditor = lazy(() => import('./components/ScadEditor'))
-const GitPanel = lazy(() => import('./components/GitPanel'))
-const AiChatPanel = lazy(() => import('./components/AiChatPanel'))
-const ForkDialog = lazy(() => import('./components/ForkDialog'))
+const ProjectsView = lazy(() => import('./components/project/ProjectsView'))
+const OnboardingWizard = lazy(() => import('./components/onboarding/OnboardingWizard'))
+const ScadEditor = lazy(() => import('./components/editor/ScadEditor'))
+const GitPanel = lazy(() => import('./components/editor/GitPanel'))
+const AiChatPanel = lazy(() => import('./components/ai/AiChatPanel'))
+const ForkDialog = lazy(() => import('./components/project/ForkDialog'))
 
 const isEmbed = new URLSearchParams(window.location.search).get('embed') === 'true'
 

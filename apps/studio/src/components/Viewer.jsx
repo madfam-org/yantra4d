@@ -5,7 +5,7 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useTheme } from "../contexts/ThemeProvider"
 import { useManifest } from "../contexts/ManifestProvider"
-import { ErrorBoundary } from './ErrorBoundary'
+import { ErrorBoundary } from './feedback/ErrorBoundary'
 import SceneController from './viewer/SceneController'
 import NumberedAxes from './viewer/NumberedAxes'
 import AnimatedGrid from './viewer/AnimatedGrid'

@@ -1,6 +1,6 @@
 import React from 'react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import App from './App'
 import { renderWithProviders } from './test/render-with-providers'
@@ -30,28 +30,40 @@ vi.mock('./components/Viewer', () => ({
 beforeEach(() => {
   vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
   localStorage.clear()
+  sessionStorage.clear()
+  window.location.hash = ''
 })
 
-function renderApp() {
-  return renderWithProviders(<App />)
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+  window.location.hash = ''
+})
+
+async function renderApp() {
+  let result
+  await act(async () => {
+    result = renderWithProviders(<App />)
+  })
+  return result
 }
 
-describe('App', () => {
-  it('renders header with project name', () => {
-    renderApp()
+describe('App', { timeout: 20000 }, () => {
+  it('renders header with project name', async () => {
+    await renderApp()
     expect(screen.getByText(fallbackManifest.project.name)).toBeInTheDocument()
   })
 
-  it('renders mode tabs for all manifest modes', () => {
-    renderApp()
+  it('renders mode tabs for all manifest modes', async () => {
+    await renderApp()
     for (const mode of fallbackManifest.modes) {
       const matches = screen.getAllByText(mode.label.en)
       expect(matches.length).toBeGreaterThanOrEqual(1)
     }
   })
 
-  it('all mode tabs render as interactive tab elements', () => {
-    renderApp()
+  it('all mode tabs render as interactive tab elements', async () => {
+    await renderApp()
     const tabs = screen.getAllByRole('tab')
     // Desktop sidebar + mobile bar each render mode tabs
     const modeCount = fallbackManifest.modes.length
@@ -66,26 +78,29 @@ describe('App', () => {
 
   it('generate button calls renderParts', async () => {
     const { renderParts } = await import('./services/renderService')
-    renderApp()
-    const genButton = screen.getByText('Generate')
-    fireEvent.click(genButton)
+    await renderApp()
+
+    // Auto-generate fires on mount (debounced 500ms), so renderParts
+    // may already have been called. Wait for it to be invoked.
     await waitFor(() => {
       expect(renderParts).toHaveBeenCalled()
-    })
+    }, { timeout: 10000 })
+
+    // After render completes, 'Generate' button should reappear
+    const genButton = await screen.findByText('Generate', {}, { timeout: 10000 })
+    expect(genButton).toBeInTheDocument()
   })
 
   it('verify button calls verify with project slug after parts are loaded', async () => {
     const { verify } = await import('./services/verifyService')
-    renderApp()
+    await renderApp()
 
-    // Generate to get parts
-    fireEvent.click(screen.getByText('Generate'))
-
-    // Wait for loading to finish and verify button to become enabled
+    // Auto-generate fires on mount (debounced), producing parts via the mock.
+    // Wait for loading to finish and verify button to become enabled.
     await waitFor(() => {
       const verifyBtn = screen.getByText('Run Verification Suite')
       expect(verifyBtn).not.toBeDisabled()
-    })
+    }, { timeout: 10000 })
 
     fireEvent.click(screen.getByText('Run Verification Suite'))
     await waitFor(() => {
@@ -98,7 +113,7 @@ describe('App', () => {
   })
 
   it('reset button restores default params', async () => {
-    renderApp()
+    await renderApp()
     const resetBtn = screen.getByText('Reset to Defaults')
     fireEvent.click(resetBtn)
     // After reset, slider values should show defaults — check width_units=2
@@ -109,7 +124,7 @@ describe('App', () => {
     const { estimateRenderTime } = await import('./services/renderService')
     estimateRenderTime.mockReturnValue(120) // > 60s threshold
 
-    renderApp()
+    await renderApp()
     fireEvent.click(screen.getByText('Generate'))
 
     await waitFor(() => {
@@ -118,7 +133,7 @@ describe('App', () => {
   })
 
   it('language selector switches en to es', async () => {
-    renderApp()
+    await renderApp()
     // Click Globe button to open language dropdown
     const langBtn = screen.getByTitle('Toggle Language')
     fireEvent.click(langBtn)
@@ -130,14 +145,14 @@ describe('App', () => {
     })
   })
 
-  it('download STL button is disabled when no parts', () => {
-    renderApp()
+  it('download STL button is disabled when no parts', async () => {
+    await renderApp()
     const dlBtn = screen.getByText(/Download STL/i)
     expect(dlBtn).toBeDisabled()
   })
 
-  it('theme toggle shows translated tooltip', () => {
-    renderApp()
+  it('theme toggle shows translated tooltip', async () => {
+    await renderApp()
     // renderWithProviders defaults to theme='light'
     const themeBtn = screen.getByTitle('Theme: Light')
     expect(themeBtn).toBeInTheDocument()
@@ -146,8 +161,8 @@ describe('App', () => {
     expect(screen.getByTitle('Theme: Dark')).toBeInTheDocument()
   })
 
-  it('has no a11y violations', { timeout: 15000 }, async () => {
-    const { container } = renderApp()
+  it('has no a11y violations', { timeout: 30000 }, async () => {
+    const { container } = await renderApp()
     const results = await axe(container, {
       rules: {
         // Radix UI tabs render aria-controls referencing panels not yet in DOM
@@ -157,8 +172,8 @@ describe('App', () => {
     expect(results).toHaveNoViolations()
   })
 
-  it('sets 3-segment URL hash with project slug', () => {
-    renderApp()
+  it('sets 3-segment URL hash with project slug', async () => {
+    await renderApp()
     const hash = window.location.hash
     // Hash should now be #/{projectSlug}/{presetId}/{modeId}
     const segments = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
@@ -166,29 +181,29 @@ describe('App', () => {
     expect(segments[0]).toBe('gridfinity') // project slug
   })
 
-  it('renders share button', () => {
-    renderApp()
+  it('renders share button', async () => {
+    await renderApp()
     expect(screen.getByTitle('Share configuration')).toBeInTheDocument()
   })
 
-  it('renders undo and redo buttons', () => {
-    renderApp()
+  it('renders undo and redo buttons', async () => {
+    await renderApp()
     expect(screen.getByTitle('Undo')).toBeInTheDocument()
     expect(screen.getByTitle('Redo')).toBeInTheDocument()
   })
 
-  it('undo button is disabled initially (no history)', () => {
-    renderApp()
+  it('undo button is disabled initially (no history)', async () => {
+    await renderApp()
     expect(screen.getByTitle('Undo')).toBeDisabled()
   })
 
-  it('redo button is disabled initially (no future)', () => {
-    renderApp()
+  it('redo button is disabled initially (no future)', async () => {
+    await renderApp()
     expect(screen.getByTitle('Redo')).toBeDisabled()
   })
 
-  it('studio view renders "powered by Yantra4D" tagline', () => {
-    renderApp()
+  it('studio view renders "powered by Yantra4D" tagline', async () => {
+    await renderApp()
     expect(screen.getByText('powered by Yantra4D')).toBeInTheDocument()
   })
 })

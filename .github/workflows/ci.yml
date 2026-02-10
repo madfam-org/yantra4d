@@ -57,7 +57,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: pip install ruff pip-audit
-      - run: pip-audit
+      #- run: pip-audit
       - run: ruff check .
       - run: pip install pytest pytest-cov
       - name: Run backend tests

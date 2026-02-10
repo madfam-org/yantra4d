@@ -7,7 +7,7 @@ export default defineConfig({
   testIgnore: process.env.CI ? ['**/18-visual-regression/**'] : [],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  retries: 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['list'],
@@ -16,9 +16,9 @@ export default defineConfig({
   ],
   use: {
     baseURL: 'http://localhost:5173',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    trace: process.env.CI ? 'off' : 'on-first-retry',
+    screenshot: process.env.CI ? 'off' : 'only-on-failure',
+    video: process.env.CI ? 'off' : 'retain-on-failure',
   },
   projects: [
     {
@@ -51,9 +51,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? 'npm run dev' : 'cd ../.. && ./scripts/dev.sh',
+    command: process.env.CI ? 'npx vite preview --port 5173' : 'cd ../.. && ./scripts/dev.sh',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    timeout: process.env.CI ? 60_000 : 30_000,
   },
 })

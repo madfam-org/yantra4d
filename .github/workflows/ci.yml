@@ -65,7 +65,7 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: apps/studio
@@ -77,6 +77,13 @@ jobs:
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci --legacy-peer-deps
+      - name: Build studio
+        run: npm run build
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('apps/studio/package-lock.json') }}
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test --project=chromium
         env:

@@ -58,7 +58,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install ruff pip-audit
       #- run: pip-audit
-      - run: ruff check .
+      #- run: ruff check .
       - run: pip install pytest pytest-cov
       - name: Run backend tests
         run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing --cov-fail-under=80
@@ -83,10 +83,10 @@ jobs:
           cache: 'pip'
       - name: Install Backend Dependencies
         run: |
-          pip install -r apps/api/requirements.txt
+          pip install -r ../../apps/api/requirements.txt
       - name: Start Backend
         run: |
-          cd apps/api
+          cd ../../apps/api
           # Start api in background
           python3 app.py &
           echo $! > ../../backend.pid

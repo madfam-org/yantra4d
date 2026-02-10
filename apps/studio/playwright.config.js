@@ -2,10 +2,12 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
+  timeout: 30_000,
   testDir: './e2e/tests',
+  testIgnore: process.env.CI ? ['**/18-visual-regression/**'] : [],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['list'],

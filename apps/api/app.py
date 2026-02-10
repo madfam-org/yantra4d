@@ -3,8 +3,8 @@ Yantra4D Backend API
 Production-ready Flask application for OpenSCAD rendering.
 
 Structure:
-- manifest.py          - Project manifest loader (modes, parts, parameters)
-- config.py            - Environment configuration (paths, server settings)
+- manifest.py          - Project manifest loader (ManifestService singleton)
+- config.py            - Environment configuration (AppConfig dataclass)
 - routes/render.py     - Render endpoints (estimate, render, render-stream, cancel)
 - routes/verify.py     - Verification endpoint
 - routes/health.py     - Health check endpoint

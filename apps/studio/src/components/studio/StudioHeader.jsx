@@ -6,14 +6,29 @@ import AuthGate from '../auth/AuthGate'
 import ProjectSelector from '../project/ProjectSelector'
 import { SUPPORTED_LANGUAGES } from '../../config/languages'
 import { useProjectMeta } from '../../hooks/useProjectMeta'
+import { useProject } from '../../contexts/ProjectProvider'
+import { useLanguage } from '../../contexts/LanguageProvider'
+import { useTheme } from '../../contexts/ThemeProvider'
 
 export default function StudioHeader({
-  manifest, t, language, setLanguage, theme, cycleTheme,
-  undoParams, redoParams, canUndo, canRedo,
-  handleShare, shareToast,
-  editorOpen, toggleEditor, projectSlug,
+  editorOpen, toggleEditor,
   aiPanelOpen, toggleAiPanel, onForkRequest,
 }) {
+  const {
+    manifest, projectSlug,
+    undoParams, redoParams, canUndo, canRedo,
+    handleShare, shareToast,
+  } = useProject()
+
+  const { language, setLanguage, t } = useLanguage()
+  const { theme, setTheme } = useTheme()
+
+  const cycleTheme = () => {
+    const themes = ['light', 'dark', 'system']
+    const currentIndex = themes.indexOf(theme)
+    setTheme(themes[(currentIndex + 1) % themes.length])
+  }
+
   const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
   const [langOpen, setLangOpen] = useState(false)
   const langRef = useRef(null)

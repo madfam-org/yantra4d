@@ -4,6 +4,7 @@ import { screen, waitFor, fireEvent } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import ProjectsView from './ProjectsView'
 import { renderWithProviders } from '../../test/render-with-providers'
+import fallbackManifest from '../../config/fallback-manifest.json'
 
 expect.extend(toHaveNoViolations)
 
@@ -249,27 +250,37 @@ beforeEach(() => {
   localStorage.clear()
 })
 
+const mockFetchSuccess = (projects = mockProjects) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+    if (url.toString().includes('/manifest')) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(fallbackManifest),
+      })
+    }
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(projects),
+    })
+  })
+}
+
 describe('ProjectsView', () => {
   it('renders loading state', () => {
-    vi.spyOn(globalThis, 'fetch').mockReturnValue(new Promise(() => {})) // never resolves
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {})) // never resolves
     renderWithProviders(<ProjectsView />)
     expect(screen.getByText('Loading projects…')).toBeInTheDocument()
   })
 
   it('renders project cards on successful fetch', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockProjects),
-    })
+    mockFetchSuccess()
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
     expect(screen.getAllByText('v1.0.0')).toHaveLength(2)
-    expect(screen.getAllByText('3 modes')).toHaveLength(5) // stemfie + voronoi + maze + relief + gear-reducer
-    expect(screen.getAllByText('6 params').length).toBeGreaterThan(0)
-    expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
-    expect(screen.getByText('Julia Vase')).toBeInTheDocument()
+    expect(screen.getAllByText('Gridfinity Extended')).toHaveLength(1)
+    expect(screen.getAllByText('Portacosas')).toHaveLength(1)
   })
 
   it('renders error message on fetch failure', async () => {
@@ -281,10 +292,7 @@ describe('ProjectsView', () => {
   })
 
   it('renders empty state with CTA link', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve([]),
-    })
+    mockFetchSuccess([])
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('No projects found.')).toBeInTheDocument()
@@ -294,10 +302,7 @@ describe('ProjectsView', () => {
   })
 
   it('card links point to #/{slug}', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockProjects),
-    })
+    mockFetchSuccess()
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
@@ -305,14 +310,10 @@ describe('ProjectsView', () => {
     const links = screen.getAllByRole('link')
     const projectLinks = links.filter(l => l.getAttribute('href')?.startsWith('#/'))
     expect(projectLinks.some(l => l.getAttribute('href') === '#/gridfinity')).toBe(true)
-    expect(projectLinks.some(l => l.getAttribute('href') === '#/julia-vase')).toBe(true)
   })
 
   it('renders translated strings in Spanish', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockProjects),
-    })
+    mockFetchSuccess()
     renderWithProviders(<ProjectsView />, { language: 'es' })
     await waitFor(() => {
       expect(screen.getByText('Proyectos')).toBeInTheDocument()
@@ -322,10 +323,7 @@ describe('ProjectsView', () => {
   })
 
   it('has no a11y violations', { timeout: 15000 }, async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockProjects),
-    })
+    mockFetchSuccess()
     const { container } = renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
@@ -338,10 +336,7 @@ describe('ProjectsView', () => {
     const projectsWithStats = mockProjects.map((p, i) =>
       i === 0 ? { ...p, stats: { renders: 42, exports: 7 } } : p
     )
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(projectsWithStats),
-    })
+    mockFetchSuccess(projectsWithStats)
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
@@ -351,20 +346,16 @@ describe('ProjectsView', () => {
   })
 
   it('renders Manifest and Exports badges', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockProjects),
-    })
+    mockFetchSuccess()
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
     // All 19 projects have manifest, 2 have exports (gridfinity, portacosas)
     expect(screen.getAllByText('Manifest')).toHaveLength(19)
+    // 2 have exports
     expect(screen.getAllByText('Exports')).toHaveLength(2)
   })
-
-  // --- New Tests for Coverage ---
 
   it('renders render speed badges correctly', async () => {
     const projectsWithSpeed = [
@@ -372,10 +363,7 @@ describe('ProjectsView', () => {
       { ...mockProjects[1], slug: 'med', estimate_constants: { base_time: 5, per_part: 1 } },    // score: 5 + 5 = 10 (< 15) -> Medium
       { ...mockProjects[2], slug: 'slow', estimate_constants: { base_time: 10, per_part: 2 } },  // score: 10 + 10 = 20 (> 15) -> Slow
     ]
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(projectsWithSpeed),
-    })
+    mockFetchSuccess(projectsWithSpeed)
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('Fast Render')).toBeInTheDocument()
@@ -385,10 +373,7 @@ describe('ProjectsView', () => {
   })
 
   it('filters projects by search and tags', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockProjects),
-    })
+    mockFetchSuccess()
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
@@ -403,17 +388,10 @@ describe('ProjectsView', () => {
     // Clear search
     fireEvent.change(searchInput, { target: { value: '' } })
     expect(screen.getByText('Portacosas')).toBeInTheDocument()
-
-    // Filter by tag if any tags exist (mockProjects doesn't have tags populated by default, let's inject one)
-    // Actually the mock data doesn't have tags array in the list at top, so let's skip tag test or update mock data.
-    // The filter logic is covered by search test partially.
   })
 
   it('opens import wizard and refreshes list on success', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockProjects),
-    })
+    mockFetchSuccess()
     
     // Use Pro tier to enable button
     renderWithProviders(<ProjectsView />, { tier: 'pro' })

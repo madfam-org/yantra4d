@@ -28,9 +28,19 @@ vi.mock('../assembly-editor/AssemblyEditorPanel', () => ({
   },
 }))
 
-import StudioSidebar from './StudioSidebar'
+// Mock Contexts
+vi.mock('../../contexts/ProjectProvider', () => ({
+  useProject: vi.fn(),
+}))
+vi.mock('../../contexts/LanguageProvider', () => ({
+  useLanguage: vi.fn(),
+}))
 
-const baseProps = {
+import StudioSidebar from './StudioSidebar'
+import { useProject } from '../../contexts/ProjectProvider'
+import { useLanguage } from '../../contexts/LanguageProvider'
+
+const baseContext = {
   manifest: {
     modes: [
       { id: 'full', label: 'Full' },
@@ -41,8 +51,6 @@ const baseProps = {
   mode: 'full',
   setMode: vi.fn(),
   getLabel: (m) => m.label,
-  language: 'en',
-  t: (key) => key,
   params: {},
   setParams: vi.fn(),
   colors: {},
@@ -65,7 +73,7 @@ const baseProps = {
   setExportFormat: vi.fn(),
   constraintsByParam: {},
   constraintErrors: false,
-  onAssemblyStepChange: vi.fn(),
+  handleAssemblyStepChange: vi.fn(),
   assemblyEditorOpen: false,
   setAssemblyEditorOpen: vi.fn(),
   viewerRef: { current: null },
@@ -74,32 +82,40 @@ const baseProps = {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  useProject.mockReturnValue(baseContext)
+  useLanguage.mockReturnValue({
+    t: (key) => key,
+    language: 'en',
+  })
 })
 
 describe('StudioSidebar', () => {
   it('renders mode tabs for each mode in manifest', () => {
-    render(<StudioSidebar {...baseProps} />)
+    render(<StudioSidebar />)
     expect(screen.getAllByText('Full').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Plate').length).toBeGreaterThan(0)
   })
 
   it('renders generate button', () => {
-    render(<StudioSidebar {...baseProps} />)
+    render(<StudioSidebar />)
     expect(screen.getAllByText('btn.gen').length).toBeGreaterThan(0)
   })
 
   it('shows processing text when loading', () => {
-    render(<StudioSidebar {...baseProps} loading={true} />)
+    useProject.mockReturnValue({ ...baseContext, loading: true })
+    render(<StudioSidebar />)
     expect(screen.getAllByText('btn.proc').length).toBeGreaterThan(0)
   })
 
   it('shows cancel button when loading', () => {
-    render(<StudioSidebar {...baseProps} loading={true} />)
+    useProject.mockReturnValue({ ...baseContext, loading: true })
+    render(<StudioSidebar />)
     expect(screen.getAllByText('btn.cancel').length).toBeGreaterThan(0)
   })
 
   it('disables generate button when loading', () => {
-    render(<StudioSidebar {...baseProps} loading={true} />)
+    useProject.mockReturnValue({ ...baseContext, loading: true })
+    render(<StudioSidebar />)
     const genBtns = screen.getAllByText('btn.proc')
     genBtns.forEach(btn => {
       expect(btn.closest('button')).toBeDisabled()
@@ -107,7 +123,8 @@ describe('StudioSidebar', () => {
   })
 
   it('disables generate button when constraint errors', () => {
-    render(<StudioSidebar {...baseProps} constraintErrors={true} />)
+    useProject.mockReturnValue({ ...baseContext, constraintErrors: true })
+    render(<StudioSidebar />)
     const genBtns = screen.getAllByText('btn.gen')
     genBtns.forEach(btn => {
       expect(btn.closest('button')).toBeDisabled()
@@ -115,7 +132,8 @@ describe('StudioSidebar', () => {
   })
 
   it('disables verify button when no parts', () => {
-    render(<StudioSidebar {...baseProps} parts={[]} />)
+    useProject.mockReturnValue({ ...baseContext, parts: [] })
+    render(<StudioSidebar />)
     const verifyBtns = screen.getAllByText('btn.verify')
     verifyBtns.forEach(btn => {
       expect(btn.closest('button')).toBeDisabled()
@@ -123,7 +141,8 @@ describe('StudioSidebar', () => {
   })
 
   it('enables verify button when parts available', () => {
-    render(<StudioSidebar {...baseProps} parts={[{ id: 'body' }]} />)
+    useProject.mockReturnValue({ ...baseContext, parts: [{ id: 'body' }] })
+    render(<StudioSidebar />)
     const verifyBtns = screen.getAllByText('btn.verify')
     verifyBtns.forEach(btn => {
       expect(btn.closest('button')).not.toBeDisabled()
@@ -131,21 +150,21 @@ describe('StudioSidebar', () => {
   })
 
   it('calls handleGenerate when clicking generate button', () => {
-    render(<StudioSidebar {...baseProps} />)
+    render(<StudioSidebar />)
     const genBtns = screen.getAllByText('btn.gen')
     fireEvent.click(genBtns[0].closest('button'))
-    expect(baseProps.handleGenerate).toHaveBeenCalled()
+    expect(baseContext.handleGenerate).toHaveBeenCalled()
   })
 
   it('calls handleReset when clicking reset button', () => {
-    render(<StudioSidebar {...baseProps} />)
+    render(<StudioSidebar />)
     const resetBtns = screen.getAllByText('btn.reset')
     fireEvent.click(resetBtns[0].closest('button'))
-    expect(baseProps.handleReset).toHaveBeenCalled()
+    expect(baseContext.handleReset).toHaveBeenCalled()
   })
 
   it('renders child panels: controls, export, bom, assembly', () => {
-    render(<StudioSidebar {...baseProps} />)
+    render(<StudioSidebar />)
     expect(screen.getAllByTestId('controls').length).toBeGreaterThan(0)
     expect(screen.getAllByTestId('export-panel').length).toBeGreaterThan(0)
     expect(screen.getAllByTestId('bom-panel').length).toBeGreaterThan(0)
@@ -153,21 +172,21 @@ describe('StudioSidebar', () => {
   })
 
   it('shows assembly editor toggle when assembly steps exist', () => {
-    const propsWithAssembly = {
-      ...baseProps,
-      manifest: { ...baseProps.manifest, assembly_steps: [{ id: 's1' }] },
-    }
-    render(<StudioSidebar {...propsWithAssembly} />)
+    useProject.mockReturnValue({
+      ...baseContext,
+      manifest: { ...baseContext.manifest, assembly_steps: [{ id: 's1' }] },
+    })
+    render(<StudioSidebar />)
     expect(screen.getAllByText('Edit Assembly Guide').length).toBeGreaterThan(0)
   })
 
   it('hides assembly editor toggle when no assembly steps', () => {
-    render(<StudioSidebar {...baseProps} />)
+    render(<StudioSidebar />)
     expect(screen.queryByText('Edit Assembly Guide')).not.toBeInTheDocument()
   })
 
   it('renders mobile menu button with screen reader text', () => {
-    render(<StudioSidebar {...baseProps} />)
+    render(<StudioSidebar />)
     expect(screen.getByText('Open controls')).toBeInTheDocument()
   })
 })

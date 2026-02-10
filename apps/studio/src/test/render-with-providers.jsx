@@ -4,6 +4,7 @@ import { ThemeProvider } from '../contexts/ThemeProvider'
 import { LanguageProvider } from '../contexts/LanguageProvider'
 import { AuthProvider } from '../contexts/AuthProvider'
 import { ManifestProvider } from '../contexts/ManifestProvider'
+import { ProjectProvider } from '../contexts/ProjectProvider'
 
 /**
  * Render a component wrapped in all application providers.
@@ -21,7 +22,9 @@ export function renderWithProviders(ui, { language = 'en', theme = 'light', ...r
       <LanguageProvider defaultLanguage={language} storageKey="test-lang">
         <AuthProvider>
           <ManifestProvider>
-            {ui}
+            <ProjectProvider>
+              {ui}
+            </ProjectProvider>
           </ManifestProvider>
         </AuthProvider>
       </LanguageProvider>

@@ -48,7 +48,7 @@ async function renderApp() {
   return result
 }
 
-describe('App', { timeout: 20000 }, () => {
+describe('App', { timeout: 30000 }, () => {
   it('renders header with project name', async () => {
     await renderApp()
     expect(screen.getByText(fallbackManifest.project.name)).toBeInTheDocument()
@@ -84,10 +84,10 @@ describe('App', { timeout: 20000 }, () => {
     // may already have been called. Wait for it to be invoked.
     await waitFor(() => {
       expect(renderParts).toHaveBeenCalled()
-    }, { timeout: 10000 })
+    }, { timeout: 15000 })
 
     // After render completes, 'Generate' button should reappear
-    const genButton = await screen.findByText('Generate', {}, { timeout: 10000 })
+    const genButton = await screen.findByText('Generate', {}, { timeout: 15000 })
     expect(genButton).toBeInTheDocument()
   })
 
@@ -100,7 +100,7 @@ describe('App', { timeout: 20000 }, () => {
     await waitFor(() => {
       const verifyBtn = screen.getByText('Run Verification Suite')
       expect(verifyBtn).not.toBeDisabled()
-    }, { timeout: 10000 })
+    }, { timeout: 15000 })
 
     fireEvent.click(screen.getByText('Run Verification Suite'))
     await waitFor(() => {

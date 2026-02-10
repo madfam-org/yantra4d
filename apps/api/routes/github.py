@@ -2,7 +2,7 @@
 GitHub Import Blueprint — validate, import, and sync repos.
 """
 import logging
-import re
+
 
 from flask import Blueprint, request, jsonify
 

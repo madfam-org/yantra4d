@@ -9,7 +9,7 @@ import json
 import logging
 import os
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, request, Response
 
 from config import Config
 from services.route_helpers import error_response

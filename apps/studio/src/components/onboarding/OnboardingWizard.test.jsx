@@ -171,9 +171,171 @@ describe('OnboardingWizard', () => {
     })
 
     it('navigates forward to edit step', async () => {
-      await renderAtStep1()
+      await renderAtStep1({ warnings: [] })
+      const nextBtn = screen.getByText('onboard.edit_manifest')
+      fireEvent.click(nextBtn)
+      await waitFor(() => {
+        expect(screen.getByText('onboard.edit_title')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Step 2: Edit Manifest', () => {
+    async function renderAtStep2() {
+      // Mock analysis result
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({
+          analysis: {
+            files: {
+              'main.scad': {
+                variables: [],
+                modules: [],
+                includes: [],
+                render_modes: [],
+              }
+            }
+          },
+          manifest: {
+            project: { name: 'Test', slug: 'test' },
+            modes: [{ id: 'default', label: 'Default', scad_file: 'main.scad' }],
+            parameters: [
+              { id: 'width', type: 'slider', default: 10, min: 1, max: 100 },
+              { id: 'show', type: 'checkbox', default: true },
+            ],
+          },
+          warnings: [],
+        }),
+      })
+
+      render(<OnboardingWizard {...defaultProps} />)
+
+      // Upload & Analyze
+      const fileInput = document.getElementById('scad-upload')
+      fireEvent.change(fileInput, { target: { files: [new File(['content'], 'main.scad')] } })
+      fireEvent.click(screen.getByText('onboard.analyze_btn'))
+
+      // Wait for review step
+      await waitFor(() => screen.getByText('onboard.review_title'))
+
+      // Go to edit step
       fireEvent.click(screen.getByText('onboard.edit_manifest'))
-      expect(screen.getByText('onboard.edit_title')).toBeInTheDocument()
+      await waitFor(() => screen.getByText('onboard.edit_title'))
+    }
+
+    it('renders parameter list', async () => {
+      await renderAtStep2()
+      expect(screen.getByText('width')).toBeInTheDocument()
+      expect(screen.getByText('show')).toBeInTheDocument()
+    })
+
+
+
+
+
+    it('updates parameter min/max', async () => {
+      await renderAtStep2()
+      // inputs: default, min, max (if applicable) for slider type
+      const inputs = screen.getAllByRole('spinbutton')
+      // width is first parameter (slider):
+      // 1. default value input
+      // 2. min value input
+      // 3. max value input
+      const minInput = inputs[1]
+      fireEvent.change(minInput, { target: { value: '5' } })
+      expect(minInput.value).toBe('5')
+    })
+
+    it('navigates to save step', async () => {
+      await renderAtStep2()
+      fireEvent.click(screen.getByText('onboard.review_save'))
+      expect(screen.getByText('onboard.save_title')).toBeInTheDocument()
+    })
+  })
+
+  describe('Step 3: Save', () => {
+    async function renderAtStep3() {
+      // Setup same as Step 2 but advance one more
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({
+          analysis: {
+            files: {
+              'main.scad': {
+                variables: [],
+                modules: [],
+                includes: [],
+                render_modes: [],
+              }
+            }
+          },
+          manifest: {
+            project: { name: 'Test', slug: 'test' },
+            modes: [{ id: 'default', label: 'Default', scad_file: 'main.scad' }],
+            parameters: [],
+          },
+          warnings: [],
+        }),
+      })
+
+      render(<OnboardingWizard {...defaultProps} />)
+
+      // Upload
+      const fileInput = document.getElementById('scad-upload')
+      fireEvent.change(fileInput, { target: { files: [new File(['content'], 'main.scad')] } })
+      fireEvent.click(screen.getByText('onboard.analyze_btn'))
+      await waitFor(() => screen.getByText('onboard.review_title'))
+
+      // Edit
+      fireEvent.click(screen.getByText('onboard.edit_manifest'))
+      await waitFor(() => screen.getByText('onboard.edit_title'))
+
+      // Save
+      fireEvent.click(screen.getByText('onboard.review_save'))
+      await waitFor(() => screen.getByText('onboard.save_title'))
+    }
+
+    it('renders save summary', async () => {
+      await renderAtStep3()
+      // "onboard.save_summary" is just the key in mock, so we look for it
+      // The real component replaces placeholders, but our mock language provider just returns the key
+      // Actually, wait - let's verify what the component renders.
+      // It renders {saveSummary} which comes from t("onboard.save_summary").replace(...)
+      // Since our t(key) returns key, it will try to replace on the key string "onboard.save_summary".
+      // It won't find placeholders. So it just renders "onboard.save_summary".
+      expect(screen.getByText('onboard.save_summary')).toBeInTheDocument()
+    })
+
+    it('saves project on create click', async () => {
+      await renderAtStep3()
+
+      // Mock save response
+      globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      })
+
+      fireEvent.click(screen.getByText('onboard.create_btn'))
+
+      await waitFor(() => {
+        expect(defaultProps.onComplete).toHaveBeenCalled()
+      })
+    })
+
+    it('shows error if save fails', async () => {
+      await renderAtStep3()
+
+      // Mock save failure
+      globalThis.fetch.mockResolvedValueOnce({
+        ok: false,
+        json: () => Promise.resolve({ error: 'Save failed' }),
+      })
+
+      fireEvent.click(screen.getByText('onboard.create_btn'))
+
+      await waitFor(() => {
+        expect(screen.getByText('Save failed')).toBeInTheDocument()
+      })
     })
   })
 })

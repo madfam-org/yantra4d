@@ -74,7 +74,7 @@ export default function StudioMainView() {
         ref={consoleRef}
         className="h-32 lg:h-48 bg-muted border-t border-border p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap shrink-0"
         role="log"
-        aria-live="off"
+        aria-live="polite"
         aria-label="Render console"
       >
         {logs}

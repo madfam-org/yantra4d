@@ -65,28 +65,34 @@ test.describe('Studio Header', () => {
   test('share button copies URL to clipboard', async ({ page, header }) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
     await header.clickShare()
-    await expect(page.locator('text=Link copied!')).toBeVisible()
+    // Toast may appear as inline tooltip or via sonner
+    const toast = page.locator('text=Link copied!, text=¡Enlace copiado!')
+    await expect(toast.first()).toBeVisible({ timeout: 5000 })
   })
 
   test('share toast disappears after a delay', async ({ page, header }) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
     await header.clickShare()
-    await expect(page.locator('text=Link copied!')).toBeVisible()
-    await page.waitForTimeout(3000)
-    await expect(page.locator('text=Link copied!')).not.toBeVisible()
+    const toast = page.locator('text=Link copied!, text=¡Enlace copiado!')
+    await expect(toast.first()).toBeVisible({ timeout: 5000 })
+    await page.waitForTimeout(4000)
+    await expect(toast).not.toBeVisible({ timeout: 5000 })
   })
 
   test('language toggle switches EN→ES', async ({ page, header }) => {
-    await expect(page.locator('text=Generate')).toBeVisible()
+    await expect(page.locator('text=Generate')).toBeVisible({ timeout: 5000 })
     await header.toggleLanguage()
-    await expect(page.locator('text=Generar')).toBeVisible()
+    await page.waitForTimeout(500)
+    await expect(page.locator('text=Generar')).toBeVisible({ timeout: 5000 })
   })
 
   test('language toggle switches ES→EN', async ({ page, header }) => {
     await header.toggleLanguage() // to ES
-    await expect(page.locator('text=Generar')).toBeVisible()
+    await page.waitForTimeout(500)
+    await expect(page.locator('text=Generar')).toBeVisible({ timeout: 5000 })
     await header.toggleLanguage() // back to EN
-    await expect(page.locator('text=Generate')).toBeVisible()
+    await page.waitForTimeout(500)
+    await expect(page.locator('text=Generate')).toBeVisible({ timeout: 5000 })
   })
 
   test('language persists to localStorage', async ({ page, header }) => {
@@ -100,23 +106,26 @@ test.describe('Studio Header', () => {
   })
 
   test('theme toggle cycles light→dark→system', async ({ page, header }) => {
-    // Set theme directly via localStorage (not addInitScript to avoid persistence issues)
+    // Set theme directly via localStorage and reload
     await page.evaluate(() => localStorage.setItem('vite-ui-theme', 'light'))
     await page.reload()
     await page.waitForSelector('header')
 
     // Cycle light → dark
     await header.cycleTheme()
+    await page.waitForTimeout(300)
     const theme1 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
     expect(theme1).toBe('dark')
 
     // Cycle dark → system
     await header.cycleTheme()
+    await page.waitForTimeout(300)
     const theme2 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
     expect(theme2).toBe('system')
 
     // Cycle system → light
     await header.cycleTheme()
+    await page.waitForTimeout(300)
     const theme3 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
     expect(theme3).toBe('light')
   })

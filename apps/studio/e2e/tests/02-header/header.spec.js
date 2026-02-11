@@ -66,14 +66,14 @@ test.describe('Studio Header', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
     await header.clickShare()
     // Toast may appear as inline tooltip or via sonner
-    const toast = page.locator('text=Link copied!, text=¡Enlace copiado!')
+    const toast = page.getByText('Link copied!').or(page.getByText('¡Enlace copiado!'))
     await expect(toast.first()).toBeVisible({ timeout: 5000 })
   })
 
   test('share toast disappears after a delay', async ({ page, header }) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
     await header.clickShare()
-    const toast = page.locator('text=Link copied!, text=¡Enlace copiado!')
+    const toast = page.getByText('Link copied!').or(page.getByText('¡Enlace copiado!'))
     await expect(toast.first()).toBeVisible({ timeout: 5000 })
     await page.waitForTimeout(4000)
     await expect(toast).not.toBeVisible({ timeout: 5000 })

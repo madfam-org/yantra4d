@@ -1,6 +1,38 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { goToStudio, goToProjects, setLanguage } from '../../helpers/test-utils.js'
 
+/** Click the globe button and select a language from the dropdown. */
+async function selectLanguageFromDropdown(page, langLabel) {
+  await page.locator('button:has(.lucide-globe)').first().click()
+  // Wait for dropdown to appear
+  const dropdown = page.locator('.absolute.top-full')
+  await dropdown.first().waitFor({ timeout: 3000 })
+  // Click the target language button
+  await dropdown.locator('button', { hasText: langLabel }).click()
+  await page.waitForTimeout(300)
+}
+
+/** Click the globe button and select the first non-current language. */
+async function toggleToOtherLanguage(page) {
+  await page.locator('button:has(.lucide-globe)').first().click()
+  const dropdown = page.locator('.absolute.top-full')
+  await dropdown.first().waitFor({ timeout: 3000 })
+  const options = dropdown.locator('button')
+  const count = await options.count()
+  for (let i = 0; i < count; i++) {
+    const isBold = await options.nth(i).evaluate(el => el.classList.contains('font-semibold'))
+    if (!isBold) {
+      await options.nth(i).click()
+      await page.waitForTimeout(300)
+      return
+    }
+  }
+  if (count > 0) {
+    await options.last().click()
+    await page.waitForTimeout(300)
+  }
+}
+
 test.describe('Internationalization (i18n)', () => {
   test('default language renders all UI in Spanish', async ({ page }) => {
     await setLanguage(page, 'es')
@@ -23,8 +55,8 @@ test.describe('Internationalization (i18n)', () => {
     await goToStudio(page)
     await expect(page.locator('text=Projects').first()).toBeVisible()
 
-    await page.locator('button:has(.lucide-globe)').first().click()
-    await expect(page.locator('text=Proyectos').first()).toBeVisible()
+    await selectLanguageFromDropdown(page, 'Español')
+    await expect(page.locator('text=Proyectos').first()).toBeVisible({ timeout: 5000 })
   })
 
   test('export panel text updates on language toggle', async ({ page }) => {
@@ -33,18 +65,18 @@ test.describe('Internationalization (i18n)', () => {
     await expect(page.locator('text=Export Images')).toBeVisible()
     await expect(page.locator('text=Download STL')).toBeVisible()
 
-    await page.locator('button:has(.lucide-globe)').first().click()
-    await expect(page.locator('text=Exportar Imágenes')).toBeVisible()
-    await expect(page.locator('text=Descargar STL')).toBeVisible()
+    await selectLanguageFromDropdown(page, 'Español')
+    await expect(page.locator('text=Exportar Imágenes')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('text=Descargar STL')).toBeVisible({ timeout: 5000 })
   })
 
   test('projects view title translates', async ({ page }) => {
     await setLanguage(page, 'en')
     await goToProjects(page)
-    await expect(page.locator('h2', { hasText: 'Projects' })).toBeVisible()
+    await expect(page.locator('h2', { hasText: 'Projects' })).toBeVisible({ timeout: 5000 })
 
-    await page.locator('button:has(.lucide-globe)').first().click()
-    await expect(page.locator('h2', { hasText: 'Proyectos' })).toBeVisible()
+    await selectLanguageFromDropdown(page, 'Español')
+    await expect(page.locator('h2', { hasText: 'Proyectos' })).toBeVisible({ timeout: 5000 })
   })
 
   test('theme toggle tooltips translate', async ({ page }) => {
@@ -54,8 +86,8 @@ test.describe('Internationalization (i18n)', () => {
     const title = await themeBtn.getAttribute('title')
     expect(title).toContain('Theme')
 
-    await page.locator('button:has(.lucide-globe)').first().click()
-    await page.waitForTimeout(200)
+    await selectLanguageFromDropdown(page, 'Español')
+    await page.waitForTimeout(300)
     const titleEs = await themeBtn.getAttribute('title')
     expect(titleEs).toContain('Tema')
   })
@@ -76,7 +108,7 @@ test.describe('Internationalization (i18n)', () => {
     const globe = page.locator('button:has(.lucide-globe)').first()
     await expect(globe).toBeVisible()
 
-    await globe.click()
+    await toggleToOtherLanguage(page)
     await expect(globe).toBeVisible()
   })
 

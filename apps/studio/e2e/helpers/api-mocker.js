@@ -110,7 +110,7 @@ export async function mockAllAPIs(page) {
     route.fulfill({ json: { passed: true, checks: [] } })
   })
 
-  await page.route('**/api/admin/projects', (route) => {
+  await page.route('**/api/admin/projects**', (route) => {
     route.fulfill({ json: MOCK_PROJECTS })
   })
 }
@@ -127,7 +127,7 @@ export async function mockAPIErrors(page) {
     route.fulfill({ status: 500, json: { error: 'Server error' } })
   })
 
-  await page.route('**/api/admin/projects', (route) => {
+  await page.route('**/api/admin/projects**', (route) => {
     route.fulfill({ status: 500, json: { error: 'Server error' } })
   })
 }

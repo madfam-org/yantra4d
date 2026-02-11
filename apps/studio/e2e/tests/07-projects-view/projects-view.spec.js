@@ -8,7 +8,7 @@ test.describe('Projects View', () => {
 
   test('displays projects title', async ({ page }) => {
     await goToProjects(page)
-    await expect(page.locator('h2', { hasText: 'Projects' })).toBeVisible()
+    await expect(page.locator('h2', { hasText: 'Projects' })).toBeVisible({ timeout: 8000 })
   })
 
   test('shows project cards grid', async ({ page, projectsView }) => {
@@ -19,19 +19,19 @@ test.describe('Projects View', () => {
 
   test('project card displays name and version', async ({ page }) => {
     await goToProjects(page)
-    await expect(page.locator('text=Test Project')).toBeVisible()
-    await expect(page.locator('text=v1.0.0')).toBeVisible()
+    await expect(page.getByText('Test Project')).toBeVisible({ timeout: 8000 })
+    await expect(page.getByText('v1.0.0')).toBeVisible({ timeout: 5000 })
   })
 
   test('project card displays metadata (modes, params, scad count)', async ({ page }) => {
     await goToProjects(page)
-    await expect(page.locator('text=2 modes')).toBeVisible()
-    await expect(page.locator('text=4 params')).toBeVisible()
+    await expect(page.getByText('2 modes')).toBeVisible({ timeout: 8000 })
+    await expect(page.getByText('4 params')).toBeVisible({ timeout: 5000 })
   })
 
   test('project card shows manifest badge', async ({ page }) => {
     await goToProjects(page)
-    await expect(page.locator('text=Manifest').first()).toBeVisible()
+    await expect(page.getByText('Manifest').first()).toBeVisible({ timeout: 8000 })
   })
 
   test('clicking project card navigates to studio', async ({ page, projectsView }) => {
@@ -44,31 +44,32 @@ test.describe('Projects View', () => {
 
   test('empty state shows message and CTA', async ({ page }) => {
     // Override the mock to return empty array
-    await page.route('**/api/admin/projects', (route) => {
+    await page.unroute('**/api/admin/projects**')
+    await page.route('**/api/admin/projects**', (route) => {
       route.fulfill({ json: [] })
     })
     await goToProjects(page)
-    await expect(page.locator('text=No projects found')).toBeVisible()
-    await expect(page.locator('a[href="#/onboard"]')).toBeVisible()
+    await expect(page.getByText('No projects found').or(page.getByText('No se encontraron proyectos'))).toBeVisible({ timeout: 8000 })
+    await expect(page.locator('a[href="#/onboard"]')).toBeVisible({ timeout: 5000 })
   })
 
   test('loading state shows loading text', async ({ page }) => {
     // Delay the response to catch loading state
-    await page.unroute('**/api/admin/projects')
-    await page.route('**/api/admin/projects', async (route) => {
+    await page.unroute('**/api/admin/projects**')
+    await page.route('**/api/admin/projects**', async (route) => {
       await new Promise(r => setTimeout(r, 3000))
       route.fulfill({ json: [] })
     })
     await goToProjects(page)
-    await expect(page.locator('text=Loading')).toBeVisible({ timeout: 2000 })
+    await expect(page.getByText('Loading').or(page.getByText('Cargando'))).toBeVisible({ timeout: 2000 })
   })
 
   test('error state shows error message', async ({ page }) => {
-    await page.unroute('**/api/admin/projects')
-    await page.route('**/api/admin/projects', (route) => {
+    await page.unroute('**/api/admin/projects**')
+    await page.route('**/api/admin/projects**', (route) => {
       route.fulfill({ status: 500, json: { error: 'Server error' } })
     })
     await goToProjects(page)
-    await expect(page.locator('.text-destructive')).toBeVisible()
+    await expect(page.locator('.text-destructive')).toBeVisible({ timeout: 8000 })
   })
 })

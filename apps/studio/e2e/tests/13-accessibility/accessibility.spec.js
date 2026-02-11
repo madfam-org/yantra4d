@@ -28,6 +28,7 @@ test.describe('Accessibility', () => {
           'aria-required-parent',   // Radix TabsTrigger rendering
           'nested-interactive',     // Shadcn compound components
           'aria-allowed-attr',      // Radix custom data-state attributes
+          'aria-valid-attr-value',  // Radix aria-controls references
         ])
         .analyze()
       // Log all violations at any impact level for visibility

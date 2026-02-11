@@ -19,16 +19,23 @@ test.describe('Rendering Flow', () => {
   })
 
   test('cancel button appears during render', async ({ page, sidebar }) => {
+    // The auto-render during goToStudio caches results for the current params.
+    // Change a param to bust the cache key, then re-mock render-stream to be slow.
+    await sidebar.editSliderValue('width', 123)
+    await page.waitForTimeout(300)
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
       await new Promise(r => setTimeout(r, 5000))
       route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
     await sidebar.clickGenerate()
-    await expect(sidebar.cancelButton).toBeVisible()
+    await expect(sidebar.cancelButton).toBeVisible({ timeout: 3000 })
   })
 
   test('cancel aborts render', async ({ page, sidebar }) => {
+    // Change param to bust cache (same as above)
+    await sidebar.editSliderValue('width', 124)
+    await page.waitForTimeout(300)
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
       await new Promise(r => setTimeout(r, 10000))

@@ -4,21 +4,26 @@ import { goToStudio, setLanguage, getSearchParams, waitForAppReady } from '../..
 
 /**
  * Navigate to a URL with ?p= param and ensure controls are ready.
- * Uses a 3-segment hash (#/project/preset/mode) to ensure the correct mode
- * is active immediately, bypassing the fallback manifest mode issue.
+ * Uses a 1-segment hash (#/test) to avoid preset overrides.
+ * After mock manifest loads, explicitly activates the 'Single' mode tab
+ * since the fallback manifest initializes mode to 'cup' which doesn't
+ * exist in the mock manifest.
  */
 async function goToWithParams(page, url) {
   await page.goto(url)
   await waitForAppReady(page)
-  // Wait for mock manifest to load
+  // Wait for mock manifest to load — header shows "Test Project"
   await page.locator('header h1', { hasText: 'Test Project' })
     .waitFor({ timeout: 8000 }).catch(() => { })
-  // Ensure a mode tab is active (fallback manifest may set wrong mode)
-  const activeTab = page.locator('[role="tab"][data-state="active"]')
-  if (await activeTab.count() === 0) {
-    const firstTab = page.locator('[role="tab"]').first()
-    if (await firstTab.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await firstTab.click()
+  // After mock manifest loads, React re-renders tabs for 'single','grid'.
+  // The mode state is still 'cup' (from fallback), so no tab is active.
+  // Wait a tick for React to re-render, then click the first mock tab.
+  await page.waitForTimeout(500)
+  const singleTab = page.locator('[role="tab"]').filter({ hasText: /Single|Individual/ }).first()
+  if (await singleTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+    const state = await singleTab.getAttribute('data-state').catch(() => null)
+    if (state !== 'active') {
+      await singleTab.click()
       await page.waitForTimeout(500)
     }
   }
@@ -52,8 +57,8 @@ test.describe('Shareable URLs', () => {
 
   test('loading URL with ?p= restores params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 100 })).toString('base64url')
-    // Use 3-segment hash to explicitly set mode to 'single'
-    await goToWithParams(page, `/?p=${diff}#/test/small/single`)
+    // Use 1-segment hash to avoid preset override
+    await goToWithParams(page, `/?p=${diff}#/test`)
     await page.waitForTimeout(800)
     const valEl = sidebar.sliderValue('width')
     await expect(valEl).toHaveText('100', { timeout: 8000 })
@@ -61,8 +66,8 @@ test.describe('Shareable URLs', () => {
 
   test('?p= with default values is equivalent to no params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 50 })).toString('base64url')
-    // Use 3-segment hash to explicitly set mode to 'single'
-    await goToWithParams(page, `/?p=${diff}#/test/small/single`)
+    // Use 1-segment hash to avoid preset override
+    await goToWithParams(page, `/?p=${diff}#/test`)
     await page.waitForTimeout(800)
     const valEl = sidebar.sliderValue('width')
     await expect(valEl).toHaveText('50', { timeout: 8000 })

@@ -1,6 +1,8 @@
-cd apps/studio && npx lint-staged
+#!/bin/sh
+# Run Lint Staged in Studio
+(cd apps/studio && npx lint-staged) || exit 1
 
-# Lint staged Python files with ruff (matches CI)
+# Run Python Linting (Ruff)
 STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
 if [ -n "$STAGED_PY" ]; then
   if command -v ruff >/dev/null 2>&1; then

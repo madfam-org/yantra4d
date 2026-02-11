@@ -63,8 +63,8 @@ test.describe('Studio Sidebar', () => {
 
   // Sliders
   test('slider displays current value', async ({ sidebar }) => {
-    const val = await sidebar.sliderValue('width').textContent()
-    expect(val).toBeTruthy()
+    // Wait for the value to be rendered and non-empty
+    await expect(sidebar.sliderValue('width')).toHaveText(/\d+/)
   })
 
   test('clicking value enters edit mode', async ({ page, sidebar }) => {

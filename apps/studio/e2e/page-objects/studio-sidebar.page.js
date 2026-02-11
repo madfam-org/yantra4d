@@ -68,24 +68,23 @@ export class StudioSidebarPage extends BasePage {
 
   /** Get the displayed value span for a slider (the clickable value next to the label). */
   sliderValue(paramId) {
-    // Find the row container by filtering for the label ID
-    return this.sidebar.locator('.flex.justify-between.items-center')
-      .filter({ has: this.page.locator(`#param-label-${paramId}`) })
-      .locator('[role="button"], input[type="number"]')
-      .first()
+    // 1. Find the slider thumb (which has the aria-labelledby)
+    const thumb = this.sidebar.locator(`[aria-labelledby="param-label-${paramId}"]`)
+
+    // 2. Go up to Slider Root, then up to the Container div
+    // Thumb -> Root -> Container
+    const container = thumb.locator('xpath=../..')
+
+    // 3. Find the header row (it's a sibling of the Slider Root in the Container)
+    return container.locator('.flex.justify-between').first()
+      // 4. Find the value display (button) or input
+      .locator('[role="button"], input[type="number"]').last()
   }
 
   /** Click the slider value to enter edit mode, type a value, and blur. */
   async editSliderValue(paramId, value) {
     const valSpan = this.sliderValue(paramId)
-    if (await valSpan.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await valSpan.click()
-    } else {
-      // Fallback: find slider by aria-labelledby and click the value span nearby
-      const slider = this.sidebar.locator(`[aria-labelledby="param-label-${paramId}"]`)
-      const container = slider.locator('xpath=../../..')
-      await container.locator('[role="button"]').click()
-    }
+    await valSpan.click()
     const input = this.sidebar.locator(`input[type="number"]`)
     await input.fill(String(value))
     await input.blur()

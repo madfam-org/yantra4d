@@ -4,7 +4,7 @@ FROM python:3.12-slim
 # OpenSCAD snapshot version — update hash after changing version:
 #   wget -q <url> -O openscad && sha256sum openscad
 ARG OPENSCAD_VERSION=2026.02.01
-ARG OPENSCAD_SHA256=REPLACE_WITH_ACTUAL_SHA256_ON_FIRST_BUILD
+ARG OPENSCAD_SHA256=dad3a8d19e63c543129eabef314676ac9348ffcab727544f4283b2ae9000277c
 
 # Install OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
 RUN apt-get update && \

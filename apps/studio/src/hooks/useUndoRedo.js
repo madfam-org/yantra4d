@@ -30,7 +30,10 @@ export function useUndoRedo(initialValue) {
     const prev = historyRef.current[indexRef.current]
     const next = typeof updater === 'function' ? updater(prev) : updater
 
-    if (JSON.stringify(prev) === JSON.stringify(next)) return
+    if (JSON.stringify(prev) === JSON.stringify(next)) {
+      // console.log('useUndoRedo: skipping update (no change)', next)
+      return
+    }
 
     if (history) {
       // Truncate redo history and push

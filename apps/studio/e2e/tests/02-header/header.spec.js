@@ -37,8 +37,13 @@ test.describe('Studio Header', () => {
   test('undo reverts parameter change', async ({ page, header, sidebar }) => {
     await expect(sidebar.slider('width')).toBeVisible({ timeout: 5000 })
     const valueBefore = await sidebar.sliderValue('width').textContent()
-    await sidebar.editSliderValue('width', 100)
-    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 2000 })
+    const targetValue = Number(valueBefore) === 100 ? 150 : 100
+    await sidebar.editSliderValue('width', targetValue)
+    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 2000 })
+
+    // Check/Wait for undo button to be active
+    const undoBtn = header.undoButton || header.header.locator('button[title="Undo"], button[title="Deshacer"]')
+    await expect(undoBtn).toBeEnabled({ timeout: 5000 })
 
     await header.clickUndo()
     await page.waitForTimeout(300)
@@ -49,7 +54,9 @@ test.describe('Studio Header', () => {
 
   test('redo restores undone change', async ({ page, header, sidebar }) => {
     await expect(sidebar.slider('width')).toBeVisible({ timeout: 5000 })
-    await sidebar.editSliderValue('width', 100)
+    const valueBefore = await sidebar.sliderValue('width').textContent()
+    const targetValue = Number(valueBefore) === 100 ? 150 : 100
+    await sidebar.editSliderValue('width', targetValue)
     await page.waitForTimeout(300)
     await header.clickUndo()
     await page.waitForTimeout(300)
@@ -59,7 +66,7 @@ test.describe('Studio Header', () => {
     await page.waitForTimeout(300)
 
     const value = await sidebar.sliderValue('width').textContent()
-    expect(value).toBe('100')
+    expect(value).toBe(String(targetValue))
   })
 
   test('share button copies URL to clipboard', async ({ page, header }) => {

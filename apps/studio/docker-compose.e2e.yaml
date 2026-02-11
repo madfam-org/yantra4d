@@ -1,0 +1,17 @@
+services:
+  e2e:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    working_dir: /app/apps/studio
+    volumes:
+      - ../..:/app
+      - /app/apps/studio/node_modules
+      - /app/node_modules
+    ipc: host
+    environment:
+      - CI=true
+    # Run tests against local dev server if host networking is supported
+    # macOS docker desktop supports host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

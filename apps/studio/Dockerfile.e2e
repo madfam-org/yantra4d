@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/playwright:v1.52.0-jammy
+
+WORKDIR /app
+
+# Copy package files for studio
+COPY package.json package-lock.json ./
+
+# Install dependencies (use legacy-peer-deps to bypass React 19 vs 18 conflict)
+RUN npm ci --legacy-peer-deps
+
+# Copy source code (will be overridden by volume mount in dev/test, but good for build)
+# We need to copy .. to /app to get packages/ but that's hard with context .
+# Instead, we just assume volume mount for running tests.
+# For the image build, we just keep it simple basically.
+COPY . .
+
+# Default command
+CMD ["npx", "playwright", "test"]

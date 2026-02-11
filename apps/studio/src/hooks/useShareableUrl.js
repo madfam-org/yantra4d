@@ -9,7 +9,6 @@ function encodeParams(params, defaultParams) {
   for (const [key, value] of Object.entries(params)) {
     const def = defaultParams[key]
     // Use loose equality to handle number vs string from inputs
-    // eslint-disable-next-line eqeqeq
     if (value != def) {
       diff[key] = value
     }

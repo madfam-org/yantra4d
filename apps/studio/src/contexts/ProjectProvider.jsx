@@ -19,7 +19,7 @@ export function useProject() {
 // Inner component to handle strict state reset on project change
 function ProjectProviderContent({ children }) {
   const viewerRef = useRef(null)
-  const { projectSlug, manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, presets } = useManifest()
+  const { projectSlug } = useManifest()
   const { t } = useLanguage()
 
   // 1. Core parametric state (mode, params, render loop, etc.)

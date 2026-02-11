@@ -109,8 +109,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=backend
-          cache-to: type=gha,scope=backend,mode=max
+          cache-from: type=gha,scope=backend,ignore-error=true
+          cache-to: type=gha,scope=backend,mode=max,ignore-error=true
           provenance: false
           sbom: false
 
@@ -158,8 +158,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=studio
-          cache-to: type=gha,scope=studio,mode=max
+          cache-from: type=gha,scope=studio,ignore-error=true
+          cache-to: type=gha,scope=studio,mode=max,ignore-error=true
           provenance: false
           sbom: false
           build-args: |
@@ -212,8 +212,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=landing
-          cache-to: type=gha,scope=landing,mode=max
+          cache-from: type=gha,scope=landing,ignore-error=true
+          cache-to: type=gha,scope=landing,mode=max,ignore-error=true
           provenance: false
           sbom: false
 

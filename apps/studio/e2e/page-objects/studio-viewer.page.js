@@ -10,7 +10,7 @@ export class StudioViewerPage extends BasePage {
     this.progressBar = page.locator('.bg-primary.transition-all')
     this.progressText = page.locator('.text-muted-foreground', { hasText: '%' })
     this.axesToggle = page.locator('button', { hasText: /⊞|⊟/ })
-    this.animationToggle = page.locator('button', { hasText: /▶|⏸/ })
+    this.animationToggle = page.locator('[data-testid="animation-toggle"]')
   }
 
   /** Get camera view button by view id. */

@@ -173,6 +173,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
 
             {mode === 'grid' && (
                 <button
+                    data-testid="animation-toggle"
                     onClick={() => setAnimating(a => !a)}
                     className="absolute top-16 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-lg hover:bg-background/90 backdrop-blur-sm"
                     title={animating ? t("viewer.pause_anim") : t("viewer.play_anim")}
@@ -186,11 +187,10 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                     <button
                         key={view.id}
                         onClick={() => handleViewChange(view.id)}
-                        className={`px-2 py-1 min-h-[44px] min-w-[44px] text-xs rounded font-medium transition-colors ${
-                            activeView === view.id
+                        className={`px-2 py-1 min-h-[44px] min-w-[44px] text-xs rounded font-medium transition-colors ${activeView === view.id
                                 ? 'bg-primary text-primary-foreground'
                                 : 'hover:bg-muted text-muted-foreground'
-                        }`}
+                            }`}
                     >
                         {getLabel(view, 'label', language)}
                     </button>
@@ -198,71 +198,71 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
             </div>
 
             <ErrorBoundary t={t}>
-            <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
-                <color attach="background" args={[bgColor]} />
-                <SceneController ref={sceneRef} cameraViews={cameraViews} />
+                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
+                    <color attach="background" args={[bgColor]} />
+                    <SceneController ref={sceneRef} cameraViews={cameraViews} />
 
-                <Environment preset="city" />
-                <ambientLight intensity={0.3} />
-                <pointLight position={[10, 10, 10]} intensity={0.5} />
+                    <Environment preset="city" />
+                    <ambientLight intensity={0.3} />
+                    <pointLight position={[10, 10, 10]} intensity={0.5} />
 
-                <OrbitControls makeDefault up={[0, 0, 1]} />
-                <Grid
-                    infiniteGrid
-                    sectionColor={GRID_SECTION_COLOR}
-                    cellColor={GRID_CELL_COLOR}
-                    fadeDistance={500}
-                    args={[10, 10]}
-                    rotation={[Math.PI / 2, 0, 0]}
-                />
-                <GizmoHelper alignment="bottom-left" margin={[60, 60]}>
-                    <GizmoViewport axisColors={axisColors} labelColor="white" />
-                </GizmoHelper>
+                    <OrbitControls makeDefault up={[0, 0, 1]} />
+                    <Grid
+                        infiniteGrid
+                        sectionColor={GRID_SECTION_COLOR}
+                        cellColor={GRID_CELL_COLOR}
+                        fadeDistance={500}
+                        args={[10, 10]}
+                        rotation={[Math.PI / 2, 0, 0]}
+                    />
+                    <GizmoHelper alignment="bottom-left" margin={[60, 60]}>
+                        <GizmoViewport axisColors={axisColors} labelColor="white" />
+                    </GizmoHelper>
 
-                {showAxes && <NumberedAxes axisColors={axisColors} />}
+                    {showAxes && <NumberedAxes axisColors={axisColors} />}
 
-                <Suspense fallback={null}>
-                    <Bounds fit clip observe margin={1.2}>
-                        {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
-                        <group>
-                            {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (
-                                <Model
-                                    key={part.type}
-                                    url={part.url}
-                                    color={colors[part.type] || defaultColor}
-                                    wireframe={wireframe}
-                                    onGeometry={(geom) => handleGeometry(part.type, geom)}
-                                    highlightMode={getHighlightMode(part.type)}
-                                />
-                            ))}
-                        </group>
-                        {/* Assembly parts — hidden when animated grid is active */}
-                        <group visible={!(animating && mode === 'grid' && animReady)}>
-                            {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => (
-                                <Model
-                                    key={part.type}
-                                    url={part.url}
-                                    color={colors[part.type] || defaultColor}
-                                    wireframe={wireframe}
-                                    onGeometry={(geom) => handleGeometry(part.type, geom)}
-                                    highlightMode={getHighlightMode(part.type)}
-                                />
-                            ))}
-                        </group>
-                        {/* Animated grid — mounted when animating, visible once ready */}
-                        {animating && mode === 'grid' && (
-                            <group visible={animReady}>
-                                <AnimatedGrid
-                                    params={params}
-                                    colors={colors}
-                                    wireframe={wireframe}
-                                    onReady={() => setAnimReady(true)}
-                                />
+                    <Suspense fallback={null}>
+                        <Bounds fit clip observe margin={1.2}>
+                            {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
+                            <group>
+                                {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (
+                                    <Model
+                                        key={part.type}
+                                        url={part.url}
+                                        color={colors[part.type] || defaultColor}
+                                        wireframe={wireframe}
+                                        onGeometry={(geom) => handleGeometry(part.type, geom)}
+                                        highlightMode={getHighlightMode(part.type)}
+                                    />
+                                ))}
                             </group>
-                        )}
-                    </Bounds>
-                </Suspense>
-            </Canvas>
+                            {/* Assembly parts — hidden when animated grid is active */}
+                            <group visible={!(animating && mode === 'grid' && animReady)}>
+                                {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => (
+                                    <Model
+                                        key={part.type}
+                                        url={part.url}
+                                        color={colors[part.type] || defaultColor}
+                                        wireframe={wireframe}
+                                        onGeometry={(geom) => handleGeometry(part.type, geom)}
+                                        highlightMode={getHighlightMode(part.type)}
+                                    />
+                                ))}
+                            </group>
+                            {/* Animated grid — mounted when animating, visible once ready */}
+                            {animating && mode === 'grid' && (
+                                <group visible={animReady}>
+                                    <AnimatedGrid
+                                        params={params}
+                                        colors={colors}
+                                        wireframe={wireframe}
+                                        onReady={() => setAnimReady(true)}
+                                    />
+                                </group>
+                            )}
+                        </Bounds>
+                    </Suspense>
+                </Canvas>
             </ErrorBoundary>
         </div>
     )

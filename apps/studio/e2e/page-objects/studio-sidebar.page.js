@@ -7,7 +7,7 @@ export class StudioSidebarPage extends BasePage {
     this.generateButton = this.sidebar.locator('button', { hasText: /Generate|Generar/ }).first()
     this.cancelButton = this.sidebar.locator('button', { hasText: /Cancel|Cancelar/ }).first()
     this.verifyButton = this.sidebar.locator('button', { hasText: /Verification|Verificación/ }).first()
-    this.resetButton = this.sidebar.locator('button', { hasText: /Reset|Restablecer/ }).first()
+    this.resetButton = this.sidebar.locator('button', { hasText: /Reset to Defaults|Restablecer/ }).first()
   }
 
   /** Get mode tab trigger by mode id or label. */
@@ -22,12 +22,19 @@ export class StudioSidebarPage extends BasePage {
     )
   }
 
-  /** Click a mode tab by index (0-based). */
+  /** Click a mode tab by index (0-based) or data-value. */
   async selectMode(modeId) {
+    // 1. Try to find by data-value (Radix UI)
+    const tabByValue = this.sidebar.locator(`[role="tablist"] [role="tab"][data-value="${modeId}"]`)
+    if (await tabByValue.count() > 0) {
+      await tabByValue.click()
+      return
+    }
+
     const tabs = this.sidebar.locator('[role="tablist"] [role="tab"]')
     const count = await tabs.count()
-    // Map mock mode IDs to indices
-    const modeIndex = { single: 0, grid: 1, assembly: 1 }
+    // Map mock mode IDs to indices based on MOCK_MANIFEST (cup, single, grid)
+    const modeIndex = { cup: 0, single: 1, grid: 2, assembly: 2 }
     const idx = modeIndex[modeId] ?? 0
     if (idx < count) {
       await tabs.nth(idx).click()
@@ -61,8 +68,11 @@ export class StudioSidebarPage extends BasePage {
 
   /** Get the displayed value span for a slider (the clickable value next to the label). */
   sliderValue(paramId) {
-    // Primary: find the [role="button"] span inside the same row as the param label
-    return this.sidebar.locator(`#param-label-${paramId}`).locator('xpath=..').locator('[role="button"]').first()
+    // Find the row container by filtering for the label ID
+    return this.sidebar.locator('.flex.justify-between.items-center')
+      .filter({ has: this.page.locator(`#param-label-${paramId}`) })
+      .locator('[role="button"], input[type="number"]')
+      .first()
   }
 
   /** Click the slider value to enter edit mode, type a value, and blur. */

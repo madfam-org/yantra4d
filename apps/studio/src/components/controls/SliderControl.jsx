@@ -62,7 +62,8 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
             <Slider
                 value={[value]}
                 min={param.min} max={param.max} step={param.step}
-                onValueChange={(vals) => onSliderChange(param.id, vals)}
+                onValueChange={(vals) => onSliderChange(param.id, vals, false)}
+                onValueCommit={(vals) => onSliderChange(param.id, vals, true)}
                 aria-labelledby={labelId}
             />
             {/* Tick marks with default star */}

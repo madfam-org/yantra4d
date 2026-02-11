@@ -68,7 +68,7 @@ function SidebarContent() {
         constraintsByParam={constraintsByParam}
       />
 
-      <div className="flex-1"></div>
+      <div className="hidden lg:block flex-1"></div>
 
       <div className="flex flex-col gap-2 border-t border-border pt-4">
         <Button
@@ -105,6 +105,7 @@ function SidebarContent() {
       </div>
 
       <ExportPanel
+        manifest={manifest}
         parts={parts}
         mode={mode}
         onDownloadStl={handleDownloadStl}

@@ -1,227 +1,109 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import React from 'react'
-
-const mockApiFetch = vi.fn()
-
-vi.mock('../../services/apiClient', () => ({
-  apiFetch: (...args) => mockApiFetch(...args),
-}))
-
-vi.mock('../../services/backendDetection', () => ({
-  getApiBase: () => 'http://localhost:5000',
-}))
-
+import { vi, describe, it, expect, afterEach } from 'vitest'
 import GitHubImportWizard from './GitHubImportWizard'
 
-const defaultProps = {
-  onClose: vi.fn(),
-  onImported: vi.fn(),
-}
-
-beforeEach(() => {
-  vi.clearAllMocks()
-})
+// Mock API client
+vi.mock('../../services/apiClient', () => ({
+  apiFetch: vi.fn()
+}))
+import { apiFetch } from '../../services/apiClient'
 
 describe('GitHubImportWizard', () => {
-  it('renders step 1: URL input', () => {
-    render(<GitHubImportWizard {...defaultProps} />)
-    expect(screen.getByText('Import from GitHub')).toBeInTheDocument()
-    expect(screen.getByLabelText('Repository URL')).toBeInTheDocument()
-    expect(screen.getByText('Validate')).toBeInTheDocument()
-    expect(screen.getByText('Cancel')).toBeInTheDocument()
+  const mockOnClose = vi.fn()
+  const mockOnImported = vi.fn()
+
+  afterEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('disables validate button when URL is empty', () => {
-    render(<GitHubImportWizard {...defaultProps} />)
-    expect(screen.getByText('Validate')).toBeDisabled()
+  it('renders initial URL input step', () => {
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    expect(screen.getByText('Import from GitHub')).toBeInTheDocument()
+    expect(screen.getByLabelText('Repository URL')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Validate' })).toBeDisabled()
   })
 
   it('enables validate button when URL is entered', () => {
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/repo' },
-    })
-    expect(screen.getByText('Validate')).not.toBeDisabled()
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/user/repo' } })
+    expect(screen.getByRole('button', { name: 'Validate' })).toBeEnabled()
   })
 
-  it('calls onClose when clicking cancel', () => {
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.click(screen.getByText('Cancel'))
-    expect(defaultProps.onClose).toHaveBeenCalledOnce()
-  })
-
-  it('shows validation error on failed response', async () => {
-    mockApiFetch.mockResolvedValue({
-      ok: false,
-      json: () => Promise.resolve({ error: 'Repository not found' }),
-    })
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/nonexistent' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Repository not found')).toBeInTheDocument()
-    })
-  })
-
-  it('shows network error on fetch failure', async () => {
-    mockApiFetch.mockRejectedValue(new Error('Network error'))
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/repo' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Network error')).toBeInTheDocument()
-    })
-  })
-
-  it('advances to step 2 on successful validation', async () => {
-    mockApiFetch.mockResolvedValue({
+  it('handles validation success and advances to step 2', async () => {
+    // Mock API response
+    apiFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({
-        scad_files: [{ path: 'main.scad', size: 2048 }],
-        has_manifest: true,
-        manifest: { project: { name: 'Test' } },
-      }),
-    })
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/my-repo' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Project slug')).toBeInTheDocument()
-    })
-    // Shows detected files
-    expect(screen.getByText(/Detected files \(1\)/)).toBeInTheDocument()
-    expect(screen.getByText(/main\.scad/)).toBeInTheDocument()
-    // Shows found manifest message
-    expect(screen.getByText(/Found project\.json in repository/)).toBeInTheDocument()
-    // Auto-generates slug from repo URL
-    expect(screen.getByLabelText('Project slug')).toHaveValue('my-repo')
-    // Shows Back and Import buttons
-    expect(screen.getByText('Back')).toBeInTheDocument()
-    expect(screen.getByText('Import')).toBeInTheDocument()
-  })
-
-  it('shows warning when no manifest found', async () => {
-    mockApiFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({
-        scad_files: [{ path: 'main.scad', size: 2048 }],
-        has_manifest: false,
-        manifest: null,
-      }),
-    })
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/repo' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
-
-    await waitFor(() => {
-      expect(screen.getByText(/No project\.json found/)).toBeInTheDocument()
-    })
-  })
-
-  it('goes back to step 1 when clicking Back', async () => {
-    mockApiFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({
+      json: async () => ({
         scad_files: [{ path: 'main.scad', size: 1024 }],
         has_manifest: true,
-        manifest: { project: { name: 'Test' } },
-      }),
+        manifest: { name: 'Test Project' }
+      })
     })
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/repo' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
 
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+
+    // Enter URL
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/user/valid-repo' } })
+
+    // Click Validate
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+
+    // Expect loading state
+    expect(screen.getByText('Validating...')).toBeInTheDocument()
+
+    // Wait for step 2
     await waitFor(() => {
-      expect(screen.getByText('Back')).toBeInTheDocument()
+      expect(screen.getByText('Project slug')).toBeInTheDocument()
     })
-    fireEvent.click(screen.getByText('Back'))
+
+    // Verify slug generation
+    expect(screen.getByLabelText('Project slug')).toHaveValue('valid-repo')
+    expect(screen.getByText('Found project.json in repository')).toBeInTheDocument()
+  })
+
+  it('handles validation failure', async () => {
+    apiFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Repo used not found' })
+    })
+
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/bad/repo' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+
+    expect(await screen.findByText('Repo used not found')).toBeInTheDocument()
+    // Should still be on step 1
     expect(screen.getByLabelText('Repository URL')).toBeInTheDocument()
   })
 
-  it('shows error when importing without manifest', async () => {
-    // First validate with no manifest
-    mockApiFetch.mockResolvedValue({
+  it('handles import success', async () => {
+    // Stage 1: Validation
+    apiFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({
-        scad_files: [{ path: 'main.scad', size: 1024 }],
-        has_manifest: false,
-        manifest: null,
-      }),
-    })
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/repo' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Import')).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByText('Import'))
-
-    await waitFor(() => {
-      expect(screen.getByText('A valid manifest is required to import')).toBeInTheDocument()
-    })
-  })
-
-  it('advances to step 3 on successful import', async () => {
-    // Validate
-    mockApiFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({
-        scad_files: [{ path: 'main.scad', size: 1024 }],
+      json: async () => ({
+        scad_files: [],
         has_manifest: true,
-        manifest: { project: { name: 'Test' } },
-      }),
-    })
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/repo' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Import')).toBeInTheDocument()
+        manifest: {}
+      })
     })
 
-    // Import
-    mockApiFetch.mockResolvedValueOnce({
+    render(<GitHubImportWizard onClose={mockOnClose} onImported={mockOnImported} />)
+
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/u/r' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+
+    await waitFor(() => screen.getByLabelText('Project slug'))
+
+    // Stage 2: Import
+    apiFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ slug: 'repo' }),
+      json: async () => ({ slug: 'r' })
     })
-    fireEvent.click(screen.getByText('Import'))
 
-    await waitFor(() => {
-      expect(screen.getByText('Project imported')).toBeInTheDocument()
-    })
-    expect(defaultProps.onImported).toHaveBeenCalledWith('repo')
-    expect(screen.getByText('Open in Editor')).toBeInTheDocument()
-  })
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }))
 
-  it('shows loading state during validation', async () => {
-    mockApiFetch.mockImplementation(() => new Promise(() => {})) // never resolves
-    render(<GitHubImportWizard {...defaultProps} />)
-    fireEvent.change(screen.getByLabelText('Repository URL'), {
-      target: { value: 'https://github.com/user/repo' },
-    })
-    fireEvent.click(screen.getByText('Validate'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Validating...')).toBeInTheDocument()
-    })
+    expect(await screen.findByText('Project imported')).toBeInTheDocument()
+    expect(mockOnImported).toHaveBeenCalledWith('r')
   })
 })

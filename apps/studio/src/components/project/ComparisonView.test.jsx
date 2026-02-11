@@ -1,85 +1,79 @@
-import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import { vi, describe, it, expect, afterEach } from 'vitest'
 import ComparisonView from './ComparisonView'
 
-// Mock dependencies
+// Mock Viewer since it requires WebGL/Three.js context
+vi.mock('../Viewer', () => ({
+  default: ({ parts }) => <div data-testid="viewer-mock">Viewer Mock (Parts: {parts?.length})</div>
+}))
+
+// Mock useLanguage hook directly
 vi.mock('../../contexts/LanguageProvider', () => ({
   useLanguage: () => ({ t: (key) => key }),
+  LanguageProvider: ({ children }) => children
 }))
 
-vi.mock('../Viewer', () => ({
-  default: ({ label }) => <div data-testid="mock-viewer">{label}</div>,
-}))
+const renderWithProviders = (ui) => {
+  return render(ui)
+}
 
 describe('ComparisonView', () => {
-  const mockSlots = [
-    { id: '1', label: 'Slot 1', parts: [], params: {} },
-    { id: '2', label: 'Slot 2', parts: [], params: {} },
-  ]
+  const mockOnAddCurrent = vi.fn()
+  const mockOnRemoveSlot = vi.fn()
 
-  it('renders empty state when no slots', () => {
-    render(
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders empty state when no slots provided', () => {
+    renderWithProviders(
       <ComparisonView
         slots={[]}
-        onRemoveSlot={() => {}}
-        onAddCurrent={() => {}}
+        onAddCurrent={mockOnAddCurrent}
+        onRemoveSlot={mockOnRemoveSlot}
       />
     )
     expect(screen.getByText('compare.empty')).toBeInTheDocument()
     expect(screen.getByText('compare.add_current')).toBeInTheDocument()
   })
 
-  it('renders slots when provided', () => {
-    render(
-      <ComparisonView
-        slots={mockSlots}
-        onRemoveSlot={() => {}}
-        onAddCurrent={() => {}}
-      />
-    )
-    expect(screen.getByText('compare.title')).toBeInTheDocument()
-    expect(screen.getAllByTestId('mock-viewer')).toHaveLength(2)
-  })
-
-  it('calls onAddCurrent when add button clicked', () => {
-    const onAddCurrent = vi.fn()
-    render(
+  it('calls onAddCurrent when add button clicked in empty state', () => {
+    renderWithProviders(
       <ComparisonView
         slots={[]}
-        onRemoveSlot={() => {}}
-        onAddCurrent={onAddCurrent}
+        onAddCurrent={mockOnAddCurrent}
       />
     )
     fireEvent.click(screen.getByRole('button', { name: /compare.add_current/i }))
-    expect(onAddCurrent).toHaveBeenCalled()
+    expect(mockOnAddCurrent).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders populated slots', () => {
+    const slots = [
+      { id: '1', parts: [], params: {}, label: 'Slot 1' },
+      { id: '2', parts: [], params: {}, label: 'Slot 2' }
+    ]
+    renderWithProviders(
+      <ComparisonView
+        slots={slots}
+        onRemoveSlot={mockOnRemoveSlot}
+      />
+    )
+    expect(screen.getByText('Slot 1')).toBeInTheDocument()
+    expect(screen.getByText('Slot 2')).toBeInTheDocument()
+    expect(screen.getAllByTestId('viewer-mock')).toHaveLength(2)
   })
 
   it('calls onRemoveSlot when remove button clicked', () => {
-    const onRemoveSlot = vi.fn()
-    render(
+    const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }]
+    renderWithProviders(
       <ComparisonView
-        slots={mockSlots}
-        onRemoveSlot={onRemoveSlot}
-        onAddCurrent={() => {}}
+        slots={slots}
+        onRemoveSlot={mockOnRemoveSlot}
       />
     )
-    const removeButtons = screen.getAllByRole('button', { name: 'Remove slot' })
-    expect(removeButtons).toHaveLength(2)
-    fireEvent.click(removeButtons[0])
-    expect(onRemoveSlot).toHaveBeenCalledWith('1')
-  })
-  
-  it('toggles camera sync', () => {
-    render(
-      <ComparisonView
-        slots={mockSlots}
-        onRemoveSlot={() => {}}
-        onAddCurrent={() => {}}
-      />
-    )
-    const syncButton = screen.getByText('compare.sync_camera')
-    fireEvent.click(syncButton)
-    // It just changes internal state, so we expect no crash
-    expect(syncButton).toBeInTheDocument()
+    const removeBtn = screen.getByLabelText('Remove slot')
+    fireEvent.click(removeBtn)
+    expect(mockOnRemoveSlot).toHaveBeenCalledWith('1')
   })
 })

@@ -21,7 +21,7 @@ jobs:
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci --legacy-peer-deps
-      #- run: npm audit --audit-level=high
+      - run: npm audit || true
       - run: npm run lint
       - run: npm run test:coverage
 
@@ -64,6 +64,10 @@ jobs:
         run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing --cov-fail-under=80
 
   e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit, mobile]
     runs-on: ubuntu-latest
     timeout-minutes: 25
     defaults:
@@ -83,15 +87,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('apps/studio/package-lock.json') }}
-      - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --project=chromium
+          key: playwright-${{ runner.os }}-${{ matrix.project }}-${{ hashFiles('apps/studio/package-lock.json') }}
+      - run: npx playwright install --with-deps ${{ matrix.project == 'mobile' && 'chromium' || matrix.project }}
+      - run: npx playwright test --project=${{ matrix.project }}
         env:
           CI: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.project }}
           path: apps/studio/playwright-report/
           retention-days: 14
 
@@ -104,3 +108,15 @@ jobs:
           submodules: recursive
       - name: Check manifest sync
         run: diff <(python3 -c "import json; print(json.dumps(json.load(open('projects/gridfinity/project.json')), indent=2))") <(python3 -c "import json; print(json.dumps(json.load(open('apps/studio/src/config/fallback-manifest.json')), indent=2))")
+
+  manifest-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install jsonschema
+      - name: Validate Project Manifests
+        run: python3 scripts/validate_manifests.py

@@ -151,7 +151,7 @@ describe('useKeyboardShortcuts', () => {
     const removeSpy = vi.spyOn(window, 'removeEventListener')
     const { unmount } = renderShortcuts()
     unmount()
-    expect(removeSpy).toHaveBeenCalledWith('keydown', expect.any(Function))
+    expect(removeSpy).toHaveBeenCalledWith('keydown', expect.any(Function), { capture: true })
   })
 
   it('handles empty modes array', () => {

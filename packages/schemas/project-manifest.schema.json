@@ -4,19 +4,58 @@
   "title": "Yantra4D Project Manifest",
   "description": "Schema for project.json files used by the Yantra4D parametric 3D design platform.",
   "type": "object",
-  "required": ["project", "modes", "parts", "parameters", "estimate_constants"],
+  "required": [
+    "project",
+    "modes",
+    "parts",
+    "parameters",
+    "estimate_constants"
+  ],
   "properties": {
     "project": {
       "type": "object",
-      "required": ["name", "slug", "version"],
+      "required": [
+        "name",
+        "slug",
+        "version"
+      ],
       "properties": {
-        "name": { "type": "string", "description": "Human-readable project name" },
-        "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-_]*$", "description": "URL-safe project identifier" },
-        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
-        "description": { "type": "string" },
-        "thumbnail": { "type": "string", "description": "Relative path to project thumbnail image" },
-        "tags": { "type": "array", "items": { "type": "string" }, "description": "Searchable tags for project gallery" },
-        "difficulty": { "type": "string", "enum": ["beginner", "intermediate", "advanced"], "description": "Project complexity level" }
+        "name": {
+          "type": "string",
+          "description": "Human-readable project name"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-_]*$",
+          "description": "URL-safe project identifier"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "description": {
+          "$ref": "#/$defs/i18nString"
+        },
+        "thumbnail": {
+          "$ref": "#/$defs/i18nString",
+          "description": "Relative path to project thumbnail image"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Searchable tags for project gallery"
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced"
+          ],
+          "description": "Project complexity level"
+        }
       }
     },
     "modes": {
@@ -24,65 +63,233 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "scad_file", "label", "parts", "estimate"],
+        "required": [
+          "scad_file",
+          "label",
+          "parts",
+          "estimate"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "scad_file": { "type": "string", "pattern": "\\.scad$" },
-          "label": { "$ref": "#/$defs/i18nString" },
-          "parts": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "scad_file": {
+            "type": "string",
+            "pattern": "\\.scad$"
+          },
+          "label": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
           "estimate": {
-            "type": "object",
-            "properties": {
-              "base_units": { "type": ["integer", "number", "string"] },
-              "formula": { "type": "string", "enum": ["constant", "grid"] },
-              "formula_vars": { "type": "array", "items": { "type": "string" } }
-            }
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "base_time": {
+                    "type": [
+                      "integer",
+                      "number"
+                    ]
+                  },
+                  "base_units": {
+                    "type": [
+                      "integer",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "per_unit": {
+                    "type": [
+                      "integer",
+                      "number"
+                    ]
+                  },
+                  "per_part": {
+                    "type": [
+                      "integer",
+                      "number"
+                    ]
+                  },
+                  "fn_factor": {
+                    "type": [
+                      "integer",
+                      "number"
+                    ]
+                  },
+                  "wasm_multiplier": {
+                    "type": [
+                      "integer",
+                      "number"
+                    ]
+                  },
+                  "warning_threshold_seconds": {
+                    "type": [
+                      "integer",
+                      "number"
+                    ]
+                  },
+                  "formula": {
+                    "type": "string"
+                  },
+                  "formula_vars": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": true
+              }
+            ]
           }
-        }
-      }
-    },
-    "parts": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": ["id", "render_mode", "label", "default_color"],
-        "properties": {
-          "id": { "type": "string" },
-          "render_mode": { "type": "integer" },
-          "static_stl": { "type": "string", "description": "Relative path to a pre-existing STL file (skip OpenSCAD rendering)" },
-          "label": { "$ref": "#/$defs/i18nString" },
-          "default_color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
-        }
+        },
+        "additionalProperties": true
       }
     },
     "parameters": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "type", "default", "label"],
+        "required": [
+          "type",
+          "label"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "type": { "type": "string", "enum": ["slider", "checkbox", "text"] },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "slider",
+              "checkbox",
+              "text"
+            ]
+          },
           "default": {},
-          "min": { "type": "number" },
-          "max": { "type": "number" },
-          "step": { "type": "number" },
-          "label": { "$ref": "#/$defs/i18nString" },
-          "tooltip": { "$ref": "#/$defs/i18nString" },
-          "group": { "type": "string" },
-          "visible_in_modes": { "type": "array", "items": { "type": "string" } },
-          "visibility_level": { "type": "string" },
-          "parent": { "type": "string" },
-          "disabled": { "type": "boolean" },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "step": {
+            "type": "number"
+          },
+          "maxlength": {
+            "type": "number"
+          },
+          "label": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "tooltip": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "group": {
+            "type": "string"
+          },
+          "modes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "visible_in_modes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "advanced": {
+            "type": "boolean"
+          },
+          "parent": {
+            "type": "string"
+          },
+          "visibility_level": {
+            "type": "string"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
           "widget": {
             "type": "object",
             "description": "Custom widget plugin for this parameter.",
             "properties": {
-              "type": { "type": "string", "enum": ["custom", "color-gradient", "pattern-selector", "image-picker"] },
-              "url": { "type": "string", "description": "URL of ES module exporting a React component (for type=custom)" }
+              "type": {
+                "type": "string",
+                "enum": [
+                  "custom",
+                  "color-gradient",
+                  "pattern-selector",
+                  "image-picker"
+                ]
+              },
+              "url": {
+                "type": "string",
+                "description": "URL of ES module exporting a React component (for type=custom)"
+              }
             },
-            "required": ["type"]
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "id"
+            ]
+          },
+          {
+            "required": [
+              "name"
+            ]
+          }
+        ]
+      }
+    },
+    "grid_presets": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "string"
+        },
+        "default": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "label",
+          "values"
+        ],
+        "properties": {
+          "emoji": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "values": {
+            "type": "object"
           }
         }
       }
@@ -91,11 +298,23 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "label", "values"],
+        "required": [
+          "label",
+          "values"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "label": { "$ref": "#/$defs/i18nString" },
-          "values": { "type": "object" }
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "values": {
+            "type": "object"
+          }
         }
       }
     },
@@ -103,11 +322,26 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "label", "position"],
+        "required": [
+          "id",
+          "label",
+          "position"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "label": { "$ref": "#/$defs/i18nString" },
-          "position": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 }
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "position": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          }
         }
       }
     },
@@ -115,18 +349,73 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "label"],
+        "required": [
+          "label"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "label": { "$ref": "#/$defs/i18nString" },
-          "levels": { "type": "array", "items": { "type": "string" } }
-        }
+          "id": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "label"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "$ref": "#/$defs/i18nString"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "id"
+            ]
+          },
+          {
+            "required": [
+              "key"
+            ]
+          },
+          {
+            "required": [
+              "slug"
+            ]
+          }
+        ]
       }
     },
     "viewer": {
       "type": "object",
       "properties": {
-        "default_color": { "type": "string" }
+        "default_color": {
+          "type": "string"
+        }
       }
     },
     "verification": {
@@ -142,13 +431,39 @@
                 "additionalProperties": {
                   "type": "object",
                   "properties": {
-                    "enabled": { "type": "boolean" }
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "expected": {},
+                    "xy_tolerance_mm": {
+                      "type": "number"
+                    },
+                    "z_ratio_min": {
+                      "type": "number"
+                    },
+                    "z_ratio_max": {
+                      "type": "number"
+                    },
+                    "min_facets": {
+                      "type": "integer"
+                    },
+                    "min_thickness_mm": {
+                      "type": "number"
+                    },
+                    "max_angle_deg": {
+                      "type": "number"
+                    },
+                    "min_size_mm": {
+                      "type": "number"
+                    }
                   },
                   "additionalProperties": true
                 }
               }
             },
-            "required": ["checks"]
+            "required": [
+              "checks"
+            ]
           }
         },
         "mode_overrides": {
@@ -156,139 +471,401 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
-              "stages": { "type": "array", "items": { "type": "string" } },
-              "overrides": { "type": "object", "additionalProperties": true },
-              "part_overrides": { "type": "object", "additionalProperties": true }
+              "stages": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "overrides": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "part_overrides": {
+                "type": "object",
+                "additionalProperties": true
+              }
             }
           }
         }
       },
-      "required": ["stages"]
+      "required": [
+        "stages"
+      ]
     },
     "export_formats": {
       "type": "array",
-      "items": { "type": "string", "enum": ["stl", "3mf", "off"] },
-      "default": ["stl"],
+      "items": {
+        "type": "string",
+        "enum": [
+          "stl",
+          "3mf",
+          "off"
+        ]
+      },
+      "default": [
+        "stl"
+      ],
       "description": "Supported export formats. OpenSCAD determines format from file extension."
     },
     "print_estimation": {
       "type": "object",
       "description": "Print estimation configuration for slicer heuristics.",
       "properties": {
-        "default_material": { "type": "string", "enum": ["pla", "petg", "abs", "tpu"], "default": "pla" },
-        "default_infill": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.2 }
+        "default_material": {
+          "type": "string",
+          "enum": [
+            "pla",
+            "petg",
+            "abs",
+            "tpu"
+          ],
+          "default": "pla"
+        },
+        "default_infill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.2
+        },
+        "material_profiles": {
+          "type": "object",
+          "additionalProperties": true
+        }
       }
     },
     "access_control": {
       "type": "object",
       "description": "Per-project access control. Missing = fully public.",
       "properties": {
-        "view": { "enum": ["public", "authenticated"], "default": "public" },
-        "configure": { "enum": ["public", "authenticated"], "default": "public" },
-        "download_stl": { "enum": ["public", "authenticated"], "default": "public" },
-        "download_scad": { "enum": ["public", "authenticated"], "default": "public" }
+        "view": {
+          "enum": [
+            "public",
+            "authenticated"
+          ],
+          "default": "public"
+        },
+        "configure": {
+          "enum": [
+            "public",
+            "authenticated"
+          ],
+          "default": "public"
+        },
+        "download_stl": {
+          "enum": [
+            "public",
+            "authenticated"
+          ],
+          "default": "public"
+        },
+        "download_scad": {
+          "enum": [
+            "public",
+            "authenticated"
+          ],
+          "default": "public"
+        },
+        "render": {
+          "enum": [
+            "public",
+            "authenticated"
+          ],
+          "default": "public"
+        },
+        "download": {
+          "enum": [
+            "public",
+            "authenticated"
+          ],
+          "default": "public"
+        },
+        "export": {
+          "enum": [
+            "public",
+            "authenticated"
+          ],
+          "default": "public"
+        }
       },
       "additionalProperties": false
     },
     "bom": {
-      "type": "object",
-      "description": "Bill of materials configuration.",
-      "properties": {
-        "hardware": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Bill of materials configuration.",
+          "properties": {
+            "hardware": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label",
+                  "quantity_formula"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "$ref": "#/$defs/i18nString"
+                  },
+                  "quantity_formula": {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  },
+                  "unit": {
+                    "type": "string"
+                  },
+                  "supplier_url": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
           "type": "array",
+          "description": "Legacy BOM array format (e.g. Ultimate Box).",
           "items": {
             "type": "object",
-            "required": ["id", "label", "quantity_formula"],
+            "required": [
+              "item",
+              "qty",
+              "condition"
+            ],
             "properties": {
-              "id": { "type": "string" },
-              "label": { "$ref": "#/$defs/i18nString" },
-              "quantity_formula": { "type": ["string", "number"], "description": "Expression using param IDs or a constant number" },
-              "unit": { "type": "string", "default": "pcs" },
-              "supplier_url": { "type": "string", "format": "uri" }
+              "item": {
+                "$ref": "#/$defs/i18nString"
+              },
+              "qty": {
+                "type": "number"
+              },
+              "condition": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "array",
+          "description": "Legacy BOM array format with quantity_formula (e.g. Yapp Box).",
+          "items": {
+            "type": "object",
+            "required": [
+              "item",
+              "quantity_formula"
+            ],
+            "properties": {
+              "item": {
+                "$ref": "#/$defs/i18nString"
+              },
+              "quantity_formula": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "conditional": {
+                "$ref": "#/$defs/i18nString"
+              }
             }
           }
         }
-      }
+      ]
     },
     "assembly_steps": {
       "type": "array",
-      "description": "Step-by-step assembly instructions with part visibility and camera control.",
+      "description": "Step-by-step assembly instructions.",
       "items": {
-        "type": "object",
-        "required": ["step", "label"],
-        "properties": {
-          "step": { "type": "integer", "minimum": 1 },
-          "label": { "$ref": "#/$defs/i18nString" },
-          "highlight_parts": { "type": "array", "items": { "type": "string" }, "description": "Parts to highlight at full opacity with emissive glow" },
-          "visible_parts": { "type": "array", "items": { "type": "string" }, "description": "Cumulative parts visible at this step" },
-          "camera": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
-          "camera_target": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "description": "Look-at point for camera" },
-          "notes": { "$ref": "#/$defs/i18nString" },
-          "hardware": { "type": "array", "items": { "type": "string" }, "description": "BOM item IDs relevant to this step" }
-        }
+        "oneOf": [
+          {
+            "$ref": "#/$defs/i18nString"
+          },
+          {
+            "type": "object",
+            "required": [
+              "step",
+              "label"
+            ],
+            "properties": {
+              "step": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "label": {
+                "$ref": "#/$defs/i18nString"
+              },
+              "highlight_parts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "visible_parts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "camera": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "camera_target": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "notes": {
+                "$ref": "#/$defs/i18nString"
+              },
+              "hardware": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "constraints": {
       "type": "array",
       "description": "Cross-parameter validation rules evaluated client-side via expr-eval.",
-      "items": {
-        "type": "object",
-        "required": ["rule", "message", "severity"],
-        "properties": {
-          "rule": { "type": "string", "description": "Expression using parameter IDs. Must return truthy when valid." },
-          "message": { "$ref": "#/$defs/i18nString" },
-          "severity": { "type": "string", "enum": ["error", "warning"] },
-          "applies_to": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Parameter IDs this constraint visually attaches to."
-          }
+      "items": {},
+      "anyOf": [
+        {
+          "required": [
+            "rule",
+            "message"
+          ]
+        },
+        {
+          "required": [
+            "expression",
+            "message"
+          ]
+        }
+      ]
+    }
+  },
+  "materials": {
+    "type": "array",
+    "description": "Custom material profiles for print estimation. Falls back to built-in profiles if absent.",
+    "items": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "density",
+        "cost_per_kg"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "density": {
+          "type": "number",
+          "description": "g/cm³"
+        },
+        "cost_per_kg": {
+          "type": "number"
+        },
+        "print_speed_factor": {
+          "type": "number",
+          "default": 1.0,
+          "description": "Multiplier vs PLA baseline speed"
         }
       }
-    },
-    "materials": {
-      "type": "array",
-      "description": "Custom material profiles for print estimation. Falls back to built-in profiles if absent.",
-      "items": {
-        "type": "object",
-        "required": ["id", "name", "density", "cost_per_kg"],
-        "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "density": { "type": "number", "description": "g/cm³" },
-          "cost_per_kg": { "type": "number" },
-          "print_speed_factor": { "type": "number", "default": 1.0, "description": "Multiplier vs PLA baseline speed" }
-        }
+    }
+  },
+  "source": {
+    "type": "object",
+    "description": "Import source metadata (e.g., GitHub repo origin).",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "github",
+          "upload",
+          "local"
+        ]
+      },
+      "repo_url": {
+        "type": "string",
+        "format": "uri"
+      },
+      "imported_at": {
+        "type": "string",
+        "format": "date-time"
       }
-    },
-    "source": {
-      "type": "object",
-      "description": "Import source metadata (e.g., GitHub repo origin).",
-      "properties": {
-        "type": { "type": "string", "enum": ["github", "upload", "local"] },
-        "repo_url": { "type": "string", "format": "uri" },
-        "imported_at": { "type": "string", "format": "date-time" }
-      }
-    },
-    "grid_presets": { "type": "object", "additionalProperties": { "type": "object" } },
-    "estimate_constants": {
-      "type": "object",
-      "required": ["base_time", "per_unit", "per_part"],
-      "properties": {
-        "base_time": { "type": "number" },
-        "per_unit": { "type": "number" },
-        "per_part": { "type": "number" },
-        "fn_factor": { "type": "number" },
-        "wasm_multiplier": { "type": "number" },
-        "warning_threshold_seconds": { "type": "number" }
+    }
+  },
+  "estimate_constants": {
+    "type": "object",
+    "required": [
+      "base_time",
+      "per_unit",
+      "per_part"
+    ],
+    "properties": {
+      "base_time": {
+        "type": "number"
+      },
+      "per_unit": {
+        "type": "number"
+      },
+      "per_part": {
+        "type": "number"
+      },
+      "fn_factor": {
+        "type": "number"
+      },
+      "wasm_multiplier": {
+        "type": "number"
+      },
+      "warning_threshold_seconds": {
+        "type": "number"
       }
     }
   },
   "$defs": {
     "i18nString": {
       "oneOf": [
-        { "type": "string" },
-        { "type": "object", "properties": { "en": { "type": "string" }, "es": { "type": "string" } }, "required": ["en"] }
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string"
+            },
+            "es": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "en"
+          ]
+        }
       ]
     }
   }

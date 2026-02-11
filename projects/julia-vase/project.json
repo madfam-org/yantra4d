@@ -28,7 +28,11 @@
       "render_mode": 0,
       "parts": [
         "vase"
-      ]
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [

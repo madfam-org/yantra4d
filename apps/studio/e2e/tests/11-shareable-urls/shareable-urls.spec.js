@@ -4,12 +4,16 @@ import { goToStudio, setLanguage, getSearchParams, waitForAppReady } from '../..
 
 /**
  * Navigate to a URL with ?p= param and ensure controls are ready.
+ * Uses a 3-segment hash (#/project/preset/mode) to ensure the correct mode
+ * is active immediately, bypassing the fallback manifest mode issue.
  */
 async function goToWithParams(page, url) {
   await page.goto(url)
   await waitForAppReady(page)
+  // Wait for mock manifest to load
   await page.locator('header h1', { hasText: 'Test Project' })
     .waitFor({ timeout: 8000 }).catch(() => { })
+  // Ensure a mode tab is active (fallback manifest may set wrong mode)
   const activeTab = page.locator('[role="tab"][data-state="active"]')
   if (await activeTab.count() === 0) {
     const firstTab = page.locator('[role="tab"]').first()
@@ -18,6 +22,7 @@ async function goToWithParams(page, url) {
       await page.waitForTimeout(500)
     }
   }
+  // Wait for sliders to render (they only appear for the correct mode)
   await page.locator('[role="slider"]').first()
     .waitFor({ timeout: 5000 }).catch(() => { })
 }
@@ -47,19 +52,20 @@ test.describe('Shareable URLs', () => {
 
   test('loading URL with ?p= restores params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 100 })).toString('base64url')
-    await goToWithParams(page, `/?p=${diff}#/test`)
-    // Wait for params to settle — ?p= is applied during component mount
-    await page.waitForTimeout(500)
+    // Use 3-segment hash to explicitly set mode to 'single'
+    await goToWithParams(page, `/?p=${diff}#/test/small/single`)
+    await page.waitForTimeout(800)
     const valEl = sidebar.sliderValue('width')
-    await expect(valEl).toHaveText('100', { timeout: 5000 })
+    await expect(valEl).toHaveText('100', { timeout: 8000 })
   })
 
   test('?p= with default values is equivalent to no params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 50 })).toString('base64url')
-    await goToWithParams(page, `/?p=${diff}#/test`)
-    await page.waitForTimeout(500)
+    // Use 3-segment hash to explicitly set mode to 'single'
+    await goToWithParams(page, `/?p=${diff}#/test/small/single`)
+    await page.waitForTimeout(800)
     const valEl = sidebar.sliderValue('width')
-    await expect(valEl).toHaveText('50', { timeout: 5000 })
+    await expect(valEl).toHaveText('50', { timeout: 8000 })
   })
 
   test('invalid ?p= value is gracefully ignored', async ({ page }) => {

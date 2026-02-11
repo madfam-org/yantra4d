@@ -1,5 +1,27 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, goToProjects, setLanguage } from '../../helpers/test-utils.js'
+import { goToStudio, goToProjects, setLanguage, waitForAppReady } from '../../helpers/test-utils.js'
+
+/**
+ * Lightweight studio navigation for mobile viewports.
+ * Unlike goToStudio, this does NOT wait for desktop sidebar (.w-80) or sliders,
+ * which are hidden at mobile and cause 13s of wasted timeouts.
+ */
+async function goToStudioMobile(page, slug = 'test') {
+  await page.goto(`/#/${slug}`)
+  await waitForAppReady(page)
+  // Wait for mock manifest to load
+  await page.locator('header h1', { hasText: 'Test Project' })
+    .waitFor({ timeout: 8000 }).catch(() => { })
+  // Ensure a mode tab is active (click first tab if needed)
+  const activeTab = page.locator('[role="tab"][data-state="active"]')
+  if (await activeTab.count() === 0) {
+    const firstTab = page.locator('[role="tab"]').first()
+    if (await firstTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await firstTab.click()
+      await page.waitForTimeout(300)
+    }
+  }
+}
 
 test.describe('Responsive Design', () => {
   test.beforeEach(async ({ page }) => {
@@ -51,7 +73,7 @@ test.describe('Responsive Design', () => {
 
   test('mobile: mode tabs are visible', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
-    await goToStudio(page)
+    await goToStudioMobile(page)
     // At mobile, mode tabs are in the mobile bar (which has role="tablist")
     const tablist = page.locator('[role="tablist"]').first()
     await expect(tablist).toBeVisible({ timeout: 10000 })
@@ -150,19 +172,18 @@ test.describe('Responsive Design', () => {
 
   test('mobile: export panel is accessible via scroll', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
-    await goToStudio(page)
+    await goToStudioMobile(page)
     // On mobile, the export panel is inside the bottom sheet.
-    // Open the sheet by clicking the hamburger menu button (has Menu icon).
-    // Use sr-only text locator since CSS class escaping is fragile
-    const menuBtn = page.locator('button').filter({ hasText: 'Open controls' }).first()
-      .or(page.getByRole('button', { name: /open controls|abrir/i }))
-    await expect(menuBtn.first()).toBeVisible({ timeout: 10000 })
-    await menuBtn.first().click()
+    // Open the sheet by clicking the hamburger menu button.
+    // The SheetTrigger button contains <Menu> icon and sr-only text "Open controls".
+    const menuBtn = page.locator('button:has(.lucide-menu)').first()
+    await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await menuBtn.click()
     await page.waitForTimeout(800)
     // The sheet should now be open with export panel content
     const exportText = page.getByText('Export Images').or(page.getByText('Exportar Imágenes'))
-    // Scroll to make export visible inside sheet
-    const sheetContent = page.locator('[role="dialog"]').first().or(page.locator('[data-state="open"]').first())
+    // Scroll inside sheet if needed
+    const sheetContent = page.locator('[role="dialog"], [data-state="open"]').first()
     if (await sheetContent.isVisible({ timeout: 2000 }).catch(() => false)) {
       await sheetContent.evaluate(el => el.scrollTo(0, el.scrollHeight))
       await page.waitForTimeout(300)

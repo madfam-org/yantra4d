@@ -58,3 +58,54 @@ class TestAiSession:
         sid = create_session("p", "configurator")
         _sessions[sid]["created_at"] = time.time() - 7200
         assert get_messages(sid) == []
+
+    def test_redis_create_and_get(self):
+        """Test Redis path when redis_client is active."""
+        from unittest.mock import MagicMock, patch
+        import json
+        
+        mock_redis = MagicMock()
+        # Mock get to return None first (cache miss) then data
+        # actually create_session sets data.
+        
+        with patch("services.ai_session.redis_client", mock_redis):
+            # Create session
+            sid = create_session("redis-proj", "code-editor")
+            
+            # Verify setex called
+            assert mock_redis.setex.called
+            args = mock_redis.setex.call_args[0]
+            assert args[0] == f"ai_session:{sid}"
+            assert args[1] == 3600
+            data = json.loads(args[2])
+            assert data["project_slug"] == "redis-proj"
+            
+            # Mock get for retrieval
+            mock_redis.get.return_value = json.dumps(data)
+            
+            # Get session
+            session = get_session(sid)
+            assert session is not None
+            assert session["project_slug"] == "redis-proj"
+            
+            # Append message -> update
+            append_message(sid, "user", "hi redis")
+            # Verify setex called again for update
+            assert mock_redis.setex.call_count >= 2
+
+    def test_redis_fallback(self):
+        """Test fallback to memory on Redis error."""
+        from unittest.mock import MagicMock, patch
+        import redis
+        
+        mock_redis = MagicMock()
+        # Simulate Redis failure on setex
+        mock_redis.setex.side_effect = redis.RedisError("Connection failed")
+        
+        with patch("services.ai_session.redis_client", mock_redis):
+            # Should not raise, but fall back to memory
+            sid = create_session("fallback-proj", "configurator")
+            
+            # Verify it's in memory
+            assert sid in _sessions
+            assert _sessions[sid]["project_slug"] == "fallback-proj"

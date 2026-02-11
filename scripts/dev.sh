@@ -45,6 +45,9 @@ done
 if [ "$START_API" = true ]; then
   echo "Starting backend (Flask :5000)..."
   cd "$PROJECT_ROOT/apps/api"
+  if [ -d ".venv" ]; then
+    source .venv/bin/activate
+  fi
   python3 app.py &
   echo $! > "$PID_DIR/backend.pid"
   cd "$PROJECT_ROOT"

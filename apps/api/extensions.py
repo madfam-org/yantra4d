@@ -16,7 +16,7 @@ def tiered_rate_key():
 # RATE_LIMIT_STORAGE controls the rate-limiter backend:
 #   "memory://"          — per-process (default, not shared across workers)
 #   "redis://host:port"  — shared across workers via Redis
-_storage_uri = os.environ.get("RATE_LIMIT_STORAGE", "memory://")
+_storage_uri = os.environ.get("RATE_LIMIT_STORAGE", os.environ.get("REDIS_URL", "memory://"))
 
 limiter = Limiter(
     key_func=tiered_rate_key,

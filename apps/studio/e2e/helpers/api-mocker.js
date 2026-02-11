@@ -6,15 +6,15 @@
 const MOCK_MANIFEST = {
   project: { name: 'Test Project', slug: 'test', version: '1.0.0', description: 'Test project' },
   modes: [
-    { id: 'cup', label: 'Single', label_es: 'Individual', scad_file: 'test.scad', parts: ['body'] },
+    { id: 'cup', label: 'Start', label_es: 'Inicio', scad_file: 'test.scad', parts: ['body'] },
     { id: 'single', label: 'Single', label_es: 'Individual', scad_file: 'test.scad', parts: ['body'] },
     { id: 'grid', label: 'Grid', label_es: 'Cuadrícula', scad_file: 'test.scad', parts: ['body', 'rod'] },
   ],
   parameters: [
     { id: 'width', type: 'slider', label: 'Width', label_es: 'Ancho', default: 50, min: 10, max: 200, step: 1, visible_in_modes: ['cup', 'single', 'grid'] },
-    { id: 'height', type: 'slider', label: 'Height', label_es: 'Alto', default: 30, min: 5, max: 100, step: 1, visible_in_modes: ['single', 'grid'] },
-    { id: 'letter', type: 'text', label: 'Letter', label_es: 'Letra', default: 'A', maxlength: 1, visible_in_modes: ['single'] },
-    { id: 'show_base', type: 'checkbox', label: 'Show Base', label_es: 'Mostrar Base', default: true, visible_in_modes: ['single', 'grid'] },
+    { id: 'height', type: 'slider', label: 'Height', label_es: 'Alto', default: 30, min: 5, max: 100, step: 1, visible_in_modes: ['cup', 'single', 'grid'] },
+    { id: 'letter', type: 'text', label: 'Letter', label_es: 'Letra', default: 'A', maxlength: 1, visible_in_modes: ['cup', 'single'] },
+    { id: 'show_base', type: 'checkbox', label: 'Show Base', label_es: 'Mostrar Base', default: true, visible_in_modes: ['cup', 'single', 'grid'] },
   ],
   presets: [
     { id: 'small', label: 'Small', label_es: 'Pequeño', values: { width: 30, height: 20 } },

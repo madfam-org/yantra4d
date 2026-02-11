@@ -11,9 +11,10 @@ const EXPORT_FORMATS = [
   { id: 'off', label: 'OFF', ext: '.off' },
 ]
 
-export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad, onExportImage, onExportAllViews, exportFormat, onExportFormatChange }) {
+export default function ExportPanel({ manifest: propManifest, parts, mode, onDownloadStl, onDownloadScad, onExportImage, onExportAllViews, exportFormat, onExportFormatChange }) {
   const { language, t } = useLanguage()
-  const { getCameraViews, getLabel, manifest } = useManifest()
+  const { getCameraViews, getLabel, manifest: contextManifest } = useManifest()
+  const manifest = propManifest || contextManifest
   const cameraViews = getCameraViews()
   const disabled = parts.length === 0
 
@@ -37,11 +38,10 @@ export default function ExportPanel({ parts, mode, onDownloadStl, onDownloadScad
               <button
                 key={f.id}
                 type="button"
-                className={`px-2 py-0.5 rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
-                  (exportFormat || 'stl') === f.id
+                className={`px-2 py-0.5 rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${(exportFormat || 'stl') === f.id
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-background text-muted-foreground border-border hover:text-foreground'
-                }`}
+                  }`}
                 onClick={() => onExportFormatChange?.(f.id)}
               >
                 {f.label}

@@ -19,33 +19,40 @@ test.describe('Rendering Flow', () => {
   })
 
   test('cancel button appears during render', async ({ page, sidebar }) => {
-    // The auto-render during goToStudio caches results for the current params.
-    // Change a param to bust the cache key, then re-mock render-stream to be slow.
-    await sidebar.editSliderValue('width', 123)
-    await page.waitForTimeout(300)
+    // Setup slow mock FIRST to catch the auto-render
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
       await new Promise(r => setTimeout(r, 5000))
       route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
-    await sidebar.clickGenerate()
-    await expect(sidebar.cancelButton).toBeVisible({ timeout: 3000 })
+
+    // Change param to trigger auto-render (debounce 500ms)
+    await sidebar.editSliderValue('width', 123)
+
+    // Wait for cancel button (implies render started)
+    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
   })
 
   test('cancel aborts render', async ({ page, sidebar }) => {
-    // Change param to bust cache (same as above)
-    await sidebar.editSliderValue('width', 124)
-    await page.waitForTimeout(300)
+    // Setup slow mock
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
       await new Promise(r => setTimeout(r, 10000))
       route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
-    await sidebar.clickGenerate()
-    await page.waitForTimeout(500)
+
+    // Trigger auto-render
+    await sidebar.editSliderValue('width', 124)
+
+    // Wait for render to start
+    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+
+    // Cancel
     await sidebar.clickCancel()
-    await page.waitForTimeout(500)
-    await expect(page.locator('button', { hasText: /Generate|Generar/ })).toBeVisible({ timeout: 3000 })
+
+    // Verify loading cleared
+    await expect(sidebar.generateButton).toBeVisible({ timeout: 5000 })
+    await expect(sidebar.generateButton).toBeEnabled({ timeout: 5000 })
   })
 
   test('console logs render progress', async ({ page, sidebar, viewer }) => {
@@ -80,9 +87,26 @@ test.describe('Rendering Flow', () => {
   })
 
   test('changing parameter triggers auto-render after debounce', async ({ page, sidebar }) => {
+    // Setup a specific mock to ensure we catch the right request
+    await page.unroute('**/api/render-stream')
+    await page.route('**/api/render-stream', async (route) => {
+      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
+    })
+
+    // Prepare to wait for the request
+    const requestPromise = page.waitForRequest(req => req.url().includes('/api/render-stream'))
+
+    // Trigger change
     await sidebar.editSliderValue('width', 75)
-    // Wait for 500ms debounce + render time
-    await page.waitForTimeout(2000)
+
+    // Wait for the debounced request (default debounce is 500ms)
+    // If this times out, the debounce logic or event handler is broken
+    const request = await requestPromise
+    expect(request).toBeTruthy()
+
+    // Verify payload if needed, but existence is enough for this test
+    const postData = request.postDataJSON()
+    expect(postData.width).toBe(75)
   })
 
   test('render error shows message in console', async ({ page, sidebar, viewer }) => {

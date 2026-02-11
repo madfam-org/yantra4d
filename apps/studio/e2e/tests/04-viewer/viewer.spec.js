@@ -71,7 +71,7 @@ test.describe('Studio Viewer', () => {
 
   test('clicking animation toggle switches play/pause', async ({ page, sidebar, viewer }) => {
     await sidebar.selectMode('grid')
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(1000) // Wait for debounce (500ms) and potential render
     const textBefore = await viewer.animationToggle.textContent()
     await viewer.toggleAnimation()
     const textAfter = await viewer.animationToggle.textContent()

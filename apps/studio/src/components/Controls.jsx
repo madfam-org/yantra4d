@@ -19,8 +19,8 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
         return visGroup?.levels?.[0]?.id || 'basic'
     })
 
-    const handleSliderChange = (name, valArray) => {
-        setParams(prev => ({ ...prev, [name]: valArray[0] }))
+    const handleSliderChange = (name, valArray, commit = true) => {
+        setParams(prev => ({ ...prev, [name]: valArray[0] }), { history: commit })
     }
 
     const handleCheckedChange = (name, checked) => {
@@ -79,11 +79,10 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                         <button
                             key={p.id}
                             type="button"
-                            className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                                activePresetId === p.id
+                            className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activePresetId === p.id
                                     ? 'bg-primary text-primary-foreground border-primary'
                                     : 'bg-background text-muted-foreground border-border hover:text-foreground'
-                            }`}
+                                }`}
                             onClick={() => onApplyPreset(p)}
                         >
                             {getLabel(p, 'label', language)}
@@ -106,11 +105,10 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             <button
                                 key={id}
                                 type="button"
-                                className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                                    activeGp === id
+                                className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activeGp === id
                                         ? 'bg-primary text-primary-foreground border-primary'
                                         : 'bg-background text-muted-foreground border-border hover:text-foreground'
-                                }`}
+                                    }`}
                                 onClick={() => activeGp !== id && onToggleGridPreset()}
                             >
                                 {gp[id].emoji} {getLabel(gp[id], 'label', language)}

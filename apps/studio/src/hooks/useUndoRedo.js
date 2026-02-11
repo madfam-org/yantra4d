@@ -24,17 +24,22 @@ export function useUndoRedo(initialValue) {
   }, [])
 
   // setValue: pushes a new entry to history (normal user action)
-  const setValue = useCallback((updater) => {
+  // options: { history: boolean } - if false, update state but skip history push
+  const setValue = useCallback((updater, options = {}) => {
+    const { history = true } = options
     const prev = historyRef.current[indexRef.current]
     const next = typeof updater === 'function' ? updater(prev) : updater
+
     if (JSON.stringify(prev) === JSON.stringify(next)) return
 
-    // Truncate redo history and push
-    const newHistory = historyRef.current.slice(0, indexRef.current + 1)
-    newHistory.push(next)
-    if (newHistory.length > MAX_HISTORY) newHistory.shift()
-    historyRef.current = newHistory
-    indexRef.current = newHistory.length - 1
+    if (history) {
+      // Truncate redo history and push
+      const newHistory = historyRef.current.slice(0, indexRef.current + 1)
+      newHistory.push(next)
+      if (newHistory.length > MAX_HISTORY) newHistory.shift()
+      historyRef.current = newHistory
+      indexRef.current = newHistory.length - 1
+    }
 
     setValueRaw(next)
     syncFlags()

@@ -16,9 +16,10 @@ export function useProject() {
   return context
 }
 
-export function ProjectProvider({ children }) {
+// Inner component to handle strict state reset on project change
+function ProjectProviderContent({ children }) {
   const viewerRef = useRef(null)
-  const { projectSlug } = useManifest()
+  const { projectSlug, manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, presets } = useManifest()
   const { t } = useLanguage()
 
   // 1. Core parametric state (mode, params, render loop, etc.)
@@ -57,7 +58,7 @@ export function ProjectProvider({ children }) {
     presets: projectParams.presets,
     cameraViews: projectParams.cameraViews,
     getLabel: projectParams.getLabel,
-    
+
     // Params & Mode
     mode: projectParams.mode,
     setMode: projectParams.setMode,
@@ -126,5 +127,16 @@ export function ProjectProvider({ children }) {
     <ProjectContext.Provider value={value}>
       {children}
     </ProjectContext.Provider>
+  )
+}
+
+export function ProjectProvider({ children }) {
+  const { projectSlug } = useManifest()
+
+  // Force full remount when project changes to reset all state (params, undo history, etc.)
+  return (
+    <ProjectProviderContent key={projectSlug}>
+      {children}
+    </ProjectProviderContent>
   )
 }

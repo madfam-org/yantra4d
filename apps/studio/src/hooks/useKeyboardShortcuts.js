@@ -30,29 +30,46 @@ export function useKeyboardShortcuts({
 }) {
   useEffect(() => {
     const handler = (e) => {
+      // Ignore text inputs to allow native typing/undo
+      const target = e.target
+      if (
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+        target.isContentEditable
+      ) {
+        return
+      }
+
       const mod = e.metaKey || e.ctrlKey
       if (mod && e.key === 'z' && !e.shiftKey) {
+        // ... existing logic ...
         e.preventDefault()
+        e.stopPropagation()
         onUndo?.()
         return
       } else if (mod && e.key === 'z' && e.shiftKey) {
         e.preventDefault()
+        e.stopPropagation()
         onRedo?.()
         return
       } else if (mod && e.key === 'Enter') {
         e.preventDefault()
+        e.stopPropagation()
         onRender?.()
       } else if (e.key === 'Escape' && loading) {
+        // Escape usually doesn't need stopPropagation but good for consistency if we want to own it
         onCancelRender?.()
       } else if (mod && modes?.length > 0) {
         const num = parseInt(e.key, 10)
         if (num >= 1 && num <= modes.length) {
           e.preventDefault()
+          e.stopPropagation()
           onSwitchMode?.(modes[num - 1].id)
         }
       }
     }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+
+    // Use capture phase to handle events before Radix UI/other libs stop propagation
+    window.addEventListener('keydown', handler, { capture: true })
+    return () => window.removeEventListener('keydown', handler, { capture: true })
   }, [onUndo, onRedo, onRender, onCancelRender, onSwitchMode, loading, modes])
 }

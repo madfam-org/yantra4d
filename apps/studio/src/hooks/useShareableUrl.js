@@ -7,7 +7,10 @@ import { useCallback } from 'react'
 function encodeParams(params, defaultParams) {
   const diff = {}
   for (const [key, value] of Object.entries(params)) {
-    if (value !== defaultParams[key]) {
+    const def = defaultParams[key]
+    // Use loose equality to handle number vs string from inputs
+    // eslint-disable-next-line eqeqeq
+    if (value != def) {
       diff[key] = value
     }
   }

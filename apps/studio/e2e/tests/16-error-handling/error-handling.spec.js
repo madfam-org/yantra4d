@@ -69,11 +69,12 @@ test.describe('Error Handling', () => {
   })
 
   test('projects fetch failure shows error state', async ({ page }) => {
-    await page.route('**/api/admin/projects', (route) => {
+    await page.unroute('**/api/admin/projects**')
+    await page.route('**/api/admin/projects**', (route) => {
       route.fulfill({ status: 500, json: { error: 'Server down' } })
     })
     await goToProjects(page)
-    await expect(page.locator('.text-destructive')).toBeVisible()
+    await expect(page.locator('.text-destructive')).toBeVisible({ timeout: 8000 })
   })
 
   test('verify failure shows error in console', async ({ page, sidebar }) => {

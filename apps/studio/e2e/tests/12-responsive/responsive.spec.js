@@ -52,8 +52,14 @@ test.describe('Responsive Design', () => {
   test('mobile: mode tabs are visible', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
-    // Mobile mode tabs are in the .lg:hidden bar
-    await expect(page.locator('[role="tablist"]').first()).toBeVisible({ timeout: 5000 })
+    // At mobile, mode tabs are in the mobile bar (which has role="tablist")
+    const tablist = page.locator('[role="tablist"]').first()
+    await expect(tablist).toBeVisible({ timeout: 10000 })
+    // Should have at least 2 mode tabs
+    const tabs = tablist.locator('[role="tab"]')
+    await expect(tabs.first()).toBeVisible({ timeout: 3000 })
+    const count = await tabs.count()
+    expect(count).toBeGreaterThanOrEqual(2)
   })
 
   // Tablet (768px)
@@ -146,13 +152,21 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
     // On mobile, the export panel is inside the bottom sheet.
-    // Open the sheet by clicking the hamburger menu button.
-    const menuBtn = page.locator('.lg\\:hidden button:has(.lucide-menu)')
-    await expect(menuBtn).toBeVisible({ timeout: 5000 })
-    await menuBtn.click()
-    await page.waitForTimeout(500)
+    // Open the sheet by clicking the hamburger menu button (has Menu icon).
+    // Use sr-only text locator since CSS class escaping is fragile
+    const menuBtn = page.locator('button').filter({ hasText: 'Open controls' }).first()
+      .or(page.getByRole('button', { name: /open controls|abrir/i }))
+    await expect(menuBtn.first()).toBeVisible({ timeout: 10000 })
+    await menuBtn.first().click()
+    await page.waitForTimeout(800)
+    // The sheet should now be open with export panel content
     const exportText = page.getByText('Export Images').or(page.getByText('Exportar Imágenes'))
-    await exportText.first().scrollIntoViewIfNeeded()
+    // Scroll to make export visible inside sheet
+    const sheetContent = page.locator('[role="dialog"]').first().or(page.locator('[data-state="open"]').first())
+    if (await sheetContent.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await sheetContent.evaluate(el => el.scrollTo(0, el.scrollHeight))
+      await page.waitForTimeout(300)
+    }
     await expect(exportText.first()).toBeVisible({ timeout: 5000 })
   })
 

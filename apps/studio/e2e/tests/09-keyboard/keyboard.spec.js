@@ -72,14 +72,14 @@ test.describe('Keyboard Shortcuts', () => {
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+1' : 'Control+1')
     await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Single|Individual/i, { timeout: 3000 })
+    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Start|Inicio/i, { timeout: 3000 })
   })
 
   test('Cmd/Ctrl+2 switches to second mode', async ({ page }) => {
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+2' : 'Control+2')
     await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Grid|Cuadrícula/i, { timeout: 3000 })
+    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Single|Individual/i, { timeout: 3000 })
   })
 
   test('Cmd/Ctrl+number beyond mode count does nothing', async ({ page }) => {

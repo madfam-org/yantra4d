@@ -61,9 +61,8 @@ export class StudioSidebarPage extends BasePage {
 
   /** Get the displayed value span for a slider (the clickable value next to the label). */
   sliderValue(paramId) {
-    // The value display is a span[role="button"] sibling of the label, inside the same flex row
-    return this.sidebar.locator(`[aria-label*="${paramId}"][role="button"]`).first()
-      .or(this.sidebar.locator(`#param-label-${paramId}`).locator('xpath=..').locator('[role="button"]'))
+    // Primary: find the [role="button"] span inside the same row as the param label
+    return this.sidebar.locator(`#param-label-${paramId}`).locator('xpath=..').locator('[role="button"]').first()
   }
 
   /** Click the slider value to enter edit mode, type a value, and blur. */

@@ -75,7 +75,9 @@ test.describe('Internationalization (i18n)', () => {
     await goToProjects(page)
     await expect(page.locator('h2', { hasText: 'Projects' })).toBeVisible({ timeout: 5000 })
 
-    await selectLanguageFromDropdown(page, 'Español')
+    // In the projects view, the globe button is a simple toggle (not a dropdown)
+    await page.locator('button:has(.lucide-globe)').first().click()
+    await page.waitForTimeout(500)
     await expect(page.locator('h2', { hasText: 'Proyectos' })).toBeVisible({ timeout: 5000 })
   })
 

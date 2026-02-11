@@ -168,11 +168,12 @@ test.describe('Responsive Design', () => {
     const menuBtn = page.locator('button:has(.lucide-menu)').first()
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
     await menuBtn.click()
-    await page.waitForTimeout(800)
-    // The sheet should now be open with export panel content
-    const exportText = page.getByText('Export Images').or(page.getByText('Exportar Imágenes'))
-    // Scroll inside sheet to make sure it's visible
-    // Scroll into view if needed
+    // Wait for the Sheet dialog to open (SidebarContent is rendered twice:
+    // once in the hidden desktop sidebar and once in the Sheet portal,
+    // so we must scope to the dialog to avoid picking up the hidden copy)
+    const sheet = page.locator('[role="dialog"]')
+    await expect(sheet).toBeVisible({ timeout: 5000 })
+    const exportText = sheet.getByText('Export Images').or(sheet.getByText('Exportar Imágenes'))
     await exportText.first().scrollIntoViewIfNeeded()
     await expect(exportText.first()).toBeVisible({ timeout: 5000 })
   })

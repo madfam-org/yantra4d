@@ -9,7 +9,7 @@ async function goToWithParams(page, url) {
   await page.goto(url)
   await waitForAppReady(page)
   await page.locator('header h1', { hasText: 'Test Project' })
-    .waitFor({ timeout: 8000 }).catch(() => {})
+    .waitFor({ timeout: 8000 }).catch(() => { })
   const activeTab = page.locator('[role="tab"][data-state="active"]')
   if (await activeTab.count() === 0) {
     const firstTab = page.locator('[role="tab"]').first()
@@ -19,7 +19,7 @@ async function goToWithParams(page, url) {
     }
   }
   await page.locator('[role="slider"]').first()
-    .waitFor({ timeout: 5000 }).catch(() => {})
+    .waitFor({ timeout: 5000 }).catch(() => { })
 }
 
 test.describe('Shareable URLs', () => {
@@ -48,15 +48,18 @@ test.describe('Shareable URLs', () => {
   test('loading URL with ?p= restores params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 100 })).toString('base64url')
     await goToWithParams(page, `/?p=${diff}#/test`)
-    const val = await sidebar.sliderValue('width').textContent()
-    expect(val).toBe('100')
+    // Wait for params to settle — ?p= is applied during component mount
+    await page.waitForTimeout(500)
+    const valEl = sidebar.sliderValue('width')
+    await expect(valEl).toHaveText('100', { timeout: 5000 })
   })
 
   test('?p= with default values is equivalent to no params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 50 })).toString('base64url')
     await goToWithParams(page, `/?p=${diff}#/test`)
-    const val = await sidebar.sliderValue('width').textContent()
-    expect(val).toBe('50')
+    await page.waitForTimeout(500)
+    const valEl = sidebar.sliderValue('width')
+    await expect(valEl).toHaveText('50', { timeout: 5000 })
   })
 
   test('invalid ?p= value is gracefully ignored', async ({ page }) => {

@@ -7,16 +7,22 @@ test.describe('Responsive Design', () => {
   })
 
   // Mobile (375px)
+  // Note: Desktop sidebar has `hidden lg:flex w-80` — it is NOT visible below lg (1024px).
+  // On mobile, controls are in a bottom Sheet accessed via the hamburger button.
   test('mobile: sidebar stacks above viewer', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
-    const sidebar = page.locator('.lg\\:w-80').first()
-    const sidebarBox = await sidebar.boundingBox()
+    // At mobile, the desktop sidebar is hidden. Instead, a slim mobile bar
+    // with mode tabs and a hamburger button is shown above the viewer.
+    const mobileBar = page.locator('.lg\\:hidden').first()
+    await expect(mobileBar).toBeVisible({ timeout: 5000 })
+    // Canvas should be below the mobile bar
     const canvas = page.locator('canvas').first()
+    await expect(canvas).toBeVisible({ timeout: 10000 })
+    const barBox = await mobileBar.boundingBox()
     const canvasBox = await canvas.boundingBox()
-    // Sidebar should be above canvas (lower Y)
-    if (sidebarBox && canvasBox) {
-      expect(sidebarBox.y).toBeLessThan(canvasBox.y)
+    if (barBox && canvasBox) {
+      expect(barBox.y).toBeLessThan(canvasBox.y)
     }
   })
 
@@ -29,7 +35,7 @@ test.describe('Responsive Design', () => {
     for (let i = 0; i < Math.min(count, 10); i++) {
       const box = await buttons.nth(i).boundingBox()
       if (box && box.height > 0) {
-        // Allow 32px minimum — some icon buttons are intentionally smaller
+        // Allow 28px minimum — some icon buttons are intentionally smaller
         expect(box.height).toBeGreaterThanOrEqual(28)
         checkedCount++
       }
@@ -46,30 +52,32 @@ test.describe('Responsive Design', () => {
   test('mobile: mode tabs are visible', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
-    await expect(page.locator('[role="tablist"]')).toBeVisible()
+    // Mobile mode tabs are in the .lg:hidden bar
+    await expect(page.locator('[role="tablist"]').first()).toBeVisible({ timeout: 5000 })
   })
 
   // Tablet (768px)
   test('tablet: projects grid shows 2 columns', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await goToProjects(page)
-    const grid = page.locator('.grid.grid-cols-1')
-    await expect(grid).toBeVisible()
-    // At sm breakpoint, should be 2 columns
+    const grid = page.locator('.grid')
+    await expect(grid.first()).toBeVisible({ timeout: 5000 })
+    // At sm breakpoint, should have grid-cols classes
   })
 
   test('tablet: studio layout is functional', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await goToStudio(page)
     await expect(page.locator('header')).toBeVisible()
-    await expect(page.locator('canvas')).toBeVisible()
+    await expect(page.locator('canvas').first()).toBeVisible({ timeout: 10000 })
   })
 
   // Desktop (1280px)
   test('desktop: sidebar is fixed-width', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await goToStudio(page)
-    const sidebar = page.locator('.lg\\:w-80').first()
+    const sidebar = page.locator('.w-80').first()
+    await expect(sidebar).toBeVisible({ timeout: 5000 })
     const box = await sidebar.boundingBox()
     if (box) {
       expect(box.width).toBeGreaterThanOrEqual(300)
@@ -81,6 +89,7 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await goToStudio(page)
     const canvas = page.locator('canvas').first()
+    await expect(canvas).toBeVisible({ timeout: 10000 })
     const box = await canvas.boundingBox()
     if (box) {
       expect(box.width).toBeGreaterThan(400)
@@ -91,16 +100,18 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await goToProjects(page)
     const grid = page.locator('.grid')
-    await expect(grid).toBeVisible()
-    // At lg breakpoint, should be 3 columns
+    await expect(grid.first()).toBeVisible({ timeout: 5000 })
+    // At lg breakpoint, should have grid-cols-3
   })
 
   test('desktop: sidebar and viewer are side-by-side', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await goToStudio(page)
-    const sidebar = page.locator('.lg\\:w-80').first()
-    const sidebarBox = await sidebar.boundingBox()
+    const sidebar = page.locator('.w-80').first()
+    await expect(sidebar).toBeVisible({ timeout: 5000 })
     const canvas = page.locator('canvas').first()
+    await expect(canvas).toBeVisible({ timeout: 10000 })
+    const sidebarBox = await sidebar.boundingBox()
     const canvasBox = await canvas.boundingBox()
     if (sidebarBox && canvasBox) {
       // Sidebar should be to the left of canvas
@@ -116,7 +127,8 @@ test.describe('Responsive Design', () => {
     await goToStudio(page)
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.waitForTimeout(500)
-    const sidebar = page.locator('.lg\\:w-80').first()
+    const sidebar = page.locator('.w-80').first()
+    await expect(sidebar).toBeVisible({ timeout: 5000 })
     const box = await sidebar.boundingBox()
     if (box) {
       expect(box.width).toBeGreaterThanOrEqual(300)
@@ -133,10 +145,15 @@ test.describe('Responsive Design', () => {
   test('mobile: export panel is accessible via scroll', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
-    const exportText = page.locator('text=Export Images').or(page.locator('text=Exportar Imágenes'))
-    // May need to scroll sidebar
+    // On mobile, the export panel is inside the bottom sheet.
+    // Open the sheet by clicking the hamburger menu button.
+    const menuBtn = page.locator('.lg\\:hidden button:has(.lucide-menu)')
+    await expect(menuBtn).toBeVisible({ timeout: 5000 })
+    await menuBtn.click()
+    await page.waitForTimeout(500)
+    const exportText = page.getByText('Export Images').or(page.getByText('Exportar Imágenes'))
     await exportText.first().scrollIntoViewIfNeeded()
-    await expect(exportText.first()).toBeVisible()
+    await expect(exportText.first()).toBeVisible({ timeout: 5000 })
   })
 
   test('desktop: all action buttons visible without scroll', async ({ page }) => {

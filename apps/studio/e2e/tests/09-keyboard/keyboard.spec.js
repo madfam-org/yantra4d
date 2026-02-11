@@ -69,25 +69,37 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('Cmd/Ctrl+1 switches to first mode', async ({ page }) => {
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+1' : 'Control+1')
+    // Dispatch keydown via JS to bypass browser tab-switching shortcut
+    await page.evaluate(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', {
+        key: '1', code: 'Digit1', ctrlKey: true, metaKey: false, bubbles: true
+      }))
+    })
     await page.waitForTimeout(300)
     const activeTab = await page.locator('[role="tab"][data-state="active"]').textContent()
     expect(activeTab.toLowerCase()).toContain('single')
   })
 
   test('Cmd/Ctrl+2 switches to second mode', async ({ page }) => {
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+2' : 'Control+2')
+    // Dispatch keydown via JS to bypass browser tab-switching shortcut
+    await page.evaluate(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', {
+        key: '2', code: 'Digit2', ctrlKey: true, metaKey: false, bubbles: true
+      }))
+    })
     await page.waitForTimeout(300)
     const activeTab = await page.locator('[role="tab"][data-state="active"]').textContent()
     expect(activeTab.toLowerCase()).toContain('grid')
   })
 
   test('Cmd/Ctrl+number beyond mode count does nothing', async ({ page }) => {
-    const mac = await isMac(page)
     const tabBefore = await page.locator('[role="tab"][data-state="active"]').textContent()
-    await page.keyboard.press(mac ? 'Meta+9' : 'Control+9')
+    // Dispatch keydown via JS to bypass browser tab-switching shortcut
+    await page.evaluate(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', {
+        key: '9', code: 'Digit9', ctrlKey: true, metaKey: false, bubbles: true
+      }))
+    })
     await page.waitForTimeout(200)
     const tabAfter = await page.locator('[role="tab"][data-state="active"]').textContent()
     expect(tabAfter).toBe(tabBefore)
@@ -108,8 +120,12 @@ test.describe('Keyboard Shortcuts', () => {
   test('keyboard shortcuts work when viewer is focused', async ({ page }) => {
     await page.locator('canvas').click()
     await page.waitForTimeout(100)
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+2' : 'Control+2')
+    // Dispatch keydown via JS to bypass browser tab-switching shortcut
+    await page.evaluate(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', {
+        key: '2', code: 'Digit2', ctrlKey: true, metaKey: false, bubbles: true
+      }))
+    })
     await page.waitForTimeout(300)
     const activeTab = await page.locator('[role="tab"][data-state="active"]').textContent()
     expect(activeTab.toLowerCase()).toContain('grid')

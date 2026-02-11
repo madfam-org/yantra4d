@@ -68,14 +68,17 @@ function createMinimalSTL() {
 export async function mockAllAPIs(page) {
   await page.route('**/api/projects', (route) => {
     if (route.request().url().includes('/api/projects/')) return route.fallback()
+    console.log('MOCK: Intercepted GET /api/projects')
     route.fulfill({ json: MOCK_PROJECTS })
   })
 
   await page.route('**/api/projects/*/manifest', (route) => {
+    console.log('MOCK: Intercepted GET manifest', route.request().url())
     route.fulfill({ json: MOCK_MANIFEST })
   })
 
   await page.route('**/api/manifest', (route) => {
+    console.log('MOCK: Intercepted GET /api/manifest')
     route.fulfill({ json: MOCK_MANIFEST })
   })
 

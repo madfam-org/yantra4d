@@ -8,7 +8,7 @@ import logging
 import os
 import json
 import redis
-from datetime import datetime
+
 
 logger = logging.getLogger(__name__)
 

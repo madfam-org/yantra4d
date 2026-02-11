@@ -1,0 +1,15 @@
+#!/bin/sh
+# Get the absolute path to the repo root
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+STUDIO_HOOK="$ROOT_DIR/apps/studio/.husky/pre-commit"
+
+# debug: print what we are trying to run
+echo "husky: delegating to $STUDIO_HOOK"
+
+if [ -f "$STUDIO_HOOK" ]; then
+    # Use bash to run the target script explicitly
+    /bin/bash "$STUDIO_HOOK"
+else
+    echo "Error: Studio hook not found at $STUDIO_HOOK"
+    exit 1
+fi

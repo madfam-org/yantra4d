@@ -172,14 +172,8 @@ test.describe('Responsive Design', () => {
     // The sheet should now be open with export panel content
     const exportText = page.getByText('Export Images').or(page.getByText('Exportar Imágenes'))
     // Scroll inside sheet to make sure it's visible
-    const sheetContent = page.locator('[role="dialog"], [data-state="open"]').first()
-    if (await sheetContent.isVisible({ timeout: 2000 }).catch(() => false)) {
-      // Small scroll to ensure content is active/rendered if virtualized
-      await sheetContent.evaluate(el => el.scrollTo(0, 100))
-      await page.waitForTimeout(300)
-      await sheetContent.evaluate(el => el.scrollTo(0, el.scrollHeight))
-      await page.waitForTimeout(300)
-    }
+    // Scroll into view if needed
+    await exportText.first().scrollIntoViewIfNeeded()
     await expect(exportText.first()).toBeVisible({ timeout: 5000 })
   })
 

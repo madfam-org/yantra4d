@@ -15,19 +15,12 @@ async function goToWithParams(page, url) {
   // Wait for mock manifest to load — header shows "Test Project"
   await page.locator('header h1', { hasText: 'Test Project' })
     .waitFor({ timeout: 8000 }).catch(() => { })
-  // After mock manifest loads, React re-renders tabs for 'single','grid'.
-  // The mode state is still 'cup' (from fallback), so no tab is active.
-  // Wait a tick for React to re-render, then click the first mock tab.
-  await page.waitForTimeout(500)
-  const singleTab = page.locator('[role="tab"]').filter({ hasText: /Single|Individual/ }).first()
-  if (await singleTab.isVisible({ timeout: 3000 }).catch(() => false)) {
-    const state = await singleTab.getAttribute('data-state').catch(() => null)
-    if (state !== 'active') {
-      await singleTab.click()
-      await page.waitForTimeout(500)
-    }
-  }
-  // Wait for sliders to render (they only appear for the correct mode)
+
+  // With MOCK_MANIFEST now supporting 'cup' mode (default from fallback),
+  // we don't need to switch modes. The 'width' slider should be visible
+  // immediately once mock loads.
+
+  // Wait for sliders to render
   await page.locator('[role="slider"]').first()
     .waitFor({ timeout: 5000 }).catch(() => { })
 }

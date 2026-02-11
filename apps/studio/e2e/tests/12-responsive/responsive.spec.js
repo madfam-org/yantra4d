@@ -74,8 +74,10 @@ test.describe('Responsive Design', () => {
   test('mobile: mode tabs are visible', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudioMobile(page)
-    // At mobile, mode tabs are in the mobile bar (which has role="tablist")
-    const tablist = page.locator('[role="tablist"]').first()
+    // At mobile, mode tabs are in the mobile bar using Tabs component.
+    // The desktop sidebar also has a tablist but is hidden.
+    // We must find the visible tablist.
+    const tablist = page.locator('[role="tablist"]').filter({ hasText: /Single|Individual/ }).last()
     await expect(tablist).toBeVisible({ timeout: 10000 })
     // Should have at least 2 mode tabs
     const tabs = tablist.locator('[role="tab"]')
@@ -93,93 +95,98 @@ test.describe('Responsive Design', () => {
     // At sm breakpoint, should have grid-cols classes
   })
 
+
   test('tablet: studio layout is functional', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 })
-    test('tablet: sidebar is visible', async ({ page }) => {
-      await page.setViewportSize({ width: 1024, height: 768 }) // lg breakpoint
-      await goToStudio(page)
-      const sidebar = page.locator('.w-80').first()
-      await expect(sidebar).toBeVisible()
-    })
+    await goToStudio(page)
+    await expect(page.locator('header')).toBeVisible()
+    await expect(page.locator('canvas').first()).toBeVisible({ timeout: 10000 })
+  })
 
-    test('desktop: wide screen shows 3 columns in projects', async ({ page }) => {
-      await page.setViewportSize({ width: 1280, height: 800 })
-      await goToProjects(page)
-      const grid = page.locator('.grid')
-      await expect(grid.first()).toBeVisible()
-    })
+  test('tablet: sidebar is visible', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 }) // lg breakpoint
+    await goToStudio(page)
+    const sidebar = page.locator('.w-80').first()
+    await expect(sidebar).toBeVisible()
+  })
 
-    // Touch targets
-    test('mobile: touch targets are spaced appropriately', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 812 })
-      await goToStudio(page)
-      const buttons = page.locator('button:visible')
-      const count = await buttons.count()
+  test('desktop: wide screen shows 3 columns in projects', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await goToProjects(page)
+    const grid = page.locator('.grid')
+    await expect(grid.first()).toBeVisible()
+  })
 
-      // Check first few buttons for overlap/spacing
-      for (let i = 0; i < Math.min(count - 1, 5); i++) {
-        const b1 = await buttons.nth(i).boundingBox()
-        const b2 = await buttons.nth(i + 1).boundingBox()
-        if (b1 && b2) {
-          // Basic check: buttons shouldn't overlap
-          const overlapX = Math.max(0, Math.min(b1.x + b1.width, b2.x + b2.width) - Math.max(b1.x, b2.x))
-          const overlapY = Math.max(0, Math.min(b1.y + b1.height, b2.y + b2.height) - Math.max(b1.y, b2.y))
-          const intersection = overlapX * overlapY
-          expect(intersection).toBe(0)
-        }
+  // Touch targets
+  test('mobile: touch targets are spaced appropriately', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudio(page)
+    const buttons = page.locator('button:visible')
+    const count = await buttons.count()
+
+    // Check first few buttons for overlap/spacing
+    for (let i = 0; i < Math.min(count - 1, 5); i++) {
+      const b1 = await buttons.nth(i).boundingBox()
+      const b2 = await buttons.nth(i + 1).boundingBox()
+      if (b1 && b2) {
+        // Basic check: buttons shouldn't overlap
+        const overlapX = Math.max(0, Math.min(b1.x + b1.width, b2.x + b2.width) - Math.max(b1.x, b2.x))
+        const overlapY = Math.max(0, Math.min(b1.y + b1.height, b2.y + b2.height) - Math.max(b1.y, b2.y))
+        const intersection = overlapX * overlapY
+        expect(intersection).toBe(0)
       }
-    })
+    }
+  })
 
-    // Resize behavior
-    test('resizing from mobile to desktop adjusts layout', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 812 })
-      await goToStudio(page)
-      await page.setViewportSize({ width: 1280, height: 900 })
-      await page.waitForTimeout(500)
-      const sidebar = page.locator('.w-80').first()
-      await expect(sidebar).toBeVisible({ timeout: 5000 })
-      const box = await sidebar.boundingBox()
-      if (box) {
-        expect(box.width).toBeGreaterThanOrEqual(300)
-      }
-    })
+  // Resize behavior
+  test('resizing from mobile to desktop adjusts layout', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudio(page)
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.waitForTimeout(500)
+    const sidebar = page.locator('.w-80').first()
+    await expect(sidebar).toBeVisible({ timeout: 5000 })
+    const box = await sidebar.boundingBox()
+    if (box) {
+      expect(box.width).toBeGreaterThanOrEqual(300)
+    }
+  })
 
-    test('mobile: console is visible below viewer', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 812 })
-      await goToStudio(page)
-      const console_ = page.locator('[role="log"]')
-      await expect(console_).toBeVisible()
-    })
+  test('mobile: console is visible below viewer', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudio(page)
+    const console_ = page.locator('[role="log"]')
+    await expect(console_).toBeVisible()
+  })
 
-    test('mobile: export panel is accessible via scroll', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 812 })
-      await goToStudioMobile(page)
-      // On mobile, the export panel is inside the bottom sheet.
-      // Open the sheet by clicking the hamburger menu button.
-      // The SheetTrigger button contains <Menu> icon and sr-only text "Open controls".
-      const menuBtn = page.locator('button:has(.lucide-menu)').first()
-      await expect(menuBtn).toBeVisible({ timeout: 10000 })
-      await menuBtn.click()
-      await page.waitForTimeout(800)
-      // The sheet should now be open with export panel content
-      const exportText = page.getByText('Export Images').or(page.getByText('Exportar Imágenes'))
-      // Scroll inside sheet to make sure it's visible
-      const sheetContent = page.locator('[role="dialog"], [data-state="open"]').first()
-      if (await sheetContent.isVisible({ timeout: 2000 }).catch(() => false)) {
-        // Small scroll to ensure content is active/rendered if virtualized
-        await sheetContent.evaluate(el => el.scrollTo(0, 100))
-        await page.waitForTimeout(300)
-        await sheetContent.evaluate(el => el.scrollTo(0, el.scrollHeight))
-        await page.waitForTimeout(300)
-      }
-      await expect(exportText.first()).toBeVisible({ timeout: 5000 })
-    })
+  test('mobile: export panel is accessible via scroll', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudioMobile(page)
+    // On mobile, the export panel is inside the bottom sheet.
+    // Open the sheet by clicking the hamburger menu button.
+    // The SheetTrigger button contains <Menu> icon and sr-only text "Open controls".
+    const menuBtn = page.locator('button:has(.lucide-menu)').first()
+    await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await menuBtn.click()
+    await page.waitForTimeout(800)
+    // The sheet should now be open with export panel content
+    const exportText = page.getByText('Export Images').or(page.getByText('Exportar Imágenes'))
+    // Scroll inside sheet to make sure it's visible
+    const sheetContent = page.locator('[role="dialog"], [data-state="open"]').first()
+    if (await sheetContent.isVisible({ timeout: 2000 }).catch(() => false)) {
+      // Small scroll to ensure content is active/rendered if virtualized
+      await sheetContent.evaluate(el => el.scrollTo(0, 100))
+      await page.waitForTimeout(300)
+      await sheetContent.evaluate(el => el.scrollTo(0, el.scrollHeight))
+      await page.waitForTimeout(300)
+    }
+    await expect(exportText.first()).toBeVisible({ timeout: 5000 })
+  })
 
-    test('desktop: all action buttons visible without scroll', async ({ page }) => {
-      await page.setViewportSize({ width: 1280, height: 900 })
-      await goToStudio(page)
-      await expect(page.locator('button', { hasText: 'Generate' })).toBeVisible()
-      await expect(page.locator('button', { hasText: 'Reset' })).toBeVisible()
-    })
+  test('desktop: all action buttons visible without scroll', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await goToStudio(page)
+    await expect(page.locator('button', { hasText: 'Generate' })).toBeVisible()
+    await expect(page.locator('button', { hasText: 'Reset' })).toBeVisible()
   })
 })

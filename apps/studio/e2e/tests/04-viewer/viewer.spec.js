@@ -86,6 +86,7 @@ test.describe('Studio Viewer', () => {
   test('console has role="log" and aria-live', async ({ viewer }) => {
     await expect(viewer.console).toHaveAttribute('role', 'log')
     await expect(viewer.console).toHaveAttribute('aria-live', 'polite')
+    await expect(viewer.console).toHaveAttribute('aria-label', 'Render console')
   })
 
   test('console shows "Ready." initially', async ({ viewer }) => {

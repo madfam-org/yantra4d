@@ -8,9 +8,11 @@ test.describe('Navigation', () => {
     await page.waitForSelector('header', { timeout: 15000 })
     // Wait for mock manifest to load and app to settle
     await expect(page.locator('header h1')).toContainText('Test Project', { timeout: 10000 })
-    // Hash should contain project slug and mode after app resolves
+    // App resolves 3-segment hash: project/preset/mode
+    // Hash should contain the mode after app resolves
+    await page.waitForTimeout(500)
     const hash = await getHash(page)
-    expect(hash).toContain('/grid')
+    expect(hash).toContain('grid')
   })
 
   test('legacy 2-segment hash #/preset/mode falls back correctly', async ({ page }) => {

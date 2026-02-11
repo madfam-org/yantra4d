@@ -38,7 +38,7 @@ test.describe('Studio Header', () => {
     await expect(sidebar.slider('width')).toBeVisible({ timeout: 5000 })
     const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 2000 })
 
     await header.clickUndo()
     await page.waitForTimeout(300)

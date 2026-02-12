@@ -104,10 +104,12 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('keyboard shortcuts work when viewer is focused', async ({ page }) => {
-    await page.locator('canvas').first().click()
+    // Click the viewer area (not canvas directly — it may remount during manifest load)
+    await page.locator('#main-content').click()
     await page.waitForTimeout(200)
     const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+2' : 'Control+2')
+    // Ctrl+3 selects the 3rd mode (Grid) — modes are 1-indexed in shortcuts
+    await page.keyboard.press(mac ? 'Meta+3' : 'Control+3')
     await page.waitForTimeout(500)
     await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Grid|Cuadrícula/i, { timeout: 3000 })
   })

@@ -31,7 +31,7 @@ export default function BomPanel({ params }) {
 
   return (
     <div className="flex flex-col gap-2 border-t border-border pt-4">
-      <h3 className="text-sm font-semibold">{t('bom.title')}</h3>
+      <h2 className="text-sm font-semibold">{t('bom.title')}</h2>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>

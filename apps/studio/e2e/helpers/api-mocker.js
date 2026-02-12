@@ -52,12 +52,27 @@ const MOCK_PROJECTS = [
   { slug: 'demo', name: 'Demo Project', version: '0.1.0', description: 'A demo', mode_count: 1, parameter_count: 2, scad_file_count: 1, has_manifest: true, has_exports: true },
 ]
 
-// Minimal valid binary STL (84 bytes, 0 triangles)
+// Minimal valid binary STL (134 bytes, 1 triangle)
 function createMinimalSTL() {
-  const buffer = new ArrayBuffer(84)
+  // 80-byte header + 4-byte count + 50-byte triangle = 134 bytes
+  const buffer = new ArrayBuffer(134)
   const view = new DataView(buffer)
-  // 80-byte header (zeros) + 4-byte triangle count (0)
-  view.setUint32(80, 0, true)
+  view.setUint32(80, 1, true) // 1 triangle
+  // Triangle: normal(0,0,1) + 3 vertices forming a small triangle + 2-byte attribute
+  const off = 84
+  view.setFloat32(off + 0, 0, true)  // normal x
+  view.setFloat32(off + 4, 0, true)  // normal y
+  view.setFloat32(off + 8, 1, true)  // normal z
+  view.setFloat32(off + 12, 0, true) // v1 x
+  view.setFloat32(off + 16, 0, true) // v1 y
+  view.setFloat32(off + 20, 0, true) // v1 z
+  view.setFloat32(off + 24, 1, true) // v2 x
+  view.setFloat32(off + 28, 0, true) // v2 y
+  view.setFloat32(off + 32, 0, true) // v2 z
+  view.setFloat32(off + 36, 0, true) // v3 x
+  view.setFloat32(off + 40, 1, true) // v3 y
+  view.setFloat32(off + 44, 0, true) // v3 z
+  view.setUint16(off + 48, 0, true)  // attribute byte count
   return Buffer.from(buffer)
 }
 
@@ -106,7 +121,7 @@ export async function mockAllAPIs(page) {
     })
   })
 
-  await page.route('**/api/render/*.stl', (route) => {
+  await page.route(/\/api\/render\/.*\.stl/, (route) => {
     route.fulfill({
       contentType: 'model/stl',
       body: createMinimalSTL(),

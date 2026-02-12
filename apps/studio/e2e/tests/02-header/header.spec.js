@@ -96,10 +96,10 @@ test.describe('Studio Header', () => {
   test('language toggle switches ES→EN', async ({ page, header }) => {
     await header.toggleLanguage() // to ES
     await page.waitForTimeout(500)
-    await expect(page.locator('text=Generar')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('button', { name: 'Generar' })).toBeVisible({ timeout: 5000 })
     await header.toggleLanguage() // back to EN
     await page.waitForTimeout(500)
-    await expect(page.locator('text=Generate')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('button', { name: 'Generate' })).toBeVisible({ timeout: 5000 })
   })
 
   test('language persists to localStorage', async ({ page, header }) => {

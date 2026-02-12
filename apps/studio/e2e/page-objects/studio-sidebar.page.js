@@ -68,16 +68,10 @@ export class StudioSidebarPage extends BasePage {
 
   /** Get the displayed value span for a slider (the clickable value next to the label). */
   sliderValue(paramId) {
-    // 1. Find the slider thumb (which has the aria-labelledby)
-    const thumb = this.sidebar.locator(`[aria-labelledby="param-label-${paramId}"]`)
-
-    // 2. Go up to Slider Root, then up to the Container div
-    // Thumb -> Root -> Container
-    const container = thumb.locator('xpath=../..')
-
-    // 3. Find the header row (it's a sibling of the Slider Root in the Container)
+    // Find the SliderControl container that has the matching label, then get the value display.
+    // Uses the label id to scope to the correct control without fragile xpath traversal.
+    const container = this.sidebar.locator(`.space-y-2:has(#param-label-${paramId})`)
     return container.locator('.flex.justify-between').first()
-      // 4. Find the value display (button) or input
       .locator('[role="button"], input[type="number"]').last()
   }
 

@@ -38,13 +38,15 @@ test.describe('Responsive Design', () => {
     // with mode tabs and a hamburger button is shown above the viewer.
     const mobileBar = page.locator('.lg\\:hidden').first()
     await expect(mobileBar).toBeVisible({ timeout: 5000 })
-    // Canvas should be below the mobile bar
-    const canvas = page.locator('canvas').first()
-    await expect(canvas).toBeVisible({ timeout: 10000 })
+    // Viewer area should be below the mobile bar.
+    // Use #main-content instead of canvas — R3F's <Canvas> requires WebGL
+    // which may not be available in CI headless Chromium at mobile DPI.
+    const viewerArea = page.locator('#main-content')
+    await expect(viewerArea).toBeVisible({ timeout: 10000 })
     const barBox = await mobileBar.boundingBox()
-    const canvasBox = await canvas.boundingBox()
-    if (barBox && canvasBox) {
-      expect(barBox.y).toBeLessThan(canvasBox.y)
+    const viewerBox = await viewerArea.boundingBox()
+    if (barBox && viewerBox) {
+      expect(barBox.y).toBeLessThan(viewerBox.y)
     }
   })
 
@@ -100,7 +102,8 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await goToStudio(page)
     await expect(page.locator('header')).toBeVisible()
-    await expect(page.locator('canvas').first()).toBeVisible({ timeout: 10000 })
+    // Use #main-content instead of canvas — WebGL may be unavailable at mobile DPI
+    await expect(page.locator('#main-content')).toBeVisible({ timeout: 10000 })
   })
 
   test('tablet: sidebar is visible', async ({ page }) => {

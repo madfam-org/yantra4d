@@ -95,14 +95,21 @@ export async function mockAllAPIs(page) {
 
   await page.route('**/api/render-stream', (route) => {
     const body = [
-      'data: {"progress":25,"phase":"Compiling..."}\n\n',
-      'data: {"progress":50,"phase":"Processing geometry..."}\n\n',
-      'data: {"progress":75,"phase":"Rendering mesh..."}\n\n',
-      'data: {"progress":100,"phase":"Done","stl_base64":"' + Buffer.from(createMinimalSTL()).toString('base64') + '"}\n\n',
+      'data: {"event":"part_start","part":"body","index":0,"total":1}\n\n',
+      'data: {"progress":50}\n\n',
+      'data: {"event":"part_done","part":"body","progress":100}\n\n',
+      'data: {"event":"complete","parts":[{"type":"body","url":"/api/render/body.stl"}]}\n\n',
     ].join('')
     route.fulfill({
       contentType: 'text/event-stream',
       body,
+    })
+  })
+
+  await page.route('**/api/render/*.stl', (route) => {
+    route.fulfill({
+      contentType: 'model/stl',
+      body: createMinimalSTL(),
     })
   })
 

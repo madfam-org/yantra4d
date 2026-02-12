@@ -21,7 +21,7 @@ export default function AssemblyEditorPanel({ onStepChange, onClose, viewerRef, 
   return (
     <div className="flex flex-col gap-3 h-full">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Assembly Editor</h3>
+        <h2 className="text-sm font-semibold">Assembly Editor</h2>
       </div>
 
       <StepList

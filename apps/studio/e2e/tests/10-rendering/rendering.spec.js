@@ -93,18 +93,17 @@ test.describe('Rendering Flow', () => {
       route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
 
-    // Prepare to wait for the request
-    const requestPromise = page.waitForRequest(req => req.url().includes('/api/render-stream'))
-
     // Trigger change
     await sidebar.editSliderValue('width', 75)
 
-    // Wait for the debounced request (default debounce is 500ms)
-    // If this times out, the debounce logic or event handler is broken
-    const request = await requestPromise
+    // Wait for the debounced request that contains our updated value.
+    // Filter on postData to skip any in-flight render from page load.
+    const request = await page.waitForRequest(req => {
+      if (!req.url().includes('/api/render-stream')) return false
+      try { return req.postDataJSON().width === 75 } catch { return false }
+    })
     expect(request).toBeTruthy()
 
-    // Verify payload if needed, but existence is enough for this test
     const postData = request.postDataJSON()
     expect(postData.width).toBe(75)
   })

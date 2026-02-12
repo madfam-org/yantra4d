@@ -44,7 +44,7 @@ export default function AssemblyView({ onStepChange }) {
 
   return (
     <div className="flex flex-col gap-3 border-t border-border pt-4">
-      <h3 className="text-sm font-semibold">{t('assembly.title')}</h3>
+      <h2 className="text-sm font-semibold">{t('assembly.title')}</h2>
       <div className="flex items-center gap-2">
         <Button
           variant="outline"

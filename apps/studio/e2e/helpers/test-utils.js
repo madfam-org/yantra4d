@@ -40,6 +40,10 @@ export async function goToStudio(page, slug = 'test') {
   await page.locator('[role="slider"]').first()
     .waitFor({ timeout: 5000 })
     .catch(() => {})
+  // Wait for slider values to be populated (guards against manifest-params race)
+  await page.locator('[role="button"]').filter({ hasText: /^\d/ }).first()
+    .waitFor({ timeout: 3000 })
+    .catch(() => {})
 }
 
 /**

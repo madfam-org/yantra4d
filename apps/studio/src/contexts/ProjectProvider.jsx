@@ -131,11 +131,13 @@ function ProjectProviderContent({ children }) {
 }
 
 export function ProjectProvider({ children }) {
-  const { projectSlug } = useManifest()
+  const { projectSlug, manifest } = useManifest()
 
-  // Force full remount when project changes to reset all state (params, undo history, etc.)
+  // Force full remount when project changes OR when the real manifest loads
+  // (replacing the fallback). This ensures hooks reinitialize with correct defaults.
+  const manifestSlug = manifest.project?.slug || ''
   return (
-    <ProjectProviderContent key={projectSlug}>
+    <ProjectProviderContent key={`${projectSlug}:${manifestSlug}`}>
       {children}
     </ProjectProviderContent>
   )

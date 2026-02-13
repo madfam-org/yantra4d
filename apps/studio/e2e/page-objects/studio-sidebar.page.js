@@ -75,13 +75,20 @@ export class StudioSidebarPage extends BasePage {
       .locator('[role="button"], input[type="number"]').last()
   }
 
-  /** Click the slider value to enter edit mode, type a value, and press Enter to commit. */
+  /** Click the slider value to enter edit mode, type a value, and commit. */
   async editSliderValue(paramId, value) {
     const valSpan = this.sliderValue(paramId)
     await valSpan.click()
     const input = this.sidebar.locator(`input[type="number"]`)
     await input.waitFor({ state: 'visible', timeout: 3000 })
     await input.fill(String(value))
+    // Verify fill took effect; on WebKit, fill() on number inputs can silently fail.
+    // Fall back to select-all + keyboard type if the value didn't change.
+    const actual = await input.inputValue().catch(() => '')
+    if (actual !== String(value)) {
+      await input.selectText()
+      await input.type(String(value))
+    }
     await input.press('Enter')
   }
 

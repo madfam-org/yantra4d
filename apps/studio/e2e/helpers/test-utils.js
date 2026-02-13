@@ -130,3 +130,40 @@ export async function pressShortcut(page, key, { meta = false, shift = false, co
 export async function isMac(page) {
   return page.evaluate(() => navigator.platform.includes('Mac'))
 }
+
+/**
+ * Enable clipboard access cross-browser.
+ * Chromium: uses grantPermissions (native, reliable).
+ * Firefox/WebKit: mocks clipboard API via page.evaluate.
+ * Call after page has navigated (needs a live page context).
+ * @param {import('@playwright/test').Page} page
+ */
+export async function enableClipboard(page) {
+  const browserName = page.context().browser()?.browserType()?.name() || 'chromium'
+  if (browserName === 'chromium') {
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+  } else {
+    await page.evaluate(() => {
+      window.__clipboardText = ''
+      if (!navigator.clipboard) {
+        Object.defineProperty(navigator, 'clipboard', {
+          value: {}, writable: true, configurable: true
+        })
+      }
+      navigator.clipboard.writeText = async (text) => { window.__clipboardText = text }
+      navigator.clipboard.readText = async () => window.__clipboardText
+    })
+  }
+}
+
+/**
+ * Read text from clipboard (works with both grantPermissions and mock).
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<string>}
+ */
+export async function readClipboard(page) {
+  return page.evaluate(async () => {
+    if (window.__clipboardText !== undefined) return window.__clipboardText
+    return navigator.clipboard.readText()
+  })
+}

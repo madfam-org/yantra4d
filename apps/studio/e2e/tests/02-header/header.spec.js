@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, enableClipboard } from '../../helpers/test-utils.js'
 
 test.describe('Studio Header', () => {
   test.beforeEach(async ({ page }) => {
@@ -65,7 +65,7 @@ test.describe('Studio Header', () => {
   })
 
   test('share button copies URL to clipboard', async ({ page, header }) => {
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+    await enableClipboard(page)
     await header.clickShare()
     // Toast may appear as inline tooltip or via sonner
     const toast = page.getByText('Link copied!').or(page.getByText('¡Enlace copiado!'))
@@ -73,7 +73,7 @@ test.describe('Studio Header', () => {
   })
 
   test('share toast disappears after a delay', async ({ page, header }) => {
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+    await enableClipboard(page)
     await header.clickShare()
     // Wait for any toast to appear (inline tooltip or sonner)
     const toast = page.getByText('Link copied!').or(page.getByText('¡Enlace copiado!'))

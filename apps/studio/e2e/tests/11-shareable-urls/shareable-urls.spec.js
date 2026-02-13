@@ -1,6 +1,6 @@
 /* global Buffer */
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, getSearchParams, waitForAppReady } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, getSearchParams, waitForAppReady, enableClipboard, readClipboard } from '../../helpers/test-utils.js'
 
 /**
  * Navigate to a URL with ?p= param and ensure controls are ready.
@@ -38,13 +38,12 @@ test.describe('Shareable URLs', () => {
 
   test('non-default params encode ?p= query via share', async ({ page, sidebar, header }) => {
     await goToStudio(page)
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+    await enableClipboard(page)
     await sidebar.editSliderValue('width', 100)
     await page.waitForTimeout(300)
     await header.clickShare()
     await page.waitForTimeout(500)
-    // The clipboard should contain a URL with ?p=
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+    const clipboardText = await readClipboard(page)
     expect(clipboardText).toContain('p=')
   })
 
@@ -81,31 +80,31 @@ test.describe('Shareable URLs', () => {
 
   test('shared URL preserves mode in hash', async ({ page, sidebar, header }) => {
     await goToStudio(page)
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+    await enableClipboard(page)
     await sidebar.selectMode('grid')
     await page.waitForTimeout(300)
     await header.clickShare()
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+    const clipboardText = await readClipboard(page)
     expect(clipboardText).toContain('grid')
   })
 
   test('shared URL preserves project slug', async ({ page, header }) => {
     await goToStudio(page)
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+    await enableClipboard(page)
     await header.clickShare()
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+    const clipboardText = await readClipboard(page)
     expect(clipboardText).toContain('test')
   })
 
   test('multiple params are encoded together', async ({ page, sidebar, header }) => {
     await goToStudio(page)
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+    await enableClipboard(page)
     await sidebar.editSliderValue('width', 100)
     await page.waitForTimeout(200)
     await sidebar.editSliderValue('height', 60)
     await page.waitForTimeout(200)
     await header.clickShare()
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+    const clipboardText = await readClipboard(page)
     expect(clipboardText).toContain('p=')
   })
 

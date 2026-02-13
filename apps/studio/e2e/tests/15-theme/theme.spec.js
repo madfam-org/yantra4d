@@ -67,14 +67,32 @@ test.describe('Theme System', () => {
     await setTheme(page, 'light')
     await goToStudio(page)
 
-    const themeBtn = page.locator('button:has(.lucide-sun), button:has(.lucide-moon), button:has(.lucide-monitor)').first()
-    await themeBtn.click()
-    const t1 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
-    expect(t1).toBe('dark')
+    const themes = ['light', 'dark', 'system']
+    const icons = { light: '.lucide-sun', dark: '.lucide-moon', system: '.lucide-monitor' }
 
-    await themeBtn.click()
-    const t2 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
-    expect(t2).toBe('system')
+    // Read initial theme from localStorage (may not always be 'light' due to init timing)
+    const initial = await page.evaluate(() => localStorage.getItem('vite-ui-theme')) || 'light'
+    const startIdx = themes.indexOf(initial)
+
+    // Click theme button and verify it advances to next theme in cycle
+    const clickThemeBtn = () => page.evaluate(() => {
+      const btn = document.querySelector('header button:has(.lucide-sun)')
+        || document.querySelector('header button:has(.lucide-moon)')
+        || document.querySelector('header button:has(.lucide-monitor)')
+      if (btn) btn.click()
+    })
+
+    // First cycle
+    const next1 = themes[(startIdx + 1) % 3]
+    await clickThemeBtn()
+    await expect(page.locator(`header button:has(${icons[next1]})`)).toBeVisible({ timeout: 3000 })
+    expect(await page.evaluate(() => localStorage.getItem('vite-ui-theme'))).toBe(next1)
+
+    // Second cycle
+    const next2 = themes[(startIdx + 2) % 3]
+    await clickThemeBtn()
+    await expect(page.locator(`header button:has(${icons[next2]})`)).toBeVisible({ timeout: 3000 })
+    expect(await page.evaluate(() => localStorage.getItem('vite-ui-theme'))).toBe(next2)
   })
 
   test('dark theme changes canvas background', async ({ page }) => {

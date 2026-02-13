@@ -14,12 +14,12 @@
     "titleLine1": "Tus Diseños.",
     "titleLine2": "Sus Dimensiones.",
     "subtitle": "Makers: personaliza cualquier parámetro y exporta tu STL perfecto. Creadores: convierte tus modelos OpenSCAD en configuradores que cualquiera puede usar.",
-    "ctaPrimary": "Explorar 20 Proyectos",
+    "ctaPrimary": "Explorar 21 Proyectos",
     "ctaSecondary": "Sube Tu Diseño"
   },
   "gallery": {
     "heading": "Galería de Proyectos",
-    "subtitle": "20 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.",
+    "subtitle": "21 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.",
     "categories": {
       "all": "Todos",
       "storage": "Almacenamiento",
@@ -107,7 +107,7 @@
   "openSourceSection": {
     "heading": "Gratis. Código Abierto. Para Siempre.",
     "description": "Auto-aloja, contribuye, construye encima — tus configuradores son tuyos.",
-    "statProjects": "20 Proyectos",
+    "statProjects": "21 Proyectos",
     "statLicense": "AGPLv3",
     "cta": "Ver en GitHub",
     "techNote": "Construido con OpenSCAD, React, Three.js, Flask y WebAssembly."

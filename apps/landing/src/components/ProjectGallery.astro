@@ -14,7 +14,7 @@ const { lang = 'es', t } = Astro.props;
   <div class="mx-auto max-w-6xl">
     <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.gallery.heading ?? 'Galería de Proyectos'}</h2>
     <p class="mb-12 text-center text-muted-foreground max-w-2xl mx-auto">
-      {t?.gallery.subtitle ?? '20 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.'}
+      {t?.gallery.subtitle ?? '21 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.'}
     </p>
     <ProjectGalleryGrid lang={lang} t={t} client:visible />
   </div>

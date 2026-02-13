@@ -40,7 +40,8 @@ services:
 
   studio:
     build:
-      context: ./apps/studio
+      context: .
+      dockerfile: apps/studio/Dockerfile
       args:
         VITE_API_BASE: http://backend:5000
         VITE_JANUA_BASE_URL: ${VITE_JANUA_BASE_URL:-}
@@ -54,7 +55,8 @@ services:
 
   landing:
     build:
-      context: ./apps/landing
+      context: .
+      dockerfile: apps/landing/Dockerfile
     restart: unless-stopped
     ports:
       - "4321:80"

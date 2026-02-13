@@ -1,0 +1,475 @@
+{
+  "project": {
+    "name": "Microscope Slide Holder",
+    "slug": "slide-holder",
+    "version": "0.1.0",
+    "description": {
+      "es": "Porta-laminillas parametrico para microscopio, imprimible en 3D",
+      "en": "Parametric 3D-printable microscope slide holder rack"
+    },
+    "thumbnail": "/projects/slide-holder.webp",
+    "tags": [
+      "lab",
+      "microscope",
+      "science",
+      "organizer",
+      "rack"
+    ],
+    "difficulty": "beginner"
+  },
+  "modes": [
+    {
+      "id": "holder",
+      "scad_file": "yantra4d_slide_holder.scad",
+      "label": {
+        "es": "Porta-laminillas",
+        "en": "Slide Holder"
+      },
+      "parts": [
+        "holder"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "holder",
+      "render_mode": 0,
+      "label": {
+        "es": "Porta-laminillas",
+        "en": "Slide Holder"
+      },
+      "default_color": "#4a90d9"
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard",
+      "label": {
+        "es": "Estandar (10 laminillas)",
+        "en": "Standard (10 slides)"
+      },
+      "values": {
+        "slides": 10,
+        "thickness": 1,
+        "length": 76.2,
+        "width": 25
+      }
+    },
+    {
+      "id": "compact",
+      "label": {
+        "es": "Compacto (5 laminillas)",
+        "en": "Compact (5 slides)"
+      },
+      "values": {
+        "slides": 5,
+        "thickness": 1,
+        "length": 76.2,
+        "width": 25
+      }
+    },
+    {
+      "id": "large",
+      "label": {
+        "es": "Grande (20 laminillas)",
+        "en": "Large (20 slides)"
+      },
+      "values": {
+        "slides": 20,
+        "thickness": 1,
+        "length": 76.2,
+        "width": 25
+      }
+    },
+    {
+      "id": "thick_slides",
+      "label": {
+        "es": "Laminillas gruesas (2mm)",
+        "en": "Thick Slides (2mm)"
+      },
+      "values": {
+        "slides": 10,
+        "thickness": 2,
+        "length": 76.2,
+        "width": 25
+      }
+    },
+    {
+      "id": "half_size",
+      "label": {
+        "es": "Medio tamano (laminillas cortas)",
+        "en": "Half-Size (short slides)"
+      },
+      "values": {
+        "slides": 10,
+        "thickness": 1,
+        "length": 50,
+        "width": 20
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "slides",
+      "type": "slider",
+      "default": 10,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "label": {
+        "es": "Numero de laminillas",
+        "en": "Number of Slides"
+      },
+      "tooltip": {
+        "es": "Cantidad de ranuras para laminillas",
+        "en": "Number of slide slots in the rack"
+      },
+      "visible_in_modes": [
+        "holder"
+      ],
+      "group": "slides"
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 1,
+      "min": 0.5,
+      "max": 3,
+      "step": 0.1,
+      "label": {
+        "es": "Grosor de laminilla (mm)",
+        "en": "Slide Thickness (mm)"
+      },
+      "tooltip": {
+        "es": "Grosor de las laminillas de microscopio (estandar: 1mm)",
+        "en": "Thickness of microscope slides (standard: 1mm)"
+      },
+      "visible_in_modes": [
+        "holder"
+      ],
+      "group": "dimensions"
+    },
+    {
+      "id": "length",
+      "type": "slider",
+      "default": 76.2,
+      "min": 50,
+      "max": 100,
+      "step": 0.1,
+      "label": {
+        "es": "Largo de laminilla (mm)",
+        "en": "Slide Length (mm)"
+      },
+      "tooltip": {
+        "es": "Largo de las laminillas (estandar: 75-76.2mm)",
+        "en": "Length of microscope slides (standard: 75–76.2mm)"
+      },
+      "visible_in_modes": [
+        "holder"
+      ],
+      "group": "dimensions"
+    },
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 25,
+      "min": 15,
+      "max": 35,
+      "step": 0.5,
+      "label": {
+        "es": "Ancho de laminilla (mm)",
+        "en": "Slide Width (mm)"
+      },
+      "tooltip": {
+        "es": "Ancho de las laminillas (estandar: 25-26mm)",
+        "en": "Width of microscope slides (standard: 25–26mm)"
+      },
+      "visible_in_modes": [
+        "holder"
+      ],
+      "group": "dimensions"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": {
+        "es": "Calidad ($fn)",
+        "en": "Quality ($fn)"
+      },
+      "tooltip": {
+        "es": "0 = automatico",
+        "en": "0 = auto"
+      },
+      "visible_in_modes": [
+        "holder"
+      ],
+      "group": "quality",
+      "visibility_level": "advanced"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "slides",
+      "label": {
+        "es": "Laminillas",
+        "en": "Slides"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "es": "Dimensiones",
+        "en": "Dimensions"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "es": "Calidad",
+        "en": "Quality"
+      }
+    },
+    {
+      "id": "colors",
+      "label": {
+        "es": "Colores",
+        "en": "Colors"
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "rule": "slides >= 1",
+      "message": {
+        "es": "Se necesita al menos 1 ranura",
+        "en": "At least 1 slide slot is required"
+      },
+      "severity": "error",
+      "applies_to": [
+        "slides"
+      ]
+    },
+    {
+      "rule": "thickness > 0",
+      "message": {
+        "es": "El grosor debe ser mayor a 0",
+        "en": "Thickness must be greater than 0"
+      },
+      "severity": "error",
+      "applies_to": [
+        "thickness"
+      ]
+    },
+    {
+      "rule": "length > width",
+      "message": {
+        "es": "El largo debe ser mayor que el ancho",
+        "en": "Length must be greater than width"
+      },
+      "severity": "warning",
+      "applies_to": [
+        "length",
+        "width"
+      ]
+    },
+    {
+      "rule": "slides <= 25",
+      "message": {
+        "es": "Mas de 25 laminillas puede requerir impresora grande",
+        "en": "More than 25 slides may require a large print bed"
+      },
+      "severity": "warning",
+      "applies_to": [
+        "slides"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "id": "pla",
+      "name": "PLA",
+      "density": 1.24,
+      "cost_per_kg": 20,
+      "print_speed_factor": 1.0
+    },
+    {
+      "id": "petg",
+      "name": "PETG",
+      "density": 1.27,
+      "cost_per_kg": 25,
+      "print_speed_factor": 0.85
+    }
+  ],
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": {
+        "es": "Imprime el porta-laminillas",
+        "en": "Print the slide holder"
+      },
+      "notes": {
+        "es": "0.2mm capas, 20-30% relleno. PLA o PETG recomendado",
+        "en": "0.2mm layers, 20–30% infill. PLA or PETG recommended"
+      },
+      "visible_parts": [
+        "holder"
+      ],
+      "highlight_parts": [
+        "holder"
+      ],
+      "camera": [
+        80,
+        -80,
+        50
+      ],
+      "camera_target": [
+        20,
+        40,
+        0
+      ]
+    },
+    {
+      "step": 2,
+      "label": {
+        "es": "Inserta las laminillas",
+        "en": "Insert microscope slides"
+      },
+      "notes": {
+        "es": "Desliza las laminillas por la parte superior en las ranuras",
+        "en": "Slide microscope slides in from the top into the slots"
+      },
+      "visible_parts": [
+        "holder"
+      ],
+      "highlight_parts": [
+        "holder"
+      ],
+      "camera": [
+        60,
+        -40,
+        40
+      ],
+      "camera_target": [
+        20,
+        40,
+        10
+      ]
+    }
+  ],
+  "verification": {
+    "stages": {
+      "geometry": {
+        "checks": {
+          "watertight": {
+            "enabled": true
+          },
+          "body_count": {
+            "enabled": true,
+            "expected": 1
+          },
+          "facet_count": {
+            "enabled": true,
+            "min_facets": 100
+          }
+        }
+      },
+      "printability": {
+        "checks": {
+          "thin_wall": {
+            "enabled": true,
+            "min_thickness_mm": 1.0
+          },
+          "overhang": {
+            "enabled": true,
+            "max_angle_deg": 90
+          }
+        }
+      }
+    },
+    "mode_overrides": {
+      "holder": {
+        "stages": [
+          "geometry",
+          "printability"
+        ]
+      }
+    }
+  },
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
+  "print_estimation": {
+    "default_material": "pla",
+    "default_infill": 0.2
+  },
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "es": "Isometrico",
+        "en": "Isometric"
+      },
+      "position": [
+        80,
+        80,
+        50
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "es": "Superior",
+        "en": "Top"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "es": "Frente",
+        "en": "Front"
+      },
+      "position": [
+        0,
+        -150,
+        20
+      ]
+    },
+    {
+      "id": "side",
+      "label": {
+        "es": "Lateral",
+        "en": "Side"
+      },
+      "position": [
+        150,
+        0,
+        20
+      ]
+    }
+  ],
+  "viewer": {
+    "default_color": "#4a90d9"
+  },
+  "estimate_constants": {
+    "base_time": 3,
+    "per_unit": 1,
+    "per_part": 5,
+    "fn_factor": 32,
+    "wasm_multiplier": 2,
+    "warning_threshold_seconds": 60
+  }
+}

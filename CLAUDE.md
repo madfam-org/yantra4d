@@ -261,7 +261,8 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 
 ## Testing Standards
 
-- **Studio**: Vitest + RTL, coverage thresholds (65% statements/lines, 55% branches, 60% functions), jest-axe accessibility audits
+- **Studio unit**: Vitest + RTL, coverage thresholds (65% statements/lines, 55% branches, 60% functions), jest-axe accessibility audits
+- **Studio E2E**: Playwright — 18 test suites in `apps/studio/e2e/tests/`, page object pattern, mock API via `api-mocker.js`
 - **Landing**: `npm run build` (Astro static build)
 - **Backend**: pytest + pytest-cov, coverage threshold 60%, tests in `apps/api/tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` → ESLint fix + Vitest on changed files
@@ -285,8 +286,9 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: 100/hr, Estimate: 200/hr, Verify: 50/hr |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
-| Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links restore params on load |
-| Undo/Redo | Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z for parameter undo/redo; 50-entry history stack |
+| Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links restore params on load. Hash normalization uses `replaceState` (not `location.hash =`) to avoid re-triggering preset values over shared params |
+| Undo/Redo | Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z for parameter undo/redo; 50-entry history stack. Any `setParams()` call with `history: true` (default) truncates the redo stack |
+| E2E test patterns | Use Playwright's `toHaveText`/`toBeEnabled` assertions instead of `waitForTimeout` + `textContent()`. Auto-render caches results — change a param to bust cache before testing slow/error mocks. `editSliderValue` commits via Enter key. Native `<input type="color">` cannot be programmatically set in Playwright |
 | Export formats | `export_format` in render payloads (stl/3mf/off); format selector only visible when manifest declares `export_formats` |
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` — edit tokens there, not in individual app CSS |

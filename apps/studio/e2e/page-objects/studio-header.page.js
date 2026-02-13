@@ -30,11 +30,11 @@ export class StudioHeaderPage extends BasePage {
   /** Toggle language — opens dropdown, clicks the other language option. */
   async toggleLanguage() {
     await this.languageToggle.click()
-    // Wait for dropdown to appear
-    const dropdown = this.page.locator('.absolute.top-full button').first()
-    await dropdown.waitFor({ timeout: 3000 })
+    // Wait for dropdown to appear — scope to the relative wrapper around the language toggle
+    const langWrapper = this.languageToggle.locator('..')
+    const options = langWrapper.locator('.absolute.top-full button')
+    await options.first().waitFor({ timeout: 5000 })
     // Click the non-bold option (the one not currently selected)
-    const options = this.page.locator('.absolute.top-full button')
     const count = await options.count()
     for (let i = 0; i < count; i++) {
       const isBold = await options.nth(i).evaluate(el => el.classList.contains('font-semibold'))

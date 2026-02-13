@@ -90,7 +90,10 @@ export function useHashNavigation({ presets, modes, projectSlug, onHashChange })
     const presetId = parsed.preset?.id || presets[0]?.id
     const modeId = parsed.mode?.id || modes[0]?.id
     if (presetId && modeId) {
-      window.location.hash = buildHash(projectSlug, presetId, modeId)
+      // Use replaceState to avoid triggering hashchange — params are already
+      // correctly initialized (including ?p= shared params) and a hashchange
+      // would re-apply preset values, overriding shared params.
+      history.replaceState(null, '', buildHash(projectSlug, presetId, modeId))
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

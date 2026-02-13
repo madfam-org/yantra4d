@@ -14,7 +14,9 @@ test.describe('Rendering Flow', () => {
       await new Promise(r => setTimeout(r, 5000))
       route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
-    await sidebar.clickGenerate()
+    // Change param to bust the render cache (auto-render cached the initial result)
+    await sidebar.editSliderValue('width', 66)
+    // The debounced auto-render fires with the slow mock, showing Processing...
     await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 3000 })
   })
 
@@ -87,25 +89,26 @@ test.describe('Rendering Flow', () => {
   })
 
   test('changing parameter triggers auto-render after debounce', async ({ page, sidebar }) => {
+    // Wait for initial auto-render to settle
+    await page.waitForTimeout(1000)
     // Setup a specific mock to ensure we catch the right request
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
       route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
 
+    // Start listening for the request BEFORE triggering the change
+    const requestPromise = page.waitForRequest(req => {
+      if (!req.url().includes('/api/render-stream')) return false
+      try { return req.postDataJSON().width === 75 } catch { return false }
+    }, { timeout: 10000 })
+
     // Trigger change
     await sidebar.editSliderValue('width', 75)
 
-    // Wait for the debounced request that contains our updated value.
-    // Filter on postData to skip any in-flight render from page load.
-    const request = await page.waitForRequest(req => {
-      if (!req.url().includes('/api/render-stream')) return false
-      try { return req.postDataJSON().width === 75 } catch { return false }
-    })
+    const request = await requestPromise
     expect(request).toBeTruthy()
-
-    const postData = request.postDataJSON()
-    expect(postData.width).toBe(75)
+    expect(request.postDataJSON().width).toBe(75)
   })
 
   test('render error shows message in console', async ({ page, sidebar, viewer }) => {
@@ -117,8 +120,9 @@ test.describe('Rendering Flow', () => {
     await page.route('**/api/render-stream', (route) => {
       route.fulfill({ status: 500, json: { error: 'OpenSCAD crashed' } })
     })
-    await sidebar.clickGenerate()
-    await page.waitForTimeout(1000)
+    // Change param to bust cache, triggering a fresh render with the error mock
+    await sidebar.editSliderValue('width', 55)
+    await page.waitForTimeout(2000)
     const logs = await viewer.getConsoleLogs()
     expect(logs).toContain('Error')
   })
@@ -132,7 +136,8 @@ test.describe('Rendering Flow', () => {
     await page.route('**/api/render-stream', (route) => {
       route.abort('timedout')
     })
-    await sidebar.clickGenerate()
+    // Change param to bust cache, triggering render with timeout mock
+    await sidebar.editSliderValue('width', 44)
     await page.waitForTimeout(2000)
   })
 

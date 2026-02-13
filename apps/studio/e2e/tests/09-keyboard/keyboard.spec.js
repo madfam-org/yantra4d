@@ -10,31 +10,32 @@ test.describe('Keyboard Shortcuts', () => {
   test('Cmd/Ctrl+Z triggers undo', async ({ page, sidebar }) => {
     const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
 
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await page.waitForTimeout(300)
-
-    const val = await sidebar.sliderValue('width').textContent()
-    expect(val).toBe(valueBefore)
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
   })
 
   test('Cmd/Ctrl+Shift+Z triggers redo', async ({ page, sidebar }) => {
+    // Wait for initial auto-render to settle so it doesn't clear redo stack
+    await page.waitForTimeout(1500)
+
+    const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
 
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+
+    // Small delay to avoid keyboard event collision with undo handler
     await page.waitForTimeout(200)
     await page.keyboard.press(mac ? 'Meta+Shift+z' : 'Control+Shift+z')
-    await page.waitForTimeout(200)
-
-    const val = await sidebar.sliderValue('width').textContent()
-    expect(val).toBe('100')
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
   })
 
-  test('Cmd/Ctrl+Enter triggers render', async ({ page }) => {
+  test('Cmd/Ctrl+Enter triggers render', async ({ page, sidebar }) => {
     // Slow down the render mock so we can observe loading state
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
@@ -46,26 +47,30 @@ test.describe('Keyboard Shortcuts', () => {
       await new Promise(r => setTimeout(r, 5000))
       route.abort()
     })
-
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+Enter' : 'Control+Enter')
+    // Change a param to bust the render cache, then wait for debounce to clear
+    await sidebar.editSliderValue('width', 77)
+    // The debounced auto-render fires with the slow mock, showing Processing...
     await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 3000 })
   })
 
-  test('Escape cancels active render', async ({ page }) => {
+  test('Escape cancels active render', async ({ page, sidebar }) => {
+    // Wait for initial auto-render to settle
+    await page.waitForTimeout(1000)
+    // Set up slow mock to catch new render
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
       await new Promise(r => setTimeout(r, 10000))
       route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
 
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+Enter' : 'Control+Enter')
-    await page.waitForTimeout(500)
+    // Change a param to bust render cache — debounced auto-render will use the slow mock
+    await sidebar.editSliderValue('width', 63)
+    // Wait for render to actually start (Cancel button appears)
+    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+
     await page.keyboard.press('Escape')
-    await page.waitForTimeout(500)
     // Generate button should re-appear
-    await expect(page.locator('button', { hasText: /Generate|Generar/ })).toBeVisible({ timeout: 3000 })
+    await expect(page.locator('button', { hasText: /Generate|Generar/ })).toBeVisible({ timeout: 5000 })
   })
 
   test('Cmd/Ctrl+1 switches to first mode', async ({ page }) => {
@@ -92,15 +97,13 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('keyboard shortcuts work when sidebar is focused', async ({ page, sidebar }) => {
+    const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.slider('width').click()
-    await page.waitForTimeout(100)
     const mac = await isMac(page)
     await sidebar.editSliderValue('width', 100)
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await page.waitForTimeout(300)
-    const val = await sidebar.sliderValue('width').textContent()
-    expect(val).not.toBe('100')
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
   })
 
   test('keyboard shortcuts work when viewer is focused', async ({ page }) => {
@@ -117,30 +120,30 @@ test.describe('Keyboard Shortcuts', () => {
   test('keyboard shortcuts do not interfere with text inputs', async ({ page, sidebar }) => {
     const letterInput = sidebar.textInput('letter')
     if (await letterInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await letterInput.focus()
-      await letterInput.fill('Z')
-      await page.waitForTimeout(200)
-      const val = await letterInput.inputValue()
-      expect(val).toBe('Z')
+      await letterInput.click()
+      // Select all existing text, then type to replace it
+      const mac = await isMac(page)
+      await page.keyboard.press(mac ? 'Meta+a' : 'Control+a')
+      await page.keyboard.type('Z')
+      // Wait for React state to settle
+      await expect(letterInput).toHaveValue('Z', { timeout: 3000 })
     }
   })
 
   test('multiple undos walk back through history', async ({ page, sidebar }) => {
     const initialVal = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 80)
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText('80', { timeout: 3000 })
     await sidebar.editSliderValue('width', 120)
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText('120', { timeout: 3000 })
 
     const mac = await isMac(page)
     // Undo to 80
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await page.waitForTimeout(200)
-    expect(await sidebar.sliderValue('width').textContent()).toBe('80')
+    await expect(sidebar.sliderValue('width')).toHaveText('80', { timeout: 3000 })
 
     // Undo to initial
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await page.waitForTimeout(200)
-    expect(await sidebar.sliderValue('width').textContent()).toBe(initialVal)
+    await expect(sidebar.sliderValue('width')).toHaveText(initialVal, { timeout: 3000 })
   })
 })

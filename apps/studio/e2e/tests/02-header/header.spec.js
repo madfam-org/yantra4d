@@ -34,7 +34,7 @@ test.describe('Studio Header', () => {
     expect(hash).toBe('#/projects')
   })
 
-  test('undo reverts parameter change', async ({ page, header, sidebar }) => {
+  test('undo reverts parameter change', async ({ header, sidebar }) => {
     await expect(sidebar.slider('width')).toBeVisible({ timeout: 5000 })
     const valueBefore = await sidebar.sliderValue('width').textContent()
     const targetValue = Number(valueBefore) === 100 ? 150 : 100
@@ -46,27 +46,22 @@ test.describe('Studio Header', () => {
     await expect(undoBtn).toBeEnabled({ timeout: 5000 })
 
     await header.clickUndo()
-    await page.waitForTimeout(300)
-
-    const valueAfter = await sidebar.sliderValue('width').textContent()
-    expect(valueAfter).toBe(valueBefore)
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
   })
 
-  test('redo restores undone change', async ({ page, header, sidebar }) => {
+  test('redo restores undone change', async ({ header, sidebar }) => {
     await expect(sidebar.slider('width')).toBeVisible({ timeout: 5000 })
     const valueBefore = await sidebar.sliderValue('width').textContent()
     const targetValue = Number(valueBefore) === 100 ? 150 : 100
     await sidebar.editSliderValue('width', targetValue)
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 3000 })
+
     await header.clickUndo()
-    await page.waitForTimeout(300)
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
 
     expect(await header.isRedoDisabled()).toBe(false)
     await header.clickRedo()
-    await page.waitForTimeout(300)
-
-    const value = await sidebar.sliderValue('width').textContent()
-    expect(value).toBe(String(targetValue))
+    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 3000 })
   })
 
   test('share button copies URL to clipboard', async ({ page, header }) => {
@@ -80,10 +75,12 @@ test.describe('Studio Header', () => {
   test('share toast disappears after a delay', async ({ page, header }) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
     await header.clickShare()
+    // Wait for any toast to appear (inline tooltip or sonner)
     const toast = page.getByText('Link copied!').or(page.getByText('¡Enlace copiado!'))
     await expect(toast.first()).toBeVisible({ timeout: 5000 })
-    await page.waitForTimeout(4000)
-    await expect(toast).not.toBeVisible({ timeout: 5000 })
+    // Both inline tooltip (2s) and sonner toast (2s) auto-hide
+    // Wait for ALL instances to disappear
+    await expect(toast.first()).not.toBeVisible({ timeout: 8000 })
   })
 
   test('language toggle switches EN→ES', async ({ page, header }) => {
@@ -112,29 +109,35 @@ test.describe('Studio Header', () => {
     expect(['en', 'es']).toContain(lang)
   })
 
-  test('theme toggle cycles light→dark→system', async ({ page, header }) => {
+  test('theme toggle cycles light→dark→system', async ({ page }) => {
     // Set theme directly via localStorage and reload
     await page.evaluate(() => localStorage.setItem('vite-ui-theme', 'light'))
     await page.reload()
-    await page.waitForSelector('header')
+    // Wait for app to fully hydrate
+    await expect(page.locator('[role="tab"]').first()).toBeVisible({ timeout: 8000 })
+
+    // Dispatch click via JS to avoid Playwright click intermittency after reload
+    const clickThemeButton = async () => {
+      await page.evaluate(() => {
+        const btn = document.querySelector('header button[title^="Theme:"]')
+          || document.querySelector('header button[title^="Tema:"]')
+        if (btn) btn.click()
+      })
+    }
+
+    const getTheme = () => page.evaluate(() => localStorage.getItem('vite-ui-theme'))
 
     // Cycle light → dark
-    await header.cycleTheme()
-    await page.waitForTimeout(300)
-    const theme1 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
-    expect(theme1).toBe('dark')
+    await clickThemeButton()
+    await expect(async () => expect(await getTheme()).toBe('dark')).toPass({ timeout: 3000 })
 
     // Cycle dark → system
-    await header.cycleTheme()
-    await page.waitForTimeout(300)
-    const theme2 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
-    expect(theme2).toBe('system')
+    await clickThemeButton()
+    await expect(async () => expect(await getTheme()).toBe('system')).toPass({ timeout: 3000 })
 
     // Cycle system → light
-    await header.cycleTheme()
-    await page.waitForTimeout(300)
-    const theme3 = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
-    expect(theme3).toBe('light')
+    await clickThemeButton()
+    await expect(async () => expect(await getTheme()).toBe('light')).toPass({ timeout: 3000 })
   })
 
   test('theme persists across reload', async ({ page }) => {

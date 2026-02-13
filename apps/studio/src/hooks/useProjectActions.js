@@ -24,7 +24,7 @@ export function useProjectActions({
     if (ok) {
       setShareToast(true)
       setTimeout(() => setShareToast(false), TOAST_DURATION_MS)
-      toast.success(t('act.share_copied'))
+      toast.success(t('act.share_copied'), { duration: TOAST_DURATION_MS })
     } else {
       toast.error(t('toast.share_failed'))
     }

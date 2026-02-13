@@ -75,13 +75,14 @@ export class StudioSidebarPage extends BasePage {
       .locator('[role="button"], input[type="number"]').last()
   }
 
-  /** Click the slider value to enter edit mode, type a value, and blur. */
+  /** Click the slider value to enter edit mode, type a value, and press Enter to commit. */
   async editSliderValue(paramId, value) {
     const valSpan = this.sliderValue(paramId)
     await valSpan.click()
     const input = this.sidebar.locator(`input[type="number"]`)
+    await input.waitFor({ state: 'visible', timeout: 3000 })
     await input.fill(String(value))
-    await input.blur()
+    await input.press('Enter')
   }
 
   /** Get text input by param id. */

@@ -51,7 +51,7 @@ describe('useProjectActions', () => {
       await act(async () => {
         await result.current.handleShare()
       })
-      expect(toast.success).toHaveBeenCalledWith('act.share_copied')
+      expect(toast.success).toHaveBeenCalledWith('act.share_copied', { duration: 2000 })
     })
 
     it('sets shareToast temporarily on success', async () => {

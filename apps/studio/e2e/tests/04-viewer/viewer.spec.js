@@ -51,10 +51,12 @@ test.describe('Studio Viewer', () => {
   })
 
   test('axes toggle switches icon on click', async ({ viewer }) => {
+    await expect(viewer.axesToggle).toBeVisible()
     const textBefore = await viewer.axesToggle.textContent()
     await viewer.toggleAxes()
-    const textAfter = await viewer.axesToggle.textContent()
-    expect(textAfter).not.toBe(textBefore)
+    // Wait for the icon text to actually change (React re-render)
+    const expected = textBefore === '⊞' ? '⊟' : '⊞'
+    await expect(viewer.axesToggle).toHaveText(expected, { timeout: 3000 })
   })
 
   // Animation toggle (grid mode only)

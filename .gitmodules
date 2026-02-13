@@ -37,3 +37,9 @@
 [submodule "libs/dotSCAD"]
 	path = libs/dotSCAD
 	url = https://github.com/JustinSDK/dotSCAD.git
+[submodule "projects/rugged-box/vendor/rugged-box"]
+	path = projects/rugged-box/vendor/rugged-box
+	url = https://github.com/madfam-org/rugged-box
+[submodule "projects/slide-holder/vendor/slide-holder"]
+	path = projects/slide-holder/vendor/slide-holder
+	url = https://github.com/madfam-org/slide-holder

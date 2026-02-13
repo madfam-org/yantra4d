@@ -8,8 +8,12 @@
 #   --no-landing    Start api + studio
 set -e
 
-# Use OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
-export OPENSCAD_PATH="/Applications/OpenSCAD-Snapshot.app/Contents/MacOS/OpenSCAD"
+# Detect OpenSCAD: prefer Snapshot, fall back to stable release
+if [ -x "/Applications/OpenSCAD-Snapshot.app/Contents/MacOS/OpenSCAD" ]; then
+  export OPENSCAD_PATH="/Applications/OpenSCAD-Snapshot.app/Contents/MacOS/OpenSCAD"
+elif [ -x "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" ]; then
+  export OPENSCAD_PATH="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"

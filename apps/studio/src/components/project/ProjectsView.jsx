@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'
 import { getApiBase } from '../../services/backendDetection'
 import { useLanguage } from '../../contexts/LanguageProvider'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
@@ -24,7 +24,8 @@ const getRenderSpeed = (constants) => {
 }
 
 export default function ProjectsView() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
+  const loc = useCallback((val) => (typeof val === 'object' && val !== null) ? (val[language] || val.en || '') : (val || ''), [language])
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -60,7 +61,7 @@ export default function ProjectsView() {
       const q = search.toLowerCase()
       result = result.filter(p =>
         p.name?.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q) ||
+        loc(p.description)?.toLowerCase().includes(q) ||
         p.slug?.toLowerCase().includes(q) ||
         (p.tags || []).some(tag => tag.toLowerCase().includes(q))
       )
@@ -69,7 +70,7 @@ export default function ProjectsView() {
       result = result.filter(p => (p.tags || []).includes(activeTag))
     }
     return result
-  }, [projects, search, activeTag])
+  }, [projects, search, activeTag, loc])
 
   if (loading) {
     return (
@@ -165,7 +166,7 @@ export default function ProjectsView() {
                   <span className="text-xs text-muted-foreground shrink-0">v{project.version}</span>
                 </div>
                 {project.description && (
-                  <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+                  <CardDescription className="line-clamp-2">{loc(project.description)}</CardDescription>
                 )}
               </CardHeader>
               <CardContent className="flex-1">

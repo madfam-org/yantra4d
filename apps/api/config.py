@@ -84,7 +84,7 @@ class AppConfig:
 
         self.STATIC_DIR = self.BASE_DIR / "static"
 
-        self._default_verify = parent / "tests" / "verify_design.py"
+        self._default_verify = self.BASE_DIR / "tests" / "verify_design.py"
         self.VERIFY_SCRIPT = Path(os.getenv("VERIFY_SCRIPT", self._default_verify))
         
         self.JANUA_JWKS_URL = os.getenv("JANUA_JWKS_URL", f"{self.JANUA_ISSUER}/.well-known/jwks.json")

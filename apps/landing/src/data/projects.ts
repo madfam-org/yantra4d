@@ -14,6 +14,7 @@ export const PROJECTS: Project[] = [
   { slug: 'gridfinity', name: 'Gridfinity Extended', description: 'Modular storage bins with snap-fit baseplates and lids', descriptionEs: 'Contenedores modulares con bases y tapas de ensamble a presión', category: 'storage', thumbnail: '/projects/gridfinity.webp' },
   { slug: 'multiboard', name: 'Multiboard Wall Storage', description: 'Modular wall-mounted storage with hexagonal peg pattern', descriptionEs: 'Almacenamiento modular de pared con patrón hexagonal', category: 'storage', thumbnail: '/projects/multiboard.webp' },
   { slug: 'portacosas', name: 'Portacosas', description: 'Modular desk organizer with snap-fit tray system', descriptionEs: 'Organizador de escritorio modular con sistema de bandejas', category: 'storage', thumbnail: '/projects/portacosas.webp' },
+  { slug: 'rugged-box', name: 'Rugged Box', description: 'Parametric hinged box with latches, gasket seal, and reinforcement ribs', descriptionEs: 'Caja robusta paramétrica con bisagra, sellos y refuerzos', category: 'storage', thumbnail: '/projects/rugged-box.webp' },
 
   // Mechanical
   { slug: 'gear-reducer', name: 'Gear Reducer', description: 'Parametric gear assembly with housing and configurable ratio', descriptionEs: 'Ensamble paramétrico de engranes con carcasa y relación configurable', category: 'mechanical', thumbnail: '/projects/gear-reducer.webp' },
@@ -35,6 +36,7 @@ export const PROJECTS: Project[] = [
 
   // Education
   { slug: 'stemfie', name: 'STEMFIE', description: 'Modular construction system for education and prototyping', descriptionEs: 'Sistema de construcción modular para educación y prototipado', category: 'education', thumbnail: '/projects/stemfie.webp' },
+  { slug: 'slide-holder', name: 'Microscope Slide Holder', description: 'Parametric rack for standard microscope slides', descriptionEs: 'Porta-láminas paramétrico para microscopio estándar', category: 'education', thumbnail: '/projects/slide-holder.webp' },
 
   // Electronics
   { slug: 'ultimate-box', name: 'Ultimate Box Maker', description: 'Electronics enclosure with ventilation, PCB standoffs, and snap-fit lid', descriptionEs: 'Carcasa para electrónica con ventilación, soportes PCB y tapa a presión', category: 'electronics', thumbnail: '/projects/ultimate-box.webp' },

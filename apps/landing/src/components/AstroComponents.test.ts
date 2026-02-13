@@ -330,7 +330,7 @@ describe('OpenSource.astro', () => {
   })
 
   it('shows stats badges', () => {
-    expect(html).toMatch(/20 Proyectos|statProjects/)
+    expect(html).toMatch(/21 Proyectos|statProjects/)
     expect(html).toMatch(/AGPLv3|statLicense/)
     expect(html).toContain('GitHub')
   })

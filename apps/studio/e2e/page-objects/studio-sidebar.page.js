@@ -79,17 +79,16 @@ export class StudioSidebarPage extends BasePage {
   async editSliderValue(paramId, value) {
     const container = this.sidebar.locator(`.space-y-2:has(#param-label-${paramId})`)
     const valSpan = this.sliderValue(paramId)
+    await valSpan.waitFor({ state: 'visible', timeout: 5000 })
     await valSpan.click()
     // Scope input to the parameter's container to avoid matching other inputs
     const input = container.locator(`input[type="number"]`)
     await input.waitFor({ state: 'visible', timeout: 3000 })
-    // Use keyboard-based input instead of fill() — fill() on number inputs
-    // doesn't reliably fire React synthetic onChange in WebKit, causing
-    // the component to commit the stale value when Enter is pressed.
-    await input.focus()
-    await input.selectText()
-    await this.page.keyboard.press('Backspace')
-    await input.type(String(value), { delay: 30 })
+    // Use fill() to atomically clear and set the value. Previous approaches
+    // (selectText, triple-click, Ctrl+A) all raced with React's autoFocus
+    // under parallel test load, especially in Chromium where the Selection API
+    // is restricted for <input type="number">.
+    await input.fill(String(value))
     await input.press('Enter')
     // Wait for the input to disappear (confirming commit back to display mode)
     await input.waitFor({ state: 'hidden', timeout: 3000 })

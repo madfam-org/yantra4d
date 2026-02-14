@@ -179,7 +179,8 @@
             "enum": [
               "slider",
               "checkbox",
-              "text"
+              "text",
+              "select"
             ]
           },
           "default": {},

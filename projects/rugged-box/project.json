@@ -1772,7 +1772,11 @@
   ],
   "camera_views": [
     {
-      "name": "iso",
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
       "position": [
         200,
         200,
@@ -1785,7 +1789,11 @@
       ]
     },
     {
-      "name": "top",
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
       "position": [
         50,
         30,
@@ -1798,7 +1806,11 @@
       ]
     },
     {
-      "name": "front",
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frente"
+      },
       "position": [
         50,
         -150,
@@ -1811,7 +1823,11 @@
       ]
     },
     {
-      "name": "right",
+      "id": "right",
+      "label": {
+        "en": "Right",
+        "es": "Lateral"
+      },
       "position": [
         250,
         30,
@@ -1830,6 +1846,7 @@
   ],
   "estimate_constants": {
     "base_time": 8,
+    "per_unit": 1,
     "per_part": 4
   }
 }

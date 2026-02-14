@@ -40,3 +40,6 @@
 [submodule "projects/slide-holder/vendor/slide-holder"]
 	path = projects/slide-holder/vendor/slide-holder
 	url = https://github.com/madfam-org/slide-holder
+[submodule "projects/gridfinity/gridfinity_extended"]
+	path = projects/gridfinity/gridfinity_extended
+	url = https://github.com/madfam-org/gridfinity_extended_openscad.git

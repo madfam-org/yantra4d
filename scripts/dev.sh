@@ -17,7 +17,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-export OPENSCADPATH="$PROJECT_ROOT/libs"
+export OPENSCADPATH="$PROJECT_ROOT/libs:$PROJECT_ROOT/libs/dotSCAD/src"
 PID_DIR="$PROJECT_ROOT/.dev-pids"
 mkdir -p "$PID_DIR"
 

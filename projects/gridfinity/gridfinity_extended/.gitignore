@@ -1,7 +1,0 @@
-sandpit/
-test_results/
-demos/output/
-modules/*.json
-demos/*.json
-generated
-*.disabled

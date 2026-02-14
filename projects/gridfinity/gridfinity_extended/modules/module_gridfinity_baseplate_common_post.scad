@@ -1,2 +1,0 @@
-BasePlateSettings =[
-  BasePlateSettings_cnclaser];

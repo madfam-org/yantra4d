@@ -97,9 +97,11 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('keyboard shortcuts work when sidebar is focused', async ({ page, sidebar }) => {
-    const valueBefore = await sidebar.sliderValue('width').textContent()
-    await sidebar.slider('width').click()
+    // Focus the sidebar by clicking the param label (non-interactive, won't change values)
+    await page.locator('#param-label-width').click()
     const mac = await isMac(page)
+    // Capture value AFTER focus — clicking the slider track could change it
+    const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
     await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')

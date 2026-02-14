@@ -77,19 +77,22 @@ export class StudioSidebarPage extends BasePage {
 
   /** Click the slider value to enter edit mode, type a value, and commit. */
   async editSliderValue(paramId, value) {
+    const container = this.sidebar.locator(`.space-y-2:has(#param-label-${paramId})`)
     const valSpan = this.sliderValue(paramId)
     await valSpan.click()
-    const input = this.sidebar.locator(`input[type="number"]`)
+    // Scope input to the parameter's container to avoid matching other inputs
+    const input = container.locator(`input[type="number"]`)
     await input.waitFor({ state: 'visible', timeout: 3000 })
-    await input.fill(String(value))
-    // Verify fill took effect; on WebKit, fill() on number inputs can silently fail.
-    // Fall back to select-all + keyboard type if the value didn't change.
-    const actual = await input.inputValue().catch(() => '')
-    if (actual !== String(value)) {
-      await input.selectText()
-      await input.type(String(value))
-    }
+    // Use keyboard-based input instead of fill() — fill() on number inputs
+    // doesn't reliably fire React synthetic onChange in WebKit, causing
+    // the component to commit the stale value when Enter is pressed.
+    await input.focus()
+    await input.selectText()
+    await this.page.keyboard.press('Backspace')
+    await input.type(String(value), { delay: 30 })
     await input.press('Enter')
+    // Wait for the input to disappear (confirming commit back to display mode)
+    await input.waitFor({ state: 'hidden', timeout: 3000 })
   }
 
   /** Get text input by param id. */

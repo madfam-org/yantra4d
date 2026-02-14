@@ -7,6 +7,8 @@ ARG OPENSCAD_VERSION=2026.02.01
 ARG OPENSCAD_SHA256=dad3a8d19e63c543129eabef314676ac9348ffcab727544f4283b2ae9000277c
 
 # Install OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
+# AppImages require FUSE which isn't available in containers, so we extract
+# the AppImage at build time and run the binary directly.
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
   wget \
@@ -16,9 +18,12 @@ RUN apt-get update && \
   libglu1-mesa \
   xvfb && \
   wget -q "https://files.openscad.org/snapshots/OpenSCAD-${OPENSCAD_VERSION}-x86_64.AppImage" \
-    -O /usr/local/bin/openscad && \
-  echo "${OPENSCAD_SHA256}  /usr/local/bin/openscad" | sha256sum -c - && \
-  chmod +x /usr/local/bin/openscad && \
+  -O /tmp/openscad.AppImage && \
+  echo "${OPENSCAD_SHA256}  /tmp/openscad.AppImage" | sha256sum -c - && \
+  chmod +x /tmp/openscad.AppImage && \
+  cd /opt && /tmp/openscad.AppImage --appimage-extract && \
+  rm /tmp/openscad.AppImage && \
+  ln -sf /opt/squashfs-root/AppRun /usr/local/bin/openscad && \
   rm -rf /var/lib/apt/lists/*
 
 # Set working directory

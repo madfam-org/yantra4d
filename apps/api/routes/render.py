@@ -89,7 +89,7 @@ def _extract_render_payload(data):
     if export_format not in ALLOWED_EXPORT_FORMATS:
         export_format = 'stl'
 
-    params = validate_params(data.get('parameters', data))
+    params = validate_params(data.get('parameters', data), project_slug or None)
 
     return {
         'scad_filename': scad_filename,

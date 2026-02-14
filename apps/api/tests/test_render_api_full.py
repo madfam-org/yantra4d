@@ -57,8 +57,8 @@ def client(app):
 
 @pytest.fixture(autouse=True)
 def _mock_validate_params(monkeypatch):
-    """validate_params calls get_manifest() without slug — bypass it."""
-    monkeypatch.setattr("routes.render.validate_params", lambda data: {
+    """Bypass validate_params so unit tests don't need a real manifest."""
+    monkeypatch.setattr("routes.render.validate_params", lambda data, project_slug=None: {
         k: v for k, v in data.items()
         if k not in ("mode", "scad_file", "parameters", "project", "export_format")
     })

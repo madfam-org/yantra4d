@@ -57,13 +57,13 @@ def get_phase_from_line(line: str) -> str | None:
     return None
 
 
-def validate_params(params: dict) -> dict:
+def validate_params(params: dict, project_slug: str | None = None) -> dict:
     """Validate parameters against the manifest.
 
     Checks types, enforces min/max for numbers, and rejects unknown keys.
     Returns a cleaned dict of validated parameters.
     """
-    manifest = get_manifest()
+    manifest = get_manifest(project_slug)
     param_defs = {p["id"]: p for p in manifest.parameters}
     pass_through_keys = {"mode", "scad_file", "parameters"}
     cleaned = {}

@@ -11,6 +11,9 @@ export function ManifestProvider({ children }) {
   const [projects, setProjects] = useState([])
   const [projectSlug, setProjectSlug] = useState(() => _getProjectSlugFromHash())
   const [loading, setLoading] = useState(true)
+  // Track whether the projects list has been fetched (or failed).
+  // The manifest fetch must wait for this so it can use the correct endpoint.
+  const [projectsResolved, setProjectsResolved] = useState(false)
 
   // Fetch projects list on mount
   useEffect(() => {
@@ -27,17 +30,19 @@ export function ManifestProvider({ children }) {
         if (slug) {
           setProjectSlug(slug)
         }
+        setProjectsResolved(true)
       })
       .catch((err) => {
         console.warn('Projects fetch failed, using fallback:', err)
         setProjectSlug(fallbackManifest.project.slug)
+        setProjectsResolved(true)
         setLoading(false)
       })
   }, [])
 
-  // Fetch manifest when projectSlug changes
+  // Fetch manifest when projectSlug changes — only after projects list resolves
   useEffect(() => {
-    if (!projectSlug) return
+    if (!projectSlug || !projectsResolved) return
 
     const controller = new AbortController()
     setLoading(true) // eslint-disable-line react-hooks/set-state-in-effect -- intentional loading indicator before async fetch
@@ -61,7 +66,7 @@ export function ManifestProvider({ children }) {
       })
 
     return () => controller.abort()
-  }, [projectSlug, projects.length])
+  }, [projectSlug, projects.length, projectsResolved])
 
   const switchProject = useCallback((slug) => {
     setProjectSlug(slug)

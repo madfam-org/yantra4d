@@ -206,7 +206,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                     <ambientLight intensity={0.3} />
                     <pointLight position={[10, 10, 10]} intensity={0.5} />
 
-                    <OrbitControls makeDefault up={[0, 0, 1]} />
+                    <OrbitControls makeDefault up={[0, 0, 1]} minDistance={0.5} maxDistance={5000} />
                     <Grid
                         infiniteGrid
                         sectionColor={GRID_SECTION_COLOR}
@@ -222,6 +222,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                     {showAxes && <NumberedAxes axisColors={axisColors} />}
 
                     <Suspense fallback={null}>
+                        {parts.length > 0 ? (
                         <Bounds fit clip observe margin={1.2}>
                             {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
                             <group>
@@ -261,6 +262,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                                 </group>
                             )}
                         </Bounds>
+                        ) : null}
                     </Suspense>
                 </Canvas>
             </ErrorBoundary>

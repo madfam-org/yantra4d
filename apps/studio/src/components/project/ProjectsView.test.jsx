@@ -359,9 +359,9 @@ describe('ProjectsView', () => {
 
   it('renders render speed badges correctly', async () => {
     const projectsWithSpeed = [
-      { ...mockProjects[0], slug: 'fast', estimate_constants: { base_time: 1, per_part: 0.5 } }, // score: 1 + 2.5 = 3.5 (< 5) -> Fast
-      { ...mockProjects[1], slug: 'med', estimate_constants: { base_time: 5, per_part: 1 } },    // score: 5 + 5 = 10 (< 15) -> Medium
-      { ...mockProjects[2], slug: 'slow', estimate_constants: { base_time: 10, per_part: 2 } },  // score: 10 + 10 = 20 (> 15) -> Slow
+      { ...mockProjects[0], estimate_constants: { base_time: 1, per_part: 0.5 } }, // score: 1 + 2.5 = 3.5 (< 5) -> Fast
+      { ...mockProjects[1], estimate_constants: { base_time: 5, per_part: 1 } },    // score: 5 + 5 = 10 (< 15) -> Medium
+      { ...mockProjects[2], estimate_constants: { base_time: 10, per_part: 2 } },  // score: 10 + 10 = 20 (> 15) -> Slow
     ]
     mockFetchSuccess(projectsWithSpeed)
     renderWithProviders(<ProjectsView />)

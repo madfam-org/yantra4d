@@ -133,9 +133,27 @@ function ProjectProviderContent({ children }) {
 export function ProjectProvider({ children }) {
   const { projectSlug, manifest } = useManifest()
 
+  // Gate: only block when the manifest belongs to a DIFFERENT project than
+  // the one requested via URL.  This prevents the auto-render from firing with
+  // the wrong (fallback) manifest while the correct one is being fetched.
+  // We deliberately do NOT gate on generic `loading` so that views which don't
+  // depend on the manifest (e.g. ProjectsView) can render immediately.
+  const manifestSlug = manifest.project?.slug || ''
+  const manifestStale = manifestSlug && projectSlug && manifestSlug !== projectSlug
+
+  if (manifestStale) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <span className="text-sm text-muted-foreground">Loading project…</span>
+        </div>
+      </div>
+    )
+  }
+
   // Force full remount when project changes OR when the real manifest loads
   // (replacing the fallback). This ensures hooks reinitialize with correct defaults.
-  const manifestSlug = manifest.project?.slug || ''
   return (
     <ProjectProviderContent key={`${projectSlug}:${manifestSlug}`}>
       {children}

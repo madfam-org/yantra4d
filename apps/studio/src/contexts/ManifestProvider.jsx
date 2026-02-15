@@ -68,6 +68,21 @@ export function ManifestProvider({ children }) {
     return () => controller.abort()
   }, [projectSlug, projects.length, projectsResolved])
 
+  // Listen for hash changes to detect cross-project navigation
+  useEffect(() => {
+    const onHashChange = () => {
+      const newSlug = _getProjectSlugFromHash()
+      if (newSlug && newSlug !== projectSlug) {
+        setProjectSlug(newSlug)
+      }
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [projectSlug])
+
+  // ready = manifest has loaded and matches the requested project
+  const ready = !loading && manifest.project?.slug === projectSlug
+
   const switchProject = useCallback((slug) => {
     setProjectSlug(slug)
   }, [])
@@ -122,6 +137,7 @@ export function ManifestProvider({ children }) {
   const value = useMemo(() => ({
     manifest,
     loading,
+    ready,
     projects,
     projectSlug: projectSlug || manifest.project.slug,
     switchProject,
@@ -136,7 +152,7 @@ export function ManifestProvider({ children }) {
     getViewerConfig,
     getEstimateConstants,
     presets: manifest.presets || [],
-  }), [manifest, loading, projects, projectSlug, switchProject, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
+  }), [manifest, loading, ready, projects, projectSlug, switchProject, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
 
   return <ManifestContext.Provider value={value}>{children}</ManifestContext.Provider>
 }

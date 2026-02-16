@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { PROJECTS, CATEGORIES } from '../data/projects';
+import { STUDIO_URL } from '../lib/env';
 import type { Translations } from '../lib/i18n';
 
 type Props = {
   lang?: string;
   t?: Translations;
 };
-
-const STUDIO_BASE = import.meta.env.DEV
-  ? 'http://localhost:5173'
-  : 'https://4d-app.madfam.io';
 
 export default function ProjectGalleryGrid({ lang = 'es', t }: Props) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -55,7 +52,7 @@ export default function ProjectGalleryGrid({ lang = 'es', t }: Props) {
         {filtered.map(project => (
           <a
             key={project.slug}
-            href={`${STUDIO_BASE}#/${project.slug}`}
+            href={`${STUDIO_URL}#/${project.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="group rounded-xl border border-border bg-card overflow-hidden transition-shadow hover:shadow-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"

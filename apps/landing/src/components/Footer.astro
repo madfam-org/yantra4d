@@ -1,12 +1,13 @@
 ---
 import type { Translations } from '../lib/i18n';
+import { STUDIO_URL } from '../lib/env';
 
 interface Props {
   t?: Translations;
 }
 
 const { t } = Astro.props;
-const studioUrl = import.meta.env.PROD ? 'https://4d-app.madfam.io' : 'http://localhost:5173';
+const studioUrl = STUDIO_URL;
 ---
 
 <footer class="border-t border-border py-8 px-6">

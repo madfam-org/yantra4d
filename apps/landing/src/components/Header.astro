@@ -1,5 +1,6 @@
 ---
 import type { Translations } from '../lib/i18n';
+import { STUDIO_URL } from '../lib/env';
 
 interface Props {
   lang?: string;
@@ -7,7 +8,7 @@ interface Props {
 }
 
 const { lang = 'es', t } = Astro.props;
-const studioUrl = import.meta.env.PROD ? 'https://4d-app.madfam.io' : 'http://localhost:5173';
+const studioUrl = STUDIO_URL;
 const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label: 'Español', href: '/' };
 ---
 

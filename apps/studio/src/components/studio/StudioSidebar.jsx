@@ -42,6 +42,12 @@ function SidebarContent() {
 
   const hasAssemblySteps = manifest?.assembly_steps?.length > 0
 
+  // Only show assembly guide when current mode's parts overlap with assembly step parts
+  const currentModeParts = manifest.modes?.find(m => m.id === mode)?.parts || []
+  const showAssemblyGuide = hasAssemblySteps && manifest.assembly_steps.some(s =>
+    (s.visible_parts || []).some(p => currentModeParts.includes(p))
+  )
+
   return (
     <>
       <Tabs value={mode} onValueChange={setMode} className="w-full relative z-10">
@@ -116,7 +122,7 @@ function SidebarContent() {
       />
 
       <BomPanel params={params} />
-      <AssemblyView onStepChange={handleAssemblyStepChange} />
+      {showAssemblyGuide && <AssemblyView onStepChange={handleAssemblyStepChange} />}
 
       {/* Assembly editor toggle */}
       {(hasAssemblySteps || mode === 'assembly') && (

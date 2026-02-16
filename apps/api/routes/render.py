@@ -208,7 +208,7 @@ def render_stl():
             render_mode = mode_map.get(part, 0)
             cmd = build_openscad_command(output_path, scad_path, params, render_mode)
 
-            success, stderr = run_render(cmd)
+            success, stderr = run_render(cmd, scad_path=scad_path)
             if not success:
                 return error_response(stderr)
 
@@ -300,7 +300,7 @@ def render_stl_stream():
             render_mode = mode_map.get(part, 0)
             cmd = build_openscad_command(output_path, scad_path, params, render_mode)
 
-            for event_data in stream_render(cmd, part, part_base, part_weight, i, num_parts):
+            for event_data in stream_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path):
                 yield f"data: {event_data}\n\n"
                 try:
                     event = json.loads(event_data)

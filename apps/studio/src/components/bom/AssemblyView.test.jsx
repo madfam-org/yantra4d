@@ -63,10 +63,10 @@ describe('AssemblyView', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('calls onStepChange on mount with first step', () => {
+  it('does not auto-activate step on mount', () => {
     const onStep = vi.fn()
     render(<AssemblyView onStepChange={onStep} />)
-    expect(onStep).toHaveBeenCalledWith(mockSteps[0])
+    expect(onStep).not.toHaveBeenCalled()
   })
 
   it('calls onStepChange(null) on unmount', () => {

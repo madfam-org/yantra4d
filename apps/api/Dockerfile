@@ -16,6 +16,11 @@ RUN apt-get update && \
   fontconfig \
   libgl1 \
   libglu1-mesa \
+  libharfbuzz0b \
+  libegl1 \
+  libwayland-client0 \
+  libcomerr2 \
+  libgpg-error0 \
   xvfb && \
   wget -q "https://files.openscad.org/snapshots/OpenSCAD-${OPENSCAD_VERSION}-x86_64.AppImage" \
   -O /tmp/openscad.AppImage && \
@@ -38,6 +43,14 @@ COPY projects/ ./projects/
 COPY libs/ ./libs/
 COPY apps/api/tests/ ./tests/
 COPY apps/api/ ./backend/
+
+# Install project-bundled fonts into system fontconfig (belt-and-suspenders:
+# the runtime FONTCONFIG_FILE env var also handles this, but having fonts
+# system-installed in Docker is more robust).
+RUN mkdir -p /usr/local/share/fonts/yantra4d && \
+    find /app/projects -path '*/fonts/*.ttf' -exec cp {} /usr/local/share/fonts/yantra4d/ \; && \
+    find /app/projects -path '*/fonts/*.otf' -exec cp {} /usr/local/share/fonts/yantra4d/ \; && \
+    fc-cache -f /usr/local/share/fonts/yantra4d 2>/dev/null || true
 
 # Environment configuration
 ENV FLASK_DEBUG=false

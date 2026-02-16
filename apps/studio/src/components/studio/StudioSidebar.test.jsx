@@ -163,12 +163,45 @@ describe('StudioSidebar', () => {
     expect(baseContext.handleReset).toHaveBeenCalled()
   })
 
-  it('renders child panels: controls, export, bom, assembly', () => {
+  it('renders child panels: controls, export, bom', () => {
     render(<StudioSidebar />)
     expect(screen.getAllByTestId('controls').length).toBeGreaterThan(0)
     expect(screen.getAllByTestId('export-panel').length).toBeGreaterThan(0)
     expect(screen.getAllByTestId('bom-panel').length).toBeGreaterThan(0)
+  })
+
+  it('renders assembly view when mode parts overlap with assembly step parts', () => {
+    useProject.mockReturnValue({
+      ...baseContext,
+      mode: 'assembly',
+      manifest: {
+        ...baseContext.manifest,
+        modes: [
+          { id: 'unit', label: 'Unit', parts: ['main'] },
+          { id: 'assembly', label: 'Assembly', parts: ['bottom', 'top'] },
+        ],
+        assembly_steps: [{ step: 1, visible_parts: ['bottom'], highlight_parts: ['bottom'] }],
+      },
+    })
+    render(<StudioSidebar />)
     expect(screen.getAllByTestId('assembly-view').length).toBeGreaterThan(0)
+  })
+
+  it('hides assembly view when mode parts do not overlap with assembly steps', () => {
+    useProject.mockReturnValue({
+      ...baseContext,
+      mode: 'unit',
+      manifest: {
+        ...baseContext.manifest,
+        modes: [
+          { id: 'unit', label: 'Unit', parts: ['main'] },
+          { id: 'assembly', label: 'Assembly', parts: ['bottom', 'top'] },
+        ],
+        assembly_steps: [{ step: 1, visible_parts: ['bottom'], highlight_parts: ['bottom'] }],
+      },
+    })
+    render(<StudioSidebar />)
+    expect(screen.queryByTestId('assembly-view')).not.toBeInTheDocument()
   })
 
   it('shows assembly editor toggle when assembly steps exist', () => {

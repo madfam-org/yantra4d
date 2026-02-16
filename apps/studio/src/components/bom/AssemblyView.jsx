@@ -20,13 +20,11 @@ export default function AssemblyView({ onStepChange }) {
     onStepChange?.(s)
   }, [steps, onStepChange])
 
-  // Notify parent of initial step when assembly steps first appear
+  // Clear assembly state when component unmounts or steps disappear.
+  // Do NOT auto-activate step 1 on mount — that would hide non-visible
+  // parts in the viewer before the user interacts with the guide.
   useEffect(() => {
-    if (steps?.length > 0) {
-      onStepChange?.(steps[0])
-    }
     return () => {
-      // Clear assembly state when component unmounts or steps disappear
       onStepChange?.(null)
     }
   }, [steps]) // eslint-disable-line react-hooks/exhaustive-deps

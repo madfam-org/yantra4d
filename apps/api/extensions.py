@@ -18,8 +18,11 @@ def tiered_rate_key():
 #   "redis://host:port"  — shared across workers via Redis
 _storage_uri = os.environ.get("RATE_LIMIT_STORAGE", os.environ.get("REDIS_URL", "memory://"))
 
+_enabled = os.environ.get("RATE_LIMIT_ENABLED", "true").lower() not in ("0", "false", "no")
+
 limiter = Limiter(
     key_func=tiered_rate_key,
     default_limits=["500 per hour"],
     storage_uri=_storage_uri,
+    enabled=_enabled,
 )

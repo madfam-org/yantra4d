@@ -7,7 +7,9 @@ import os
 import re
 import subprocess
 import json
+import tempfile
 import threading
+from pathlib import Path
 
 from config import Config
 from manifest import get_manifest
@@ -16,11 +18,40 @@ logger = logging.getLogger(__name__)
 
 RENDER_TIMEOUT_S = 300
 
+# Cache fontconfig temp files per project fonts dir so they're created once
+_fontconfig_cache: dict[str, str] = {}
 
-def _openscad_env():
-    """Return environment with OPENSCADPATH set for library resolution."""
+
+def _openscad_env(scad_path: str | None = None):
+    """Return environment with OPENSCADPATH and optional font config set.
+
+    When *scad_path* is provided and the parent directory contains a ``fonts/``
+    subdirectory, a minimal fontconfig configuration is generated that adds
+    that directory to the font search path.  This lets OpenSCAD resolve
+    project-bundled fonts (e.g. Allerta Stencil for tablaco).
+    """
     env = os.environ.copy()
     env["OPENSCADPATH"] = Config.OPENSCADPATH
+
+    if scad_path:
+        project_dir = str(Path(scad_path).parent)
+        fonts_dir = os.path.join(project_dir, "fonts")
+        if os.path.isdir(fonts_dir):
+            if fonts_dir not in _fontconfig_cache:
+                fd, conf_path = tempfile.mkstemp(suffix=".conf", prefix="fc_yantra_")
+                os.write(fd, (
+                    '<?xml version="1.0"?>\n'
+                    '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n'
+                    '<fontconfig>\n'
+                    f'  <dir>{fonts_dir}</dir>\n'
+                    '  <include ignore_missing="yes">/etc/fonts/fonts.conf</include>\n'
+                    '</fontconfig>\n'
+                ).encode())
+                os.close(fd)
+                _fontconfig_cache[fonts_dir] = conf_path
+                logger.info("Created fontconfig for %s → %s", fonts_dir, conf_path)
+            env["FONTCONFIG_FILE"] = _fontconfig_cache[fonts_dir]
+
     return env
 
 # Track the active render process for cancellation
@@ -176,11 +207,11 @@ def _sanitize_cmd_for_log(cmd: list) -> str:
     return " ".join(sanitized)
 
 
-def run_render(cmd: list) -> tuple[bool, str]:
+def run_render(cmd: list, scad_path: str | None = None) -> tuple[bool, str]:
     """Execute OpenSCAD render synchronously. Returns (success, stderr)."""
     logger.info(f"Running OpenSCAD: {_sanitize_cmd_for_log(cmd)}")
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=RENDER_TIMEOUT_S, env=_openscad_env())
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
         return True, result.stderr
     except subprocess.TimeoutExpired:
         logger.error("OpenSCAD render timed out after %ds", RENDER_TIMEOUT_S)
@@ -190,26 +221,26 @@ def run_render(cmd: list) -> tuple[bool, str]:
         return False, e.stderr
 
 
-def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int):
+def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int, scad_path: str | None = None):
     """
     Generator that streams OpenSCAD progress as SSE events.
     Yields JSON-formatted SSE data strings.
     """
     current_phase_progress = PHASE_WEIGHTS['start']
-    
+
     # Send part start event
     initial_progress = part_base + (PHASE_WEIGHTS['start'] / 100) * part_weight
     yield json.dumps({
-        'event': 'part_start', 
-        'part': part, 
+        'event': 'part_start',
+        'part': part,
         'progress': round(initial_progress),
         'index': index,
         'total': total
     })
-    
+
     # Run with Popen to stream stderr
     global _active_process
-    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env())
+    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env(scad_path))
     with _process_lock:
         _active_process = process
 

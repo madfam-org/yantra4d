@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { STUDIO_URL } from '../lib/env';
 
 type DemoProject = {
   slug: string;
@@ -21,10 +22,6 @@ const PROJECTS: DemoProject[] = [
   { slug: 'fasteners', label: 'Fasteners', description: 'Parametric bolts and nuts with real threads', descriptionEs: 'Tornillos y tuercas paramétricas con hilos reales', category: 'Mechanical', color: '#7f8c8d' },
   { slug: 'maze', label: 'Maze', description: 'Maze generator for coasters, cubes, and cylinders', descriptionEs: 'Generador de laberintos para posavasos, cubos y cilindros', category: 'Art', color: '#1abc9c' },
 ];
-
-const STUDIO_BASE = import.meta.env.DEV
-  ? 'http://localhost:5173'
-  : 'https://4d-app.madfam.io';
 
 export default function InteractiveShowcase() {
   const [active, setActive] = useState(PROJECTS[0]);
@@ -71,7 +68,7 @@ export default function InteractiveShowcase() {
       >
         <iframe
           key={active.slug}
-          src={`${STUDIO_BASE}?embed=true#/${active.slug}`}
+          src={`${STUDIO_URL}?embed=true#/${active.slug}`}
           className="w-full h-full border-0"
           allow="clipboard-write"
           title={`${active.label} interactive demo`}
@@ -80,7 +77,7 @@ export default function InteractiveShowcase() {
       </div>
       <div className="text-center py-3 border-t border-border">
         <a
-          href={`${STUDIO_BASE}#/${active.slug}`}
+          href={`${STUDIO_URL}#/${active.slug}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-primary hover:underline"

@@ -18,7 +18,11 @@ def tiered_rate_key():
 #   "redis://host:port"  — shared across workers via Redis
 _storage_uri = os.environ.get("RATE_LIMIT_STORAGE", os.environ.get("REDIS_URL", "memory://"))
 
-_enabled = os.environ.get("RATE_LIMIT_ENABLED", "true").lower() not in ("0", "false", "no")
+# Disable rate limiting in dev mode (FLASK_DEBUG=true) unless explicitly overridden.
+# Production Dockerfile sets FLASK_DEBUG=false, so limits are always active in prod.
+_debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+_default_enabled = "false" if _debug else "true"
+_enabled = os.environ.get("RATE_LIMIT_ENABLED", _default_enabled).lower() not in ("0", "false", "no")
 
 limiter = Limiter(
     key_func=tiered_rate_key,

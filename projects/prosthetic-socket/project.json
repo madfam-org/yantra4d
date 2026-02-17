@@ -1,0 +1,237 @@
+{
+  "project": {
+    "name": "Prosthetic Socket",
+    "slug": "prosthetic-socket",
+    "version": "1.0.0",
+    "description": {
+      "en": "Parametric prosthetic sockets from limb measurements or 3D scans — custom fit with Voronoi ventilation and e-NABLE/OSL compatible interfaces",
+      "es": "Sockets protésicos paramétricos a partir de medidas del miembro o escaneos 3D — ajuste personalizado con ventilación Voronoi e interfaces compatibles con e-NABLE/OSL"
+    },
+    "thumbnail": "/projects/prosthetic-socket.webp",
+    "tags": [
+      "prosthetic",
+      "medical",
+      "accessibility",
+      "e-nable",
+      "socket",
+      "scan",
+      "hyperobject",
+      "commons",
+      "cdg"
+    ],
+    "difficulty": "advanced"
+  },
+  "modes": [
+    {
+      "id": "below_knee",
+      "scad_file": "socket.scad",
+      "label": { "en": "Below-Knee (Transtibial)", "es": "Bajo Rodilla (Transtibial)" },
+      "parts": ["socket", "liner"],
+      "estimate": { "base_units": 2, "formula": "constant" }
+    },
+    {
+      "id": "above_knee",
+      "scad_file": "socket.scad",
+      "label": { "en": "Above-Knee (Transfemoral)", "es": "Sobre Rodilla (Transfemoral)" },
+      "parts": ["socket", "liner"],
+      "estimate": { "base_units": 2, "formula": "constant" }
+    },
+    {
+      "id": "forearm",
+      "scad_file": "socket.scad",
+      "label": { "en": "Forearm (Transradial)", "es": "Antebrazo (Transradial)" },
+      "parts": ["socket"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    {
+      "id": "socket",
+      "render_mode": 0,
+      "label": { "en": "Socket Shell", "es": "Carcasa del Socket" },
+      "default_color": "#ec4899"
+    },
+    {
+      "id": "liner",
+      "render_mode": 1,
+      "label": { "en": "Comfort Liner", "es": "Forro de Confort" },
+      "default_color": "#fbbf24"
+    }
+  ],
+  "presets": [
+    {
+      "id": "adult_transtibial",
+      "label": { "en": "Adult Transtibial (medium)", "es": "Transtibial Adulto (mediano)" },
+      "values": {
+        "circumference_proximal": 340,
+        "circumference_distal": 250,
+        "socket_length": 180,
+        "voronoi_density": 1,
+        "distal_interface": 0
+      }
+    },
+    {
+      "id": "child_forearm",
+      "label": { "en": "Child Forearm (e-NABLE)", "es": "Antebrazo Infantil (e-NABLE)" },
+      "values": {
+        "circumference_proximal": 200,
+        "circumference_distal": 140,
+        "socket_length": 120,
+        "voronoi_density": 2,
+        "distal_interface": 1
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "circumference_proximal",
+      "type": "slider",
+      "default": 340,
+      "min": 100,
+      "max": 500,
+      "step": 5,
+      "label": { "en": "Proximal Circumference (mm)", "es": "Circunferencia Proximal (mm)" },
+      "tooltip": { "en": "Measure at the widest point of the residual limb", "es": "Mida en el punto más ancho del miembro residual" },
+      "visible_in_modes": ["below_knee", "above_knee", "forearm"],
+      "group": "anatomy"
+    },
+    {
+      "id": "circumference_distal",
+      "type": "slider",
+      "default": 250,
+      "min": 50,
+      "max": 400,
+      "step": 5,
+      "label": { "en": "Distal Circumference (mm)", "es": "Circunferencia Distal (mm)" },
+      "tooltip": { "en": "Measure at the narrow end of the residual limb", "es": "Mida en el extremo estrecho del miembro residual" },
+      "visible_in_modes": ["below_knee", "above_knee", "forearm"],
+      "group": "anatomy"
+    },
+    {
+      "id": "socket_length",
+      "type": "slider",
+      "default": 180,
+      "min": 80,
+      "max": 350,
+      "step": 10,
+      "label": { "en": "Socket Length (mm)", "es": "Largo del Socket (mm)" },
+      "tooltip": { "en": "Length from proximal brim to distal end", "es": "Largo desde el borde proximal hasta el extremo distal" },
+      "visible_in_modes": ["below_knee", "above_knee", "forearm"],
+      "group": "anatomy"
+    },
+    {
+      "id": "wall_thickness",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 5.0,
+      "step": 0.5,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shell wall thickness — thicker for structural support", "es": "Grosor de pared de la carcasa — más grueso para soporte estructural" },
+      "visible_in_modes": ["below_knee", "above_knee", "forearm"],
+      "group": "structure"
+    },
+    {
+      "id": "voronoi_density",
+      "type": "slider",
+      "default": 1,
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "label": { "en": "Voronoi Ventilation", "es": "Ventilación Voronoi" },
+      "tooltip": { "en": "0=solid, 1=light, 2=medium, 3=maximum breathability", "es": "0=sólido, 1=ligero, 2=medio, 3=máxima transpirabilidad" },
+      "visible_in_modes": ["below_knee", "above_knee", "forearm"],
+      "group": "comfort"
+    },
+    {
+      "id": "distal_interface",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "label": { "en": "Distal Interface", "es": "Interfaz Distal" },
+      "tooltip": { "en": "0=30mm pylon (standard), 1=e-NABLE Phoenix, 2=OSL bolt pattern", "es": "0=pilón 30mm (estándar), 1=e-NABLE Phoenix, 2=patrón OSL" },
+      "visible_in_modes": ["below_knee", "above_knee", "forearm"],
+      "group": "interface"
+    },
+    {
+      "id": "liner_thickness",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.5,
+      "label": { "en": "Liner Thickness (mm)", "es": "Grosor del Forro (mm)" },
+      "tooltip": { "en": "Comfort liner thickness — print in TPU/TPE", "es": "Grosor del forro de confort — imprimir en TPU/TPE" },
+      "visible_in_modes": ["below_knee", "above_knee"],
+      "group": "comfort"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
+      "tooltip": { "en": "0 = auto; higher = more detail but slower", "es": "0 = automático; mayor = más detalle pero más lento" },
+      "visible_in_modes": ["below_knee", "above_knee", "forearm"],
+      "group": "quality",
+      "visibility_level": "advanced"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "anatomy", "label": { "en": "Anatomy", "es": "Anatomía" } },
+    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } },
+    { "id": "comfort", "label": { "en": "Comfort", "es": "Confort" } },
+    { "id": "interface", "label": { "en": "Interface", "es": "Interfaz" } },
+    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "limb_scan_parametric",
+        "label": { "en": "Limb Scan Parametric Surface", "es": "Superficie Paramétrica de Escaneo de Miembro" },
+        "geometry_type": "surface",
+        "standard": "Custom (measurement/scan-derived)",
+        "parameters": ["circumference_proximal", "circumference_distal", "socket_length"]
+      },
+      {
+        "id": "distal_pylon_interface",
+        "label": { "en": "Distal Pylon Interface", "es": "Interfaz de Pilón Distal" },
+        "geometry_type": "connector",
+        "standard": "e-NABLE / OSL compatible",
+        "parameters": ["distal_interface"]
+      },
+      {
+        "id": "voronoi_ventilation_map",
+        "label": { "en": "Voronoi Ventilation Density Map", "es": "Mapa de Densidad de Ventilación Voronoi" },
+        "geometry_type": "pattern",
+        "standard": "internal (structural load zones)",
+        "parameters": ["voronoi_density"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "required_materials": ["TPU", "TPE"],
+      "print_parameters": {
+        "extrusion_temp_c": 235,
+        "print_speed_mm_s": 25,
+        "notes": "Flexible materials require slow speeds and direct-drive extruder"
+      }
+    },
+    "societal_benefit": {
+      "en": "Custom-fit prosthetic sockets without expensive molds — enables accessible healthcare for amputees worldwide via 3D scan and parametric generation.",
+      "es": "Sockets protésicos a medida sin moldes costosos — permite atención médica accesible para amputados en todo el mundo mediante escaneo 3D y generación paramétrica."
+    },
+    "commons_license": "CERN-OHL-S-2.0",
+    "bosl2_modules_used": ["attachable", "cyl", "rotate_extrude", "vnf"],
+    "oep8_features": ["geometry_as_data", "object_dicts", "material_structs"],
+    "cdg_registry_refs": ["limb_scan_interface", "distal_interface_standard"]
+  }
+}

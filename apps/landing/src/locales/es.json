@@ -8,6 +8,8 @@
     "forMakers": "Para Makers",
     "forCreators": "Para Creadores",
     "demo": "Demo",
+    "commons": "Commons",
+    "cdg": "CDG",
     "openStudio": "Abrir Studio →"
   },
   "hero": {
@@ -112,6 +114,119 @@
     "statLicense": "AGPLv3",
     "cta": "Ver en GitHub",
     "techNote": "Construido con OpenSCAD, React, Three.js, Flask y WebAssembly."
+  },
+  "hyperCommons": {
+    "heading": "Los Comunes Paramétricos",
+    "subtitle": "Un solo archivo .scad no define un objeto — define todos los objetos posibles dentro de su espacio de parámetros. Los llamamos Hiperobjetos 4D Acotados, y están construyendo un nuevo tipo de infraestructura abierta.",
+    "whatIsHeading": "¿Qué es un Hiperobjeto?",
+    "whatIsBody": "Los archivos 3D tradicionales son estáticos — una geometría, congelada en un tamaño. Un hiperobjeto paramétrico es la definición computacional de toda una *familia* de objetos, acotada por las reglas de su código. Cambia los parámetros, y la geometría se adapta — al instante.",
+    "whatIsCaption1": "Un archivo",
+    "whatIsCaption2": "Infinitos objetos",
+    "shiftHeading": "El Cambio de Paradigma",
+    "shiftFrom": ".STL Estático",
+    "shiftFromDesc": "Una geometría fija. Un solo tamaño. Descarga y espera que funcione.",
+    "shiftTo": ".SCAD Paramétrico",
+    "shiftToDesc": "Geometrías infinitas. Tus dimensiones. Configurado a tu realidad.",
+    "shiftStat1": "1 archivo → ∞ objetos",
+    "shiftStat2": "Interfaces comunitarias",
+    "shiftStat3": "Código material-consciente",
+    "domainsHeading": "Cuatro Dominios de Impacto",
+    "domainsSubtitle": "Desde tu cajón de escritorio hasta ayuda humanitaria — los hiperobjetos paramétricos estandarizan las interfaces que permiten a las comunidades fabricar lo que necesitan.",
+    "household": {
+      "title": "Hogar",
+      "desc": "Organización, infraestructura y autosuficiencia para el ámbito doméstico.",
+      "items": "Gridfinity (almacenamiento modular 42mm) · Conectores Paramétricos (refugios PVC/bambú) · Filtros de Agua Faircap (rosca PCO 1881)",
+      "stat": "Estándar 42mm"
+    },
+    "industrial": {
+      "title": "Industrial",
+      "desc": "Manufactura puente y herramental bajo pedido para la planta de producción.",
+      "items": "Clips Riel DIN (perfil TS35/TS15) · Accesorios 80/20 T-Slot · Jigs y Fixtures Paramétricos",
+      "stat": "Perfil TS35"
+    },
+    "medical": {
+      "title": "Médico",
+      "desc": "Salud accesible a través de dispositivos diagnósticos y protésicos de código abierto.",
+      "items": "Prótesis de Socket (paramétricas por escaneo) · Estetoscopio Glia ($5 vs $500) · Otoscopio Abierto",
+      "stat": "99% reducción de costo"
+    },
+    "commercial": {
+      "title": "Comercial",
+      "desc": "Derecho a Reparar y economía circular mediante repuestos paramétricos.",
+      "items": "Generador Universal de Engranes (módulo/presión/dientes) · Perillas Paramétricas (eje-D) · Montajes VESA",
+      "stat": "Cero residuos electrónicos"
+    },
+    "impactHeading": "Impacto Real",
+    "impact1label": "Otoscopio Glia",
+    "impact1value": "99% más barato",
+    "impact2label": "Conectores Tubería",
+    "impact2value": "3-17× más baratos",
+    "impact3label": "Gridfinity",
+    "impact3value": "Estándar global",
+    "impact4label": "Licencia",
+    "impact4value": "CERN OHL"
+  },
+  "cdg": {
+    "badge": "Geometría de Denominador Común",
+    "heading": "Las Interfaces Que Conectan Todo",
+    "subtitle": "CDG es la geometría estandarizada que asegura la interoperabilidad en los comunes. Cada CDG define una interfaz inmutable — la verdad matemática que permite que hiperobjetos de diferentes creadores funcionen juntos.",
+    "explainerTitle": "¿Qué es la CDG?",
+    "explainerBody": "Tomada del trazado aeroespacial, la CDG proporciona la 'verdad base' geométrica que asegura que un filtro encaje en cualquier botella, un clip se enganche en cualquier riel, y un socket se conecte a cualquier prótesis. Estandariza la interfaz, y la comunidad construye el resto.",
+    "catalogTitle": "El Catálogo CDG",
+    "entries": {
+      "gridfinity": {
+        "name": "Gridfinity 42mm",
+        "standard": "Estándar Comunitario",
+        "description": "Rejilla de almacenamiento modular universal. Módulo base de 42mm, unidad de altura de 7mm, perfil de labio estandarizado.",
+        "projects": "Gridfinity Extendido"
+      },
+      "pco1881": {
+        "name": "Rosca PCO 1881",
+        "standard": "ISBT PCO 1881",
+        "description": "Rosca estándar de cuello de botella PET — 26.7mm OD, paso de 3.18mm. Convierte residuos plásticos en infraestructura hídrica.",
+        "projects": "Filtro de Agua Faircap"
+      },
+      "ts35": {
+        "name": "Riel DIN TS35",
+        "standard": "IEC/EN 60715",
+        "description": "Riel de automatización industrial — 35mm de ancho, perfil sombrero de 7.5mm. La columna vertebral de cada panel eléctrico.",
+        "projects": "Clip de Riel DIN"
+      },
+      "iso8037": {
+        "name": "Laminilla ISO 8037",
+        "standard": "ISO 8037-1:2003",
+        "description": "Dimensiones de laminilla de microscopio — 76×26×1mm. Estándar en histología, citología y patología mundial.",
+        "projects": "Porta Laminillas"
+      },
+      "viseBolt": {
+        "name": "Patrón de Pernos de Prensa",
+        "standard": "Kurt (de facto)",
+        "description": "Ancho de mordaza de 6\", pernos 5/16-18 a 4.5\" de separación. La interfaz universal de sujeción CNC.",
+        "projects": "Mordaza Suave / Jig"
+      },
+      "speculum": {
+        "name": "Interfaz de Espéculo",
+        "standard": "Estándar Médico",
+        "description": "Cono de otoscopio — 4.25mm OD, conicidad de 3°. Compatible con consumibles médicos desechables a nivel global.",
+        "projects": "Diagnóstico Glia"
+      },
+      "involute": {
+        "name": "Perfil Involuto de Engranaje",
+        "standard": "ISO 53 / AGMA",
+        "description": "Definido por módulo, ángulo de presión y número de dientes. El lenguaje universal de transmisión de potencia mecánica.",
+        "projects": "Engranajes Paramétricos"
+      }
+    },
+    "impactTitle": "La Estrategia de Interfaces",
+    "impactBody": "Deja de diseñar productos. Empieza a diseñar interfaces. Una base Gridfinity perfecta es más valiosa que 1,000 portavasos diferentes.",
+    "stat1value": "14",
+    "stat1label": "Interfaces CDG",
+    "stat2value": "10",
+    "stat2label": "Hiperobjetos",
+    "stat3value": "4",
+    "stat3label": "Dominios",
+    "stat4value": "CERN OHL",
+    "stat4label": "Licencia Abierta"
   },
   "cta": {
     "heading": "Tu próxima impresión empieza aquí",

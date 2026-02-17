@@ -1,0 +1,385 @@
+---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+const h = t?.hyperCommons;
+---
+
+<!-- ═══════ Section: The Parametric Commons ═══════ -->
+<section id="hyper-commons" class="relative py-28 px-6 overflow-hidden">
+
+  <!-- Animated background grid -->
+  <div class="hc-grid-bg absolute inset-0 -z-10" aria-hidden="true"></div>
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background/80 to-background"></div>
+
+  <div class="mx-auto max-w-6xl">
+
+    <!-- ── Hero intro ── -->
+    <div class="text-center mb-20 hc-fade-in">
+      <span class="inline-block rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wider text-primary uppercase mb-6">
+        Open Commons
+      </span>
+      <h2 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
+        {h?.heading ?? 'Los Comunes Paramétricos'}
+      </h2>
+      <p class="mx-auto max-w-3xl text-lg text-muted-foreground leading-relaxed">
+        {h?.subtitle ?? 'Un solo archivo .scad no define un objeto — define todos los objetos posibles dentro de su espacio de parámetros. Los llamamos Hiperobjetos 4D Acotados, y están construyendo un nuevo tipo de infraestructura abierta.'}
+      </p>
+    </div>
+
+    <!-- ── What is a Hyperobject? ── -->
+    <div class="mb-24 hc-fade-in">
+      <div class="grid gap-8 lg:grid-cols-2 items-center">
+        <!-- Animated visual: parametric morph -->
+        <div class="relative flex items-center justify-center">
+          <div class="hc-morph-container relative w-full max-w-md aspect-square mx-auto">
+            <!-- Animated parametric shape -->
+            <svg viewBox="0 0 400 400" class="w-full h-full" aria-hidden="true">
+              <!-- Grid lines -->
+              <g class="hc-grid-lines" stroke="hsl(var(--primary) / 0.08)" stroke-width="1" fill="none">
+                <line x1="0" y1="80" x2="400" y2="80" />
+                <line x1="0" y1="160" x2="400" y2="160" />
+                <line x1="0" y1="240" x2="400" y2="240" />
+                <line x1="0" y1="320" x2="400" y2="320" />
+                <line x1="80" y1="0" x2="80" y2="400" />
+                <line x1="160" y1="0" x2="160" y2="400" />
+                <line x1="240" y1="0" x2="240" y2="400" />
+                <line x1="320" y1="0" x2="320" y2="400" />
+              </g>
+              <!-- The morphing shape -->
+              <rect class="hc-shape-morph" x="80" y="100" rx="8" fill="none" stroke="hsl(var(--primary))" stroke-width="2" />
+              <!-- Ghost outlines showing parameter space -->
+              <rect class="hc-shape-ghost hc-ghost-1" x="60" y="80" rx="4" fill="none" stroke="hsl(var(--primary) / 0.12)" stroke-width="1" stroke-dasharray="4 4" />
+              <rect class="hc-shape-ghost hc-ghost-2" x="100" y="120" rx="12" fill="none" stroke="hsl(var(--primary) / 0.08)" stroke-width="1" stroke-dasharray="4 4" />
+              <rect class="hc-shape-ghost hc-ghost-3" x="120" y="60" rx="6" fill="none" stroke="hsl(var(--primary) / 0.06)" stroke-width="1" stroke-dasharray="4 4" />
+              <!-- Parameter dimension arrows -->
+              <g class="hc-dim-arrows" stroke="hsl(var(--primary) / 0.3)" stroke-width="1.5">
+                <line class="hc-dim-x" x1="80" y1="340" x2="320" y2="340" marker-end="url(#arrowhead)" />
+                <line class="hc-dim-y" x1="360" y1="100" x2="360" y2="300" marker-end="url(#arrowhead)" />
+              </g>
+              <defs>
+                <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                  <polygon points="0 0, 8 3, 0 6" fill="hsl(var(--primary) / 0.3)" />
+                </marker>
+              </defs>
+              <!-- Labels -->
+              <text x="200" y="370" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="12" font-family="monospace" class="hc-label-animate">width</text>
+              <text x="380" y="200" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="12" font-family="monospace" transform="rotate(90, 380, 200)" class="hc-label-animate">height</text>
+            </svg>
+            <!-- Captions -->
+            <div class="absolute bottom-0 inset-x-0 flex justify-between px-4 text-xs text-muted-foreground font-mono">
+              <span class="bg-background/80 px-2 py-1 rounded backdrop-blur-sm">{h?.whatIsCaption1 ?? 'Un archivo'}</span>
+              <span class="bg-primary/10 text-primary px-2 py-1 rounded backdrop-blur-sm font-semibold">{h?.whatIsCaption2 ?? 'Infinitos objetos'}</span>
+            </div>
+          </div>
+        </div>
+        <!-- Text -->
+        <div>
+          <h3 class="text-2xl font-bold tracking-tight sm:text-3xl mb-4">
+            {h?.whatIsHeading ?? '¿Qué es un Hiperobjeto?'}
+          </h3>
+          <p class="text-muted-foreground leading-relaxed text-lg">
+            {h?.whatIsBody ?? 'Los archivos 3D tradicionales son estáticos — una geometría, congelada en un tamaño. Un hiperobjeto paramétrico es la definición computacional de toda una familia de objetos, acotada por las reglas de su código. Cambia los parámetros, y la geometría se adapta — al instante.'}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── The Shift: .STL vs .SCAD ── -->
+    <div class="mb-24 hc-fade-in">
+      <h3 class="text-center text-2xl font-bold tracking-tight sm:text-3xl mb-10">
+        {h?.shiftHeading ?? 'El Cambio de Paradigma'}
+      </h3>
+      <div class="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+        <!-- Static .STL -->
+        <div class="hc-shift-card hc-shift-old rounded-2xl border border-border bg-card/50 p-8 backdrop-blur-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-muted-foreground/20 to-muted-foreground/5"></div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground text-lg">📄</div>
+            <h4 class="font-bold text-lg">{h?.shiftFrom ?? '.STL Estático'}</h4>
+          </div>
+          <p class="text-muted-foreground">{h?.shiftFromDesc ?? 'Una geometría fija. Un solo tamaño. Descarga y espera que funcione.'}</p>
+          <!-- Static cube visual -->
+          <div class="mt-6 flex justify-center">
+            <div class="hc-static-cube w-20 h-20 border-2 border-muted-foreground/20 rounded-md"></div>
+          </div>
+        </div>
+        <!-- Parametric .SCAD -->
+        <div class="hc-shift-card hc-shift-new rounded-2xl border border-primary/30 bg-primary/5 p-8 relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary/40"></div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary text-lg">⚡</div>
+            <h4 class="font-bold text-lg text-primary">{h?.shiftTo ?? '.SCAD Paramétrico'}</h4>
+          </div>
+          <p class="text-muted-foreground">{h?.shiftToDesc ?? 'Geometrías infinitas. Tus dimensiones. Configurado a tu realidad.'}</p>
+          <!-- Morphing shapes visual -->
+          <div class="mt-6 flex justify-center gap-2">
+            <div class="hc-morph-shape-1 w-12 h-16 border-2 border-primary/40 rounded-md"></div>
+            <div class="hc-morph-shape-2 w-16 h-12 border-2 border-primary/30 rounded-lg"></div>
+            <div class="hc-morph-shape-3 w-20 h-20 border-2 border-primary/20 rounded-sm"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Shift stats -->
+      <div class="flex flex-wrap justify-center gap-4 mt-8">
+        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+          {h?.shiftStat1 ?? '1 archivo → ∞ objetos'}
+        </span>
+        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+          {h?.shiftStat2 ?? 'Interfaces comunitarias'}
+        </span>
+        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+          {h?.shiftStat3 ?? 'Código material-consciente'}
+        </span>
+      </div>
+    </div>
+
+    <!-- ── Four Domains of Impact ── -->
+    <div class="mb-24 hc-fade-in">
+      <div class="text-center mb-12">
+        <h3 class="text-2xl font-bold tracking-tight sm:text-3xl mb-4">
+          {h?.domainsHeading ?? 'Cuatro Dominios de Impacto'}
+        </h3>
+        <p class="text-muted-foreground max-w-2xl mx-auto">
+          {h?.domainsSubtitle ?? 'Desde tu cajón de escritorio hasta ayuda humanitaria — los hiperobjetos paramétricos estandarizan las interfaces que permiten a las comunidades fabricar lo que necesitan.'}
+        </p>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Household -->
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)]">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-xl transition-transform duration-300 group-hover:scale-110">🏠</div>
+            <h4 class="font-bold">{h?.household?.title ?? 'Hogar'}</h4>
+          </div>
+          <p class="text-sm text-muted-foreground mb-4">{h?.household?.desc ?? 'Organización, infraestructura y autosuficiencia para el ámbito doméstico.'}</p>
+          <p class="text-xs text-muted-foreground/80 leading-relaxed mb-4 border-t border-border/50 pt-3">{h?.household?.items ?? 'Gridfinity (almacenamiento modular 42mm) · Conectores Paramétricos (refugios PVC/bambú) · Filtros de Agua Faircap (rosca PCO 1881)'}</p>
+          <div class="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">{h?.household?.stat ?? 'Estándar 42mm'}</div>
+        </article>
+
+        <!-- Industrial -->
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)]">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-xl transition-transform duration-300 group-hover:scale-110">🏭</div>
+            <h4 class="font-bold">{h?.industrial?.title ?? 'Industrial'}</h4>
+          </div>
+          <p class="text-sm text-muted-foreground mb-4">{h?.industrial?.desc ?? 'Manufactura puente y herramental bajo pedido para la planta de producción.'}</p>
+          <p class="text-xs text-muted-foreground/80 leading-relaxed mb-4 border-t border-border/50 pt-3">{h?.industrial?.items ?? 'Clips Riel DIN (perfil TS35/TS15) · Accesorios 80/20 T-Slot · Jigs y Fixtures Paramétricos'}</p>
+          <div class="inline-flex items-center rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400">{h?.industrial?.stat ?? 'Perfil TS35'}</div>
+        </article>
+
+        <!-- Medical -->
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-rose-500/40 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)]">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-xl transition-transform duration-300 group-hover:scale-110">🏥</div>
+            <h4 class="font-bold">{h?.medical?.title ?? 'Médico'}</h4>
+          </div>
+          <p class="text-sm text-muted-foreground mb-4">{h?.medical?.desc ?? 'Salud accesible a través de dispositivos diagnósticos y protésicos de código abierto.'}</p>
+          <p class="text-xs text-muted-foreground/80 leading-relaxed mb-4 border-t border-border/50 pt-3">{h?.medical?.items ?? 'Prótesis de Socket (paramétricas por escaneo) · Estetoscopio Glia ($5 vs $500) · Otoscopio Abierto'}</p>
+          <div class="inline-flex items-center rounded-full bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-400">{h?.medical?.stat ?? '99% reducción de costo'}</div>
+        </article>
+
+        <!-- Commercial -->
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-violet-500/40 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)]">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-xl transition-transform duration-300 group-hover:scale-110">⚙️</div>
+            <h4 class="font-bold">{h?.commercial?.title ?? 'Comercial'}</h4>
+          </div>
+          <p class="text-sm text-muted-foreground mb-4">{h?.commercial?.desc ?? 'Derecho a Reparar y economía circular mediante repuestos paramétricos.'}</p>
+          <p class="text-xs text-muted-foreground/80 leading-relaxed mb-4 border-t border-border/50 pt-3">{h?.commercial?.items ?? 'Generador Universal de Engranes (módulo/presión/dientes) · Perillas Paramétricas (eje-D) · Montajes VESA'}</p>
+          <div class="inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-400">{h?.commercial?.stat ?? 'Cero residuos electrónicos'}</div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ── Impact Stats ── -->
+    <div class="hc-fade-in">
+      <h3 class="text-center text-xl font-bold tracking-tight sm:text-2xl mb-8">
+        {h?.impactHeading ?? 'Impacto Real'}
+      </h3>
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 max-w-4xl mx-auto">
+        <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
+          <div class="text-2xl font-bold text-primary mb-1">{h?.impact1value ?? '99% más barato'}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact1label ?? 'Otoscopio Glia'}</div>
+        </div>
+        <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
+          <div class="text-2xl font-bold text-primary mb-1">{h?.impact2value ?? '3-17× más baratos'}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact2label ?? 'Conectores Tubería'}</div>
+        </div>
+        <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
+          <div class="text-2xl font-bold text-primary mb-1">{h?.impact3value ?? 'Estándar global'}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact3label ?? 'Gridfinity'}</div>
+        </div>
+        <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
+          <div class="text-2xl font-bold text-primary mb-1">{h?.impact4value ?? 'CERN OHL'}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact4label ?? 'Licencia'}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ Styles ═══════ -->
+<style>
+  /* ── Background grid ── */
+  .hc-grid-bg {
+    background-image:
+      linear-gradient(hsl(var(--primary) / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: hc-grid-drift 30s linear infinite;
+  }
+
+  @keyframes hc-grid-drift {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+  }
+
+  /* ── Morphing parametric shape ── */
+  .hc-shape-morph {
+    animation: hc-morph 8s ease-in-out infinite;
+  }
+
+  @keyframes hc-morph {
+    0%, 100% { width: 240px; height: 200px; x: 80; y: 100; rx: 8; opacity: 1; }
+    25%       { width: 160px; height: 280px; x: 120; y: 60;  rx: 16; opacity: 0.9; }
+    50%       { width: 280px; height: 120px; x: 60;  y: 140; rx: 4;  opacity: 1; }
+    75%       { width: 200px; height: 200px; x: 100; y: 100; rx: 24; opacity: 0.9; }
+  }
+
+  .hc-ghost-1 {
+    animation: hc-ghost-a 8s ease-in-out infinite;
+  }
+  .hc-ghost-2 {
+    animation: hc-ghost-b 8s ease-in-out infinite;
+  }
+  .hc-ghost-3 {
+    animation: hc-ghost-c 8s ease-in-out infinite;
+  }
+
+  @keyframes hc-ghost-a {
+    0%, 100% { width: 280px; height: 240px; x: 60; y: 80; }
+    50%      { width: 200px; height: 160px; x: 100; y: 120; }
+  }
+  @keyframes hc-ghost-b {
+    0%, 100% { width: 180px; height: 160px; x: 110; y: 120; }
+    50%      { width: 300px; height: 200px; x: 50; y: 100; }
+  }
+  @keyframes hc-ghost-c {
+    0%, 100% { width: 160px; height: 280px; x: 120; y: 60; }
+    50%      { width: 260px; height: 100px; x: 70; y: 150; }
+  }
+
+  /* Dimension arrows animate */
+  .hc-dim-x { animation: hc-dim-h 8s ease-in-out infinite; }
+  .hc-dim-y { animation: hc-dim-v 8s ease-in-out infinite; }
+
+  @keyframes hc-dim-h {
+    0%, 100% { x2: 320; }
+    25%      { x2: 280; }
+    50%      { x2: 340; }
+    75%      { x2: 300; }
+  }
+  @keyframes hc-dim-v {
+    0%, 100% { y2: 300; }
+    25%      { y2: 340; }
+    50%      { y2: 260; }
+    75%      { y2: 300; }
+  }
+
+  .hc-label-animate {
+    animation: hc-label-pulse 4s ease-in-out infinite;
+  }
+  @keyframes hc-label-pulse {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+  }
+
+  /* ── Shift card morphing shapes ── */
+  .hc-morph-shape-1 { animation: hc-smorph-1 6s ease-in-out infinite; }
+  .hc-morph-shape-2 { animation: hc-smorph-2 6s ease-in-out infinite 0.5s; }
+  .hc-morph-shape-3 { animation: hc-smorph-3 6s ease-in-out infinite 1s; }
+
+  @keyframes hc-smorph-1 {
+    0%, 100% { width: 3rem; height: 4rem; border-radius: 0.375rem; }
+    50%      { width: 4rem; height: 3rem; border-radius: 0.75rem; }
+  }
+  @keyframes hc-smorph-2 {
+    0%, 100% { width: 4rem; height: 3rem; border-radius: 0.5rem; }
+    50%      { width: 3rem; height: 5rem; border-radius: 0.25rem; }
+  }
+  @keyframes hc-smorph-3 {
+    0%, 100% { width: 5rem; height: 5rem; border-radius: 0.125rem; }
+    50%      { width: 3.5rem; height: 3.5rem; border-radius: 1rem; }
+  }
+
+  /* ── Scroll fade-in ── */
+  .hc-fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+
+  .hc-fade-in.hc-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Domain card hover ── */
+  .hc-domain-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .hc-domain-card:hover {
+    transform: translateY(-4px);
+  }
+
+  /* ── Stat card counter animation ── */
+  .hc-stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .hc-stat-card:hover {
+    transform: scale(1.04);
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .hc-grid-bg,
+    .hc-shape-morph,
+    .hc-ghost-1, .hc-ghost-2, .hc-ghost-3,
+    .hc-dim-x, .hc-dim-y,
+    .hc-label-animate,
+    .hc-morph-shape-1, .hc-morph-shape-2, .hc-morph-shape-3 {
+      animation: none !important;
+    }
+    .hc-fade-in {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .hc-domain-card:hover,
+    .hc-stat-card:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<!-- ═══════ Script: Intersection Observer for fade-in ═══════ -->
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('hc-visible');
+        }
+      });
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+  );
+
+  document.querySelectorAll('.hc-fade-in').forEach((el) => observer.observe(el));
+</script>

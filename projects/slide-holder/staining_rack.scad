@@ -108,20 +108,30 @@ module rack() {
     translate([_body_x - _pillar_w, _body_y - _pillar_w, 0])
         cube([_pillar_w, _pillar_w, _body_z]);
 
-    // --- Top rails (connect pillars, hold ribs) ---
+    // --- Top rails (connect pillars at the top) ---
     // Front rail
-    cube([_body_x, _pillar_w, _crossbar_h]);
+    translate([0, 0, _body_z - _crossbar_h])
+        cube([_body_x, _pillar_w, _crossbar_h]);
     // Back rail
-    translate([0, _body_y - _pillar_w, 0])
+    translate([0, _body_y - _pillar_w, _body_z - _crossbar_h])
         cube([_body_x, _pillar_w, _crossbar_h]);
     // Left rail
-    cube([_pillar_w, _body_y, _crossbar_h]);
+    translate([0, 0, _body_z - _crossbar_h])
+        cube([_pillar_w, _body_y, _crossbar_h]);
     // Right rail
-    translate([_body_x - _pillar_w, 0, 0])
+    translate([_body_x - _pillar_w, 0, _body_z - _crossbar_h])
         cube([_pillar_w, _body_y, _crossbar_h]);
 
     // --- Bottom crossbars (open or solid) ---
     if (open_bottom == 1) {
+        // Front and back bottom rails
+        cube([_body_x, _pillar_w, _crossbar_h]);
+        translate([0, _body_y - _pillar_w, 0])
+            cube([_body_x, _pillar_w, _crossbar_h]);
+        // Left and right bottom rails
+        cube([_pillar_w, _body_y, _crossbar_h]);
+        translate([_body_x - _pillar_w, 0, 0])
+            cube([_pillar_w, _body_y, _crossbar_h]);
         // Two crossbars at 33% and 66% for slide support
         for (frac = [0.33, 0.66]) {
             translate([0, _body_y * frac - _crossbar_w / 2, 0])
@@ -137,10 +147,8 @@ module rack() {
     }
 
     // --- Slotted rib rails (knife-edge profile) ---
-    // Front rib rail
-    translate([_pillar_w, _pillar_w, _crossbar_h]) {
-        _inner_x = _body_x - 2 * _pillar_w;
-        // Use thin rectangular ribs for knife-edge contact
+    // Front rib rail: sits on front bottom rail, extends up to rib height
+    translate([_pillar_w, 0, _crossbar_h]) {
         for (i = [0 : num_slots]) {
             translate([i * _forced_pitch, 0, 0])
                 rectangular_rib(_rib_height, _pillar_w, _min_rib_w);
@@ -148,7 +156,7 @@ module rack() {
     }
 
     // Back rib rail (mirrors front)
-    translate([_pillar_w, _body_y - 2 * _pillar_w, _crossbar_h]) {
+    translate([_pillar_w, _body_y - _pillar_w, _crossbar_h]) {
         for (i = [0 : num_slots]) {
             translate([i * _forced_pitch, 0, 0])
                 rectangular_rib(_rib_height, _pillar_w, _min_rib_w);

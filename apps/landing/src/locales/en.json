@@ -8,6 +8,8 @@
     "forMakers": "For Makers",
     "forCreators": "For Creators",
     "demo": "Demo",
+    "commons": "Commons",
+    "cdg": "CDG",
     "openStudio": "Open Studio →"
   },
   "hero": {
@@ -112,6 +114,119 @@
     "statLicense": "AGPLv3",
     "cta": "View on GitHub",
     "techNote": "Built with OpenSCAD, React, Three.js, Flask, and WebAssembly."
+  },
+  "hyperCommons": {
+    "heading": "The Parametric Commons",
+    "subtitle": "A single .scad file doesn't define one object — it defines every possible object within its parameter space. We call these Bounded 4D Hyperobjects, and they're building a new kind of open infrastructure.",
+    "whatIsHeading": "What is a Hyperobject?",
+    "whatIsBody": "Traditional 3D files are static — one geometry, frozen at one size. A parametric hyperobject is a computational definition of an entire *family* of objects, bounded by the rules of its code. Change the parameters, and the geometry adapts — instantly.",
+    "whatIsCaption1": "One file",
+    "whatIsCaption2": "Infinite objects",
+    "shiftHeading": "The Shift",
+    "shiftFrom": "Static .STL",
+    "shiftFromDesc": "One fixed geometry. One size. Download and hope it fits.",
+    "shiftTo": "Parametric .SCAD",
+    "shiftToDesc": "Infinite geometries. Your dimensions. Configured to your reality.",
+    "shiftStat1": "1 file → ∞ objects",
+    "shiftStat2": "Community interfaces",
+    "shiftStat3": "Material-aware code",
+    "domainsHeading": "Four Domains of Impact",
+    "domainsSubtitle": "From your desk drawer to disaster relief — parametric hyperobjects standardize the interfaces that let communities manufacture what they need.",
+    "household": {
+      "title": "Household",
+      "desc": "Organization, infrastructure, and self-sufficiency for the domestic sphere.",
+      "items": "Gridfinity (42mm modular storage) · Parametric Connectors (PVC/bamboo shelters) · Faircap Water Filters (PCO 1881 thread)",
+      "stat": "42mm standard"
+    },
+    "industrial": {
+      "title": "Industrial",
+      "desc": "Bridge manufacturing and on-demand tooling for the factory floor.",
+      "items": "DIN Rail Clips (TS35/TS15 profile) · 80/20 T-Slot Accessories · Parametric Jigs & Fixtures",
+      "stat": "TS35 profile"
+    },
+    "medical": {
+      "title": "Medical",
+      "desc": "Accessible healthcare through open-source diagnostic and prosthetic devices.",
+      "items": "Prosthetic Sockets (limb-scan parametric) · Glia Stethoscope ($5 vs $500) · Open Otoscope",
+      "stat": "99% cost reduction"
+    },
+    "commercial": {
+      "title": "Commercial",
+      "desc": "Right to Repair and circular economy through parametric spare parts.",
+      "items": "Universal Gear Generator (module/pressure/teeth) · Parametric Knobs (D-shaft) · VESA Mounts",
+      "stat": "Zero e-waste"
+    },
+    "impactHeading": "Real-World Impact",
+    "impact1label": "Glia Otoscope",
+    "impact1value": "99% cheaper",
+    "impact2label": "Pipe Fittings",
+    "impact2value": "3-17× cheaper",
+    "impact3label": "Gridfinity",
+    "impact3value": "Global standard",
+    "impact4label": "License",
+    "impact4value": "CERN OHL"
+  },
+  "cdg": {
+    "badge": "Common Denominator Geometry",
+    "heading": "The Interfaces That Connect Everything",
+    "subtitle": "CDG is the standardized geometry that ensures interoperability across the commons. Each CDG defines an immutable interface — the mathematical truth that lets hyperobjects from different creators work together.",
+    "explainerTitle": "What is CDG?",
+    "explainerBody": "Borrowed from aerospace lofting, CDG provides the geometric 'ground truth' that ensures a filter fits any bottle, a clip snaps onto any rail, and a socket connects to any prosthetic. Standardize the interface, and the community builds the rest.",
+    "catalogTitle": "The CDG Catalog",
+    "entries": {
+      "gridfinity": {
+        "name": "Gridfinity 42mm",
+        "standard": "Community Standard",
+        "description": "Universal modular storage grid. 42mm base module, 7mm height unit, standardized lip profile.",
+        "projects": "Gridfinity Extended"
+      },
+      "pco1881": {
+        "name": "PCO 1881 Thread",
+        "standard": "ISBT PCO 1881",
+        "description": "Standard PET bottle neck thread — 26.7mm OD, 3.18mm pitch. Turns plastic waste into water infrastructure.",
+        "projects": "Faircap Water Filter"
+      },
+      "ts35": {
+        "name": "TS35 DIN Rail",
+        "standard": "IEC/EN 60715",
+        "description": "Industrial automation rail — 35mm wide, 7.5mm hat profile. The backbone of every electrical panel.",
+        "projects": "DIN Rail Clip"
+      },
+      "iso8037": {
+        "name": "ISO 8037 Slide",
+        "standard": "ISO 8037-1:2003",
+        "description": "Microscope slide dimensions — 76×26×1mm. Standard across histology, cytology, and pathology worldwide.",
+        "projects": "Slide Holder"
+      },
+      "viseBolt": {
+        "name": "Vise Bolt Pattern",
+        "standard": "Kurt (de facto)",
+        "description": "6\" jaw width, 5/16-18 bolts at 4.5\" spacing. The universal interface for CNC workholding.",
+        "projects": "Soft Jaw / Jig"
+      },
+      "speculum": {
+        "name": "Speculum Interface",
+        "standard": "Medical Standard",
+        "description": "Otoscope cone — 4.25mm OD, 3° taper. Matches disposable medical consumables globally.",
+        "projects": "Glia Diagnostic"
+      },
+      "involute": {
+        "name": "Involute Gear Profile",
+        "standard": "ISO 53 / AGMA",
+        "description": "Defined by module, pressure angle, and tooth count. The universal language of mechanical power transmission.",
+        "projects": "Parametric Gears"
+      }
+    },
+    "impactTitle": "The Interface Strategy",
+    "impactBody": "Stop designing products. Start designing interfaces. A perfect Gridfinity base is more valuable than 1,000 different cup holders.",
+    "stat1value": "14",
+    "stat1label": "CDG Interfaces",
+    "stat2value": "10",
+    "stat2label": "Hyperobjects",
+    "stat3value": "4",
+    "stat3label": "Domains",
+    "stat4value": "CERN OHL",
+    "stat4label": "Open License"
   },
   "cta": {
     "heading": "Your next print starts here",

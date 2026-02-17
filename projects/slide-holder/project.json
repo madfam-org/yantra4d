@@ -18,7 +18,10 @@
       "pathology",
       "archival",
       "hyperobject",
-      "commons"
+      "commons",
+      "cdg",
+      "bosl2",
+      "pilot"
     ],
     "difficulty": "intermediate"
   },
@@ -75,7 +78,11 @@
       "en": "Enables laboratories and pathology departments to fabricate precision slide retention systems for histology, cytology, and archival workflows — independent of commercial supply chains.",
       "es": "Permite a laboratorios y departamentos de patología fabricar sistemas de retención de laminillas de precisión para flujos de trabajo de histología, citología y archivo — independiente de cadenas de suministro comerciales."
     },
-    "commons_license": "CERN-OHL-S-2.0"
+    "commons_license": "CERN-OHL-S-2.0",
+    "bosl2_modules_used": ["attachable", "cuboid", "cyl", "diff", "snap_pin"],
+    "oep8_features": ["object_dicts", "material_structs"],
+    "cdg_registry_refs": ["iso_8037_slide"],
+    "pilot_hyperobject": true
   },
   "modes": [
     {

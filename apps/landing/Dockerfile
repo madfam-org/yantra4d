@@ -3,6 +3,7 @@ WORKDIR /app/apps/landing
 COPY apps/landing/package*.json ./
 RUN npm ci
 COPY packages/ /app/packages/
+COPY commons/ /app/commons/
 COPY apps/landing/ ./
 RUN npm run build
 

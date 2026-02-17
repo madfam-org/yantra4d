@@ -8,15 +8,23 @@ interface Props {
 const { t } = Astro.props;
 const c = t?.cdg;
 
-const entries = [
-  { key: 'gridfinity', icon: '⊞', color: 'blue' },
-  { key: 'pco1881',    icon: '🔩', color: 'cyan' },
-  { key: 'ts35',       icon: '⏛', color: 'amber' },
-  { key: 'iso8037',    icon: '🔬', color: 'rose' },
-  { key: 'viseBolt',   icon: '⚙', color: 'violet' },
-  { key: 'speculum',   icon: '🩺', color: 'pink' },
-  { key: 'involute',   icon: '⚡', color: 'orange' },
-];
+import cdgRegistry from '../../../../commons/cdg.json';
+
+const entries = cdgRegistry.cdg_registry.map(entry => {
+  let key = entry.id;
+  let icon = '⊞'; 
+  let color = 'blue'; 
+  
+  if (entry.id.includes('gridfinity')) { key = 'gridfinity'; icon = '⊞'; color = 'blue'; }
+  else if (entry.id.includes('pco')) { key = 'pco1881'; icon = '🔩'; color = 'cyan'; }
+  else if (entry.id.includes('ts35')) { key = 'ts35'; icon = '⏛'; color = 'amber'; }
+  else if (entry.id.includes('iso_8037')) { key = 'iso8037'; icon = '🔬'; color = 'rose'; }
+  else if (entry.id.includes('vise')) { key = 'viseBolt'; icon = '⚙'; color = 'violet'; }
+  else if (entry.id.includes('speculum')) { key = 'speculum'; icon = '🩺'; color = 'pink'; }
+  else if (entry.id.includes('involute')) { key = 'involute'; icon = '⚡'; color = 'orange'; }
+  
+  return { key, icon, color, rawData: entry };
+});
 
 const colorMap: Record<string, { border: string; glow: string; text: string }> = {
   blue:   { border: 'border-blue-500/30',   glow: 'hover:shadow-blue-500/20',   text: 'text-blue-400' },
@@ -28,11 +36,15 @@ const colorMap: Record<string, { border: string; glow: string; text: string }> =
   orange: { border: 'border-orange-500/30', glow: 'hover:shadow-orange-500/20', text: 'text-orange-400' },
 };
 
+const interfaceCount = cdgRegistry.cdg_registry.length;
+const domainSet = new Set(cdgRegistry.cdg_registry.map(e => e.domain));
+const domainCount = domainSet.size;
+
 const stats = [
-  { value: c?.stat1value ?? '14',       label: c?.stat1label ?? 'CDG Interfaces' },
-  { value: c?.stat2value ?? '10',       label: c?.stat2label ?? 'Hyperobjects' },
-  { value: c?.stat3value ?? '4',        label: c?.stat3label ?? 'Domains' },
-  { value: c?.stat4value ?? 'CERN OHL', label: c?.stat4label ?? 'Open License' },
+  { value: c?.stat1value ?? interfaceCount.toString(), label: c?.stat1label ?? 'CDG Interfaces' },
+  { value: c?.stat2value ?? '10',                      label: c?.stat2label ?? 'Hyperobjects' },
+  { value: c?.stat3value ?? domainCount.toString(),    label: c?.stat3label ?? 'Domains' },
+  { value: c?.stat4value ?? 'CERN OHL',                label: c?.stat4label ?? 'Open License' },
 ];
 ---
 
@@ -119,27 +131,42 @@ const stats = [
       <h3 class="text-2xl font-bold text-center mb-10">{c?.catalogTitle ?? 'The CDG Catalog'}</h3>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {entries.map(({ key, icon, color }) => {
+        {entries.map(({ key, icon, color, rawData }) => {
           const entry = c?.entries?.[key];
-          const colors = colorMap[color];
+          const colors = colorMap[color] || colorMap.blue;
+          
+          // Use translation if available, otherwise fall back to raw JSON data
+          // We assume rawData.label is an object with 'en' and 'es' keys
+          // Since we don't have direct access to the current lang here easily without passing it, 
+          // we'll default to 'en' or try to use the key if all else fails.
+          // Ideally 't' should contain everything we need.
+          // If 'entry' is undefined (because we added a new item in JSON that isn't in i18n yet),
+          // we should display something sensible.
+          
+          const name = entry?.name ?? rawData?.label?.en ?? key;
+          const standard = entry?.standard ?? rawData?.standard ?? '';
+          const description = entry?.description ?? ''; // CDG JSON doesn't strictly have a 'description' field for the entry itself in the same way, usually it's implied or we need to add it.
+          // Actually cdg.json DOES NOT have a description per item in the root array items, only label/standard/dims.
+          // So we might leave description empty if no translation exists.
+          
           return (
             <div class={`group relative rounded-xl border ${colors.border} bg-card/50 backdrop-blur-sm p-5 transition-all duration-300 hover:shadow-lg ${colors.glow} hover:-translate-y-0.5`}>
               <div class="flex items-start gap-3 mb-3">
                 <span class="text-2xl" aria-hidden="true">{icon}</span>
                 <div>
                   <h4 class={`font-bold text-sm ${colors.text}`}>
-                    {entry?.name ?? key}
+                    {name}
                   </h4>
                   <span class="text-xs text-muted-foreground font-mono">
-                    {entry?.standard ?? ''}
+                    {standard}
                   </span>
                 </div>
               </div>
               <p class="text-sm text-muted-foreground leading-relaxed mb-3">
-                {entry?.description ?? ''}
+                {description}
               </p>
               <div class="text-xs text-muted-foreground/60 font-mono border-t border-border/30 pt-2">
-                → {entry?.projects ?? ''}
+                → {entry?.projects ?? rawData?.projects?.join(', ') ?? ''}
               </div>
             </div>
           );

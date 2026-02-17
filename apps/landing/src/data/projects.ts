@@ -36,7 +36,7 @@ export const PROJECTS: Project[] = [
 
   // Education
   { slug: 'stemfie', name: 'STEMFIE', description: 'Modular construction system for education and prototyping', descriptionEs: 'Sistema de construcción modular para educación y prototipado', category: 'education', thumbnail: '/projects/stemfie.webp' },
-  { slug: 'slide-holder', name: 'Microscope Slide Holder', description: 'Parametric rack for standard microscope slides', descriptionEs: 'Porta-láminas paramétrico para microscopio estándar', category: 'education', thumbnail: '/projects/slide-holder.webp' },
+  { slug: 'slide-holder', name: 'Microscope Slide Holder', description: 'Parametric slide retention — trays, boxes, staining racks, and archival cabinets for ISO/US/petrographic slides', descriptionEs: 'Sistema de retención de laminillas — bandejas, cajas, bastidores de tinción y gabinetes archivadores', category: 'education', thumbnail: '/projects/slide-holder.webp' },
 
   // Electronics
   { slug: 'ultimate-box', name: 'Ultimate Box Maker', description: 'Electronics enclosure with ventilation, PCB standoffs, and snap-fit lid', descriptionEs: 'Carcasa para electrónica con ventilación, soportes PCB y tapa a presión', category: 'electronics', thumbnail: '/projects/ultimate-box.webp' },

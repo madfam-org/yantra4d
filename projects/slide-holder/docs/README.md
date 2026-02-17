@@ -111,9 +111,32 @@ Parametric microscope slide retention system — trays, boxes, staining racks, a
 | ABS/ASA | 1.04 | $22 | Archival, high-temp drying |
 | Nylon (PA) | 1.14 | $40 | Heavy-duty staining, moving parts |
 
+## Hyperobject Profile
+
+> This project is classified as a **Bounded 4D Hyperobject** in the Yantra4D Commons.
+
+| Field | Value |
+|---|---|
+| **Domain** | Medical |
+| **License** | CERN-OHL-S-2.0 |
+| **Material Awareness** | Tolerance-by-material ✅, Shrinkage compensation ✗, Recycled material ✗ |
+
+### Common Denominator Geometry (CDG) Interfaces
+
+| Interface | Type | Standard | Parameters |
+|---|---|---|---|
+| ISO 8037 Microscope Slide | pocket | ISO 8037-1:2003 | `slide_standard`, `custom_slide_length`, `custom_slide_width`, `custom_slide_thickness` |
+| Retention Pitch System | rail | internal | `density`, `num_slots` |
+| Stacking Lip/Groove | snap | internal | `stackable` |
+| Snap-Fit Lid Latch | snap | internal | `lid_latch` |
+
+### Societal Benefit
+
+Enables laboratories and pathology departments to fabricate precision slide retention systems for histology, cytology, and archival workflows — independent of commercial supply chains.
+
 ## Engineering Reference
 
 Design based on `docs/RESEARCH.pdf` (*Parametric Architectures for Microscope Slide Retention*) covering ISO 8037 slide standards, tolerance engineering, and retention class taxonomy.
 
 ---
-*Generated from `project.json` v2.0.0*
+*Generated from `project.json` v2.0.0 — Hyperobjects Commons*

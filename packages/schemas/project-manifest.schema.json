@@ -819,6 +819,109 @@
       }
     }
   },
+  "hyperobject": {
+    "type": "object",
+    "description": "Hyperobject Commons metadata — classifies the project as a Bounded 4D Hyperobject with CDG interfaces, material awareness, and societal benefit.",
+    "properties": {
+      "domain": {
+        "type": "string",
+        "enum": [
+          "household",
+          "industrial",
+          "medical",
+          "commercial",
+          "hybrid"
+        ],
+        "description": "Primary deployment domain per the Hyperobject taxonomy."
+      },
+      "cdg_interfaces": {
+        "type": "array",
+        "description": "Common Denominator Geometry interfaces — standardized geometric connection points that enable interoperability.",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "label",
+            "geometry_type"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "Machine-readable interface identifier."
+            },
+            "label": {
+              "$ref": "#/$defs/i18nString",
+              "description": "Human-readable interface name."
+            },
+            "geometry_type": {
+              "type": "string",
+              "enum": [
+                "grid",
+                "rail",
+                "thread",
+                "socket",
+                "pocket",
+                "snap",
+                "bolt_pattern",
+                "profile",
+                "spline",
+                "custom"
+              ],
+              "description": "Category of the geometric interface."
+            },
+            "standard": {
+              "type": "string",
+              "description": "Reference standard (e.g. 'ISO 8037-1:2003', 'DIN 35', 'Gridfinity 42mm') or 'internal' for project-specific interfaces."
+            },
+            "parameters": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Parameter IDs from this manifest that define the interface geometry."
+            },
+            "compatible_with": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Slugs of other Yantra4D projects that share this interface (cross-commons interoperability)."
+            }
+          }
+        }
+      },
+      "material_awareness": {
+        "type": "object",
+        "description": "Declares which material-geometry interactions the SCAD code supports.",
+        "properties": {
+          "shrinkage_compensation": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the code adjusts geometry based on material shrinkage factors."
+          },
+          "recycled_material_toggle": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the code offers adjusted tolerances for recycled filament (rPET, rPLA)."
+          },
+          "tolerance_by_material": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the code varies clearances based on the selected material profile."
+          }
+        }
+      },
+      "societal_benefit": {
+        "$ref": "#/$defs/i18nString",
+        "description": "Human-readable statement of the hyperobject's societal value (commons utility)."
+      },
+      "commons_license": {
+        "type": "string",
+        "description": "SPDX identifier for the open hardware license (e.g. 'CERN-OHL-S-2.0', 'CC-BY-SA-4.0')."
+      }
+    }
+  },
   "estimate_constants": {
     "type": "object",
     "required": [

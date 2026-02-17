@@ -1,6 +1,6 @@
 # Yantra4D — Parametric 3D Print Design Platform
 
-Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview.
+Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview, evolving into a **Hyperobjects Commons**.
 
 ## Architecture
 
@@ -100,7 +100,7 @@ packages/
 
 ## Core Pattern: Manifest-Driven Design
 
-`projects/{slug}/project.json` controls **everything**: modes, parts, parameters, UI controls, colors, and estimates. To add features, **edit the manifest first** — the UI and backend read it dynamically.
+`projects/{slug}/project.json` controls **everything**: modes, parts, parameters, UI controls, colors, estimates, and optional `hyperobject` metadata (CDG interfaces, domain, material awareness, societal benefit). To add features, **edit the manifest first** — the UI and backend read it dynamically.
 
 **Rule**: Most new parameters or modes require **zero code changes** — only manifest edits.
 
@@ -128,6 +128,13 @@ Or use the web UI: upload `.scad` files → review analysis → edit manifest �
 1. Add entry to `projects/{slug}/project.json` → `modes[]` (set slug, scad_file, parts, estimate)
 2. Create the `.scad` file in `projects/{slug}/`
 3. Update `fallback-manifest.json`
+
+### Classify a project as a Hyperobject
+1. Add `hyperobject` block to `projects/{slug}/project.json` with `domain`, `cdg_interfaces[]`, `material_awareness`, `societal_benefit`, `commons_license`
+2. Each `cdg_interfaces` entry declares: `id`, `label`, `geometry_type` (grid/rail/thread/socket/pocket/snap/bolt_pattern/profile/spline/custom), `standard`, and `parameters[]` (referencing manifest param IDs)
+3. Add `hyperobject` and `commons` to `project.tags`
+4. Update `projects/{slug}/docs/README.md` with a Hyperobject Profile section
+5. See `projects/slide-holder/project.json` for the reference implementation
 
 ### Add a new SCAD project
 1. Create `projects/{slug}/project.json` following the manifest schema (see `docs/manifest.md`)

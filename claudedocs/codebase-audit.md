@@ -418,7 +418,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 
 ## 5. Project Catalog
 
-### 19 Built-in Projects
+### 21 Built-in Projects
 
 | # | Slug | Description | SCAD Files | Exports | Vendor | Docs | Features |
 |---|------|-------------|-----------|---------|--------|------|----------|

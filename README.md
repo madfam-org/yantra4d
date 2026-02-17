@@ -1,10 +1,10 @@
 # Yantra4D — Parametric 3D Print Design Platform
 
-A manifest-driven platform for parametric OpenSCAD models with a web-based 3D preview studio.
+A manifest-driven platform for parametric OpenSCAD models with a web-based 3D preview studio, evolving into a **Hyperobjects Commons**.
 
 ![Yantra4D](/docs/images/half_cube_iso.png)
 
-Ships with 19 built-in projects including **gridfinity** (modular storage), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), and **motor-mount** (NEMA stepper mounts). See [`projects/`](./projects/) for all projects.
+Ships with 21 built-in projects including **gridfinity** (modular storage), **slide-holder** 🔷 (microscope slide retention — first hyperobject), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), **rugged-box** (hinged latching box), and **motor-mount** (NEMA stepper mounts). See [`projects/`](./projects/) for all projects.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
@@ -31,7 +31,7 @@ Platform documentation is available in the [`docs/`](./docs/index.md) directory:
 -   [AI Features](./docs/ai-features.md) — AI Configurator and Code Editor
 -   [llms.txt](./llms.txt) — LLM-optimized project overview for AI agents
 
-Per-project docs live in `projects/{slug}/docs/`. Browse all 19 built-in projects under [`projects/`](./projects/).
+Per-project docs live in `projects/{slug}/docs/`. Browse all 21 built-in projects under [`projects/`](./projects/).
 
 ## Tech Stack
 -   **CAD**: OpenSCAD
@@ -52,7 +52,7 @@ yantra4d/
 │   │   └── exports/models/      # Reference STL exports
 │   ├── polydice/                # Parametric dice set
 │   ├── ultimate-box/            # Parametric box maker
-│   └── ...                      # 19 built-in projects total
+│   └── ...                      # 21 built-in projects total
 ├── apps/
 │   ├── api/                     # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration

@@ -1078,5 +1078,76 @@
     "per_part": 10,
     "wasm_multiplier": 4,
     "warning_threshold_seconds": 90
-  }
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "gridfinity_grid",
+        "label": {
+          "en": "Gridfinity Grid Unit",
+          "es": "Unidad de Rejilla Gridfinity"
+        },
+        "geometry_type": "grid",
+        "standard": "Gridfinity 42mm grid",
+        "parameters": [
+          "width_units",
+          "depth_units"
+        ]
+      },
+      {
+        "id": "gridfinity_baseplate_snap",
+        "label": {
+          "en": "Baseplate Snap Interface",
+          "es": "Interfaz de Encaje a Base"
+        },
+        "geometry_type": "snap",
+        "standard": "Gridfinity baseplate profile",
+        "parameters": [
+          "lip_style_id"
+        ]
+      },
+      {
+        "id": "magnet_socket_6x2",
+        "label": {
+          "en": "6×2mm Magnet Socket",
+          "es": "Alojamiento para Imán 6×2mm"
+        },
+        "geometry_type": "socket",
+        "standard": "6×2mm N52 neodymium",
+        "parameters": [
+          "enable_magnets"
+        ]
+      },
+      {
+        "id": "screw_socket_m5",
+        "label": {
+          "en": "M5 Screw Pocket",
+          "es": "Alojamiento para Tornillo M5"
+        },
+        "geometry_type": "pocket",
+        "standard": "ISO 4762 M5",
+        "parameters": [
+          "enable_screws"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "Universal modular storage system for workshops, offices, and homes — reduces single-use organizers",
+      "es": "Sistema de almacenamiento modular universal para talleres, oficinas y hogares — reduce organizadores de un solo uso"
+    },
+    "commons_license": "CERN-OHL-S-2.0"
+  },
+  "tags": [
+    "gridfinity",
+    "modular",
+    "storage",
+    "hyperobject",
+    "commons"
+  ]
 }

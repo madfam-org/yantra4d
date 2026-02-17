@@ -449,5 +449,68 @@
     "fn_factor": 32,
     "wasm_multiplier": 2,
     "warning_threshold_seconds": 30
-  }
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "stemfie_beam_profile",
+        "label": {
+          "en": "STEMFIE Beam Profile",
+          "es": "Perfil de Viga STEMFIE"
+        },
+        "geometry_type": "profile",
+        "standard": "STEMFIE 10mm block unit",
+        "parameters": [
+          "length_units",
+          "width_units",
+          "height_units"
+        ]
+      },
+      {
+        "id": "stemfie_through_hole",
+        "label": {
+          "en": "STEMFIE 4mm Through-Hole",
+          "es": "Agujero Pasante STEMFIE 4mm"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "STEMFIE 4mm hole on 10mm pitch",
+        "parameters": [
+          "holes_x",
+          "holes_y",
+          "holes_z"
+        ]
+      },
+      {
+        "id": "stemfie_fastener_interface",
+        "label": {
+          "en": "STEMFIE Pin/Screw Fastener",
+          "es": "Perno/Tornillo STEMFIE"
+        },
+        "geometry_type": "thread",
+        "standard": "STEMFIE fastener spec",
+        "parameters": [
+          "fastener_type_id"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "Open-source construction kit for STEM education — enables schools to fabricate their own learning tools",
+      "es": "Kit de construcción de código abierto para educación STEM — permite a escuelas fabricar sus propias herramientas de aprendizaje"
+    },
+    "commons_license": "CERN-OHL-S-2.0"
+  },
+  "tags": [
+    "stemfie",
+    "education",
+    "stem",
+    "modular",
+    "hyperobject",
+    "commons"
+  ]
 }

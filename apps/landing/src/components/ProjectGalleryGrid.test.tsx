@@ -115,4 +115,35 @@ describe('ProjectGalleryGrid', () => {
     expect(screen.getByRole('tab', { name: 'Mecánico' })).toHaveAttribute('aria-selected', 'true')
     expect(allTab).toHaveAttribute('aria-selected', 'false')
   })
+
+  it('renders Commons category tab', () => {
+    render(<ProjectGalleryGrid />)
+    const commonsTab = screen.getByRole('tab', { name: '🔷 Commons' })
+    expect(commonsTab).toBeInTheDocument()
+  })
+
+  it('filters to hyperobject projects when Commons tab is clicked', () => {
+    render(<ProjectGalleryGrid />)
+    fireEvent.click(screen.getByRole('tab', { name: '🔷 Commons' }))
+
+    // hyperobject projects should be visible
+    expect(screen.getByText('Microscope Slide Holder')).toBeInTheDocument()
+    expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
+    // non-hyperobject projects should be hidden
+    expect(screen.queryByText('Voronoi Generator')).not.toBeInTheDocument()
+    expect(screen.queryByText('PolyDice Generator')).not.toBeInTheDocument()
+  })
+
+  it('renders hyperobject badge on hyperobject cards', () => {
+    render(<ProjectGalleryGrid />)
+    // The slide-holder card should display the Hyperobject badge
+    const badges = screen.getAllByText(/Hyperobject/)
+    expect(badges.length).toBeGreaterThan(0)
+  })
+
+  it('shows domain label on hyperobject cards', () => {
+    render(<ProjectGalleryGrid />)
+    // slide-holder has domain: 'medical' → shows 'Médico' in Spanish (default lang)
+    expect(screen.getByText('Médico')).toBeInTheDocument()
+  })
 })

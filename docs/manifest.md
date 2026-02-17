@@ -1,6 +1,6 @@
 # Project Manifest
 
-The project manifest (`projects/{slug}/project.json`) is the single source of truth for modes, parameters, parts, colors, labels, and estimation formulas. Both the backend and frontend consume it, making the webapp fully data-driven and project-agnostic. A formal JSON Schema is available at `schemas/project-manifest.schema.json`.
+The project manifest (`projects/{slug}/project.json`) is the single source of truth for modes, parameters, parts, colors, labels, estimation formulas, verification checks, and optional hyperobject metadata. Both the backend and frontend consume it, making the webapp fully data-driven and project-agnostic. A formal JSON Schema is available at `schemas/project-manifest.schema.json`.
 
 ---
 
@@ -176,6 +176,39 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
   }
 }
 ```
+
+### Hyperobject Metadata (optional)
+
+Projects can optionally declare `hyperobject` metadata to be classified as **Bounded 4D Hyperobjects** in the Yantra4D Commons:
+
+```jsonc
+{
+  "hyperobject": {
+    "domain": "medical",               // household | industrial | medical | commercial | hybrid
+    "cdg_interfaces": [                // Common Denominator Geometry interfaces
+      {
+        "id": "iso_8037_standard",
+        "label": { "en": "ISO 8037 Microscope Slide", "es": "Estándar ISO 8037" },
+        "geometry_type": "pocket",     // grid | rail | thread | socket | pocket | snap | bolt_pattern | profile | spline | custom
+        "standard": "ISO 8037-1:2003", // ISO/internal standard
+        "parameters": ["slide_standard", "custom_slide_length"]  // References to manifest param IDs
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,  // Adapts geometry to shrinkage curves
+      "recycled_material_toggle": false, // Loosened tolerance for recycled filament
+      "tolerance_by_material": true     // Material-specific tolerance profiles
+    },
+    "societal_benefit": {              // Human-readable commons value statement
+      "en": "Enables labs to fabricate precision slide holders",
+      "es": "Permite a laboratorios fabricar portaobjetos de precisión"
+    },
+    "commons_license": "CERN-OHL-S-2.0"  // SPDX license identifier
+  }
+}
+```
+
+**Reference implementation**: See `projects/slide-holder/project.json` for the first hyperobject in the commons.
 
 ---
 

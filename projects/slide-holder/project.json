@@ -16,9 +16,66 @@
       "rack",
       "histology",
       "pathology",
-      "archival"
+      "archival",
+      "hyperobject",
+      "commons"
     ],
     "difficulty": "intermediate"
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "iso_8037_standard",
+        "label": {
+          "en": "ISO 8037 Microscope Slide Standard",
+          "es": "Estándar ISO 8037 Laminillas de Microscopio"
+        },
+        "geometry_type": "pocket",
+        "standard": "ISO 8037-1:2003",
+        "parameters": ["slide_standard", "custom_slide_length", "custom_slide_width", "custom_slide_thickness"]
+      },
+      {
+        "id": "density_pitch_system",
+        "label": {
+          "en": "Retention Pitch System",
+          "es": "Sistema de Paso de Retención"
+        },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["density", "num_slots"]
+      },
+      {
+        "id": "stacking_interface",
+        "label": {
+          "en": "Stacking Lip/Groove Interface",
+          "es": "Interfaz de Labio/Ranura de Apilamiento"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["stackable"]
+      },
+      {
+        "id": "snap_latch_interface",
+        "label": {
+          "en": "Snap-Fit Lid Latch",
+          "es": "Pestillo de Tapa a Presión"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["lid_latch"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Enables laboratories and pathology departments to fabricate precision slide retention systems for histology, cytology, and archival workflows — independent of commercial supply chains.",
+      "es": "Permite a laboratorios y departamentos de patología fabricar sistemas de retención de laminillas de precisión para flujos de trabajo de histología, citología y archivo — independiente de cadenas de suministro comerciales."
+    },
+    "commons_license": "CERN-OHL-S-2.0"
   },
   "modes": [
     {

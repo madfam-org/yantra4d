@@ -18,7 +18,7 @@
   },
   "modes": [
     {
-      "slug": "keycap",
+      "id": "keycap",
       "label": {
         "en": "Keycap",
         "es": "Tecla"
@@ -39,7 +39,7 @@
   ],
   "parameters": [
     {
-      "name": "profile_id",
+      "id": "profile_id",
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -59,7 +59,7 @@
       ]
     },
     {
-      "name": "row_id",
+      "id": "row_id",
       "type": "slider",
       "default": 1,
       "min": 1,
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "name": "key_size_id",
+      "id": "key_size_id",
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -99,7 +99,7 @@
       ]
     },
     {
-      "name": "stem_type_id",
+      "id": "stem_type_id",
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -119,7 +119,7 @@
       ]
     },
     {
-      "name": "legend_enabled",
+      "id": "legend_enabled",
       "type": "checkbox",
       "default": false,
       "group": "legend",
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "name": "legend_text",
+      "id": "legend_text",
       "type": "text",
       "default": "A",
       "group": "legend",
@@ -154,7 +154,7 @@
       ]
     },
     {
-      "name": "font_size",
+      "id": "font_size",
       "type": "slider",
       "default": 6,
       "min": 3,
@@ -175,7 +175,7 @@
       ]
     },
     {
-      "name": "dish_depth",
+      "id": "dish_depth",
       "type": "slider",
       "default": 1,
       "min": 0,
@@ -196,7 +196,7 @@
       ]
     },
     {
-      "name": "wall_thickness",
+      "id": "wall_thickness",
       "type": "slider",
       "default": 3,
       "min": 1.5,
@@ -217,7 +217,7 @@
       ]
     },
     {
-      "name": "keytop_thickness",
+      "id": "keytop_thickness",
       "type": "slider",
       "default": 1,
       "min": 0.5,
@@ -238,7 +238,7 @@
       ]
     },
     {
-      "name": "stem_slop",
+      "id": "stem_slop",
       "type": "slider",
       "default": 0.35,
       "min": 0.1,
@@ -259,7 +259,7 @@
       ]
     },
     {
-      "name": "fn",
+      "id": "fn",
       "type": "slider",
       "default": 0,
       "min": 0,
@@ -318,7 +318,7 @@
   ],
   "presets": [
     {
-      "slug": "cherry_r3_1u",
+      "id": "cherry_r3_1u",
       "label": {
         "en": "Cherry Row 3 (1u)",
         "es": "Cherry Fila 3 (1u)"
@@ -330,7 +330,7 @@
       }
     },
     {
-      "slug": "dsa_uniform",
+      "id": "dsa_uniform",
       "label": {
         "en": "DSA Uniform",
         "es": "DSA Uniforme"
@@ -342,7 +342,7 @@
       }
     },
     {
-      "slug": "sa_sculpted",
+      "id": "sa_sculpted",
       "label": {
         "en": "SA Sculpted Row 3",
         "es": "SA Esculpido Fila 3"

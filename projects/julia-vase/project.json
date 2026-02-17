@@ -19,7 +19,7 @@
   },
   "modes": [
     {
-      "slug": "vase",
+      "id": "vase",
       "label": {
         "en": "Vase",
         "es": "Jarrón"
@@ -48,7 +48,7 @@
   ],
   "parameters": [
     {
-      "name": "height",
+      "id": "height",
       "type": "slider",
       "label": {
         "en": "Height",
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "name": "base_radius",
+      "id": "base_radius",
       "type": "slider",
       "label": {
         "en": "Base Radius",
@@ -88,7 +88,7 @@
       ]
     },
     {
-      "name": "twist_angle",
+      "id": "twist_angle",
       "type": "slider",
       "label": {
         "en": "Twist Angle",
@@ -108,7 +108,7 @@
       ]
     },
     {
-      "name": "wave_frequency",
+      "id": "wave_frequency",
       "type": "slider",
       "label": {
         "en": "Wave Frequency",
@@ -128,7 +128,7 @@
       ]
     },
     {
-      "name": "wave_amplitude",
+      "id": "wave_amplitude",
       "type": "slider",
       "label": {
         "en": "Wave Amplitude",
@@ -148,7 +148,7 @@
       ]
     },
     {
-      "name": "wall_thickness",
+      "id": "wall_thickness",
       "type": "slider",
       "label": {
         "en": "Wall Thickness",
@@ -168,7 +168,7 @@
       ]
     },
     {
-      "name": "fn",
+      "id": "fn",
       "type": "slider",
       "label": {
         "en": "Resolution ($fn)",
@@ -188,7 +188,7 @@
       ]
     },
     {
-      "name": "resolution",
+      "id": "resolution",
       "type": "slider",
       "label": {
         "en": "Layer Resolution",
@@ -234,7 +234,7 @@
   ],
   "presets": [
     {
-      "slug": "smooth_cylinder",
+      "id": "smooth_cylinder",
       "label": {
         "en": "Smooth Cylinder",
         "es": "Cilindro Liso"
@@ -245,7 +245,7 @@
       }
     },
     {
-      "slug": "twisted_spiral",
+      "id": "twisted_spiral",
       "label": {
         "en": "Twisted Spiral",
         "es": "Espiral Torcida"
@@ -256,7 +256,7 @@
       }
     },
     {
-      "slug": "ripple_vase",
+      "id": "ripple_vase",
       "label": {
         "en": "Ripple Vase",
         "es": "Jarrón Ondulado"
@@ -268,7 +268,7 @@
       }
     },
     {
-      "slug": "fractal_complex",
+      "id": "fractal_complex",
       "label": {
         "en": "Fractal Complex",
         "es": "Fractal Complejo"

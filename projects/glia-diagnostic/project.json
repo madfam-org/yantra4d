@@ -12,27 +12,30 @@
       "cdg_interface": "diaphragm_housing"
     }
   },
-  "parameters": {
-    "tool_type": {
+  "parameters": [
+    {
+      "id": "tool_type",
       "type": "string",
       "default": "stethoscope_head",
       "enum": ["stethoscope_head", "otoscope_specula"],
       "description": "Select the medical tool to print"
     },
-    "diaphragm_size_mm": {
+    {
+      "id": "diaphragm_size_mm",
       "type": "number",
       "default": 44,
       "min": 30,
       "max": 50,
       "description": "Diameter of the stethoscope diaphragm (if applicable)"
     },
-    "speculum_size_mm": {
+    {
+      "id": "speculum_size_mm",
       "type": "number",
       "default": 4,
       "enum": [2.5, 3, 4, 5],
       "description": "Tip diameter of the otoscope speculum (if applicable)"
     }
-  },
+  ],
   "3d_models": [
     {
       "filename": "diagnostic.scad",

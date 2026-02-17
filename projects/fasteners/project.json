@@ -110,7 +110,7 @@
   ],
   "parameters": [
     {
-      "name": "diameter",
+      "id": "diameter",
       "label": {
         "en": "Diameter (mm)",
         "es": "Diametro (mm)"
@@ -131,7 +131,7 @@
       ]
     },
     {
-      "name": "length",
+      "id": "length",
       "label": {
         "en": "Length (mm)",
         "es": "Largo (mm)"
@@ -151,7 +151,7 @@
       ]
     },
     {
-      "name": "pitch",
+      "id": "pitch",
       "label": {
         "en": "Thread Pitch (mm)",
         "es": "Paso de Rosca (mm)"
@@ -173,7 +173,7 @@
       "advanced": true
     },
     {
-      "name": "head_style_id",
+      "id": "head_style_id",
       "label": {
         "en": "Head Style (0=Hex, 1=Socket, 2=Button)",
         "es": "Estilo de Cabeza (0=Hex, 1=Allen, 2=Boton)"
@@ -193,7 +193,7 @@
       ]
     },
     {
-      "name": "head_diameter",
+      "id": "head_diameter",
       "label": {
         "en": "Head Diameter (0=Auto)",
         "es": "Diametro de Cabeza (0=Auto)"
@@ -214,7 +214,7 @@
       "advanced": true
     },
     {
-      "name": "head_height",
+      "id": "head_height",
       "label": {
         "en": "Head Height (0=Auto)",
         "es": "Altura de Cabeza (0=Auto)"
@@ -235,7 +235,7 @@
       "advanced": true
     },
     {
-      "name": "nut_style_id",
+      "id": "nut_style_id",
       "label": {
         "en": "Nut Style (0=Hex, 1=Square, 2=Nyloc)",
         "es": "Estilo de Tuerca (0=Hex, 1=Cuadrada, 2=Nyloc)"
@@ -255,7 +255,7 @@
       ]
     },
     {
-      "name": "width",
+      "id": "width",
       "label": {
         "en": "Nut Width (0=Auto)",
         "es": "Ancho de Tuerca (0=Auto)"
@@ -276,7 +276,7 @@
       "advanced": true
     },
     {
-      "name": "height",
+      "id": "height",
       "label": {
         "en": "Nut Height (0=Auto)",
         "es": "Altura de Tuerca (0=Auto)"
@@ -297,7 +297,7 @@
       "advanced": true
     },
     {
-      "name": "thread_enabled",
+      "id": "thread_enabled",
       "label": {
         "en": "Enable Threads",
         "es": "Habilitar Rosca"
@@ -315,7 +315,7 @@
       ]
     },
     {
-      "name": "fn",
+      "id": "fn",
       "label": {
         "en": "Resolution ($fn, 0=Auto)",
         "es": "Resolucion ($fn, 0=Auto)"

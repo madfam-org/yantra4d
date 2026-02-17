@@ -34,6 +34,9 @@ function resolve_slide(standard, custom_l, custom_w, custom_t) =
 // Each row: [rib_width_mm, description]
 DENSITY_RIB_WIDTHS = [1.0, 1.5, 2.0, 3.0];
 
+// Accessor function for use<> compatibility (use<> imports functions, not variables)
+function density_rib_width(idx) = DENSITY_RIB_WIDTHS[idx];
+
 // Compute slot width from slide thickness + tolerances + waviness
 // RESEARCH §2.1.2: 0.2mm waviness compensation for ISO 8037 planarity spec
 function slot_width(slide_thick, tol_z) =
@@ -75,26 +78,33 @@ module retention_rib(height, depth, root_w, tip_w, chamfer_h) {
     _body_h = height - _chamfer;
     _taper_offset = (root_w - tip_w) / 2;
 
-    // Main tapered body
-    linear_extrude(height = depth)
-        polygon([
-            [0, 0],
-            [root_w, 0],
-            [root_w - _taper_offset, _body_h],
-            [_taper_offset, _body_h]
-        ]);
+    // Profile is drawn in XY then rotated so:
+    //   X → rib width (pitch direction)
+    //   Y → rib height, rotated to Z (vertical)
+    //   extrusion → rotated from Z to Y (slide-insertion direction)
+    rotate([-90, 0, 0])
+    translate([0, -height, 0]) {
+        // Main tapered body
+        linear_extrude(height = depth)
+            polygon([
+                [0, 0],
+                [root_w, 0],
+                [root_w - _taper_offset, _body_h],
+                [_taper_offset, _body_h]
+            ]);
 
-    // Chamfered lead-in at top
-    if (_chamfer > 0) {
-        _cw = (root_w - 2 * _taper_offset);  // width at body top = tip_w
-        translate([_taper_offset, 0, 0])
-            linear_extrude(height = depth)
-                polygon([
-                    [0, _body_h],
-                    [_cw, _body_h],
-                    [_cw / 2 + _cw * 0.3, _body_h + _chamfer],
-                    [_cw / 2 - _cw * 0.3, _body_h + _chamfer]
-                ]);
+        // Chamfered lead-in at top
+        if (_chamfer > 0) {
+            _cw = (root_w - 2 * _taper_offset);  // width at body top = tip_w
+            translate([_taper_offset, 0, 0])
+                linear_extrude(height = depth)
+                    polygon([
+                        [0, _body_h],
+                        [_cw, _body_h],
+                        [_cw / 2 + _cw * 0.3, _body_h + _chamfer],
+                        [_cw / 2 - _cw * 0.3, _body_h + _chamfer]
+                    ]);
+        }
     }
 }
 

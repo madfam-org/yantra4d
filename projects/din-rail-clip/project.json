@@ -1,0 +1,233 @@
+{
+  "project": {
+    "name": "DIN Rail Clip",
+    "slug": "din-rail-clip",
+    "version": "1.0.0",
+    "description": {
+      "en": "Parametric DIN rail clips, brackets, and sensor mounts for TS35/TS15 industrial rails — democratizing automation",
+      "es": "Clips, soportes y montajes de sensores paramétricos para rieles DIN TS35/TS15 industriales — democratizando la automatización"
+    },
+    "thumbnail": "/projects/din-rail-clip.webp",
+    "tags": [
+      "din-rail",
+      "industrial",
+      "automation",
+      "bracket",
+      "sensor-mount",
+      "hyperobject",
+      "commons",
+      "cdg"
+    ],
+    "difficulty": "beginner"
+  },
+  "modes": [
+    {
+      "id": "simple_clip",
+      "scad_file": "clip.scad",
+      "label": { "en": "Simple Clip", "es": "Clip Simple" },
+      "parts": ["clip"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "bracket_mount",
+      "scad_file": "clip.scad",
+      "label": { "en": "Bracket Mount", "es": "Soporte con Clip" },
+      "parts": ["clip", "bracket"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "sensor_holder",
+      "scad_file": "clip.scad",
+      "label": { "en": "Sensor Holder", "es": "Porta Sensor" },
+      "parts": ["clip", "sensor_cradle"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "cable_clip",
+      "scad_file": "clip.scad",
+      "label": { "en": "Cable Management Clip", "es": "Clip de Cable" },
+      "parts": ["clip"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    {
+      "id": "clip",
+      "render_mode": 0,
+      "label": { "en": "DIN Clip", "es": "Clip DIN" },
+      "default_color": "#f59e0b"
+    },
+    {
+      "id": "bracket",
+      "render_mode": 1,
+      "label": { "en": "Bracket", "es": "Soporte" },
+      "default_color": "#6b7280"
+    },
+    {
+      "id": "sensor_cradle",
+      "render_mode": 1,
+      "label": { "en": "Sensor Cradle", "es": "Cuna de Sensor" },
+      "default_color": "#3b82f6"
+    }
+  ],
+  "presets": [
+    {
+      "id": "ts35_basic",
+      "label": { "en": "Basic TS35 Clip", "es": "Clip TS35 Básico" },
+      "values": { "rail_type": 0, "clip_width": 20, "spring_flex": 1 }
+    },
+    {
+      "id": "ts35_relay_mount",
+      "label": { "en": "Relay/SSR Bracket", "es": "Soporte para Relevador/SSR" },
+      "values": { "rail_type": 0, "clip_width": 45, "mount_holes": true, "hole_spacing": 35 }
+    },
+    {
+      "id": "proximity_sensor",
+      "label": { "en": "Proximity Sensor Mount (M12)", "es": "Montaje Sensor Proximidad (M12)" },
+      "values": { "rail_type": 0, "sensor_diameter": 12, "clip_type": 2 }
+    },
+    {
+      "id": "cable_management",
+      "label": { "en": "Cable Clip Bundle (6mm)", "es": "Clip de Cable (6mm)" },
+      "values": { "rail_type": 0, "cable_diameter": 6, "clip_width": 15, "clip_type": 3 }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "rail_type",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 1,
+      "label": { "en": "Rail Type", "es": "Tipo de Riel" },
+      "tooltip": { "en": "0=TS35 (35mm, standard), 1=TS15 (15mm, miniature)", "es": "0=TS35 (35mm, estándar), 1=TS15 (15mm, miniatura)" },
+      "visible_in_modes": ["simple_clip", "bracket_mount", "sensor_holder", "cable_clip"],
+      "group": "rail"
+    },
+    {
+      "id": "clip_width",
+      "type": "slider",
+      "default": 20,
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "label": { "en": "Clip Width (mm)", "es": "Ancho del Clip (mm)" },
+      "tooltip": { "en": "Width of the DIN rail clip body", "es": "Ancho del cuerpo del clip DIN" },
+      "visible_in_modes": ["simple_clip", "bracket_mount", "sensor_holder", "cable_clip"],
+      "group": "clip"
+    },
+    {
+      "id": "spring_flex",
+      "type": "slider",
+      "default": 1,
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "label": { "en": "Spring Flexibility", "es": "Flexibilidad del Resorte" },
+      "tooltip": { "en": "0=rigid (tools needed), 1=standard snap, 2=easy release", "es": "0=rígido (requiere herramientas), 1=snap estándar, 2=liberación fácil" },
+      "visible_in_modes": ["simple_clip", "bracket_mount", "sensor_holder", "cable_clip"],
+      "group": "clip"
+    },
+    {
+      "id": "mount_holes",
+      "type": "checkbox",
+      "default": false,
+      "label": { "en": "Mounting Holes", "es": "Orificios de Montaje" },
+      "tooltip": { "en": "Add holes for screwing components to the bracket", "es": "Agregar orificios para atornillar componentes al soporte" },
+      "visible_in_modes": ["bracket_mount"],
+      "group": "bracket"
+    },
+    {
+      "id": "hole_spacing",
+      "type": "slider",
+      "default": 25,
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "label": { "en": "Hole Spacing (mm)", "es": "Espaciado de Orificios (mm)" },
+      "tooltip": { "en": "Center-to-center distance between mounting holes", "es": "Distancia centro a centro entre orificios de montaje" },
+      "visible_in_modes": ["bracket_mount"],
+      "group": "bracket",
+      "parent": "mount_holes"
+    },
+    {
+      "id": "sensor_diameter",
+      "type": "slider",
+      "default": 12,
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "label": { "en": "Sensor Diameter (mm)", "es": "Diámetro del Sensor (mm)" },
+      "tooltip": { "en": "Barrel diameter of the sensor (M8, M12, M18, M30)", "es": "Diámetro del barril del sensor (M8, M12, M18, M30)" },
+      "visible_in_modes": ["sensor_holder"],
+      "group": "sensor"
+    },
+    {
+      "id": "cable_diameter",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro del Cable (mm)" },
+      "tooltip": { "en": "Diameter of cable to manage", "es": "Diámetro del cable a gestionar" },
+      "visible_in_modes": ["cable_clip"],
+      "group": "cable"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
+      "tooltip": { "en": "0 = auto; higher = more detail but slower", "es": "0 = automático; mayor = más detalle pero más lento" },
+      "visible_in_modes": ["simple_clip", "bracket_mount", "sensor_holder", "cable_clip"],
+      "group": "quality",
+      "visibility_level": "advanced"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "rail", "label": { "en": "Rail", "es": "Riel" } },
+    { "id": "clip", "label": { "en": "Clip", "es": "Clip" } },
+    { "id": "bracket", "label": { "en": "Bracket", "es": "Soporte" } },
+    { "id": "sensor", "label": { "en": "Sensor", "es": "Sensor" } },
+    { "id": "cable", "label": { "en": "Cable", "es": "Cable" } },
+    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "ts35_din_rail_snap",
+        "label": { "en": "TS35 DIN Rail Snap Interface", "es": "Interfaz Snap de Riel DIN TS35" },
+        "geometry_type": "rail",
+        "standard": "IEC/EN 60715 (TS35)",
+        "parameters": ["rail_type", "spring_flex"]
+      },
+      {
+        "id": "component_mount_plate",
+        "label": { "en": "Component Mount Surface", "es": "Superficie de Montaje de Componente" },
+        "geometry_type": "plate",
+        "standard": "internal",
+        "parameters": ["clip_width", "mount_holes", "hole_spacing"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Democratizes industrial automation by enabling on-demand fabrication of DIN rail components — eliminates expensive commercial clips and shipping delays.",
+      "es": "Democratiza la automatización industrial permitiendo la fabricación bajo demanda de componentes de riel DIN — elimina clips comerciales costosos y demoras de envío."
+    },
+    "commons_license": "CERN-OHL-S-2.0",
+    "bosl2_modules_used": ["attachable", "cuboid", "diff", "snap_pin"],
+    "oep8_features": ["object_dicts"],
+    "cdg_registry_refs": ["ts35_din_rail", "tslot_2020_profile"]
+  }
+}

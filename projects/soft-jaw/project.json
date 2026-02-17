@@ -1,0 +1,242 @@
+{
+  "project": {
+    "name": "Soft Jaw / Jig",
+    "slug": "soft-jaw",
+    "version": "1.0.0",
+    "description": {
+      "en": "Parametric soft jaws and fixtures for CNC vises — custom workholding from Boolean geometry in hours, not weeks",
+      "es": "Mordazas suaves y fijaciones paramétricas para prensas CNC — sujeción personalizada mediante geometría booleana en horas, no semanas"
+    },
+    "thumbnail": "/projects/soft-jaw.webp",
+    "tags": [
+      "cnc",
+      "machining",
+      "vise",
+      "fixture",
+      "jig",
+      "tooling",
+      "hyperobject",
+      "commons",
+      "cdg"
+    ],
+    "difficulty": "advanced"
+  },
+  "modes": [
+    {
+      "id": "flat_jaw",
+      "scad_file": "jaw.scad",
+      "label": { "en": "Flat Jaw", "es": "Mordaza Plana" },
+      "parts": ["jaw"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "v_jaw",
+      "scad_file": "jaw.scad",
+      "label": { "en": "V-Jaw (Round Stock)", "es": "Mordaza V (Material Redondo)" },
+      "parts": ["jaw"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    },
+    {
+      "id": "drill_guide",
+      "scad_file": "jaw.scad",
+      "label": { "en": "Drill Guide", "es": "Guía de Taladro" },
+      "parts": ["guide"],
+      "estimate": { "base_units": 1, "formula": "constant" }
+    }
+  ],
+  "parts": [
+    {
+      "id": "jaw",
+      "render_mode": 0,
+      "label": { "en": "Soft Jaw", "es": "Mordaza Suave" },
+      "default_color": "#a855f7"
+    },
+    {
+      "id": "guide",
+      "render_mode": 0,
+      "label": { "en": "Drill Guide", "es": "Guía" },
+      "default_color": "#f97316"
+    }
+  ],
+  "presets": [
+    {
+      "id": "kurt_6in_flat",
+      "label": { "en": "Kurt 6\" Flat Jaw", "es": "Mordaza Plana Kurt 6\"" },
+      "values": { "vise_standard": 0, "jaw_type": 0, "jaw_height": 30, "clamping_depth": 15 }
+    },
+    {
+      "id": "kurt_6in_v",
+      "label": { "en": "Kurt 6\" V-Jaw (25mm rod)", "es": "Mordaza V Kurt 6\" (varilla 25mm)" },
+      "values": { "vise_standard": 0, "jaw_type": 1, "v_diameter": 25, "jaw_height": 30 }
+    },
+    {
+      "id": "drill_guide_5mm",
+      "label": { "en": "5mm Drill Guide", "es": "Guía de Taladro 5mm" },
+      "values": { "drill_diameter": 5, "bushing_tolerance": 0.1, "guide_height": 20 }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "vise_standard",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "label": { "en": "Vise Standard", "es": "Estándar de Prensa" },
+      "tooltip": { "en": "0=Kurt 6\" (standard), 1=Kurt 4\", 2=Custom dimensions", "es": "0=Kurt 6\" (estándar), 1=Kurt 4\", 2=Dimensiones personalizadas" },
+      "visible_in_modes": ["flat_jaw", "v_jaw"],
+      "group": "vise"
+    },
+    {
+      "id": "jaw_width",
+      "type": "slider",
+      "default": 152.4,
+      "min": 50,
+      "max": 250,
+      "step": 1,
+      "label": { "en": "Jaw Width (mm)", "es": "Ancho de Mordaza (mm)" },
+      "tooltip": { "en": "Total jaw width — 152.4mm for Kurt 6\"", "es": "Ancho total de mordaza — 152.4mm para Kurt 6\"" },
+      "visible_in_modes": ["flat_jaw", "v_jaw"],
+      "group": "vise",
+      "visibility_level": "advanced"
+    },
+    {
+      "id": "jaw_height",
+      "type": "slider",
+      "default": 30,
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "label": { "en": "Jaw Height (mm)", "es": "Altura de Mordaza (mm)" },
+      "tooltip": { "en": "Height of the soft jaw above the vise", "es": "Altura de la mordaza suave sobre la prensa" },
+      "visible_in_modes": ["flat_jaw", "v_jaw"],
+      "group": "jaw"
+    },
+    {
+      "id": "clamping_depth",
+      "type": "slider",
+      "default": 15,
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "label": { "en": "Clamping Depth (mm)", "es": "Profundidad de Sujeción (mm)" },
+      "tooltip": { "en": "Depth of the negative cavity for the workpiece", "es": "Profundidad de la cavidad negativa para la pieza de trabajo" },
+      "visible_in_modes": ["flat_jaw"],
+      "group": "jaw"
+    },
+    {
+      "id": "v_diameter",
+      "type": "slider",
+      "default": 25,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "label": { "en": "Stock Diameter (mm)", "es": "Diámetro del Material (mm)" },
+      "tooltip": { "en": "Diameter of round stock to hold", "es": "Diámetro del material redondo a sujetar" },
+      "visible_in_modes": ["v_jaw"],
+      "group": "jaw"
+    },
+    {
+      "id": "bolt_size",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "label": { "en": "Bolt Size", "es": "Tamaño de Perno" },
+      "tooltip": { "en": "0=5/16-18 (Kurt standard), 1=M8, 2=M6", "es": "0=5/16-18 (estándar Kurt), 1=M8, 2=M6" },
+      "visible_in_modes": ["flat_jaw", "v_jaw"],
+      "group": "vise",
+      "visibility_level": "advanced"
+    },
+    {
+      "id": "drill_diameter",
+      "type": "slider",
+      "default": 5,
+      "min": 1,
+      "max": 20,
+      "step": 0.5,
+      "label": { "en": "Drill Diameter (mm)", "es": "Diámetro de Broca (mm)" },
+      "tooltip": { "en": "Drill bit diameter for the guide bushing", "es": "Diámetro de broca para el buje guía" },
+      "visible_in_modes": ["drill_guide"],
+      "group": "guide"
+    },
+    {
+      "id": "bushing_tolerance",
+      "type": "slider",
+      "default": 0.1,
+      "min": 0.05,
+      "max": 0.5,
+      "step": 0.05,
+      "label": { "en": "Bushing Tolerance (mm)", "es": "Tolerancia del Buje (mm)" },
+      "tooltip": { "en": "Press-fit tolerance for drill bushing — adjust for your printer", "es": "Tolerancia de ajuste a presión para buje — ajuste según su impresora" },
+      "visible_in_modes": ["drill_guide"],
+      "group": "guide"
+    },
+    {
+      "id": "guide_height",
+      "type": "slider",
+      "default": 20,
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "label": { "en": "Guide Height (mm)", "es": "Altura de Guía (mm)" },
+      "tooltip": { "en": "Height of the drill guide body", "es": "Altura del cuerpo de la guía de taladro" },
+      "visible_in_modes": ["drill_guide"],
+      "group": "guide"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
+      "tooltip": { "en": "0 = auto; higher = more detail but slower", "es": "0 = automático; mayor = más detalle pero más lento" },
+      "visible_in_modes": ["flat_jaw", "v_jaw", "drill_guide"],
+      "group": "quality",
+      "visibility_level": "advanced"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "vise", "label": { "en": "Vise", "es": "Prensa" } },
+    { "id": "jaw", "label": { "en": "Jaw", "es": "Mordaza" } },
+    { "id": "guide", "label": { "en": "Drill Guide", "es": "Guía de Taladro" } },
+    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+  ],
+  "export_formats": ["stl", "3mf"],
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "vise_bolt_pattern",
+        "label": { "en": "Vise Jaw Bolt Pattern", "es": "Patrón de Pernos de Mordaza" },
+        "geometry_type": "bolt_pattern",
+        "standard": "Kurt Manufacturing (de facto)",
+        "parameters": ["vise_standard", "bolt_size", "jaw_width"]
+      },
+      {
+        "id": "negative_volume",
+        "label": { "en": "Negative Volume (Boolean Subtract)", "es": "Volumen Negativo (Resta Booleana)" },
+        "geometry_type": "boolean",
+        "standard": "Geometry-as-data (OEP8)",
+        "parameters": ["clamping_depth", "v_diameter"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Bridges CNC workholding gaps — any machine shop can print custom fixtures in hours instead of weeks, protecting surface finish and ensuring precise alignment.",
+      "es": "Cierra brechas de sujeción CNC — cualquier taller puede imprimir fijaciones personalizadas en horas en vez de semanas, protegiendo acabados superficiales y asegurando alineación precisa."
+    },
+    "commons_license": "CERN-OHL-S-2.0",
+    "bosl2_modules_used": ["diff", "cuboid", "cyl", "attachable", "screw_hole"],
+    "oep8_features": ["geometry_as_data", "object_dicts"],
+    "cdg_registry_refs": ["vise_bolt_pattern"]
+  }
+}

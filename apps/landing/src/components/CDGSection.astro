@@ -1,0 +1,230 @@
+---
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+}
+
+const { t } = Astro.props;
+const c = t?.cdg;
+
+const entries = [
+  { key: 'gridfinity', icon: '⊞', color: 'blue' },
+  { key: 'pco1881',    icon: '🔩', color: 'cyan' },
+  { key: 'ts35',       icon: '⏛', color: 'amber' },
+  { key: 'iso8037',    icon: '🔬', color: 'rose' },
+  { key: 'viseBolt',   icon: '⚙', color: 'violet' },
+  { key: 'speculum',   icon: '🩺', color: 'pink' },
+  { key: 'involute',   icon: '⚡', color: 'orange' },
+];
+
+const colorMap: Record<string, { border: string; glow: string; text: string }> = {
+  blue:   { border: 'border-blue-500/30',   glow: 'hover:shadow-blue-500/20',   text: 'text-blue-400' },
+  cyan:   { border: 'border-cyan-500/30',   glow: 'hover:shadow-cyan-500/20',   text: 'text-cyan-400' },
+  amber:  { border: 'border-amber-500/30',  glow: 'hover:shadow-amber-500/20',  text: 'text-amber-400' },
+  rose:   { border: 'border-rose-500/30',   glow: 'hover:shadow-rose-500/20',   text: 'text-rose-400' },
+  violet: { border: 'border-violet-500/30', glow: 'hover:shadow-violet-500/20', text: 'text-violet-400' },
+  pink:   { border: 'border-pink-500/30',   glow: 'hover:shadow-pink-500/20',   text: 'text-pink-400' },
+  orange: { border: 'border-orange-500/30', glow: 'hover:shadow-orange-500/20', text: 'text-orange-400' },
+};
+
+const stats = [
+  { value: c?.stat1value ?? '14',       label: c?.stat1label ?? 'CDG Interfaces' },
+  { value: c?.stat2value ?? '10',       label: c?.stat2label ?? 'Hyperobjects' },
+  { value: c?.stat3value ?? '4',        label: c?.stat3label ?? 'Domains' },
+  { value: c?.stat4value ?? 'CERN OHL', label: c?.stat4label ?? 'Open License' },
+];
+---
+
+<!-- ═══════ Section: Common Denominator Geometry ═══════ -->
+<section id="cdg-section" class="relative py-28 px-6 overflow-hidden">
+
+  <!-- Background: subtle graph paper effect -->
+  <div class="cdg-graph-bg absolute inset-0 -z-10" aria-hidden="true"></div>
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background/90 to-background"></div>
+
+  <div class="mx-auto max-w-6xl">
+
+    <!-- ── Hero ── -->
+    <div class="text-center mb-20 cdg-fade-in">
+      <span class="inline-block rounded-full border border-cyan-500/30 bg-cyan-500/5 px-4 py-1.5 text-xs font-medium tracking-wider text-cyan-400 uppercase mb-6">
+        {c?.badge ?? 'Common Denominator Geometry'}
+      </span>
+      <h2 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
+        {c?.heading ?? 'The Interfaces That Connect Everything'}
+      </h2>
+      <p class="mx-auto max-w-3xl text-lg text-muted-foreground leading-relaxed">
+        {c?.subtitle ?? 'CDG is the standardized geometry that ensures interoperability across the commons.'}
+      </p>
+    </div>
+
+    <!-- ── Explainer ── -->
+    <div class="mb-20 cdg-fade-in">
+      <div class="grid gap-8 lg:grid-cols-5 items-center">
+        <!-- Diagram: Interface visualization -->
+        <div class="lg:col-span-2 flex items-center justify-center">
+          <div class="relative w-full max-w-sm aspect-square mx-auto">
+            <svg viewBox="0 0 300 300" class="w-full h-full" aria-hidden="true">
+              <!-- Center node -->
+              <circle cx="150" cy="150" r="30" fill="none" stroke="hsl(var(--primary))" stroke-width="2" class="cdg-pulse-ring" />
+              <text x="150" y="154" text-anchor="middle" fill="hsl(var(--primary))" font-size="10" font-weight="bold" font-family="monospace">CDG</text>
+
+              <!-- Satellite nodes — orbiting hyperobjects -->
+              <g class="cdg-orbit" style="transform-origin: 150px 150px;">
+                <circle cx="150" cy="50" r="18" fill="hsl(var(--primary) / 0.08)" stroke="hsl(var(--primary) / 0.3)" stroke-width="1" />
+                <text x="150" y="53" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="7" font-family="monospace">42mm</text>
+                <line x1="150" y1="68" x2="150" y2="120" stroke="hsl(var(--primary) / 0.15)" stroke-width="1" stroke-dasharray="3 3" />
+              </g>
+              <g class="cdg-orbit" style="transform-origin: 150px 150px; animation-delay: -3s;">
+                <circle cx="245" cy="105" r="18" fill="hsl(180 80% 50% / 0.08)" stroke="hsl(180 80% 50% / 0.3)" stroke-width="1" />
+                <text x="245" y="108" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="7" font-family="monospace">PCO</text>
+                <line x1="228" y1="114" x2="178" y2="140" stroke="hsl(180 80% 50% / 0.15)" stroke-width="1" stroke-dasharray="3 3" />
+              </g>
+              <g class="cdg-orbit" style="transform-origin: 150px 150px; animation-delay: -6s;">
+                <circle cx="245" cy="205" r="18" fill="hsl(38 90% 50% / 0.08)" stroke="hsl(38 90% 50% / 0.3)" stroke-width="1" />
+                <text x="245" y="208" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="7" font-family="monospace">TS35</text>
+                <line x1="228" y1="198" x2="178" y2="162" stroke="hsl(38 90% 50% / 0.15)" stroke-width="1" stroke-dasharray="3 3" />
+              </g>
+              <g class="cdg-orbit" style="transform-origin: 150px 150px; animation-delay: -9s;">
+                <circle cx="150" cy="260" r="18" fill="hsl(350 80% 55% / 0.08)" stroke="hsl(350 80% 55% / 0.3)" stroke-width="1" />
+                <text x="150" y="263" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="7" font-family="monospace">ISO</text>
+                <line x1="150" y1="242" x2="150" y2="180" stroke="hsl(350 80% 55% / 0.15)" stroke-width="1" stroke-dasharray="3 3" />
+              </g>
+              <g class="cdg-orbit" style="transform-origin: 150px 150px; animation-delay: -12s;">
+                <circle cx="55" cy="205" r="18" fill="hsl(270 70% 55% / 0.08)" stroke="hsl(270 70% 55% / 0.3)" stroke-width="1" />
+                <text x="55" y="208" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="6" font-family="monospace">Kurt</text>
+                <line x1="72" y1="198" x2="122" y2="162" stroke="hsl(270 70% 55% / 0.15)" stroke-width="1" stroke-dasharray="3 3" />
+              </g>
+              <g class="cdg-orbit" style="transform-origin: 150px 150px; animation-delay: -15s;">
+                <circle cx="55" cy="105" r="18" fill="hsl(30 90% 50% / 0.08)" stroke="hsl(30 90% 50% / 0.3)" stroke-width="1" />
+                <text x="55" y="108" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="6" font-family="monospace">⚡</text>
+                <line x1="72" y1="114" x2="122" y2="140" stroke="hsl(30 90% 50% / 0.15)" stroke-width="1" stroke-dasharray="3 3" />
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="lg:col-span-3">
+          <h3 class="text-2xl font-bold mb-4">{c?.explainerTitle ?? 'What is CDG?'}</h3>
+          <p class="text-muted-foreground leading-relaxed text-lg">
+            {c?.explainerBody ?? "Borrowed from aerospace lofting, CDG provides the geometric 'ground truth' that ensures a filter fits any bottle, a clip snaps onto any rail, and a socket connects to any prosthetic."}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CDG Catalog ── -->
+    <div class="mb-20 cdg-fade-in">
+      <h3 class="text-2xl font-bold text-center mb-10">{c?.catalogTitle ?? 'The CDG Catalog'}</h3>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {entries.map(({ key, icon, color }) => {
+          const entry = c?.entries?.[key];
+          const colors = colorMap[color];
+          return (
+            <div class={`group relative rounded-xl border ${colors.border} bg-card/50 backdrop-blur-sm p-5 transition-all duration-300 hover:shadow-lg ${colors.glow} hover:-translate-y-0.5`}>
+              <div class="flex items-start gap-3 mb-3">
+                <span class="text-2xl" aria-hidden="true">{icon}</span>
+                <div>
+                  <h4 class={`font-bold text-sm ${colors.text}`}>
+                    {entry?.name ?? key}
+                  </h4>
+                  <span class="text-xs text-muted-foreground font-mono">
+                    {entry?.standard ?? ''}
+                  </span>
+                </div>
+              </div>
+              <p class="text-sm text-muted-foreground leading-relaxed mb-3">
+                {entry?.description ?? ''}
+              </p>
+              <div class="text-xs text-muted-foreground/60 font-mono border-t border-border/30 pt-2">
+                → {entry?.projects ?? ''}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- ── Interface Strategy ── -->
+    <div class="mb-16 cdg-fade-in">
+      <div class="rounded-2xl border border-primary/10 bg-primary/[0.02] p-8 md:p-10 text-center">
+        <h3 class="text-2xl font-bold mb-4">{c?.impactTitle ?? 'The Interface Strategy'}</h3>
+        <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
+          {c?.impactBody ?? 'Stop designing products. Start designing interfaces.'}
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Stats ── -->
+    <div class="cdg-fade-in">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map((stat) => (
+          <div class="rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm p-5 text-center transition-all duration-300 hover:border-cyan-500/30">
+            <div class="text-2xl font-bold text-cyan-400 mb-1">{stat.value}</div>
+            <div class="text-sm text-muted-foreground">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* Graph paper background */
+  .cdg-graph-bg {
+    background-image:
+      linear-gradient(hsl(var(--primary) / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* CDG center pulse */
+  .cdg-pulse-ring {
+    animation: cdg-pulse 3s ease-in-out infinite;
+  }
+  @keyframes cdg-pulse {
+    0%, 100% { stroke-width: 2; stroke-opacity: 1; }
+    50% { stroke-width: 3; stroke-opacity: 0.6; }
+  }
+
+  /* Orbiting nodes */
+  .cdg-orbit {
+    animation: cdg-orbit-glow 6s ease-in-out infinite;
+  }
+  @keyframes cdg-orbit-glow {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+
+  /* Fade-in on scroll */
+  .cdg-fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .cdg-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cdg-pulse-ring,
+    .cdg-orbit { animation: none; }
+    .cdg-fade-in {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.cdg-fade-in').forEach(el => observer.observe(el));
+</script>

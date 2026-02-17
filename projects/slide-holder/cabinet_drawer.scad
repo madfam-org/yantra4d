@@ -67,7 +67,7 @@ _st = _slide[2];   // slide thickness
 // ---------------------------------------------------------------------------
 // Derived Dimensions (RESEARCH §7)
 // ---------------------------------------------------------------------------
-_rib_w = DENSITY_RIB_WIDTHS[density];
+_rib_w = density_rib_width(density);
 _slot_w = slot_width(_st, tolerance_z);
 _pitch = pitch(_slot_w, _rib_w);
 
@@ -90,7 +90,8 @@ _rail_clearance = tolerance_xy + 0.1;   // RESEARCH §7.2 extra clearance
 _shell_wall = wall_thickness;
 _drawer_gap = 1.0;   // clearance between drawer and shell
 _slot_h = _drawer_z + _drawer_gap + _rail_h;
-_shell_x = _drawer_x + 2 * (_shell_wall + _drawer_gap);
+// Shell X must encompass drawer + rails on each side + gaps + walls
+_shell_x = _drawer_x + 2 * (_rail_w + _drawer_gap) + 2 * _shell_wall;
 _shell_y = _drawer_y + _shell_wall + _drawer_gap + 5;  // extra at back for backstop
 _shell_z = (drawers_per_shell * _slot_h) + _shell_wall * 2;
 
@@ -99,6 +100,7 @@ _tab_base = 15;
 _tab_top = 10;
 _tab_h = 4;
 _tab_depth = 8;
+_tab_y = (_shell_y - _tab_depth) / 2;
 
 // Backstop tab
 _backstop_w = 10;
@@ -178,6 +180,9 @@ module drawer() {
 // shell — Outer housing with rail channels and stack tabs
 // ---------------------------------------------------------------------------
 module shell() {
+    // Position of drawer within shell
+    _dx = _shell_wall + _drawer_gap + _rail_w;
+
     difference() {
         // Outer box
         cube([_shell_x, _shell_y, _shell_z]);
@@ -185,11 +190,9 @@ module shell() {
         // Drawer slot cavities
         for (d = [0 : drawers_per_shell - 1]) {
             _dz = _shell_wall + d * _slot_h;
-            _dx = _shell_wall + _drawer_gap;
-            _dy = 0;   // open at front
 
-            // Main drawer cavity
-            translate([_dx, _dy - 0.01, _dz])
+            // Main drawer cavity (open at front)
+            translate([_dx - _drawer_gap, -0.01, _dz])
                 cube([
                     _drawer_x + _drawer_gap * 2,
                     _drawer_y + _drawer_gap,
@@ -198,27 +201,33 @@ module shell() {
 
             // Rail channels
             if (rail_profile == 0) {
-                // T-slot channels: wider at head
+                // T-slot channels
                 // Left channel
-                translate([_dx - _rail_w - _rail_clearance, -0.01, _dz + _drawer_z / 2 - _rail_h / 2 - _rail_clearance / 2]) {
+                translate([_dx - _rail_w - _rail_clearance - _drawer_gap, -0.01, _dz + _drawer_z / 2 - _rail_h / 2 - _rail_clearance / 2]) {
                     cube([_rail_stem + _rail_clearance, _shell_y + 0.02, _rail_h + _rail_clearance]);
                     translate([-(_rail_w - _rail_stem) / 2 - _rail_clearance / 2, 0, _rail_h * 0.25 - _rail_clearance / 2])
                         cube([_rail_w + _rail_clearance, _shell_y + 0.02, _rail_h * 0.5 + _rail_clearance]);
                 }
                 // Right channel
-                translate([_dx + _drawer_x + _drawer_gap * 2, -0.01, _dz + _drawer_z / 2 - _rail_h / 2 - _rail_clearance / 2]) {
+                translate([_dx + _drawer_x + _drawer_gap, -0.01, _dz + _drawer_z / 2 - _rail_h / 2 - _rail_clearance / 2]) {
                     cube([_rail_stem + _rail_clearance, _shell_y + 0.02, _rail_h + _rail_clearance]);
                     translate([_rail_stem - (_rail_w - _rail_stem) / 2, 0, _rail_h * 0.25 - _rail_clearance / 2])
                         cube([_rail_w + _rail_clearance, _shell_y + 0.02, _rail_h * 0.5 + _rail_clearance]);
                 }
             } else {
                 // L-rail channels
-                translate([_dx - _rail_w - _rail_clearance, -0.01, _dz - _rail_clearance / 2])
+                translate([_dx - _rail_w - _rail_clearance - _drawer_gap, -0.01, _dz - _rail_clearance / 2])
                     cube([_rail_w + _rail_clearance, _shell_y + 0.02, _rail_h + _rail_clearance]);
-                translate([_dx + _drawer_x + _drawer_gap * 2, -0.01, _dz - _rail_clearance / 2])
+                translate([_dx + _drawer_x + _drawer_gap, -0.01, _dz - _rail_clearance / 2])
                     cube([_rail_w + _rail_clearance, _shell_y + 0.02, _rail_h + _rail_clearance]);
             }
         }
+
+        // Female stack tab recesses on bottom
+        translate([_shell_x * 0.25 - _tab_base / 2 - 0.2, _tab_y - 0.2, -0.01])
+            stack_tab_female(_tab_base, _tab_top, _tab_h, _tab_depth);
+        translate([_shell_x * 0.75 - _tab_base / 2 - 0.2, _tab_y - 0.2, -0.01])
+            stack_tab_female(_tab_base, _tab_top, _tab_h, _tab_depth);
     }
 
     // Backstop tabs at rear (one per drawer slot)
@@ -234,26 +243,12 @@ module shell() {
         }
     }
 
-    // Stack tabs — male on top, female (recess) on bottom (RESEARCH §7.1)
-    // Two tabs per side (left-center, right-center)
-    _tab_y = (_shell_y - _tab_depth) / 2;
+    // Stack tabs — male on top
 
-    // Male tabs on top
     translate([_shell_x * 0.25 - _tab_base / 2, _tab_y, _shell_z])
         stack_tab_male(_tab_base, _tab_top, _tab_h, _tab_depth);
     translate([_shell_x * 0.75 - _tab_base / 2, _tab_y, _shell_z])
         stack_tab_male(_tab_base, _tab_top, _tab_h, _tab_depth);
-
-    // Female recesses on bottom (boolean subtract)
-    difference() {
-        // Invisible zero-height block (hack: difference needs a body)
-        translate([0, 0, -0.01]) cube([0.01, 0.01, 0.01]);
-
-        translate([_shell_x * 0.25 - _tab_base / 2 - 0.2, _tab_y - 0.2, -_tab_h - 0.01])
-            stack_tab_female(_tab_base, _tab_top, _tab_h, _tab_depth);
-        translate([_shell_x * 0.75 - _tab_base / 2 - 0.2, _tab_y - 0.2, -_tab_h - 0.01])
-            stack_tab_female(_tab_base, _tab_top, _tab_h, _tab_depth);
-    }
 
     // Label area on shell front (one per drawer slot)
     if (label_area == 1) {

@@ -540,5 +540,66 @@
     "fn_factor": 48,
     "wasm_multiplier": 3,
     "warning_threshold_seconds": 60
-  }
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "nema_bolt_pattern",
+        "label": {
+          "en": "NEMA Stepper Bolt Pattern",
+          "es": "Patrón de Tornillos NEMA"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "NEMA 17/23/34",
+        "parameters": [
+          "nema_size"
+        ]
+      },
+      {
+        "id": "nema_pilot_bore",
+        "label": {
+          "en": "NEMA Pilot/Shaft Bore",
+          "es": "Orificio Piloto/Eje NEMA"
+        },
+        "geometry_type": "socket",
+        "standard": "NEMA motor face spec",
+        "parameters": [
+          "nema_size"
+        ]
+      },
+      {
+        "id": "mounting_surface",
+        "label": {
+          "en": "Machine Mounting Surface",
+          "es": "Superficie de Montaje"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "Custom mounting pattern",
+        "parameters": [
+          "mounting_style",
+          "wall_thickness",
+          "base_thickness"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Standard NEMA motor brackets for CNC, 3D printers, and robotics — enables rapid machine building",
+      "es": "Soportes estándar NEMA para CNC, impresoras 3D y robótica — permite construcción rápida de máquinas"
+    },
+    "commons_license": "CERN-OHL-S-2.0"
+  },
+  "tags": [
+    "nema",
+    "motor",
+    "cnc",
+    "robotics",
+    "hyperobject",
+    "commons"
+  ]
 }

@@ -1,4 +1,5 @@
 export type ProjectCategory = 'storage' | 'mechanical' | 'art' | 'tabletop' | 'education' | 'electronics';
+export type HyperobjectDomain = 'household' | 'industrial' | 'medical' | 'commercial' | 'hybrid';
 
 export type Project = {
   slug: string;
@@ -7,20 +8,22 @@ export type Project = {
   descriptionEs: string;
   category: ProjectCategory;
   thumbnail: string;
+  isHyperobject?: boolean;
+  domain?: HyperobjectDomain;
 };
 
 export const PROJECTS: Project[] = [
   // Storage
-  { slug: 'gridfinity', name: 'Gridfinity Extended', description: 'Modular storage bins with snap-fit baseplates and lids', descriptionEs: 'Contenedores modulares con bases y tapas de ensamble a presión', category: 'storage', thumbnail: '/projects/gridfinity.webp' },
+  { slug: 'gridfinity', name: 'Gridfinity Extended', description: 'Modular storage bins with snap-fit baseplates and lids', descriptionEs: 'Contenedores modulares con bases y tapas de ensamble a presión', category: 'storage', thumbnail: '/projects/gridfinity.webp', isHyperobject: true, domain: 'household' },
   { slug: 'multiboard', name: 'Multiboard Wall Storage', description: 'Modular wall-mounted storage with hexagonal peg pattern', descriptionEs: 'Almacenamiento modular de pared con patrón hexagonal', category: 'storage', thumbnail: '/projects/multiboard.webp' },
   { slug: 'portacosas', name: 'Portacosas', description: 'Modular desk organizer with snap-fit tray system', descriptionEs: 'Organizador de escritorio modular con sistema de bandejas', category: 'storage', thumbnail: '/projects/portacosas.webp' },
   { slug: 'rugged-box', name: 'Rugged Box', description: 'Parametric hinged box with latches, gasket seal, and reinforcement ribs', descriptionEs: 'Caja robusta paramétrica con bisagra, sellos y refuerzos', category: 'storage', thumbnail: '/projects/rugged-box.webp' },
 
   // Mechanical
   { slug: 'gear-reducer', name: 'Gear Reducer', description: 'Parametric gear assembly with housing and configurable ratio', descriptionEs: 'Ensamble paramétrico de engranes con carcasa y relación configurable', category: 'mechanical', thumbnail: '/projects/gear-reducer.webp' },
-  { slug: 'gears', name: 'Parametric Gears', description: 'Involute spur and herringbone gears powered by MCAD', descriptionEs: 'Engranajes rectos e helicoidales con MCAD', category: 'mechanical', thumbnail: '/projects/gears.webp' },
-  { slug: 'fasteners', name: 'Fastener Generator', description: 'Parametric bolts and nuts with real threads', descriptionEs: 'Tornillos y tuercas paramétricas con hilos reales', category: 'mechanical', thumbnail: '/projects/fasteners.webp' },
-  { slug: 'motor-mount', name: 'NEMA Motor Mount', description: 'Parametric NEMA motor mount with real motor preview', descriptionEs: 'Soporte paramétrico para motor NEMA con vista previa real', category: 'mechanical', thumbnail: '/projects/motor-mount.webp' },
+  { slug: 'gears', name: 'Parametric Gears', description: 'Involute spur and herringbone gears powered by MCAD', descriptionEs: 'Engranajes rectos e helicoidales con MCAD', category: 'mechanical', thumbnail: '/projects/gears.webp', isHyperobject: true, domain: 'industrial' },
+  { slug: 'fasteners', name: 'Fastener Generator', description: 'Parametric bolts and nuts with real threads', descriptionEs: 'Tornillos y tuercas paramétricas con hilos reales', category: 'mechanical', thumbnail: '/projects/fasteners.webp', isHyperobject: true, domain: 'industrial' },
+  { slug: 'motor-mount', name: 'NEMA Motor Mount', description: 'Parametric NEMA motor mount with real motor preview', descriptionEs: 'Soporte paramétrico para motor NEMA con vista previa real', category: 'mechanical', thumbnail: '/projects/motor-mount.webp', isHyperobject: true, domain: 'industrial' },
 
   // Art & Generative
   { slug: 'voronoi', name: 'Voronoi Generator', description: 'Organic Voronoi patterns — coasters, vases, lampshades', descriptionEs: 'Patrones orgánicos Voronoi — posavasos, jarrones, pantallas', category: 'art', thumbnail: '/projects/voronoi.webp' },
@@ -35,8 +38,8 @@ export const PROJECTS: Project[] = [
   { slug: 'polydice', name: 'PolyDice Generator', description: 'Polyhedral dice for tabletop and RPG gaming — D4 through D20', descriptionEs: 'Dados poliédricos para juegos de mesa y RPG — D4 a D20', category: 'tabletop', thumbnail: '/projects/polydice.webp' },
 
   // Education
-  { slug: 'stemfie', name: 'STEMFIE', description: 'Modular construction system for education and prototyping', descriptionEs: 'Sistema de construcción modular para educación y prototipado', category: 'education', thumbnail: '/projects/stemfie.webp' },
-  { slug: 'slide-holder', name: 'Microscope Slide Holder', description: 'Parametric slide retention — trays, boxes, staining racks, and archival cabinets for ISO/US/petrographic slides', descriptionEs: 'Sistema de retención de laminillas — bandejas, cajas, bastidores de tinción y gabinetes archivadores', category: 'education', thumbnail: '/projects/slide-holder.webp' },
+  { slug: 'stemfie', name: 'STEMFIE', description: 'Modular construction system for education and prototyping', descriptionEs: 'Sistema de construcción modular para educación y prototipado', category: 'education', thumbnail: '/projects/stemfie.webp', isHyperobject: true, domain: 'household' },
+  { slug: 'slide-holder', name: 'Microscope Slide Holder', description: 'Parametric slide retention — trays, boxes, staining racks, and archival cabinets for ISO/US/petrographic slides', descriptionEs: 'Sistema de retención de laminillas — bandejas, cajas, bastidores de tinción y gabinetes archivadores', category: 'education', thumbnail: '/projects/slide-holder.webp', isHyperobject: true, domain: 'medical' },
 
   // Electronics
   { slug: 'ultimate-box', name: 'Ultimate Box Maker', description: 'Electronics enclosure with ventilation, PCB standoffs, and snap-fit lid', descriptionEs: 'Carcasa para electrónica con ventilación, soportes PCB y tapa a presión', category: 'electronics', thumbnail: '/projects/ultimate-box.webp' },
@@ -44,4 +47,4 @@ export const PROJECTS: Project[] = [
   { slug: 'keyv2', name: 'KeyV2 Keycaps', description: 'Customizable mechanical keyboard keycaps with multiple profiles', descriptionEs: 'Keycaps personalizables para teclado mecánico con múltiples perfiles', category: 'electronics', thumbnail: '/projects/keyv2.webp' },
 ];
 
-export const CATEGORIES = ['all', 'storage', 'mechanical', 'art', 'tabletop', 'education', 'electronics'] as const;
+export const CATEGORIES = ['all', 'commons', 'storage', 'mechanical', 'art', 'tabletop', 'education', 'electronics'] as const;

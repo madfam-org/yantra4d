@@ -1,9 +1,10 @@
 # Yantra4D — Comprehensive LLM Context
 
-> Manifest-driven parametric 3D print design platform. Flask API + React/Vite
-> studio + Astro landing page. 19 built-in OpenSCAD projects with dual rendering
-> (server-side CLI + client-side WASM), tiered access control, AI-assisted
-> design, and GitHub integration.
+> Manifest-driven parametric 3D print design platform evolving into a
+> Hyperobjects Commons. Flask API + React/Vite studio + Astro landing page.
+> 21 built-in OpenSCAD projects with dual rendering (server-side CLI +
+> client-side WASM), tiered access control, AI-assisted design, and GitHub
+> integration.
 
 ---
 
@@ -104,7 +105,7 @@ packages/
 
 ## Manifest Schema
 
-The project manifest (`projects/{slug}/project.json`) is the single source of truth. Both backend and frontend consume it, making the webapp fully data-driven.
+The project manifest (`projects/{slug}/project.json`) is the single source of truth. Both backend and frontend consume it, making the webapp fully data-driven. Projects can optionally declare `hyperobject` metadata to classify them as Bounded 4D Hyperobjects in the Yantra4D Commons.
 
 ### Top-Level Fields
 
@@ -212,6 +213,34 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "per_part": 8,
     "wasm_multiplier": 3,
     "warning_threshold_seconds": 60
+  }
+}
+```
+
+### Hyperobject Metadata (optional)
+
+Projects can be classified as Bounded 4D Hyperobjects with CDG interfaces:
+
+```jsonc
+{
+  "hyperobject": {
+    "domain": "medical",             // household | industrial | medical | commercial | hybrid
+    "cdg_interfaces": [
+      {
+        "id": "iso_8037_standard",
+        "label": { "en": "ISO 8037 Microscope Slide" },
+        "geometry_type": "pocket",   // grid | rail | thread | socket | pocket | snap | bolt_pattern | profile | spline | custom
+        "standard": "ISO 8037-1:2003",
+        "parameters": ["slide_standard", "custom_slide_length"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": { "en": "Enables labs to fabricate precision slide holders" },
+    "commons_license": "CERN-OHL-S-2.0"
   }
 }
 ```
@@ -619,7 +648,7 @@ docker compose down         # stop
 
 ## Projects Catalog
 
-19 built-in parametric SCAD projects in `projects/`:
+21 built-in parametric SCAD projects in `projects/`:
 
 | Slug | Name | Description |
 |------|------|-------------|
@@ -642,6 +671,8 @@ docker compose down         # stop
 | `spiral-planter` | Spiral Planter | Archimedean spiral planters |
 | `motor-mount` | NEMA Motor Mount | NEMA stepper motor mounts |
 | `portacosas` | Portacosas | Customizable container/holder |
+| `slide-holder` 🔷 | Microscope Slide Holder | Slide retention system — first hyperobject |
+| `rugged-box` | Rugged Box | Hinged box with latches and gasket seal |
 
 Each project has: `project.json` (manifest), `*.scad` (geometry files), optional `exports/` (reference STLs) and `docs/` (project-specific docs).
 

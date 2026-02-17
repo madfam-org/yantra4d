@@ -84,11 +84,38 @@ Strategic features for future implementation, documented for planning and priori
 
 ---
 
+## 3.5 — Hyperobjects Commons
+
+**Goal**: Evolve Yantra4D from a collection of demo projects into a **Parametric Commons** — a platform for Bounded 4D Hyperobjects with Common Denominator Geometry (CDG) interfaces.
+
+**Inspired by**: *The Parametric Commons: Architecting Common Denominator Geometry for the Era of Bounded 4D Hyperobjects* (research document).
+
+**Current Status** (Phase 1 ✅):
+- `hyperobject` schema added to `project-manifest.schema.json`
+- slide-holder classified as first hyperobject (domain: medical, 4 CDG interfaces, CERN-OHL-S-2.0)
+- 10 geometry types defined: grid, rail, thread, socket, pocket, snap, bolt_pattern, profile, spline, custom
+
+**Phase 2** (in progress):
+- Landing page: CDG interface badges, domain filter, hyperobject visual distinction
+- Studio: CDG interface panel, material awareness indicators
+
+**Phase 3** (planned — rollout to more projects):
+- gridfinity (household, grid+snap interfaces)
+- stemfie (education, bolt_pattern+profile interfaces)
+- fasteners (industrial, thread+bolt_pattern interfaces)
+- gears (mechanical, profile interfaces)
+- motor-mount (industrial, bolt_pattern interfaces)
+
+**Why it matters**: Transforms parametric projects from isolated designs into interoperable components in a distributed manufacturing commons. CDG interfaces enable communities to build compatible ecosystems of printable objects.
+
+---
+
 ## Priority Matrix
 
-| Feature | Impact | Effort | Dependencies |
-|---------|--------|--------|--------------|
-| Storefront Mode | High | Large | access_control, PDF gen |
-| Auto-Assembly | Medium | Medium | scad_analyzer extension |
-| Component Catalog | Medium | Medium | NopSCADlib metadata parser |
-| MCAD→BOSL2 Gears | Low | Small | None (BOSL2 already available) |
+| Feature | Impact | Effort | Dependencies | Status |
+|---------|--------|--------|--------------|--------|
+| **Hyperobjects Commons** | **High** | **Medium** | Schema, UI | **Phase 1 ✅** |
+| Storefront Mode | High | Large | access_control, PDF gen | Planned |
+| Auto-Assembly | Medium | Medium | scad_analyzer extension | Planned |
+| Component Catalog | Medium | Medium | NopSCADlib metadata parser | Planned |
+| MCAD→BOSL2 Gears | Low | Small | None (BOSL2 already available) | Planned |

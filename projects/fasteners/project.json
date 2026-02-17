@@ -459,5 +459,69 @@
     "fn_factor": 64,
     "wasm_multiplier": 4,
     "warning_threshold_seconds": 90
-  }
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "iso_metric_thread",
+        "label": {
+          "en": "ISO Metric Thread",
+          "es": "Rosca Métrica ISO"
+        },
+        "geometry_type": "thread",
+        "standard": "ISO 261 / ISO 965",
+        "parameters": [
+          "diameter",
+          "pitch",
+          "thread_enabled"
+        ]
+      },
+      {
+        "id": "bolt_head_interface",
+        "label": {
+          "en": "Bolt Head Profile",
+          "es": "Perfil de Cabeza de Tornillo"
+        },
+        "geometry_type": "profile",
+        "standard": "ISO 4014 / ISO 4762",
+        "parameters": [
+          "head_style_id",
+          "head_diameter",
+          "head_height"
+        ]
+      },
+      {
+        "id": "nut_interface",
+        "label": {
+          "en": "Nut Wrench Interface",
+          "es": "Interfaz de Tuerca"
+        },
+        "geometry_type": "profile",
+        "standard": "ISO 4032 / ISO 4033",
+        "parameters": [
+          "nut_style_id",
+          "width",
+          "height"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "On-demand fabrication of standard fasteners — enables prototyping and repair without hardware store dependency",
+      "es": "Fabricación bajo demanda de tornillería estándar — permite prototipado y reparación sin depender de ferreterías"
+    },
+    "commons_license": "CERN-OHL-S-2.0"
+  },
+  "tags": [
+    "fasteners",
+    "hardware",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
 }

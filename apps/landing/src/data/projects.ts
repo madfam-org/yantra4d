@@ -44,7 +44,7 @@ export const PROJECTS: Project[] = [
   // Electronics
   { slug: 'ultimate-box', name: 'Ultimate Box Maker', description: 'Electronics enclosure with ventilation, PCB standoffs, and snap-fit lid', descriptionEs: 'Carcasa para electrónica con ventilación, soportes PCB y tapa a presión', category: 'electronics', thumbnail: '/projects/ultimate-box.webp' },
   { slug: 'yapp-box', name: 'YAPP Box Generator', description: 'PCB enclosure with snap-fit lid — parametric projectbox', descriptionEs: 'Carcasa para PCB con tapa a presión — caja de proyecto paramétrica', category: 'electronics', thumbnail: '/projects/yapp-box.webp' },
-  { slug: 'keyv2', name: 'KeyV2 Keycaps', description: 'Customizable mechanical keyboard keycaps with multiple profiles', descriptionEs: 'Keycaps personalizables para teclado mecánico con múltiples perfiles', category: 'electronics', thumbnail: '/projects/keyv2.webp' },
+  { slug: 'keyv2', name: 'KeyV2 Keycaps', description: 'Customizable mechanical keyboard keycaps with multiple profiles', descriptionEs: 'Keycaps personalizables para teclado mecánico con múltiples perfiles', category: 'electronics', thumbnail: '/projects/keyv2.webp', isHyperobject: true, domain: 'commercial' },
 ];
 
 export const CATEGORIES = ['all', 'commons', 'storage', 'mechanical', 'art', 'tabletop', 'education', 'electronics'] as const;

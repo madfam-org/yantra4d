@@ -13,7 +13,12 @@
       "modular",
       "snap-fit"
     ],
-    "difficulty": "advanced"
+    "difficulty": "advanced",
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "household",
+      "cdg_interface": "gridfinity_42mm"
+    }
   },
   "modes": [
     {

@@ -47,7 +47,14 @@ export default function StudioHeader({
     <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
       <div className="flex items-center gap-3">
         <div className="flex flex-col">
-          <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
+            {manifest.project.hyperobject?.is_hyperobject && (
+              <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-500 ring-1 ring-inset ring-blue-500/20" title={`Domain: ${manifest.project.hyperobject.domain}`}>
+                Commons
+              </span>
+            )}
+          </div>
           <span className="text-[10px] text-muted-foreground leading-tight">{t('platform.powered_by')}</span>
         </div>
         <ProjectSelector />

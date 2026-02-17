@@ -55,6 +55,17 @@
             "advanced"
           ],
           "description": "Project complexity level"
+        },
+        "hyperobject": {
+          "type": "object",
+          "properties": {
+            "is_hyperobject": { "type": "boolean" },
+            "domain": { 
+              "type": "string",
+              "enum": ["household", "industrial", "medical", "commercial", "hybrid"]
+            },
+            "cdg_interface": { "type": "string" }
+          }
         }
       }
     },

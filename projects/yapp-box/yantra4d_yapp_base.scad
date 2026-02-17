@@ -17,10 +17,11 @@ render_mode = 0;
 fn = 0;
 
 // Tell YAPP to render base only
+include <vendor/yapp/YAPPgenerator_v3.scad>
+
 printBaseShell = true;
 printLidShell = false;
 printSwitchExtenders = false;
+showSideBySide = false;
 
-$fn = fn > 0 ? fn : 32;
-
-include <vendor/yapp/YAPPgenerator_v3.scad>
+YAPPgenerate();

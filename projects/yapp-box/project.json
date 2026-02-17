@@ -18,7 +18,7 @@
   },
   "modes": [
     {
-      "slug": "base",
+      "id": "base",
       "label": {
         "en": "Base",
         "es": "Base"
@@ -30,7 +30,7 @@
       "estimate": "base"
     },
     {
-      "slug": "lid",
+      "id": "lid",
       "label": {
         "en": "Lid",
         "es": "Tapa"
@@ -64,7 +64,7 @@
   ],
   "parameters": [
     {
-      "name": "pcbLength",
+      "id": "pcbLength",
       "label": {
         "en": "PCB Length",
         "es": "Largo del PCB"
@@ -85,7 +85,7 @@
       ]
     },
     {
-      "name": "pcbWidth",
+      "id": "pcbWidth",
       "label": {
         "en": "PCB Width",
         "es": "Ancho del PCB"
@@ -106,7 +106,7 @@
       ]
     },
     {
-      "name": "pcbThickness",
+      "id": "pcbThickness",
       "label": {
         "en": "PCB Thickness",
         "es": "Grosor del PCB"
@@ -128,7 +128,7 @@
       "advanced": true
     },
     {
-      "name": "standoffHeight",
+      "id": "standoffHeight",
       "label": {
         "en": "Standoff Height",
         "es": "Altura de separadores"
@@ -149,7 +149,7 @@
       ]
     },
     {
-      "name": "wallThickness",
+      "id": "wallThickness",
       "label": {
         "en": "Wall Thickness",
         "es": "Grosor de pared"
@@ -170,7 +170,7 @@
       ]
     },
     {
-      "name": "baseWallHeight",
+      "id": "baseWallHeight",
       "label": {
         "en": "Base Wall Height",
         "es": "Altura de pared base"
@@ -190,7 +190,7 @@
       ]
     },
     {
-      "name": "lidWallHeight",
+      "id": "lidWallHeight",
       "label": {
         "en": "Lid Wall Height",
         "es": "Altura de pared tapa"
@@ -210,7 +210,7 @@
       ]
     },
     {
-      "name": "roundRadius",
+      "id": "roundRadius",
       "label": {
         "en": "Corner Radius",
         "es": "Radio de esquinas"
@@ -231,7 +231,7 @@
       ]
     },
     {
-      "name": "paddingFront",
+      "id": "paddingFront",
       "label": {
         "en": "Padding Front",
         "es": "Relleno frontal"
@@ -253,7 +253,7 @@
       "advanced": true
     },
     {
-      "name": "paddingBack",
+      "id": "paddingBack",
       "label": {
         "en": "Padding Back",
         "es": "Relleno trasero"
@@ -275,7 +275,7 @@
       "advanced": true
     },
     {
-      "name": "paddingLeft",
+      "id": "paddingLeft",
       "label": {
         "en": "Padding Left",
         "es": "Relleno izquierdo"
@@ -297,7 +297,7 @@
       "advanced": true
     },
     {
-      "name": "paddingRight",
+      "id": "paddingRight",
       "label": {
         "en": "Padding Right",
         "es": "Relleno derecho"
@@ -319,7 +319,7 @@
       "advanced": true
     },
     {
-      "name": "fn",
+      "id": "fn",
       "label": {
         "en": "Resolution ($fn)",
         "es": "Resolución ($fn)"
@@ -372,7 +372,7 @@
   ],
   "presets": [
     {
-      "slug": "esp32_dev",
+      "id": "esp32_dev",
       "label": {
         "en": "ESP32 Dev Board",
         "es": "Placa ESP32 Dev"
@@ -386,7 +386,7 @@
       }
     },
     {
-      "slug": "sensor_node",
+      "id": "sensor_node",
       "label": {
         "en": "Sensor Node",
         "es": "Nodo Sensor"
@@ -399,7 +399,7 @@
       }
     },
     {
-      "slug": "display_box",
+      "id": "display_box",
       "label": {
         "en": "Display Box",
         "es": "Caja para Display"

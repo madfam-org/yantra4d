@@ -1,3 +1,4 @@
+include <vendor/polydice/PolyDiceGenerator.scad>
 // Yantra4D wrapper — PolyDiceGenerator
 // render_mode: 0=d4, 1=d6, 2=d8, 3=d12, 4=d20
 
@@ -41,4 +42,4 @@ edge_rounding = rounding_edge;
 // Quality override
 $fn = fn > 0 ? fn : 32;
 
-include <vendor/polydice/PolyDiceGenerator.scad>
+

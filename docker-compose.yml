@@ -28,6 +28,7 @@ services:
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
       - JANUA_AUDIENCE=${JANUA_AUDIENCE:-yantra4d}
       - AUTH_ENABLED=${AUTH_ENABLED:-true}
+      - RATE_LIMIT_ENABLED=false
       - RATE_LIMIT_STORAGE=redis://redis:6379
     depends_on:
       redis:

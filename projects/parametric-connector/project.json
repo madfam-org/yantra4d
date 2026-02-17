@@ -1,179 +1,113 @@
 {
   "project": {
-    "name": "Parametric Connector",
+    "name": "Parametric Pipe Connector",
     "slug": "parametric-connector",
     "version": "1.0.0",
     "description": {
-      "en": "Universal parametric pipe and tube connectors for PVC, bamboo, and scavenged materials — disaster relief infrastructure",
-      "es": "Conectores paramétricos universales para tubos de PVC, bambú y materiales recuperados — infraestructura de ayuda humanitaria"
+      "en": "Universal connector system for PVC, Bamboo, and Wood Dowels",
+      "es": "Sistema de conectores universales para PVC, Bambú y Espigas de Madera"
     },
-    "thumbnail": "/projects/parametric-connector.webp",
+    "thumbnail": "/projects/parametric-connector.png",
     "tags": [
-      "connector",
-      "pipe",
-      "bamboo",
-      "disaster-relief",
-      "infrastructure",
+      "construction",
+      "pvc",
+      "structure",
+      "furniture",
       "hyperobject",
-      "commons",
-      "cdg"
+      "commons"
     ],
-    "difficulty": "beginner"
+    "difficulty": "beginner",
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "household",
+      "cdg_interface": "pipe_od_standards"
+    }
   },
   "modes": [
     {
-      "id": "elbow",
+      "id": "Standard",
       "scad_file": "connector.scad",
-      "label": {
-        "en": "Elbow (90°)",
-        "es": "Codo (90°)"
-      },
-      "parts": ["connector"],
-      "estimate": { "base_units": 1, "formula": "constant" }
-    },
-    {
-      "id": "tee",
-      "scad_file": "connector.scad",
-      "label": {
-        "en": "Tee Junction",
-        "es": "Unión en T"
-      },
-      "parts": ["connector"],
-      "estimate": { "base_units": 1, "formula": "constant" }
-    },
-    {
-      "id": "cross",
-      "scad_file": "connector.scad",
-      "label": {
-        "en": "Cross Junction",
-        "es": "Unión en Cruz"
-      },
-      "parts": ["connector"],
-      "estimate": { "base_units": 1, "formula": "constant" }
-    },
-    {
-      "id": "custom_angle",
-      "scad_file": "connector.scad",
-      "label": {
-        "en": "Custom Angle",
-        "es": "Ángulo Personalizado"
-      },
-      "parts": ["connector"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": { "en": "Pipe Connector", "es": "Conector de Tubería" },
+      "parts": ["connector_body"],
+      "estimate": { "base_units": 1, "formula": "complex" }
     }
   ],
   "parts": [
     {
-      "id": "connector",
+      "id": "connector_body",
       "render_mode": 0,
-      "label": { "en": "Connector", "es": "Conector" },
-      "default_color": "#10b981"
+      "label": { "en": "Connector Body", "es": "Cuerpo del Conector" },
+      "default_color": "#f97316"
     }
   ],
   "presets": [
     {
       "id": "pvc_half_inch_elbow",
-      "label": { "en": "PVC ½\" Elbow", "es": "Codo PVC ½\"" },
-      "values": { "pipe_od": 21.3, "wall_thickness": 3.0, "connector_type": 0, "angle": 90 }
+      "label": { "en": "1/2\" PVC Elbow", "es": "Codo PVC 1/2\"" },
+      "values": { "pipe_od_mm": 21.3, "connector_type": "elbow" }
     },
     {
-      "id": "bamboo_tee",
-      "label": { "en": "Bamboo Tee (40mm)", "es": "T de Bambú (40mm)" },
-      "values": { "pipe_od": 40, "wall_thickness": 4.0, "connector_type": 1, "angle": 90 }
+      "id": "pvc_three_quarter_tee",
+      "label": { "en": "3/4\" PVC Tee", "es": "Tee PVC 3/4\"" },
+      "values": { "pipe_od_mm": 26.7, "connector_type": "tee" }
     },
     {
-      "id": "pvc_one_inch_cross",
-      "label": { "en": "PVC 1\" Cross", "es": "Cruz PVC 1\"" },
-      "values": { "pipe_od": 33.4, "wall_thickness": 3.5, "connector_type": 2, "angle": 90 }
-    },
-    {
-      "id": "custom_45_elbow",
-      "label": { "en": "Custom 45° Elbow (25mm)", "es": "Codo 45° Personalizado (25mm)" },
-      "values": { "pipe_od": 25, "wall_thickness": 3.0, "connector_type": 3, "angle": 45 }
+      "id": "furniture_corner",
+      "label": { "en": "Furniture 3-Way Corner (1\")", "es": "Esquina de Mueble 3 Vías (1\")" },
+      "values": { "pipe_od_mm": 33.4, "connector_type": "3-way-corner" }
     }
   ],
   "parameters": [
     {
-      "id": "pipe_od",
+      "id": "pipe_od_mm",
       "type": "slider",
-      "default": 33.4,
+      "default": 21.3,
       "min": 10,
-      "max": 80,
+      "max": 60,
       "step": 0.1,
-      "label": { "en": "Pipe Outer Diameter (mm)", "es": "Diámetro Exterior del Tubo (mm)" },
-      "tooltip": { "en": "Outer diameter of the pipe to connect. Measure your actual pipe!", "es": "Diámetro exterior del tubo a conectar. ¡Mida su tubo real!" },
-      "visible_in_modes": ["elbow", "tee", "cross", "custom_angle"],
-      "group": "pipe"
-    },
-    {
-      "id": "wall_thickness",
-      "type": "slider",
-      "default": 3.0,
-      "min": 2.0,
-      "max": 6.0,
-      "step": 0.5,
-      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
-      "tooltip": { "en": "Connector wall thickness — thicker for structural loads", "es": "Grosor de pared del conector — más grueso para cargas estructurales" },
-      "visible_in_modes": ["elbow", "tee", "cross", "custom_angle"],
-      "group": "pipe"
+      "label": { "en": "Pipe OD (mm)", "es": "OD Tubería (mm)" },
+      "tooltip": { "en": "Outer diameter of the pipe/dowel", "es": "Diámetro exterior del tubo/espiga" },
+      "visible_in_modes": ["Standard"],
+      "group": "dimensions"
     },
     {
       "id": "connector_type",
-      "type": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 3,
-      "step": 1,
+      "type": "select",
+      "default": "elbow",
+      "options": [
+        { "value": "elbow", "label": { "en": "Elbow (2-way)", "es": "Codo (2 vías)" } },
+        { "value": "tee", "label": { "en": "Tee (3-way flat)", "es": "Tee (3 vías plano)" } },
+        { "value": "cross", "label": { "en": "Cross (4-way flat)", "es": "Cruz (4 vías plano)" } },
+        { "value": "3-way-corner", "label": { "en": "Corner (3-way)", "es": "Esquina (3 vías)" } },
+        { "value": "4-way-corner", "label": { "en": "Corner (4-way)", "es": "Esquina (4 vías)" } },
+        { "value": "5-way", "label": { "en": "5-Way Center", "es": "Centro 5 Vías" } },
+        { "value": "6-way", "label": { "en": "6-Way Hub", "es": "Hub 6 Vías" } }
+      ],
       "label": { "en": "Connector Type", "es": "Tipo de Conector" },
-      "tooltip": { "en": "0=Elbow, 1=Tee, 2=Cross, 3=Custom Angle", "es": "0=Codo, 1=T, 2=Cruz, 3=Ángulo Personalizado" },
-      "visible_in_modes": ["elbow", "tee", "cross", "custom_angle"],
+      "visible_in_modes": ["Standard"],
       "group": "geometry"
     },
     {
-      "id": "angle",
+      "id": "wall_thickness_mm",
       "type": "slider",
-      "default": 90,
-      "min": 15,
-      "max": 180,
-      "step": 5,
-      "label": { "en": "Angle (°)", "es": "Ángulo (°)" },
-      "tooltip": { "en": "Bend angle between pipe arms", "es": "Ángulo de curvatura entre brazos" },
-      "visible_in_modes": ["elbow", "custom_angle"],
-      "group": "geometry"
+      "default": 3,
+      "min": 2,
+      "max": 8,
+      "step": 0.5,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "visible_in_modes": ["Standard"],
+      "group": "structure"
     },
     {
-      "id": "socket_depth",
+      "id": "insertion_depth_mm",
       "type": "slider",
-      "default": 25,
+      "default": 20,
       "min": 10,
-      "max": 60,
-      "step": 5,
-      "label": { "en": "Socket Depth (mm)", "es": "Profundidad del Socket (mm)" },
-      "tooltip": { "en": "How deep the pipe inserts into the connector", "es": "Profundidad de inserción del tubo en el conector" },
-      "visible_in_modes": ["elbow", "tee", "cross", "custom_angle"],
-      "group": "geometry"
-    },
-    {
-      "id": "tolerance",
-      "type": "slider",
-      "default": 0.4,
-      "min": 0.1,
-      "max": 1.0,
-      "step": 0.05,
-      "label": { "en": "Tolerance (mm)", "es": "Tolerancia (mm)" },
-      "tooltip": { "en": "Gap between pipe and socket for fit", "es": "Holgura entre tubo y socket para ajuste" },
-      "visible_in_modes": ["elbow", "tee", "cross", "custom_angle"],
-      "group": "pipe",
-      "visibility_level": "advanced"
-    },
-    {
-      "id": "ribbed",
-      "type": "checkbox",
-      "default": true,
-      "label": { "en": "Grip Ribs", "es": "Costillas de Agarre" },
-      "tooltip": { "en": "Internal ribs for friction-fit grip", "es": "Costillas internas para agarre por fricción" },
-      "visible_in_modes": ["elbow", "tee", "cross", "custom_angle"],
-      "group": "features"
+      "max": 50,
+      "step": 1,
+      "label": { "en": "Insertion Depth (mm)", "es": "Profundidad de Inserción (mm)" },
+      "visible_in_modes": ["Standard"],
+      "group": "structure"
     },
     {
       "id": "fn",
@@ -183,49 +117,16 @@
       "max": 64,
       "step": 8,
       "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
-      "tooltip": { "en": "0 = auto; higher = more detail but slower", "es": "0 = automático; mayor = más detalle pero más lento" },
-      "visible_in_modes": ["elbow", "tee", "cross", "custom_angle"],
+      "visible_in_modes": ["Standard"],
       "group": "quality",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "pipe", "label": { "en": "Pipe", "es": "Tubo" } },
-    { "id": "geometry", "label": { "en": "Geometry", "es": "Geometría" } },
-    { "id": "features", "label": { "en": "Features", "es": "Características" } },
+    { "id": "dimensions", "label": { "en": "Pipe Size", "es": "Tamaño de Tubería" } },
+    { "id": "geometry", "label": { "en": "Topology", "es": "Topología" } },
+    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } },
     { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
   ],
-  "export_formats": ["stl", "3mf"],
-  "hyperobject": {
-    "domain": "household",
-    "cdg_interfaces": [
-      {
-        "id": "pipe_od_socket",
-        "label": { "en": "Pipe OD Socket Interface", "es": "Interfaz Socket de Diámetro Exterior" },
-        "geometry_type": "tube",
-        "standard": "ASTM D1785 / ISO 1452 / Variable",
-        "parameters": ["pipe_od", "tolerance"]
-      },
-      {
-        "id": "connectivity_topology",
-        "label": { "en": "Connectivity Topology", "es": "Topología de Conectividad" },
-        "geometry_type": "junction",
-        "standard": "internal",
-        "parameters": ["connector_type", "angle"]
-      }
-    ],
-    "material_awareness": {
-      "shrinkage_compensation": true,
-      "recycled_material_toggle": true,
-      "tolerance_by_material": true
-    },
-    "societal_benefit": {
-      "en": "Enables disaster shelter construction, agricultural infrastructure, and local material reuse by turning scavenged pipes and bamboo into rigid frameworks.",
-      "es": "Permite la construcción de refugios de emergencia, infraestructura agrícola y reutilización de materiales locales convirtiendo tubos recuperados y bambú en estructuras rígidas."
-    },
-    "commons_license": "CERN-OHL-S-2.0",
-    "bosl2_modules_used": ["tube", "attachable", "cyl", "rot"],
-    "oep8_features": ["object_dicts"],
-    "cdg_registry_refs": ["pipe_od_standards"]
-  }
+  "export_formats": ["stl", "3mf"]
 }

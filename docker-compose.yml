@@ -57,6 +57,8 @@ services:
     build:
       context: .
       dockerfile: apps/landing/Dockerfile
+      args:
+        PUBLIC_STUDIO_URL: http://localhost:3000
     restart: unless-stopped
     ports:
       - "4321:80"

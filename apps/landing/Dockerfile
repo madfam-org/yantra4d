@@ -5,6 +5,8 @@ RUN npm ci
 COPY packages/ /app/packages/
 COPY commons/ /app/commons/
 COPY apps/landing/ ./
+ARG PUBLIC_STUDIO_URL
+ENV PUBLIC_STUDIO_URL=$PUBLIC_STUDIO_URL
 RUN npm run build
 
 FROM nginx:alpine

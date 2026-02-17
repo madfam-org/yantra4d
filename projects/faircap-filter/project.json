@@ -7,7 +7,7 @@
       "en": "Open-source parametric water filter that screws onto standard PET bottles — clean water from plastic waste",
       "es": "Filtro de agua paramétrico de código abierto que se enrosca en botellas PET estándar — agua limpia a partir de residuos plásticos"
     },
-    "thumbnail": "/projects/faircap-filter.webp",
+    "thumbnail": "/projects/faircap-filter.png",
     "tags": [
       "water",
       "filter",
@@ -18,187 +18,79 @@
       "commons",
       "cdg"
     ],
-    "difficulty": "intermediate"
+    "difficulty": "intermediate",
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "household",
+      "cdg_interface": "pco_1881_thread"
+    }
   },
   "modes": [
     {
-      "id": "basic_filter",
-      "scad_file": "filter.scad",
-      "label": { "en": "Basic Sediment Filter", "es": "Filtro Básico de Sedimentos" },
-      "parts": ["filter_body", "cap"],
-      "estimate": { "base_units": 1, "formula": "constant" }
-    },
-    {
-      "id": "carbon_stage",
-      "scad_file": "filter.scad",
-      "label": { "en": "Activated Carbon Stage", "es": "Etapa de Carbón Activado" },
-      "parts": ["filter_body", "carbon_chamber", "cap"],
-      "estimate": { "base_units": 1, "formula": "constant" }
-    },
-    {
-      "id": "membrane_stage",
-      "scad_file": "filter.scad",
-      "label": { "en": "Membrane Filtration", "es": "Filtración por Membrana" },
-      "parts": ["filter_body", "membrane_housing", "cap"],
+      "id": "Standard",
+      "scad_file": "faircap.scad",
+      "label": { "en": "Standard Filter", "es": "Filtro Estándar" },
+      "parts": ["filter_housing"],
       "estimate": { "base_units": 1, "formula": "constant" }
     }
   ],
   "parts": [
     {
-      "id": "filter_body",
+      "id": "filter_housing",
       "render_mode": 0,
-      "label": { "en": "Filter Body", "es": "Cuerpo del Filtro" },
+      "label": { "en": "Filter Housing", "es": "Carcasa del Filtro" },
       "default_color": "#06b6d4"
-    },
-    {
-      "id": "carbon_chamber",
-      "render_mode": 1,
-      "label": { "en": "Carbon Chamber", "es": "Cámara de Carbón" },
-      "default_color": "#6b7280"
-    },
-    {
-      "id": "membrane_housing",
-      "render_mode": 1,
-      "label": { "en": "Membrane Housing", "es": "Carcasa de Membrana" },
-      "default_color": "#8b5cf6"
-    },
-    {
-      "id": "cap",
-      "render_mode": 1,
-      "label": { "en": "End Cap", "es": "Tapa Final" },
-      "default_color": "#10b981"
     }
   ],
   "presets": [
     {
-      "id": "pet_basic",
-      "label": { "en": "Standard PET Bottle Filter", "es": "Filtro para Botella PET Estándar" },
-      "values": { "thread_standard": 0, "filter_length": 80, "pore_size": 1 }
+      "id": "charcoal_standard",
+      "label": { "en": "Charcoal Filter (Standard)", "es": "Filtro de Carbón (Estándar)" },
+      "values": { "filter_type": "charcoal", "housing_length_mm": 80 }
     },
     {
-      "id": "carbon_enhanced",
-      "label": { "en": "Carbon Enhanced (1L Bottle)", "es": "Carbón Mejorado (Botella 1L)" },
-      "values": { "thread_standard": 0, "filter_length": 120, "pore_size": 0, "carbon_chamber": true }
-    },
-    {
-      "id": "field_emergency",
-      "label": { "en": "Field Emergency (Any Bottle)", "es": "Emergencia de Campo (Cualquier Botella)" },
-      "values": { "thread_standard": 0, "filter_length": 60, "pore_size": 2 }
+      "id": "ceramic_long",
+      "label": { "en": "Ceramic Filter (Long)", "es": "Filtro Cerámico (Largo)" },
+      "values": { "filter_type": "ceramic", "housing_length_mm": 120 }
     }
   ],
   "parameters": [
     {
-      "id": "thread_standard",
+      "id": "filter_type",
+      "type": "string",
+      "default": "charcoal",
+      "enum": ["charcoal", "ceramic", "mesh", "empty"],
+      "label": { "en": "Filter Media Type", "es": "Tipo de Medio Filtrante" },
+      "tooltip": { "en": "Internal structure for filtration", "es": "Estructura interna para filtración" },
+      "visible_in_modes": ["Standard"],
+      "group": "filtration"
+    },
+    {
+      "id": "housing_od_mm",
       "type": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 2,
+      "default": 40,
+      "min": 30,
+      "max": 60,
       "step": 1,
-      "label": { "en": "Bottle Thread Standard", "es": "Estándar de Rosca de Botella" },
-      "tooltip": { "en": "0=PCO 1881 (most common), 1=PCO 1810, 2=Custom OD", "es": "0=PCO 1881 (más común), 1=PCO 1810, 2=OD Personalizado" },
-      "visible_in_modes": ["basic_filter", "carbon_stage", "membrane_stage"],
-      "group": "thread"
+      "label": { "en": "Housing Diameter (mm)", "es": "Diámetro de Carcasa (mm)" },
+      "visible_in_modes": ["Standard"],
+      "group": "dimensions"
     },
     {
-      "id": "custom_thread_od",
-      "type": "slider",
-      "default": 26.7,
-      "min": 20,
-      "max": 40,
-      "step": 0.1,
-      "label": { "en": "Custom Thread OD (mm)", "es": "OD de Rosca Personalizado (mm)" },
-      "tooltip": { "en": "Only used when Thread Standard = 2", "es": "Solo se usa cuando Estándar de Rosca = 2" },
-      "visible_in_modes": ["basic_filter", "carbon_stage", "membrane_stage"],
-      "group": "thread",
-      "visibility_level": "advanced"
-    },
-    {
-      "id": "filter_length",
+      "id": "housing_length_mm",
       "type": "slider",
       "default": 80,
       "min": 40,
-      "max": 200,
-      "step": 10,
-      "label": { "en": "Filter Length (mm)", "es": "Largo del Filtro (mm)" },
-      "tooltip": { "en": "Total filter cartridge length", "es": "Largo total del cartucho de filtro" },
-      "visible_in_modes": ["basic_filter", "carbon_stage", "membrane_stage"],
-      "group": "filter"
-    },
-    {
-      "id": "pore_size",
-      "type": "slider",
-      "default": 1,
-      "min": 0,
-      "max": 3,
-      "step": 1,
-      "label": { "en": "Pore Size", "es": "Tamaño de Poro" },
-      "tooltip": { "en": "0=fine (0.5mm), 1=medium (1mm), 2=coarse (2mm), 3=pre-filter (3mm)", "es": "0=fino (0.5mm), 1=medio (1mm), 2=grueso (2mm), 3=pre-filtro (3mm)" },
-      "visible_in_modes": ["basic_filter", "carbon_stage", "membrane_stage"],
-      "group": "filter"
-    },
-    {
-      "id": "wall_thickness",
-      "type": "slider",
-      "default": 2.5,
-      "min": 1.5,
-      "max": 4.0,
-      "step": 0.5,
-      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
-      "tooltip": { "en": "Filter body wall thickness", "es": "Grosor de pared del cuerpo del filtro" },
-      "visible_in_modes": ["basic_filter", "carbon_stage", "membrane_stage"],
-      "group": "structure"
-    },
-    {
-      "id": "fn",
-      "type": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 64,
-      "step": 8,
-      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
-      "tooltip": { "en": "0 = auto; higher = more detail but slower", "es": "0 = automático; mayor = más detalle pero más lento" },
-      "visible_in_modes": ["basic_filter", "carbon_stage", "membrane_stage"],
-      "group": "quality",
-      "visibility_level": "advanced"
+      "max": 150,
+      "step": 5,
+      "label": { "en": "Housing Length (mm)", "es": "Largo de Carcasa (mm)" },
+      "visible_in_modes": ["Standard"],
+      "group": "dimensions"
     }
   ],
   "parameter_groups": [
-    { "id": "thread", "label": { "en": "Bottle Thread", "es": "Rosca de Botella" } },
-    { "id": "filter", "label": { "en": "Filtration", "es": "Filtración" } },
-    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } },
-    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+    { "id": "filtration", "label": { "en": "Filtration Settings", "es": "Configuración de Filtrado" } },
+    { "id": "dimensions", "label": { "en": "Dimensions", "es": "Dimensiones" } }
   ],
-  "export_formats": ["stl", "3mf"],
-  "hyperobject": {
-    "domain": "household",
-    "cdg_interfaces": [
-      {
-        "id": "pco_1881_thread",
-        "label": { "en": "PCO 1881 Bottle Thread", "es": "Rosca PCO 1881 de Botella" },
-        "geometry_type": "thread",
-        "standard": "ISBT PCO 1881",
-        "parameters": ["thread_standard", "custom_thread_od"]
-      },
-      {
-        "id": "filter_membrane_housing",
-        "label": { "en": "Filter Membrane Housing", "es": "Carcasa de Membrana de Filtro" },
-        "geometry_type": "housing",
-        "standard": "internal",
-        "parameters": ["filter_length", "pore_size"]
-      }
-    ],
-    "material_awareness": {
-      "shrinkage_compensation": true,
-      "recycled_material_toggle": true,
-      "tolerance_by_material": true
-    },
-    "societal_benefit": {
-      "en": "Water sovereignty through plastic bottle upcycling — turns waste PET bottles into clean water filtration systems for disaster relief and developing regions.",
-      "es": "Soberanía hídrica mediante reciclaje de botellas plásticas — convierte botellas PET de desecho en sistemas de filtración de agua limpia para ayuda humanitaria y regiones en desarrollo."
-    },
-    "commons_license": "CERN-OHL-S-2.0",
-    "bosl2_modules_used": ["threaded_rod", "thread_helix", "cyl", "tube", "attachable"],
-    "oep8_features": ["object_dicts"],
-    "cdg_registry_refs": ["pco_1881_thread"]
-  }
+  "export_formats": ["stl", "3mf"]
 }

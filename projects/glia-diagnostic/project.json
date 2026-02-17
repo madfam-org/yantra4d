@@ -1,293 +1,42 @@
 {
+  "version": "1.0.0",
   "project": {
-    "name": "Glia Diagnostic",
-    "slug": "glia-diagnostic",
-    "version": "1.0.0",
-    "description": {
-      "en": "Open-source parametric diagnostic instruments — stethoscope, otoscope, and pulse oximeter clip at 99% lower cost than commercial equivalents",
-      "es": "Instrumentos diagnósticos paramétricos de código abierto — estetoscopio, otoscopio y clip de oxímetro con 99% menos costo que equivalentes comerciales"
-    },
-    "thumbnail": "/projects/glia-diagnostic.webp",
-    "tags": [
-      "medical",
-      "diagnostic",
-      "stethoscope",
-      "otoscope",
-      "open-source",
-      "glia",
-      "hyperobject",
-      "commons",
-      "cdg"
-    ],
-    "difficulty": "intermediate"
+    "name": "Glia Diagnostic Tools",
+    "description": "Open source stethoscope and otoscope medical hardware",
+    "authors": ["Glia Project", "Yantra4D"],
+    "license": "CC-BY-SA-4.0",
+    "difficulty": "intermediate",
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "medical",
+      "cdg_interface": "diaphragm_housing"
+    }
   },
-  "modes": [
-    {
-      "id": "stethoscope",
-      "scad_file": "stethoscope.scad",
-      "label": { "en": "Stethoscope", "es": "Estetoscopio" },
-      "parts": ["chest_piece", "headset_spring", "eartip"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+  "parameters": {
+    "tool_type": {
+      "type": "string",
+      "default": "stethoscope_head",
+      "enum": ["stethoscope_head", "otoscope_specula"],
+      "description": "Select the medical tool to print"
     },
-    {
-      "id": "otoscope",
-      "scad_file": "otoscope.scad",
-      "label": { "en": "Otoscope", "es": "Otoscopio" },
-      "parts": ["otoscope_body", "speculum", "lens_holder"],
-      "estimate": { "base_units": 1, "formula": "constant" }
-    },
-    {
-      "id": "pulse_oximeter_clip",
-      "scad_file": "oximeter_clip.scad",
-      "label": { "en": "Pulse Oximeter Clip", "es": "Clip de Oxímetro" },
-      "parts": ["clip_body"],
-      "estimate": { "base_units": 1, "formula": "constant" }
-    }
-  ],
-  "parts": [
-    {
-      "id": "chest_piece",
-      "render_mode": 0,
-      "label": { "en": "Chest Piece", "es": "Pieza de Pecho" },
-      "default_color": "#3b82f6"
-    },
-    {
-      "id": "headset_spring",
-      "render_mode": 1,
-      "label": { "en": "Headset Spring", "es": "Resorte de Auricular" },
-      "default_color": "#6b7280"
-    },
-    {
-      "id": "eartip",
-      "render_mode": 1,
-      "label": { "en": "Ear Tip", "es": "Punta de Oído" },
-      "default_color": "#10b981"
-    },
-    {
-      "id": "otoscope_body",
-      "render_mode": 0,
-      "label": { "en": "Otoscope Body", "es": "Cuerpo del Otoscopio" },
-      "default_color": "#8b5cf6"
-    },
-    {
-      "id": "speculum",
-      "render_mode": 1,
-      "label": { "en": "Speculum Cone", "es": "Cono de Espéculo" },
-      "default_color": "#f59e0b"
-    },
-    {
-      "id": "lens_holder",
-      "render_mode": 1,
-      "label": { "en": "Lens Holder", "es": "Porta Lente" },
-      "default_color": "#ef4444"
-    },
-    {
-      "id": "clip_body",
-      "render_mode": 0,
-      "label": { "en": "Oximeter Clip", "es": "Clip Oxímetro" },
-      "default_color": "#06b6d4"
-    }
-  ],
-  "presets": [
-    {
-      "id": "standard_stethoscope",
-      "label": { "en": "Standard Stethoscope", "es": "Estetoscopio Estándar" },
-      "values": { "diaphragm_od": 44, "tubing_barb_id": 8, "head_size": 1 }
-    },
-    {
-      "id": "pediatric_stethoscope",
-      "label": { "en": "Pediatric Stethoscope", "es": "Estetoscopio Pediátrico" },
-      "values": { "diaphragm_od": 30, "tubing_barb_id": 6, "head_size": 0 }
-    },
-    {
-      "id": "standard_otoscope",
-      "label": { "en": "Standard Otoscope ($5)", "es": "Otoscopio Estándar ($5)" },
-      "values": { "speculum_od": 4.25, "led_diameter": 3, "battery_type": 0 }
-    },
-    {
-      "id": "field_oximeter",
-      "label": { "en": "Field Pulse Oximeter Clip", "es": "Clip de Oxímetro de Campo" },
-      "values": { "finger_width": 18, "sensor_type": 0 }
-    }
-  ],
-  "parameters": [
-    {
-      "id": "diaphragm_od",
-      "type": "slider",
+    "diaphragm_size_mm": {
+      "type": "number",
       "default": 44,
-      "min": 25,
-      "max": 55,
-      "step": 1,
-      "label": { "en": "Diaphragm OD (mm)", "es": "OD del Diafragma (mm)" },
-      "tooltip": { "en": "Outer diameter of the stethoscope diaphragm housing", "es": "Diámetro exterior de la carcasa del diafragma" },
-      "visible_in_modes": ["stethoscope"],
-      "group": "stethoscope"
+      "min": 30,
+      "max": 50,
+      "description": "Diameter of the stethoscope diaphragm (if applicable)"
     },
-    {
-      "id": "tubing_barb_id",
-      "type": "slider",
-      "default": 8,
-      "min": 4,
-      "max": 12,
-      "step": 1,
-      "label": { "en": "Tubing Barb ID (mm)", "es": "ID del Boquilla de Tubo (mm)" },
-      "tooltip": { "en": "Match to your locally available silicone tubing", "es": "Ajuste al tubo de silicona disponible localmente" },
-      "visible_in_modes": ["stethoscope"],
-      "group": "stethoscope"
-    },
-    {
-      "id": "head_size",
-      "type": "slider",
-      "default": 1,
-      "min": 0,
-      "max": 2,
-      "step": 1,
-      "label": { "en": "Head Size", "es": "Tamaño de Cabeza" },
-      "tooltip": { "en": "0=small (child), 1=medium (adult), 2=large — adjusts spring curve radius", "es": "0=pequeño (niño), 1=medio (adulto), 2=grande — ajusta el radio de curva del resorte" },
-      "visible_in_modes": ["stethoscope"],
-      "group": "stethoscope"
-    },
-    {
-      "id": "speculum_od",
-      "type": "slider",
-      "default": 4.25,
-      "min": 2.5,
-      "max": 6.0,
-      "step": 0.25,
-      "label": { "en": "Speculum OD (mm)", "es": "OD del Espéculo (mm)" },
-      "tooltip": { "en": "Speculum cone outer diameter — match to standard consumables", "es": "Diámetro exterior del cono de espéculo — ajuste a consumibles estándar" },
-      "visible_in_modes": ["otoscope"],
-      "group": "otoscope"
-    },
-    {
-      "id": "led_diameter",
-      "type": "slider",
-      "default": 3,
-      "min": 3,
-      "max": 5,
-      "step": 1,
-      "label": { "en": "LED Diameter (mm)", "es": "Diámetro del LED (mm)" },
-      "tooltip": { "en": "White LED diameter for illumination", "es": "Diámetro del LED blanco para iluminación" },
-      "visible_in_modes": ["otoscope"],
-      "group": "otoscope"
-    },
-    {
-      "id": "battery_type",
-      "type": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 2,
-      "step": 1,
-      "label": { "en": "Battery Type", "es": "Tipo de Batería" },
-      "tooltip": { "en": "0=2×AA, 1=2×AAA, 2=CR2032 coin cell", "es": "0=2×AA, 1=2×AAA, 2=Pila CR2032" },
-      "visible_in_modes": ["otoscope"],
-      "group": "otoscope"
-    },
-    {
-      "id": "finger_width",
-      "type": "slider",
-      "default": 18,
-      "min": 10,
-      "max": 25,
-      "step": 1,
-      "label": { "en": "Finger Width (mm)", "es": "Ancho de Dedo (mm)" },
-      "tooltip": { "en": "Width of the finger to clip onto", "es": "Ancho del dedo para sujetar" },
-      "visible_in_modes": ["pulse_oximeter_clip"],
-      "group": "oximeter"
-    },
-    {
-      "id": "sensor_type",
-      "type": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 1,
-      "step": 1,
-      "label": { "en": "Sensor Module", "es": "Módulo Sensor" },
-      "tooltip": { "en": "0=MAX30102, 1=MAX30100", "es": "0=MAX30102, 1=MAX30100" },
-      "visible_in_modes": ["pulse_oximeter_clip"],
-      "group": "oximeter"
-    },
-    {
-      "id": "fn",
-      "type": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 64,
-      "step": 8,
-      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
-      "tooltip": { "en": "0 = auto; higher = more detail but slower", "es": "0 = automático; mayor = más detalle pero más lento" },
-      "visible_in_modes": ["stethoscope", "otoscope", "pulse_oximeter_clip"],
-      "group": "quality",
-      "visibility_level": "advanced"
+    "speculum_size_mm": {
+      "type": "number",
+      "default": 4,
+      "enum": [2.5, 3, 4, 5],
+      "description": "Tip diameter of the otoscope speculum (if applicable)"
     }
-  ],
-  "parameter_groups": [
-    { "id": "stethoscope", "label": { "en": "Stethoscope", "es": "Estetoscopio" } },
-    { "id": "otoscope", "label": { "en": "Otoscope", "es": "Otoscopio" } },
-    { "id": "oximeter", "label": { "en": "Oximeter", "es": "Oxímetro" } },
-    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
-  ],
-  "export_formats": ["stl", "3mf"],
-  "bom": {
-    "hardware": [
-      {
-        "id": "silicone_tubing",
-        "label": { "en": "Silicone Tubing (60cm)", "es": "Tubo de Silicona (60cm)" },
-        "quantity_formula": "1",
-        "unit": "pcs",
-        "notes": { "en": "Match barb ID to tubing ID", "es": "Coincida el ID del boquilla con el ID del tubo" }
-      },
-      {
-        "id": "diaphragm_membrane",
-        "label": { "en": "PET Diaphragm (from bottle)", "es": "Diafragma PET (de botella)" },
-        "quantity_formula": "1",
-        "unit": "pcs"
-      },
-      {
-        "id": "led_white",
-        "label": { "en": "White LED", "es": "LED Blanco" },
-        "quantity_formula": "1",
-        "unit": "pcs"
-      }
-    ]
   },
-  "hyperobject": {
-    "domain": "medical",
-    "cdg_interfaces": [
-      {
-        "id": "speculum_snap_interface",
-        "label": { "en": "Otoscope Speculum Snap Interface", "es": "Interfaz Snap de Espéculo de Otoscopio" },
-        "geometry_type": "snap",
-        "standard": "Medical consumable standard",
-        "parameters": ["speculum_od"]
-      },
-      {
-        "id": "diaphragm_housing",
-        "label": { "en": "Stethoscope Diaphragm Housing", "es": "Carcasa de Diafragma de Estetoscopio" },
-        "geometry_type": "housing",
-        "standard": "Glia Project",
-        "parameters": ["diaphragm_od", "tubing_barb_id"]
-      },
-      {
-        "id": "tubing_barb_interface",
-        "label": { "en": "Tubing Barb Interface", "es": "Interfaz de Boquilla de Tubo" },
-        "geometry_type": "barb",
-        "standard": "Variable (local silicone hose diameters)",
-        "parameters": ["tubing_barb_id"]
-      }
-    ],
-    "material_awareness": {
-      "shrinkage_compensation": false,
-      "recycled_material_toggle": false,
-      "tolerance_by_material": true
-    },
-    "societal_benefit": {
-      "en": "Medical independence — a hospital can manufacture its own diagnostic tools. Glia otoscope costs $5 vs hundreds for commercial equivalents. Enables healthcare in resource-limited and conflict-affected regions.",
-      "es": "Independencia médica — un hospital puede fabricar sus propios instrumentos diagnósticos. El otoscopio Glia cuesta $5 vs cientos por equivalentes comerciales. Habilita atención médica en regiones con recursos limitados y afectadas por conflictos."
-    },
-    "commons_license": "CERN-OHL-S-2.0",
-    "bosl2_modules_used": ["cyl", "tube", "attachable", "rot"],
-    "oep8_features": ["object_dicts"],
-    "cdg_registry_refs": ["speculum_interface", "diaphragm_housing"]
-  }
+  "3d_models": [
+    {
+      "filename": "diagnostic.scad",
+      "description": "Medical tool body"
+    }
+  ]
 }

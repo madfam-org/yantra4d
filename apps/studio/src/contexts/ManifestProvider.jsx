@@ -24,11 +24,15 @@ export function ManifestProvider({ children }) {
       })
       .then((data) => {
         setProjects(data)
-        // Determine initial project from URL hash or first project
+        // Determine initial project from URL hash
         const hashSlug = _getProjectSlugFromHash()
-        const slug = data.find(p => p.slug === hashSlug)?.slug || data[0]?.slug
+        const slug = data.find(p => p.slug === hashSlug)?.slug
         if (slug) {
           setProjectSlug(slug)
+        } else {
+          // If no project in hash, ensure we don't have a stale fallback
+          setProjectSlug(null)
+          setLoading(false)
         }
         setProjectsResolved(true)
       })

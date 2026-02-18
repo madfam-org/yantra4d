@@ -250,6 +250,7 @@ def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
     payload = _extract_render_payload(data)
+    logger.error(f"Render Payload: {json.dumps(data)} => Parts: {payload['parts'] if payload else 'None'}")
 
     if payload is None:
         bad_name = _resolve_render_context(data)[4]

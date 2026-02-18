@@ -1,6 +1,7 @@
 {
   "version": "1.0.0",
   "project": {
+    "slug": "glia-diagnostic",
     "name": "Glia Diagnostic Tools",
     "description": "Open source stethoscope and otoscope medical hardware",
     "authors": ["Glia Project", "Yantra4D"],
@@ -13,13 +14,7 @@
     }
   },
   "parameters": [
-    {
-      "id": "tool_type",
-      "type": "string",
-      "default": "stethoscope_head",
-      "enum": ["stethoscope_head", "otoscope_specula"],
-      "description": "Select the medical tool to print"
-    },
+
     {
       "id": "diaphragm_size_mm",
       "type": "number",
@@ -34,12 +29,40 @@
       "default": 4,
       "enum": [2.5, 3, 4, 5],
       "description": "Tip diameter of the otoscope speculum (if applicable)"
+    },
+    {
+      "id": "render_mode",
+      "type": "number",
+      "default": 0,
+      "hidden": true
     }
   ],
-  "3d_models": [
+  "modes": [
     {
-      "filename": "diagnostic.scad",
-      "description": "Medical tool body"
+      "id": "stethoscope",
+      "label": "Stethoscope",
+      "scad_file": "diagnostic.scad",
+      "parts": ["head"],
+      "estimate": { "base_units": 1 }
+    },
+    {
+      "id": "otoscope",
+      "label": "Otoscope",
+      "scad_file": "diagnostic.scad",
+      "parts": ["specula"],
+      "estimate": { "base_units": 1 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "head",
+      "label": "Head",
+      "render_mode": 1
+    },
+    {
+      "id": "specula",
+      "label": "Specula",
+      "render_mode": 2
     }
   ]
 }

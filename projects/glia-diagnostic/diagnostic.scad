@@ -4,6 +4,7 @@ include <BOSL2/std.scad>
 tool_type = "stethoscope_head"; // [stethoscope_head, otoscope_specula]
 diaphragm_size_mm = 44;
 speculum_size_mm = 4; // [2.5, 3, 4, 5]
+render_mode = 0;
 
 module stethoscope_head() {
     // Glia-style bell
@@ -54,8 +55,8 @@ module otoscope_specula() {
     }
 }
 
-if (tool_type == "stethoscope_head") {
+if (render_mode == 1 || (render_mode == 0 && tool_type == "stethoscope_head")) {
     stethoscope_head();
-} else if (tool_type == "otoscope_specula") {
+} else if (render_mode == 2 || (render_mode == 0 && tool_type == "otoscope_specula")) {
     otoscope_specula();
 }

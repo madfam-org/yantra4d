@@ -173,6 +173,8 @@ async function renderBackend(mode, params, onProgress, abortSignal, project) {
     signal: abortSignal
   })
 
+  console.log('[DEBUG] renderBackend payload:', payload)
+
   if (!response.ok) {
     const text = await response.text().catch(() => '')
     throw new Error(`Render request failed (HTTP ${response.status}): ${text}`)

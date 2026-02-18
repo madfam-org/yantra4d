@@ -79,9 +79,12 @@ export function buildHash(projectSlug, presetId, modeId) {
  */
 export function useHashNavigation({ presets, modes, projectSlug, onHashChange }) {
   const [isDemo, setIsDemo] = useState(() => isDemoView(window.location.hash))
-  const [currentView, setCurrentView] = useState(() =>
-    isProjectsView(window.location.hash) ? 'projects' : 'studio'
-  )
+  const [currentView, setCurrentView] = useState(() => {
+    const hash = window.location.hash
+    // Default to projects view if hash is empty or explicitly 'projects'
+    if (!hash || hash === '#' || isProjectsView(hash)) return 'projects'
+    return 'studio'
+  })
 
   // Set initial hash if missing or invalid
   useEffect(() => {

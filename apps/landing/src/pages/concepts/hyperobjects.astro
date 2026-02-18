@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../lib/i18n';
+
+const lang = Astro.currentLocale || 'es';
+const t = getTranslations(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  t={t}
+  title="Hyperobjects | Yantra4D"
+  description="Software-defined physical objects that exist across multiple dimensions of customization."
+>
+  <Header lang={lang} t={t} />
+  
+  <main class="pt-20">
+    <section class="relative min-h-[60vh] flex items-center justify-center px-6 overflow-hidden">
+      <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-purple-900/10"></div>
+      
+      <!-- Placeholder for 3D Background Element -->
+      <div class="absolute inset-0 -z-20 opacity-30">
+        <div class="w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-purple-500/20 via-transparent to-transparent"></div>
+      </div>
+
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-300 mb-6">
+          {t.concepts.hyperobjects.heroTitle}
+        </h1>
+        <p class="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          {t.concepts.hyperobjects.heroSubtitle}
+        </p>
+      </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-6 py-24 space-y-24">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+          <h2 class="text-3xl font-bold">{t.concepts.hyperobjects.section1Title}</h2>
+          <p class="text-lg text-muted-foreground">
+            {t.concepts.hyperobjects.section1Body1}
+          </p>
+          <p class="text-lg text-muted-foreground">
+            {t.concepts.hyperobjects.section1Body2}
+          </p>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-2 aspect-square flex items-center justify-center bg-gradient-to-br from-card to-purple-900/20">
+           <span class="text-muted-foreground italic">[Parametric Slider Animation Placeholder]</span>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 py-12">
+        <div class="bg-card/50 border border-border p-6 rounded-lg backdrop-blur-sm">
+          <div class="text-4xl mb-4">🎛️</div>
+          <h3 class="text-xl font-bold mb-2">{t.concepts.hyperobjects.parametricTitle}</h3>
+          <p class="text-muted-foreground">{t.concepts.hyperobjects.parametricDesc}</p>
+        </div>
+        <div class="bg-card/50 border border-border p-6 rounded-lg backdrop-blur-sm">
+          <div class="text-4xl mb-4">📦</div>
+          <h3 class="text-xl font-bold mb-2">{t.concepts.hyperobjects.codeDrivenTitle}</h3>
+          <p class="text-muted-foreground">{t.concepts.hyperobjects.codeDrivenDesc}</p>
+        </div>
+        <div class="bg-card/50 border border-border p-6 rounded-lg backdrop-blur-sm">
+          <div class="text-4xl mb-4">🏭</div>
+          <h3 class="text-xl font-bold mb-2">{t.concepts.hyperobjects.manufacturingTitle}</h3>
+          <p class="text-muted-foreground">{t.concepts.hyperobjects.manufacturingDesc}</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer t={t} />
+</BaseLayout>

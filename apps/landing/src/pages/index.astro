@@ -21,17 +21,69 @@ const t = getTranslations(lang);
 
 <BaseLayout lang={lang} t={t}>
   <Header lang={lang} t={t} />
-  <main>
+  <main class="scroll-smooth">
     <Hero lang={lang} t={t} />
+    
+    <!-- Choose Your Own Adventure Section -->
+    <section id="adventure" class="py-24 px-6 min-h-screen flex flex-col items-center justify-center relative">
+       <div class="text-center mb-16 max-w-3xl">
+          <h2 class="text-3xl md:text-5xl font-bold mb-6">{t.choosePath.title}</h2>
+          <p class="text-xl text-muted-foreground">
+            {t.choosePath.subtitle}
+          </p>
+       </div>
+
+       <div class="grid md:grid-cols-3 gap-8 max-w-6xl w-full">
+          <!-- Path 1: Hyperobjects -->
+          <a href="/concepts/hyperobjects" class="group relative overflow-hidden rounded-xl border border-border bg-card p-8 hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-900/20">
+             <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10">
+                <div class="h-12 w-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition-transform">✨</div>
+                <h3 class="text-2xl font-bold mb-3">{t.choosePath.hyperobjects.title}</h3>
+                <p class="text-muted-foreground mb-6">
+                   {t.choosePath.hyperobjects.desc}
+                </p>
+                <div class="text-purple-400 font-medium flex items-center">
+                   {t.choosePath.hyperobjects.action} <span class="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+             </div>
+          </a>
+
+          <!-- Path 2: Common Denominator -->
+          <a href="/concepts/common-denominator" class="group relative overflow-hidden rounded-xl border border-border bg-card p-8 hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/20">
+             <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10">
+                <div class="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition-transform">📐</div>
+                <h3 class="text-2xl font-bold mb-3">{t.choosePath.cdg.title}</h3>
+                <p class="text-muted-foreground mb-6">
+                   {t.choosePath.cdg.desc}
+                </p>
+                <div class="text-blue-400 font-medium flex items-center">
+                   {t.choosePath.cdg.action} <span class="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+             </div>
+          </a>
+
+          <!-- Path 3: The Commons -->
+          <a href="/concepts/commons" class="group relative overflow-hidden rounded-xl border border-border bg-card p-8 hover:border-green-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/20">
+             <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10">
+                <div class="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition-transform">🌍</div>
+                <h3 class="text-2xl font-bold mb-3">{t.choosePath.commons.title}</h3>
+                <p class="text-muted-foreground mb-6">
+                   {t.choosePath.commons.desc}
+                </p>
+                <div class="text-green-400 font-medium flex items-center">
+                   {t.choosePath.commons.action} <span class="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+             </div>
+          </a>
+       </div>
+    </section>
+
     <ProjectGallery lang={lang} t={t} />
-    <BeforeAfter t={t} />
-    <ForMakers t={t} />
-    <ForCreators t={t} />
     <HowItWorks t={t} />
     <LiveDemo t={t} />
-    <OpenSource t={t} />
-    <HyperCommons t={t} />
-    <CDGSection t={t} />
     <CallToAction t={t} />
   </main>
   <Footer t={t} />

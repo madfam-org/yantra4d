@@ -101,7 +101,7 @@ export default function ProjectsView() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold">{t('projects.title')}</h2>
           <AuthGate tier="pro">
@@ -111,6 +111,37 @@ export default function ProjectsView() {
             </Button>
           </AuthGate>
         </div>
+      </div>
+
+      {/* Intro Section */}
+      <div className="grid md:grid-cols-2 gap-6 mb-10">
+        <Card className="bg-gradient-to-br from-purple-500/5 to-transparent border-purple-200/20">
+          <CardHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">✨</span>
+              <CardTitle className="text-lg">{t('projects.intro.hyperobjects.title')}</CardTitle>
+            </div>
+            <CardDescription className="text-foreground/80">
+              {t('projects.intro.hyperobjects.desc')}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-500/5 to-transparent border-blue-200/20">
+          <CardHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">📐</span>
+              <CardTitle className="text-lg">{t('projects.intro.cdg.title')}</CardTitle>
+            </div>
+            <CardDescription className="text-foreground/80">
+              {t('projects.intro.cdg.desc')}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <h3 className="text-xl font-semibold">{t('projects.library_title')}</h3>
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -129,11 +160,10 @@ export default function ProjectsView() {
             <button
               key={tag}
               type="button"
-              className={`px-2.5 py-1 text-xs rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                activeTag === tag
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background text-muted-foreground border-border hover:text-foreground'
-              }`}
+              className={`px-2.5 py-1 text-xs rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeTag === tag
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:text-foreground'
+                }`}
               onClick={() => setActiveTag(prev => prev === tag ? null : tag)}
             >
               {tag}
@@ -239,7 +269,7 @@ export default function ProjectsView() {
               fetch(`${getApiBase()}/api/admin/projects`)
                 .then(res => res.ok ? res.json() : [])
                 .then(setProjects)
-                .catch(() => {})
+                .catch(() => { })
             }}
           />
         </Suspense>

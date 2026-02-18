@@ -30,7 +30,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 
 Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 21 built-in projects:
 -   [Gridfinity](../projects/gridfinity/) — Modular storage bins (flagship)
--   [Slide Holder](../projects/slide-holder/) 🔷 — Microscope slide retention (first hyperobject)
+-   [Microscope Slide Holder](../projects/microscope-slide-holder/) 🔷 — Microscope slide retention (first hyperobject)
 -   [Polydice](../projects/polydice/) — Parametric dice set
 -   Browse all projects under [`projects/`](../projects/)
 

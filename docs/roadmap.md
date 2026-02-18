@@ -248,7 +248,7 @@ New SCAD projects to be designed and classified as Hyperobjects from the ground 
 
 **Domain**: `culture` (archival, collectibles, display infrastructure)
 
-**License**: CERN-OHL-S-2.0 (consistent with `slide-holder`)
+**License**: CERN-OHL-S-2.0 (consistent with `microscope-slide-holder`)
 
 **Prerequisites before starting**:
 1. P0.1 — E2E tests in CI ✅

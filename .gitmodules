@@ -46,3 +46,6 @@
 [submodule "projects/tablaco/vendor/tablaco"]
 	path = projects/tablaco/vendor/tablaco
 	url = https://github.com/madfam-org/tablaco
+[submodule "projects/slide-holder"]
+	path = projects/microscope-slide-holder
+	url = https://github.com/madfam-org/microscope-slide-holder

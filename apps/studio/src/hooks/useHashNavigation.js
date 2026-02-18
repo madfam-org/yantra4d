@@ -86,8 +86,10 @@ export function useHashNavigation({ presets, modes, projectSlug, onHashChange })
     return 'studio'
   })
 
-  // Set initial hash if missing or invalid
+  // Set initial hash if missing or invalid, BUT ONLY if we are in studio view.
+  // If we are in projects view (root), we should not auto-select a project params hash.
   useEffect(() => {
+    if (currentView === 'projects') return
     if (!modes || modes.length === 0) return
     const parsed = parseHash(window.location.hash, presets, modes)
     const presetId = parsed.preset?.id || presets[0]?.id

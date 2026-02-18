@@ -42,7 +42,8 @@ beforeEach(() => {
   })
   localStorage.clear()
   sessionStorage.clear()
-  window.location.hash = ''
+  // Default to studio view for these tests
+  window.location.hash = '#/gridfinity'
 })
 
 afterEach(() => {

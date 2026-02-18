@@ -252,6 +252,7 @@ beforeEach(() => {
 
 const mockFetchSuccess = (projects = mockProjects) => {
   vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+    console.log('[DEBUG] Mock fetch:', url.toString())
     if (url.toString().includes('/manifest')) {
       return Promise.resolve({
         ok: true,
@@ -267,7 +268,7 @@ const mockFetchSuccess = (projects = mockProjects) => {
 
 describe('ProjectsView', () => {
   it('renders loading state', () => {
-    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {})) // never resolves
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => { })) // never resolves
     renderWithProviders(<ProjectsView />)
     expect(screen.getByText('Loading projects…')).toBeInTheDocument()
   })
@@ -293,12 +294,13 @@ describe('ProjectsView', () => {
 
   it('renders empty state with CTA link', async () => {
     mockFetchSuccess([])
-    renderWithProviders(<ProjectsView />)
+    renderWithProviders(<ProjectsView />, { tier: 'pro' })
     await waitFor(() => {
       expect(screen.getByText('No projects found.')).toBeInTheDocument()
     })
     const link = screen.getByText('Create your first project →')
-    expect(link).toHaveAttribute('href', '#/onboard')
+    expect(link).toBeInTheDocument()
+    expect(link.tagName).toBe('BUTTON')
   })
 
   it('card links point to #/{slug}', async () => {
@@ -341,8 +343,8 @@ describe('ProjectsView', () => {
     await waitFor(() => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
-    expect(screen.getByText('42 renders')).toBeInTheDocument()
-    expect(screen.getByText('7 exports')).toBeInTheDocument()
+    expect(screen.getByTestId('stats-renders')).toHaveTextContent('42 renders')
+    expect(screen.getByTestId('stats-exports')).toHaveTextContent('7 exports')
   })
 
   it('renders Manifest and Exports badges', async () => {
@@ -352,9 +354,9 @@ describe('ProjectsView', () => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
     // All 19 projects have manifest, 2 have exports (gridfinity, portacosas)
-    expect(screen.getAllByText('Manifest')).toHaveLength(19)
+    expect(screen.getAllByTestId('manifest-badge')).toHaveLength(19)
     // 2 have exports
-    expect(screen.getAllByText('Exports')).toHaveLength(2)
+    expect(screen.getAllByTestId('exports-badge')).toHaveLength(2)
   })
 
   it('renders render speed badges correctly', async () => {
@@ -380,7 +382,7 @@ describe('ProjectsView', () => {
     })
 
     // Search by description ("storage bins")
-    const searchInput = screen.getByPlaceholderText('Search projects…')
+    const searchInput = screen.getByPlaceholderText(/Search projects/i)
     fireEvent.change(searchInput, { target: { value: 'storage bins' } })
     expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     expect(screen.queryByText('Portacosas')).not.toBeInTheDocument()
@@ -392,7 +394,7 @@ describe('ProjectsView', () => {
 
   it('opens import wizard and refreshes list on success', async () => {
     mockFetchSuccess()
-    
+
     // Use Pro tier to enable button
     renderWithProviders(<ProjectsView />, { tier: 'pro' })
     await waitFor(() => {
@@ -401,7 +403,7 @@ describe('ProjectsView', () => {
 
     // Click Import
     fireEvent.click(screen.getByText('Import'))
-    
+
     // Check if wizard appears (it's lazy loaded, so we might need waitFor)
     // We can't easily test the lazy loaded component rendering without mocking Suspense or waiting long.
     // But we CAN test the state change if we mock the lazy import.

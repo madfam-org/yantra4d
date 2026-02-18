@@ -3,8 +3,10 @@ import { getApiBase } from '../../services/backendDetection'
 import { useLanguage } from '../../contexts/LanguageProvider'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Search, Github } from 'lucide-react'
+import { Github } from 'lucide-react'
 import AuthGate from '../auth/AuthGate'
+import { ProjectToolbar } from './ProjectToolbar'
+import { ProjectList } from './ProjectList'
 
 const GitHubImportWizard = lazy(() => import('../ai/GitHubImportWizard'))
 
@@ -26,12 +28,19 @@ const getRenderSpeed = (constants) => {
 export default function ProjectsView() {
   const { t, language } = useLanguage()
   const loc = useCallback((val) => (typeof val === 'object' && val !== null) ? (val[language] || val.en || '') : (val || ''), [language])
+
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // Toolbar State
   const [search, setSearch] = useState('')
-  const [activeTag, setActiveTag] = useState(null)
+  const [sort, setSort] = useState('name_asc')
+  const [filterType, setFilterType] = useState('all')
+  const [filterDifficulty, setFilterDifficulty] = useState('all')
+  const [viewMode, setViewMode] = useState('grid')
   const [showImport, setShowImport] = useState(false)
+  const [activeTag, setActiveTag] = useState(null)
 
   useEffect(() => {
     fetch(`${getApiBase()}/api/admin/projects?stats=1`)
@@ -55,8 +64,10 @@ export default function ProjectsView() {
     return [...tags].sort()
   }, [projects])
 
-  const filtered = useMemo(() => {
+  const processedProjects = useMemo(() => {
     let result = projects
+
+    // 1. Filter
     if (search) {
       const q = search.toLowerCase()
       result = result.filter(p =>
@@ -66,11 +77,35 @@ export default function ProjectsView() {
         (p.tags || []).some(tag => tag.toLowerCase().includes(q))
       )
     }
+
     if (activeTag) {
       result = result.filter(p => (p.tags || []).includes(activeTag))
     }
+
+    if (filterType !== 'all') {
+      if (filterType === 'hyperobject') result = result.filter(p => p.is_hyperobject)
+      if (filterType === 'demo') result = result.filter(p => p.is_demo)
+    }
+
+    if (filterDifficulty !== 'all') {
+      result = result.filter(p => p.difficulty === filterDifficulty)
+    }
+
+    // 2. Sort
+    result = [...result].sort((a, b) => {
+      switch (sort) {
+        case 'name_asc': return a.name.localeCompare(b.name)
+        case 'name_desc': return b.name.localeCompare(a.name)
+        case 'date_newest': return (b.modified_at || 0) - (a.modified_at || 0)
+        case 'date_oldest': return (a.modified_at || 0) - (b.modified_at || 0)
+        case 'complexity_asc': return (a.parameter_count || 0) - (b.parameter_count || 0)
+        case 'complexity_desc': return (b.parameter_count || 0) - (a.parameter_count || 0)
+        default: return 0
+      }
+    })
+
     return result
-  }, [projects, search, activeTag, loc])
+  }, [projects, search, activeTag, filterType, filterDifficulty, sort, loc])
 
   if (loading) {
     return (
@@ -88,19 +123,37 @@ export default function ProjectsView() {
     )
   }
 
+  // Early return for empty projects (except when filtering)
   if (projects.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
         <p className="text-muted-foreground">{t('projects.empty')}</p>
-        <a href="#/onboard" className="text-sm text-primary hover:underline">
-          {t('projects.empty_cta')}
-        </a>
+        <AuthGate tier="pro">
+          <Button variant="outline" size="sm" onClick={() => setShowImport(true)} className="gap-1.5">
+            {t('projects.empty_cta')}
+          </Button>
+        </AuthGate>
+        {showImport && (
+          <Suspense fallback={null}>
+            <GitHubImportWizard
+              onClose={() => setShowImport(false)}
+              onImported={() => {
+                setShowImport(false)
+                // Refresh project list
+                fetch(`${getApiBase()}/api/admin/projects`)
+                  .then(res => res.ok ? res.json() : [])
+                  .then(setProjects)
+                  .catch(() => { })
+              }}
+            />
+          </Suspense>
+        )}
       </div>
     )
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold">{t('projects.title')}</h2>
@@ -113,47 +166,22 @@ export default function ProjectsView() {
         </div>
       </div>
 
-      {/* Intro Section */}
-      <div className="grid md:grid-cols-2 gap-6 mb-10">
-        <Card className="bg-gradient-to-br from-purple-500/5 to-transparent border-purple-200/20">
-          <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">✨</span>
-              <CardTitle className="text-lg">{t('projects.intro.hyperobjects.title')}</CardTitle>
-            </div>
-            <CardDescription className="text-foreground/80">
-              {t('projects.intro.hyperobjects.desc')}
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      {/* Toolbar */}
+      <ProjectToolbar
+        search={search}
+        onSearchChange={setSearch}
+        sort={sort}
+        onSortChange={setSort}
+        filterType={filterType}
+        onFilterTypeChange={setFilterType}
+        filterDifficulty={filterDifficulty}
+        onFilterDifficultyChange={setFilterDifficulty}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        t={t}
+      />
 
-        <Card className="bg-gradient-to-br from-blue-500/5 to-transparent border-blue-200/20">
-          <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">📐</span>
-              <CardTitle className="text-lg">{t('projects.intro.cdg.title')}</CardTitle>
-            </div>
-            <CardDescription className="text-foreground/80">
-              {t('projects.intro.cdg.desc')}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h3 className="text-xl font-semibold">{t('projects.library_title')}</h3>
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="search"
-            placeholder={t('projects.search')}
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-
+      {/* Tags (Legacy but useful) */}
       {allTags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {allTags.map(tag => (
@@ -172,91 +200,91 @@ export default function ProjectsView() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map(project => (
-          <a
-            key={project.slug}
-            href={`#/${project.slug}`}
-            className="block hover:ring-2 hover:ring-ring rounded-lg transition-shadow"
-          >
-            <Card className="h-full flex flex-col">
-              {project.thumbnail && (
-                <div className="aspect-video overflow-hidden rounded-t-lg bg-muted">
-                  <img
-                    src={project.thumbnail}
-                    alt={project.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-lg">{project.name}</CardTitle>
-                  <span className="text-xs text-muted-foreground shrink-0">v{project.version}</span>
-                </div>
-                {project.description && (
-                  <CardDescription className="line-clamp-2">{loc(project.description)}</CardDescription>
-                )}
-              </CardHeader>
-              <CardContent className="flex-1">
-                <div className="flex flex-wrap gap-1.5 text-xs text-muted-foreground">
-                  <span>{project.mode_count} mode{project.mode_count !== 1 ? 's' : ''}</span>
-                  <span>·</span>
-                  <span>{project.parameter_count} param{project.parameter_count !== 1 ? 's' : ''}</span>
-                  <span>·</span>
-                  <span>{project.scad_file_count} .scad</span>
-                </div>
-                {(project.tags || []).length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {project.tags.map(tag => (
-                      <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="gap-2 flex-wrap">
-                {project.difficulty && (
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${DIFFICULTY_COLORS[project.difficulty] || ''}`}>
-                    {project.difficulty}
-                  </span>
-                )}
-                {(() => {
-                  const speed = getRenderSpeed(project.estimate_constants)
-                  if (!speed) return null
-                  return (
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${speed.color}`}>
-                      {speed.label}
-                    </span>
-                  )
-                })()}
-                {project.has_manifest && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.manifest')}</span>}
-                {project.has_exports && <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
-                {project.stats?.renders > 0 && (
-                  <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900 px-2 py-0.5 text-[10px] font-medium text-blue-800 dark:text-blue-200">
-                    {project.stats.renders} render{project.stats.renders !== 1 ? 's' : ''}
-                  </span>
-                )}
-                {project.stats?.exports > 0 && (
-                  <span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900 px-2 py-0.5 text-[10px] font-medium text-green-800 dark:text-green-200">
-                    {project.stats.exports} export{project.stats.exports !== 1 ? 's' : ''}
-                  </span>
-                )}
-                {project.modified_at && (
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    {new Date(project.modified_at * 1000).toLocaleDateString()}
-                  </span>
-                )}
-              </CardFooter>
-            </Card>
-          </a>
-        ))}
-      </div>
-
-      {filtered.length === 0 && projects.length > 0 && (
-        <div className="flex items-center justify-center h-32 text-muted-foreground">
+      {/* Content */}
+      {processedProjects.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
           {t('projects.no_results')}
         </div>
+      ) : (
+        viewMode === 'list' ? (
+          <ProjectList projects={processedProjects} loc={loc} t={t} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {processedProjects.map(project => (
+              <a
+                key={project.slug}
+                href={`#/${project.slug}`}
+                className="block hover:ring-2 hover:ring-ring rounded-lg transition-shadow"
+              >
+                <Card className="h-full flex flex-col">
+                  {project.thumbnail && (
+                    <div className="aspect-video overflow-hidden rounded-t-lg bg-muted">
+                      <img
+                        src={project.thumbnail}
+                        alt={project.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-lg">{project.name}</CardTitle>
+                      <span className="text-xs text-muted-foreground shrink-0">v{project.version}</span>
+                    </div>
+                    {project.description && (
+                      <CardDescription className="line-clamp-2">{loc(project.description)}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <div className="flex flex-wrap gap-1.5 text-xs text-muted-foreground px-0">
+                      <span>{project.mode_count} mode{project.mode_count !== 1 ? 's' : ''}</span>
+                      <span>·</span>
+                      <span>{project.parameter_count} param{project.parameter_count !== 1 ? 's' : ''}</span>
+                      {project.stats?.renders > 0 && (
+                        <>
+                          <span>·</span>
+                          <span data-testid="stats-renders">{project.stats.renders} renders</span>
+                        </>
+                      )}
+                      {project.stats?.exports > 0 && (
+                        <>
+                          <span>·</span>
+                          <span data-testid="stats-exports">{project.stats.exports} exports</span>
+                        </>
+                      )}
+                    </div>
+                    {(project.tags || []).length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {project.tags.map(tag => (
+                          <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter className="gap-2 flex-wrap">
+                    {project.difficulty && (
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${DIFFICULTY_COLORS[project.difficulty] || ''}`}>
+                        {project.difficulty}
+                      </span>
+                    )}
+                    {(() => {
+                      const speed = getRenderSpeed(project.estimate_constants)
+                      if (!speed) return null
+                      return (
+                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${speed.color}`}>
+                          {speed.label}
+                        </span>
+                      )
+                    })()}
+                    {project.has_manifest && <span data-testid="manifest-badge" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.manifest')}</span>}
+                    {project.has_exports && <span data-testid="exports-badge" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
+                  </CardFooter>
+                </Card>
+              </a>
+            ))}
+          </div>
+        )
       )}
 
       {showImport && (

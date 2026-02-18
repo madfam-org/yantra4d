@@ -13,7 +13,9 @@ const DOMAIN_LABELS: Record<string, { en: string; es: string }> = {
   industrial: { en: 'Industrial', es: 'Industrial' },
   medical: { en: 'Medical', es: 'Médico' },
   commercial: { en: 'Commercial', es: 'Comercial' },
+  commercial: { en: 'Commercial', es: 'Comercial' },
   hybrid: { en: 'Hybrid', es: 'Híbrido' },
+  culture: { en: 'Culture', es: 'Cultura' },
 };
 
 export default function ProjectGalleryGrid({ lang = 'es', t }: Props) {
@@ -48,15 +50,14 @@ export default function ProjectGalleryGrid({ lang = 'es', t }: Props) {
             role="tab"
             aria-selected={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-1.5 text-sm rounded-full border transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-              activeCategory === cat
+            className={`px-4 py-1.5 text-sm rounded-full border transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activeCategory === cat
                 ? cat === 'commons'
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-500'
                   : 'bg-primary text-primary-foreground border-primary'
                 : cat === 'commons'
                   ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40'
                   : 'bg-background text-muted-foreground border-border hover:text-foreground'
-            }`}
+              }`}
           >
             {categoryLabels[cat]}
           </button>
@@ -70,11 +71,10 @@ export default function ProjectGalleryGrid({ lang = 'es', t }: Props) {
             href={`${STUDIO_URL}#/${project.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`group rounded-xl border overflow-hidden transition-shadow hover:shadow-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-              project.isHyperobject
+            className={`group rounded-xl border overflow-hidden transition-shadow hover:shadow-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${project.isHyperobject
                 ? 'border-blue-300 dark:border-blue-700 bg-gradient-to-b from-blue-50/50 to-card dark:from-blue-950/20 dark:to-card'
                 : 'border-border bg-card'
-            }`}
+              }`}
           >
             <div className="aspect-video bg-secondary/30 overflow-hidden relative">
               <img

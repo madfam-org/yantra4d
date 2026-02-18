@@ -29,40 +29,76 @@
     {
       "id": "Standard",
       "scad_file": "faircap.scad",
-      "label": { "en": "Standard Filter", "es": "Filtro Estándar" },
-      "parts": ["filter_housing"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "en": "Standard Filter",
+        "es": "Filtro Estándar"
+      },
+      "parts": [
+        "filter_housing"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
     {
       "id": "filter_housing",
       "render_mode": 0,
-      "label": { "en": "Filter Housing", "es": "Carcasa del Filtro" },
+      "label": {
+        "en": "Filter Housing",
+        "es": "Carcasa del Filtro"
+      },
       "default_color": "#06b6d4"
     }
   ],
   "presets": [
     {
       "id": "charcoal_standard",
-      "label": { "en": "Charcoal Filter (Standard)", "es": "Filtro de Carbón (Estándar)" },
-      "values": { "filter_type": "charcoal", "housing_length_mm": 80 }
+      "label": {
+        "en": "Charcoal Filter (Standard)",
+        "es": "Filtro de Carbón (Estándar)"
+      },
+      "values": {
+        "filter_type": "charcoal",
+        "housing_length_mm": 80
+      }
     },
     {
       "id": "ceramic_long",
-      "label": { "en": "Ceramic Filter (Long)", "es": "Filtro Cerámico (Largo)" },
-      "values": { "filter_type": "ceramic", "housing_length_mm": 120 }
+      "label": {
+        "en": "Ceramic Filter (Long)",
+        "es": "Filtro Cerámico (Largo)"
+      },
+      "values": {
+        "filter_type": "ceramic",
+        "housing_length_mm": 120
+      }
     }
   ],
   "parameters": [
     {
       "id": "filter_type",
-      "type": "string",
+      "type": "text",
       "default": "charcoal",
-      "enum": ["charcoal", "ceramic", "mesh", "empty"],
-      "label": { "en": "Filter Media Type", "es": "Tipo de Medio Filtrante" },
-      "tooltip": { "en": "Internal structure for filtration", "es": "Estructura interna para filtración" },
-      "visible_in_modes": ["Standard"],
+      "enum": [
+        "charcoal",
+        "ceramic",
+        "mesh",
+        "empty"
+      ],
+      "label": {
+        "en": "Filter Media Type",
+        "es": "Tipo de Medio Filtrante"
+      },
+      "tooltip": {
+        "en": "Internal structure for filtration",
+        "es": "Estructura interna para filtración"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "filtration"
     },
     {
@@ -72,8 +108,13 @@
       "min": 30,
       "max": 60,
       "step": 1,
-      "label": { "en": "Housing Diameter (mm)", "es": "Diámetro de Carcasa (mm)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Housing Diameter (mm)",
+        "es": "Diámetro de Carcasa (mm)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "dimensions"
     },
     {
@@ -83,14 +124,42 @@
       "min": 40,
       "max": 150,
       "step": 5,
-      "label": { "en": "Housing Length (mm)", "es": "Largo de Carcasa (mm)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Housing Length (mm)",
+        "es": "Largo de Carcasa (mm)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "dimensions"
     }
   ],
   "parameter_groups": [
-    { "id": "filtration", "label": { "en": "Filtration Settings", "es": "Configuración de Filtrado" } },
-    { "id": "dimensions", "label": { "en": "Dimensions", "es": "Dimensiones" } }
+    {
+      "id": "filtration",
+      "label": {
+        "en": "Filtration Settings",
+        "es": "Configuración de Filtrado"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
+    }
   ],
-  "export_formats": ["stl", "3mf"]
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
 }

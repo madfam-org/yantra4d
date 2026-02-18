@@ -1,24 +1,24 @@
-// Yantra4D wrapper — Spur Gear (MCAD)
-use <MCAD/involute_gears.scad>
+// Yantra4D wrapper — Spur Gear (BOSL2)
+// Migrated from MCAD/involute_gears.scad → BOSL2 gears.scad
+// BOSL2 advantages: active maintenance, shaft bore, helical support, rack-and-pinion
+include <BOSL2/std.scad>
+include <BOSL2/gears.scad>
 
+// Parameters (injected by Yantra4D platform via -D flags)
 teeth_count = 20;
-module_size = 2;
-pressure_angle = 20;
-thickness = 5;
-bore_diameter = 5;
+module_size = 2; // gear module (mm per tooth)
+pressure_angle = 20; // degrees
+thickness = 5; // gear face width (mm)
+bore_diameter = 5; // shaft bore (mm)
 fn = 0;
 render_mode = 0;
 
 $fn = fn > 0 ? fn : 32;
 
-_cp = module_size * 3.14159;
-
-gear(number_of_teeth=teeth_count,
-     circular_pitch=_cp,
-     pressure_angle=pressure_angle,
-     clearance=0.2,
-     gear_thickness=thickness,
-     rim_thickness=thickness,
-     hub_thickness=thickness,
-     hub_diameter=bore_diameter * 2.5,
-     bore_diameter=bore_diameter);
+spur_gear(
+  mod=module_size,
+  teeth=teeth_count,
+  thickness=thickness,
+  shaft_diam=bore_diameter,
+  pressure_angle=pressure_angle
+);

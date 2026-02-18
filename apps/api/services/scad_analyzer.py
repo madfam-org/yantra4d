@@ -17,6 +17,7 @@ def analyze_file(filepath: Path) -> dict:
         "uses": _extract_uses(text),
         "render_modes": _extract_render_modes(text),
         "module_calls": _extract_module_calls(text),
+        "attachments": _extract_attachments(text),
     }
 
 
@@ -192,3 +193,52 @@ def _identify_entry_points(files: dict) -> list[str]:
             entry.append(fname)
 
     return sorted(set(entry))
+
+
+# --- BOSL2 attachment extraction ---
+
+# Matches: attach(ANCHOR) { child_module(...) }
+# or:      attach(ANCHOR, PARENT_ANCHOR) { ... }
+_ATTACH_PATTERN = re.compile(
+    r"\battach\s*\(\s*([\w+]+)(?:\s*,\s*([\w+]+))?\s*\)\s*\{?\s*(\w+)",
+    re.MULTILINE,
+)
+
+# Matches: position(ANCHOR) { child_module(...) }
+_POSITION_PATTERN = re.compile(
+    r"\bposition\s*\(\s*([\w+]+)\s*\)\s*\{?\s*(\w+)",
+    re.MULTILINE,
+)
+
+
+def _extract_attachments(text: str) -> list[dict]:
+    """
+    Extract BOSL2 attach() and position() calls.
+
+    Returns a list of dicts:
+      {
+        "type":          "attach" | "position",
+        "anchor":        str,   # anchor on the parent (e.g. "TOP")
+        "parent_anchor": str,   # anchor on the child (only for attach())
+        "child":         str,   # name of the child module being attached
+      }
+    """
+    results = []
+
+    for m in _ATTACH_PATTERN.finditer(text):
+        results.append({
+            "type": "attach",
+            "anchor": m.group(1),
+            "parent_anchor": m.group(2) or m.group(1),
+            "child": m.group(3),
+        })
+
+    for m in _POSITION_PATTERN.finditer(text):
+        results.append({
+            "type": "position",
+            "anchor": m.group(1),
+            "parent_anchor": m.group(1),
+            "child": m.group(2),
+        })
+
+    return results

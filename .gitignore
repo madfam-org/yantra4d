@@ -52,8 +52,6 @@ Thumbs.db
 # Analytics runtime database
 *.analytics.db
 
-# Client/imported projects (have their own .git, not tracked by main repo)
-projects/tablaco/
 
 # Dev server PIDs
 .dev-pids/

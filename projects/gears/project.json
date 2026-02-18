@@ -14,7 +14,11 @@
       "engineering",
       "transmission"
     ],
-    "difficulty": "intermediate"
+    "difficulty": "intermediate",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "is_demo": true
   },
   "modes": [
     {
@@ -217,15 +221,15 @@
       ]
     },
     {
-      "id": "twist_angle",
+      "id": "helical_angle",
       "type": "slider",
       "default": 30,
       "min": 10,
       "max": 60,
       "step": 5,
       "label": {
-        "en": "Twist Angle (°)",
-        "es": "Ángulo de Torsión (°)"
+        "en": "Helix Angle (°)",
+        "es": "Ángulo Helicoidal (°)"
       },
       "tooltip": {
         "en": "Helix angle for the herringbone pattern",

@@ -1,40 +1,28 @@
-// Yantra4D wrapper — Herringbone Gear (MCAD)
-use <MCAD/involute_gears.scad>
+// Yantra4D wrapper — Herringbone Gear (BOSL2)
+// Migrated from MCAD/involute_gears.scad → BOSL2 gears.scad
+// BOSL2 renders herringbone natively in a single call (herringbone=true + helical angle)
+include <BOSL2/std.scad>
+include <BOSL2/gears.scad>
 
+// Parameters (injected by Yantra4D platform via -D flags)
 teeth_count = 20;
-module_size = 2;
-pressure_angle = 20;
-thickness = 10;
-bore_diameter = 5;
-twist_angle = 30;
+module_size = 2; // gear module (mm per tooth)
+pressure_angle = 20; // degrees
+thickness = 10; // total gear face width (mm)
+bore_diameter = 5; // shaft bore (mm)
+helical_angle = 30; // helix angle (degrees) — replaces MCAD twist_angle
 fn = 0;
 render_mode = 0;
 
 $fn = fn > 0 ? fn : 32;
 
-_cp = module_size * 3.14159;
-
-// Herringbone = two mirrored helical halves
-mirror([0,0,0])
-  gear(number_of_teeth=teeth_count,
-       circular_pitch=_cp,
-       pressure_angle=pressure_angle,
-       clearance=0.2,
-       gear_thickness=thickness/2,
-       rim_thickness=thickness/2,
-       hub_thickness=thickness/2,
-       hub_diameter=bore_diameter * 2.5,
-       bore_diameter=bore_diameter,
-       twist=twist_angle/teeth_count);
-
-translate([0,0,thickness/2])
-  gear(number_of_teeth=teeth_count,
-       circular_pitch=_cp,
-       pressure_angle=pressure_angle,
-       clearance=0.2,
-       gear_thickness=thickness/2,
-       rim_thickness=thickness/2,
-       hub_thickness=thickness/2,
-       hub_diameter=bore_diameter * 2.5,
-       bore_diameter=bore_diameter,
-       twist=-twist_angle/teeth_count);
+// BOSL2 herringbone: single call, symmetric halves, no manual mirror() needed
+spur_gear(
+  mod=module_size,
+  teeth=teeth_count,
+  thickness=thickness,
+  shaft_diam=bore_diameter,
+  pressure_angle=pressure_angle,
+  helical=helical_angle,
+  herringbone=true
+);

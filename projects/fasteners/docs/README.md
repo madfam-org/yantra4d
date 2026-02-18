@@ -18,17 +18,17 @@ Parametric bolts and nuts with real threads
 
 | Name | Type | Default | Range | Description |
 |---|---|---|---|---|
-| `` | slider | 5 | 2–20 (step 0.5) | Nominal thread diameter |
-| `` | slider | 20 | 5–80 | Bolt shaft length excluding head |
-| `` | slider | 0.8 | 0.25–3 (step 0.05) | Distance between thread crests |
-| `` | slider | 0 | 0–2 | Bolt head shape |
-| `` | slider | 0 | 0–30 (step 0.5) | Override head diameter (0=auto) |
-| `` | slider | 0 | 0–15 (step 0.5) | Override head height (0=auto) |
-| `` | slider | 0 | 0–2 | Nut shape |
-| `` | slider | 0 | 0–30 (step 0.5) | Override nut width (0=auto) |
-| `` | slider | 0 | 0–15 (step 0.5) | Override nut height (0=auto) |
-| `` | checkbox | Yes |  | Generate real threads (slower) |
-| `` | slider | 0 | 0–64 (step 8) | Circle smoothness (0=auto) |
+| `diameter` | slider | 5 | 2–20 (step 0.5) | Nominal thread diameter |
+| `length` | slider | 20 | 5–80 | Bolt shaft length excluding head |
+| `pitch` | slider | 0.8 | 0.25–3 (step 0.05) | Distance between thread crests |
+| `head_style_id` | slider | 0 | 0–2 | Bolt head shape |
+| `head_diameter` | slider | 0 | 0–30 (step 0.5) | Override head diameter (0=auto) |
+| `head_height` | slider | 0 | 0–15 (step 0.5) | Override head height (0=auto) |
+| `nut_style_id` | slider | 0 | 0–2 | Nut shape |
+| `width` | slider | 0 | 0–30 (step 0.5) | Override nut width (0=auto) |
+| `height` | slider | 0 | 0–15 (step 0.5) | Override nut height (0=auto) |
+| `thread_enabled` | checkbox | Yes |  | Generate real threads (slower) |
+| `fn` | slider | 0 | 0–64 (step 8) | Circle smoothness (0=auto) |
 
 ## Presets
 

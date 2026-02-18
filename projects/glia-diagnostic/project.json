@@ -3,9 +3,28 @@
   "project": {
     "slug": "glia-diagnostic",
     "name": "Glia Diagnostic Tools",
-    "description": "Open source stethoscope and otoscope medical hardware",
-    "authors": ["Glia Project", "Yantra4D"],
+    "version": "1.0.0",
+    "description": {
+      "en": "Open source stethoscope and otoscope medical hardware by the Glia Project",
+      "es": "Hardware médico de código abierto: estetoscopio y otoscopio del Proyecto Glia"
+    },
+    "authors": [
+      "Glia Project",
+      "Yantra4D"
+    ],
     "license": "CC-BY-SA-4.0",
+    "thumbnail": "/projects/glia-diagnostic.webp",
+    "tags": [
+      "medical",
+      "diagnostic",
+      "stethoscope",
+      "otoscope",
+      "glia",
+      "open-source-hardware",
+      "hyperobject",
+      "commons",
+      "cdg"
+    ],
     "difficulty": "intermediate",
     "hyperobject": {
       "is_hyperobject": true,
@@ -13,56 +32,144 @@
       "cdg_interface": "diaphragm_housing"
     }
   },
-  "parameters": [
-
-    {
-      "id": "diaphragm_size_mm",
-      "type": "number",
-      "default": 44,
-      "min": 30,
-      "max": 50,
-      "description": "Diameter of the stethoscope diaphragm (if applicable)"
-    },
-    {
-      "id": "speculum_size_mm",
-      "type": "number",
-      "default": 4,
-      "enum": [2.5, 3, 4, 5],
-      "description": "Tip diameter of the otoscope speculum (if applicable)"
-    },
-    {
-      "id": "render_mode",
-      "type": "number",
-      "default": 0,
-      "hidden": true
-    }
-  ],
   "modes": [
     {
       "id": "stethoscope",
-      "label": "Stethoscope",
+      "label": {
+        "en": "Stethoscope",
+        "es": "Estetoscopio"
+      },
       "scad_file": "diagnostic.scad",
-      "parts": ["head"],
-      "estimate": { "base_units": 1 }
+      "parts": [
+        "head"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     },
     {
       "id": "otoscope",
-      "label": "Otoscope",
+      "label": {
+        "en": "Otoscope",
+        "es": "Otoscopio"
+      },
       "scad_file": "diagnostic.scad",
-      "parts": ["specula"],
-      "estimate": { "base_units": 1 }
+      "parts": [
+        "specula"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
     {
       "id": "head",
-      "label": "Head",
-      "render_mode": 1
+      "label": {
+        "en": "Head",
+        "es": "Cabezal"
+      },
+      "render_mode": 1,
+      "default_color": "#e5e7eb"
     },
     {
       "id": "specula",
-      "label": "Specula",
-      "render_mode": 2
+      "label": {
+        "en": "Specula",
+        "es": "Espéculo"
+      },
+      "render_mode": 2,
+      "default_color": "#d1d5db"
     }
-  ]
+  ],
+  "parameters": [
+    {
+      "id": "diaphragm_size_mm",
+      "type": "slider",
+      "default": 44,
+      "min": 30,
+      "max": 50,
+      "step": 1,
+      "label": {
+        "en": "Diaphragm Diameter (mm)",
+        "es": "Diámetro del Diafragma (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the stethoscope diaphragm",
+        "es": "Diámetro del diafragma del estetoscopio"
+      },
+      "visible_in_modes": [
+        "stethoscope"
+      ],
+      "group": "dimensions"
+    },
+    {
+      "id": "speculum_size_mm",
+      "type": "slider",
+      "default": 4,
+      "min": 2.5,
+      "max": 5,
+      "step": 0.5,
+      "label": {
+        "en": "Speculum Tip Diameter (mm)",
+        "es": "Diámetro de Punta del Espéculo (mm)"
+      },
+      "tooltip": {
+        "en": "Tip diameter of the otoscope speculum (2.5, 3, 4, or 5 mm)",
+        "es": "Diámetro de punta del espéculo del otoscopio (2.5, 3, 4 o 5 mm)"
+      },
+      "visible_in_modes": [
+        "otoscope"
+      ],
+      "group": "dimensions"
+    },
+    {
+      "id": "fn",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "label": {
+        "en": "Quality ($fn)",
+        "es": "Calidad ($fn)"
+      },
+      "visible_in_modes": [
+        "stethoscope",
+        "otoscope"
+      ],
+      "group": "quality",
+      "visibility_level": "advanced"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
 }

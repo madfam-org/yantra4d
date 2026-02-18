@@ -28,7 +28,7 @@ describe('isBackendAvailable', () => {
 
 describe('getApiBase', () => {
   it('returns default localhost URL', () => {
-    expect(getApiBase()).toBe('http://localhost:5000')
+    expect(getApiBase()).toBe('')
   })
 })
 

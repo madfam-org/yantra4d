@@ -147,6 +147,10 @@ def validate_params(params: dict, project_slug: str | None = None) -> dict:
                 continue
             cleaned[key] = str_val
 
+    # Explicitly remove render_mode if present, as it's handled via the mode ID
+    if 'render_mode' in cleaned:
+        del cleaned['render_mode']
+
     return cleaned
 
 
@@ -238,14 +242,24 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         'total': total
     })
 
-    # Run with Popen to stream stderr
-    global _active_process
-    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env(scad_path))
-    with _process_lock:
-        _active_process = process
+    try:
+        # Run with Popen to stream stderr
+        logger.error(f"Streaming OpenSCAD (CWD: {os.getcwd()}): {_sanitize_cmd_for_log(cmd)}")
+        global _active_process
+        process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env(scad_path))
+        with _process_lock:
+            _active_process = process
 
-    kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
-    kill_timer.start()
+        kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
+        kill_timer.start()
+    except Exception as e:
+        logger.exception("Failed to start OpenSCAD process")
+        yield json.dumps({
+            'event': 'error',
+            'part': part,
+            'message': f'Internal Process Error: {str(e)}'
+        })
+        return
 
     try:
         for line in process.stderr:
@@ -287,7 +301,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         yield json.dumps({
             'event': 'error',
             'part': part,
-            'message': 'Render failed'
+            'message': f'Render failed with code {process.returncode}'
         })
         return False
 

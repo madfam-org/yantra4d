@@ -1,0 +1,125 @@
+{
+  "name": "framing-hyperobject",
+  "version": "1.0.0",
+  "description": "Parametric framing and containment systems (Hyperobject)",
+  "thumbnail": "docs/images/thumbnail.png",
+  "tags": [
+    "culture",
+    "hyperobject",
+    "framing",
+    "display"
+  ],
+  "difficulty": "Intermediate",
+  "author": "Yantra4D",
+  "license": "CERN-OHL-S-2.0",
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "culture",
+    "interfaces": [
+      "rabbet",
+      "vesa_pattern",
+      "french_cleat",
+      "standoff_mount"
+    ]
+  },
+  "parameters": {
+    "dimensions": {
+      "width": {
+        "type": "float",
+        "default": 200,
+        "min": 50,
+        "max": 1000,
+        "description": "Inner width of the frame (mm)"
+      },
+      "height": {
+        "type": "float",
+        "default": 250,
+        "min": 50,
+        "max": 1000,
+        "description": "Inner height of the frame (mm)"
+      },
+      "depth": {
+        "type": "float",
+        "default": 20,
+        "min": 10,
+        "max": 100,
+        "description": "Total depth of the frame (mm)"
+      }
+    },
+    "style": {
+      "profile": {
+        "type": "string",
+        "default": "ogee",
+        "options": [
+          "ogee",
+          "bevel",
+          "box",
+          "floater",
+          "stretcher",
+          "seg",
+          "snap"
+        ],
+        "description": "Moulding profile style"
+      },
+      "mounting": {
+        "type": "string",
+        "default": "none",
+        "options": [
+          "none",
+          "vesa_75",
+          "vesa_100",
+          "french_cleat",
+          "standoffs"
+        ],
+        "description": "Backing attachment style"
+      }
+    },
+    "components": {
+      "mat_width": {
+        "type": "float",
+        "default": 50,
+        "min": 0,
+        "max": 200,
+        "description": "Width of the mat board (mm)"
+      },
+      "glazing_thickness": {
+        "type": "float",
+        "default": 2,
+        "min": 1,
+        "max": 6,
+        "description": "Thickness of the glass/acrylic (mm)"
+      }
+    },
+    "containment": {
+      "tpye": {
+        "type": "string",
+        "default": "none",
+        "options": [
+          "none",
+          "PSA",
+          "BGS",
+          "SGC",
+          "CGC",
+          "Silver Eagle",
+          "Small Dollar",
+          "ID Badge"
+        ],
+        "description": "Specialized container insert"
+      }
+    }
+  },
+  "parts": {
+    "frame_assembly": {
+      "file": "framing.scad",
+      "description": "Main frame structure"
+    },
+    "back_panel": {
+      "file": "framing.scad",
+      "description": "Backing board"
+    },
+    "glazing": {
+      "file": "framing.scad",
+      "description": "Glass or Acrylic pane"
+    }
+  }
+}

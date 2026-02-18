@@ -19,8 +19,11 @@ const ScadEditor = lazy(() => import('./components/editor/ScadEditor'))
 const GitPanel = lazy(() => import('./components/editor/GitPanel'))
 const AiChatPanel = lazy(() => import('./components/ai/AiChatPanel'))
 const ForkDialog = lazy(() => import('./components/project/ForkDialog'))
+const StorefrontView = lazy(() => import('./components/storefront/StorefrontView'))
 
-const isEmbed = new URLSearchParams(window.location.search).get('embed') === 'true'
+const _searchParams = new URLSearchParams(window.location.search)
+const isEmbed = _searchParams.get('embed') === 'true'
+const isStorefront = _searchParams.get('mode') === 'storefront'
 
 function App() {
   const [editorOpen, setEditorOpen] = useState(() => sessionStorage.getItem('yantra4d-editor-open') === 'true')
@@ -59,6 +62,22 @@ function App() {
     setEditorOpen(true)
     sessionStorage.setItem('yantra4d-editor-open', 'true')
   }, [])
+
+  if (isStorefront) {
+    return (
+      <ErrorBoundary t={t}>
+        <Suspense fallback={<div className="flex items-center justify-center h-screen text-muted-foreground">Loading storefront...</div>}>
+          <StorefrontView
+            onExitStorefront={() => {
+              const url = new URL(window.location.href)
+              url.searchParams.delete('mode')
+              window.location.href = url.toString()
+            }}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
 
   if (!isEmbed && currentView === 'projects') {
     const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor

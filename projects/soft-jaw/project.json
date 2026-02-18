@@ -29,34 +29,66 @@
     {
       "id": "Standard",
       "scad_file": "soft_jaw.scad",
-      "label": { "en": "Soft Jaw", "es": "Mordaza Blanda" },
-      "parts": ["jaw_body"],
-      "estimate": { "base_units": 1, "formula": "constant" }
+      "label": {
+        "en": "Soft Jaw",
+        "es": "Mordaza Blanda"
+      },
+      "parts": [
+        "jaw_body"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
     }
   ],
   "parts": [
     {
       "id": "jaw_body",
       "render_mode": 0,
-      "label": { "en": "Jaw Body", "es": "Cuerpo de Mordaza" },
+      "label": {
+        "en": "Jaw Body",
+        "es": "Cuerpo de Mordaza"
+      },
       "default_color": "#a8a29e"
     }
   ],
   "presets": [
     {
       "id": "kurt_dx6_prismatic",
-      "label": { "en": "Kurt DX6 Prismatic (Round Stock)", "es": "Kurt DX6 Prismático (Material Redondo)" },
-      "values": { "vise_model": 0, "face_pattern": 1, "jaw_width": 6 }
+      "label": {
+        "en": "Kurt DX6 Prismatic (Round Stock)",
+        "es": "Kurt DX6 Prismático (Material Redondo)"
+      },
+      "values": {
+        "vise_model": 0,
+        "face_pattern": 1,
+        "jaw_width": 6
+      }
     },
     {
       "id": "kurt_dx6_smooth",
-      "label": { "en": "Kurt DX6 Smooth (Mar-free)", "es": "Kurt DX6 Liso (Sin marcas)" },
-      "values": { "vise_model": 0, "face_pattern": 0, "jaw_width": 6 }
+      "label": {
+        "en": "Kurt DX6 Smooth (Mar-free)",
+        "es": "Kurt DX6 Liso (Sin marcas)"
+      },
+      "values": {
+        "vise_model": 0,
+        "face_pattern": 0,
+        "jaw_width": 6
+      }
     },
     {
       "id": "orange_vise_grid",
-      "label": { "en": "Orange Vise 6\" Grid", "es": "Orange Vise 6\" Rejilla" },
-      "values": { "vise_model": 1, "face_pattern": 2, "jaw_width": 6 }
+      "label": {
+        "en": "Orange Vise 6\" Grid",
+        "es": "Orange Vise 6\" Rejilla"
+      },
+      "values": {
+        "vise_model": 1,
+        "face_pattern": 2,
+        "jaw_width": 6
+      }
     }
   ],
   "parameters": [
@@ -67,9 +99,17 @@
       "min": 0,
       "max": 2,
       "step": 1,
-      "label": { "en": "Vise Model", "es": "Modelo de Tornillo" },
-      "tooltip": { "en": "0=Kurt DX6, 1=Orange Vise, 2=Tormach 5\"", "es": "0=Kurt DX6, 1=Orange Vise, 2=Tormach 5\"" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Vise Model",
+        "es": "Modelo de Tornillo"
+      },
+      "tooltip": {
+        "en": "0=Kurt DX6, 1=Orange Vise, 2=Tormach 5\"",
+        "es": "0=Kurt DX6, 1=Orange Vise, 2=Tormach 5\""
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "vise"
     },
     {
@@ -79,9 +119,17 @@
       "min": 4,
       "max": 10,
       "step": 1,
-      "label": { "en": "Jaw Width (inch)", "es": "Ancho de Mordaza (pulg)" },
-      "tooltip": { "en": "Width of the jaw in inches", "es": "Ancho de la mordaza en pulgadas" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Jaw Width (inch)",
+        "es": "Ancho de Mordaza (pulg)"
+      },
+      "tooltip": {
+        "en": "Width of the jaw in inches",
+        "es": "Ancho de la mordaza en pulgadas"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "dimensions"
     },
     {
@@ -91,8 +139,13 @@
       "min": 1.0,
       "max": 3.0,
       "step": 0.125,
-      "label": { "en": "Jaw Height (inch)", "es": "Altura de Mordaza (pulg)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Jaw Height (inch)",
+        "es": "Altura de Mordaza (pulg)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "dimensions"
     },
     {
@@ -102,8 +155,13 @@
       "min": 0.5,
       "max": 2.0,
       "step": 0.125,
-      "label": { "en": "Jaw Thickness (inch)", "es": "Grosor de Mordaza (pulg)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Jaw Thickness (inch)",
+        "es": "Grosor de Mordaza (pulg)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "dimensions"
     },
     {
@@ -113,18 +171,34 @@
       "min": 0,
       "max": 3,
       "step": 1,
-      "label": { "en": "Face Pattern", "es": "Patrón de Cara" },
-      "tooltip": { "en": "0=smooth, 1=prismatic (V-groove), 2=grid (knurled), 3=step (parallels)", "es": "0=liso, 1=prismático (ranura en V), 2=rejilla (moleteado), 3=escalón (paralelas)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Face Pattern",
+        "es": "Patrón de Cara"
+      },
+      "tooltip": {
+        "en": "0=smooth, 1=prismatic (V-groove), 2=grid (knurled), 3=step (parallels)",
+        "es": "0=liso, 1=prismático (ranura en V), 2=rejilla (moleteado), 3=escalón (paralelas)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "features"
     },
     {
       "id": "magnet_pockets",
       "type": "checkbox",
       "default": true,
-      "label": { "en": "Magnet Pockets", "es": "Bolsillos para Imanes" },
-      "tooltip": { "en": "Pockets for 10x3mm magnets on back face", "es": "Bolsillos para imanes de 10x3mm en la cara trasera" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Magnet Pockets",
+        "es": "Bolsillos para Imanes"
+      },
+      "tooltip": {
+        "en": "Pockets for 10x3mm magnets on back face",
+        "es": "Bolsillos para imanes de 10x3mm en la cara trasera"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "features"
     },
     {
@@ -134,35 +208,78 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Quality ($fn)",
+        "es": "Calidad ($fn)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "quality",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "vise", "label": { "en": "Vise Compatibility", "es": "Compatibilidad de Tornillo" } },
-    { "id": "dimensions", "label": { "en": "Dimensions", "es": "Dimensiones" } },
-    { "id": "features", "label": { "en": "Features", "es": "Características" } },
-    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+    {
+      "id": "vise",
+      "label": {
+        "en": "Vise Compatibility",
+        "es": "Compatibilidad de Tornillo"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
+    },
+    {
+      "id": "features",
+      "label": {
+        "en": "Features",
+        "es": "Características"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "hyperobject": {
     "domain": "industrial",
     "cdg_interfaces": [
       {
         "id": "vise_mounting_pattern",
-        "label": { "en": "Vise Jaw Mounting Interface", "es": "Interfaz de Montaje de Mordaza" },
+        "label": {
+          "en": "Vise Jaw Mounting Interface",
+          "es": "Interfaz de Montaje de Mordaza"
+        },
         "geometry_type": "bolt_pattern",
         "standard": "Kurt / Industry Standard",
-        "parameters": ["vise_model", "jaw_width"]
+        "parameters": [
+          "vise_model",
+          "jaw_width"
+        ]
       },
       {
         "id": "workholding_face",
-        "label": { "en": "Workholding Surface", "es": "Superficie de Sujeción" },
+        "label": {
+          "en": "Workholding Surface",
+          "es": "Superficie de Sujeción"
+        },
         "geometry_type": "surface",
         "standard": "internal",
-        "parameters": ["face_pattern"]
+        "parameters": [
+          "face_pattern"
+        ]
       }
     ],
     "material_awareness": {
@@ -175,8 +292,26 @@
       "es": "Empodera a talleres de manufactura locales para equiparse rápidamente para nuevos trabajos sin esperar la entrega de accesorios personalizados."
     },
     "commons_license": "CERN-OHL-S-2.0",
-    "bosl2_modules_used": ["cuboid", "diff", "cyl", "fwd", "back"],
-    "oep8_features": ["object_dicts"],
-    "cdg_registry_refs": ["vise_bolt_pattern"]
+    "bosl2_modules_used": [
+      "cuboid",
+      "diff",
+      "cyl",
+      "fwd",
+      "back"
+    ],
+    "oep8_features": [
+      "object_dicts"
+    ],
+    "cdg_registry_refs": [
+      "vise_bolt_pattern"
+    ]
+  },
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
   }
 }

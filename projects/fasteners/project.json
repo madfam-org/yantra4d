@@ -15,7 +15,10 @@
       "nut",
       "thread"
     ],
-    "difficulty": "intermediate"
+    "difficulty": "intermediate",
+    "hyperobject": {
+      "is_hyperobject": true
+    }
   },
   "modes": [
     {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
@@ -8,6 +8,75 @@ import { Tooltip } from "@/components/ui/tooltip"
 
 import SliderControl from './controls/SliderControl'
 import ColorGradientControl from './controls/ColorGradientControl'
+
+// ---------------------------------------------------------------------------
+// ComponentPickerWidget — visual hardware selector backed by NopSCADlib catalog
+// ---------------------------------------------------------------------------
+function ComponentPickerWidget({ param, params, setParams, getLabel, language }) {
+    const catalog = param.widget?.catalog ?? ''
+    const category = catalog.replace('nopscadlib/', '')
+    const [components, setComponents] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [selected, setSelected] = useState(null)
+
+    useEffect(() => {
+        if (!category) return
+        setLoading(true)
+        fetch(`/api/catalog/nopscadlib/${category}`)
+            .then(r => r.json())
+            .then(data => {
+                setComponents(data.components ?? [])
+                setLoading(false)
+            })
+            .catch(() => setLoading(false))
+    }, [category])
+
+    const handleSelect = useCallback((component) => {
+        setSelected(component.id)
+        // Apply all parameter mappings from the component
+        if (component.parameters) {
+            setParams(prev => ({ ...prev, ...component.parameters }))
+        }
+    }, [setParams])
+
+    const label = getLabel(param, 'label', language)
+
+    return (
+        <div className="space-y-2" data-testid={`component-picker-${param.id}`}>
+            <Label className="text-sm font-medium">{label}</Label>
+            {loading && (
+                <p className="text-xs text-muted-foreground">Loading catalog...</p>
+            )}
+            {!loading && components.length === 0 && (
+                <p className="text-xs text-muted-foreground">No components found for '{category}'</p>
+            )}
+            {!loading && components.length > 0 && (
+                <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                    {components.map(comp => (
+                        <button
+                            key={comp.id}
+                            type="button"
+                            data-testid={`component-option-${comp.id}`}
+                            className={`text-left px-2 py-1.5 text-xs rounded border transition-colors ${selected === comp.id
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'bg-background border-border hover:border-primary/50 hover:bg-accent'
+                                }`}
+                            onClick={() => handleSelect(comp)}
+                            aria-pressed={selected === comp.id}
+                        >
+                            <span className="font-mono font-semibold">{comp.id}</span>
+                            {comp.specs?.bore_diameter && (
+                                <span className="block text-[10px] opacity-70">
+                                    ⌀{comp.specs.bore_diameter}mm bore
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
 
 const DEFAULT_TEXT_MAX_LENGTH = 255
 
@@ -37,9 +106,10 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
     const parametersForMode = getParametersForMode(mode)
     const sliders = parametersForMode.filter(p => p.type === 'slider' && !p.widget)
-    const textInputs = parametersForMode.filter(p => p.type === 'text')
+    const textInputs = parametersForMode.filter(p => p.type === 'text' && !p.widget)
     const checkboxes = parametersForMode.filter(p => p.type === 'checkbox')
     const gradientParams = parametersForMode.filter(p => p.widget?.type === 'color-gradient')
+    const componentPickers = parametersForMode.filter(p => p.widget?.type === 'component-picker')
     const visibilityCheckboxes = checkboxes.filter(p => p.group === 'visibility')
     const otherCheckboxes = checkboxes.filter(p => !p.group)
 
@@ -80,8 +150,8 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             key={p.id}
                             type="button"
                             className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activePresetId === p.id
-                                    ? 'bg-primary text-primary-foreground border-primary'
-                                    : 'bg-background text-muted-foreground border-border hover:text-foreground'
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background text-muted-foreground border-border hover:text-foreground'
                                 }`}
                             onClick={() => onApplyPreset(p)}
                         >
@@ -106,8 +176,8 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                                 key={id}
                                 type="button"
                                 className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activeGp === id
-                                        ? 'bg-primary text-primary-foreground border-primary'
-                                        : 'bg-background text-muted-foreground border-border hover:text-foreground'
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'bg-background text-muted-foreground border-border hover:text-foreground'
                                     }`}
                                 onClick={() => activeGp !== id && onToggleGridPreset()}
                             >
@@ -172,6 +242,22 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             param={param}
                             value={params[param.id]}
                             onChange={handleGradientChange}
+                            getLabel={getLabel}
+                            language={language}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Component Picker Widgets (NopSCADlib) */}
+            {componentPickers.length > 0 && (
+                <div className="space-y-4 border-t border-border pt-4">
+                    {componentPickers.map(param => (
+                        <ComponentPickerWidget
+                            key={param.id}
+                            param={param}
+                            params={params}
+                            setParams={setParams}
                             getLabel={getLabel}
                             language={language}
                         />

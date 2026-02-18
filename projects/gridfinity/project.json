@@ -13,7 +13,11 @@
       "modular",
       "snap-fit"
     ],
-    "difficulty": "advanced"
+    "difficulty": "advanced",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "is_demo": true
   },
   "modes": [
     {

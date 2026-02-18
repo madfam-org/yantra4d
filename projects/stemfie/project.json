@@ -14,7 +14,10 @@
       "modular",
       "stem"
     ],
-    "difficulty": "advanced"
+    "difficulty": "advanced",
+    "hyperobject": {
+      "is_hyperobject": true
+    }
   },
   "modes": [
     {

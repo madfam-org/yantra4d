@@ -27,34 +27,63 @@
     {
       "id": "Standard",
       "scad_file": "connector.scad",
-      "label": { "en": "Pipe Connector", "es": "Conector de Tubería" },
-      "parts": ["connector_body"],
-      "estimate": { "base_units": 1, "formula": "complex" }
+      "label": {
+        "en": "Pipe Connector",
+        "es": "Conector de Tubería"
+      },
+      "parts": [
+        "connector_body"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "complex"
+      }
     }
   ],
   "parts": [
     {
       "id": "connector_body",
       "render_mode": 0,
-      "label": { "en": "Connector Body", "es": "Cuerpo del Conector" },
+      "label": {
+        "en": "Connector Body",
+        "es": "Cuerpo del Conector"
+      },
       "default_color": "#f97316"
     }
   ],
   "presets": [
     {
       "id": "pvc_half_inch_elbow",
-      "label": { "en": "1/2\" PVC Elbow", "es": "Codo PVC 1/2\"" },
-      "values": { "pipe_od_mm": 21.3, "connector_type": "elbow" }
+      "label": {
+        "en": "1/2\" PVC Elbow",
+        "es": "Codo PVC 1/2\""
+      },
+      "values": {
+        "pipe_od_mm": 21.3,
+        "connector_type": "elbow"
+      }
     },
     {
       "id": "pvc_three_quarter_tee",
-      "label": { "en": "3/4\" PVC Tee", "es": "Tee PVC 3/4\"" },
-      "values": { "pipe_od_mm": 26.7, "connector_type": "tee" }
+      "label": {
+        "en": "3/4\" PVC Tee",
+        "es": "Tee PVC 3/4\""
+      },
+      "values": {
+        "pipe_od_mm": 26.7,
+        "connector_type": "tee"
+      }
     },
     {
       "id": "furniture_corner",
-      "label": { "en": "Furniture 3-Way Corner (1\")", "es": "Esquina de Mueble 3 Vías (1\")" },
-      "values": { "pipe_od_mm": 33.4, "connector_type": "3-way-corner" }
+      "label": {
+        "en": "Furniture 3-Way Corner (1\")",
+        "es": "Esquina de Mueble 3 Vías (1\")"
+      },
+      "values": {
+        "pipe_od_mm": 33.4,
+        "connector_type": "3-way-corner"
+      }
     }
   ],
   "parameters": [
@@ -65,9 +94,17 @@
       "min": 10,
       "max": 60,
       "step": 0.1,
-      "label": { "en": "Pipe OD (mm)", "es": "OD Tubería (mm)" },
-      "tooltip": { "en": "Outer diameter of the pipe/dowel", "es": "Diámetro exterior del tubo/espiga" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Pipe OD (mm)",
+        "es": "OD Tubería (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the pipe/dowel",
+        "es": "Diámetro exterior del tubo/espiga"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "dimensions"
     },
     {
@@ -75,16 +112,63 @@
       "type": "select",
       "default": "elbow",
       "options": [
-        { "value": "elbow", "label": { "en": "Elbow (2-way)", "es": "Codo (2 vías)" } },
-        { "value": "tee", "label": { "en": "Tee (3-way flat)", "es": "Tee (3 vías plano)" } },
-        { "value": "cross", "label": { "en": "Cross (4-way flat)", "es": "Cruz (4 vías plano)" } },
-        { "value": "3-way-corner", "label": { "en": "Corner (3-way)", "es": "Esquina (3 vías)" } },
-        { "value": "4-way-corner", "label": { "en": "Corner (4-way)", "es": "Esquina (4 vías)" } },
-        { "value": "5-way", "label": { "en": "5-Way Center", "es": "Centro 5 Vías" } },
-        { "value": "6-way", "label": { "en": "6-Way Hub", "es": "Hub 6 Vías" } }
+        {
+          "value": "elbow",
+          "label": {
+            "en": "Elbow (2-way)",
+            "es": "Codo (2 vías)"
+          }
+        },
+        {
+          "value": "tee",
+          "label": {
+            "en": "Tee (3-way flat)",
+            "es": "Tee (3 vías plano)"
+          }
+        },
+        {
+          "value": "cross",
+          "label": {
+            "en": "Cross (4-way flat)",
+            "es": "Cruz (4 vías plano)"
+          }
+        },
+        {
+          "value": "3-way-corner",
+          "label": {
+            "en": "Corner (3-way)",
+            "es": "Esquina (3 vías)"
+          }
+        },
+        {
+          "value": "4-way-corner",
+          "label": {
+            "en": "Corner (4-way)",
+            "es": "Esquina (4 vías)"
+          }
+        },
+        {
+          "value": "5-way",
+          "label": {
+            "en": "5-Way Center",
+            "es": "Centro 5 Vías"
+          }
+        },
+        {
+          "value": "6-way",
+          "label": {
+            "en": "6-Way Hub",
+            "es": "Hub 6 Vías"
+          }
+        }
       ],
-      "label": { "en": "Connector Type", "es": "Tipo de Conector" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Connector Type",
+        "es": "Tipo de Conector"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "geometry"
     },
     {
@@ -94,8 +178,13 @@
       "min": 2,
       "max": 8,
       "step": 0.5,
-      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "structure"
     },
     {
@@ -105,8 +194,13 @@
       "min": 10,
       "max": 50,
       "step": 1,
-      "label": { "en": "Insertion Depth (mm)", "es": "Profundidad de Inserción (mm)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Insertion Depth (mm)",
+        "es": "Profundidad de Inserción (mm)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "structure"
     },
     {
@@ -116,17 +210,57 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
-      "visible_in_modes": ["Standard"],
+      "label": {
+        "en": "Quality ($fn)",
+        "es": "Calidad ($fn)"
+      },
+      "visible_in_modes": [
+        "Standard"
+      ],
       "group": "quality",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "dimensions", "label": { "en": "Pipe Size", "es": "Tamaño de Tubería" } },
-    { "id": "geometry", "label": { "en": "Topology", "es": "Topología" } },
-    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } },
-    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Pipe Size",
+        "es": "Tamaño de Tubería"
+      }
+    },
+    {
+      "id": "geometry",
+      "label": {
+        "en": "Topology",
+        "es": "Topología"
+      }
+    },
+    {
+      "id": "structure",
+      "label": {
+        "en": "Structure",
+        "es": "Estructura"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
+    }
   ],
-  "export_formats": ["stl", "3mf"]
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  }
 }

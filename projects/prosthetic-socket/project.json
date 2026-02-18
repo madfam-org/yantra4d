@@ -28,41 +28,84 @@
     {
       "id": "transtibial_socket",
       "scad_file": "socket.scad",
-      "label": { "en": "Transtibial Socket", "es": "Socket Transtibial" },
-      "parts": ["socket_shell"],
-      "estimate": { "base_units": 1, "formula": "complex" }
+      "label": {
+        "en": "Transtibial Socket",
+        "es": "Socket Transtibial"
+      },
+      "parts": [
+        "socket_shell"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "complex"
+      }
     },
     {
       "id": "transfemoral_socket",
       "scad_file": "socket.scad",
-      "label": { "en": "Transfemoral Socket", "es": "Socket Transfemoral" },
-      "parts": ["socket_shell"],
-      "estimate": { "base_units": 1, "formula": "complex" }
+      "label": {
+        "en": "Transfemoral Socket",
+        "es": "Socket Transfemoral"
+      },
+      "parts": [
+        "socket_shell"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "complex"
+      }
     }
   ],
   "parts": [
     {
       "id": "socket_shell",
       "render_mode": 0,
-      "label": { "en": "Socket Shell", "es": "Carcasa del Socket" },
+      "label": {
+        "en": "Socket Shell",
+        "es": "Carcasa del Socket"
+      },
       "default_color": "#fcd34d"
     }
   ],
   "presets": [
     {
       "id": "child_bk",
-      "label": { "en": "Child Below-Knee (Small)", "es": "Niño Bajo-Rodilla (Pequeño)" },
-      "values": { "amputation_level": 0, "circumference_top": 280, "circumference_bottom": 200, "length": 200 }
+      "label": {
+        "en": "Child Below-Knee (Small)",
+        "es": "Niño Bajo-Rodilla (Pequeño)"
+      },
+      "values": {
+        "amputation_level": 0,
+        "circumference_top": 280,
+        "circumference_bottom": 200,
+        "length": 200
+      }
     },
     {
       "id": "adult_bk",
-      "label": { "en": "Adult Below-Knee (Medium)", "es": "Adulto Bajo-Rodilla (Medio)" },
-      "values": { "amputation_level": 0, "circumference_top": 350, "circumference_bottom": 250, "length": 300 }
+      "label": {
+        "en": "Adult Below-Knee (Medium)",
+        "es": "Adulto Bajo-Rodilla (Medio)"
+      },
+      "values": {
+        "amputation_level": 0,
+        "circumference_top": 350,
+        "circumference_bottom": 250,
+        "length": 300
+      }
     },
     {
       "id": "adult_ak",
-      "label": { "en": "Adult Above-Knee (Large)", "es": "Adulto Sobre-Rodilla (Grande)" },
-      "values": { "amputation_level": 1, "circumference_top": 450, "circumference_bottom": 350, "length": 400 }
+      "label": {
+        "en": "Adult Above-Knee (Large)",
+        "es": "Adulto Sobre-Rodilla (Grande)"
+      },
+      "values": {
+        "amputation_level": 1,
+        "circumference_top": 450,
+        "circumference_bottom": 350,
+        "length": 400
+      }
     }
   ],
   "parameters": [
@@ -73,9 +116,18 @@
       "min": 0,
       "max": 1,
       "step": 1,
-      "label": { "en": "Amputation Level", "es": "Nivel de Amputación" },
-      "tooltip": { "en": "0=Below Knee (Transtibial), 1=Above Knee (Transfemoral)", "es": "0=Bajo Rodilla (Transtibial), 1=Sobre Rodilla (Transfemoral)" },
-      "visible_in_modes": ["transtibial_socket", "transfemoral_socket"],
+      "label": {
+        "en": "Amputation Level",
+        "es": "Nivel de Amputación"
+      },
+      "tooltip": {
+        "en": "0=Below Knee (Transtibial), 1=Above Knee (Transfemoral)",
+        "es": "0=Bajo Rodilla (Transtibial), 1=Sobre Rodilla (Transfemoral)"
+      },
+      "visible_in_modes": [
+        "transtibial_socket",
+        "transfemoral_socket"
+      ],
       "group": "geometry"
     },
     {
@@ -85,9 +137,18 @@
       "min": 200,
       "max": 600,
       "step": 10,
-      "label": { "en": "Top Circumference (mm)", "es": "Circunferencia Superior (mm)" },
-      "tooltip": { "en": "Proximal circumference of the residual limb", "es": "Circunferencia proximal del miembro residual" },
-      "visible_in_modes": ["transtibial_socket", "transfemoral_socket"],
+      "label": {
+        "en": "Top Circumference (mm)",
+        "es": "Circunferencia Superior (mm)"
+      },
+      "tooltip": {
+        "en": "Proximal circumference of the residual limb",
+        "es": "Circunferencia proximal del miembro residual"
+      },
+      "visible_in_modes": [
+        "transtibial_socket",
+        "transfemoral_socket"
+      ],
       "group": "dimensions"
     },
     {
@@ -97,9 +158,18 @@
       "min": 150,
       "max": 500,
       "step": 10,
-      "label": { "en": "Bottom Circumference (mm)", "es": "Circunferencia Inferior (mm)" },
-      "tooltip": { "en": "Distal circumference of the residual limb", "es": "Circunferencia distal del miembro residual" },
-      "visible_in_modes": ["transtibial_socket", "transfemoral_socket"],
+      "label": {
+        "en": "Bottom Circumference (mm)",
+        "es": "Circunferencia Inferior (mm)"
+      },
+      "tooltip": {
+        "en": "Distal circumference of the residual limb",
+        "es": "Circunferencia distal del miembro residual"
+      },
+      "visible_in_modes": [
+        "transtibial_socket",
+        "transfemoral_socket"
+      ],
       "group": "dimensions"
     },
     {
@@ -109,8 +179,14 @@
       "min": 150,
       "max": 500,
       "step": 10,
-      "label": { "en": "Socket Length (mm)", "es": "Largo del Socket (mm)" },
-      "visible_in_modes": ["transtibial_socket", "transfemoral_socket"],
+      "label": {
+        "en": "Socket Length (mm)",
+        "es": "Largo del Socket (mm)"
+      },
+      "visible_in_modes": [
+        "transtibial_socket",
+        "transfemoral_socket"
+      ],
       "group": "dimensions"
     },
     {
@@ -120,9 +196,18 @@
       "min": 5,
       "max": 20,
       "step": 1,
-      "label": { "en": "Voronoi Density", "es": "Densidad Voronoi" },
-      "tooltip": { "en": "Higher = more, smaller holes; Lower = fewer, larger holes", "es": "Mayor = más agujeros pequeños; Menor = menos agujeros grandes" },
-      "visible_in_modes": ["transtibial_socket", "transfemoral_socket"],
+      "label": {
+        "en": "Voronoi Density",
+        "es": "Densidad Voronoi"
+      },
+      "tooltip": {
+        "en": "Higher = more, smaller holes; Lower = fewer, larger holes",
+        "es": "Mayor = más agujeros pequeños; Menor = menos agujeros grandes"
+      },
+      "visible_in_modes": [
+        "transtibial_socket",
+        "transfemoral_socket"
+      ],
       "group": "pattern"
     },
     {
@@ -132,8 +217,14 @@
       "min": 3,
       "max": 8,
       "step": 0.5,
-      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
-      "visible_in_modes": ["transtibial_socket", "transfemoral_socket"],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "visible_in_modes": [
+        "transtibial_socket",
+        "transfemoral_socket"
+      ],
       "group": "structure"
     },
     {
@@ -143,33 +234,82 @@
       "min": 0,
       "max": 64,
       "step": 8,
-      "label": { "en": "Quality ($fn)", "es": "Calidad ($fn)" },
-      "visible_in_modes": ["transtibial_socket", "transfemoral_socket"],
+      "label": {
+        "en": "Quality ($fn)",
+        "es": "Calidad ($fn)"
+      },
+      "visible_in_modes": [
+        "transtibial_socket",
+        "transfemoral_socket"
+      ],
       "group": "quality",
       "visibility_level": "advanced"
     }
   ],
   "parameter_groups": [
-    { "id": "geometry", "label": { "en": "Limb Type", "es": "Tipo de Miembro" } },
-    { "id": "dimensions", "label": { "en": "Measurements", "es": "Medidas" } },
-    { "id": "pattern", "label": { "en": "Pattern", "es": "Patrón" } },
-    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } },
-    { "id": "quality", "label": { "en": "Quality", "es": "Calidad" } }
+    {
+      "id": "geometry",
+      "label": {
+        "en": "Limb Type",
+        "es": "Tipo de Miembro"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Measurements",
+        "es": "Medidas"
+      }
+    },
+    {
+      "id": "pattern",
+      "label": {
+        "en": "Pattern",
+        "es": "Patrón"
+      }
+    },
+    {
+      "id": "structure",
+      "label": {
+        "en": "Structure",
+        "es": "Estructura"
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "en": "Quality",
+        "es": "Calidad"
+      }
+    }
   ],
-  "export_formats": ["stl", "3mf"],
+  "export_formats": [
+    "stl",
+    "3mf"
+  ],
   "hyperobject": {
     "domain": "medical",
     "cdg_interfaces": [
       {
         "id": "limb_scan_interface",
-        "label": { "en": "Limb Scan Interface", "es": "Interfaz de Escaneo de Miembro" },
+        "label": {
+          "en": "Limb Scan Interface",
+          "es": "Interfaz de Escaneo de Miembro"
+        },
         "geometry_type": "mesh_boolean",
         "standard": "DICOM / STL",
-        "parameters": ["circumference_top", "circumference_bottom", "length"]
+        "parameters": [
+          "circumference_top",
+          "circumference_bottom",
+          "length"
+        ]
       },
       {
         "id": "distal_interface_standard",
-        "label": { "en": "Distal Hardware Interface", "es": "Interfaz de Hardware Distal" },
+        "label": {
+          "en": "Distal Hardware Interface",
+          "es": "Interfaz de Hardware Distal"
+        },
         "geometry_type": "bolt_pattern",
         "standard": "Euro 4-hole / Pyramid",
         "parameters": []
@@ -185,9 +325,28 @@
       "es": "Producción escalable y localizada de sockets protésicos — reduce el costo de $5000+ a <$50. El patrón Voronoi mejora la higiene en climas cálidos."
     },
     "commons_license": "CERN-OHL-S-2.0",
-    "bosl2_modules_used": ["hull", "cyl", "diff", "sphere", "skin"],
-    "oep8_features": ["object_dicts", "geometry_as_data"],
-    "cdg_registry_refs": ["limb_scan_interface", "distal_interface_standard"]
+    "bosl2_modules_used": [
+      "hull",
+      "cyl",
+      "diff",
+      "sphere",
+      "skin"
+    ],
+    "oep8_features": [
+      "object_dicts",
+      "geometry_as_data"
+    ],
+    "cdg_registry_refs": [
+      "limb_scan_interface",
+      "distal_interface_standard"
+    ]
+  },
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
   }
 }
-

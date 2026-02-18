@@ -1,125 +1,320 @@
 {
-  "name": "framing-hyperobject",
-  "version": "1.0.0",
-  "description": "Parametric framing and containment systems (Hyperobject)",
-  "thumbnail": "docs/images/thumbnail.png",
-  "tags": [
-    "culture",
-    "hyperobject",
-    "framing",
-    "display"
+  "project": {
+    "name": "Framing Hyperobject",
+    "slug": "framing-hyperobject",
+    "version": "1.0.0",
+    "description": {
+      "en": "Parametric framing and containment systems (Hyperobject)",
+      "es": "Sistemas paramétricos de enmarcado y contención (Hiperobjeto)"
+    },
+    "thumbnail": "docs/images/thumbnail.png",
+    "tags": [
+      "culture",
+      "hyperobject",
+      "framing",
+      "display"
+    ],
+    "difficulty": "Intermediate",
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "culture",
+      "interfaces": [
+        "rabbet",
+        "vesa_pattern",
+        "french_cleat",
+        "standoff_mount"
+      ]
+    }
+  },
+  "modes": [
+    {
+      "id": "frame",
+      "scad_file": "framing.scad",
+      "label": {
+        "en": "Frame Assembly",
+        "es": "Ensamblaje del Marco"
+      },
+      "parts": [
+        "frame_assembly",
+        "back_panel",
+        "glazing"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
+    }
   ],
-  "difficulty": "Intermediate",
-  "author": "Yantra4D",
-  "license": "CERN-OHL-S-2.0",
-  "hyperobject": {
-    "is_hyperobject": true,
-    "domain": "culture",
-    "interfaces": [
-      "rabbet",
-      "vesa_pattern",
-      "french_cleat",
-      "standoff_mount"
-    ]
-  },
-  "parameters": {
-    "dimensions": {
-      "width": {
-        "type": "float",
-        "default": 200,
-        "min": 50,
-        "max": 1000,
-        "description": "Inner width of the frame (mm)"
+  "parts": [
+    {
+      "id": "frame_assembly",
+      "render_mode": 0,
+      "label": {
+        "en": "Frame",
+        "es": "Marco"
       },
-      "height": {
-        "type": "float",
-        "default": 250,
-        "min": 50,
-        "max": 1000,
-        "description": "Inner height of the frame (mm)"
-      },
-      "depth": {
-        "type": "float",
-        "default": 20,
-        "min": 10,
-        "max": 100,
-        "description": "Total depth of the frame (mm)"
-      }
+      "default_color": "#8b4513"
     },
-    "style": {
-      "profile": {
-        "type": "string",
-        "default": "ogee",
-        "options": [
-          "ogee",
-          "bevel",
-          "box",
-          "floater",
-          "stretcher",
-          "seg",
-          "snap"
-        ],
-        "description": "Moulding profile style"
+    {
+      "id": "back_panel",
+      "render_mode": 0,
+      "label": {
+        "en": "Backing",
+        "es": "Respaldo"
       },
-      "mounting": {
-        "type": "string",
-        "default": "none",
-        "options": [
-          "none",
-          "vesa_75",
-          "vesa_100",
-          "french_cleat",
-          "standoffs"
-        ],
-        "description": "Backing attachment style"
-      }
+      "default_color": "#f5deb3"
     },
-    "components": {
-      "mat_width": {
-        "type": "float",
-        "default": 50,
-        "min": 0,
-        "max": 200,
-        "description": "Width of the mat board (mm)"
+    {
+      "id": "glazing",
+      "render_mode": 0,
+      "label": {
+        "en": "Glazing",
+        "es": "Vidrio/Acrílico"
       },
-      "glazing_thickness": {
-        "type": "float",
-        "default": 2,
-        "min": 1,
-        "max": 6,
-        "description": "Thickness of the glass/acrylic (mm)"
-      }
-    },
-    "containment": {
-      "type": {
-        "type": "string",
-        "default": "none",
-        "options": [
-          "none",
-          "PSA",
-          "BGS",
-          "SGC",
-          "CGC",
-          "Silver Eagle",
-          "Small Dollar",
-          "ID Badge"
-        ],
-        "description": "Specialized container insert"
-      }
+      "default_color": "#add8e6"
     }
-  },
-  "parts": {
-    "frame_assembly": {
-      "file": "framing.scad",
-      "description": "Main frame structure"
+  ],
+  "parameters": [
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 200,
+      "min": 50,
+      "max": 1000,
+      "step": 1,
+      "label": {
+        "en": "Width (mm)",
+        "es": "Ancho (mm)"
+      },
+      "group": "dimensions"
     },
-    "back_panel": {
-      "file": "framing.scad",
-      "description": "Backing board"
+    {
+      "id": "height",
+      "type": "slider",
+      "default": 250,
+      "min": 50,
+      "max": 1000,
+      "step": 1,
+      "label": {
+        "en": "Height (mm)",
+        "es": "Altura (mm)"
+      },
+      "group": "dimensions"
     },
-    "glazing": {
-      "file": "framing.scad",
-      "description": "Glass or Acrylic pane"
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "label": {
+        "en": "Depth (mm)",
+        "es": "Profundidad (mm)"
+      },
+      "group": "dimensions"
+    },
+    {
+      "id": "profile_style",
+      "type": "select",
+      "default": "ogee",
+      "options": [
+        {
+          "value": "ogee",
+          "label": {
+            "en": "Ogee (Classic)",
+            "es": "Ogee (Clásico)"
+          }
+        },
+        {
+          "value": "bevel",
+          "label": {
+            "en": "Bevel",
+            "es": "Biselado"
+          }
+        },
+        {
+          "value": "box",
+          "label": {
+            "en": "Box",
+            "es": "Caja"
+          }
+        },
+        {
+          "value": "floater",
+          "label": {
+            "en": "Floater",
+            "es": "Flotante"
+          }
+        },
+        {
+          "value": "stretcher",
+          "label": {
+            "en": "Stretcher Bar",
+            "es": "Bastidor"
+          }
+        },
+        {
+          "value": "seg",
+          "label": {
+            "en": "SEG Extrusion",
+            "es": "Perfil SEG"
+          }
+        },
+        {
+          "value": "snap",
+          "label": {
+            "en": "Snap Frame",
+            "es": "Marco Snap"
+          }
+        }
+      ],
+      "label": {
+        "en": "Profile Style",
+        "es": "Estilo de Perfil"
+      },
+      "group": "style"
+    },
+    {
+      "id": "mounting_style",
+      "type": "select",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": {
+            "en": "None",
+            "es": "Ninguno"
+          }
+        },
+        {
+          "value": "vesa_75",
+          "label": {
+            "en": "VESA 75",
+            "es": "VESA 75"
+          }
+        },
+        {
+          "value": "vesa_100",
+          "label": {
+            "en": "VESA 100",
+            "es": "VESA 100"
+          }
+        },
+        {
+          "value": "french_cleat",
+          "label": {
+            "en": "French Cleat",
+            "es": "Listón Francés"
+          }
+        },
+        {
+          "value": "standoffs",
+          "label": {
+            "en": "Standoffs",
+            "es": "Separadores"
+          }
+        }
+      ],
+      "label": {
+        "en": "Mounting",
+        "es": "Montaje"
+      },
+      "group": "style"
+    },
+    {
+      "id": "container_type",
+      "type": "select",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": {
+            "en": "None",
+            "es": "Ninguno"
+          }
+        },
+        {
+          "value": "PSA",
+          "label": {
+            "en": "PSA Slab",
+            "es": "Slab PSA"
+          }
+        },
+        {
+          "value": "BGS",
+          "label": {
+            "en": "BGS Slab",
+            "es": "Slab BGS"
+          }
+        },
+        {
+          "value": "SGC",
+          "label": {
+            "en": "SGC Slab",
+            "es": "Slab SGC"
+          }
+        },
+        {
+          "value": "CGC",
+          "label": {
+            "en": "CGC Slab",
+            "es": "Slab CGC"
+          }
+        },
+        {
+          "value": "Silver Eagle",
+          "label": {
+            "en": "Silver Eagle Capsule",
+            "es": "Cápsula Silver Eagle"
+          }
+        },
+        {
+          "value": "Small Dollar",
+          "label": {
+            "en": "Small Dollar Capsule",
+            "es": "Cápsula Dólar Peq."
+          }
+        },
+        {
+          "value": "ID Badge",
+          "label": {
+            "en": "ID Badge (CR80)",
+            "es": "Gafete (CR80)"
+          }
+        }
+      ],
+      "label": {
+        "en": "Container",
+        "es": "Contenedor"
+      },
+      "group": "containment"
+    },
+    {
+      "id": "mat_width",
+      "type": "slider",
+      "default": 50,
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "label": {
+        "en": "Mat Width (mm)",
+        "es": "Ancho Paspartú (mm)"
+      },
+      "group": "components"
+    },
+    {
+      "id": "glazing_thickness",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 6,
+      "step": 0.5,
+      "label": {
+        "en": "Glazing Thickness (mm)",
+        "es": "Grosor Vidrio (mm)"
+      },
+      "group": "components"
     }
-  }
+  ]
 }

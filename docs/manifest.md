@@ -312,6 +312,23 @@ See [Multi-Project Platform](./multi-project.md) and [Developer Experience Guide
 
 No frontend or backend code changes are required in either mode.
 
+### Minimal Template
+
+Ensure your `project.json` follows this root structure. **Common mistake:** defining `name` or `modes` at the top level without the `project` wrapper.
+
+```json
+{
+  "project": {
+    "name": "My Project",
+    "slug": "my-project",
+    "version": "0.0.1"
+  },
+  "modes": [],
+  "parts": [],
+  "parameters": []
+}
+```
+
 ---
 
 ## Relationship to Other Docs

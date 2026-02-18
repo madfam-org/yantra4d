@@ -84,3 +84,13 @@ backend:
 2. Add `.scad` files
 3. Create `project.json` following the [manifest schema](manifest.md)
 4. Restart backend (or manifests are loaded on first request)
+
+### Quick Start Template
+
+```json
+{
+  "project": { "name": "My Project", "slug": "my-project" },
+  "modes": [ ... ],
+  "parts": [ ... ]
+}
+```

@@ -208,7 +208,7 @@ Projects can optionally declare `hyperobject` metadata to be classified as **Bou
 }
 ```
 
-**Reference implementation**: See `projects/slide-holder/project.json` for the first hyperobject in the commons.
+**Reference implementation**: See `projects/microscope-slide-holder/project.json` for the first hyperobject in the commons.
 
 ---
 

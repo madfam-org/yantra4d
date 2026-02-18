@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
 
     return {
         plugins: [react()],
-        base: '/admin/',
+        base: '/',
         resolve: {
             alias: {
                 // Share shadcn UI components from studio

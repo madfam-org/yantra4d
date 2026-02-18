@@ -5,7 +5,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -23,11 +23,11 @@ services:
       - FLASK_DEBUG=false
       - PORT=5000
       - PROJECTS_DIR=/app/projects
-      # Covers studio (5173 dev / 3000 docker), landing (4321), and additional dev ports
-      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:4321
+      # Covers studio (5173 dev / 3000 docker), landing (4321), admin (3001) and additional dev ports
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:4321,http://localhost:3001
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
       - JANUA_AUDIENCE=${JANUA_AUDIENCE:-yantra4d}
-      - AUTH_ENABLED=${AUTH_ENABLED:-true}
+      - AUTH_ENABLED=false
       - RATE_LIMIT_ENABLED=false
       - RATE_LIMIT_STORAGE=redis://redis:6379
     depends_on:
@@ -64,7 +64,22 @@ services:
     ports:
       - "4321:80"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/" ]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:5000}
+        VITE_JANUA_BASE_URL: ${VITE_JANUA_BASE_URL:-}
+        VITE_JANUA_CLIENT_ID: ${VITE_JANUA_CLIENT_ID:-yantra4d-admin}
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    depends_on:
+      backend:
+        condition: service_healthy

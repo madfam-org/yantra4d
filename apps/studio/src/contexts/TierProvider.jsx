@@ -3,7 +3,8 @@ import { getApiBase } from '../services/backendDetection'
 import { useAuth, isAuthEnabled } from './AuthProvider'
 import { apiFetch } from '../services/apiClient'
 
-const TierContext = createContext(null)
+// eslint-disable-next-line react-refresh/only-export-components
+export const TierContext = createContext(null)
 
 const TIER_HIERARCHY = { guest: 0, basic: 1, pro: 2, madfam: 3 }
 
@@ -27,7 +28,7 @@ export function TierProvider({ children }) {
     fetch(`${getApiBase()}/api/tiers`)
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setAllTiers(data) })
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   // Fetch current user tier whenever auth state changes

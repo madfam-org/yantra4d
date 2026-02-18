@@ -91,15 +91,33 @@
     "heading": "How It Works",
     "makerTrack": {
       "label": "For Makers",
-      "step1": { "title": "Browse", "desc": "Pick a project from the gallery or follow a shared link." },
-      "step2": { "title": "Customize", "desc": "Adjust dimensions with sliders and toggles. See changes in real-time 3D." },
-      "step3": { "title": "Export & Print", "desc": "Download your STL and send it to your slicer. Done." }
+      "step1": {
+        "title": "Browse",
+        "desc": "Pick a project from the gallery or follow a shared link."
+      },
+      "step2": {
+        "title": "Customize",
+        "desc": "Adjust dimensions with sliders and toggles. See changes in real-time 3D."
+      },
+      "step3": {
+        "title": "Export & Print",
+        "desc": "Download your STL and send it to your slicer. Done."
+      }
     },
     "creatorTrack": {
       "label": "For Creators",
-      "step1": { "title": "Upload .scad", "desc": "Drop your OpenSCAD source files into Yantra4D." },
-      "step2": { "title": "Configure", "desc": "Edit the manifest — params, modes, presets, assembly steps." },
-      "step3": { "title": "Share", "desc": "Get a link. Anyone can customize and export your design." }
+      "step1": {
+        "title": "Upload .scad",
+        "desc": "Drop your OpenSCAD source files into Yantra4D."
+      },
+      "step2": {
+        "title": "Configure",
+        "desc": "Edit the manifest — params, modes, presets, assembly steps."
+      },
+      "step3": {
+        "title": "Share",
+        "desc": "Get a link. Anyone can customize and export your design."
+      }
     }
   },
   "demo": {
@@ -233,6 +251,77 @@
     "subtitle": "No account required. No install. Just open.",
     "ctaMakers": "Browse Gallery",
     "ctaCreators": "Onboard Your Design"
+  },
+  "choosePath": {
+    "title": "Choose Your Path",
+    "subtitle": "The world of Yantra4D is vast. How do you wish to interact with the new paradigm of manufacturing?",
+    "hyperobjects": {
+      "title": "Hyperobjects",
+      "desc": "Explore objects that are not static, but exist as software-defined possibility spaces.",
+      "action": "Learn about Parametricity"
+    },
+    "cdg": {
+      "title": "Common Denominator",
+      "desc": "Understand the universal geometry that allows any part to fit with any other part, instantly.",
+      "action": "See the Standards"
+    },
+    "commons": {
+      "title": "The Commons",
+      "desc": "Join the global library of remixable, open-source designs owned by everyone.",
+      "action": "Enter the Library"
+    }
+  },
+  "concepts": {
+    "hyperobjects": {
+      "title": "Hyperobjects",
+      "description": "Software-defined physical objects that exist across multiple dimensions of customization.",
+      "heroTitle": "Hyperobjects",
+      "heroSubtitle": "One code, infinite physical manifestations.",
+      "section1Title": "Beyond Static Files",
+      "section1Body1": "An STL file is a dead snapshot. A Hyperobject is alive. It is a parametric definition that contains every possible variation of itself.",
+      "section1Body2": "When you interact with a Yantra4D project, you aren't downloading a file; you are exploring a Hyperobject's possibility space to find the specific instance that fits your reality.",
+      "parametricTitle": "Parametric",
+      "parametricDesc": "Adjust dimensions, features, and constraints in real-time.",
+      "codeDrivenTitle": "Code-Driven",
+      "codeDrivenDesc": "Built with OpenSCAD, version-controlled with Git, shareable like open source software.",
+      "manufacturingTitle": "Manufacturing Ready",
+      "manufacturingDesc": "Generates precise, distinct STLs ready for your slicer and 3D printer."
+    },
+    "cdg": {
+      "title": "Common Denominator Geometry",
+      "description": "A universal language for 3D design that ensures compatibility and remixability across the entire ecosystem.",
+      "heroTitle": "Common Denominator Geometry",
+      "heroSubtitle": "The universal DNA of every object in the Yantra4D ecosystem.",
+      "section1Title": "Standardized Connectivity",
+      "section1Body": "CDG defines a rigorous set of geometric standards that ensure every part fits with every other part. Whether you're designing a drawer system, a wall mount, or a complex machine, the interfaces are guaranteed to match.",
+      "gridfinity": "Universal Grid Alignment (Gridfinity compatible)",
+      "fasteners": "Standardized Screw Holes & Fasteners",
+      "tolerances": "Predictable Tolerances for 3D Printing",
+      "remixTitle": "Remix Culture, Native",
+      "remixBody": "Because the geometry is standardized, remixing isn't just possible—it's effortless. Take a module from a creator in Tokyo, combine it with a base from a maker in Berlin, and add your own custom interface. It just works."
+    },
+    "commons": {
+      "title": "The Commons",
+      "description": "A shared, open library of parametric wisdom owned by everyone.",
+      "heroTitle": "The Commons",
+      "heroSubtitle": "The sum of all human manufacturing knowledge, accessible to all.",
+      "section1Title": "Ownership for Everyone",
+      "section1Body": "The Yantra4D Commons is not a walled garden. It is a public library of designs. When you contribute a Hyperobject, you aren't giving it to a corporation—you are gifting it to the global community of makers.",
+      "forkTitle": "Fork & Adapt",
+      "forkDesc": "Derivative works are encouraged, not restricted.",
+      "copyleftTitle": "Copyleft Licensed",
+      "copyleftDesc": "Protected by AGPLv3 to ensure freedom forever.",
+      "globalTitle": "Global Standards",
+      "globalDesc": "Language agnostic, metric-first, universally compatible.",
+      "joinTitle": "Join the Movement",
+      "joinBody": "Start your journey by exploring the existing Commons or configuring your first Hyperobject.",
+      "browseBtn": "Browse the Commons"
+    }
+  },
+  "heroNew": {
+    "badge": "v0.1.0 Public Beta",
+    "journeyBtn": "Begin Your Journey",
+    "studioBtn": "Launch Studio"
   },
   "footer": {
     "copyright": "Yantra4D. Open source under AGPLv3.",

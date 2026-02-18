@@ -91,15 +91,33 @@
     "heading": "Cómo Funciona",
     "makerTrack": {
       "label": "Para Makers",
-      "step1": { "title": "Explora", "desc": "Elige un proyecto de la galería o sigue un enlace compartido." },
-      "step2": { "title": "Personaliza", "desc": "Ajusta dimensiones con deslizadores y botones. Ve los cambios en 3D en tiempo real." },
-      "step3": { "title": "Exporta e Imprime", "desc": "Descarga tu STL y envíalo a tu slicer. Listo." }
+      "step1": {
+        "title": "Explora",
+        "desc": "Elige un proyecto de la galería o sigue un enlace compartido."
+      },
+      "step2": {
+        "title": "Personaliza",
+        "desc": "Ajusta dimensiones con deslizadores y botones. Ve los cambios en 3D en tiempo real."
+      },
+      "step3": {
+        "title": "Exporta e Imprime",
+        "desc": "Descarga tu STL y envíalo a tu slicer. Listo."
+      }
     },
     "creatorTrack": {
       "label": "Para Creadores",
-      "step1": { "title": "Sube .scad", "desc": "Arrastra tus archivos fuente de OpenSCAD a Yantra4D." },
-      "step2": { "title": "Configura", "desc": "Edita el manifiesto — parámetros, modos, preajustes, pasos de ensamblaje." },
-      "step3": { "title": "Comparte", "desc": "Obtén un enlace. Cualquiera puede personalizar y exportar tu diseño." }
+      "step1": {
+        "title": "Sube .scad",
+        "desc": "Arrastra tus archivos fuente de OpenSCAD a Yantra4D."
+      },
+      "step2": {
+        "title": "Configura",
+        "desc": "Edita el manifiesto — parámetros, modos, preajustes, pasos de ensamblaje."
+      },
+      "step3": {
+        "title": "Comparte",
+        "desc": "Obtén un enlace. Cualquiera puede personalizar y exportar tu diseño."
+      }
     }
   },
   "demo": {
@@ -233,6 +251,77 @@
     "subtitle": "Sin cuenta. Sin instalar nada. Solo abre.",
     "ctaMakers": "Explorar Galería",
     "ctaCreators": "Sube Tu Diseño"
+  },
+  "choosePath": {
+    "title": "Elige Tu Camino",
+    "subtitle": "El mundo de Yantra4D es vasto. ¿Cómo deseas interactuar con el nuevo paradigma de manufactura?",
+    "hyperobjects": {
+      "title": "Hiperobjetos",
+      "desc": "Explora objetos que no son estáticos, sino que existen como espacios de posibilidad definidos por software.",
+      "action": "Aprende sobre Parametricidad"
+    },
+    "cdg": {
+      "title": "Denominador Común",
+      "desc": "Entiende la geometría universal que permite que cualquier parte encaje con cualquier otra, al instante.",
+      "action": "Ver los Estándares"
+    },
+    "commons": {
+      "title": "Los Comunes",
+      "desc": "Únete a la biblioteca global de diseños remezclables y de código abierto, propiedad de todos.",
+      "action": "Entrar a la Biblioteca"
+    }
+  },
+  "concepts": {
+    "hyperobjects": {
+      "title": "Hiperobjetos",
+      "description": "Objetos físicos definidos por software que existen a través de múltiples dimensiones de personalización.",
+      "heroTitle": "Hiperobjetos",
+      "heroSubtitle": "Un código, infinitas manifestaciones físicas.",
+      "section1Title": "Más Allá de Archivos Estáticos",
+      "section1Body1": "Un archivo STL es una instantánea muerta. Un Hiperobjeto está vivo. Es una definición paramétrica que contiene cada variación posible de sí mismo.",
+      "section1Body2": "Cuando interactúas con un proyecto Yantra4D, no estás descargando un archivo; estás explorando el espacio de posibilidad de un Hiperobjeto para encontrar la instancia específica que se ajusta a tu realidad.",
+      "parametricTitle": "Paramétrico",
+      "parametricDesc": "Ajusta dimensiones, características y restricciones en tiempo real.",
+      "codeDrivenTitle": "Impulsado por Código",
+      "codeDrivenDesc": "Construido con OpenSCAD, controlado por versiones con Git, compartible como software de código abierto.",
+      "manufacturingTitle": "Listo para Manufactura",
+      "manufacturingDesc": "Genera STLs precisos y distintos listos para tu slicer e impresora 3D."
+    },
+    "cdg": {
+      "title": "Geometría de Denominador Común",
+      "description": "Un lenguaje universal para el diseño 3D que asegura compatibilidad y remezclabilidad en todo el ecosistema.",
+      "heroTitle": "Geometría de Denominador Común",
+      "heroSubtitle": "El ADN universal de cada objeto en el ecosistema Yantra4D.",
+      "section1Title": "Conectividad Estandarizada",
+      "section1Body": "CDG define un conjunto riguroso de estándares geométricos que aseguran que cada parte encaje con cada otra parte. Ya sea que diseñes un sistema de cajones, un soporte de pared o una máquina compleja, las interfaces están garantizadas para coincidir.",
+      "gridfinity": "Alineación de Rejilla Universal (compatible con Gridfinity)",
+      "fasteners": "Agujeros de Tornillo y Sujetadores Estandarizados",
+      "tolerances": "Tolerancias Predecibles para Impresión 3D",
+      "remixTitle": "Cultura Remix, Nativa",
+      "remixBody": "Porque la geometría está estandarizada, remezclar no solo es posible—es fácil. Toma un módulo de un creador en Tokio, combínalo con una base de un maker en Berlín, y añade tu propia interfaz personalizada. Simplemente funciona."
+    },
+    "commons": {
+      "title": "Los Comunes",
+      "description": "Una biblioteca compartida y abierta de sabiduría paramétrica propiedad de todos.",
+      "heroTitle": "Los Comunes",
+      "heroSubtitle": "La suma de todo el conocimiento de manufactura humano, accesible para todos.",
+      "section1Title": "Propiedad para Todos",
+      "section1Body": "Los Comunes de Yantra4D no son un jardín amurallado. Son una biblioteca pública de diseños. Cuando contribuyes un Hiperobjeto, no se lo estás dando a una corporación—se lo estás regalando a la comunidad global de makers.",
+      "forkTitle": "Fork y Adaptar",
+      "forkDesc": "Las obras derivadas son fomentadas, no restringidas.",
+      "copyleftTitle": "Licencia Copyleft",
+      "copyleftDesc": "Protegido por AGPLv3 para asegurar libertad por siempre.",
+      "globalTitle": "Estándares Globales",
+      "globalDesc": "Agnóstico al idioma, sistema métrico, universalmente compatible.",
+      "joinTitle": "Únete al Movimiento",
+      "joinBody": "Comienza tu viaje explorando los Comunes existentes o configurando tu primer Hiperobjeto.",
+      "browseBtn": "Explorar los Comunes"
+    }
+  },
+  "heroNew": {
+    "badge": "v0.1.0 Beta Pública",
+    "journeyBtn": "Comienza Tu Viaje",
+    "studioBtn": "Abrir Studio"
   },
   "footer": {
     "copyright": "Yantra4D. Código abierto bajo AGPLv3.",

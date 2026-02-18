@@ -91,7 +91,7 @@
       }
     },
     "containment": {
-      "tpye": {
+      "type": {
         "type": "string",
         "default": "none",
         "options": [

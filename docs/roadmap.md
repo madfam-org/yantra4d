@@ -168,9 +168,17 @@ The following features expand the platform's capabilities. They should be tackle
 
 ### 3.5 — Hyperobjects Commons Rollout (Phase 3)
 
-**Goal**: Classify additional existing projects as Hyperobjects with CDG interfaces.
+**Goal**: Transform designated projects into standardized Hyperobjects with CDG interfaces, enforcing strict architectural and licensing standards.
 
-**Planned classifications** (after Phase 2 UI is live):
+**Hyperobject Standards**:
+Any project designated as a "Hyperobject" and part of the Commons must adhere to the following strict requirements:
+1.  **Complete Rewrite**: Logic must be rewritten from scratch to ensure cleanliness and modern standards.
+2.  **BOSL2 & OEP8**: All geometry must leverage `BOSL2` and follow `OEP8` formatting/structure standards.
+3.  **No External Vendors**: Start fresh without `vendors/` or 3rd-party repositories.
+4.  **Repository Extraction**: The final result must be extracted into its own repository under the `madfam-org` organization.
+5.  **CERN OHL License**: The new repository must be licensed under `CERN-OHL-S-2.0`.
+
+**Planned Rollout candidates**:
 - `gridfinity` — household domain, `grid` + `snap` interfaces
 - `stemfie` — education domain, `bolt_pattern` + `profile` interfaces
 - `fasteners` — industrial domain, `thread` + `bolt_pattern` interfaces
@@ -178,6 +186,17 @@ The following features expand the platform's capabilities. They should be tackle
 - `motor-mount` — industrial domain, `bolt_pattern` interfaces
 
 **Why it matters**: Transforms parametric projects from isolated designs into interoperable components in a distributed manufacturing commons. CDG interfaces enable communities to build compatible ecosystems of printable objects.
+
+---
+
+### 3.6 — Technical Health & Engineering
+
+**Goal**: Address technical debt and optimize platform performance alongside feature development.
+
+**Key Initiatives**:
+*   **SCAD Optimization**: Refactor core project geometry (e.g., `gridfinity`) to reduce duplication and improve render times (addressing existing `TODO`s).
+*   **WASM Performance**: Investigate and implement memory optimizations for client-side rendering to handle complex models more robustly.
+*   **Render Pipeline Robustness**: Optimize the Docker rendering pipeline to better handle exponentially complex parameter sets without timing out.
 
 ---
 

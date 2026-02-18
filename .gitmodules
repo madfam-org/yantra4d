@@ -49,3 +49,6 @@
 [submodule "projects/slide-holder"]
 	path = projects/microscope-slide-holder
 	url = https://github.com/madfam-org/microscope-slide-holder
+[submodule "projects/custom-msh/vendor/microscope-slide-holder"]
+	path = projects/custom-msh/vendor/microscope-slide-holder
+	url = https://github.com/madfam-org/microscope-slide-holder

@@ -1,0 +1,125 @@
+{
+    "project": {
+        "name": "Custom MSH (AOCL)",
+        "slug": "custom-msh",
+        "version": "1.0.0",
+        "description": {
+            "en": "Custom slide holder system for 1x1 inch substrates (AOCL)",
+            "es": "Sistema de portaobjetos personalizado para sustratos de 1x1 pulgada (AOCL)"
+        },
+        "thumbnail": "/projects/custom-msh.webp",
+        "tags": [
+            "lab",
+            "custom",
+            "microscope",
+            "aocl"
+        ],
+        "difficulty": "intermediate"
+    },
+    "modes": [
+        {
+            "id": "holder",
+            "scad_file": "holder.scad",
+            "label": {
+                "en": "Single Holder",
+                "es": "Soporte Individual"
+            },
+            "parts": [
+                "holder_body"
+            ],
+            "estimate": {
+                "base_units": 1,
+                "formula": "constant"
+            }
+        },
+        {
+            "id": "rack",
+            "scad_file": "rack.scad",
+            "label": {
+                "en": "10-Slot Rack",
+                "es": "Rack de 10 Ranuras"
+            },
+            "parts": [
+                "rack"
+            ],
+            "estimate": {
+                "base_units": 1,
+                "formula": "constant"
+            }
+        },
+        {
+            "id": "box",
+            "scad_file": "box.scad",
+            "label": {
+                "en": "3-Rack Box",
+                "es": "Caja para 3 Racks"
+            },
+            "parts": [
+                "box_base",
+                "box_lid"
+            ],
+            "estimate": {
+                "base_units": 1,
+                "formula": "constant"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "holder_body",
+            "render_mode": 0,
+            "label": {
+                "en": "Holder Body",
+                "es": "Cuerpo del Soporte"
+            },
+            "default_color": "#4a90d9"
+        },
+        {
+            "id": "rack",
+            "render_mode": 0,
+            "label": {
+                "en": "Rack",
+                "es": "Rack"
+            },
+            "default_color": "#e5e7eb"
+        },
+        {
+            "id": "box_base",
+            "render_mode": 0,
+            "label": {
+                "en": "Box Base",
+                "es": "Base de Caja"
+            },
+            "default_color": "#4a90d9"
+        },
+        {
+            "id": "box_lid",
+            "render_mode": 1,
+            "label": {
+                "en": "Box Lid",
+                "es": "Tapa de Caja"
+            },
+            "default_color": "#6b7280"
+        }
+    ],
+    "parameters": [
+        {
+            "id": "substrate_size",
+            "type": "slider",
+            "default": 25.4,
+            "min": 20,
+            "max": 30,
+            "step": 0.1,
+            "label": {
+                "en": "Substrate Size (mm)",
+                "es": "Tamaño Sustrato (mm)"
+            },
+            "disabled": true,
+            "visible_in_modes": [
+                "holder",
+                "rack",
+                "box"
+            ]
+        }
+    ]
+}

@@ -11,7 +11,7 @@ from flask import Blueprint, jsonify, request, Response
 
 from config import Config
 from manifest import discover_projects, get_manifest
-from middleware.auth import require_role
+from middleware.auth import require_role, optional_auth
 from services.route_helpers import error_response
 
 admin_bp = Blueprint('admin', __name__)
@@ -80,11 +80,55 @@ def _enrich_project(proj):
 
 
 @admin_bp.route('/api/admin/projects', methods=['GET'])
-@require_role("admin")
+@optional_auth
 def admin_list_projects() -> Response:
-    """Return enriched list of all projects."""
+    """
+    Return enriched list of projects.
+    
+    - Admins: See all projects.
+    - Public/Anonymous: See only demos and hyperobjects (excluding 'tablaco').
+    """
     projects = discover_projects()
     enriched = [_enrich_project(p) for p in projects]
+
+    # Check if user is admin
+    is_admin = False
+    if Config.AUTH_ENABLED:
+        claims = getattr(request, "auth_claims", None)
+        if claims:
+            roles = claims.get("roles", [])
+            if isinstance(roles, str):
+                roles = [roles]
+            if claims.get("role"):
+                roles.append(claims.get("role"))
+            is_admin = "admin" in roles
+    else:
+        # If auth is disabled (local dev default), treat as admin unless restricted?
+        # Requirement: "Locally, we should not be asked to authenticate" -> implied public access is enough?
+        # Actually, if AUTH_ENABLED is False, middleware sets auth_claims=None.
+        # But for local dev, we might want full access?
+        # The user said: "Locally, we should not be asked to authenticate"
+        # If AUTH_ENABLED is false, we probably just want to show everything or use the public logic?
+        # Let's stick to the prompt: "Globally, every single user should have access to hyperobject and demo projects"
+        # "Locally we should not be asked to authenticate" -> This implies we simply want it to work.
+        # If AUTH_ENABLED is False, we typically bypass auth checks.
+        pass
+
+    # If not admin, filter the list
+    if not is_admin and Config.AUTH_ENABLED:
+         enriched = [
+             p for p in enriched 
+             if (p.get("is_demo") or p.get("is_hyperobject")) 
+             and p["slug"] != "tablaco"
+         ]
+    
+    # If AUTH_ENABLED is False (local dev), we usually allow everything in other parts of the app.
+    # However, to be safe and consistent with "Global" rule, we might strictly filter unless we decide local dev = admin.
+    # But usually AUTH_ENABLED=False means we are in dev mode and should see everything.
+    # Let's check how require_role handles AUTH_ENABLED=False.
+    # require_role simply calls f(*args) if not Config.AUTH_ENABLED.
+    # So if Auth is disabled, we should probably return everything.
+    
     return jsonify(enriched)
 
 

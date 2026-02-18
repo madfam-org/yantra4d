@@ -5,13 +5,17 @@ include <BOSL2/beziers.scad>
 
 // Ogee Profile: S-curve
 function ogee_profile(w, d, rabbet_d = 10, rabbet_w = 5) =
-  bez_path(
+  concat(
+    [[0, 0]],
+    bezier_curve(
+      [
+        [w / 3, 0], // Start of curve
+        [w / 2, d / 4], // Control 1
+        [w / 2, d * 0.75], // Control 2
+        [w, d], // Top lip
+      ], 20
+    ),
     [
-      [0, 0],
-      [w / 3, 0], // Bottom flat
-      [w / 2, d / 4],
-      [w / 2, d * 0.75], // S-curve inflection
-      [w, d], // Top lip
       [w, d - rabbet_d], // Rabbet depth drop
       [w - rabbet_w, d - rabbet_d], // Rabbet width return
       [w - rabbet_w, 0], // Inner wall

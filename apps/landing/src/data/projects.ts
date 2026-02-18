@@ -1,5 +1,5 @@
 export type ProjectCategory = 'storage' | 'mechanical' | 'art' | 'tabletop' | 'education' | 'electronics';
-export type HyperobjectDomain = 'household' | 'industrial' | 'medical' | 'commercial' | 'hybrid';
+export type HyperobjectDomain = 'household' | 'industrial' | 'medical' | 'commercial' | 'hybrid' | 'culture';
 
 export type Project = {
   slug: string;
@@ -15,6 +15,7 @@ export type Project = {
 export const PROJECTS: Project[] = [
   // Storage
   { slug: 'gridfinity', name: 'Gridfinity Extended', description: 'Modular storage bins with snap-fit baseplates and lids', descriptionEs: 'Contenedores modulares con bases y tapas de ensamble a presión', category: 'storage', thumbnail: '/projects/gridfinity.webp', isHyperobject: true, domain: 'household' },
+  { slug: 'framing-hyperobject', name: 'Framing Hyperobject', description: 'Parametric framing and containment systems', descriptionEs: 'Sistemas paramétricos de enmarcado y contención', category: 'art', thumbnail: '/projects/framing.png', isHyperobject: true, domain: 'culture' },
   { slug: 'multiboard', name: 'Multiboard Wall Storage', description: 'Modular wall-mounted storage with hexagonal peg pattern', descriptionEs: 'Almacenamiento modular de pared con patrón hexagonal', category: 'storage', thumbnail: '/projects/multiboard.webp' },
   { slug: 'portacosas', name: 'Portacosas', description: 'Modular desk organizer with snap-fit tray system', descriptionEs: 'Organizador de escritorio modular con sistema de bandejas', category: 'storage', thumbnail: '/projects/portacosas.webp' },
   { slug: 'rugged-box', name: 'Rugged Box', description: 'Parametric hinged box with latches, gasket seal, and reinforcement ribs', descriptionEs: 'Caja robusta paramétrica con bisagra, sellos y refuerzos', category: 'storage', thumbnail: '/projects/rugged-box.webp' },

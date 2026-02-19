@@ -137,16 +137,40 @@ def check_overhang(mesh, cfg):
         return True, f"no overhangs (threshold {max_angle}°)"
 
     down_normals = normals[downward]
+
+    # Filter out faces that are on the build plate (min Z)
+    # These are supported by the bed and shouldn't count as overhangs.
+    min_z = mesh.bounds[0][2]
+    # Centroids of downward faces
+    down_centroids = mesh.triangles_center[downward]
+    # Check if centroid Z is close to min_z (e.g. within 0.1mm)
+    on_bed = np.isclose(down_centroids[:, 2], min_z, atol=0.1)
+    
+    # Only keep those NOT on bed
+    valid_downward_mask = ~on_bed
+    
+    if not np.any(valid_downward_mask):
+         return True, f"no unsupported overhangs (threshold {max_angle}°)"
+
+    down_normals = down_normals[valid_downward_mask]
+    
     # Angle from vertical (Z-down): arccos(abs(nz))
-    angles_rad = np.arccos(np.clip(np.abs(down_normals[:, 2]), 0, 1))
-    angles_deg = np.degrees(angles_rad)
-    worst = float(np.max(angles_deg))
-    overhang_count = int(np.sum(angles_deg > max_angle))
+    # This gives 0 deg for horizontal roof (downward normal is parallel to Z)
+    # and 90 deg for vertical wall.
+    # We want "Overhang Angle": 0 deg for vertical wall, 90 deg for horizontal roof.
+    # So Overhang Angle = 90 - Angle_From_Vertical.
+    angle_from_vertical_rad = np.arccos(np.clip(np.abs(down_normals[:, 2]), 0, 1))
+    angle_from_vertical_deg = np.degrees(angle_from_vertical_rad)
+    
+    overhang_angles_deg = 90.0 - angle_from_vertical_deg
+    
+    worst_overhang = float(np.max(overhang_angles_deg))
+    overhang_count = int(np.sum(overhang_angles_deg > max_angle))
     overhang_ratio = overhang_count / len(mesh.faces)
 
-    if worst <= max_angle:
-        return True, f"max {worst:.0f}° (threshold {max_angle}°)"
-    return False, f"max {worst:.0f}° > {max_angle}° ({overhang_ratio:.0%} overhang faces)"
+    if worst_overhang <= max_angle:
+        return True, f"max {worst_overhang:.0f}° (threshold {max_angle}°)"
+    return False, f"max {worst_overhang:.0f}° > {max_angle}° ({overhang_ratio:.0%} overhang faces)"
 
 
 def check_min_feature_size(mesh, cfg):

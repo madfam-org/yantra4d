@@ -1,6 +1,6 @@
 # Yantra4D — Parametric 3D Print Design Platform
 
-Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview, evolving into a **Hyperobjects Commons**.
+Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview (wireframe/bounding-box), evolving into a **Hyperobjects Commons**.
 
 ## Architecture
 

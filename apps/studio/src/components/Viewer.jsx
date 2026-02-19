@@ -1,7 +1,8 @@
-import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
+import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback, useRef } from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
-import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
+import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, useHelper } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { BoxHelper } from 'three'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useTheme } from "../contexts/ThemeProvider"
 import { useManifest } from "../contexts/ManifestProvider"
@@ -9,7 +10,7 @@ import { ErrorBoundary } from './feedback/ErrorBoundary'
 import SceneController from './viewer/SceneController'
 import NumberedAxes from './viewer/NumberedAxes'
 import AnimatedGrid from './viewer/AnimatedGrid'
-import { computeVolumeMm3, computeBoundingBox } from '../lib/printEstimator'
+import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../lib/printEstimator'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 const GRID_SECTION_COLOR = '#4b5563'
@@ -67,16 +68,31 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     )
 })
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [] }, ref) => {
+const PartsGroup = ({ boundingBox, children }) => {
+    const groupRef = useRef()
+    useHelper(boundingBox && groupRef, BoxHelper, 'cyan')
+    return <group ref={groupRef}>{children}</group>
+}
+
+const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [] }, ref) => {
     const geometriesRef = React.useRef({})
+    const [centerOfMass, setCenterOfMass] = useState([0, 0, 0])
 
     const handleGeometry = useCallback((partType, geometry) => {
         geometriesRef.current[partType] = geometry
         // Aggregate stats across all parts
         let totalVolume = 0
+        let weightedCenterSum = { x: 0, y: 0, z: 0 }
         let mergedBox = null
         for (const geom of Object.values(geometriesRef.current)) {
-            totalVolume += computeVolumeMm3(geom)
+            const vol = computeVolumeMm3(geom)
+            totalVolume += vol
+            const centroid = computeCentroid(geom)
+
+            weightedCenterSum.x += centroid.x * vol
+            weightedCenterSum.y += centroid.y * vol
+            weightedCenterSum.z += centroid.z * vol
+
             const bbox = computeBoundingBox(geom)
             if (!mergedBox) {
                 mergedBox = bbox
@@ -88,6 +104,15 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                 }
             }
         }
+
+        if (totalVolume > 0) {
+            setCenterOfMass([
+                weightedCenterSum.x / totalVolume,
+                weightedCenterSum.y / totalVolume,
+                weightedCenterSum.z / totalVolume
+            ])
+        }
+
         onGeometryStats?.({ volumeMm3: totalVolume, boundingBox: mergedBox })
     }, [onGeometryStats])
 
@@ -188,8 +213,8 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                         key={view.id}
                         onClick={() => handleViewChange(view.id)}
                         className={`px-2 py-1 min-h-[44px] min-w-[44px] text-xs rounded font-medium transition-colors ${activeView === view.id
-                                ? 'bg-primary text-primary-foreground'
-                                : 'hover:bg-muted text-muted-foreground'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'hover:bg-muted text-muted-foreground'
                             }`}
                     >
                         {getLabel(view, 'label', language)}
@@ -206,7 +231,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
                     <ambientLight intensity={0.3} />
                     <pointLight position={[10, 10, 10]} intensity={0.5} />
 
-                    <OrbitControls makeDefault up={[0, 0, 1]} minDistance={0.5} maxDistance={5000} />
+                    <OrbitControls makeDefault up={[0, 0, 1]} minDistance={0.5} maxDistance={5000} target={centerOfMass} />
                     <Grid
                         infiniteGrid
                         sectionColor={GRID_SECTION_COLOR}
@@ -223,45 +248,47 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, loading, progress, p
 
                     <Suspense fallback={null}>
                         {parts.length > 0 ? (
-                        <Bounds fit clip observe margin={1.2}>
-                            {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
-                            <group>
-                                {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (
-                                    <Model
-                                        key={part.type}
-                                        url={part.url}
-                                        color={colors[part.type] || defaultColor}
-                                        wireframe={wireframe}
-                                        onGeometry={(geom) => handleGeometry(part.type, geom)}
-                                        highlightMode={getHighlightMode(part.type)}
-                                    />
-                                ))}
-                            </group>
-                            {/* Assembly parts — hidden when animated grid is active */}
-                            <group visible={!(animating && mode === 'grid' && animReady)}>
-                                {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => (
-                                    <Model
-                                        key={part.type}
-                                        url={part.url}
-                                        color={colors[part.type] || defaultColor}
-                                        wireframe={wireframe}
-                                        onGeometry={(geom) => handleGeometry(part.type, geom)}
-                                        highlightMode={getHighlightMode(part.type)}
-                                    />
-                                ))}
-                            </group>
-                            {/* Animated grid — mounted when animating, visible once ready */}
-                            {animating && mode === 'grid' && (
-                                <group visible={animReady}>
-                                    <AnimatedGrid
-                                        params={params}
-                                        colors={colors}
-                                        wireframe={wireframe}
-                                        onReady={() => setAnimReady(true)}
-                                    />
-                                </group>
-                            )}
-                        </Bounds>
+                            <Bounds fit clip observe margin={1.2}>
+                                <PartsGroup boundingBox={boundingBox}>
+                                    {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
+                                    <group>
+                                        {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (
+                                            <Model
+                                                key={part.type}
+                                                url={part.url}
+                                                color={colors[part.type] || defaultColor}
+                                                wireframe={wireframe}
+                                                onGeometry={(geom) => handleGeometry(part.type, geom)}
+                                                highlightMode={getHighlightMode(part.type)}
+                                            />
+                                        ))}
+                                    </group>
+                                    {/* Assembly parts — hidden when animated grid is active */}
+                                    <group visible={!(animating && mode === 'grid' && animReady)}>
+                                        {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => (
+                                            <Model
+                                                key={part.type}
+                                                url={part.url}
+                                                color={colors[part.type] || defaultColor}
+                                                wireframe={wireframe}
+                                                onGeometry={(geom) => handleGeometry(part.type, geom)}
+                                                highlightMode={getHighlightMode(part.type)}
+                                            />
+                                        ))}
+                                    </group>
+                                </PartsGroup>
+                                {/* Animated grid — mounted when animating, visible once ready */}
+                                {animating && mode === 'grid' && (
+                                    <group visible={animReady}>
+                                        <AnimatedGrid
+                                            params={params}
+                                            colors={colors}
+                                            wireframe={wireframe}
+                                            onReady={() => setAnimReady(true)}
+                                        />
+                                    </group>
+                                )}
+                            </Bounds>
                         ) : null}
                     </Suspense>
                 </Canvas>

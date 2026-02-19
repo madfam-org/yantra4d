@@ -81,7 +81,7 @@ function ComponentPickerWidget({ param, setParams, getLabel, language }) {
 
 const DEFAULT_TEXT_MAX_LENGTH = 255
 
-export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {} }) {
+export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, boundingBox, setBoundingBox, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {} }) {
     const { language, t } = useLanguage()
     const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
     const [visibilityLevel, setVisibilityLevel] = useState(() => {
@@ -341,6 +341,17 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             checked={wireframe}
                             onCheckedChange={setWireframe}
                             aria-label={t('ctrl.wireframe')}
+                        />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="bounds-toggle" className="text-sm">
+                            {t('ctrl.bounds')}
+                        </Label>
+                        <Switch
+                            id="bounds-toggle"
+                            checked={boundingBox}
+                            onCheckedChange={setBoundingBox}
+                            aria-label={t('ctrl.bounds')}
                         />
                     </div>
                     <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>

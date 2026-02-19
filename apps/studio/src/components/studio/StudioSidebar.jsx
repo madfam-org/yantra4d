@@ -14,7 +14,8 @@ import { useLanguage } from '../../contexts/LanguageProvider'
 function SidebarContent() {
   const {
     manifest, mode, setMode, getLabel,
-    params, setParams, colors, setColors, wireframe, setWireframe,
+    params, setParams, colors, setColors,
+    wireframe, setWireframe, boundingBox, setBoundingBox,
     presets, handleApplyPreset, handleGridPresetToggle,
     loading, parts,
     handleGenerate, handleCancelGenerate, handleVerify, handleReset,
@@ -68,6 +69,8 @@ function SidebarContent() {
         setColors={setColors}
         wireframe={wireframe}
         setWireframe={setWireframe}
+        boundingBox={boundingBox}
+        setBoundingBox={setBoundingBox}
         presets={presets}
         onApplyPreset={handleApplyPreset}
         onToggleGridPreset={handleGridPresetToggle}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeVolumeMm3, computeBoundingBox, estimatePrint, getMaterialProfiles } from './printEstimator'
+import { computeVolumeMm3, computeBoundingBox, computeCentroid, estimatePrint, getMaterialProfiles } from './printEstimator'
 
 describe('printEstimator', () => {
   describe('computeVolumeMm3', () => {
@@ -98,6 +98,80 @@ describe('printEstimator', () => {
       expect(bbox.width).toBe(20)   // x range
       expect(bbox.depth).toBe(20)   // y range
       expect(bbox.height).toBe(30)  // z range (Z-up)
+    })
+  })
+
+  describe('computeCentroid', () => {
+    it('returns zero vector for null geometry', () => {
+      expect(computeCentroid(null)).toEqual({ x: 0, y: 0, z: 0 })
+    })
+
+    it('computes centroid of a simple tetrahedron', () => {
+      // Tetrahedron vertices: (0,0,0), (1,0,0), (0,1,0), (0,0,1)
+      // Centroid is average of vertices: (0.25, 0.25, 0.25)
+      const positions = new Float32Array([
+        // Face 1: (0,0,0), (1,0,0), (0,1,0)
+        0, 0, 0, 1, 0, 0, 0, 1, 0,
+        // Face 2: (0,0,0), (1,0,0), (0,0,1)
+        0, 0, 0, 1, 0, 0, 0, 0, 1,
+        // Face 3: (0,0,0), (0,1,0), (0,0,1)
+        0, 0, 0, 0, 1, 0, 0, 0, 1,
+        // Face 4: (1,0,0), (0,1,0), (0,0,1)
+        1, 0, 0, 0, 1, 0, 0, 0, 1,
+      ])
+
+      const geometry = {
+        attributes: {
+          position: {
+            count: 12,
+            getX: (i) => positions[i * 3],
+            getY: (i) => positions[i * 3 + 1],
+            getZ: (i) => positions[i * 3 + 2],
+          }
+        },
+        index: null,
+      }
+
+      const centroid = computeCentroid(geometry)
+      expect(centroid.x).toBeCloseTo(0.25, 2)
+      expect(centroid.y).toBeCloseTo(0.25, 2)
+      expect(centroid.z).toBeCloseTo(0.25, 2)
+    })
+
+    it('computes centroid of a cube', () => {
+      // Cube centered at (10, 10, 10) with side 2
+      // Vertices: (9,9,9) to (11,11,11)
+      // Centroid should be (10, 10, 10)
+      // Represented as 2 triangles per face (12 triangles)
+      // Simplification: just check that if we offset the previous tetrahedron, the centroid offsets too.
+
+      const positions = new Float32Array([
+        // Face 1: P0, P2, P1 (points down/out in Z)
+        10, 10, 10, 10, 11, 10, 11, 10, 10,
+        // Face 2: P0, P1, P3 (points out in Y)
+        10, 10, 10, 11, 10, 10, 10, 10, 11,
+        // Face 3: P0, P3, P2 (points out in X)
+        10, 10, 10, 10, 10, 11, 10, 11, 10,
+        // Face 4: P1, P2, P3 (points out)
+        11, 10, 10, 10, 11, 10, 10, 10, 11,
+      ])
+
+      const geometry = {
+        attributes: {
+          position: {
+            count: 12,
+            getX: (i) => positions[i * 3],
+            getY: (i) => positions[i * 3 + 1],
+            getZ: (i) => positions[i * 3 + 2],
+          }
+        },
+        index: null,
+      }
+
+      const centroid = computeCentroid(geometry)
+      expect(centroid.x).toBeCloseTo(10.25, 2)
+      expect(centroid.y).toBeCloseTo(10.25, 2)
+      expect(centroid.z).toBeCloseTo(10.25, 2)
     })
   })
 

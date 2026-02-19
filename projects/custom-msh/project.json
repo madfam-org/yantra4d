@@ -2,19 +2,59 @@
     "project": {
         "name": "Custom MSH (AOCL)",
         "slug": "custom-msh",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "description": {
-            "en": "Custom slide holder system for 1x1 inch substrates (AOCL)",
-            "es": "Sistema de portaobjetos personalizado para sustratos de 1x1 pulgada (AOCL)"
+            "en": "Custom substrate holder system for 1×1 inch substrates (AOCL) — holder, 10-slot rack, and 3-rack storage box",
+            "es": "Sistema portamuestras para sustratos de 1×1 pulgada (AOCL) — soporte individual, rack de 10 ranuras y caja para 3 racks"
         },
         "thumbnail": "/projects/custom-msh.webp",
         "tags": [
             "lab",
             "custom",
+            "aocl",
+            "substrate",
             "microscope",
-            "aocl"
+            "hyperobject"
         ],
         "difficulty": "intermediate"
+    },
+    "hyperobject": {
+        "domain": "medical",
+        "vendor": "microscope-slide-holder",
+        "vendor_path": "vendor/microscope-slide-holder",
+        "cdg_interfaces": [
+            {
+                "id": "aocl_substrate_pocket",
+                "label": {
+                    "en": "AOCL 1\"×1\" Substrate Pocket",
+                    "es": "Bolsillo para Sustrato AOCL 1\"×1\""
+                },
+                "geometry_type": "pocket",
+                "standard": "internal/aocl",
+                "parameters": [
+                    "substrate_size",
+                    "tolerance_xy",
+                    "tolerance_z"
+                ]
+            },
+            {
+                "id": "snap_latch_interface",
+                "label": {
+                    "en": "Snap-Fit Lid Latch",
+                    "es": "Pestillo de Tapa a Presión"
+                },
+                "geometry_type": "snap",
+                "standard": "internal",
+                "parameters": [
+                    "snap_lid"
+                ]
+            }
+        ],
+        "commons_license": "CERN-OHL-S-2.0",
+        "societal_benefit": {
+            "en": "Enables fabrication of a precision substrate retention system for AOCL laboratory workflows — independent of commercial supply chains.",
+            "es": "Permite fabricar un sistema de retención de sustratos de precisión para flujos de trabajo de laboratorio AOCL — independiente de cadenas de suministro comerciales."
+        }
     },
     "modes": [
         {
@@ -102,24 +142,353 @@
             "default_color": "#6b7280"
         }
     ],
+    "presets": [
+        {
+            "id": "aocl_default",
+            "label": {
+                "en": "AOCL Default (1\"×1\", 10 slots, 3 racks)",
+                "es": "AOCL Predeterminado (1\"×1\", 10 ranuras, 3 racks)"
+            },
+            "values": {
+                "substrate_size": 25.4,
+                "num_slots": 10,
+                "num_racks": 3,
+                "tolerance_xy": 0.4,
+                "tolerance_z": 0.2,
+                "wall_thickness": 2.0,
+                "label_area": 1,
+                "snap_lid": 1,
+                "handle": 1,
+                "open_bottom": 1
+            }
+        },
+        {
+            "id": "tight_tolerance",
+            "label": {
+                "en": "Tight Tolerance (precision printer)",
+                "es": "Tolerancia Fina (impresora de precisión)"
+            },
+            "values": {
+                "substrate_size": 25.4,
+                "tolerance_xy": 0.2,
+                "tolerance_z": 0.1,
+                "wall_thickness": 2.0
+            }
+        },
+        {
+            "id": "loose_tolerance",
+            "label": {
+                "en": "Loose Tolerance (easy extraction)",
+                "es": "Tolerancia Amplia (extracción fácil)"
+            },
+            "values": {
+                "substrate_size": 25.4,
+                "tolerance_xy": 0.6,
+                "tolerance_z": 0.3,
+                "wall_thickness": 2.0
+            }
+        }
+    ],
     "parameters": [
         {
             "id": "substrate_size",
             "type": "slider",
             "default": 25.4,
-            "min": 20,
-            "max": 30,
+            "min": 24.0,
+            "max": 27.0,
             "step": 0.1,
             "label": {
                 "en": "Substrate Size (mm)",
                 "es": "Tamaño Sustrato (mm)"
             },
-            "disabled": true,
+            "tooltip": {
+                "en": "Square substrate side length. AOCL spec: 25.4 mm (1 inch)",
+                "es": "Lado del sustrato cuadrado. Especificación AOCL: 25.4 mm (1 pulgada)"
+            },
             "visible_in_modes": [
                 "holder",
                 "rack",
                 "box"
-            ]
+            ],
+            "group": "substrate"
+        },
+        {
+            "id": "tolerance_xy",
+            "type": "slider",
+            "default": 0.4,
+            "min": 0.1,
+            "max": 0.8,
+            "step": 0.05,
+            "label": {
+                "en": "XY Tolerance (mm)",
+                "es": "Tolerancia XY (mm)"
+            },
+            "tooltip": {
+                "en": "Horizontal clearance added to pocket/slot openings for FDM shrinkage compensation",
+                "es": "Holgura horizontal añadida a bolsillos y ranuras para compensación de contracción FDM"
+            },
+            "visible_in_modes": [
+                "holder",
+                "rack",
+                "box"
+            ],
+            "group": "tolerance",
+            "visibility_level": "advanced"
+        },
+        {
+            "id": "tolerance_z",
+            "type": "slider",
+            "default": 0.2,
+            "min": 0.05,
+            "max": 0.5,
+            "step": 0.05,
+            "label": {
+                "en": "Z Tolerance (mm)",
+                "es": "Tolerancia Z (mm)"
+            },
+            "tooltip": {
+                "en": "Slot width clearance over substrate thickness (waviness + layer offset)",
+                "es": "Holgura de ranura sobre el grosor del sustrato (ondulación + desfase de capa)"
+            },
+            "visible_in_modes": [
+                "rack"
+            ],
+            "group": "tolerance",
+            "visibility_level": "advanced"
+        },
+        {
+            "id": "wall_thickness",
+            "type": "slider",
+            "default": 2.0,
+            "min": 1.2,
+            "max": 4.0,
+            "step": 0.2,
+            "label": {
+                "en": "Wall Thickness (mm)",
+                "es": "Grosor de Pared (mm)"
+            },
+            "tooltip": {
+                "en": "Outer wall and pillar thickness",
+                "es": "Grosor de paredes y pilares exteriores"
+            },
+            "visible_in_modes": [
+                "holder",
+                "rack",
+                "box"
+            ],
+            "group": "structure"
+        },
+        {
+            "id": "label_area",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Label Recess",
+                "es": "Rebaje para Etiqueta"
+            },
+            "tooltip": {
+                "en": "Debossed recess for handwritten or adhesive label",
+                "es": "Rebaje para etiqueta manuscrita o adhesiva"
+            },
+            "visible_in_modes": [
+                "holder",
+                "rack",
+                "box"
+            ],
+            "group": "features"
+        },
+        {
+            "id": "chamfer_pocket",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Chamfer Pocket Entry",
+                "es": "Chaflán de Entrada al Bolsillo"
+            },
+            "tooltip": {
+                "en": "45° chamfer at pocket entry to guide substrate insertion",
+                "es": "Chaflán 45° en la entrada del bolsillo para guiar la inserción del sustrato"
+            },
+            "visible_in_modes": [
+                "holder"
+            ],
+            "group": "features"
+        },
+        {
+            "id": "num_slots",
+            "type": "slider",
+            "default": 10,
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "label": {
+                "en": "Slots per Rack",
+                "es": "Ranuras por Rack"
+            },
+            "tooltip": {
+                "en": "Number of substrate positions per rack. AOCL spec: 10",
+                "es": "Cantidad de posiciones de sustrato por rack. Especificación AOCL: 10"
+            },
+            "visible_in_modes": [
+                "rack"
+            ],
+            "group": "rack"
+        },
+        {
+            "id": "handle",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Carry Handle",
+                "es": "Asa de Transporte"
+            },
+            "tooltip": {
+                "en": "Integrated handle arch for carrying the rack",
+                "es": "Arco asa integrado para transportar el rack"
+            },
+            "visible_in_modes": [
+                "rack"
+            ],
+            "group": "rack"
+        },
+        {
+            "id": "open_bottom",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Open-Frame Base",
+                "es": "Base de Marco Abierto"
+            },
+            "tooltip": {
+                "en": "Open crossbar base (less material, easier cleaning) vs. solid floor",
+                "es": "Base de travesañas abiertas (menos material, limpieza más fácil) vs. piso sólido"
+            },
+            "visible_in_modes": [
+                "rack"
+            ],
+            "group": "rack"
+        },
+        {
+            "id": "drainage_angle",
+            "type": "slider",
+            "default": 5,
+            "min": 0,
+            "max": 15,
+            "step": 1,
+            "label": {
+                "en": "Drainage Angle (°)",
+                "es": "Ángulo de Drenaje (°)"
+            },
+            "tooltip": {
+                "en": "Slope for fluid runoff (0 = flat). Reserved for future use.",
+                "es": "Pendiente para escurrimiento de líquidos (0 = plano). Reservado para uso futuro."
+            },
+            "visible_in_modes": [
+                "rack"
+            ],
+            "group": "rack",
+            "visibility_level": "advanced"
+        },
+        {
+            "id": "numbering_start",
+            "type": "slider",
+            "default": 1,
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "label": {
+                "en": "Numbering Start",
+                "es": "Numeración Inicial"
+            },
+            "tooltip": {
+                "en": "First slot number engraved on the rack. Requires Quality ($fn) > 0.",
+                "es": "Primer número de ranura grabado en el rack. Requiere Calidad ($fn) > 0."
+            },
+            "visible_in_modes": [
+                "rack"
+            ],
+            "group": "rack",
+            "visibility_level": "advanced"
+        },
+        {
+            "id": "num_racks",
+            "type": "slider",
+            "default": 3,
+            "min": 1,
+            "max": 5,
+            "step": 1,
+            "label": {
+                "en": "Number of Racks",
+                "es": "Número de Racks"
+            },
+            "tooltip": {
+                "en": "How many racks the box accommodates. AOCL spec: 3",
+                "es": "Cuántos racks aloja la caja. Especificación AOCL: 3"
+            },
+            "visible_in_modes": [
+                "box"
+            ],
+            "group": "box"
+        },
+        {
+            "id": "box_depth_target",
+            "type": "slider",
+            "default": 26.0,
+            "min": 24.0,
+            "max": 40.0,
+            "step": 0.5,
+            "label": {
+                "en": "Box Depth / Height (mm)",
+                "es": "Profundidad / Altura de la Caja (mm)"
+            },
+            "tooltip": {
+                "en": "Outer box Z-height. AOCL spec: ~26 mm (~2.6 cm). Clamped to minimum rack height automatically.",
+                "es": "Altura exterior en Z de la caja. Especificación AOCL: ~26 mm (~2.6 cm). Se ajusta automáticamente al mínimo del rack."
+            },
+            "visible_in_modes": [
+                "box"
+            ],
+            "group": "box"
+        },
+        {
+            "id": "snap_lid",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Snap-Fit Lid",
+                "es": "Tapa a Presión"
+            },
+            "tooltip": {
+                "en": "Generate snap-fit cantilever latch arms on lid (PLA-safe 15 mm arm)",
+                "es": "Generar brazos de pestillo voladizo a presión en la tapa (brazo 15 mm seguro para PLA)"
+            },
+            "visible_in_modes": [
+                "box"
+            ],
+            "group": "box"
+        },
+        {
+            "id": "fn",
+            "type": "slider",
+            "default": 0,
+            "min": 0,
+            "max": 64,
+            "step": 8,
+            "label": {
+                "en": "Quality ($fn)",
+                "es": "Calidad ($fn)"
+            },
+            "tooltip": {
+                "en": "0 = auto (fast draft); higher = more detail + slot numbers engraved, but slower render",
+                "es": "0 = automático (borrador rápido); mayor = más detalle + números de ranura grabados, pero renderizado más lento"
+            },
+            "visible_in_modes": [
+                "holder",
+                "rack",
+                "box"
+            ],
+            "group": "quality",
+            "visibility_level": "advanced"
         }
     ]
 }

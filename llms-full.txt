@@ -671,7 +671,7 @@ docker compose down         # stop
 | `spiral-planter` | Spiral Planter | Archimedean spiral planters |
 | `motor-mount` | NEMA Motor Mount | NEMA stepper motor mounts |
 | `portacosas` | Portacosas | Customizable container/holder |
-| `custom-msh` 🔷 | Microscope Slide Holder | Slide retention system — first hyperobject |
+| `microscope-slide-holder` 🔷 | Microscope Slide Holder | Slide retention system — first hyperobject |
 | `rugged-box` | Rugged Box | Hinged box with latches and gasket seal |
 
 Each project has: `project.json` (manifest), `*.scad` (geometry files), optional `exports/` (reference STLs) and `docs/` (project-specific docs).

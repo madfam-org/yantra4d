@@ -134,7 +134,7 @@ Or use the web UI: upload `.scad` files → review analysis → edit manifest �
 2. Each `cdg_interfaces` entry declares: `id`, `label`, `geometry_type` (grid/rail/thread/socket/pocket/snap/bolt_pattern/profile/spline/custom), `standard`, and `parameters[]` (referencing manifest param IDs)
 3. Add `hyperobject` and `commons` to `project.tags`
 4. Update `projects/{slug}/docs/README.md` with a Hyperobject Profile section
-5. See `projects/custom-msh/project.json` for the reference implementation
+5. See `projects/microscope-slide-holder/project.json` for the reference implementation
 
 ### Add a new SCAD project
 1. Create `projects/{slug}/project.json` following the manifest schema (see `docs/manifest.md`)

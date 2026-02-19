@@ -54,6 +54,7 @@ export function useProjectParams({ viewerRef }) {
   const [activePresetId, setActivePresetId] = useState(() => initialHash.preset?.id || presets[0]?.id || null)
   const [gridPresetId, setGridPresetId] = useState(manifest.grid_presets?.default || Object.keys(manifest.grid_presets || {}).find(k => k !== 'default'))
   const [wireframe, setWireframe] = useState(false)
+  const [boundingBox, setBoundingBox] = useState(false)
   const [animating, setAnimating] = useState(false)
   const [printEstimate, setPrintEstimate] = useState(null)
   const [exportFormat, setExportFormat] = useState('stl')
@@ -225,6 +226,7 @@ export function useProjectParams({ viewerRef }) {
     mode, setMode, params, setParams,
     colors, setColors,
     wireframe, setWireframe,
+    boundingBox, setBoundingBox,
     animating, setAnimating,
     // Undo/redo
     undoParams, redoParams, canUndo, canRedo,

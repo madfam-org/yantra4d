@@ -98,6 +98,65 @@ export function computeBoundingBox(geometry) {
 }
 
 /**
+ * Compute the volumetric centroid of a geometry.
+ * Uses the signed volume of tetrahedra method.
+ * @param {BufferGeometry} geometry
+ * @returns {{ x: number, y: number, z: number }} Centroid coordinates
+ */
+export function computeCentroid(geometry) {
+  if (!geometry?.attributes?.position) return { x: 0, y: 0, z: 0 }
+
+  const pos = geometry.attributes.position
+  const index = geometry.index
+  let volume = 0
+  let cx = 0, cy = 0, cz = 0
+
+  const getVertex = (i) => ({
+    x: pos.getX(i),
+    y: pos.getY(i),
+    z: pos.getZ(i),
+  })
+
+  const triCount = index ? index.count / 3 : pos.count / 3
+
+  for (let i = 0; i < triCount; i++) {
+    const i0 = index ? index.getX(i * 3) : i * 3
+    const i1 = index ? index.getX(i * 3 + 1) : i * 3 + 1
+    const i2 = index ? index.getX(i * 3 + 2) : i * 3 + 2
+
+    const v0 = getVertex(i0)
+    const v1 = getVertex(i1)
+    const v2 = getVertex(i2)
+
+    // Signed volume of tetrahedron formed with origin
+    const vol = (
+      v0.x * (v1.y * v2.z - v2.y * v1.z) -
+      v1.x * (v0.y * v2.z - v2.y * v0.z) +
+      v2.x * (v0.y * v1.z - v1.y * v0.z)
+    ) / 6.0
+
+    // Centroid of the tetrahedron (average of 4 vertices, 4th is 0,0,0)
+    // C_tet = (v0 + v1 + v2 + 0) / 4
+    const cTetX = (v0.x + v1.x + v2.x) / 4
+    const cTetY = (v0.y + v1.y + v2.y) / 4
+    const cTetZ = (v0.z + v1.z + v2.z) / 4
+
+    volume += vol
+    cx += cTetX * vol
+    cy += cTetY * vol
+    cz += cTetZ * vol
+  }
+
+  if (Math.abs(volume) < 1e-9) return { x: 0, y: 0, z: 0 }
+
+  return {
+    x: cx / volume,
+    y: cy / volume,
+    z: cz / volume,
+  }
+}
+
+/**
  * Estimate print time and filament usage.
  * @param {number} volumeMm3 - Part volume in mm³
  * @param {{ width: number, depth: number, height: number }} bbox - Bounding box in mm

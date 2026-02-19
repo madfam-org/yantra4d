@@ -102,6 +102,7 @@
   "lang.switch_to_en": "English",
   "lang.switch_to_es": "Español",
   "ctrl.wireframe": "Estructura",
+  "ctrl.bounds": "Caja Límite",
   "ctrl.click_to_edit": "Clic para editar",
   "act.share": "Compartir configuración",
   "act.share_copied": "¡Enlace copiado!",

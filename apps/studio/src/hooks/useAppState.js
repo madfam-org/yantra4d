@@ -43,6 +43,7 @@ export function useAppState() {
     setParams: projectParams.setParams,
     setColors: projectParams.setColors,
     setWireframe: projectParams.setWireframe,
+    setBoundingBox: projectParams.setBoundingBox,
     copyShareUrl: projectParams.copyShareUrl,
     handleExportImage: projectParams.handleExportImage,
     handleExportAllViews: projectParams.handleExportAllViews,
@@ -70,6 +71,8 @@ export function useAppState() {
     setColors: projectParams.setColors,
     wireframe: projectParams.wireframe,
     setWireframe: projectParams.setWireframe,
+    boundingBox: projectParams.boundingBox,
+    setBoundingBox: projectParams.setBoundingBox,
     animating: projectParams.animating,
     setAnimating: projectParams.setAnimating,
     // Undo/redo

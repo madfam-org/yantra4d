@@ -30,7 +30,7 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
 export default function StudioMainView() {
   const {
     viewerRef, consoleRef,
-    parts, colors, wireframe, loading, progress, progressPhase,
+    parts, colors, wireframe, boundingBox, loading, progress, progressPhase,
     animating, setAnimating, mode, params,
     printEstimate, setPrintEstimate,
     assemblyActive, highlightedParts, visibleParts,
@@ -47,6 +47,7 @@ export default function StudioMainView() {
           parts={parts}
           colors={colors}
           wireframe={wireframe}
+          boundingBox={boundingBox}
           loading={loading}
           progress={progress}
           progressPhase={progressPhase}

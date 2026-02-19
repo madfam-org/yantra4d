@@ -102,6 +102,7 @@
   "lang.switch_to_en": "English",
   "lang.switch_to_es": "Español",
   "ctrl.wireframe": "Wireframe",
+  "ctrl.bounds": "Bounding Box",
   "ctrl.click_to_edit": "Click to edit",
   "act.share": "Share configuration",
   "act.share_copied": "Link copied!",

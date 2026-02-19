@@ -244,4 +244,8 @@ module box_lid() {
 // Render dispatch
 // ---------------------------------------------------------------------------
 if (render_mode == 0) box_base();
-if (render_mode == 1) box_lid();
+if (render_mode == 1) {
+  // AM-Friendliness: Position lid on top of base for correct assembly view
+  // Note: Slicers usually auto-drop to build plate, so this offset acts as an assembly preview
+  translate([0, 0, _box_z]) box_lid();
+}

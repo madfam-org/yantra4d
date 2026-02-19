@@ -2,7 +2,11 @@
 
 Modular storage system with bins, baseplates, and lids in the Gridfinity grid standard
 
-*Sistema de almacenamiento modular con contenedores, placas base y tapas en el estándar Gridfinity*
+Official Visualizer and Configurator: Yantra4D
+
+*Sistema de almacenamiento modular con contenedores, placas base y tapas en el estándar Gridfinity
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `gridfinity`
@@ -11,9 +15,9 @@ Modular storage system with bins, baseplates, and lids in the Gridfinity grid st
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `cup` | Bin | `yantra4d_cup.scad` | cup |
-| `baseplate` | Baseplate | `yantra4d_baseplate.scad` | baseplate |
-| `lid` | Lid | `yantra4d_lid.scad` | lid |
+| `cup` | Bin | `cup.scad` | cup |
+| `baseplate` | Baseplate | `baseplate.scad` | baseplate |
+| `lid` | Lid | `lid.scad` | lid |
 
 ## Parameters
 

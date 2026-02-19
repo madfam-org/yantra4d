@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": {
       "en": "Parametric electronics enclosure with ventilation, PCB standoffs, and snap-fit lid",
-      "es": "Carcasa paramétrica para electrónica con ventilación, soportes para PCB y tapa a presión"
+      "es": "Carcasa param\u00e9trica para electr\u00f3nica con ventilaci\u00f3n, soportes para PCB y tapa a presi\u00f3n"
     },
     "thumbnail": "/projects/ultimate-box.webp",
     "tags": [
@@ -23,7 +23,7 @@
         "en": "Enclosure",
         "es": "Carcasa"
       },
-      "scad_file": "yantra4d_box.scad",
+      "scad_file": "box.scad",
       "parts": [
         "enclosure"
       ],
@@ -166,7 +166,7 @@
       },
       "tooltip": {
         "en": "Add ventilation slots to walls",
-        "es": "Agregar ranuras de ventilación en las paredes"
+        "es": "Agregar ranuras de ventilaci\u00f3n en las paredes"
       },
       "modes": [
         "enclosure"
@@ -188,7 +188,7 @@
       },
       "tooltip": {
         "en": "Width of each ventilation slot",
-        "es": "Ancho de cada ranura de ventilación"
+        "es": "Ancho de cada ranura de ventilaci\u00f3n"
       },
       "modes": [
         "enclosure"
@@ -246,7 +246,7 @@
       },
       "tooltip": {
         "en": "Diameter of screw holes for lid",
-        "es": "Diámetro de agujeros para tornillos de tapa"
+        "es": "Di\u00e1metro de agujeros para tornillos de tapa"
       },
       "modes": [
         "enclosure"
@@ -266,7 +266,7 @@
       },
       "tooltip": {
         "en": "Circle smoothness (0=auto)",
-        "es": "Suavidad de círculos (0=auto)"
+        "es": "Suavidad de c\u00edrculos (0=auto)"
       },
       "modes": [
         "enclosure"
@@ -367,7 +367,7 @@
       "id": "iso",
       "label": {
         "en": "Isometric",
-        "es": "Isométrico"
+        "es": "Isom\u00e9trico"
       },
       "position": [
         100,

@@ -2,7 +2,11 @@
 
 Involute spur and herringbone gears powered by MCAD
 
-*Engranajes rectos y de espiga con perfil involuto impulsados por MCAD*
+Official Visualizer and Configurator: Yantra4D
+
+*Engranajes rectos y de espiga con perfil involuto impulsados por MCAD
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `gears`
@@ -11,8 +15,8 @@ Involute spur and herringbone gears powered by MCAD
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `spur_gear` | Spur Gear | `yantra4d_spur_gear.scad` | spur_gear |
-| `herringbone_gear` | Herringbone Gear | `yantra4d_herringbone_gear.scad` | herringbone_gear |
+| `spur_gear` | Spur Gear | `spur_gear.scad` | spur_gear |
+| `herringbone_gear` | Herringbone Gear | `herringbone_gear.scad` | herringbone_gear |
 
 ## Parameters
 
@@ -23,7 +27,7 @@ Involute spur and herringbone gears powered by MCAD
 | `pressure_angle` | slider | 20 | 14–25 | Tooth profile angle — 20° is standard, 14.5° for legacy gears |
 | `thickness` | slider | 5 | 2–30 | Face width of the gear |
 | `bore_diameter` | slider | 5 | 0–20 (step 0.5) | Central shaft bore diameter — 0 for solid center |
-| `twist_angle` | slider | 30 | 10–60 (step 5) | Helix angle for the herringbone pattern |
+| `helical_angle` | slider | 30 | 10–60 (step 5) | Helix angle for the herringbone pattern |
 | `fn` | slider | 0 | 0–64 (step 8) | Curve resolution — 0 uses default (32) |
 
 ## Presets

@@ -2,7 +2,11 @@
 
 Modular construction system for education and prototyping
 
-*Sistema de construccion modular para educacion y prototipado*
+Official Visualizer and Configurator: Yantra4D
+
+*Sistema de construccion modular para educacion y prototipado
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `stemfie`
@@ -11,9 +15,9 @@ Modular construction system for education and prototyping
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `beam` | Beam | `yantra4d_beam.scad` | beam |
-| `brace` | Brace | `yantra4d_brace.scad` | brace |
-| `fastener` | Fastener | `yantra4d_fastener.scad` | fastener |
+| `beam` | Beam | `beam.scad` | beam |
+| `brace` | Brace | `brace.scad` | brace |
+| `fastener` | Fastener | `fastener.scad` | fastener |
 
 ## Parameters
 

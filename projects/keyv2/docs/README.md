@@ -11,24 +11,24 @@ Customizable mechanical keyboard keycaps with multiple profiles and stems
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Keycap | `yantra4d_keycap.scad` | keycap |
+| `keycap` | Keycap | `keycap.scad` | keycap |
 
 ## Parameters
 
 | Name | Type | Default | Range | Description |
 |---|---|---|---|---|
-| `` | slider | 0 | 0–4 | Keycap profile family |
-| `` | slider | 1 | 1–4 | Sculpted row number (affects tilt) |
-| `` | slider | 0 | 0–3 | Keycap width in standard units |
-| `` | slider | 0 | 0–2 | Switch stem type |
-| `` | checkbox | No |  | Add text legend to keycap top |
-| `` | text | A |  | Character or text for the legend |
-| `` | slider | 6 | 3–10 (step 0.5) | Legend font size in mm |
-| `` | slider | 1 | 0–3 (step 0.25) | Depth of the concave top dish |
-| `` | slider | 3 | 1.5–5 (step 0.25) | Shell wall thickness |
-| `` | slider | 1 | 0.5–2 (step 0.25) | Thickness of keycap top surface |
-| `` | slider | 0.35 | 0.1–0.6 (step 0.05) | Extra clearance for stem fit |
-| `` | slider | 0 | 0–64 (step 8) | Circle smoothness (0=auto) |
+| `profile_id` | slider | 0 | 0–4 | Keycap profile family |
+| `row_id` | slider | 1 | 1–4 | Sculpted row number (affects tilt) |
+| `key_size_id` | slider | 0 | 0–3 | Keycap width in standard units |
+| `stem_type_id` | slider | 0 | 0–2 | Switch stem type |
+| `legend_enabled` | checkbox | No |  | Add text legend to keycap top |
+| `legend_text` | text | A |  | Character or text for the legend |
+| `font_size` | slider | 6 | 3–10 (step 0.5) | Legend font size in mm |
+| `dish_depth` | slider | 1 | 0–3 (step 0.25) | Depth of the concave top dish |
+| `wall_thickness` | slider | 3 | 1.5–5 (step 0.25) | Shell wall thickness |
+| `keytop_thickness` | slider | 1 | 0.5–2 (step 0.25) | Thickness of keycap top surface |
+| `stem_slop` | slider | 0.35 | 0.1–0.6 (step 0.05) | Extra clearance for stem fit |
+| `fn` | slider | 0 | 0–64 (step 8) | Circle smoothness (0=auto) |
 
 ## Presets
 

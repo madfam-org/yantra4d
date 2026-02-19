@@ -18,7 +18,7 @@
   "modes": [
     {
       "id": "plaque",
-      "scad_file": "yantra4d_plaque.scad",
+      "scad_file": "plaque.scad",
       "label": {
         "es": "Placa",
         "en": "Plaque"
@@ -33,7 +33,7 @@
     },
     {
       "id": "tag",
-      "scad_file": "yantra4d_tag.scad",
+      "scad_file": "tag.scad",
       "label": {
         "es": "Etiqueta",
         "en": "Tag"
@@ -48,7 +48,7 @@
     },
     {
       "id": "sign",
-      "scad_file": "yantra4d_sign.scad",
+      "scad_file": "sign.scad",
       "label": {
         "es": "Letrero",
         "en": "Sign"

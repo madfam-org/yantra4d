@@ -11,20 +11,20 @@ Parametric twisted vase with sinusoidal profile modulation inspired by Julia set
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Vase | `yantra4d_vase.scad` | vase |
+| `vase` | Vase | `vase.scad` | vase |
 
 ## Parameters
 
 | Name | Type | Default | Range | Description |
 |---|---|---|---|---|
-| `` | slider | 150 | 50–300 (step 5) | Total vase height |
-| `` | slider | 40 | 15–80 | Radius at the base of the vase |
-| `` | slider | 360 | 0–720 (step 15) | Total rotation angle from base to top |
-| `` | slider | 5 | 1–12 | Number of wave lobes around perimeter |
-| `` | slider | 10 | 0–25 | Depth of wave modulation |
-| `` | slider | 2 | 0.8–4 (step 0.2) | Vase wall thickness |
-| `` | slider | 64 | 0–128 (step 8) | Angular resolution for curves |
-| `` | slider | 100 | 20–200 (step 10) | Number of vertical layers in the mesh |
+| `height` | slider | 150 | 50–300 (step 5) | Total vase height |
+| `base_radius` | slider | 40 | 15–80 | Radius at the base of the vase |
+| `twist_angle` | slider | 360 | 0–720 (step 15) | Total rotation angle from base to top |
+| `wave_frequency` | slider | 5 | 1–12 | Number of wave lobes around perimeter |
+| `wave_amplitude` | slider | 10 | 0–25 | Depth of wave modulation |
+| `wall_thickness` | slider | 2 | 0.8–4 (step 0.2) | Vase wall thickness |
+| `fn` | slider | 64 | 0–128 (step 8) | Angular resolution for curves |
+| `resolution` | slider | 100 | 20–200 (step 10) | Number of vertical layers in the mesh |
 
 ## Presets
 

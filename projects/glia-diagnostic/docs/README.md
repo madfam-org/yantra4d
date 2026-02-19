@@ -1,7 +1,14 @@
 # Glia Diagnostic Tools
 
-Open source stethoscope and otoscope medical hardware
+Open source stethoscope and otoscope medical hardware by the Glia Project
 
+Official Visualizer and Configurator: Yantra4D
+
+*Hardware médico de código abierto: estetoscopio y otoscopio del Proyecto Glia
+
+Visualizador y configurador oficial: Yantra4D*
+
+**Version**: 1.0.0  
 **Slug**: `glia-diagnostic`
 
 ## Modes
@@ -15,16 +22,16 @@ Open source stethoscope and otoscope medical hardware
 
 | Name | Type | Default | Range | Description |
 |---|---|---|---|---|
-| `diaphragm_size_mm` | number | 44 | 30–50 | diaphragm_size_mm |
-| `speculum_size_mm` | number | 4 |  | speculum_size_mm |
-| `render_mode` | number | 0 |  | render_mode |
+| `diaphragm_size_mm` | slider | 44 | 30–50 | Diameter of the stethoscope diaphragm |
+| `speculum_size_mm` | slider | 4 | 2.5–5 (step 0.5) | Tip diameter of the otoscope speculum (2.5, 3, 4, or 5 mm) |
+| `fn` | slider | 0 | 0–64 (step 8) | fn |
 
 ## Parts
 
 | ID | Label | Default Color |
 |---|---|---|
-| `head` | Head | `` |
-| `specula` | Specula | `` |
+| `head` | Head | `#e5e7eb` |
+| `specula` | Specula | `#d1d5db` |
 
 ## Render Estimates
 

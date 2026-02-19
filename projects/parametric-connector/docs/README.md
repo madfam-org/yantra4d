@@ -2,7 +2,11 @@
 
 Universal connector system for PVC, Bamboo, and Wood Dowels
 
-*Sistema de conectores universales para PVC, Bambú y Espigas de Madera*
+Official Visualizer and Configurator: Yantra4D
+
+*Sistema de conectores universales para PVC, Bambú y Espigas de Madera
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `parametric-connector`

@@ -4,8 +4,8 @@
     "slug": "gear-reducer",
     "version": "0.1.0",
     "description": {
-      "es": "Reductor de engranajes parametrico con BOSL2 — ratio configurable, tamano de motor y diametro de eje",
-      "en": "Parametric gear reducer with BOSL2 — configurable ratio, motor size, and shaft diameter"
+      "es": "Reductor de engranajes parametrico con BOSL2 \u2014 ratio configurable, tamano de motor y diametro de eje",
+      "en": "Parametric gear reducer with BOSL2 \u2014 configurable ratio, motor size, and shaft diameter"
     },
     "thumbnail": "/projects/gear-reducer.webp",
     "tags": [
@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "assembly",
-      "scad_file": "yantra4d_gear_reducer.scad",
+      "scad_file": "gear_reducer.scad",
       "label": {
         "es": "Ensamble Completo",
         "en": "Full Assembly"
@@ -38,7 +38,7 @@
     },
     {
       "id": "housing",
-      "scad_file": "yantra4d_housing.scad",
+      "scad_file": "housing.scad",
       "label": {
         "es": "Carcasa",
         "en": "Housing"
@@ -54,7 +54,7 @@
     },
     {
       "id": "gears",
-      "scad_file": "yantra4d_gear_set.scad",
+      "scad_file": "gear_set.scad",
       "label": {
         "es": "Engranajes",
         "en": "Gear Set"
@@ -120,8 +120,8 @@
     {
       "id": "nema17_3to1",
       "label": {
-        "es": "NEMA 17 — 3:1",
-        "en": "NEMA 17 — 3:1"
+        "es": "NEMA 17 \u2014 3:1",
+        "en": "NEMA 17 \u2014 3:1"
       },
       "values": {
         "input_teeth": 12,
@@ -136,8 +136,8 @@
     {
       "id": "nema17_4to1",
       "label": {
-        "es": "NEMA 17 — 4:1",
-        "en": "NEMA 17 — 4:1"
+        "es": "NEMA 17 \u2014 4:1",
+        "en": "NEMA 17 \u2014 4:1"
       },
       "values": {
         "input_teeth": 10,
@@ -152,8 +152,8 @@
     {
       "id": "nema23_5to1",
       "label": {
-        "es": "NEMA 23 — 5:1",
-        "en": "NEMA 23 — 5:1"
+        "es": "NEMA 23 \u2014 5:1",
+        "en": "NEMA 23 \u2014 5:1"
       },
       "values": {
         "input_teeth": 10,
@@ -253,8 +253,8 @@
         "en": "Module (mm)"
       },
       "tooltip": {
-        "es": "Modulo del engranaje — controla el tamano de los dientes",
-        "en": "Gear module — controls tooth size"
+        "es": "Modulo del engranaje \u2014 controla el tamano de los dientes",
+        "en": "Gear module \u2014 controls tooth size"
       },
       "visible_in_modes": [
         "assembly",
@@ -355,8 +355,8 @@
       "max": 25,
       "step": 1,
       "label": {
-        "es": "Angulo de presion (°)",
-        "en": "Pressure Angle (°)"
+        "es": "Angulo de presion (\u00b0)",
+        "en": "Pressure Angle (\u00b0)"
       },
       "tooltip": {
         "es": "Angulo de presion del perfil de dientes",

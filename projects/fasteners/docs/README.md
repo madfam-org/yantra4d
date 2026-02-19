@@ -2,7 +2,11 @@
 
 Parametric bolts and nuts with real threads
 
-*Tornillos y tuercas paramétricas con roscas reales*
+Official Visualizer and Configurator: Yantra4D
+
+*Tornillos y tuercas paramétricas con roscas reales
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `fasteners`
@@ -11,8 +15,8 @@ Parametric bolts and nuts with real threads
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Bolt | `yantra4d_bolt.scad` | bolt |
-| `` | Nut | `yantra4d_nut.scad` | nut |
+| `` | Bolt | `bolt.scad` | bolt |
+| `` | Nut | `nut.scad` | nut |
 
 ## Parameters
 

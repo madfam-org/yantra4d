@@ -173,10 +173,10 @@ The following features expand the platform's capabilities. They should be tackle
 **Hyperobject Standards**:
 Any project designated as a "Hyperobject" and part of the Commons must adhere to the following strict requirements:
 1.  **Complete Rewrite**: Logic must be rewritten from scratch to ensure cleanliness and modern standards.
-2.  **BOSL2 & OEP8**: All geometry must leverage `BOSL2` and follow `OEP8` formatting/structure standards.
-3.  **No External Vendors**: Start fresh without `vendors/` or 3rd-party repositories.
+2.  **BOSL2 & OEP8**: All geometry must leverage `BOSL2` (for Common Denominator Geometry) and follow `OEP8` formatting/structure standards (Geometry as Data).
+3.  **No External Vendors**: Start fresh without `vendors/` or 3rd-party repositories. You must architect standard interfaces, not just aggregate code you don't own.
 4.  **Repository Extraction**: The final result must be extracted into its own repository under the `madfam-org` organization.
-5.  **CERN OHL License**: The new repository must be licensed under `CERN-OHL-S-2.0`.
+5.  **CERN OHL License**: The new repository must be licensed under `CERN-OHL-W-2.0` (Weakly Reciprocal) to ensure proprietary assemblies can bolt onto the External Interfaces.
 
 **Planned Rollout candidates**:
 - `gridfinity` — household domain, `grid` + `snap` interfaces
@@ -248,7 +248,7 @@ New SCAD projects to be designed and classified as Hyperobjects from the ground 
 
 **Domain**: `culture` (archival, collectibles, display infrastructure)
 
-**License**: CERN-OHL-S-2.0 (consistent with `microscope-slide-holder`)
+**License**: CERN-OHL-W-2.0
 
 **Prerequisites before starting**:
 1. P0.1 — E2E tests in CI ✅

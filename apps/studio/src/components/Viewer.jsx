@@ -80,6 +80,10 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
     const handleGeometry = useCallback((partType, geometry) => {
         geometriesRef.current[partType] = geometry
+        // DEBUG: Check geometry bounds on load
+        geometry.computeBoundingBox()
+        console.log(`[Viewer] Loaded ${partType}:`, geometry.boundingBox)
+
         // Aggregate stats across all parts
         let totalVolume = 0
         let weightedCenterSum = { x: 0, y: 0, z: 0 }
@@ -107,6 +111,11 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
         if (totalVolume > 0) {
             setCenterOfMass([
+                weightedCenterSum.x / totalVolume,
+                weightedCenterSum.y / totalVolume,
+                weightedCenterSum.z / totalVolume
+            ])
+            console.log('[Viewer] New CenterOfMass:', [
                 weightedCenterSum.x / totalVolume,
                 weightedCenterSum.y / totalVolume,
                 weightedCenterSum.z / totalVolume
@@ -248,7 +257,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
                     <Suspense fallback={null}>
                         {parts.length > 0 ? (
-                            <Bounds fit clip observe margin={1.2}>
+                            <>
                                 <PartsGroup boundingBox={boundingBox}>
                                     {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
                                     <group>
@@ -288,7 +297,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                         />
                                     </group>
                                 )}
-                            </Bounds>
+                            </>
                         ) : null}
                     </Suspense>
                 </Canvas>

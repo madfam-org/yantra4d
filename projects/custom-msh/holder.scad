@@ -60,37 +60,40 @@ _label_d = 0.4;
 // Holder body
 // ---------------------------------------------------------------------------
 module holder_body() {
-  diff("pocket label") {
-    // Outer shell — flat rectangular plate
-    cuboid(
-      [_length, _width, _thickness],
-      rounding=1.5,
-      edges=[TOP, BOTTOM],
-      anchor=CENTER
-    );
+  // AM-Friendliness: Shift to positive octant (0,0,0) for build plate placement
+  translate([_length / 2, _width / 2, _thickness / 2]) {
+    diff("pocket label") {
+      // Outer shell — flat rectangular plate
+      cuboid(
+        [_length, _width, _thickness],
+        rounding=1.5,
+        edges=[TOP, BOTTOM],
+        anchor=CENTER
+      );
 
-    // Central through-pocket (substrate opening)
-    tag("pocket") {
-      // Through bore
-      cuboid([_pocket_size, _pocket_size, _thickness + 2], anchor=CENTER);
+      // Central through-pocket (substrate opening)
+      tag("pocket") {
+        // Through bore
+        cuboid([_pocket_size, _pocket_size, _thickness + 2], anchor=CENTER);
 
-      // Chamfered lead-in on top entry face (AM-friendly funnel)
-      if (chamfer_pocket == 1) {
-        up(_thickness / 2)
-          chamfer_mask_z(
-            l=_pocket_size * 2,
-            r=_chamfer_size,
-            square=true,
-            anchor=CENTER
-          );
+        // Chamfered lead-in on top entry face (AM-friendly funnel)
+        if (chamfer_pocket == 1) {
+          up(_thickness / 2)
+            chamfer_mask_z(
+              l=_pocket_size * 2,
+              r=_chamfer_size,
+              square=true,
+              anchor=CENTER
+            );
+        }
       }
-    }
 
-    // Debossed label recess on bottom face
-    if (label_area == 1) {
-      tag("label")
-        down(_thickness / 2 - _label_d)
-          cuboid([_label_w, _label_h, _label_d + 0.1], anchor=BOTTOM);
+      // Debossed label recess on bottom face
+      if (label_area == 1) {
+        tag("label")
+          down(_thickness / 2 - _label_d)
+            cuboid([_label_w, _label_h, _label_d + 0.1], anchor=BOTTOM);
+      }
     }
   }
 }

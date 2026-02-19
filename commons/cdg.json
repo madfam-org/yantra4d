@@ -1,5 +1,5 @@
 {
-  "$schema": "https://yantra4d.org/schemas/cdg-registry.json",
+  "$schema": "https://4d.madfam.io/schemas/cdg-registry.json",
   "version": "1.0.0",
   "description": {
     "en": "Common Denominator Geometry Registry — standardized interfaces that ensure interoperability across the Hyperobjects Open Commons.",
@@ -48,7 +48,7 @@
         ]
       },
       "projects": [
-        "custom-msh"
+        "microscope-slide-holder"
       ],
       "domain": "medical"
     },

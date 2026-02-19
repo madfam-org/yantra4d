@@ -5,7 +5,7 @@
 // Licensed under the CERN Open Hardware Licence Version 2 - Weakly Reciprocal (CERN-OHL-W-2.0).
 
 use <aocl_lib.scad>
-include <../../libs/BOSL2/std.scad>
+include <BOSL2/std.scad>
 
 // Substrate
 substrate_size = 25.4;

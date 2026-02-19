@@ -12,7 +12,7 @@ import ColorGradientControl from './controls/ColorGradientControl'
 // ---------------------------------------------------------------------------
 // ComponentPickerWidget — visual hardware selector backed by NopSCADlib catalog
 // ---------------------------------------------------------------------------
-function ComponentPickerWidget({ param, params, setParams, getLabel, language }) {
+function ComponentPickerWidget({ param, setParams, getLabel, language }) {
     const catalog = param.widget?.catalog ?? ''
     const category = catalog.replace('nopscadlib/', '')
     const [components, setComponents] = useState([])
@@ -21,6 +21,7 @@ function ComponentPickerWidget({ param, params, setParams, getLabel, language })
 
     useEffect(() => {
         if (!category) return
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true)
         fetch(`/api/catalog/nopscadlib/${category}`)
             .then(r => r.json())
@@ -58,8 +59,8 @@ function ComponentPickerWidget({ param, params, setParams, getLabel, language })
                             type="button"
                             data-testid={`component-option-${comp.id}`}
                             className={`text-left px-2 py-1.5 text-xs rounded border transition-colors ${selected === comp.id
-                                    ? 'bg-primary text-primary-foreground border-primary'
-                                    : 'bg-background border-border hover:border-primary/50 hover:bg-accent'
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background border-border hover:border-primary/50 hover:bg-accent'
                                 }`}
                             onClick={() => handleSelect(comp)}
                             aria-pressed={selected === comp.id}
@@ -111,7 +112,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
     const gradientParams = parametersForMode.filter(p => p.widget?.type === 'color-gradient')
     const componentPickers = parametersForMode.filter(p => p.widget?.type === 'component-picker')
     const visibilityCheckboxes = checkboxes.filter(p => p.group === 'visibility')
-    const otherCheckboxes = checkboxes.filter(p => !p.group)
+    const otherCheckboxes = checkboxes.filter(p => p.group !== 'visibility')
 
     // Filter visibility checkboxes by level
     const filteredVisibility = visibilityCheckboxes.filter(p => {

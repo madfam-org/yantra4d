@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": {
       "en": "Interlocking half-cube construction system with snap-fit mechanism and grid assembly",
-      "es": "Sistema de construcción de medio-cubos entrelazados con mecanismo de ensamble a presión y retícula"
+      "es": "Sistema de construcci\u00f3n de medio-cubos entrelazados con mecanismo de ensamble a presi\u00f3n y ret\u00edcula"
     },
     "thumbnail": "/projects/tablaco.webp",
     "tags": [
@@ -56,7 +56,7 @@
       "scad_file": "vendor/tablaco/tablaco.scad",
       "label": {
         "en": "Grid",
-        "es": "Retícula"
+        "es": "Ret\u00edcula"
       },
       "parts": [
         "bottom",
@@ -136,7 +136,7 @@
       "id": "standard",
       "label": {
         "en": "Standard (20mm)",
-        "es": "Estándar (20mm)"
+        "es": "Est\u00e1ndar (20mm)"
       },
       "values": {
         "size": 20,
@@ -183,11 +183,11 @@
       "step": 0.5,
       "label": {
         "en": "Size (mm)",
-        "es": "Tamaño (mm)"
+        "es": "Tama\u00f1o (mm)"
       },
       "tooltip": {
         "en": "Width/height of each unit cube in millimeters",
-        "es": "Ancho/alto de cada cubo unitario en milímetros"
+        "es": "Ancho/alto de cada cubo unitario en mil\u00edmetros"
       },
       "visible_in_modes": [
         "unit",
@@ -222,11 +222,11 @@
       "step": 0.1,
       "label": {
         "en": "Rod Diameter (mm)",
-        "es": "Diámetro Varilla (mm)"
+        "es": "Di\u00e1metro Varilla (mm)"
       },
       "tooltip": {
         "en": "Diameter of connecting rods",
-        "es": "Diámetro de las varillas de conexión"
+        "es": "Di\u00e1metro de las varillas de conexi\u00f3n"
       },
       "visible_in_modes": [
         "unit",
@@ -245,8 +245,8 @@
         "es": "Holgura de Varilla (mm)"
       },
       "tooltip": {
-        "en": "Radial clearance for rod bore — increase for looser fit",
-        "es": "Holgura radial del orificio — aumentar para ajuste más holgado"
+        "en": "Radial clearance for rod bore \u2014 increase for looser fit",
+        "es": "Holgura radial del orificio \u2014 aumentar para ajuste m\u00e1s holgado"
       },
       "visible_in_modes": [
         "unit",
@@ -266,8 +266,8 @@
         "es": "Holgura de Junta (mm)"
       },
       "tooltip": {
-        "en": "Gap between interlocking cube faces — currently zeroed out (kept for future use)",
-        "es": "Espacio entre caras de cubos — actualmente en cero (reservado para uso futuro)"
+        "en": "Gap between interlocking cube faces \u2014 currently zeroed out (kept for future use)",
+        "es": "Espacio entre caras de cubos \u2014 actualmente en cero (reservado para uso futuro)"
       },
       "visible_in_modes": [
         "unit"
@@ -850,7 +850,7 @@
       },
       "tooltip": {
         "en": "Show or hide connecting rods",
-        "es": "Mostrar u ocultar varillas de conexión"
+        "es": "Mostrar u ocultar varillas de conexi\u00f3n"
       },
       "group": "visibility",
       "visibility_level": "basic",
@@ -887,7 +887,7 @@
       },
       "tooltip": {
         "en": "Character on bottom unit faces",
-        "es": "Carácter en caras de unidad inferior"
+        "es": "Car\u00e1cter en caras de unidad inferior"
       },
       "visible_in_modes": [
         "unit",
@@ -905,7 +905,7 @@
       },
       "tooltip": {
         "en": "Character on top unit faces",
-        "es": "Carácter en caras de unidad superior"
+        "es": "Car\u00e1cter en caras de unidad superior"
       },
       "visible_in_modes": [
         "assembly"
@@ -959,11 +959,11 @@
       "step": 1,
       "label": {
         "en": "Letter Size",
-        "es": "Tamaño de Letra"
+        "es": "Tama\u00f1o de Letra"
       },
       "tooltip": {
         "en": "Font size of embossed/carved letters on walls",
-        "es": "Tamaño de fuente de las letras en las paredes"
+        "es": "Tama\u00f1o de fuente de las letras en las paredes"
       },
       "visible_in_modes": [
         "unit",
@@ -985,7 +985,7 @@
       },
       "tooltip": {
         "en": "Number of rows in the grid",
-        "es": "Número de filas en la retícula"
+        "es": "N\u00famero de filas en la ret\u00edcula"
       },
       "visible_in_modes": [
         "grid"
@@ -1005,7 +1005,7 @@
       },
       "tooltip": {
         "en": "Number of columns in the grid",
-        "es": "Número de columnas en la retícula"
+        "es": "N\u00famero de columnas en la ret\u00edcula"
       },
       "visible_in_modes": [
         "grid"
@@ -1020,7 +1020,7 @@
       "step": 1,
       "label": {
         "en": "Rod Extension (mm)",
-        "es": "Extensión Varilla (mm)"
+        "es": "Extensi\u00f3n Varilla (mm)"
       },
       "tooltip": {
         "en": "Rod length protruding beyond stoppers",
@@ -1028,7 +1028,7 @@
       },
       "description": {
         "en": "Protrusion beyond stoppers (0 = flush)",
-        "es": "Protrusión más allá de los topes (0 = al ras)"
+        "es": "Protrusi\u00f3n m\u00e1s all\u00e1 de los topes (0 = al ras)"
       },
       "visible_in_modes": [
         "grid"
@@ -1043,11 +1043,11 @@
       "step": 0.5,
       "label": {
         "en": "Rotation Gap (mm)",
-        "es": "Espacio de Rotación (mm)"
+        "es": "Espacio de Rotaci\u00f3n (mm)"
       },
       "tooltip": {
-        "en": "Gap between cubes in grid — controls free rotation space",
-        "es": "Espacio entre cubos en la retícula — controla espacio de rotación libre"
+        "en": "Gap between cubes in grid \u2014 controls free rotation space",
+        "es": "Espacio entre cubos en la ret\u00edcula \u2014 controla espacio de rotaci\u00f3n libre"
       },
       "visible_in_modes": [
         "grid"
@@ -1115,7 +1115,7 @@
       "id": "iso",
       "label": {
         "en": "Isometric",
-        "es": "Isométrico"
+        "es": "Isom\u00e9trico"
       },
       "position": [
         50,
@@ -1172,7 +1172,7 @@
           "id": "basic",
           "label": {
             "en": "Basic",
-            "es": "Básico"
+            "es": "B\u00e1sico"
           }
         },
         {
@@ -1197,10 +1197,10 @@
   },
   "grid_presets": {
     "rendering": {
-      "emoji": "🪽",
+      "emoji": "\ud83e\udebd",
       "label": {
         "en": "Fast Preview",
-        "es": "Vista Rápida"
+        "es": "Vista R\u00e1pida"
       },
       "values": {
         "rows": 2,
@@ -1208,7 +1208,7 @@
       }
     },
     "manufacturing": {
-      "emoji": "⭐",
+      "emoji": "\u2b50",
       "label": {
         "en": "Manufacturing",
         "es": "Manufactura"
@@ -1363,7 +1363,7 @@
       },
       "notes": {
         "en": "Same settings. Snap mechanism needs supports.",
-        "es": "Misma configuración. El mecanismo de ensamble necesita soportes."
+        "es": "Misma configuraci\u00f3n. El mecanismo de ensamble necesita soportes."
       },
       "visible_parts": [
         "bottom",
@@ -1387,11 +1387,11 @@
       "step": 3,
       "label": {
         "en": "Snap together",
-        "es": "Ensambla a presión"
+        "es": "Ensambla a presi\u00f3n"
       },
       "notes": {
         "en": "Align tabs and press firmly until you hear a click.",
-        "es": "Alinea las pestañas y presiona firmemente hasta escuchar un clic."
+        "es": "Alinea las pesta\u00f1as y presiona firmemente hasta escuchar un clic."
       },
       "visible_parts": [
         "bottom",

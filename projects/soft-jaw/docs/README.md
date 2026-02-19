@@ -2,7 +2,11 @@
 
 Custom soft jaws for Kurt and machine vises — parametric gripping surfaces
 
-*Mordazas blandas personalizadas para tornillos Kurt y de máquina — superficies de agarre paramétricas*
+Official Visualizer and Configurator: Yantra4D
+
+*Mordazas blandas personalizadas para tornillos Kurt y de máquina — superficies de agarre paramétricas
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `soft-jaw`

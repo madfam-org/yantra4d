@@ -4,8 +4,8 @@
     "slug": "faircap-filter",
     "version": "1.0.0",
     "description": {
-      "en": "Open-source parametric water filter that screws onto standard PET bottles — clean water from plastic waste",
-      "es": "Filtro de agua paramétrico de código abierto que se enrosca en botellas PET estándar — agua limpia a partir de residuos plásticos"
+      "en": "Open-source parametric water filter that screws onto standard PET bottles \u2014 clean water from plastic waste\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Filtro de agua param\u00e9trico de c\u00f3digo abierto que se enrosca en botellas PET est\u00e1ndar \u2014 agua limpia a partir de residuos pl\u00e1sticos\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/faircap-filter.png",
     "tags": [
@@ -31,7 +31,7 @@
       "scad_file": "faircap.scad",
       "label": {
         "en": "Standard Filter",
-        "es": "Filtro Estándar"
+        "es": "Filtro Est\u00e1ndar"
       },
       "parts": [
         "filter_housing"
@@ -58,7 +58,7 @@
       "id": "charcoal_standard",
       "label": {
         "en": "Charcoal Filter (Standard)",
-        "es": "Filtro de Carbón (Estándar)"
+        "es": "Filtro de Carb\u00f3n (Est\u00e1ndar)"
       },
       "values": {
         "filter_type": "charcoal",
@@ -69,7 +69,7 @@
       "id": "ceramic_long",
       "label": {
         "en": "Ceramic Filter (Long)",
-        "es": "Filtro Cerámico (Largo)"
+        "es": "Filtro Cer\u00e1mico (Largo)"
       },
       "values": {
         "filter_type": "ceramic",
@@ -94,7 +94,7 @@
       },
       "tooltip": {
         "en": "Internal structure for filtration",
-        "es": "Estructura interna para filtración"
+        "es": "Estructura interna para filtraci\u00f3n"
       },
       "visible_in_modes": [
         "Standard"
@@ -110,7 +110,7 @@
       "step": 1,
       "label": {
         "en": "Housing Diameter (mm)",
-        "es": "Diámetro de Carcasa (mm)"
+        "es": "Di\u00e1metro de Carcasa (mm)"
       },
       "visible_in_modes": [
         "Standard"
@@ -139,7 +139,7 @@
       "id": "filtration",
       "label": {
         "en": "Filtration Settings",
-        "es": "Configuración de Filtrado"
+        "es": "Configuraci\u00f3n de Filtrado"
       }
     },
     {

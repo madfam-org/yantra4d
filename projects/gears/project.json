@@ -4,8 +4,8 @@
     "slug": "gears",
     "version": "1.0.0",
     "description": {
-      "en": "Involute spur and herringbone gears powered by MCAD",
-      "es": "Engranajes rectos y de espiga con perfil involuto impulsados por MCAD"
+      "en": "Involute spur and herringbone gears powered by MCAD\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Engranajes rectos y de espiga con perfil involuto impulsados por MCAD\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/gears.webp",
     "tags": [
@@ -23,7 +23,7 @@
   "modes": [
     {
       "id": "spur_gear",
-      "scad_file": "yantra4d_spur_gear.scad",
+      "scad_file": "spur_gear.scad",
       "label": {
         "en": "Spur Gear",
         "es": "Engranaje Recto"
@@ -38,7 +38,7 @@
     },
     {
       "id": "herringbone_gear",
-      "scad_file": "yantra4d_herringbone_gear.scad",
+      "scad_file": "herringbone_gear.scad",
       "label": {
         "en": "Herringbone Gear",
         "es": "Engranaje Espiga"
@@ -77,7 +77,7 @@
       "id": "small_motor_20t",
       "label": {
         "en": "Small Motor (20T)",
-        "es": "Motor Pequeño (20T)"
+        "es": "Motor Peque\u00f1o (20T)"
       },
       "values": {
         "teeth_count": 20,
@@ -90,7 +90,7 @@
       "id": "large_drive_60t",
       "label": {
         "en": "Large Drive (60T)",
-        "es": "Transmisión Grande (60T)"
+        "es": "Transmisi\u00f3n Grande (60T)"
       },
       "values": {
         "teeth_count": 60,
@@ -123,11 +123,11 @@
       "step": 1,
       "label": {
         "en": "Teeth Count",
-        "es": "Número de Dientes"
+        "es": "N\u00famero de Dientes"
       },
       "tooltip": {
         "en": "Number of teeth on the gear",
-        "es": "Número de dientes del engranaje"
+        "es": "N\u00famero de dientes del engranaje"
       },
       "group": "gear_geometry",
       "visible_in_modes": [
@@ -144,11 +144,11 @@
       "step": 0.25,
       "label": {
         "en": "Module (mm)",
-        "es": "Módulo (mm)"
+        "es": "M\u00f3dulo (mm)"
       },
       "tooltip": {
-        "en": "Gear module — pitch diameter = module x teeth",
-        "es": "Módulo del engranaje — diámetro primitivo = módulo x dientes"
+        "en": "Gear module \u2014 pitch diameter = module x teeth",
+        "es": "M\u00f3dulo del engranaje \u2014 di\u00e1metro primitivo = m\u00f3dulo x dientes"
       },
       "group": "gear_geometry",
       "visible_in_modes": [
@@ -164,12 +164,12 @@
       "max": 25,
       "step": 1,
       "label": {
-        "en": "Pressure Angle (°)",
-        "es": "Ángulo de Presión (°)"
+        "en": "Pressure Angle (\u00b0)",
+        "es": "\u00c1ngulo de Presi\u00f3n (\u00b0)"
       },
       "tooltip": {
-        "en": "Tooth profile angle — 20° is standard, 14.5° for legacy gears",
-        "es": "Ángulo del perfil del diente — 20° es estándar, 14.5° para engranajes antiguos"
+        "en": "Tooth profile angle \u2014 20\u00b0 is standard, 14.5\u00b0 for legacy gears",
+        "es": "\u00c1ngulo del perfil del diente \u2014 20\u00b0 es est\u00e1ndar, 14.5\u00b0 para engranajes antiguos"
       },
       "group": "gear_geometry",
       "visibility_level": "advanced",
@@ -208,11 +208,11 @@
       "step": 0.5,
       "label": {
         "en": "Bore Diameter (mm)",
-        "es": "Diámetro del Orificio (mm)"
+        "es": "Di\u00e1metro del Orificio (mm)"
       },
       "tooltip": {
-        "en": "Central shaft bore diameter — 0 for solid center",
-        "es": "Diámetro del orificio central — 0 para centro sólido"
+        "en": "Central shaft bore diameter \u2014 0 for solid center",
+        "es": "Di\u00e1metro del orificio central \u2014 0 para centro s\u00f3lido"
       },
       "group": "bore",
       "visible_in_modes": [
@@ -228,12 +228,12 @@
       "max": 60,
       "step": 5,
       "label": {
-        "en": "Helix Angle (°)",
-        "es": "Ángulo Helicoidal (°)"
+        "en": "Helix Angle (\u00b0)",
+        "es": "\u00c1ngulo Helicoidal (\u00b0)"
       },
       "tooltip": {
         "en": "Helix angle for the herringbone pattern",
-        "es": "Ángulo helicoidal del patrón espiga"
+        "es": "\u00c1ngulo helicoidal del patr\u00f3n espiga"
       },
       "group": "gear_geometry",
       "visible_in_modes": [
@@ -249,11 +249,11 @@
       "step": 8,
       "label": {
         "en": "Resolution ($fn)",
-        "es": "Resolución ($fn)"
+        "es": "Resoluci\u00f3n ($fn)"
       },
       "tooltip": {
-        "en": "Curve resolution — 0 uses default (32)",
-        "es": "Resolución de curvas — 0 usa el valor por defecto (32)"
+        "en": "Curve resolution \u2014 0 uses default (32)",
+        "es": "Resoluci\u00f3n de curvas \u2014 0 usa el valor por defecto (32)"
       },
       "group": "quality",
       "visible_in_modes": [
@@ -268,7 +268,7 @@
       "severity": "warning",
       "message": {
         "en": "Bore too large for pitch circle",
-        "es": "Orificio demasiado grande para el círculo primitivo"
+        "es": "Orificio demasiado grande para el c\u00edrculo primitivo"
       }
     }
   ],
@@ -277,7 +277,7 @@
       "id": "iso",
       "label": {
         "en": "Isometric",
-        "es": "Isométrico"
+        "es": "Isom\u00e9trico"
       },
       "position": [
         60,
@@ -327,7 +327,7 @@
       "id": "gear_geometry",
       "label": {
         "en": "Gear Geometry",
-        "es": "Geometría del Engranaje"
+        "es": "Geometr\u00eda del Engranaje"
       }
     },
     {
@@ -393,8 +393,8 @@
       "tolerance_by_material": true
     },
     "societal_benefit": {
-      "en": "Parametric gear generation for mechanical prototyping — reduces lead time from weeks to hours",
-      "es": "Generación paramétrica de engranajes para prototipos mecánicos — reduce tiempos de entrega de semanas a horas"
+      "en": "Parametric gear generation for mechanical prototyping \u2014 reduces lead time from weeks to hours",
+      "es": "Generaci\u00f3n param\u00e9trica de engranajes para prototipos mec\u00e1nicos \u2014 reduce tiempos de entrega de semanas a horas"
     },
     "commons_license": "CERN-OHL-S-2.0"
   },

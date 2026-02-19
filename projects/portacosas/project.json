@@ -4,7 +4,7 @@
     "slug": "portacosas",
     "version": "1.0.0",
     "description": {
-      "es": "Organizador de escritorio modular con sistema de bandejas a presión",
+      "es": "Organizador de escritorio modular con sistema de bandejas a presi\u00f3n",
       "en": "Modular desk organizer with snap-fit tray system"
     },
     "thumbnail": "/projects/portacosas.webp",
@@ -60,7 +60,7 @@
       "id": "grid",
       "scad_file": "grid.scad",
       "label": {
-        "es": "Retícula",
+        "es": "Ret\u00edcula",
         "en": "Grid"
       },
       "parts": [
@@ -90,7 +90,7 @@
       "id": "pen_holder",
       "render_mode": 1,
       "label": {
-        "es": "Porta Bolígrafos",
+        "es": "Porta Bol\u00edgrafos",
         "en": "Pen Holder"
       },
       "default_color": "#3b82f6"
@@ -136,7 +136,7 @@
     {
       "id": "minimal",
       "label": {
-        "es": "Mínimo",
+        "es": "M\u00ednimo",
         "en": "Minimal"
       },
       "values": {
@@ -319,7 +319,7 @@
         "en": "Wall Height (mm)"
       },
       "tooltip": {
-        "es": "Altura máxima de los componentes",
+        "es": "Altura m\u00e1xima de los componentes",
         "en": "Maximum height of components"
       },
       "visible_in_modes": [
@@ -355,11 +355,11 @@
       "max": 8,
       "step": 1,
       "label": {
-        "es": "Cantidad de Bolígrafos",
+        "es": "Cantidad de Bol\u00edgrafos",
         "en": "Pen Count"
       },
       "tooltip": {
-        "es": "Número de orificios para bolígrafos",
+        "es": "N\u00famero de orificios para bol\u00edgrafos",
         "en": "Number of pen holes"
       },
       "visible_in_modes": [
@@ -375,11 +375,11 @@
       "max": 20,
       "step": 1,
       "label": {
-        "es": "Diámetro de Bolígrafo (mm)",
+        "es": "Di\u00e1metro de Bol\u00edgrafo (mm)",
         "en": "Pen Diameter (mm)"
       },
       "tooltip": {
-        "es": "Diámetro de cada orificio para bolígrafo",
+        "es": "Di\u00e1metro de cada orificio para bol\u00edgrafo",
         "en": "Diameter of each pen hole"
       },
       "visible_in_modes": [
@@ -432,11 +432,11 @@
       "max": 80,
       "step": 1,
       "label": {
-        "es": "Ángulo del Celular (°)",
-        "en": "Phone Angle (°)"
+        "es": "\u00c1ngulo del Celular (\u00b0)",
+        "en": "Phone Angle (\u00b0)"
       },
       "tooltip": {
-        "es": "Ángulo de inclinación del soporte",
+        "es": "\u00c1ngulo de inclinaci\u00f3n del soporte",
         "en": "Tilt angle of the phone stand"
       },
       "visible_in_modes": [
@@ -509,11 +509,11 @@
       "max": 20,
       "step": 1,
       "label": {
-        "es": "Ángulo de Tarjetas (°)",
-        "en": "Card Angle (°)"
+        "es": "\u00c1ngulo de Tarjetas (\u00b0)",
+        "en": "Card Angle (\u00b0)"
       },
       "tooltip": {
-        "es": "Ángulo de inclinación del porta tarjetas",
+        "es": "\u00c1ngulo de inclinaci\u00f3n del porta tarjetas",
         "en": "Tilt angle of the card holder"
       },
       "visible_in_modes": [
@@ -533,7 +533,7 @@
         "en": "Clip Count"
       },
       "tooltip": {
-        "es": "Número de clips para cables",
+        "es": "N\u00famero de clips para cables",
         "en": "Number of cable clips"
       },
       "visible_in_modes": [
@@ -549,11 +549,11 @@
       "max": 10,
       "step": 1,
       "label": {
-        "es": "Diámetro de Clip (mm)",
+        "es": "Di\u00e1metro de Clip (mm)",
         "en": "Clip Diameter (mm)"
       },
       "tooltip": {
-        "es": "Diámetro interior del clip de cable",
+        "es": "Di\u00e1metro interior del clip de cable",
         "en": "Inner diameter of cable clip"
       },
       "visible_in_modes": [
@@ -611,7 +611,7 @@
         "en": "Rows"
       },
       "tooltip": {
-        "es": "Número de filas en la retícula de bandejas",
+        "es": "N\u00famero de filas en la ret\u00edcula de bandejas",
         "en": "Number of rows in the tray grid"
       },
       "visible_in_modes": [
@@ -630,7 +630,7 @@
         "en": "Columns"
       },
       "tooltip": {
-        "es": "Número de columnas en la retícula de bandejas",
+        "es": "N\u00famero de columnas en la ret\u00edcula de bandejas",
         "en": "Number of columns in the tray grid"
       },
       "visible_in_modes": [
@@ -642,7 +642,7 @@
     {
       "rule": "wall_thickness >= 1.2",
       "message": {
-        "es": "Grosor mínimo para impresión FDM",
+        "es": "Grosor m\u00ednimo para impresi\u00f3n FDM",
         "en": "Minimum thickness for FDM printing"
       },
       "severity": "error",
@@ -653,7 +653,7 @@
     {
       "rule": "pen_diameter > wall_thickness * 2",
       "message": {
-        "es": "El bolígrafo debe caber en el orificio",
+        "es": "El bol\u00edgrafo debe caber en el orificio",
         "en": "Pen must fit in the hole"
       },
       "severity": "error",
@@ -665,7 +665,7 @@
     {
       "rule": "phone_angle >= 45",
       "message": {
-        "es": "Ángulo mínimo de estabilidad",
+        "es": "\u00c1ngulo m\u00ednimo de estabilidad",
         "en": "Minimum stability angle"
       },
       "severity": "warning",
@@ -676,7 +676,7 @@
     {
       "rule": "rows * cols <= 9",
       "message": {
-        "es": "Máximo 9 bandejas en retícula",
+        "es": "M\u00e1ximo 9 bandejas en ret\u00edcula",
         "en": "Maximum 9 trays in grid"
       },
       "severity": "error",
@@ -740,7 +740,7 @@
     {
       "id": "iso",
       "label": {
-        "es": "Isométrico",
+        "es": "Isom\u00e9trico",
         "en": "Isometric"
       },
       "position": [
@@ -800,9 +800,9 @@
   },
   "grid_presets": {
     "rendering": {
-      "emoji": "🪽",
+      "emoji": "\ud83e\udebd",
       "label": {
-        "es": "Vista Rápida",
+        "es": "Vista R\u00e1pida",
         "en": "Fast Preview"
       },
       "values": {
@@ -811,9 +811,9 @@
       }
     },
     "manufacturing": {
-      "emoji": "⭐",
+      "emoji": "\u2b50",
       "label": {
-        "es": "Producción",
+        "es": "Producci\u00f3n",
         "en": "Production"
       },
       "values": {
@@ -931,7 +931,7 @@
     {
       "step": 2,
       "label": {
-        "es": "Imprime el porta bolígrafos",
+        "es": "Imprime el porta bol\u00edgrafos",
         "en": "Print the pen holder"
       },
       "notes": {
@@ -988,7 +988,7 @@
     {
       "step": 4,
       "label": {
-        "es": "Encaja el porta bolígrafos en la bandeja",
+        "es": "Encaja el porta bol\u00edgrafos en la bandeja",
         "en": "Snap pen holder into tray"
       },
       "notes": {

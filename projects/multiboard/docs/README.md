@@ -11,7 +11,7 @@ Modular wall-mounted storage system with hexagonal peg pattern
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `tile` | Tile | `yantra4d_tile.scad` | tile |
+| `tile` | Tile | `tile.scad` | tile |
 
 ## Parameters
 

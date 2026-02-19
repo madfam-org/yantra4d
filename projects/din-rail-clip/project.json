@@ -4,8 +4,8 @@
     "slug": "din-rail-clip",
     "version": "1.0.0",
     "description": {
-      "en": "Parametric mounting clip for TS35 DIN rails — industrial automation & electronics mounting",
-      "es": "Clip de montaje paramétrico para rieles DIN TS35 — automatización industrial y montaje de electrónica"
+      "en": "Parametric mounting clip for TS35 DIN rails \u2014 industrial automation & electronics mounting\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Clip de montaje param\u00e9trico para rieles DIN TS35 \u2014 automatizaci\u00f3n industrial y montaje de electr\u00f3nica\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/din-rail-clip.webp",
     "tags": [
@@ -80,7 +80,7 @@
       "id": "relay_module",
       "label": {
         "en": "Relay Module (Small)",
-        "es": "Módulo de Relé (Pequeño)"
+        "es": "M\u00f3dulo de Rel\u00e9 (Peque\u00f1o)"
       },
       "values": {
         "mount_width": 30,
@@ -131,7 +131,7 @@
       "step": 1,
       "label": {
         "en": "Bolt Size",
-        "es": "Tamaño de Perno"
+        "es": "Tama\u00f1o de Perno"
       },
       "tooltip": {
         "en": "0=M3, 1=M4, 2=M5",

@@ -2,7 +2,11 @@
 
 Parametric NEMA motor mount with real motor preview using NopSCADlib
 
-*Soporte parametrico para motores NEMA con vista previa del motor real usando NopSCADlib*
+Official Visualizer and Configurator: Yantra4D
+
+*Soporte parametrico para motores NEMA con vista previa del motor real usando NopSCADlib
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 0.1.0  
 **Slug**: `motor-mount`
@@ -11,7 +15,7 @@ Parametric NEMA motor mount with real motor preview using NopSCADlib
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `mount` | Mount | `yantra4d_mount.scad` | mount, nema_reference |
+| `mount` | Mount | `mount.scad` | mount, nema_reference |
 
 ## Parameters
 

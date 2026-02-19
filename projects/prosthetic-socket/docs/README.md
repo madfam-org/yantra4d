@@ -2,7 +2,11 @@
 
 Customizable socket for lower-limb prosthetics — Voronoi patterns for breathability and light weight
 
-*Socket personalizable para prótesis de miembro inferior — patrones Voronoi para transpirabilidad y ligereza*
+Official Visualizer and Configurator: Yantra4D
+
+*Socket personalizable para prótesis de miembro inferior — patrones Voronoi para transpirabilidad y ligereza
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `prosthetic-socket`

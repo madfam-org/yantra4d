@@ -4,8 +4,8 @@
     "slug": "prosthetic-socket",
     "version": "1.0.0",
     "description": {
-      "en": "Customizable socket for lower-limb prosthetics — Voronoi patterns for breathability and light weight",
-      "es": "Socket personalizable para prótesis de miembro inferior — patrones Voronoi para transpirabilidad y ligereza"
+      "en": "Customizable socket for lower-limb prosthetics \u2014 Voronoi patterns for breathability and light weight\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Socket personalizable para pr\u00f3tesis de miembro inferior \u2014 patrones Voronoi para transpirabilidad y ligereza\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/prosthetic-socket.webp",
     "tags": [
@@ -72,7 +72,7 @@
       "id": "child_bk",
       "label": {
         "en": "Child Below-Knee (Small)",
-        "es": "Niño Bajo-Rodilla (Pequeño)"
+        "es": "Ni\u00f1o Bajo-Rodilla (Peque\u00f1o)"
       },
       "values": {
         "amputation_level": 0,
@@ -118,7 +118,7 @@
       "step": 1,
       "label": {
         "en": "Amputation Level",
-        "es": "Nivel de Amputación"
+        "es": "Nivel de Amputaci\u00f3n"
       },
       "tooltip": {
         "en": "0=Below Knee (Transtibial), 1=Above Knee (Transfemoral)",
@@ -202,7 +202,7 @@
       },
       "tooltip": {
         "en": "Higher = more, smaller holes; Lower = fewer, larger holes",
-        "es": "Mayor = más agujeros pequeños; Menor = menos agujeros grandes"
+        "es": "Mayor = m\u00e1s agujeros peque\u00f1os; Menor = menos agujeros grandes"
       },
       "visible_in_modes": [
         "transtibial_socket",
@@ -265,7 +265,7 @@
       "id": "pattern",
       "label": {
         "en": "Pattern",
-        "es": "Patrón"
+        "es": "Patr\u00f3n"
       }
     },
     {
@@ -321,8 +321,8 @@
       "tolerance_by_material": true
     },
     "societal_benefit": {
-      "en": "Scalable, localized production of prosthetic sockets — reduces cost from $5000+ to <$50. Voronoi pattern improves hygiene in hot climates.",
-      "es": "Producción escalable y localizada de sockets protésicos — reduce el costo de $5000+ a <$50. El patrón Voronoi mejora la higiene en climas cálidos."
+      "en": "Scalable, localized production of prosthetic sockets \u2014 reduces cost from $5000+ to <$50. Voronoi pattern improves hygiene in hot climates.",
+      "es": "Producci\u00f3n escalable y localizada de sockets prot\u00e9sicos \u2014 reduce el costo de $5000+ a <$50. El patr\u00f3n Voronoi mejora la higiene en climas c\u00e1lidos."
     },
     "commons_license": "CERN-OHL-S-2.0",
     "bosl2_modules_used": [

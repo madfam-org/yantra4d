@@ -11,13 +11,13 @@ Parametric hinged rugged case with latches, gasket seals, dividers, and feet
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Complete | `yantra4d_rugged_complete.scad` | bottom, top, latches, gasket, feet, tpu-bottom-insert, tpu-top-insert |
-| `` | Bottom | `yantra4d_rugged_bottom.scad` | bottom |
-| `` | Top | `yantra4d_rugged_top.scad` | top |
-| `` | Latches | `yantra4d_rugged_latches.scad` | latches |
-| `` | Gasket | `yantra4d_rugged_gasket.scad` | gasket |
-| `` | Feet | `yantra4d_rugged_feet.scad` | feet |
-| `` | Closed View | `yantra4d_rugged_closed.scad` | bottom, top, latches |
+| `` | Complete | `rugged_complete.scad` | bottom, top, latches, gasket, feet, tpu-bottom-insert, tpu-top-insert |
+| `` | Bottom | `rugged_bottom.scad` | bottom |
+| `` | Top | `rugged_top.scad` | top |
+| `` | Latches | `rugged_latches.scad` | latches |
+| `` | Gasket | `rugged_gasket.scad` | gasket |
+| `` | Feet | `rugged_feet.scad` | feet |
+| `` | Closed View | `rugged_closed.scad` | bottom, top, latches |
 
 ## Parameters
 
@@ -122,6 +122,7 @@ Parametric hinged rugged case with latches, gasket seals, dividers, and feet
 ## Render Estimates
 
 - **base_time**: 8
+- **per_unit**: 1
 - **per_part**: 4
 
 ---

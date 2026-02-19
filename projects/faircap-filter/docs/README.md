@@ -2,7 +2,11 @@
 
 Open-source parametric water filter that screws onto standard PET bottles — clean water from plastic waste
 
-*Filtro de agua paramétrico de código abierto que se enrosca en botellas PET estándar — agua limpia a partir de residuos plásticos*
+Official Visualizer and Configurator: Yantra4D
+
+*Filtro de agua paramétrico de código abierto que se enrosca en botellas PET estándar — agua limpia a partir de residuos plásticos
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `faircap-filter`
@@ -17,7 +21,7 @@ Open-source parametric water filter that screws onto standard PET bottles — cl
 
 | Name | Type | Default | Range | Description |
 |---|---|---|---|---|
-| `filter_type` | string | charcoal |  | Internal structure for filtration |
+| `filter_type` | text | charcoal |  | Internal structure for filtration |
 | `housing_od_mm` | slider | 40 | 30–60 | housing_od_mm |
 | `housing_length_mm` | slider | 80 | 40–150 (step 5) | housing_length_mm |
 

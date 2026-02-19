@@ -11,7 +11,7 @@ Generative vases based on mathematical superformulas using dotSCAD
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `vase` | Vase | `yantra4d_superformula.scad` | vase |
+| `vase` | Vase | `superformula.scad` | vase |
 
 ## Parameters
 

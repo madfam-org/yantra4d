@@ -4,8 +4,8 @@
     "slug": "framing-hyperobject",
     "version": "1.0.0",
     "description": {
-      "en": "Parametric framing and containment systems (Hyperobject)",
-      "es": "Sistemas paramétricos de enmarcado y contención (Hiperobjeto)"
+      "en": "Parametric framing and containment systems (Hyperobject)\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sistemas param\u00e9tricos de enmarcado y contenci\u00f3n (Hiperobjeto)\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "docs/images/thumbnail.png",
     "tags": [
@@ -14,10 +14,10 @@
       "framing",
       "display"
     ],
-    "difficulty": "Intermediate",
+    "difficulty": "intermediate",
     "hyperobject": {
       "is_hyperobject": true,
-      "domain": "culture",
+      "domain": "household",
       "interfaces": [
         "rabbet",
         "vesa_pattern",
@@ -69,7 +69,7 @@
       "render_mode": 0,
       "label": {
         "en": "Glazing",
-        "es": "Vidrio/Acrílico"
+        "es": "Vidrio/Acr\u00edlico"
       },
       "default_color": "#add8e6"
     }
@@ -123,7 +123,7 @@
           "value": "ogee",
           "label": {
             "en": "Ogee (Classic)",
-            "es": "Ogee (Clásico)"
+            "es": "Ogee (Cl\u00e1sico)"
           }
         },
         {
@@ -205,7 +205,7 @@
           "value": "french_cleat",
           "label": {
             "en": "French Cleat",
-            "es": "Listón Francés"
+            "es": "List\u00f3n Franc\u00e9s"
           }
         },
         {
@@ -266,14 +266,14 @@
           "value": "Silver Eagle",
           "label": {
             "en": "Silver Eagle Capsule",
-            "es": "Cápsula Silver Eagle"
+            "es": "C\u00e1psula Silver Eagle"
           }
         },
         {
           "value": "Small Dollar",
           "label": {
             "en": "Small Dollar Capsule",
-            "es": "Cápsula Dólar Peq."
+            "es": "C\u00e1psula D\u00f3lar Peq."
           }
         },
         {
@@ -299,7 +299,7 @@
       "step": 1,
       "label": {
         "en": "Mat Width (mm)",
-        "es": "Ancho Paspartú (mm)"
+        "es": "Ancho Paspart\u00fa (mm)"
       },
       "group": "components"
     },
@@ -316,5 +316,10 @@
       },
       "group": "components"
     }
-  ]
+  ],
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 1,
+    "per_part": 8
+  }
 }

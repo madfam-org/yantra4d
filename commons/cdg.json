@@ -8,7 +8,10 @@
   "cdg_registry": [
     {
       "id": "gridfinity_42mm",
-      "label": { "en": "Gridfinity 42mm Module", "es": "Módulo Gridfinity 42mm" },
+      "label": {
+        "en": "Gridfinity 42mm Module",
+        "es": "Módulo Gridfinity 42mm"
+      },
       "standard": "Community (Zack Freedman)",
       "standard_url": "https://gridfinity.xyz",
       "geometry_type": "grid",
@@ -19,12 +22,17 @@
         "base_thickness_mm": 3.8,
         "stacking_lip_height_mm": 2.6
       },
-      "projects": ["gridfinity"],
+      "projects": [
+        "gridfinity"
+      ],
       "domain": "household"
     },
     {
       "id": "iso_8037_slide",
-      "label": { "en": "ISO 8037 Microscope Slide", "es": "Laminilla ISO 8037" },
+      "label": {
+        "en": "ISO 8037 Microscope Slide",
+        "es": "Laminilla ISO 8037"
+      },
       "standard": "ISO 8037-1:2003",
       "standard_url": "https://www.iso.org/standard/37628.html",
       "geometry_type": "pocket",
@@ -32,14 +40,24 @@
         "length_mm": 76,
         "width_mm": 26,
         "thickness_mm": 1.0,
-        "variants": ["ISO 76×26", "US 76.2×25.4", "Petrographic 46×27", "Supa Mega 75×50"]
+        "variants": [
+          "ISO 76×26",
+          "US 76.2×25.4",
+          "Petrographic 46×27",
+          "Supa Mega 75×50"
+        ]
       },
-      "projects": ["slide-holder"],
+      "projects": [
+        "custom-msh"
+      ],
       "domain": "medical"
     },
     {
       "id": "pco_1881_thread",
-      "label": { "en": "PCO 1881 Bottle Thread", "es": "Rosca de Botella PCO 1881" },
+      "label": {
+        "en": "PCO 1881 Bottle Thread",
+        "es": "Rosca de Botella PCO 1881"
+      },
       "standard": "ISBT PCO 1881",
       "standard_url": "https://www.isbt128.org",
       "geometry_type": "thread",
@@ -49,25 +67,50 @@
         "thread_turns": 1.75,
         "neck_finish": "1881"
       },
-      "projects": ["faircap-filter"],
+      "projects": [
+        "faircap-filter"
+      ],
       "domain": "household"
     },
     {
       "id": "pipe_od_standards",
-      "label": { "en": "Pipe OD Standards (PVC/Bamboo)", "es": "Estándares OD de Tubería (PVC/Bambú)" },
+      "label": {
+        "en": "Pipe OD Standards (PVC/Bamboo)",
+        "es": "Estándares OD de Tubería (PVC/Bambú)"
+      },
       "standard": "ASTM D1785 / ISO 1452 / Variable (bamboo)",
       "geometry_type": "tube",
       "key_dimensions": {
-        "common_od_mm": [21.3, 26.7, 33.4, 42.2, 48.3, 60.3],
-        "bamboo_od_range_mm": [20, 80],
-        "connectivity_topology": ["elbow", "tee", "cross", "custom_angle"]
+        "common_od_mm": [
+          21.3,
+          26.7,
+          33.4,
+          42.2,
+          48.3,
+          60.3
+        ],
+        "bamboo_od_range_mm": [
+          20,
+          80
+        ],
+        "connectivity_topology": [
+          "elbow",
+          "tee",
+          "cross",
+          "custom_angle"
+        ]
       },
-      "projects": ["parametric-connector"],
+      "projects": [
+        "parametric-connector"
+      ],
       "domain": "household"
     },
     {
       "id": "ts35_din_rail",
-      "label": { "en": "TS35 DIN Rail Profile", "es": "Perfil Riel DIN TS35" },
+      "label": {
+        "en": "TS35 DIN Rail Profile",
+        "es": "Perfil Riel DIN TS35"
+      },
       "standard": "IEC/EN 60715 (TS35)",
       "standard_url": "https://en.wikipedia.org/wiki/DIN_rail",
       "geometry_type": "rail",
@@ -75,28 +118,45 @@
         "width_mm": 35,
         "height_mm": 7.5,
         "flange_mm": 1.0,
-        "variants": ["TS35", "TS15"]
+        "variants": [
+          "TS35",
+          "TS15"
+        ]
       },
-      "projects": ["din-rail-clip"],
+      "projects": [
+        "din-rail-clip"
+      ],
       "domain": "industrial"
     },
     {
       "id": "tslot_2020_profile",
-      "label": { "en": "T-Slot 20×20 Profile (80/20)", "es": "Perfil T-Slot 20×20 (80/20)" },
+      "label": {
+        "en": "T-Slot 20×20 Profile (80/20)",
+        "es": "Perfil T-Slot 20×20 (80/20)"
+      },
       "standard": "Industry Standard (80/20 Inc.)",
       "standard_url": "https://8020.net",
       "geometry_type": "extrusion",
       "key_dimensions": {
         "profile_mm": 20,
         "slot_width_mm": 6.2,
-        "variants": ["2020", "2040", "4040"]
+        "variants": [
+          "2020",
+          "2040",
+          "4040"
+        ]
       },
-      "projects": ["din-rail-clip"],
+      "projects": [
+        "din-rail-clip"
+      ],
       "domain": "industrial"
     },
     {
       "id": "vise_bolt_pattern",
-      "label": { "en": "Vise Jaw Bolt Pattern (Kurt-Standard)", "es": "Patrón de Pernos de Mordaza (Kurt)" },
+      "label": {
+        "en": "Vise Jaw Bolt Pattern (Kurt-Standard)",
+        "es": "Patrón de Pernos de Mordaza (Kurt)"
+      },
       "standard": "Kurt Manufacturing (de facto)",
       "geometry_type": "bolt_pattern",
       "key_dimensions": {
@@ -105,39 +165,62 @@
         "bolt_size": "5/16-18",
         "jaw_height_inch": 1.25
       },
-      "projects": ["soft-jaw"],
+      "projects": [
+        "soft-jaw"
+      ],
       "domain": "industrial"
     },
     {
       "id": "limb_scan_interface",
-      "label": { "en": "Limb Scan Parametric Interface", "es": "Interfaz Paramétrica de Escaneo de Miembro" },
+      "label": {
+        "en": "Limb Scan Parametric Interface",
+        "es": "Interfaz Paramétrica de Escaneo de Miembro"
+      },
       "standard": "Custom (scan-derived)",
       "geometry_type": "surface",
       "key_dimensions": {
         "input_type": "circumference_measurements_or_3d_scan",
-        "voronoi_density_zones": ["load_bearing", "comfort", "ventilation"],
+        "voronoi_density_zones": [
+          "load_bearing",
+          "comfort",
+          "ventilation"
+        ],
         "material_requirement": "TPU/TPE"
       },
-      "projects": ["prosthetic-socket"],
+      "projects": [
+        "prosthetic-socket"
+      ],
       "domain": "medical"
     },
     {
       "id": "distal_interface_standard",
-      "label": { "en": "Prosthetic Distal Interface", "es": "Interfaz Distal Protésica" },
+      "label": {
+        "en": "Prosthetic Distal Interface",
+        "es": "Interfaz Distal Protésica"
+      },
       "standard": "e-NABLE / OSL compatible",
       "standard_url": "https://e-nable.fr",
       "geometry_type": "connector",
       "key_dimensions": {
         "pylon_od_mm": 30,
         "bolt_pattern": "4x M5 on 25mm PCD",
-        "compatible_with": ["Phoenix Hand", "Raptor Reloaded", "OSL Knee"]
+        "compatible_with": [
+          "Phoenix Hand",
+          "Raptor Reloaded",
+          "OSL Knee"
+        ]
       },
-      "projects": ["prosthetic-socket"],
+      "projects": [
+        "prosthetic-socket"
+      ],
       "domain": "medical"
     },
     {
       "id": "speculum_interface",
-      "label": { "en": "Otoscope Speculum Interface", "es": "Interfaz de Espéculo de Otoscopio" },
+      "label": {
+        "en": "Otoscope Speculum Interface",
+        "es": "Interfaz de Espéculo de Otoscopio"
+      },
       "standard": "Medical consumable standard",
       "geometry_type": "snap",
       "key_dimensions": {
@@ -145,61 +228,115 @@
         "taper_angle_deg": 3,
         "snap_ring_mm": 0.5
       },
-      "projects": ["glia-diagnostic"],
+      "projects": [
+        "glia-diagnostic"
+      ],
       "domain": "medical"
     },
     {
       "id": "diaphragm_housing",
-      "label": { "en": "Stethoscope Diaphragm Housing", "es": "Carcasa de Diafragma de Estetoscopio" },
+      "label": {
+        "en": "Stethoscope Diaphragm Housing",
+        "es": "Carcasa de Diafragma de Estetoscopio"
+      },
       "standard": "Glia Project",
       "standard_url": "https://glia.org",
       "geometry_type": "housing",
       "key_dimensions": {
         "diaphragm_od_mm": 44,
-        "tubing_barb_id_mm": [6, 8, 10],
+        "tubing_barb_id_mm": [
+          6,
+          8,
+          10
+        ],
         "spring_curve_radius_mm": "parametric (head size)"
       },
-      "projects": ["glia-diagnostic"],
+      "projects": [
+        "glia-diagnostic"
+      ],
       "domain": "medical"
     },
     {
       "id": "involute_gear_profile",
-      "label": { "en": "Involute Gear Profile", "es": "Perfil de Engranaje Involuto" },
+      "label": {
+        "en": "Involute Gear Profile",
+        "es": "Perfil de Engranaje Involuto"
+      },
       "standard": "ISO 53 / AGMA",
       "geometry_type": "kinematic",
       "key_dimensions": {
-        "defined_by": ["module", "pressure_angle", "tooth_count"],
-        "standard_pressure_angles_deg": [14.5, 20, 25],
-        "common_modules_mm": [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+        "defined_by": [
+          "module",
+          "pressure_angle",
+          "tooth_count"
+        ],
+        "standard_pressure_angles_deg": [
+          14.5,
+          20,
+          25
+        ],
+        "common_modules_mm": [
+          0.5,
+          0.75,
+          1.0,
+          1.5,
+          2.0,
+          3.0
+        ]
       },
-      "projects": ["gears", "gear-reducer"],
+      "projects": [
+        "gears",
+        "gear-reducer"
+      ],
       "domain": "commercial"
     },
     {
       "id": "d_shaft_interface",
-      "label": { "en": "D-Shaft Knob Interface", "es": "Interfaz de Perilla Eje-D" },
+      "label": {
+        "en": "D-Shaft Knob Interface",
+        "es": "Interfaz de Perilla Eje-D"
+      },
       "standard": "Common appliance standard",
       "geometry_type": "shaft",
       "key_dimensions": {
-        "common_diameters_mm": [4, 5, 6, 6.35, 8, 10],
+        "common_diameters_mm": [
+          4,
+          5,
+          6,
+          6.35,
+          8,
+          10
+        ],
         "flat_depth_mm": "0.5-1.5 (proportional)",
         "set_screw": "M3/M4"
       },
-      "projects": ["gears"],
+      "projects": [
+        "gears"
+      ],
       "domain": "commercial"
     },
     {
       "id": "vesa_mount_pattern",
-      "label": { "en": "VESA Mount Pattern", "es": "Patrón de Montaje VESA" },
+      "label": {
+        "en": "VESA Mount Pattern",
+        "es": "Patrón de Montaje VESA"
+      },
       "standard": "VESA FDMI (75/100/200)",
       "standard_url": "https://vesa.org",
       "geometry_type": "bolt_pattern",
       "key_dimensions": {
-        "patterns_mm": ["75×75", "100×100", "200×200", "200×100"],
+        "patterns_mm": [
+          "75×75",
+          "100×100",
+          "200×200",
+          "200×100"
+        ],
         "bolt_size": "M4",
         "screw_depth_mm": 10
       },
-      "projects": ["gears"],
+      "projects": [
+        "gears"
+      ],
       "domain": "commercial"
     }
   ]

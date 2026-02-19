@@ -4,8 +4,8 @@
     "slug": "stemfie",
     "version": "1.0.0",
     "description": {
-      "en": "Modular construction system for education and prototyping",
-      "es": "Sistema de construccion modular para educacion y prototipado"
+      "en": "Modular construction system for education and prototyping\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sistema de construccion modular para educacion y prototipado\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/stemfie.webp",
     "tags": [
@@ -22,7 +22,7 @@
   "modes": [
     {
       "id": "beam",
-      "scad_file": "yantra4d_beam.scad",
+      "scad_file": "beam.scad",
       "label": {
         "en": "Beam",
         "es": "Viga"
@@ -37,7 +37,7 @@
     },
     {
       "id": "brace",
-      "scad_file": "yantra4d_brace.scad",
+      "scad_file": "brace.scad",
       "label": {
         "en": "Brace",
         "es": "Escuadra"
@@ -52,7 +52,7 @@
     },
     {
       "id": "fastener",
-      "scad_file": "yantra4d_fastener.scad",
+      "scad_file": "fastener.scad",
       "label": {
         "en": "Fastener",
         "es": "Sujetador"
@@ -503,10 +503,10 @@
       "tolerance_by_material": false
     },
     "societal_benefit": {
-      "en": "Open-source construction kit for STEM education — enables schools to fabricate their own learning tools",
-      "es": "Kit de construcción de código abierto para educación STEM — permite a escuelas fabricar sus propias herramientas de aprendizaje"
+      "en": "Open-source construction kit for STEM education \u2014 enables schools to fabricate their own learning tools",
+      "es": "Kit de construcci\u00f3n de c\u00f3digo abierto para educaci\u00f3n STEM \u2014 permite a escuelas fabricar sus propias herramientas de aprendizaje"
     },
-    "commons_license": "CERN-OHL-S-2.0"
+    "commons_license": "CERN-OHL-W-2.0"
   },
   "tags": [
     "stemfie",

@@ -24,7 +24,7 @@
         "en": "Complete",
         "es": "Completo"
       },
-      "scad_file": "yantra4d_rugged_complete.scad",
+      "scad_file": "rugged_complete.scad",
       "parts": [
         "bottom",
         "top",
@@ -45,7 +45,7 @@
         "en": "Bottom",
         "es": "Inferior"
       },
-      "scad_file": "yantra4d_rugged_bottom.scad",
+      "scad_file": "rugged_bottom.scad",
       "parts": [
         "bottom"
       ],
@@ -60,7 +60,7 @@
         "en": "Top",
         "es": "Superior"
       },
-      "scad_file": "yantra4d_rugged_top.scad",
+      "scad_file": "rugged_top.scad",
       "parts": [
         "top"
       ],
@@ -75,7 +75,7 @@
         "en": "Latches",
         "es": "Pestillos"
       },
-      "scad_file": "yantra4d_rugged_latches.scad",
+      "scad_file": "rugged_latches.scad",
       "parts": [
         "latches"
       ],
@@ -90,7 +90,7 @@
         "en": "Gasket",
         "es": "Junta"
       },
-      "scad_file": "yantra4d_rugged_gasket.scad",
+      "scad_file": "rugged_gasket.scad",
       "parts": [
         "gasket"
       ],
@@ -105,7 +105,7 @@
         "en": "Feet",
         "es": "Pies"
       },
-      "scad_file": "yantra4d_rugged_feet.scad",
+      "scad_file": "rugged_feet.scad",
       "parts": [
         "feet"
       ],
@@ -120,7 +120,7 @@
         "en": "Closed View",
         "es": "Vista cerrada"
       },
-      "scad_file": "yantra4d_rugged_closed.scad",
+      "scad_file": "rugged_closed.scad",
       "parts": [
         "bottom",
         "top",
@@ -1775,7 +1775,7 @@
       "id": "iso",
       "label": {
         "en": "Isometric",
-        "es": "Isométrico"
+        "es": "Isom\u00e9trico"
       },
       "position": [
         200,

@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "sculpture",
-      "scad_file": "yantra4d_torus_knot.scad",
+      "scad_file": "torus_knot.scad",
       "label": {
         "es": "Escultura",
         "en": "Sculpture"
@@ -209,8 +209,8 @@
         "en": "Segments"
       },
       "tooltip": {
-        "es": "Suavidad de la curva — mas segmentos = mas suave pero mas lento",
-        "en": "Curve smoothness — more segments = smoother but slower"
+        "es": "Suavidad de la curva \u2014 mas segmentos = mas suave pero mas lento",
+        "en": "Curve smoothness \u2014 more segments = smoother but slower"
       },
       "visible_in_modes": [
         "sculpture"
@@ -284,8 +284,8 @@
     {
       "rule": "tube_radius < torus_radius * 0.3",
       "message": {
-        "es": "Tubo muy grueso para el radio del toro — puede auto-intersectar",
-        "en": "Tube too thick for torus radius — may self-intersect"
+        "es": "Tubo muy grueso para el radio del toro \u2014 puede auto-intersectar",
+        "en": "Tube too thick for torus radius \u2014 may self-intersect"
       },
       "severity": "error",
       "applies_to": [

@@ -19,7 +19,7 @@
   "modes": [
     {
       "id": "vase",
-      "scad_file": "yantra4d_superformula.scad",
+      "scad_file": "superformula.scad",
       "label": {
         "es": "Jarron",
         "en": "Vase"
@@ -179,8 +179,8 @@
         "en": "N1"
       },
       "tooltip": {
-        "es": "Parametro N1 de la superformula — controla la curvatura",
-        "en": "Superformula N1 parameter — controls curvature"
+        "es": "Parametro N1 de la superformula \u2014 controla la curvatura",
+        "en": "Superformula N1 parameter \u2014 controls curvature"
       },
       "visible_in_modes": [
         "vase"

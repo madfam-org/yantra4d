@@ -5,8 +5,8 @@
     "name": "Glia Diagnostic Tools",
     "version": "1.0.0",
     "description": {
-      "en": "Open source stethoscope and otoscope medical hardware by the Glia Project",
-      "es": "Hardware médico de código abierto: estetoscopio y otoscopio del Proyecto Glia"
+      "en": "Open source stethoscope and otoscope medical hardware by the Glia Project\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Hardware m\u00e9dico de c\u00f3digo abierto: estetoscopio y otoscopio del Proyecto Glia\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "authors": [
       "Glia Project",
@@ -78,7 +78,7 @@
       "id": "specula",
       "label": {
         "en": "Specula",
-        "es": "Espéculo"
+        "es": "Esp\u00e9culo"
       },
       "render_mode": 2,
       "default_color": "#d1d5db"
@@ -94,11 +94,11 @@
       "step": 1,
       "label": {
         "en": "Diaphragm Diameter (mm)",
-        "es": "Diámetro del Diafragma (mm)"
+        "es": "Di\u00e1metro del Diafragma (mm)"
       },
       "tooltip": {
         "en": "Diameter of the stethoscope diaphragm",
-        "es": "Diámetro del diafragma del estetoscopio"
+        "es": "Di\u00e1metro del diafragma del estetoscopio"
       },
       "visible_in_modes": [
         "stethoscope"
@@ -114,11 +114,11 @@
       "step": 0.5,
       "label": {
         "en": "Speculum Tip Diameter (mm)",
-        "es": "Diámetro de Punta del Espéculo (mm)"
+        "es": "Di\u00e1metro de Punta del Esp\u00e9culo (mm)"
       },
       "tooltip": {
         "en": "Tip diameter of the otoscope speculum (2.5, 3, 4, or 5 mm)",
-        "es": "Diámetro de punta del espéculo del otoscopio (2.5, 3, 4 o 5 mm)"
+        "es": "Di\u00e1metro de punta del esp\u00e9culo del otoscopio (2.5, 3, 4 o 5 mm)"
       },
       "visible_in_modes": [
         "otoscope"

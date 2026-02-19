@@ -2,7 +2,11 @@
 
 Parametric mounting clip for TS35 DIN rails — industrial automation & electronics mounting
 
-*Clip de montaje paramétrico para rieles DIN TS35 — automatización industrial y montaje de electrónica*
+Official Visualizer and Configurator: Yantra4D
+
+*Clip de montaje paramétrico para rieles DIN TS35 — automatización industrial y montaje de electrónica
+
+Visualizador y configurador oficial: Yantra4D*
 
 **Version**: 1.0.0  
 **Slug**: `din-rail-clip`

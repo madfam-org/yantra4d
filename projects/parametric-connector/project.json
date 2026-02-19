@@ -4,8 +4,8 @@
     "slug": "parametric-connector",
     "version": "1.0.0",
     "description": {
-      "en": "Universal connector system for PVC, Bamboo, and Wood Dowels",
-      "es": "Sistema de conectores universales para PVC, Bambú y Espigas de Madera"
+      "en": "Universal connector system for PVC, Bamboo, and Wood Dowels\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sistema de conectores universales para PVC, Bamb\u00fa y Espigas de Madera\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/parametric-connector.png",
     "tags": [
@@ -29,7 +29,7 @@
       "scad_file": "connector.scad",
       "label": {
         "en": "Pipe Connector",
-        "es": "Conector de Tubería"
+        "es": "Conector de Tuber\u00eda"
       },
       "parts": [
         "connector_body"
@@ -78,7 +78,7 @@
       "id": "furniture_corner",
       "label": {
         "en": "Furniture 3-Way Corner (1\")",
-        "es": "Esquina de Mueble 3 Vías (1\")"
+        "es": "Esquina de Mueble 3 V\u00edas (1\")"
       },
       "values": {
         "pipe_od_mm": 33.4,
@@ -96,11 +96,11 @@
       "step": 0.1,
       "label": {
         "en": "Pipe OD (mm)",
-        "es": "OD Tubería (mm)"
+        "es": "OD Tuber\u00eda (mm)"
       },
       "tooltip": {
         "en": "Outer diameter of the pipe/dowel",
-        "es": "Diámetro exterior del tubo/espiga"
+        "es": "Di\u00e1metro exterior del tubo/espiga"
       },
       "visible_in_modes": [
         "Standard"
@@ -116,49 +116,49 @@
           "value": "elbow",
           "label": {
             "en": "Elbow (2-way)",
-            "es": "Codo (2 vías)"
+            "es": "Codo (2 v\u00edas)"
           }
         },
         {
           "value": "tee",
           "label": {
             "en": "Tee (3-way flat)",
-            "es": "Tee (3 vías plano)"
+            "es": "Tee (3 v\u00edas plano)"
           }
         },
         {
           "value": "cross",
           "label": {
             "en": "Cross (4-way flat)",
-            "es": "Cruz (4 vías plano)"
+            "es": "Cruz (4 v\u00edas plano)"
           }
         },
         {
           "value": "3-way-corner",
           "label": {
             "en": "Corner (3-way)",
-            "es": "Esquina (3 vías)"
+            "es": "Esquina (3 v\u00edas)"
           }
         },
         {
           "value": "4-way-corner",
           "label": {
             "en": "Corner (4-way)",
-            "es": "Esquina (4 vías)"
+            "es": "Esquina (4 v\u00edas)"
           }
         },
         {
           "value": "5-way",
           "label": {
             "en": "5-Way Center",
-            "es": "Centro 5 Vías"
+            "es": "Centro 5 V\u00edas"
           }
         },
         {
           "value": "6-way",
           "label": {
             "en": "6-Way Hub",
-            "es": "Hub 6 Vías"
+            "es": "Hub 6 V\u00edas"
           }
         }
       ],
@@ -196,7 +196,7 @@
       "step": 1,
       "label": {
         "en": "Insertion Depth (mm)",
-        "es": "Profundidad de Inserción (mm)"
+        "es": "Profundidad de Inserci\u00f3n (mm)"
       },
       "visible_in_modes": [
         "Standard"
@@ -226,14 +226,14 @@
       "id": "dimensions",
       "label": {
         "en": "Pipe Size",
-        "es": "Tamaño de Tubería"
+        "es": "Tama\u00f1o de Tuber\u00eda"
       }
     },
     {
       "id": "geometry",
       "label": {
         "en": "Topology",
-        "es": "Topología"
+        "es": "Topolog\u00eda"
       }
     },
     {

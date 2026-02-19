@@ -11,26 +11,26 @@ Yet Another Parametric Projectbox — PCB enclosure with snap-fit lid
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `` | Base | `yantra4d_yapp_base.scad` | base |
-| `` | Lid | `yantra4d_yapp_lid.scad` | lid |
+| `base` | Base | `yapp_base.scad` | base |
+| `lid` | Lid | `yapp_lid.scad` | lid |
 
 ## Parameters
 
 | Name | Type | Default | Range | Description |
 |---|---|---|---|---|
-| `` | slider | 80 | 20–200 | Length of the PCB board |
-| `` | slider | 50 | 15–150 | Width of the PCB board |
-| `` | slider | 1.6 | 0.8–3.2 (step 0.1) | Thickness of the PCB |
-| `` | slider | 3 | 1–10 (step 0.5) | Height of PCB standoffs from floor |
-| `` | slider | 2 | 1.2–4 (step 0.2) | Enclosure wall thickness |
-| `` | slider | 25 | 10–60 | Height of base enclosure walls |
-| `` | slider | 15 | 5–40 | Height of lid walls |
-| `` | slider | 3 | 0–8 (step 0.5) | Corner rounding radius |
-| `` | slider | 2 | 0–10 (step 0.5) | Extra space in front of PCB |
-| `` | slider | 2 | 0–10 (step 0.5) | Extra space behind PCB |
-| `` | slider | 2 | 0–10 (step 0.5) | Extra space left of PCB |
-| `` | slider | 2 | 0–10 (step 0.5) | Extra space right of PCB |
-| `` | slider | 0 | 0–64 (step 8) | Circle smoothness (0=auto) |
+| `pcbLength` | slider | 80 | 20–200 | Length of the PCB board |
+| `pcbWidth` | slider | 50 | 15–150 | Width of the PCB board |
+| `pcbThickness` | slider | 1.6 | 0.8–3.2 (step 0.1) | Thickness of the PCB |
+| `standoffHeight` | slider | 3 | 1–10 (step 0.5) | Height of PCB standoffs from floor |
+| `wallThickness` | slider | 2 | 1.2–4 (step 0.2) | Enclosure wall thickness |
+| `baseWallHeight` | slider | 25 | 10–60 | Height of base enclosure walls |
+| `lidWallHeight` | slider | 15 | 5–40 | Height of lid walls |
+| `roundRadius` | slider | 3 | 0–8 (step 0.5) | Corner rounding radius |
+| `paddingFront` | slider | 2 | 0–10 (step 0.5) | Extra space in front of PCB |
+| `paddingBack` | slider | 2 | 0–10 (step 0.5) | Extra space behind PCB |
+| `paddingLeft` | slider | 2 | 0–10 (step 0.5) | Extra space left of PCB |
+| `paddingRight` | slider | 2 | 0–10 (step 0.5) | Extra space right of PCB |
+| `fn` | slider | 0 | 0–64 (step 8) | Circle smoothness (0=auto) |
 
 ## Presets
 

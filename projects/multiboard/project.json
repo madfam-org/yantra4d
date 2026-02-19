@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": {
       "en": "Modular wall-mounted storage system with hexagonal peg pattern",
-      "es": "Sistema modular de almacenamiento de pared con patrón de pines hexagonales"
+      "es": "Sistema modular de almacenamiento de pared con patr\u00f3n de pines hexagonales"
     },
     "thumbnail": "/projects/multiboard.webp",
     "tags": [
@@ -14,12 +14,13 @@
       "organization",
       "modular"
     ],
-    "difficulty": "intermediate"
+    "difficulty": "intermediate",
+    "commons_license": "CERN-OHL-W-2.0"
   },
   "modes": [
     {
       "id": "tile",
-      "scad_file": "yantra4d_tile.scad",
+      "scad_file": "tile.scad",
       "label": {
         "en": "Tile",
         "es": "Baldosa"
@@ -53,7 +54,7 @@
       "id": "small_panel",
       "label": {
         "en": "Small Panel (4x4)",
-        "es": "Panel Pequeño (4x4)"
+        "es": "Panel Peque\u00f1o (4x4)"
       },
       "values": {
         "x_cells": 4,
@@ -97,7 +98,7 @@
       },
       "tooltip": {
         "en": "Number of cells along the X axis",
-        "es": "Número de celdas en el eje X"
+        "es": "N\u00famero de celdas en el eje X"
       },
       "group": "grid",
       "visible_in_modes": [
@@ -117,7 +118,7 @@
       },
       "tooltip": {
         "en": "Number of cells along the Y axis",
-        "es": "Número de celdas en el eje Y"
+        "es": "N\u00famero de celdas en el eje Y"
       },
       "group": "grid",
       "visible_in_modes": [
@@ -133,7 +134,7 @@
       "step": 1,
       "label": {
         "en": "Cell Size (mm)",
-        "es": "Tamaño de Celda (mm)"
+        "es": "Tama\u00f1o de Celda (mm)"
       },
       "tooltip": {
         "en": "Center-to-center distance between pegs",
@@ -175,11 +176,11 @@
       "step": 8,
       "label": {
         "en": "Resolution ($fn)",
-        "es": "Resolución ($fn)"
+        "es": "Resoluci\u00f3n ($fn)"
       },
       "tooltip": {
-        "en": "Circle resolution — 0 uses default (32). Higher = smoother but slower",
-        "es": "Resolución de círculos — 0 usa valor por defecto (32). Mayor = más suave pero más lento"
+        "en": "Circle resolution \u2014 0 uses default (32). Higher = smoother but slower",
+        "es": "Resoluci\u00f3n de c\u00edrculos \u2014 0 usa valor por defecto (32). Mayor = m\u00e1s suave pero m\u00e1s lento"
       },
       "group": "quality",
       "visible_in_modes": [
@@ -202,7 +203,7 @@
       "id": "iso",
       "label": {
         "en": "Isometric",
-        "es": "Isométrico"
+        "es": "Isom\u00e9trico"
       },
       "position": [
         120,
@@ -252,7 +253,7 @@
       "id": "grid",
       "label": {
         "en": "Grid",
-        "es": "Cuadrícula"
+        "es": "Cuadr\u00edcula"
       }
     },
     {

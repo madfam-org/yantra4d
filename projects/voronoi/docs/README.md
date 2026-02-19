@@ -11,9 +11,9 @@ Voronoi pattern generator for coasters, vases, and lampshades
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `coaster` | Coaster | `yantra4d_coaster.scad` | coaster |
-| `vase` | Vase | `yantra4d_vase.scad` | vase |
-| `lampshade` | Lampshade | `yantra4d_lampshade.scad` | lampshade |
+| `coaster` | Coaster | `coaster.scad` | coaster |
+| `vase` | Vase | `vase.scad` | vase |
+| `lampshade` | Lampshade | `lampshade.scad` | lampshade |
 
 ## Parameters
 

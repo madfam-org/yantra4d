@@ -4,8 +4,8 @@
     "slug": "yapp-box",
     "version": "1.0.0",
     "description": {
-      "en": "Yet Another Parametric Projectbox — PCB enclosure with snap-fit lid",
-      "es": "Caja paramétrica para proyectos — carcasa para PCB con tapa a presión"
+      "en": "Yet Another Parametric Projectbox \u2014 PCB enclosure with snap-fit lid",
+      "es": "Caja param\u00e9trica para proyectos \u2014 carcasa para PCB con tapa a presi\u00f3n"
     },
     "thumbnail": "/projects/yapp-box.webp",
     "tags": [
@@ -23,7 +23,7 @@
         "en": "Base",
         "es": "Base"
       },
-      "scad_file": "yantra4d_yapp_base.scad",
+      "scad_file": "yapp_base.scad",
       "parts": [
         "base"
       ],
@@ -35,7 +35,7 @@
         "en": "Lid",
         "es": "Tapa"
       },
-      "scad_file": "yantra4d_yapp_lid.scad",
+      "scad_file": "yapp_lid.scad",
       "parts": [
         "lid"
       ],
@@ -260,7 +260,7 @@
       },
       "tooltip": {
         "en": "Extra space behind PCB",
-        "es": "Espacio extra detrás del PCB"
+        "es": "Espacio extra detr\u00e1s del PCB"
       },
       "type": "slider",
       "default": 2,
@@ -322,11 +322,11 @@
       "id": "fn",
       "label": {
         "en": "Resolution ($fn)",
-        "es": "Resolución ($fn)"
+        "es": "Resoluci\u00f3n ($fn)"
       },
       "tooltip": {
         "en": "Circle smoothness (0=auto)",
-        "es": "Suavidad de círculos (0=auto)"
+        "es": "Suavidad de c\u00edrculos (0=auto)"
       },
       "type": "slider",
       "default": 0,
@@ -422,7 +422,7 @@
       "quantity_formula": "4",
       "conditional": {
         "en": "If using screw-mount lid option",
-        "es": "Si se usa opción de tapa atornillada"
+        "es": "Si se usa opci\u00f3n de tapa atornillada"
       }
     }
   ],
@@ -449,7 +449,7 @@
       "id": "iso",
       "label": {
         "en": "Isometric",
-        "es": "Isométrico"
+        "es": "Isom\u00e9trico"
       },
       "position": [
         80,

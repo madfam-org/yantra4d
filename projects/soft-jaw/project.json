@@ -4,8 +4,8 @@
     "slug": "soft-jaw",
     "version": "1.0.0",
     "description": {
-      "en": "Custom soft jaws for Kurt and machine vises — parametric gripping surfaces",
-      "es": "Mordazas blandas personalizadas para tornillos Kurt y de máquina — superficies de agarre paramétricas"
+      "en": "Custom soft jaws for Kurt and machine vises \u2014 parametric gripping surfaces\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Mordazas blandas personalizadas para tornillos Kurt y de m\u00e1quina \u2014 superficies de agarre param\u00e9tricas\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/soft-jaw.webp",
     "tags": [
@@ -58,7 +58,7 @@
       "id": "kurt_dx6_prismatic",
       "label": {
         "en": "Kurt DX6 Prismatic (Round Stock)",
-        "es": "Kurt DX6 Prismático (Material Redondo)"
+        "es": "Kurt DX6 Prism\u00e1tico (Material Redondo)"
       },
       "values": {
         "vise_model": 0,
@@ -173,11 +173,11 @@
       "step": 1,
       "label": {
         "en": "Face Pattern",
-        "es": "Patrón de Cara"
+        "es": "Patr\u00f3n de Cara"
       },
       "tooltip": {
         "en": "0=smooth, 1=prismatic (V-groove), 2=grid (knurled), 3=step (parallels)",
-        "es": "0=liso, 1=prismático (ranura en V), 2=rejilla (moleteado), 3=escalón (paralelas)"
+        "es": "0=liso, 1=prism\u00e1tico (ranura en V), 2=rejilla (moleteado), 3=escal\u00f3n (paralelas)"
       },
       "visible_in_modes": [
         "Standard"
@@ -238,7 +238,7 @@
       "id": "features",
       "label": {
         "en": "Features",
-        "es": "Características"
+        "es": "Caracter\u00edsticas"
       }
     },
     {
@@ -273,7 +273,7 @@
         "id": "workholding_face",
         "label": {
           "en": "Workholding Surface",
-          "es": "Superficie de Sujeción"
+          "es": "Superficie de Sujeci\u00f3n"
         },
         "geometry_type": "surface",
         "standard": "internal",
@@ -289,7 +289,7 @@
     },
     "societal_benefit": {
       "en": "Empowers local manufacturing shops to rapidly tool up for new jobs without waiting for custom fixture delivery.",
-      "es": "Empodera a talleres de manufactura locales para equiparse rápidamente para nuevos trabajos sin esperar la entrega de accesorios personalizados."
+      "es": "Empodera a talleres de manufactura locales para equiparse r\u00e1pidamente para nuevos trabajos sin esperar la entrega de accesorios personalizados."
     },
     "commons_license": "CERN-OHL-S-2.0",
     "bosl2_modules_used": [

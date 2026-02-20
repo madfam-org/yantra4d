@@ -1,0 +1,137 @@
+{
+  "project": {
+    "name": "SCARA Robotics",
+    "slug": "scara-robotics",
+    "version": "1.0.0",
+    "description": {
+      "en": "Precision Strain Wave Gear (Harmonic Drive) for SCADA-controlled robotic arm joints. High-torque reduction in a compact form factor.",
+      "es": "Engranaje de onda de tensi\u00f3n de precisi\u00f3n (Harmonic Drive) para articulaciones de brazos rob\u00f3ticos controlados por SCADA."
+    },
+    "thumbnail": "/projects/scada-robotics.webp",
+    "tags": [
+      "robotics",
+      "industrial",
+      "scada",
+      "gear",
+      "hyperobject",
+      "precision"
+    ],
+    "difficulty": "advanced",
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "robotics",
+      "cdg_interface": "nema17_mount"
+    }
+  },
+  "modes": [
+    {
+      "id": "Standard",
+      "scad_file": "robot.scad",
+      "cq_file": "robot.py",
+      "label": {
+        "en": "Full Assembly",
+        "es": "Ensamblaje Completo"
+      },
+      "parts": [
+        "wave_generator",
+        "flexspline",
+        "circular_spline"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "constant"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "wave_generator",
+      "render_mode": 1,
+      "label": {
+        "en": "Wave Generator",
+        "es": "Generador de Ondas"
+      },
+      "default_color": "#4a90e2"
+    },
+    {
+      "id": "flexspline",
+      "render_mode": 2,
+      "label": {
+        "en": "Flexspline",
+        "es": "Flexspline"
+      },
+      "default_color": "#e24a4a"
+    },
+    {
+      "id": "circular_spline",
+      "render_mode": 3,
+      "label": {
+        "en": "Circular Spline",
+        "es": "Spline Circular"
+      },
+      "default_color": "#2d2d2d"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "num_teeth",
+      "type": "slider",
+      "default": 100,
+      "min": 40,
+      "max": 200,
+      "step": 2,
+      "label": {
+        "en": "Number of Teeth",
+        "es": "N\u00famero de Dientes"
+      },
+      "group": "gear_spec"
+    },
+    {
+      "id": "module",
+      "type": "slider",
+      "default": 0.5,
+      "min": 0.2,
+      "max": 1.5,
+      "step": 0.1,
+      "label": {
+        "en": "Gear Module",
+        "es": "M\u00f3dulo de Engranaje"
+      },
+      "group": "gear_spec"
+    },
+    {
+      "id": "bore_diameter",
+      "type": "slider",
+      "default": 5,
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "label": {
+        "en": "Input Bore (mm)",
+        "es": "Di\u00e1metro de Eje (mm)"
+      },
+      "group": "dimensions"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "gear_spec",
+      "label": {
+        "en": "Gear Specifications",
+        "es": "Especificaciones de Engranaje"
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Dimensions",
+        "es": "Dimensiones"
+      }
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "step",
+    "3mf"
+  ]
+}

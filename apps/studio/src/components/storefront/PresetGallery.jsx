@@ -12,11 +12,11 @@ import { useManifest } from '../../contexts/ManifestProvider'
  *   activePreset — id of the currently active preset (for highlight)
  */
 export default function PresetGallery({ presets = [], currentMode, onSelect, activePreset }) {
-    const { language, t } = useLanguage()
+    const { t } = useLanguage()
     const { getLabel } = useManifest()
 
     const visiblePresets = presets.filter(p =>
-        !p.modes || p.modes.includes(currentMode)
+        !p.visible_in_modes || p.visible_in_modes.includes(currentMode)
     )
 
     if (visiblePresets.length === 0) return null

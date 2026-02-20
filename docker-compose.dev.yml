@@ -1,0 +1,49 @@
+services:
+  backend:
+    environment:
+      - FLASK_DEBUG=true
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./projects:/app/projects
+      - ./packages:/app/packages
+    command: flask run --host=0.0.0.0 --port=5000
+
+  studio:
+    build: null
+    image: node:20-alpine
+    working_dir: /app/apps/studio
+    command: sh -c "npm ci --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - studio_node_modules:/app/apps/studio/node_modules
+    environment:
+      - VITE_API_BASE=${VITE_API_BASE:-http://localhost:5000}
+
+  landing:
+    build: null
+    image: node:20-alpine
+    working_dir: /app/apps/landing
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      - landing_node_modules:/app/apps/landing/node_modules
+
+  admin:
+    build: null
+    image: node:20-alpine
+    working_dir: /app/apps/admin
+    command: sh -c "npm ci --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - admin_node_modules:/app/apps/admin/node_modules
+
+volumes:
+  studio_node_modules:
+  landing_node_modules:
+  admin_node_modules:

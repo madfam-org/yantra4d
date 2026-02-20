@@ -1,6 +1,6 @@
 import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback, useRef } from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
-import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, useHelper } from '@react-three/drei'
+import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { BoxHelper } from 'three'
 import { useLanguage } from "../contexts/LanguageProvider"
@@ -68,14 +68,87 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     )
 })
 
-const PartsGroup = ({ boundingBox, children }) => {
+import { Box3, Vector3 } from 'three'
+import { Html } from '@react-three/drei'
+
+const BoundingBoxHelper = ({ boundingBox, children }) => {
     const groupRef = useRef()
-    useHelper(boundingBox && groupRef, BoxHelper, 'cyan')
-    return <group ref={groupRef}>{children}</group>
+    const [box, setBox] = useState(null)
+    const [dims, setDims] = useState(null)
+
+    useEffect(() => {
+        if (!boundingBox || !groupRef.current) {
+            setBox(null) // eslint-disable-line react-hooks/set-state-in-effect
+            setDims(null)  
+            return
+        }
+
+        // Delay slightly to let models mount and position
+        const timer = setTimeout(() => {
+            if (groupRef.current) {
+                const b = new Box3().setFromObject(groupRef.current)
+                if (!b.isEmpty()) {
+                    setBox(b)
+                    const size = new Vector3()
+                    b.getSize(size)
+                    setDims({
+                        w: size.x.toFixed(1),
+                        h: size.z.toFixed(1), // Z up
+                        d: size.y.toFixed(1)
+                    })
+                }
+            }
+        }, 100)
+        return () => clearTimeout(timer)
+    }, [boundingBox, children])
+
+    return (
+        <group ref={groupRef}>
+            {children}
+            {box && dims && (
+                <>
+                    <box3Helper args={[box, 0x06b6d4]} />
+                    {/* Width label (X axis) - bottom front edge */}
+                    <Html
+                        position={[box.min.x + (box.max.x - box.min.x) / 2, box.min.y, box.min.z]}
+                        center
+                        className="pointer-events-none select-none"
+                    >
+                        <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
+                            {dims.w}mm
+                        </div>
+                    </Html>
+                    {/* Depth label (Y axis) - bottom right edge */}
+                    <Html
+                        position={[box.max.x, box.min.y + (box.max.y - box.min.y) / 2, box.min.z]}
+                        center
+                        className="pointer-events-none select-none"
+                    >
+                        <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
+                            {dims.d}mm
+                        </div>
+                    </Html>
+                    {/* Height label (Z axis) - back left edge */}
+                    <Html
+                        position={[box.min.x, box.max.y, box.min.z + (box.max.z - box.min.z) / 2]}
+                        center
+                        className="pointer-events-none select-none"
+                    >
+                        <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
+                            {dims.h}mm
+                        </div>
+                    </Html>
+                </>
+            )}
+        </group>
+    )
 }
 
 const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [] }, ref) => {
     const geometriesRef = React.useRef({})
+    const prevCenterRef = React.useRef(null)
+    const prevMaxDimRef = React.useRef(null)
+    const sceneRef = React.useRef()
     const [centerOfMass, setCenterOfMass] = useState([0, 0, 0])
 
     const handleGeometry = useCallback((partType, geometry) => {
@@ -110,16 +183,45 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         }
 
         if (totalVolume > 0) {
-            setCenterOfMass([
+            const newCenter = [
                 weightedCenterSum.x / totalVolume,
                 weightedCenterSum.y / totalVolume,
                 weightedCenterSum.z / totalVolume
-            ])
-            console.log('[Viewer] New CenterOfMass:', [
-                weightedCenterSum.x / totalVolume,
-                weightedCenterSum.y / totalVolume,
-                weightedCenterSum.z / totalVolume
-            ])
+            ]
+            setCenterOfMass(newCenter)
+            console.log('[Viewer] New CenterOfMass:', newCenter)
+
+            if (mergedBox) {
+                const maxDim = Math.max(mergedBox.width, mergedBox.depth, mergedBox.height)
+
+                let shouldAnimate = false
+                if (!prevCenterRef.current || !prevMaxDimRef.current) {
+                    shouldAnimate = true
+                } else {
+                    const dist = Math.hypot(
+                        newCenter[0] - prevCenterRef.current[0],
+                        newCenter[1] - prevCenterRef.current[1],
+                        newCenter[2] - prevCenterRef.current[2]
+                    )
+                    const scaleDiff = Math.abs(maxDim - prevMaxDimRef.current)
+                    if (dist > 1.0 || scaleDiff > 1.0) {
+                        shouldAnimate = true
+                    }
+                }
+
+                if (shouldAnimate) {
+                    const offset = maxDim * 1.5
+                    const newPos = [
+                        newCenter[0] + offset,
+                        newCenter[1] + offset,
+                        newCenter[2] + offset
+                    ]
+                    sceneRef.current?.animateTo(newPos, newCenter, 0.5)
+                }
+
+                prevCenterRef.current = newCenter
+                prevMaxDimRef.current = maxDim
+            }
         }
 
         onGeometryStats?.({ volumeMm3: totalVolume, boundingBox: mergedBox })
@@ -153,7 +255,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     useEffect(() => {
         if (!animating) setAnimReady(false) // eslint-disable-line react-hooks/set-state-in-effect
     }, [animating, mode])
-    const sceneRef = React.useRef()
+
 
     const getHighlightMode = useCallback((partType) => {
         if (!assemblyActive) return 'normal'
@@ -258,7 +360,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     <Suspense fallback={null}>
                         {parts.length > 0 ? (
                             <>
-                                <PartsGroup boundingBox={boundingBox}>
+                                <BoundingBoxHelper boundingBox={boundingBox}>
                                     {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
                                     <group>
                                         {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (
@@ -285,7 +387,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                             />
                                         ))}
                                     </group>
-                                </PartsGroup>
+                                </BoundingBoxHelper>
                                 {/* Animated grid — mounted when animating, visible once ready */}
                                 {animating && mode === 'grid' && (
                                     <group visible={animReady}>

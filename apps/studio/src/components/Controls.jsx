@@ -137,16 +137,18 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
         Object.entries(p.values).every(([k, v]) => params[k] === v)
     )?.id || null
 
+    const visiblePresets = presets.filter(p => !p.visible_in_modes || p.visible_in_modes.includes(mode))
+
     return (
         <div className="flex flex-col gap-6">
-            {hasNoParameters && presets.length === 0 && partColors.length === 0 && (
+            {hasNoParameters && visiblePresets.length === 0 && partColors.length === 0 && (
                 <p className="text-sm text-muted-foreground px-4 py-6 text-center">No parameters available for this mode.</p>
             )}
 
             {/* Size Presets */}
-            {presets.length > 0 && (
+            {visiblePresets.length > 0 && (
                 <div className="flex gap-2">
-                    {presets.map(p => (
+                    {visiblePresets.map(p => (
                         <button
                             key={p.id}
                             type="button"

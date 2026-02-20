@@ -115,6 +115,10 @@ Add a `verification` section to `project.json`:
 
 - If the `verification` section is missing from `project.json`, the script uses built-in defaults with all checks enabled.
 - If the config JSON argument is omitted from the CLI, built-in defaults are used.
+- For Hyperobjects, the `scripts/verify_parity.py` logic is invoked periodically. It supports:
+    - **AABB Alignment**: Exact matching of bounding box extents.
+    - **Relative Volume Tolerance**: Allows up to 2% difference for complex kerneled meshes (CSG vs B-Rep).
+    - **Hausdorff Distance Proxy**: Allows up to 0.5mm divergence for tessellation noise.
 
 ## Web Interface Integration
 

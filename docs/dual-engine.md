@@ -27,7 +27,7 @@ Maintaining two parallel implementations of the same geometry provides several c
 For a project to reach **Hyperobject Status**, it must maintain strict parity between its OpenSCAD and CadQuery definitions.
 
 - **Verification**: The `scripts/verify_parity.py` CI script renders both engines and compares the resulting 3D volumes.
-- **Tolerance**: High-precision surface checks (Hausdorff distance) ensure that the two models never diverge by more than **0.001mm**.
+- **Tolerance**: Verified via sub-millimeter surface checks (Hausdorff distance) ensuring that the two models never diverge by more than **0.5mm** (standard mesh resolution) and maintaining **98% volume parity**.
 - **Requirement**: The Yantra4D manifest schema strictly enforces the presence of both `.scad` and `.py` source files for all Hyperobjects.
 
 ## Benefits for the Commons

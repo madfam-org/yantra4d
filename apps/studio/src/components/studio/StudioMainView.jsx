@@ -43,7 +43,7 @@ export default function StudioMainView() {
   const [estimateOpen, setEstimateOpen] = useState(true)
 
   // Only show the estimate toggle when there's something to show
-  const hasEstimate = printEstimate?.volumeMm3 > 0
+  const hasEstimate = (printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3 ?? 0) > 0
 
   return (
     <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
@@ -120,8 +120,9 @@ export default function StudioMainView() {
         {hasEstimate && estimateOpen && (
           <div className="shrink-0 w-52 bg-card border-l border-border overflow-y-auto">
             <PrintEstimateOverlay
-              volumeMm3={printEstimate?.volumeMm3}
-              boundingBox={printEstimate?.boundingBox}
+              volumeMm3={printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3}
+              boundingBox={printEstimate?.total?.boundingBox ?? printEstimate?.boundingBox}
+              perPartData={printEstimate?.parts}
               inline
             />
           </div>

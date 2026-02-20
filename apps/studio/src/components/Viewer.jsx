@@ -15,14 +15,14 @@ import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../lib/pr
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
 
-const Model = ({ url, color, wireframe, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
+const Model = ({ url, partType, color, wireframe, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
     const geom = useLoader(STLLoader, url)
     useEffect(() => {
-        if (geom && onGeometry) onGeometry(geom)
+        if (geom && onGeometry) onGeometry(partType, geom)
         return () => {
-            if (onGeometryRemove) onGeometryRemove()
+            if (onGeometryRemove) onGeometryRemove(partType)
         }
-    }, [geom, onGeometry, onGeometryRemove])
+    }, [geom, partType, onGeometry, onGeometryRemove])
 
     // highlightMode: 'normal' | 'highlight' | 'ghost' | 'hidden'
     if (highlightMode === 'hidden') return null
@@ -373,11 +373,13 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                             <Model
                                                 key={part.type}
                                                 url={part.url}
+                                                partType={part.type}
                                                 color={colors[part.type] || defaultColor}
                                                 wireframe={wireframe}
-                                                onGeometry={(geom) => handleGeometry(part.type, geom)}
-                                                onGeometryRemove={() => handleGeometryRemove(part.type)}
+                                                onGeometry={handleGeometry}
+                                                onGeometryRemove={handleGeometryRemove}
                                                 highlightMode={getHighlightMode(part.type)}
+                                                isDark={isDark}
                                             />
                                         ))}
                                     </group>
@@ -387,11 +389,13 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                             <Model
                                                 key={part.type}
                                                 url={part.url}
+                                                partType={part.type}
                                                 color={colors[part.type] || defaultColor}
                                                 wireframe={wireframe}
-                                                onGeometry={(geom) => handleGeometry(part.type, geom)}
-                                                onGeometryRemove={() => handleGeometryRemove(part.type)}
+                                                onGeometry={handleGeometry}
+                                                onGeometryRemove={handleGeometryRemove}
                                                 highlightMode={getHighlightMode(part.type)}
+                                                isDark={isDark}
                                             />
                                         ))}
                                     </group>

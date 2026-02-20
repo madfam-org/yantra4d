@@ -54,8 +54,15 @@ function SidebarContent() {
       <Tabs value={mode} onValueChange={setMode} className="w-full relative z-10">
         <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
           {manifest.modes.map(m => (
-            <TabsTrigger key={m.id} value={m.id} className="min-h-[44px]">
-              {getLabel(m, 'label', language)}
+            <TabsTrigger key={m.id} value={m.id} className="min-h-[44px] whitespace-normal break-words leading-tight flex items-center justify-center gap-2 px-1">
+              {m.svg ? (
+                <>
+                  <span className="md:hidden flex items-center justify-center" dangerouslySetInnerHTML={{ __html: m.svg }} />
+                  <span className="hidden md:inline-block">{getLabel(m, 'label', language)}</span>
+                </>
+              ) : (
+                getLabel(m, 'label', language)
+              )}
             </TabsTrigger>
           ))}
         </TabsList>

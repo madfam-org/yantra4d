@@ -1,8 +1,35 @@
-"""API contract tests — validate response shapes for key endpoints."""
 import json
-
+from pathlib import Path
+import yaml
 import pytest
+from openapi_schema_validator import validate
 
+# ---------------------------------------------------------------------------
+# OpenAPI Setup
+# ---------------------------------------------------------------------------
+
+OPENAPI_PATH = Path(__file__).parent.parent.parent.parent / "docs" / "openapi.yaml"
+with open(OPENAPI_PATH, "r") as f:
+    OPENAPI_SPEC = yaml.safe_load(f)
+
+def assert_matches_schema(data, schema_name):
+    """Validate a Python dict against a schema component in the OpenAPI spec."""
+    schema = OPENAPI_SPEC["components"]["schemas"][schema_name]
+    try:
+        validate(data, schema)
+    except Exception as e:
+        pytest.fail(f"OpenAPI validation failed: {e}")
+    
+    
+    # However we can just resolve refs manually or use the built-in RefResolver mapping the whole spec
+    # A cleaner approach using the core jsonschema validation against the sub-schema:
+    from jsonschema import RefResolver
+    resolver = RefResolver.from_schema(OPENAPI_SPEC)
+    
+    try:
+        validate(instance=data, schema=schema, resolver=resolver)
+    except Exception as e:
+        pytest.fail(f"JSON schema validation failed for {schema_name}: {e}")
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -96,6 +123,7 @@ class TestHealthContract:
     def test_returns_200(self, client):
         res = client.get("/api/health")
         assert res.status_code == 200
+        assert_matches_schema(res.get_json(), "HealthResponse")
 
     def test_has_required_fields(self, client):
         data = client.get("/api/health").get_json()
@@ -113,6 +141,10 @@ class TestProjectsListContract:
     def test_returns_200(self, client):
         res = client.get("/api/projects")
         assert res.status_code == 200
+        data = res.get_json()
+        assert isinstance(data, list)
+        for d in data:
+            assert_matches_schema(d, "ProjectSummary")
 
     def test_returns_array(self, client):
         data = client.get("/api/projects").get_json()
@@ -136,6 +168,7 @@ class TestManifestContract:
     def test_returns_200(self, client, sample_project):
         res = client.get(f"/api/projects/{sample_project}/manifest")
         assert res.status_code == 200
+        assert_matches_schema(res.get_json(), "Manifest")
 
     def test_has_top_level_keys(self, client, sample_project):
         data = client.get(f"/api/projects/{sample_project}/manifest").get_json()
@@ -192,6 +225,7 @@ class TestEstimateContract:
             json={"project": sample_project, "mode": "default", "scad_file": "main.scad", "parameters": {}},
         )
         assert res.status_code == 200
+        assert_matches_schema(res.get_json(), "EstimateResponse")
 
     def test_has_estimated_seconds(self, client, sample_project):
         data = client.post(

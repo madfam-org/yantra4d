@@ -28,7 +28,7 @@ export function ProjectList({ projects, t }) {
                 </TableHeader>
                 <TableBody>
                     {projects.map((project) => (
-                        <TableRow key={project.slug}>
+                        <TableRow key={project.slug} data-testid="project-row">
                             <TableCell>
                                 {project.thumbnail ? (
                                     <img

@@ -76,4 +76,39 @@ describe('ComparisonView', () => {
     fireEvent.click(removeBtn)
     expect(mockOnRemoveSlot).toHaveBeenCalledWith('1')
   })
+
+  it('calls onAddCurrent when slots exist but less than 4', () => {
+    const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }]
+    renderWithProviders(
+      <ComparisonView
+        slots={slots}
+        onAddCurrent={mockOnAddCurrent}
+      />
+    )
+    // There are 2 buttons, one is for "compare.add_current"
+    const addBtns = screen.getAllByRole('button', { name: /compare.add_current/i })
+    fireEvent.click(addBtns[0])
+    expect(mockOnAddCurrent).toHaveBeenCalledTimes(1)
+  })
+
+  it('toggles sync camera state', () => {
+    const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }]
+    renderWithProviders(
+      <ComparisonView
+        slots={slots}
+      />
+    )
+    const syncBtn = screen.getByText('compare.sync_camera')
+
+    // Default is true (bg-primary)
+    expect(syncBtn).toHaveClass('bg-primary')
+
+    // Click -> false
+    fireEvent.click(syncBtn)
+    expect(syncBtn).toHaveClass('bg-muted')
+
+    // Click -> true
+    fireEvent.click(syncBtn)
+    expect(syncBtn).toHaveClass('bg-primary')
+  })
 })

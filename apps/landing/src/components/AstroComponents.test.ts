@@ -42,9 +42,9 @@ describe('Header.astro', () => {
   it('has navigation with anchor links', () => {
     expect(html).toContain('<nav')
     expect(html).toContain('#gallery')
-    expect(html).toContain('#for-makers')
-    expect(html).toContain('#for-creators')
-    expect(html).toContain('#demo')
+    expect(html).toContain('/concepts/hyperobjects/')
+    expect(html).toContain('/concepts/commons/')
+    expect(html).toContain('/concepts/common-denominator/')
   })
 
   it('has mobile menu button with accessibility attributes', () => {
@@ -93,33 +93,17 @@ describe('Hero.astro', () => {
     expect(html).toContain('text-primary')
   })
 
-  it('has two CTA buttons', () => {
-    expect(html).toContain('#gallery')
+  it('has two CTA links', () => {
+    expect(html).toContain('#adventure')
     expect(html).toContain('studioUrl')
-    expect(html).toMatch(/Explorar|ctaPrimary/)
-    expect(html).toMatch(/Sube Tu|ctaSecondary/)
+    expect(html).toMatch(/Begin Your Journey|journeyBtn/)
+    expect(html).toMatch(/Launch Studio|studioBtn/)
   })
 
-  it('has hero preview image with responsive srcset', () => {
-    expect(html).toContain('hero-preview.webp')
-    expect(html).toContain('srcset=')
-    expect(html).toContain('640w')
-    expect(html).toContain('1280w')
-  })
-
-  it('has alt text on hero image', () => {
-    expect(html).toContain('alt="Yantra4D Studio')
-  })
-
-  it('has play button with aria-label', () => {
-    expect(html).toContain('id="hero-play-btn"')
-    expect(html).toContain('aria-label="Scroll to interactive demo"')
-  })
-
-  it('image has lazy loading and width/height for CLS prevention', () => {
-    expect(html).toContain('loading="lazy"')
-    expect(html).toContain('width="1280"')
-    expect(html).toContain('height="720"')
+  it('has scroll indicator animation', () => {
+    expect(html).toContain('animate-bounce')
+    expect(html).toContain('<svg')
+    expect(html).toContain('bottom-8')
   })
 })
 

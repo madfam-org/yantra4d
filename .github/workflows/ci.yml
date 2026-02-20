@@ -120,3 +120,11 @@ jobs:
       - run: pip install jsonschema
       - name: Validate Project Manifests
         run: python3 scripts/validate_manifests.py
+
+  ci-success:
+    runs-on: ubuntu-latest
+    needs: [studio, landing, backend, e2e, manifest-validation]
+    steps:
+      - name: All checks passed
+        run: echo "All CI checks passed successfully!"
+

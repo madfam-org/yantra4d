@@ -100,9 +100,24 @@ export function useProjectParams({ viewerRef }) {
         setGridPresetId(defaultGridPreset)
       }
     }
-    const presetId = activePresetId || presets[0]?.id
-    if (presetId) {
-      window.location.hash = buildHash(projectSlug, presetId, newMode)
+
+    // Ensure active preset is valid for the new mode
+    let validPresetId = activePresetId
+    const currentPreset = presets.find(p => p.id === activePresetId)
+
+    if (currentPreset && currentPreset.visible_in_modes && !currentPreset.visible_in_modes.includes(newMode)) {
+      // Preset is not valid for this mode, find the first one that is
+      const fallbackPreset = presets.find(p => !p.visible_in_modes || p.visible_in_modes.includes(newMode))
+      if (fallbackPreset) {
+        validPresetId = fallbackPreset.id
+        setActivePresetId(validPresetId)
+        setParams(prev => ({ ...prev, ...fallbackPreset.values }))
+      }
+    }
+
+    const presetIdToHash = validPresetId || presets[0]?.id
+    if (presetIdToHash) {
+      window.location.hash = buildHash(projectSlug, presetIdToHash, newMode)
     }
   }
 

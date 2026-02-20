@@ -93,12 +93,25 @@ export default function StudioMainView() {
           <div className="flex items-stretch">
             <button
               onClick={() => setEstimateOpen(o => !o)}
-              className="w-5 bg-muted hover:bg-accent border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-6 bg-muted hover:bg-accent border-l border-border flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-foreground transition-colors py-2"
               title={estimateOpen ? 'Collapse estimate' : 'Expand estimate'}
               aria-expanded={estimateOpen}
               aria-label="Toggle print estimate panel"
             >
-              {estimateOpen ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+              {estimateOpen
+                ? <ChevronRight className="h-3 w-3 shrink-0" />
+                : (
+                  <>
+                    <ChevronLeft className="h-3 w-3 shrink-0" />
+                    <span
+                      className="text-[9px] font-medium leading-none select-none"
+                      style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
+                    >
+                      Print Estimate
+                    </span>
+                  </>
+                )
+              }
             </button>
           </div>
         )}

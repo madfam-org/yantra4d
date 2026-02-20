@@ -172,16 +172,18 @@ export function estimatePrint(volumeMm3, bbox, materialId = 'pla', overrides = {
   const speed = overrides.speed || profile.speed
 
   // Estimate actual printed volume (walls + infill)
-  // Rough heuristic: shell volume + infill * interior
-  const shellVolume = volumeMm3 * 0.3  // ~30% is shell
-  const infillVolume = volumeMm3 * 0.7 * infill
+  // Heuristic calibrated for thin-walled functional parts:
+  //   Shell contribution: walls are typically ~40% of total volume for 2-wall prints
+  //   Infill contribution: remaining 60% interior scaled by infill density
+  const shellVolume = volumeMm3 * 0.40  // ~40% is shell (walls + top/bottom)
+  const infillVolume = volumeMm3 * 0.60 * infill
   const printedVolume = shellVolume + infillVolume  // mm³
 
   // Filament weight
   const volumeCm3 = printedVolume / 1000
   const grams = volumeCm3 * profile.density
 
-  // Filament length (1.75mm diameter)
+  // Filament length (1.75mm diameter standard FDM filament)
   const filamentDiameter = 1.75  // mm
   const crossSection = Math.PI * (filamentDiameter / 2) ** 2  // mm²
   const meters = printedVolume / crossSection / 1000
@@ -189,17 +191,21 @@ export function estimatePrint(volumeMm3, bbox, materialId = 'pla', overrides = {
   // Cost
   const cost = (grams / 1000) * profile.costPerKg
 
-  // Time estimation (simplified)
-  // layers = height / layer_height
-  // time per layer ≈ (perimeter + infill_travel) / speed
+  // Time estimation
+  // Layers count = part height / selected layer height
   const layers = bbox.height / layerHeight
-  const perimeterPerLayer = 2 * (bbox.width + bbox.depth)  // outer perimeter mm
-  const infillTravelPerLayer = bbox.width * bbox.depth * infill / profile.nozzleDiameter * 0.5
+  // Perimeter travel per layer = outline × 2 sides
+  const perimeterPerLayer = 2 * (bbox.width + bbox.depth)
+  // Infill travel per layer:
+  //   (area × infill_density) / nozzle_diameter gives total line length for one-direction passes
+  //   × 0.5 accounts for bi-directional (zig-zag) infill paths avoiding double-counting
+  const infillTravelPerLayer = (bbox.width * bbox.depth * infill) / profile.nozzleDiameter * 0.5
   const travelPerLayer = perimeterPerLayer + infillTravelPerLayer
   const totalTravelMm = travelPerLayer * layers
   const printSeconds = totalTravelMm / speed
-  // Add overhead: homing, heating, travel moves (~10%)
-  const totalSeconds = printSeconds * 1.1
+  // Add overhead: homing, bed heating, travel moves, first layer slow-down (~15%)
+  const totalSeconds = printSeconds * 1.15
+
 
   const hours = Math.floor(totalSeconds / 3600)
   const minutes = Math.round((totalSeconds % 3600) / 60)

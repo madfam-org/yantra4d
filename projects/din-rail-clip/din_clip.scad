@@ -11,6 +11,8 @@ RAIL_DEPTH = 7.5;
 LIP_THICKNESS = 1.0;
 
 module din_clip() {
+    bolt_d = (bolt_size == 0) ? 3.2 : ((bolt_size == 1) ? 4.2 : 5.2);
+    
     diff()
     cuboid([mount_width, RAIL_WIDTH + 10, 8], anchor=BOTTOM) {
         // DIN Rail Cutout
@@ -21,27 +23,26 @@ module din_clip() {
         
         // Locking Lip (Fixed Top)
         tag("keep")
-        attach(TOP+BACK)
+        position(TOP+BACK)
         down(2)
         prismoid([mount_width, 3], [mount_width, 1], h=3, anchor=TOP+BACK);
         
         // Spring Lip (Flexible Bottom)
         tag("keep")
-        attach(TOP+FWD)
+        position(TOP+FWD)
         down(2)
         prismoid([mount_width, 3], [mount_width, 1], h=3, anchor=TOP+FWD);
 
         // Mounting Holes
-        tag("remove")
-        bolt_d = (bolt_size == 0) ? 3.2 : (bolt_size == 1) ? 4.2 : 5.2;
-        
-        attach(TOP)
-        left(bolt_spacing/2)
-        cylinder(h=20, d=bolt_d, center=true, $fn=32);
-        
-        attach(TOP)
-        right(bolt_spacing/2)
-        cylinder(h=20, d=bolt_d, center=true, $fn=32);
+        tag("remove") {
+            attach(TOP)
+            left(bolt_spacing/2)
+            cylinder(h=20, d=bolt_d, center=true, $fn=32);
+            
+            attach(TOP)
+            right(bolt_spacing/2)
+            cylinder(h=20, d=bolt_d, center=true, $fn=32);
+        }
     }
 }
 

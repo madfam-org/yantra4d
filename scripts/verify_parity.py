@@ -37,7 +37,7 @@ def check_mesh_parity(mesh1_path, mesh2_path, tolerance=0.001):
     # 1. Bounding Box Extents
     extents_diff = np.max(np.abs(m1.extents - m2.extents))
     if extents_diff > tolerance:
-        return False, f"Bounding boxes differ by {extents_diff:.6f}mm"
+        return False, f"Bounding boxes differ by {extents_diff:.6f}mm (M1: {m1.extents}, M2: {m2.extents})"
 
     # 2. Volume
     if m1.is_watertight and m2.is_watertight:
@@ -115,14 +115,13 @@ def verify_project(project_dir: Path, tolerance: float = 0.001) -> bool:
 
         # 1. OpenSCAD
         cmd = build_openscad_command(
-            input_file=str(scad_path),
-            output_file=str(scad_out),
-            params={},
-            include_dirs=[str(project_dir.parent.parent / "libs")]
+            output_path=str(scad_out),
+            scad_path=str(scad_path),
+            params={}
         )
-        success, out, err = run_render(cmd)
+        success, out = run_render(cmd, scad_path=str(scad_path))
         if not success:
-            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: OpenSCAD render failed:\n{err}")
+            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: OpenSCAD render failed:\n{out}")
             all_passed = False
             continue
 

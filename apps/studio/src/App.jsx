@@ -135,10 +135,17 @@ function App() {
             </ErrorBoundary>
           </div>
         )}
-        {!editorOpen && <StudioSidebar />}
+        {/* φ split: Sidebar ≈ 38.2% | Main ≈ 61.8% */}
+        {!editorOpen && (
+          <div className="flex flex-col min-h-0 border-r border-border overflow-y-auto" style={{ flex: 1, minWidth: '280px', maxWidth: '420px' }}>
+            <StudioSidebar />
+          </div>
+        )}
 
         <ErrorBoundary t={t}>
-          <StudioMainView />
+          <div style={{ flex: 1.618, minWidth: 0 }} className="flex flex-col min-h-0">
+            <StudioMainView />
+          </div>
         </ErrorBoundary>
       </div>
 

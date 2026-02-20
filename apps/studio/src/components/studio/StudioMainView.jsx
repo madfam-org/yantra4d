@@ -47,8 +47,8 @@ export default function StudioMainView() {
 
   return (
     <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
-      {/* 3D Viewport */}
-      <div className="flex-1 relative min-h-0" aria-busy={loading}>
+      {/* 3D Viewport — φ dominant (≈61.8% of vertical space) */}
+      <div className="relative min-h-0" style={{ flex: 1.618 }} aria-busy={loading}>
         <Viewer
           ref={viewerRef}
           parts={parts}
@@ -74,13 +74,14 @@ export default function StudioMainView() {
         </div>
       </div>
 
-      {/* Bottom panel: logs + collapsible print estimate side panel */}
-      <div className="h-32 lg:h-48 flex shrink-0 border-t border-border">
+      {/* Bottom panel — φ subordinate (≈38.2% of vertical space) with min/max height guard */}
+      <div className="flex shrink-0 border-t border-border" style={{ flex: 1, minHeight: '120px', maxHeight: '280px' }}>
 
-        {/* Console logs */}
+        {/* Console logs — φ dominant within row (≈61.8% of row width) */}
         <div
           ref={consoleRef}
-          className="flex-1 bg-muted p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap min-w-0"
+          className="bg-muted p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap min-w-0"
+          style={{ flex: 1.618 }}
           role="log"
           aria-live="polite"
           aria-label="Render console"
@@ -116,9 +117,9 @@ export default function StudioMainView() {
           </div>
         )}
 
-        {/* Print Estimate inline panel */}
+        {/* Print Estimate inline panel — φ subordinate (≈38.2% of row width) with guard */}
         {hasEstimate && estimateOpen && (
-          <div className="shrink-0 w-52 bg-card border-l border-border overflow-y-auto">
+          <div className="shrink-0 bg-card border-l border-border overflow-y-auto" style={{ flex: 1, minWidth: '160px', maxWidth: '240px' }}>
             <PrintEstimateOverlay
               volumeMm3={printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3}
               boundingBox={printEstimate?.total?.boundingBox ?? printEstimate?.boundingBox}

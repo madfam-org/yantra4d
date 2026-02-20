@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Golden ratio layout constants — φ = (1+√5)/2 ≈ 1.618 */
+:root {
+    --phi: 1.618;
+    --phi-inv: 0.618;
+}
+
 @layer base {
     * {
         @apply border-border;

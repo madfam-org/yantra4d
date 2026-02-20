@@ -11,6 +11,8 @@ services:
   studio:
     build: null
     image: node:20-alpine
+    pull_policy: never
+    entrypoint: []
     working_dir: /app/apps/studio
     command: sh -c "npm ci --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
     ports:
@@ -24,6 +26,8 @@ services:
   landing:
     build: null
     image: node:20-alpine
+    pull_policy: never
+    entrypoint: []
     working_dir: /app/apps/landing
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     ports:
@@ -35,6 +39,8 @@ services:
   admin:
     build: null
     image: node:20-alpine
+    pull_policy: never
+    entrypoint: []
     working_dir: /app/apps/admin
     command: sh -c "npm ci --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
     ports:

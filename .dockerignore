@@ -1,6 +1,8 @@
 .git/
 node_modules/
-claudedocs/
+**/node_modules/
+apps/*/node_modules/
+packages/*/node_modules/
 docs/
 .DS_Store
 *.stl

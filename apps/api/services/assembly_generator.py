@@ -44,24 +44,39 @@ def _camera_for_anchor(anchor: str) -> list[float]:
 # Attachment graph builder
 # ---------------------------------------------------------------------------
 
-def _build_attachment_graph(analysis: dict) -> dict[str, list[dict]]:
+def _build_attachment_graph(analysis: dict, manifest_parts: list[dict]) -> dict[str, list[dict]]:
     """
-    Build {part_id: [{child, anchor, parent_anchor}]} from per-file attachment data.
+    Build {part_id: [{child_part_id, anchor, parent_anchor}]} from per-file attachment data.
 
-    Each file in the analysis is treated as a 'part'. Attachments within a file
-    describe how child geometry connects to the parent context.
+    Attempts to link the OpenSCAD module/filename to the manifest `part_id`.
     """
     graph: dict[str, list[dict]] = {}
 
+    # Create a list of all valid part_ids to fuzzy match against
+    valid_part_ids = [p["id"] for p in manifest_parts]
+
+    def _match_part(name: str) -> str:
+        # Exact match
+        if name in valid_part_ids:
+            return name
+        # Substring match (e.g. rugged_bottom -> bottom, or my_lid -> lid)
+        for pid in valid_part_ids:
+            if pid in name or name in pid:
+                return pid
+        return name
+
     for filename, file_data in analysis.get("files", {}).items():
-        part_id = filename.replace(".scad", "")
-        graph.setdefault(part_id, [])
+        base_name = filename.replace(".scad", "")
+        parent_part_id = _match_part(base_name)
+        graph.setdefault(parent_part_id, [])
 
         for att in file_data.get("attachments", []):
             child = att.get("child", "")
-            if child:
-                graph[part_id].append({
-                    "child": child,
+            child_module = att.get("child", "")
+            if child_module:
+                child_part_id = _match_part(child_module)
+                graph[parent_part_id].append({
+                    "child": child_part_id,
                     "anchor": att.get("anchor", "TOP"),
                     "parent_anchor": att.get("parent_anchor", "TOP"),
                 })
@@ -122,19 +137,19 @@ def generate_assembly_steps(
     Returns:
         List of assembly step dicts compatible with the manifest schema.
     """
-    graph = _build_attachment_graph(scad_analysis)
-    order = _topological_sort(graph)
-
     # Build a lookup: part_id → manifest part definition
-    parts_by_id = {p["id"]: p for p in manifest.get("parts", [])}
+    manifest_parts = manifest.get("parts", [])
+    parts_by_id = {p["id"]: p for p in manifest_parts}
+
+    graph = _build_attachment_graph(scad_analysis, manifest_parts)
+    order = _topological_sort(graph)
 
     steps: list[dict[str, Any]] = []
     visible_so_far: list[str] = []
 
     for i, part_id in enumerate(order, start=1):
         # Only include parts that exist in the manifest
-        if part_id not in parts_by_id and order:
-            # Try to match by prefix (e.g. "yantra4d_spur_gear" → "main")
+        if part_id not in parts_by_id:
             continue
 
         part_def = parts_by_id.get(part_id, {})

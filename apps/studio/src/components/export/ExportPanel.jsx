@@ -9,6 +9,8 @@ const EXPORT_FORMATS = [
   { id: 'stl', label: 'STL', ext: '.stl' },
   { id: '3mf', label: '3MF', ext: '.3mf' },
   { id: 'off', label: 'OFF', ext: '.off' },
+  { id: 'step', label: 'STEP', ext: '.step' },
+  { id: 'gltf', label: 'GLTF', ext: '.gltf' },
 ]
 
 export default function ExportPanel({ manifest: propManifest, parts, mode, onDownloadStl, onDownloadScad, onExportImage, onExportAllViews, exportFormat, onExportFormatChange }) {

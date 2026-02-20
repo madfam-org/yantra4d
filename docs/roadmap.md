@@ -185,11 +185,40 @@ Any project designated as a "Hyperobject" and part of the Commons must adhere to
 - `gears` — mechanical domain, `profile` interfaces
 - `motor-mount` — industrial domain, `bolt_pattern` interfaces
 
+*(Note: As of Feb 20, 2026, 12 out of 12 declared Hyperprojects have been fully audited and migrated to native Phase 3.5 BOSL2 and CERN-OHL strict architectures, achieving 100% compliance.)*
+
 **Why it matters**: Transforms parametric projects from isolated designs into interoperable components in a distributed manufacturing commons. CDG interfaces enable communities to build compatible ecosystems of printable objects.
 
 ---
 
-### 3.6 — Technical Health & Engineering
+### 3.6 — Dual-Engine Architecture & B-Rep Geometry (CadQuery)
+
+**Goal**: Expand Yantra4D's geometric engine to natively support CadQuery alongside the legacy OpenSCAD compiler.
+
+**Implementation path**:
+1. Abstract `apps/api/services/openscad.py` into a dynamic `RenderEngine` interface.
+2. Build a Python-native `cadquery_engine.py` pipeline to evaluate `.py` scripts supplied with manifest JSON params.
+3. Update the `project.json` schema to support `engine: "cadquery"`, falling back to `"openscad"`.
+4. Surface native STEP AP242 and GLTF export capabilities in the Studio UI specifically for CadQuery projects.
+
+**Why it matters**: OpenSCAD operates on discrete polygonal meshes. Moving complex parametric features (like fillets, chamfers, and threads) to CadQuery enables Boundary Representation (B-Rep) mathematical precision. This is critical for industrial standards, native robotics integration, and complex CNC paths.
+
+---
+
+### 3.7 — Hyperobject SDK Cartridges & Telemetry
+
+**Goal**: Transform `madfam-org` projects into swappable hardware SDK cartridges, bridging them into the 4th Dimension (Time & State).
+
+**Implementation path**:
+1. Update `OPENSCADPATH` and `PYTHONPATH` context globally so that all projects in `projects/` discover each other automatically as libraries (e.g. `import custom_msh`).
+2. Build a `tools/cartridge` bash CLI to cleanly slot GitHub submodules into the active ecosystem (`install`, `remove`, `sync`).
+3. Construct `mqtt_telemetry.py` to stream live external data architectures (IoT states, machine temperatures, operational cycles) directly into procedural CadQuery param loops.
+
+**Why it matters**: Cartridges eliminate copy/paste geometry. Teams can natively assemble structures from distinct hyperobjects. The MQTT Telemetry brings objects to life, rendering "Phased" models whose bounds physically react to real-time industrial data contexts.
+
+---
+
+### 3.8 — Technical Health & Engineering
 
 **Goal**: Address technical debt and optimize platform performance alongside feature development.
 
@@ -269,9 +298,11 @@ New SCAD projects to be designed and classified as Hyperobjects from the ground 
 | WASM fallback testing | **P1** | Medium | Small | ✅ Done |
 | Rate limiter → Redis | **P1** | Medium | Medium | ✅ Done |
 | Hyperobjects Phase 2 UI | **P1** | High | Medium | ✅ Done |
+| Hyperobjects Compliance Rollout | **P1** | High | Large | ✅ Done |
 | Storefront Mode | Phase 3 | High | Large | 🗓️ Planned |
-| Auto-Assembly (BOSL2) | Phase 3 | Medium | Medium | 🗓️ Planned |
+| Auto-Assembly (BOSL2) | Phase 3 | Medium | Medium | ✅ Done |
 | NopSCADlib Catalog Widget | Phase 3 | Medium | Medium | 🗓️ Planned |
 | MCAD → BOSL2 Gears | Phase 3 | Low | Small | 🗓️ Planned |
-| Hyperobjects Rollout (Phase 3) | Phase 3 | High | Medium | 🗓️ Planned |
+| Dual-Engine CadQuery (B-Rep) | Phase 3 | High | Large | ✅ Done |
+| SDK Cartridges & Telemetry | Phase 3 | High | Medium | ✅ Done |
 | **`framing-hyperobject` project** | **Phase 4** | High | Large | 🔬 Research done |

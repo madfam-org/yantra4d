@@ -65,7 +65,7 @@ def _mock_validate_params(monkeypatch):
 
 
 class TestRenderEndpoint:
-    @patch("routes.render.run_render")
+    @patch("routes.render.run_openscad_render")
     @patch("routes.render.build_openscad_command")
     @patch("routes.render.render_cache")
     def test_render_success(self, mock_cache, mock_cmd, mock_run, client, tmp_path, monkeypatch):
@@ -85,7 +85,7 @@ class TestRenderEndpoint:
         assert len(data["parts"]) == 1
         assert data["parts"][0]["type"] == "main"
 
-    @patch("routes.render.run_render")
+    @patch("routes.render.run_openscad_render")
     @patch("routes.render.build_openscad_command")
     @patch("routes.render.render_cache")
     def test_render_failure(self, mock_cache, mock_cmd, mock_run, client):
@@ -119,7 +119,7 @@ class TestRenderEndpoint:
         assert res.headers.get("X-Cache") == "HIT"
 
     def test_render_export_format_3mf(self, client):
-        with patch("routes.render.run_render", return_value=(True, "")), \
+        with patch("routes.render.run_openscad_render", return_value=(True, "")), \
              patch("routes.render.build_openscad_command", return_value=["cmd"]), \
              patch("routes.render.render_cache") as mc:
             mc.get.return_value = None
@@ -129,7 +129,7 @@ class TestRenderEndpoint:
             assert res.status_code == 200
 
     def test_render_invalid_export_format_falls_back(self, client):
-        with patch("routes.render.run_render", return_value=(True, "")), \
+        with patch("routes.render.run_openscad_render", return_value=(True, "")), \
              patch("routes.render.build_openscad_command", return_value=["cmd"]), \
              patch("routes.render.render_cache") as mc:
             mc.get.return_value = None
@@ -139,7 +139,7 @@ class TestRenderEndpoint:
             assert res.status_code == 200
 
     def test_render_rate_limit_headers(self, client):
-        with patch("routes.render.run_render", return_value=(True, "")), \
+        with patch("routes.render.run_openscad_render", return_value=(True, "")), \
              patch("routes.render.build_openscad_command", return_value=["cmd"]), \
              patch("routes.render.render_cache") as mc:
             mc.get.return_value = None
@@ -147,7 +147,7 @@ class TestRenderEndpoint:
             assert res.status_code == 200
             assert "X-RateLimit-Tier" in res.headers
 
-    @patch("routes.render.run_render")
+    @patch("routes.render.run_openscad_render")
     @patch("routes.render.build_openscad_command")
     @patch("routes.render.render_cache")
     def test_render_grid_multiple_parts(self, mock_cache, mock_cmd, mock_run, client):
@@ -170,7 +170,7 @@ class TestRenderStreamEndpoint:
         res = client.post("/api/render-stream", content_type="application/json")
         assert res.status_code == 400
 
-    @patch("routes.render.stream_render")
+    @patch("routes.render.stream_openscad_render")
     @patch("routes.render.build_openscad_command")
     @patch("routes.render.render_cache")
     def test_stream_returns_sse(self, mock_cache, mock_cmd, mock_stream, client):
@@ -187,16 +187,18 @@ class TestRenderStreamEndpoint:
 
 
 class TestCancelEndpoint:
-    @patch("routes.render.cancel_render", return_value=True)
-    def test_cancel_active(self, mock_cancel, client):
+    @patch("routes.render.cancel_openscad_render", return_value=True)
+    @patch("routes.render.cancel_cadquery_render", return_value=True)
+    def test_cancel_active(self, mock_cancel_cq, mock_cancel_scad, client):
         res = client.post("/api/render-cancel")
         assert res.status_code == 200
         data = res.get_json()
         assert data["cancelled"] is True
         assert data["status"] == "cancelled"
 
-    @patch("routes.render.cancel_render", return_value=False)
-    def test_cancel_no_active(self, mock_cancel, client):
+    @patch("routes.render.cancel_openscad_render", return_value=False)
+    @patch("routes.render.cancel_cadquery_render", return_value=False)
+    def test_cancel_no_active(self, mock_cancel_cq, mock_cancel_scad, client):
         res = client.post("/api/render-cancel")
         assert res.status_code == 200
         data = res.get_json()

@@ -13,12 +13,26 @@ from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
 from services.tier_service import resolve_tier, get_tier_limits
-from services.openscad import build_openscad_command, run_render, stream_render, cancel_render, validate_params
+from services.openscad import (
+    build_openscad_command, 
+    run_render as run_openscad_render, 
+    stream_render as stream_openscad_render, 
+    cancel_render as cancel_openscad_render, 
+    validate_params
+)
+from services.cadquery_engine import (
+    build_cadquery_command,
+    run_render as run_cadquery_render,
+    stream_render as stream_cadquery_render,
+    cancel_render as cancel_cadquery_render
+)
 from services.render_cache import render_cache
 from services.route_helpers import cleanup_old_stl_files, error_response, require_json_body
+from services.mqtt_telemetry import telemetry_service, telemetry_queue
 import rate_limits
+import queue
 
-ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off'}
+ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf'}
 
 logger = logging.getLogger(__name__)
 
@@ -205,10 +219,22 @@ def render_stl():
                 })
                 continue
 
-            render_mode = mode_map.get(part, 0)
-            cmd = build_openscad_command(output_path, scad_path, params, render_mode)
+            manifest = get_manifest(project_slug)
+            engine = manifest.engine
+            
+            # Inject continuous telemetry temporal state into static parameters
+            # using a conventional topic structure based on the project slug
+            project_topic = f"yantra4d/telemetry/projects/{project_slug}"
+            computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
 
-            success, stderr = run_render(cmd, scad_path=scad_path)
+            if engine == "cadquery":
+                cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
+                success, stderr = run_cadquery_render(cmd, scad_path=scad_path)
+            else:
+                render_mode = mode_map.get(part, 0)
+                cmd = build_openscad_command(output_path, scad_path, params, render_mode)
+                success, stderr = run_openscad_render(cmd, scad_path=scad_path)
+
             if not success:
                 return error_response(stderr)
 
@@ -298,10 +324,21 @@ def render_stl_stream():
             part_base = (i / num_parts) * 100
             part_weight = 100 / num_parts
 
-            render_mode = mode_map.get(part, 0)
-            cmd = build_openscad_command(output_path, scad_path, params, render_mode)
+            manifest = get_manifest(project_slug)
+            engine = manifest.engine
 
-            for event_data in stream_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path):
+            project_topic = f"yantra4d/telemetry/projects/{project_slug}"
+            computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
+
+            if engine == "cadquery":
+                cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
+                stream_gen = stream_cadquery_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
+            else:
+                render_mode = mode_map.get(part, 0)
+                cmd = build_openscad_command(output_path, scad_path, params, render_mode)
+                stream_gen = stream_openscad_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
+
+            for event_data in stream_gen:
                 yield f"data: {event_data}\n\n"
                 try:
                     event = json.loads(event_data)
@@ -319,6 +356,15 @@ def render_stl_stream():
                         "size_bytes": size_bytes
                     })
 
+            # Check if any live telemetry events occurred during this render tick to stream down
+            while not telemetry_queue.empty():
+                try:
+                    telemetry_event = telemetry_queue.get_nowait()
+                    if telemetry_event['topic'] == project_topic:
+                        yield f"data: {json.dumps({'event': 'telemetry_update', 'payload': telemetry_event['payload']})}\n\n"
+                except queue.Empty:
+                    break
+
         yield f"data: {json.dumps({'event': 'complete', 'parts': generated_parts, 'progress': 100})}\n\n"
 
     return Response(generate(), mimetype='text/event-stream')
@@ -328,7 +374,11 @@ def render_stl_stream():
 @optional_auth
 def cancel_render_endpoint():
     """Cancel the active render process."""
-    cancelled = cancel_render()
+    # Try cancelling both just in case
+    cancelled_scad = cancel_openscad_render()
+    cancelled_cq = cancel_cadquery_render()
+    cancelled = cancelled_scad or cancelled_cq
+
     return jsonify({
         "status": "cancelled" if cancelled else "no_active_render",
         "cancelled": cancelled

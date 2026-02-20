@@ -162,9 +162,13 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
  * Render parts via backend SSE stream.
  * Returns array of { type, url } for each part.
  */
-async function renderBackend(mode, params, onProgress, abortSignal, project) {
+async function renderBackend(mode, params, manifest, onProgress, abortSignal, project) {
   const payload = { ...params, mode }
   if (project) payload.project = project
+  
+  if (manifest && manifest.engine === 'cadquery') {
+    payload.export_format = 'gltf'
+  }
 
   const response = await apiFetch(`${API_BASE}/api/render-stream`, {
     method: 'POST',
@@ -238,7 +242,7 @@ async function renderBackend(mode, params, onProgress, abortSignal, project) {
 export async function renderParts(mode, params, manifest, { onProgress, abortSignal, project } = {}) {
   const currentMode = await detectMode()
   if (currentMode === 'backend') {
-    return renderBackend(mode, params, onProgress, abortSignal, project)
+    return renderBackend(mode, params, manifest, onProgress, abortSignal, project)
   } else {
     return renderWasm(mode, params, manifest, onProgress, abortSignal)
   }

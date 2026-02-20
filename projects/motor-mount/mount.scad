@@ -2,6 +2,8 @@
 // Parametric motor bracket for NEMA 17/23/34 stepper motors
 // Uses NopSCADlib dimensions for accurate motor hole patterns
 
+include <../../libs/BOSL2/std.scad>
+
 // --- Parameters (overridden by platform) ---
 nema_size = 17;
 wall_thickness = 4;
@@ -36,37 +38,34 @@ mount_hole_spacing = plate_size - 10;
 
 module motor_plate() {
     difference() {
-        // Base plate
-        translate([-plate_size/2, -plate_size/2, 0])
-            cube([plate_size, plate_size, base_thickness]);
+        // Base plate using BOSL2 cuboid
+        cuboid([plate_size, plate_size, base_thickness], anchor=BOT);
 
         // Center shaft hole
-        translate([0, 0, -1])
-            cylinder(d=shaft_hole_d + 1, h=base_thickness + 2, $fn=$fn);
+        cylinder(d=shaft_hole_d + 1, h=base_thickness + 2, anchor=CENTER, $fn=$fn);
 
         // Motor screw holes (4 corners)
         for (x = [-1, 1], y = [-1, 1])
-            translate([x * hole_spacing/2, y * hole_spacing/2, -1])
-                cylinder(d=screw_d + 0.3, h=base_thickness + 2, $fn=24);
+            translate([x * hole_spacing/2, y * hole_spacing/2, 0])
+                cylinder(d=screw_d + 0.3, h=base_thickness + 2, anchor=CENTER, $fn=24);
 
         // Mounting holes for attaching to surface
         for (x = [-1, 1], y = [-1, 1])
-            translate([x * mount_hole_spacing/2, y * mount_hole_spacing/2, -1])
-                cylinder(d=mount_hole_d, h=base_thickness + 2, $fn=24);
+            translate([x * mount_hole_spacing/2, y * mount_hole_spacing/2, 0])
+                cylinder(d=mount_hole_d, h=base_thickness + 2, anchor=CENTER, $fn=24);
     }
 }
 
 module l_bracket() {
     motor_plate();
 
-    // Vertical bracket wall
-    translate([-plate_size/2, -plate_size/2, 0])
+    // Vertical bracket wall using BOSL2 cuboid
+    translate([0, -plate_size/2 + wall_thickness/2, (bracket_height + base_thickness)/2])
         difference() {
-            cube([plate_size, wall_thickness, bracket_height + base_thickness]);
+            cuboid([plate_size, wall_thickness, bracket_height + base_thickness], anchor=CENTER);
             // Lightening holes
-            translate([plate_size/2, -1, bracket_height/2 + base_thickness])
-                rotate([-90, 0, 0])
-                    cylinder(d=bracket_height * 0.5, h=wall_thickness + 2, $fn=$fn);
+            translate([0, 0, 0])
+                xcyl(d=bracket_height * 0.5, l=plate_size + 2, $fn=$fn);
         }
 }
 

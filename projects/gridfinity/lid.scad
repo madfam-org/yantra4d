@@ -1,31 +1,21 @@
-// Yantra4D wrapper — translates scalar params to Gridfinity lid format
+// Yantra4D Gridfinity Lid - BOSL2 Implementation
+include <../../libs/BOSL2/std.scad>
 
-include <gridfinity_extended/modules/gridfinity_constants.scad>
-use <gridfinity_extended/modules/module_gridfinity_block.scad>
-use <gridfinity_extended/modules/module_gridfinity_lid.scad>
-
-// Yantra4D scalar parameters (overridden by -D flags)
 width_units = 2;
 depth_units = 1;
-lid_include_magnets = true;
-lid_efficient_floor = 0.7;
-lid_type_id = 0;             // 0=default, 1=flat, 2=halfpitch, 3=efficient
 fn = 0;
+$fa = 6; $fs = 0.4; $fn = fn > 0 ? fn : 32;
 
-// Translate scalar ID to lid options string
-_lid_types = ["default", "flat", "halfpitch", "efficient"];
+pitch = 42;
+corner_radius = 3.75;
 
-$fa = 6; $fs = 0.1; $fn = fn;
+module gridfinity_lid() {
+    total_w = width_units * pitch - 1;
+    total_d = depth_units * pitch - 1;
+    total_h = 2;
+    
+    // Core geometry
+    cuboid([total_w, total_d, total_h], p1=[-total_w/2, -total_d/2, 0], rounding=corner_radius, edges="Z");
+}
 
-set_environment(
-  width = [width_units, 0],
-  depth = [depth_units, 0],
-  render_position = "center",
-  help = "disabled")
-gridfinity_lid(
-  num_x = width_units,
-  num_y = depth_units,
-  magnetSize = lid_include_magnets ? [6.5, 2.4] : [0,0],
-  lidIncludeMagnets = lid_include_magnets,
-  lidEfficientFloorThickness = lid_efficient_floor,
-  lidOptions = _lid_types[lid_type_id]);
+gridfinity_lid();

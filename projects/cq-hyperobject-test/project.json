@@ -1,0 +1,56 @@
+{
+  "project": {
+    "name": "CadQuery Hyperobject Test",
+    "slug": "cq-hyperobject-test",
+    "version": "1.0.0",
+    "engine": "cadquery"
+  },
+  "modes": [
+    {
+      "id": "default",
+      "label": "Basic Box",
+      "scad_file": "box.py",
+      "parts": ["box"],
+      "estimate": {
+        "base_units": 100
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "box",
+      "label": "Hyperbox",
+      "render_mode": 1
+    }
+  ],
+  "parameters": [
+    {
+      "id": "width",
+      "label": "Width",
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 50,
+      "step": 1
+    },
+    {
+      "id": "length",
+      "label": "Length",
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 50,
+      "step": 1
+    },
+    {
+      "id": "height",
+      "label": "Height",
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 50,
+      "step": 1
+    }
+  ],
+  "estimate_constants": {}
+}

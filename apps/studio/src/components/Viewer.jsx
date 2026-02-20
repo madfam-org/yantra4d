@@ -15,7 +15,7 @@ import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../lib/pr
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
 
-const Model = ({ url, partType, color, wireframe, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
+const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
     const geom = useLoader(STLLoader, url)
     useEffect(() => {
         if (geom && onGeometry) onGeometry(partType, geom)
@@ -29,9 +29,32 @@ const Model = ({ url, partType, color, wireframe, onGeometry, onGeometryRemove, 
 
     const isGhost = highlightMode === 'ghost'
     const isHighlight = highlightMode === 'highlight'
-    const opacity = wireframe ? 0.2 : isGhost ? 0.15 : 1
     const emissive = isHighlight ? color : '#000000'
     const emissiveIntensity = isHighlight ? 0.15 : 0
+
+    // Glass material: physically-based transparent rendering
+    if (glass) {
+        const glassOpacity = wireframe ? 0.1 : 0.35
+        return (
+            <mesh geometry={geom}>
+                <meshPhysicalMaterial
+                    key={`glass-${wireframe}`}
+                    color={color}
+                    roughness={0.05}
+                    metalness={0.0}
+                    transmission={0.9}
+                    transparent={true}
+                    opacity={glassOpacity}
+                    ior={1.5}
+                    thickness={2}
+                    depthWrite={false}
+                />
+                <Edges threshold={30} color={color} />
+            </mesh>
+        )
+    }
+
+    const opacity = wireframe ? 0.2 : isGhost ? 0.15 : 1
 
     return (
         <mesh geometry={geom}>
@@ -369,35 +392,43 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                 <BoundingBoxHelper boundingBox={boundingBox} box={sceneBox}>
                                     {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
                                     <group>
-                                        {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (
-                                            <Model
-                                                key={part.type}
-                                                url={part.url}
-                                                partType={part.type}
-                                                color={colors[part.type] || defaultColor}
-                                                wireframe={wireframe}
-                                                onGeometry={handleGeometry}
-                                                onGeometryRemove={handleGeometryRemove}
-                                                highlightMode={getHighlightMode(part.type)}
-                                                isDark={isDark}
-                                            />
-                                        ))}
+                                        {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => {
+                                            const partDef = manifest?.parts?.find(p => p.id === part.type)
+                                            return (
+                                                <Model
+                                                    key={part.type}
+                                                    url={part.url}
+                                                    partType={part.type}
+                                                    color={colors[part.type] || defaultColor}
+                                                    wireframe={wireframe}
+                                                    glass={partDef?.glass === true}
+                                                    onGeometry={handleGeometry}
+                                                    onGeometryRemove={handleGeometryRemove}
+                                                    highlightMode={getHighlightMode(part.type)}
+                                                    isDark={isDark}
+                                                />
+                                            )
+                                        })}
                                     </group>
                                     {/* Assembly parts — hidden when animated grid is active */}
                                     <group visible={!(animating && mode === 'grid' && animReady)}>
-                                        {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => (
-                                            <Model
-                                                key={part.type}
-                                                url={part.url}
-                                                partType={part.type}
-                                                color={colors[part.type] || defaultColor}
-                                                wireframe={wireframe}
-                                                onGeometry={handleGeometry}
-                                                onGeometryRemove={handleGeometryRemove}
-                                                highlightMode={getHighlightMode(part.type)}
-                                                isDark={isDark}
-                                            />
-                                        ))}
+                                        {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => {
+                                            const partDef = manifest?.parts?.find(p => p.id === part.type)
+                                            return (
+                                                <Model
+                                                    key={part.type}
+                                                    url={part.url}
+                                                    partType={part.type}
+                                                    color={colors[part.type] || defaultColor}
+                                                    wireframe={wireframe}
+                                                    glass={partDef?.glass === true}
+                                                    onGeometry={handleGeometry}
+                                                    onGeometryRemove={handleGeometryRemove}
+                                                    highlightMode={getHighlightMode(part.type)}
+                                                    isDark={isDark}
+                                                />
+                                            )
+                                        })}
                                     </group>
                                 </BoundingBoxHelper>
                                 {/* Animated grid — mounted when animating, visible once ready */}

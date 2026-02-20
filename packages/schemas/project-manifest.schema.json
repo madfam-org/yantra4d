@@ -96,6 +96,10 @@
             "type": "string",
             "pattern": "\\.(scad|py)$"
           },
+          "cq_file": {
+            "type": "string",
+            "pattern": "\\.py$"
+          },
           "label": {
             "$ref": "#/$defs/i18nString"
           },
@@ -989,6 +993,35 @@
           ]
         }
       ]
+    }
+  },
+  "if": {
+    "required": ["project"],
+    "properties": {
+      "project": {
+        "required": ["hyperobject"],
+        "properties": {
+          "hyperobject": {
+            "required": ["is_hyperobject"],
+            "properties": {
+              "is_hyperobject": { "const": true }
+            }
+          }
+        }
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "modes": {
+        "items": {
+          "required": ["scad_file", "cq_file"],
+          "properties": {
+            "scad_file": { "type": "string", "pattern": "\\.scad$" },
+            "cq_file": { "type": "string", "pattern": "\\.py$" }
+          }
+        }
+      }
     }
   }
 }

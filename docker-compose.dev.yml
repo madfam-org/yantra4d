@@ -1,33 +1,105 @@
-services:
-  backend:
-    environment:
-      - FLASK_DEBUG=true
-    volumes:
-      - ./apps/api:/app/apps/api
-      - ./projects:/app/projects
-      - ./packages:/app/packages
-    command: flask run --host=0.0.0.0 --port=5000
+# Yantra4D — Development Stack with Hot-Reload
+#
+# Every service mounts its source from the host so changes are reflected
+# instantly without rebuilding or restarting the container:
+#
+#   backend → Flask Werkzeug reloader restarts on any .py save (~1 s)
+#   studio  → Vite HMR pushes JS/CSS changes to the browser without a reload
+#   landing → Astro dev server with built-in HMR
+#
+# First-time setup:
+#   cp .env.example .env       # add auth / MQTT secrets as needed
+#   docker compose -f docker-compose.dev.yml up --build
+#
+# Subsequent starts (source-only changes, no dep changes):
+#   docker compose -f docker-compose.dev.yml up
+#
+# Rebuild only when Python or npm deps change:
+#   docker compose -f docker-compose.dev.yml build backend
+#   (studio/landing deps are installed at container start, not image build time)
+#
+# Include the admin app:
+#   docker compose -f docker-compose.dev.yml --profile admin up
 
+services:
+
+  # ── Redis (rate-limit / session storage) ──────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ── Backend (Flask + OpenSCAD, hot-reload) ────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile.dev
+    volumes:
+      # Hot-reload: every .py save triggers a Werkzeug auto-restart (<1 s)
+      - ./apps/api:/app/backend
+      - ./projects:/app/projects:ro
+      - ./libs:/app/libs:ro
+      # Rendered STL/3MF files survive restarts
+      - backend_static:/app/backend/static
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      FLASK_DEBUG: "true"
+      FLASK_APP: app.py
+      PORT: "5000"
+      HOST: "0.0.0.0"
+      OPENSCAD_PATH: /usr/local/bin/openscad
+      PROJECTS_DIR: /app/projects
+      OPENSCADPATH: /app/libs:/app/libs/dotSCAD/src
+      VERIFY_SCRIPT: /app/backend/tests/verify_design.py
+      AUTH_ENABLED: "false"
+      RATE_LIMIT_ENABLED: "false"
+      RATE_LIMIT_STORAGE: "redis://redis:6379"
+      CORS_ORIGINS: "http://localhost:5173,http://localhost:4321,http://localhost:3001"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+  # ── Studio (Vite HMR) ─────────────────────────────────────────────────────
   studio:
-    build: null
     image: node:20-alpine
-    pull_policy: never
-    entrypoint: []
     working_dir: /app/apps/studio
+    # Install deps on first start, then start Vite dev server
     command: sh -c "npm ci --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
     ports:
       - "5173:5173"
     volumes:
+      # Hot-reload: Vite watches every file under src/ via bind mount
       - .:/app
+      # Isolate container node_modules (avoids macOS/Linux platform conflicts)
       - studio_node_modules:/app/apps/studio/node_modules
     environment:
-      - VITE_API_BASE=${VITE_API_BASE:-http://localhost:5000}
+      # Proxy target points to the Docker-internal backend — not localhost
+      VITE_API_PROXY_TARGET: "http://backend:5000"
+      VITE_JANUA_REDIRECT_URI: "http://localhost:5173"
+    env_file:
+      - .env
+    depends_on:
+      backend:
+        condition: service_healthy
 
+  # ── Landing (Astro HMR) ───────────────────────────────────────────────────
   landing:
-    build: null
     image: node:20-alpine
-    pull_policy: never
-    entrypoint: []
     working_dir: /app/apps/landing
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     ports:
@@ -36,20 +108,21 @@ services:
       - .:/app
       - landing_node_modules:/app/apps/landing/node_modules
 
+  # ── Admin (opt-in via --profile admin) ───────────────────────────────────
   admin:
-    build: null
     image: node:20-alpine
-    pull_policy: never
-    entrypoint: []
     working_dir: /app/apps/admin
-    command: sh -c "npm ci --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
+    command: sh -c "npm ci --legacy-peer-deps && npm run dev -- --host 0.0.0.0 --port 3001"
     ports:
       - "3001:3001"
     volumes:
       - .:/app
       - admin_node_modules:/app/apps/admin/node_modules
+    profiles:
+      - admin
 
 volumes:
+  backend_static:
   studio_node_modules:
   landing_node_modules:
   admin_node_modules:

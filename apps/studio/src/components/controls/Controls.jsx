@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
-import { useLanguage } from "../contexts/LanguageProvider"
-import { useManifest } from "../contexts/ManifestProvider"
+import { useLanguage } from "../../contexts/LanguageProvider"
+import { useManifest } from "../../contexts/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
 
-import SliderControl from './controls/SliderControl'
-import ColorGradientControl from './controls/ColorGradientControl'
+import SliderControl from './SliderControl'
+import ColorGradientControl from './ColorGradientControl'
 
 // ---------------------------------------------------------------------------
 // ComponentPickerWidget — visual hardware selector backed by NopSCADlib catalog

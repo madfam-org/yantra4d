@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-vi.mock('../Viewer', () => ({
+vi.mock('../viewer/Viewer', () => ({
   default: React.forwardRef(function MockViewer(props) {
     return <div data-testid="viewer" data-loading={props.loading} />
   }),

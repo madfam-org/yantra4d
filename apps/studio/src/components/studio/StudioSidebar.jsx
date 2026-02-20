@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Controls from '../Controls'
+import Controls from '../controls/Controls'
 import ExportPanel from '../export/ExportPanel'
 import BomPanel from '../bom/BomPanel'
 import AssemblyView from '../bom/AssemblyView'

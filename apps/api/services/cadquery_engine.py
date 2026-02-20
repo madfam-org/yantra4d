@@ -9,8 +9,12 @@ import json
 import threading
 
 from config import Config
+from services.render_engine import RENDER_TIMEOUT_S, ProcessManager
 
 logger = logging.getLogger(__name__)
+
+_cq_process_manager = ProcessManager()
+
 
 def _cadquery_env():
     env = os.environ.copy()
@@ -19,23 +23,20 @@ def _cadquery_env():
     env["PYTHONPATH"] = f"{projects_dir}{os.pathsep}{pythonpath}" if pythonpath else projects_dir
     return env
 
-RENDER_TIMEOUT_S = 300
-
-_active_process = None
-_process_lock = threading.Lock()
 
 def build_cadquery_command(output_path: str, script_path: str, params: dict, export_format: str) -> list:
     """Build Python command to run the CadQuery wrapper script."""
     runner_script = os.path.join(os.path.dirname(__file__), 'cq_runner.py')
-    
+
     # Pass parameters as a JSON string to the runner
     params_json = json.dumps(params)
-    
+
     cmd = [
         "python", runner_script,
         script_path, output_path, params_json, export_format
     ]
     return cmd
+
 
 def run_render(cmd: list, scad_path: str | None = None) -> tuple[bool, str]:
     """Execute CadQuery render synchronously. Returns (success, stderr/stdout)."""
@@ -49,6 +50,7 @@ def run_render(cmd: list, scad_path: str | None = None) -> tuple[bool, str]:
     except subprocess.CalledProcessError as e:
         logger.error(f"CadQuery failed: {e.stdout}\n{e.stderr}")
         return False, e.stdout + e.stderr
+
 
 def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int, scad_path: str | None = None):
     """
@@ -64,11 +66,9 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
     })
 
     try:
-        global _active_process
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_cadquery_env())
-        with _process_lock:
-            _active_process = process
-
+        process = _cq_process_manager.start(
+            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_cadquery_env())
+        )
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
         kill_timer.start()
     except Exception as e:
@@ -86,7 +86,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
             line = line.strip()
             if not line:
                 continue
-                
+
             lines_read += 1
             # Fake progress based on output lines (since we don't have exact phases)
             progress_incr = min(80, lines_read * 5)
@@ -102,14 +102,13 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         process.wait()
     finally:
         kill_timer.cancel()
-        with _process_lock:
-            _active_process = None
+        _cq_process_manager.clear()
 
     if process.returncode == 0:
         final_progress = part_base + part_weight
         yield json.dumps({
-            'event': 'part_done', 
-            'part': part, 
+            'event': 'part_done',
+            'part': part,
             'progress': round(final_progress)
         })
         return True
@@ -121,17 +120,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         })
         return False
 
+
 def cancel_render():
     """Kill the active CadQuery render process."""
-    global _active_process
-    with _process_lock:
-        if _active_process and _active_process.poll() is None:
-            logger.info("Cancelling active render process")
-            _active_process.terminate()
-            try:
-                _active_process.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                _active_process.kill()
-            _active_process = None
-            return True
-    return False
+    return _cq_process_manager.cancel()

@@ -18,6 +18,8 @@ from services.ai_code_editor import stream_response as stream_code_editor
 
 logger = logging.getLogger(__name__)
 
+MAX_AI_MESSAGE_CHARS = 5000  # Max characters allowed per chat message
+
 ai_bp = Blueprint("ai", __name__)
 
 
@@ -71,8 +73,8 @@ def chat_stream():
 
     if not session_id or not message:
         return error_response("session_id and message are required", 400)
-    if len(message) > 5000:
-        return error_response("Message must be 5000 characters or less", 400)
+    if len(message) > MAX_AI_MESSAGE_CHARS:
+        return error_response(f"Message must be {MAX_AI_MESSAGE_CHARS} characters or less", 400)
 
     session = get_session(session_id)
     if not session:

@@ -13,10 +13,9 @@ from pathlib import Path
 
 from config import Config
 from manifest import get_manifest
+from services.render_engine import RENDER_TIMEOUT_S, ProcessManager
 
 logger = logging.getLogger(__name__)
-
-RENDER_TIMEOUT_S = 300
 
 # Cache fontconfig temp files per project fonts dir so they're created once
 _fontconfig_cache: dict[str, str] = {}
@@ -54,9 +53,8 @@ def _openscad_env(scad_path: str | None = None):
 
     return env
 
-# Track the active render process for cancellation
-_active_process = None
-_process_lock = threading.Lock()
+# Per-engine process manager for cancellation support
+_process_manager = ProcessManager()
 
 # Phase weights represent the approximate % of total render time each OpenSCAD
 # phase consumes. Used to calculate progress bar position during streaming renders.
@@ -244,11 +242,10 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
 
     try:
         # Run with Popen to stream stderr
-        logger.error(f"Streaming OpenSCAD (CWD: {os.getcwd()}): {_sanitize_cmd_for_log(cmd)}")
-        global _active_process
-        process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env(scad_path))
-        with _process_lock:
-            _active_process = process
+        logger.info(f"Streaming OpenSCAD (CWD: {os.getcwd()}): {_sanitize_cmd_for_log(cmd)}")
+        process = _process_manager.start(
+            subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env(scad_path))
+        )
 
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
         kill_timer.start()
@@ -286,8 +283,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         process.wait()
     finally:
         kill_timer.cancel()
-        with _process_lock:
-            _active_process = None
+        _process_manager.clear()
 
     if process.returncode == 0:
         final_progress = part_base + part_weight
@@ -308,15 +304,4 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
 
 def cancel_render():
     """Kill the active OpenSCAD render process if one is running."""
-    global _active_process
-    with _process_lock:
-        if _active_process and _active_process.poll() is None:
-            logger.info("Cancelling active render process")
-            _active_process.terminate()
-            try:
-                _active_process.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                _active_process.kill()
-            _active_process = None
-            return True
-    return False
+    return _process_manager.cancel()

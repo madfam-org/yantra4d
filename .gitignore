@@ -66,3 +66,13 @@ e2e/screenshots/
 
 # Rendered STL artifacts in API static dir
 apps/api/static/*.stl
+apps/api/static/*.3mf
+apps/api/static/*.off
+apps/api/static/*.step
+apps/api/static/*.gltf
+
+# Debug dump files (never commit these)
+**/mock-dom-dump.html
+**/e2e_full_report.txt
+debug-dump-analysis.js
+debug_manifest.py

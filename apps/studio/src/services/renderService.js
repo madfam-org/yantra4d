@@ -165,7 +165,7 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
 async function renderBackend(mode, params, manifest, onProgress, abortSignal, project) {
   const payload = { ...params, mode }
   if (project) payload.project = project
-  
+
   if (manifest && manifest.engine === 'cadquery') {
     payload.export_format = 'gltf'
   }
@@ -176,8 +176,6 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
     body: JSON.stringify(payload),
     signal: abortSignal
   })
-
-  console.log('[DEBUG] renderBackend payload:', payload)
 
   if (!response.ok) {
     const text = await response.text().catch(() => '')

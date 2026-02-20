@@ -15,7 +15,7 @@ import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../lib/pr
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
 
-const Model = ({ url, color, wireframe, onGeometry, highlightMode }) => {
+const Model = ({ url, color, wireframe, onGeometry, highlightMode, isDark }) => {
     const geom = useLoader(STLLoader, url)
     useEffect(() => {
         if (geom && onGeometry) onGeometry(geom)
@@ -26,7 +26,7 @@ const Model = ({ url, color, wireframe, onGeometry, highlightMode }) => {
 
     const isGhost = highlightMode === 'ghost'
     const isHighlight = highlightMode === 'highlight'
-    const opacity = wireframe ? 0.08 : isGhost ? 0.15 : 1
+    const opacity = wireframe ? 0.2 : isGhost ? 0.15 : 1
     const emissive = isHighlight ? color : '#000000'
     const emissiveIntensity = isHighlight ? 0.15 : 0
 
@@ -43,7 +43,7 @@ const Model = ({ url, color, wireframe, onGeometry, highlightMode }) => {
                 emissiveIntensity={emissiveIntensity}
                 depthWrite={!isGhost}
             />
-            {!isGhost && <Edges threshold={15} color="#374151" />}
+            {!isGhost && <Edges threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
         </mesh>
     )
 }
@@ -82,8 +82,8 @@ const BoundingBoxHelper = ({ boundingBox, children }) => {
             return
         }
 
-        // Delay slightly to let models mount and position
-        const timer = setTimeout(() => {
+        // Poll continuously until models mount and acquire non-empty logical boundaries
+        const intervalId = setInterval(() => {
             if (groupRef.current) {
                 const b = new Box3().setFromObject(groupRef.current)
                 if (!b.isEmpty()) {
@@ -95,10 +95,14 @@ const BoundingBoxHelper = ({ boundingBox, children }) => {
                         h: size.z.toFixed(1), // Z up
                         d: size.y.toFixed(1)
                     })
+                    // Stop polling once we capture legitimate geometry
+                    clearInterval(intervalId)
                 }
             }
         }, 100)
-        return () => clearTimeout(timer)
+
+        // Cleanup on unmount or re-trigger
+        return () => clearInterval(intervalId)
     }, [boundingBox, children])
 
     return (

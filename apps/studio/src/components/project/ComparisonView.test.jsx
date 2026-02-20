@@ -3,7 +3,7 @@ import { vi, describe, it, expect, afterEach } from 'vitest'
 import ComparisonView from './ComparisonView'
 
 // Mock Viewer since it requires WebGL/Three.js context
-vi.mock('../Viewer', () => ({
+vi.mock('../viewer/Viewer', () => ({
   default: ({ parts }) => <div data-testid="viewer-mock">Viewer Mock (Parts: {parts?.length})</div>
 }))
 

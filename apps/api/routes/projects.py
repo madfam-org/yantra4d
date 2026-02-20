@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 projects_bp = Blueprint('projects', __name__)
 
-ANALYTICS_DB = os.path.join(Config.PROJECTS_DIR, ".analytics.db")
+ANALYTICS_DB = str(Config.ANALYTICS_DB_PATH)
 
 SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]{1,48}[a-z0-9]$")
 
@@ -122,7 +122,7 @@ def serve_static_part(slug, filename):
     if not parts_dir.is_dir():
         abort(404)
     requested = (parts_dir / filename).resolve()
-    if not str(requested).startswith(str(parts_dir.resolve())):
+    if not requested.is_relative_to(parts_dir.resolve()):
         abort(403)
     if not requested.is_file():
         abort(404)

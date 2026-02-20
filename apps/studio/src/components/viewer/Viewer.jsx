@@ -5,17 +5,23 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { Box3, Box3Helper, Vector3, Color } from 'three'
-import { useLanguage } from "../contexts/LanguageProvider"
-import { useTheme } from "../contexts/ThemeProvider"
-import { useManifest } from "../contexts/ManifestProvider"
-import { ErrorBoundary } from './feedback/ErrorBoundary'
-import SceneController from './viewer/SceneController'
-import NumberedAxes from './viewer/NumberedAxes'
-import AnimatedGrid from './viewer/AnimatedGrid'
-import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../lib/printEstimator'
+import { useLanguage } from "../../contexts/LanguageProvider"
+import { useTheme } from "../../contexts/ThemeProvider"
+import { useManifest } from "../../contexts/ManifestProvider"
+import { ErrorBoundary } from '../feedback/ErrorBoundary'
+import SceneController from './SceneController'
+import NumberedAxes from './NumberedAxes'
+import AnimatedGrid from './AnimatedGrid'
+import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../../lib/printEstimator'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
+
+/** Camera constants — kept as named values to avoid magic numbers in JSX */
+const CAMERA_FOV_DEG = 45
+const ORBIT_MIN_DISTANCE_MM = 0.5
+const ORBIT_MAX_DISTANCE_MM = 5000  // far enough for large assemblies (mm)
+const SCENE_UP_VECTOR = [0, 0, 1]   // Z-up coordinate system
 
 const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
     const isGLTF = url?.toLowerCase().endsWith('.gltf') || url?.toLowerCase().endsWith('.glb')
@@ -227,7 +233,6 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                 weightedCenterSum.z / totalVolume
             ]
             setCenterOfMass(newCenter)
-            console.log('[Viewer] New CenterOfMass:', newCenter)
 
             if (mergedBox) {
                 const maxDim = Math.max(mergedBox.width, mergedBox.depth, mergedBox.height)
@@ -283,7 +288,6 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const handleGeometryRemove = useCallback((partType) => {
         if (geometriesRef.current[partType]) {
             delete geometriesRef.current[partType]
-            console.log(`[Viewer] Removed ${partType}`)
             recalculateSceneStats()
         }
     }, [recalculateSceneStats])
@@ -420,7 +424,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
             </div>
 
             <ErrorBoundary t={t}>
-                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov: 45, up: [0, 0, 1] }} gl={{ preserveDrawingBuffer: true }}>
+                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov: CAMERA_FOV_DEG, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true }}>
                     <color attach="background" args={[bgColor]} />
                     <SceneController ref={sceneRef} cameraViews={cameraViews} />
 
@@ -428,7 +432,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     <ambientLight intensity={0.3} />
                     <pointLight position={[10, 10, 10]} intensity={0.5} />
 
-                    <OrbitControls makeDefault up={[0, 0, 1]} minDistance={0.5} maxDistance={5000} target={centerOfMass} />
+                    <OrbitControls makeDefault up={SCENE_UP_VECTOR} minDistance={ORBIT_MIN_DISTANCE_MM} maxDistance={ORBIT_MAX_DISTANCE_MM} target={centerOfMass} />
                     <Grid
                         infiniteGrid
                         sectionSize={10}

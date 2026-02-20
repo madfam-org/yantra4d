@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Plus, X, Copy } from 'lucide-react'
 import { useLanguage } from '../../contexts/LanguageProvider'
-import Viewer from '../Viewer'
+import Viewer from '../viewer/Viewer'
 
 /**
  * Side-by-side comparison of 2-4 parameter variations.

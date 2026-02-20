@@ -5,7 +5,6 @@ Uses SQLite for zero-dependency storage.
 """
 import json
 import logging
-import os
 import sqlite3
 import time
 from contextlib import contextmanager
@@ -17,7 +16,7 @@ from config import Config
 analytics_bp = Blueprint("analytics", __name__)
 logger = logging.getLogger(__name__)
 
-DB_PATH = os.path.join(Config.PROJECTS_DIR, ".analytics.db")
+DB_PATH = str(Config.ANALYTICS_DB_PATH)
 
 
 @contextmanager

@@ -33,6 +33,7 @@ import rate_limits
 import queue
 
 ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf'}
+PROGRESS_TOTAL = 100  # SSE progress is in the range 0–100
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,14 @@ def _get_tiered_limit() -> str:
     tier = resolve_tier(claims)
     limits = get_tier_limits(tier)
     return f"{limits['renders_per_hour']}/hour"
+
+
+def _rate_limit_key() -> str:
+    """Return a per-user or per-IP rate limit bucket key."""
+    claims = getattr(request, "auth_claims", None)
+    if claims:
+        return f"user:{claims.get('sub', '')}"
+    return f"ip:{request.remote_addr}"
 
 
 def _resolve_render_context(data):
@@ -114,7 +123,6 @@ def _extract_render_payload(data):
         'export_format': export_format,
         'params': params,
         'static_stl_map': static_stl_map,
-        'bad_name': scad_path,  # used for error message when scad_filename is None
     }
 
 
@@ -157,7 +165,7 @@ def estimate_render_time():
 
 @render_bp.route('/api/render', methods=['POST'])
 @optional_auth
-@limiter.limit(_get_tiered_limit, key_func=lambda: f"user:{getattr(request, 'auth_claims', {}).get('sub', '')}" if getattr(request, 'auth_claims', None) else f"ip:{request.remote_addr}")
+@limiter.limit(_get_tiered_limit, key_func=_rate_limit_key)
 @require_json_body
 def render_stl():
     """Synchronous render endpoint."""
@@ -183,7 +191,7 @@ def render_stl():
     cache_hits = 0
     cache_total = 0
 
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix)
+    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
 
     try:
         for part in parts_to_render:
@@ -270,13 +278,13 @@ def render_stl():
 
 @render_bp.route('/api/render-stream', methods=['POST'])
 @optional_auth
-@limiter.limit(_get_tiered_limit, key_func=lambda: f"user:{getattr(request, 'auth_claims', {}).get('sub', '')}" if getattr(request, 'auth_claims', None) else f"ip:{request.remote_addr}")
+@limiter.limit(_get_tiered_limit, key_func=_rate_limit_key)
 @require_json_body
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
     payload = _extract_render_payload(data)
-    logger.error(f"Render Payload: {json.dumps(data)} => Parts: {payload['parts'] if payload else 'None'}")
+    logger.debug(f"Render stream payload: mode={data.get('mode')}, parts={payload['parts'] if payload else 'None'}")
 
     if payload is None:
         bad_name = _resolve_render_context(data)[4]
@@ -294,7 +302,7 @@ def render_stl_stream():
     num_parts = len(parts_to_render)
     host_url = request.host_url
 
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix)
+    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
 
     def generate():
         generated_parts = []
@@ -321,8 +329,8 @@ def render_stl_stream():
             output_filename = f"{stl_prefix}{part}.{export_format}"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
-            part_base = (i / num_parts) * 100
-            part_weight = 100 / num_parts
+            part_base = (i / num_parts) * PROGRESS_TOTAL
+            part_weight = PROGRESS_TOTAL / num_parts
 
             manifest = get_manifest(project_slug)
             engine = manifest.engine

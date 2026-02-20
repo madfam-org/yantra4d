@@ -12,6 +12,8 @@ from queue import Queue
 
 logger = logging.getLogger(__name__)
 
+MQTT_DEFAULT_PORT = 1883  # IANA-standard MQTT port
+
 # A global queue to pass MQTT events to the Flask API routes (SSE streams)
 telemetry_queue = Queue()
 
@@ -23,7 +25,7 @@ class MqttTelemetryService:
         self._lock = threading.Lock()
         
         self.broker = os.getenv("MQTT_BROKER", "localhost")
-        self.port = int(os.getenv("MQTT_PORT", "1883"))
+        self.port = int(os.getenv("MQTT_PORT", MQTT_DEFAULT_PORT))
         self.enabled = os.getenv("MQTT_ENABLED", "true").lower() == "true"
         
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)

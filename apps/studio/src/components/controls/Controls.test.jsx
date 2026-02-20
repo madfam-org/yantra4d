@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import Controls from './Controls'
-import { renderWithProviders } from '../test/render-with-providers'
+import { renderWithProviders } from '../../test/render-with-providers'
 // eslint-disable-next-line no-unused-vars
-import fallbackManifest from '../config/fallback-manifest.json'
+import fallbackManifest from '../../config/fallback-manifest.json'
 
 expect.extend(toHaveNoViolations)
 
@@ -99,14 +99,16 @@ describe('Controls', () => {
   })
 
   it('default star remains when value differs from default', () => {
-    renderControls({ params: {
-      width_units: 4, depth_units: 1, height_units: 3,
-      cup_wall_thickness: 0, cup_floor_thickness: 0.7,
-      vertical_chambers: 1, horizontal_chambers: 1,
-      fingerslide_enabled: false, label_enabled: false,
-      enable_magnets: false, enable_screws: false,
-      fn: 0,
-    }})
+    renderControls({
+      params: {
+        width_units: 4, depth_units: 1, height_units: 3,
+        cup_wall_thickness: 0, cup_floor_thickness: 0.7,
+        vertical_chambers: 1, horizontal_chambers: 1,
+        fingerslide_enabled: false, label_enabled: false,
+        enable_magnets: false, enable_screws: false,
+        fn: 0,
+      }
+    })
     // Star should still be present even though width_units (4) != default (2)
     expect(screen.getByTestId('default-star-width_units')).toBeInTheDocument()
   })

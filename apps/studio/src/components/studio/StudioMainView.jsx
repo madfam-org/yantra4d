@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Viewer from '../Viewer'
+import Viewer from '../viewer/Viewer'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
 import { useProject } from '../../contexts/ProjectProvider'
 import { useLanguage } from '../../contexts/LanguageProvider'

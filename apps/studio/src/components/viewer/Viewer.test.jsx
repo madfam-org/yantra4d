@@ -18,21 +18,21 @@ vi.mock('@react-three/drei', () => ({
 }))
 
 vi.mock('three/examples/jsm/loaders/STLLoader', () => ({
-  STLLoader: class {},
+  STLLoader: class { },
 }))
 
-vi.mock('../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/LanguageProvider', () => ({
   useLanguage: () => ({
     language: 'en',
     t: (key) => key,
   }),
 }))
 
-vi.mock('../contexts/ThemeProvider', () => ({
+vi.mock('../../contexts/ThemeProvider', () => ({
   useTheme: () => ({ theme: 'light' }),
 }))
 
-vi.mock('../contexts/ManifestProvider', () => ({
+vi.mock('../../contexts/ManifestProvider', () => ({
   useManifest: () => ({
     getCameraViews: () => [
       { id: 'iso', label: 'Iso', position: [50, 50, 50] },
@@ -46,23 +46,23 @@ vi.mock('../contexts/ManifestProvider', () => ({
   }),
 }))
 
-vi.mock('./ErrorBoundary', () => ({
+vi.mock('../feedback/ErrorBoundary', () => ({
   ErrorBoundary: ({ children }) => <>{children}</>,
 }))
 
-vi.mock('./viewer/SceneController', () => ({
+vi.mock('./SceneController', () => ({
   default: () => null,
 }))
 
-vi.mock('./viewer/NumberedAxes', () => ({
+vi.mock('./NumberedAxes', () => ({
   default: () => <div data-testid="numbered-axes" />,
 }))
 
-vi.mock('./viewer/AnimatedGrid', () => ({
+vi.mock('./AnimatedGrid', () => ({
   default: () => null,
 }))
 
-vi.mock('../lib/printEstimator', () => ({
+vi.mock('../../lib/printEstimator', () => ({
   computeVolumeMm3: () => 0,
   computeBoundingBox: () => ({ width: 10, depth: 10, height: 10 }),
 }))

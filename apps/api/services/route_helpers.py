@@ -14,11 +14,11 @@ from config import Config
 logger = logging.getLogger(__name__)
 
 
-def cleanup_old_stl_files(parts: list[str], static_folder: str, prefix: str | None = None) -> None:
-    """Remove old STL preview files for the given parts."""
+def cleanup_old_stl_files(parts: list[str], static_folder: str, prefix: str | None = None, export_format: str = "stl") -> None:
+    """Remove old render files for the given parts and export format."""
     stl_prefix = prefix or Config.STL_PREFIX
     for part in parts:
-        old_path = os.path.join(static_folder, f"{stl_prefix}{part}.stl")
+        old_path = os.path.join(static_folder, f"{stl_prefix}{part}.{export_format}")
         try:
             os.remove(old_path)
         except OSError:

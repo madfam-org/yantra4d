@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 
-vi.mock('../Controls', () => ({
+vi.mock('../controls/Controls', () => ({
   default: function MockControls() {
     return <div data-testid="controls" />
   },

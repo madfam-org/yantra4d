@@ -1,0 +1,77 @@
+# Yantra4D API — Development Image
+#
+# Multi-stage build:
+#   Stage 1 (openscad-builder): Extracts OpenSCAD AppImage — same as the prod
+#            Dockerfile so the downloaded binary is layer-cached and reused.
+#   Stage 2 (dev): Lean Python image that copies only the OpenSCAD binary from
+#            stage 1, installs Python deps, and runs Flask in debug/reload mode.
+#
+# Hot-reload: /app/backend is bind-mounted from the host by docker-compose.dev.yml
+# so every .py file save triggers an automatic Werkzeug restart (~1 s).
+#
+# Rebuild only when requirements.txt or OpenSCAD version changes:
+#   docker compose -f docker-compose.dev.yml build backend
+
+# ── Stage 1: extract OpenSCAD AppImage ────────────────────────────────────
+FROM python:3.12-slim AS openscad-builder
+
+ARG OPENSCAD_VERSION=2026.02.01
+ARG OPENSCAD_SHA256=dad3a8d19e63c543129eabef314676ac9348ffcab727544f4283b2ae9000277c
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends wget && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget -q "https://files.openscad.org/snapshots/OpenSCAD-${OPENSCAD_VERSION}-x86_64.AppImage" \
+    -O /tmp/openscad.AppImage && \
+    echo "${OPENSCAD_SHA256}  /tmp/openscad.AppImage" | sha256sum -c - && \
+    chmod +x /tmp/openscad.AppImage && \
+    cd /opt && /tmp/openscad.AppImage --appimage-extract && \
+    rm /tmp/openscad.AppImage
+
+# ── Stage 2: dev server ────────────────────────────────────────────────────
+FROM python:3.12-slim
+
+# Runtime libs required by OpenSCAD
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    fonts-liberation \
+    fontconfig \
+    libgl1 \
+    libglu1-mesa \
+    libharfbuzz0b \
+    libegl1 \
+    libwayland-client0 \
+    libcomerr2 \
+    libgpg-error0 \
+    xvfb && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy extracted OpenSCAD from stage 1
+COPY --from=openscad-builder /opt/squashfs-root /opt/squashfs-root
+RUN ln -sf /opt/squashfs-root/AppRun /usr/local/bin/openscad
+
+WORKDIR /app/backend
+
+# Python dependencies (cached until requirements.txt changes)
+COPY apps/api/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir python-dotenv
+
+# Writable directories for bind-mount + rendered files
+RUN mkdir -p /app/backend/static /app/projects /app/libs && \
+    useradd -r -u 1001 -s /bin/false yantra4d && \
+    chown -R yantra4d:yantra4d /app
+
+USER yantra4d
+
+ENV FLASK_DEBUG=true
+ENV FLASK_APP=app.py
+ENV PORT=5000
+ENV HOST=0.0.0.0
+ENV OPENSCAD_PATH=/usr/local/bin/openscad
+
+EXPOSE 5000
+
+# Flask debug server — auto-reloads on any .py change (no restart needed)
+CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=5000", "--reload"]

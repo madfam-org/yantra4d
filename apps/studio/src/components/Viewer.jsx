@@ -13,8 +13,7 @@ import AnimatedGrid from './viewer/AnimatedGrid'
 import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../lib/printEstimator'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
-const GRID_SECTION_COLOR = '#4b5563'
-const GRID_CELL_COLOR = '#374151'
+// Grid colors will be evaluated dynamically based on theme.
 
 const Model = ({ url, color, wireframe, onGeometry, highlightMode }) => {
     const geom = useLoader(STLLoader, url)
@@ -79,7 +78,7 @@ const BoundingBoxHelper = ({ boundingBox, children }) => {
     useEffect(() => {
         if (!boundingBox || !groupRef.current) {
             setBox(null) // eslint-disable-line react-hooks/set-state-in-effect
-            setDims(null)  
+            setDims(null)
             return
         }
 
@@ -345,10 +344,14 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     <OrbitControls makeDefault up={[0, 0, 1]} minDistance={0.5} maxDistance={5000} target={centerOfMass} />
                     <Grid
                         infiniteGrid
-                        sectionColor={GRID_SECTION_COLOR}
-                        cellColor={GRID_CELL_COLOR}
+                        sectionSize={10}
+                        sectionThickness={1.5}
+                        sectionColor={isDark ? '#4b5563' : '#9ca3af'}
+                        cellSize={1}
+                        cellThickness={0.5}
+                        cellColor={isDark ? '#374151' : '#d1d5db'}
                         fadeDistance={500}
-                        args={[10, 10]}
+                        fadeStrength={1.5}
                         rotation={[Math.PI / 2, 0, 0]}
                     />
                     <GizmoHelper alignment="bottom-left" margin={[60, 60]}>

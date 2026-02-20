@@ -153,12 +153,14 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const [sceneBox, setSceneBox] = useState(null)
 
     const recalculateSceneStats = useCallback(() => {
-        // Aggregate stats across all parts
+        // Aggregate stats across all parts, and collect per-part stats for individual estimates
         let totalVolume = 0
         let weightedCenterSum = { x: 0, y: 0, z: 0 }
         let mergedBox = null
         let absoluteBox = null
-        for (const geom of Object.values(geometriesRef.current)) {
+        const perPartStats = {}
+
+        for (const [partType, geom] of Object.entries(geometriesRef.current)) {
             const vol = computeVolumeMm3(geom)
             totalVolume += vol
             const centroid = computeCentroid(geom)
@@ -168,6 +170,10 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
             weightedCenterSum.z += centroid.z * vol
 
             const bbox = computeBoundingBox(geom)
+
+            // Collect individual part stats for per-part print estimates
+            perPartStats[partType] = { volumeMm3: vol, boundingBox: bbox }
+
             if (!mergedBox) {
                 mergedBox = bbox
             } else {
@@ -233,8 +239,12 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
             setCenterOfMass([0, 0, 0])
         }
 
-        onGeometryStats?.({ volumeMm3: totalVolume, boundingBox: mergedBox })
+        onGeometryStats?.({
+            total: { volumeMm3: totalVolume, boundingBox: mergedBox },
+            parts: perPartStats,
+        })
     }, [onGeometryStats])
+
 
     const handleGeometry = useCallback((partType, geometry) => {
         geometriesRef.current[partType] = geometry
@@ -299,7 +309,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         prevMaxDimRef.current = maxDim
 
         sceneRef.current.animateTo(camPos, [cx, cy, cz], 0.4)
-    }, [mode, getModeBbox])  
+    }, [mode, getModeBbox])
 
     // Reset animReady when animation is toggled off or mode changes
     useEffect(() => {

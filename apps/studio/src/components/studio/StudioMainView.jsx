@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import Viewer from '../Viewer'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
 import { useProject } from '../../contexts/ProjectProvider'
 import { useLanguage } from '../../contexts/LanguageProvider'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
   if (loading) {
@@ -38,9 +40,14 @@ export default function StudioMainView() {
   } = useProject()
 
   const { t } = useLanguage()
+  const [estimateOpen, setEstimateOpen] = useState(true)
+
+  // Only show the estimate toggle when there's something to show
+  const hasEstimate = printEstimate?.volumeMm3 > 0
 
   return (
     <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
+      {/* 3D Viewport */}
       <div className="flex-1 relative min-h-0" aria-busy={loading}>
         <Viewer
           ref={viewerRef}
@@ -61,24 +68,51 @@ export default function StudioMainView() {
           visibleParts={visibleParts}
         />
         <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
-        <PrintEstimateOverlay
-          volumeMm3={printEstimate?.volumeMm3}
-          boundingBox={printEstimate?.boundingBox}
-        />
         {/* Accessible live region for render status */}
         <div aria-live="polite" className="sr-only">
           {loading ? 'Rendering in progress' : parts.length > 0 ? 'Render complete' : ''}
         </div>
       </div>
 
-      <div
-        ref={consoleRef}
-        className="h-32 lg:h-48 bg-muted border-t border-border p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap shrink-0"
-        role="log"
-        aria-live="polite"
-        aria-label="Render console"
-      >
-        {logs}
+      {/* Bottom panel: logs + collapsible print estimate side panel */}
+      <div className="h-32 lg:h-48 flex shrink-0 border-t border-border">
+
+        {/* Console logs */}
+        <div
+          ref={consoleRef}
+          className="flex-1 bg-muted p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap min-w-0"
+          role="log"
+          aria-live="polite"
+          aria-label="Render console"
+        >
+          {logs}
+        </div>
+
+        {/* Collapse/expand toggle tab */}
+        {hasEstimate && (
+          <div className="flex items-stretch">
+            <button
+              onClick={() => setEstimateOpen(o => !o)}
+              className="w-5 bg-muted hover:bg-accent border-l border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              title={estimateOpen ? 'Collapse estimate' : 'Expand estimate'}
+              aria-expanded={estimateOpen}
+              aria-label="Toggle print estimate panel"
+            >
+              {estimateOpen ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+            </button>
+          </div>
+        )}
+
+        {/* Print Estimate inline panel */}
+        {hasEstimate && estimateOpen && (
+          <div className="shrink-0 w-52 bg-card border-l border-border overflow-y-auto">
+            <PrintEstimateOverlay
+              volumeMm3={printEstimate?.volumeMm3}
+              boundingBox={printEstimate?.boundingBox}
+              inline
+            />
+          </div>
+        )}
       </div>
     </div>
   )

@@ -255,6 +255,12 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const { language, t } = useLanguage()
     const { theme } = useTheme()
     const { getCameraViews, getViewerConfig, getLabel, getMode, manifest } = useManifest()
+
+    // Helper: get the precomputed initial bounding box for the current mode from the manifest
+    const getModeBbox = useCallback((modeId) => {
+        return manifest?.modes?.find(m => m.id === modeId)?.initial_bbox || null
+    }, [manifest])
+
     const axisColors = manifest?.viewer?.axis_colors
         ? [manifest.viewer.axis_colors.x || DEFAULT_AXIS_COLORS[0], manifest.viewer.axis_colors.y || DEFAULT_AXIS_COLORS[1], manifest.viewer.axis_colors.z || DEFAULT_AXIS_COLORS[2]]
         : DEFAULT_AXIS_COLORS
@@ -275,6 +281,25 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const [showAxes, setShowAxes] = useState(true)
     const [activeView, setActiveView] = useState('iso')
     const [animReady, setAnimReady] = useState(false)
+
+    // When the mode changes, position the camera immediately using the precomputed bbox
+    // This runs BEFORE any STLs are fetched, giving instant visual feedback
+    useEffect(() => {
+        const bbox = getModeBbox(mode)
+        if (!bbox || !sceneRef.current) return
+
+        const [cx, cy, cz] = bbox.center_mm
+        const maxDim = bbox.max_dim_mm
+        const offset = maxDim * 1.5
+        const camPos = [cx + offset, cy + offset, cz + offset]
+
+        // Seed the prev-refs so geometry load won't trigger a redundant jump
+        // (only re-animates if the actual centerOfMass differs by >1mm from precomputed)
+        prevCenterRef.current = [cx, cy, cz]
+        prevMaxDimRef.current = maxDim
+
+        sceneRef.current.animateTo(camPos, [cx, cy, cz], 0.4)
+    }, [mode, getModeBbox])  
 
     // Reset animReady when animation is toggled off or mode changes
     useEffect(() => {

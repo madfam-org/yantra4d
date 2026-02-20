@@ -348,8 +348,8 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                         sectionThickness={1.5}
                         sectionColor={isDark ? '#4b5563' : '#9ca3af'}
                         cellSize={1}
-                        cellThickness={0.5}
-                        cellColor={isDark ? '#374151' : '#d1d5db'}
+                        cellThickness={0.8}
+                        cellColor={isDark ? '#4b5563' : '#cbd5e1'}
                         fadeDistance={500}
                         fadeStrength={1.5}
                         rotation={[Math.PI / 2, 0, 0]}

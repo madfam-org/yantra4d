@@ -4,10 +4,10 @@ import { useManifest } from '../../contexts/ManifestProvider'
 import { estimatePrint, getMaterialProfiles, buildMaterialLookup } from '../../lib/printEstimator'
 
 /**
- * Overlay showing print-time and filament estimates for current model.
- * Receives geometry stats computed by parent (volume in mm³ + bounding box).
+ * Shows print-time and filament estimates for the current model.
+ * `inline` prop: render as a sidebar panel instead of an absolute overlay.
  */
-export default function PrintEstimateOverlay({ volumeMm3, boundingBox }) {
+export default function PrintEstimateOverlay({ volumeMm3, boundingBox, inline = false }) {
   const { t } = useLanguage()
   const { manifest } = useManifest()
   const manifestMaterials = manifest?.materials || null
@@ -26,6 +26,65 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox }) {
 
   const { time, filament } = estimate
 
+  if (inline) {
+    return (
+      <div role="status" aria-label="Print estimate" className="p-3 text-xs space-y-2 h-full">
+        <div className="font-semibold text-sm text-foreground">{t('print.title')}</div>
+
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <label htmlFor="pe-material-inline" className="text-muted-foreground shrink-0">{t('print.material')}:</label>
+          <select
+            id="pe-material-inline"
+            className="bg-background border border-border rounded px-1 py-0.5 text-xs flex-1 min-w-0"
+            value={material}
+            onChange={e => setMaterial(e.target.value)}
+          >
+            {materials.map(m => (
+              <option key={m.id} value={m.id}>{m.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <label htmlFor="pe-infill-inline" className="text-muted-foreground shrink-0">{t('print.infill')}:</label>
+          <select
+            id="pe-infill-inline"
+            className="bg-background border border-border rounded px-1 py-0.5 text-xs flex-1 min-w-0"
+            value={infill}
+            onChange={e => setInfill(parseFloat(e.target.value))}
+          >
+            <option value={0.10}>10%</option>
+            <option value={0.15}>15%</option>
+            <option value={0.20}>20%</option>
+            <option value={0.30}>30%</option>
+            <option value={0.50}>50%</option>
+            <option value={1.00}>100%</option>
+          </select>
+        </div>
+
+        <div className="border-t border-border pt-2 space-y-1">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t('print.time')}:</span>
+            <span className="font-medium">{time.hours > 0 ? `${time.hours}h ` : ''}{time.minutes}m</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t('print.weight')}:</span>
+            <span className="font-medium">{filament.grams}g</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t('print.length')}:</span>
+            <span className="font-medium">{filament.meters}m</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t('print.cost')}:</span>
+            <span className="font-medium">~${filament.cost}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Legacy absolute overlay (kept for backward compat)
   return (
     <div role="status" aria-label="Print estimate" className="absolute bottom-2 right-2 bg-card border border-border rounded-lg p-3 text-xs space-y-2 min-w-[180px] z-10">
       <div className="font-semibold text-sm">{t('print.title')}</div>

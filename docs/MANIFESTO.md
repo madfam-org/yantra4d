@@ -48,4 +48,4 @@ This dual-license architecture prevents the digital tragedy of the commons by tr
 
 We do not ask for charity; we enforce a symbiotic relationship. You are free to take our 4D Bounded Hyperobjects and integrate them into the largest, most proprietary industrial architectures on the planet. You are free to build empires on top of our external interfaces.
 
-But the objects themselves belong to the Commons. If you improve the object, the object's evolution belongs to all of us. You may own the assembly, but the language of the forms—managed by Yantra4D and governed by the Bounder—remains free, reciprocal, and mathematically absolute.
+But the objects themselves belong to the Commons. If you improve the object, the object's evolution belongs to all of us. You may own the assembly, but the language of the forms—managed by Yantra4D and governed by the Bounder—remains free, reciprocal, and mathematically absolute via the **Geometric Parity Guarantee**.

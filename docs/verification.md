@@ -2,9 +2,9 @@
 
 The project maintains a rigorous quality assurance process using the config-driven verification engine `tests/verify_design.py`.
 
-## Overview
-
 The verification engine uses `trimesh` to analyze exported STL geometry. Checks are organized into **manufacturing stages** (`geometry`, `printability`, `assembly_fit`), configurable per **mode** and per **part** from `project.json`.
+
+For Hyperobjects, an additional **Geometric Parity** check is enforced via `scripts/verify_parity.py` to ensure identical output across OpenSCAD and CadQuery engines.
 
 ## Script: `tests/verify_design.py`
 

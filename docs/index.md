@@ -10,6 +10,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Multi-Project Platform](./multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [Developer Experience Guide](./devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
 -   [WASM Mode](./wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
+-   [Dual-Engine Architecture](./dual-engine.md): Benefits of OpenSCAD + CadQuery parity and B-Rep export.
 -   [AI Features](./ai-features.md): AI Configurator and Code Editor — setup, API reference, tier access.
 -   [Troubleshooting](./troubleshooting.md): Common issues — render timeouts, CORS, git submodules, Docker env vars.
 -   [Competitive Landscape](./competitive-landscape.md): Market research, competitor analysis, and feature roadmap.
@@ -57,10 +58,11 @@ Access: http://localhost:3000
 
 ## Architecture Overview
 
-The project has three layers:
+The project has four layers:
 
-1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions (e.g., `projects/gridfinity/`, `projects/polydice/`, `projects/ultimate-box/`)
-2. **Backend API** (`apps/api/`) — Flask server that invokes OpenSCAD and serves STL files
-3. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer
+1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions for web previews.
+2. **CadQuery Models** (`projects/{slug}/`) — Industrial-grade B-Rep mirrors for manufacturing.
+3. **Backend API** (`apps/api/`) — Flask server that invokes both engines and runs verification.
+4. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer.
 
 All three layers are connected through **project manifests** (`projects/{slug}/project.json`), which declare modes, parameters, parts, and labels. The backend's manifest registry discovers projects at startup; the frontend fetches the active project's manifest via `/api/projects/{slug}/manifest` (with a bundled fallback). See [Project Manifest](./manifest.md) and [Multi-Project Platform](./multi-project.md) for details.

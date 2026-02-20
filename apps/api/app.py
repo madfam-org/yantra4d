@@ -40,6 +40,7 @@ from routes.ai import ai_bp
 from routes.assembly import assembly_bp
 from routes.storefront import storefront_bp
 from routes.catalog import catalog_bp
+from services.mqtt_telemetry import telemetry_service
 
 # Configure logging
 logging.basicConfig(
@@ -107,6 +108,9 @@ def create_app():
     logger.info(f"Projects Directory: {Config.PROJECTS_DIR}")
     logger.info(f"Multi-project mode: {Config.MULTI_PROJECT}")
     logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")
+
+    # Start the continuous 4D Telemetry Bridge
+    telemetry_service.start()
 
     return app
 

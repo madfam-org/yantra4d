@@ -33,6 +33,10 @@ class ProjectManifest:
         return self._data["project"]["slug"]
 
     @property
+    def engine(self) -> str:
+        return self._data["project"].get("engine", "openscad")
+
+    @property
     def modes(self) -> list:
         return self._data["modes"]
 

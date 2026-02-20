@@ -2,6 +2,8 @@ import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImp
 import { Canvas, useLoader } from '@react-three/fiber'
 import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { Box3, Box3Helper, Vector3, Color } from 'three'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useTheme } from "../contexts/ThemeProvider"
@@ -16,7 +18,30 @@ const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
 
 const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
-    const geom = useLoader(STLLoader, url)
+    const isGLTF = url?.toLowerCase().endsWith('.gltf') || url?.toLowerCase().endsWith('.glb')
+    const loader = isGLTF ? GLTFLoader : STLLoader
+    const modelData = useLoader(loader, url)
+
+    const geom = useMemo(() => {
+        if (!isGLTF) return modelData
+
+        // GLTF returns a full scene graph. We must extract and merge all meshes into a single BufferGeometry
+        // so that the standard Viewer materials and edge highlights apply uniformly to the parsed B-Rep.
+        const geometries = []
+        modelData.scene.updateMatrixWorld(true)
+        modelData.scene.traverse((child) => {
+            if (child.isMesh && child.geometry) {
+                const clonedGeom = child.geometry.clone()
+                clonedGeom.applyMatrix4(child.matrixWorld)
+                geometries.push(clonedGeom)
+            }
+        })
+
+        if (geometries.length === 0) return null
+        if (geometries.length === 1) return geometries[0]
+        return BufferGeometryUtils.mergeGeometries(geometries, false)
+    }, [modelData, isGLTF])
+
     useEffect(() => {
         if (geom && onGeometry) onGeometry(partType, geom)
         return () => {
@@ -26,6 +51,7 @@ const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryR
 
     // highlightMode: 'normal' | 'highlight' | 'ghost' | 'hidden'
     if (highlightMode === 'hidden') return null
+    if (!geom) return null
 
     const isGhost = highlightMode === 'ghost'
     const isHighlight = highlightMode === 'highlight'

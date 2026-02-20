@@ -1,5 +1,6 @@
-// Yantra4D wrapper — Parametric Bolt (threads-scad)
-use <threads-scad/threads.scad>
+// Yantra4D wrapper — Parametric Bolt (BOSL2)
+include <../../libs/BOSL2/std.scad>
+include <../../libs/BOSL2/threading.scad>
 
 diameter = 5;
 length = 20;
@@ -38,7 +39,7 @@ if (head_style_id == 0) {
 
 // Shaft with or without thread
 if (thread_enabled) {
-  ScrewThread(diameter, length, pitch=pitch);
+  threaded_rod(d=diameter, l=length, pitch=pitch, anchor=BOT);
 } else {
-  cylinder(d=diameter, h=length);
+  cylinder(d=diameter, h=length, anchor=BOT);
 }

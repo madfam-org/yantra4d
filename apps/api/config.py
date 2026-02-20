@@ -77,7 +77,7 @@ class AppConfig:
         self._dotscad_src = self._default_libs / "dotSCAD" / "src"
         self.OPENSCADPATH = os.getenv(
             "OPENSCADPATH",
-            os.pathsep.join([str(self.LIBS_DIR), str(self._dotscad_src)])
+            os.pathsep.join([str(self.LIBS_DIR), str(self._dotscad_src), str(self.PROJECTS_DIR)])
         )
 
         self.MULTI_PROJECT = os.getenv("PROJECTS_DIR") is not None or self._default_projects.is_dir()

@@ -66,6 +66,11 @@
             },
             "cdg_interface": { "type": "string" }
           }
+        },
+        "engine": {
+          "type": "string",
+          "enum": ["openscad", "cadquery"],
+          "default": "openscad"
         }
       }
     },
@@ -89,7 +94,7 @@
           },
           "scad_file": {
             "type": "string",
-            "pattern": "\\.scad$"
+            "pattern": "\\.(scad|py)$"
           },
           "label": {
             "$ref": "#/$defs/i18nString"
@@ -512,7 +517,9 @@
         "enum": [
           "stl",
           "3mf",
-          "off"
+          "off",
+          "step",
+          "gltf"
         ]
       },
       "default": [

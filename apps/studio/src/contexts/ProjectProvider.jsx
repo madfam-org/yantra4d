@@ -68,6 +68,8 @@ function ProjectProviderContent({ children }) {
     setColors: projectParams.setColors,
     wireframe: projectParams.wireframe,
     setWireframe: projectParams.setWireframe,
+    boundingBox: projectParams.boundingBox,
+    setBoundingBox: projectParams.setBoundingBox,
     animating: projectParams.animating,
     setAnimating: projectParams.setAnimating,
 

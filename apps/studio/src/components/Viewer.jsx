@@ -1,8 +1,8 @@
-import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback, useRef } from 'react'
+import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
-import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport } from '@react-three/drei'
+import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
-import { BoxHelper } from 'three'
+import { Box3, Box3Helper, Vector3, Color } from 'three'
 import { useLanguage } from "../contexts/LanguageProvider"
 import { useTheme } from "../contexts/ThemeProvider"
 import { useManifest } from "../contexts/ManifestProvider"
@@ -67,50 +67,21 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     )
 })
 
-import { Box3, Vector3 } from 'three'
-import { Html } from '@react-three/drei'
-
-const BoundingBoxHelper = ({ boundingBox, children }) => {
-    const groupRef = useRef()
-    const [box, setBox] = useState(null)
-    const [dims, setDims] = useState(null)
-
-    useEffect(() => {
-        if (!boundingBox || !groupRef.current) {
-            setBox(null) // eslint-disable-line react-hooks/set-state-in-effect
-            setDims(null)
-            return
-        }
-
-        // Poll continuously until models mount and acquire non-empty logical boundaries
-        const intervalId = setInterval(() => {
-            if (groupRef.current) {
-                const b = new Box3().setFromObject(groupRef.current)
-                if (!b.isEmpty()) {
-                    setBox(b)
-                    const size = new Vector3()
-                    b.getSize(size)
-                    setDims({
-                        w: size.x.toFixed(1),
-                        h: size.z.toFixed(1), // Z up
-                        d: size.y.toFixed(1)
-                    })
-                    // Stop polling once we capture legitimate geometry
-                    clearInterval(intervalId)
-                }
-            }
-        }, 100)
-
-        // Cleanup on unmount or re-trigger
-        return () => clearInterval(intervalId)
-    }, [boundingBox, children])
+const BoundingBoxHelper = ({ boundingBox, box, children }) => {
+    // Only compute center and size if box exists
+    const center = box ? box.getCenter(new Vector3()) : new Vector3()
+    const size = box ? box.getSize(new Vector3()) : new Vector3()
 
     return (
-        <group ref={groupRef}>
+        <group>
             {children}
-            {box && dims && (
-                <>
-                    <box3Helper args={[box, 0x06b6d4]} />
+            {boundingBox && box && (
+                <group>
+                    <mesh position={center}>
+                        <boxGeometry args={[size.x, size.y, size.z]} />
+                        <meshBasicMaterial visible={false} />
+                        <Edges color="#06b6d4" linewidth={1.5} />
+                    </mesh>
                     {/* Width label (X axis) - bottom front edge */}
                     <Html
                         position={[box.min.x + (box.max.x - box.min.x) / 2, box.min.y, box.min.z]}
@@ -118,7 +89,7 @@ const BoundingBoxHelper = ({ boundingBox, children }) => {
                         className="pointer-events-none select-none"
                     >
                         <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
-                            {dims.w}mm
+                            {(box.max.x - box.min.x).toFixed(1)}mm
                         </div>
                     </Html>
                     {/* Depth label (Y axis) - bottom right edge */}
@@ -128,7 +99,7 @@ const BoundingBoxHelper = ({ boundingBox, children }) => {
                         className="pointer-events-none select-none"
                     >
                         <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
-                            {dims.d}mm
+                            {(box.max.y - box.min.y).toFixed(1)}mm
                         </div>
                     </Html>
                     {/* Height label (Z axis) - back left edge */}
@@ -138,10 +109,10 @@ const BoundingBoxHelper = ({ boundingBox, children }) => {
                         className="pointer-events-none select-none"
                     >
                         <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
-                            {dims.h}mm
+                            {(box.max.z - box.min.z).toFixed(1)}mm
                         </div>
                     </Html>
-                </>
+                </group>
             )}
         </group>
     )
@@ -153,6 +124,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const prevMaxDimRef = React.useRef(null)
     const sceneRef = React.useRef()
     const [centerOfMass, setCenterOfMass] = useState([0, 0, 0])
+    const [sceneBox, setSceneBox] = useState(null)
 
     const handleGeometry = useCallback((partType, geometry) => {
         geometriesRef.current[partType] = geometry
@@ -164,6 +136,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         let totalVolume = 0
         let weightedCenterSum = { x: 0, y: 0, z: 0 }
         let mergedBox = null
+        let absoluteBox = null
         for (const geom of Object.values(geometriesRef.current)) {
             const vol = computeVolumeMm3(geom)
             totalVolume += vol
@@ -183,7 +156,16 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     height: Math.max(mergedBox.height, bbox.height),
                 }
             }
+
+            if (!geom.boundingBox) geom.computeBoundingBox()
+            if (!absoluteBox) {
+                absoluteBox = new Box3().copy(geom.boundingBox)
+            } else {
+                absoluteBox.union(geom.boundingBox)
+            }
         }
+
+        setSceneBox(absoluteBox)
 
         if (totalVolume > 0) {
             const newCenter = [
@@ -367,7 +349,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     <Suspense fallback={null}>
                         {parts.length > 0 ? (
                             <>
-                                <BoundingBoxHelper boundingBox={boundingBox}>
+                                <BoundingBoxHelper boundingBox={boundingBox} box={sceneBox}>
                                     {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
                                     <group>
                                         {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => (

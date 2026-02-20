@@ -185,7 +185,7 @@ Any project designated as a "Hyperobject" and part of the Commons must adhere to
 - `gears` — mechanical domain, `profile` interfaces
 - `motor-mount` — industrial domain, `bolt_pattern` interfaces
 
-*(Note: As of Feb 20, 2026, 12 out of 12 declared Hyperprojects have been fully audited and migrated to native Phase 3.5 BOSL2 and CERN-OHL strict architectures, achieving 100% compliance.)*
+*(Note: As of Feb 20, 2026, 13 out of 13 declared Hyperprojects have been fully audited and migrated to native Phase 3.5 BOSL2 and CERN-OHL strict architectures, achieving 100% compliance including the new SCARA Robotics suite.)*
 
 **Why it matters**: Transforms parametric projects from isolated designs into interoperable components in a distributed manufacturing commons. CDG interfaces enable communities to build compatible ecosystems of printable objects.
 
@@ -305,4 +305,5 @@ New SCAD projects to be designed and classified as Hyperobjects from the ground 
 | MCAD → BOSL2 Gears | Phase 3 | Low | Small | 🗓️ Planned |
 | Dual-Engine CadQuery (B-Rep) | Phase 3 | High | Large | ✅ Done |
 | SDK Cartridges & Telemetry | Phase 3 | High | Medium | ✅ Done |
+| **SCARA Robotics Hyperobject**| **Phase 3** | High | Large | ✅ Done |
 | **`framing-hyperobject` project** | **Phase 4** | High | Large | 🔬 Research done |

@@ -4,7 +4,7 @@ A manifest-driven platform for parametric OpenSCAD models with a web-based 3D pr
 
 ![Yantra4D](/docs/images/half_cube_iso.png)
 
-Ships with 21 built-in projects including **gridfinity** (modular storage), **slide-holder** 🔷 (microscope slide retention — first hyperobject), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), **rugged-box** (hinged latching box), and **motor-mount** (NEMA stepper mounts). See [`projects/`](./projects/) for all projects.
+Ships with 22 built-in projects including **gridfinity** (modular storage), **slide-holder** 🔷 (microscope slide retention — first hyperobject), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), **rugged-box** (hinged latching box), **motor-mount** (NEMA stepper mounts), and **scara-robotics** (precision SCARA robotics Harmonic Drive). See [`projects/`](./projects/) for all projects.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
@@ -52,7 +52,7 @@ yantra4d/
 │   │   └── exports/models/      # Reference STL exports
 │   ├── polydice/                # Parametric dice set
 │   ├── ultimate-box/            # Parametric box maker
-│   └── ...                      # 21 built-in projects total
+│   └── ...                      # 22 built-in projects total
 ├── apps/
 │   ├── api/                     # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration

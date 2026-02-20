@@ -2,7 +2,7 @@
 
 > Manifest-driven parametric 3D print design platform evolving into a
 > Hyperobjects Commons. Flask API + React/Vite studio + Astro landing page.
-> 21 built-in OpenSCAD projects with dual rendering (server-side CLI +
+> 22 built-in OpenSCAD projects with dual rendering (server-side CLI +
 > client-side WASM), tiered access control, AI-assisted design, and GitHub
 > integration.
 
@@ -12,7 +12,7 @@ The architecture has three layers: a Flask API backend that renders models via t
 
 The platform supports four user tiers (guest, basic, pro, madfam) that gate features like export formats (STL/3MF/OFF), GitHub import and sync, AI-assisted parameter configuration, AI-powered SCAD code editing, and project limits. AI features use streaming SSE with support for Anthropic and OpenAI providers. GitHub integration enables repo import, file editing via a Monaco-based SCAD editor, and git operations (status, diff, commit, push, pull).
 
-The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite, Tailwind CSS, Shadcn UI, Three.js), Astro, Docker, Vitest + RTL + jest-axe (frontend testing), and pytest (backend testing). The platform ships with 21 built-in projects including gridfinity (modular storage), microscope-slide-holder (microscope slide retention — first hyperobject), polydice (dice), gears, voronoi, maze, relief, and more.
+The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite, Tailwind CSS, Shadcn UI, Three.js), Astro, Docker, Vitest + RTL + jest-axe (frontend testing), and pytest (backend testing). The platform ships with 22 built-in projects including gridfinity (modular storage), microscope-slide-holder (microscope slide retention — first hyperobject), polydice (dice), gears, scara-robotics (precision SCARA robotics Harmonic Drive), voronoi, maze, relief, and more.
 
 ## Documentation
 
@@ -29,7 +29,7 @@ The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite,
 
 ## Projects
 
-- [projects/](./projects/): 21 built-in parametric SCAD projects (gridfinity, microscope-slide-holder, polydice, gears, voronoi, maze, relief, and more)
+- [projects/](./projects/): 22 built-in parametric SCAD projects (gridfinity, microscope-slide-holder, polydice, gears, scara-robotics, voronoi, maze, relief, and more)
 
 ## Internal Audits
 

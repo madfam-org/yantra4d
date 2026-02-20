@@ -15,11 +15,14 @@ import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../lib/pr
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
 
-const Model = ({ url, color, wireframe, onGeometry, highlightMode, isDark }) => {
+const Model = ({ url, color, wireframe, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
     const geom = useLoader(STLLoader, url)
     useEffect(() => {
         if (geom && onGeometry) onGeometry(geom)
-    }, [geom, onGeometry])
+        return () => {
+            if (onGeometryRemove) onGeometryRemove()
+        }
+    }, [geom, onGeometry, onGeometryRemove])
 
     // highlightMode: 'normal' | 'highlight' | 'ghost' | 'hidden'
     if (highlightMode === 'hidden') return null
@@ -126,12 +129,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const [centerOfMass, setCenterOfMass] = useState([0, 0, 0])
     const [sceneBox, setSceneBox] = useState(null)
 
-    const handleGeometry = useCallback((partType, geometry) => {
-        geometriesRef.current[partType] = geometry
-        // DEBUG: Check geometry bounds on load
-        geometry.computeBoundingBox()
-        console.log(`[Viewer] Loaded ${partType}:`, geometry.boundingBox)
-
+    const recalculateSceneStats = useCallback(() => {
         // Aggregate stats across all parts
         let totalVolume = 0
         let weightedCenterSum = { x: 0, y: 0, z: 0 }
@@ -207,10 +205,29 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                 prevCenterRef.current = newCenter
                 prevMaxDimRef.current = maxDim
             }
+        } else {
+            // Handle complete empty state
+            setCenterOfMass([0, 0, 0])
         }
 
         onGeometryStats?.({ volumeMm3: totalVolume, boundingBox: mergedBox })
     }, [onGeometryStats])
+
+    const handleGeometry = useCallback((partType, geometry) => {
+        geometriesRef.current[partType] = geometry
+        // DEBUG: Check geometry bounds on load
+        geometry.computeBoundingBox()
+        console.log(`[Viewer] Loaded ${partType}:`, geometry.boundingBox)
+        recalculateSceneStats()
+    }, [recalculateSceneStats])
+
+    const handleGeometryRemove = useCallback((partType) => {
+        if (geometriesRef.current[partType]) {
+            delete geometriesRef.current[partType]
+            console.log(`[Viewer] Removed ${partType}`)
+            recalculateSceneStats()
+        }
+    }, [recalculateSceneStats])
 
     const { language, t } = useLanguage()
     const { theme } = useTheme()
@@ -359,6 +376,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                                 color={colors[part.type] || defaultColor}
                                                 wireframe={wireframe}
                                                 onGeometry={(geom) => handleGeometry(part.type, geom)}
+                                                onGeometryRemove={() => handleGeometryRemove(part.type)}
                                                 highlightMode={getHighlightMode(part.type)}
                                             />
                                         ))}
@@ -372,6 +390,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                                 color={colors[part.type] || defaultColor}
                                                 wireframe={wireframe}
                                                 onGeometry={(geom) => handleGeometry(part.type, geom)}
+                                                onGeometryRemove={() => handleGeometryRemove(part.type)}
                                                 highlightMode={getHighlightMode(part.type)}
                                             />
                                         ))}

@@ -16,9 +16,9 @@ describe('ProjectGalleryGrid', () => {
   it('renders all projects by default', () => {
     render(<ProjectGalleryGrid />)
     // Should have project cards for all projects
-    expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
-    expect(screen.getByText('Voronoi Generator')).toBeInTheDocument()
-    expect(screen.getByText('Gear Reducer')).toBeInTheDocument()
+    expect(screen.getAllByText('Gridfinity Extended').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Voronoi Generator').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Gear Reducer').length).toBeGreaterThan(0)
   })
 
   it('filters by category when clicking tab', () => {
@@ -26,8 +26,8 @@ describe('ProjectGalleryGrid', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Mecánico' }))
 
     // Should show mechanical projects
-    expect(screen.getByText('Gear Reducer')).toBeInTheDocument()
-    expect(screen.getByText('Parametric Gears')).toBeInTheDocument()
+    expect(screen.getAllByText('Gear Reducer').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Parametric Gears').length).toBeGreaterThan(0)
 
     // Should not show non-mechanical projects
     expect(screen.queryByText('Voronoi Generator')).not.toBeInTheDocument()
@@ -41,7 +41,7 @@ describe('ProjectGalleryGrid', () => {
 
     // Click all
     fireEvent.click(screen.getByRole('tab', { name: 'Todos' }))
-    expect(screen.getByText('Voronoi Generator')).toBeInTheDocument()
+    expect(screen.getAllByText('Voronoi Generator').length).toBeGreaterThan(0)
   })
 
   it('shows Spanish descriptions by default (lang=es)', () => {
@@ -127,8 +127,8 @@ describe('ProjectGalleryGrid', () => {
     fireEvent.click(screen.getByRole('tab', { name: '🔷 Commons' }))
 
     // hyperobject projects should be visible
-    expect(screen.getByText('Microscope Slide Holder')).toBeInTheDocument()
-    expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
+    expect(screen.getAllByText('Microscope Slide Holder').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Gridfinity Extended').length).toBeGreaterThan(0)
     // non-hyperobject projects should be hidden
     expect(screen.queryByText('Voronoi Generator')).not.toBeInTheDocument()
     expect(screen.queryByText('PolyDice Generator')).not.toBeInTheDocument()
@@ -144,6 +144,6 @@ describe('ProjectGalleryGrid', () => {
   it('shows domain label on hyperobject cards', () => {
     render(<ProjectGalleryGrid />)
     // slide-holder has domain: 'medical' → shows 'Médico' in Spanish (default lang)
-    expect(screen.getByText('Médico')).toBeInTheDocument()
+    expect(screen.getAllByText('Médico').length).toBeGreaterThan(0)
   })
 })

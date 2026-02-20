@@ -33,11 +33,15 @@ describe('PluginLoader', () => {
   })
 
   it('shows error for invalid URLs', async () => {
+    // Suppress console.error for this test as Vite will log the import error
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
     render(<PluginLoader url="not-a-url" />)
     expect(await screen.findByText(/Failed to load plugin/)).toBeInTheDocument()
+    consoleSpy.mockRestore()
   })
 
-  // Note: Testing successful plugin loading via dynamic import would require
-  // complex mocking of the native import() keyword which is out of scope 
-  // for this test environment.
+  it('shows loading state initially', () => {
+    render(<PluginLoader url="http://localhost:3000/valid.js" />)
+    expect(screen.getByText(/Loading plugin/)).toBeInTheDocument()
+  })
 })

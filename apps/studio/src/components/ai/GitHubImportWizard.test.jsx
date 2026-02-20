@@ -105,5 +105,115 @@ describe('GitHubImportWizard', () => {
 
     expect(await screen.findByText('Project imported')).toBeInTheDocument()
     expect(mockOnImported).toHaveBeenCalledWith('r')
+
+    // Verify opening editor
+    fireEvent.click(screen.getByRole('button', { name: 'Open in Editor' }))
+    expect(mockOnClose).toHaveBeenCalled()
+  })
+
+  it('handles validation network error', async () => {
+    apiFetch.mockRejectedValueOnce(new Error('Network error'))
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/bad/repo' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    expect(await screen.findByText('Network error')).toBeInTheDocument()
+  })
+
+  it('handles import without manifest', async () => {
+    apiFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        scad_files: [],
+        has_manifest: false
+      })
+    })
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/u/r' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    await waitFor(() => screen.getByLabelText('Project slug'))
+
+    // Attempt import
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }))
+    expect(await screen.findByText('A valid manifest is required to import')).toBeInTheDocument()
+  })
+
+  it('handles import error response', async () => {
+    apiFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        scad_files: [],
+        has_manifest: true,
+        manifest: {}
+      })
+    })
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/u/r' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    await waitFor(() => screen.getByLabelText('Project slug'))
+
+    apiFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Import failed' })
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }))
+    expect(await screen.findByText('Import failed')).toBeInTheDocument()
+  })
+
+  it('handles import network error', async () => {
+    apiFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        scad_files: [],
+        has_manifest: true,
+        manifest: {}
+      })
+    })
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/u/r' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    await waitFor(() => screen.getByLabelText('Project slug'))
+
+    apiFetch.mockRejectedValueOnce(new Error('Network import error'))
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }))
+    expect(await screen.findByText('Network import error')).toBeInTheDocument()
+  })
+
+  it('allows user to navigate back', async () => {
+    apiFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        scad_files: [],
+        has_manifest: true,
+        manifest: {}
+      })
+    })
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/u/r' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    await waitFor(() => screen.getByLabelText('Project slug'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+    expect(screen.getByRole('button', { name: 'Validate' })).toBeInTheDocument()
+  })
+
+  it('allows user to modify slug', async () => {
+    apiFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        scad_files: [],
+        has_manifest: true,
+        manifest: {}
+      })
+    })
+    render(<GitHubImportWizard onClose={mockOnClose} />)
+    fireEvent.change(screen.getByLabelText('Repository URL'), { target: { value: 'https://github.com/u/custom-repo' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    await waitFor(() => screen.getByLabelText('Project slug'))
+
+    const slugInput = screen.getByLabelText('Project slug')
+    fireEvent.change(slugInput, { target: { value: 'New_SLUG-1' } })
+
+    // verifies sanitization happens too
+    expect(slugInput.value).toBe('new_slug-1')
   })
 })

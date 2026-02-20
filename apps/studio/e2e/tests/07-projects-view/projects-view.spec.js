@@ -70,6 +70,6 @@ test.describe('Projects View', () => {
       route.fulfill({ status: 500, json: { error: 'Server error' } })
     })
     await goToProjects(page)
-    await expect(page.locator('.text-destructive')).toBeVisible({ timeout: 8000 })
+    await expect(page.getByText('Server error')).toBeVisible({ timeout: 8000 })
   })
 })

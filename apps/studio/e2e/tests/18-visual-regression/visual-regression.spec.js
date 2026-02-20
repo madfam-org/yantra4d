@@ -96,7 +96,7 @@ test.describe('Visual Regression', () => {
     await setTheme(page, 'light')
     await goToStudio(page)
     await page.waitForTimeout(500)
-    const sidebar = page.locator('.lg\\:w-80').first()
+    const sidebar = page.locator('[data-testid="studio-sidebar"]').first()
     await expect(sidebar).toHaveScreenshot('sidebar.png', {
       maxDiffPixelRatio: 0.05,
     })
@@ -107,7 +107,7 @@ test.describe('Visual Regression', () => {
     await setTheme(page, 'dark')
     await goToStudio(page)
     await page.waitForTimeout(500)
-    const sidebar = page.locator('.lg\\:w-80').first()
+    const sidebar = page.locator('[data-testid="studio-sidebar"]').first()
     await expect(sidebar).toHaveScreenshot('sidebar-dark.png', {
       maxDiffPixelRatio: 0.05,
     })
@@ -118,7 +118,7 @@ test.describe('Visual Regression', () => {
     await setTheme(page, 'light')
     await goToStudio(page)
     await page.waitForTimeout(500)
-    const exportPanel = page.locator('text=Export Images').locator('..').locator('..')
+    const exportPanel = page.getByTestId('export-panel')
     await expect(exportPanel).toHaveScreenshot('export-panel.png', {
       maxDiffPixelRatio: 0.05,
     })
@@ -151,7 +151,7 @@ test.describe('Visual Regression', () => {
     await setTheme(page, 'light')
     await goToProjects(page)
     await page.waitForTimeout(500)
-    const card = page.locator('a[href="#/test"]').first()
+    const card = page.getByTestId('project-row').first()
     await expect(card).toHaveScreenshot('project-card.png', {
       maxDiffPixelRatio: 0.05,
     })
@@ -162,7 +162,7 @@ test.describe('Visual Regression', () => {
     await setTheme(page, 'dark')
     await goToProjects(page)
     await page.waitForTimeout(500)
-    const card = page.locator('a[href="#/test"]').first()
+    const card = page.getByTestId('project-row').first()
     await expect(card).toHaveScreenshot('project-card-dark.png', {
       maxDiffPixelRatio: 0.05,
     })

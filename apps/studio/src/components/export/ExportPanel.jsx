@@ -31,7 +31,7 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
     : EXPORT_FORMATS.filter(f => f.id === 'stl')
 
   return (
-    <div className="flex flex-col gap-2 border-t border-border pt-4">
+    <div data-testid="export-panel" className="flex flex-col gap-2 border-t border-border pt-4">
       {supportedFormats.length > 1 && (
         <div className="flex items-center gap-2 text-xs">
           <span className="text-muted-foreground">{t("act.format")}:</span>
@@ -41,8 +41,8 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
                 key={f.id}
                 type="button"
                 className={`px-2 py-0.5 rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${(exportFormat || 'stl') === f.id
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-background text-muted-foreground border-border hover:text-foreground'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background text-muted-foreground border-border hover:text-foreground'
                   }`}
                 onClick={() => onExportFormatChange?.(f.id)}
               >

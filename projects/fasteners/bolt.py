@@ -1,6 +1,12 @@
 import cadquery as cq
 import json
 import argparse
+import sys
+import os
+
+# Add monorepo root to sys.path to import centralized libs
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+from libs.cq_core import create_thread
 
 def build(params):
     diameter = float(params.get('diameter', 5.0))
@@ -9,14 +15,17 @@ def build(params):
     head_height = float(params.get('head_height', 0.0))
     head_style_id = int(params.get('head_style_id', 0))
     
-    # thread_enabled is ignored for rendering performance but parameterized
-    params.get('thread_enabled', True)
+    thread_enabled = params.get('thread_enabled', True)
+    pitch = float(params.get('pitch', 0.8))
     
     head_d = head_diameter if head_diameter > 0 else diameter * 1.7
     head_h = head_height if head_height > 0 else diameter * 0.7
     
     # Shaft
-    bolt = cq.Workplane("XY").circle(diameter / 2.0).extrude(length)
+    if thread_enabled:
+        bolt = create_thread(diameter, pitch, length)
+    else:
+        bolt = cq.Workplane("XY").circle(diameter / 2.0).extrude(length)
     
     # Head
     head_wp = cq.Workplane("XY", origin=(0,0,length))

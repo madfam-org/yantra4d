@@ -91,6 +91,8 @@ Before expanding with new features or new hyperobject projects, the platform mus
 - [ ] **Decentralized Instancing:** Enhance the CLI and multi-project tools to allow independent creators to easily spin up their own white-labeled Yantra4D nodes.
 
 ### 3.10 — Reliability & Documentation
+- [x] **4D Docs Application:** Deployed an Astro Starlight `apps/docs` portal at `4d-docs.madfam.io` for "peak devX".
+- [x] **Agentic Discovery:** Formalized `/llms.txt` specifications for native LLM scraping.
 - [x] **Landing Page Island Tests:** Implement Vitest component testing for React islands.
 - [x] **Feature Documentation:** Author strict user guides for "invisible" platform mechanics.
 - [x] **E2E CI Integration Validation:** Ensure the recently integrated Playwright E2E suites successfully block regressions.
@@ -104,7 +106,7 @@ Before expanding with new features or new hyperobject projects, the platform mus
 
 ---
 
-## Phase 5 — Full Poly-Kernel Implementation & Strict Compliance (Proposed)
+## Phase 5 — Full Poly-Kernel Implementation & Strict Compliance (Completed)
 
 This phase focuses on reaching 100% architectural parity across the entire Hyperobject Commons, ensuring every project is a "first-class citizen" in both OpenSCAD and CadQuery kernels.
 
@@ -112,8 +114,28 @@ This phase focuses on reaching 100% architectural parity across the entire Hyper
 - [x] **Enforce strict manifest rules:** Re-enable mandatory `cq_file` and `estimate_constants` requirements in the core JSON Schema.
 - [x] **Hyperobject Integrity:** Formalize that `is_hyperobject: true` is invalid without a geometrically parity-matched CadQuery definition.
 
-### 5.2 — Geometric Parity Execution
-- [ ] **Poly-Kernel Implementations:** Author CadQuery (`.py`) equivalents for all 36+ projects in the commons that are currently SCAD-only.
-- [ ] **Verified Parity:** Implement automated geometric verification to ensure `.scad` and `.py` kernels produce identical B-Rep/Mesh outputs for given parameter sets.
-- [ ] **CDG Interface Parity:** Ensure all 6 CDG interfaces are natively and correctly executed across both kernels for all Hyperobjects.
+### 5.2 — Geometric Parity Authoring
+- [x] **Poly-Kernel Implementations:** Authored CadQuery (`.py`) B-Rep equivalents for all 36 projects in the commons that were SCAD-only.
+- [x] **Commons Validation:** Verified that `scripts/validate_manifests.py` organically passes at 100% ecosystem compliance.
+
+---
+
+## Phase 6 — Continuous Verification & Deep Integration (Next Priorities)
+
+To solidify our status as an elite Hyperobjects Commons platform, the immediate next focus must turn toward mathematical verification, deduplication, and collaborative viewing.
+
+### Priority 1: 6.1 — Automated Geometric Regression Testing
+- [ ] Build a CI pipeline testing script to dynamically generate meshes via both CSG (OpenSCAD) and B-Rep (CadQuery) algorithms.
+- [ ] Conduct volumetric and bounding-box analysis to guarantee the Python output mathematically matches the original SCAD geometry.
+
+### Priority 2: 6.2 — Core Library Geometry Refactoring (Tech Debt)
+- [ ] Eliminate fragmented mathematical logic across the 36 projects. 
+- [ ] Centralize reusable constructs (threads, snaps, specific module functions) deeply into Yantra4D's integrated `libs/` namespace.
+
+### Priority 3: 6.3 — Dual-Kernel CDG Interface Compliance
+- [ ] Explicitly verify that the 6 required Common Denominator Geometry (CDG) interfaces (e.g. `rabbet`, `french_cleat`) physically slice flawless bounds natively across BOTH kernels.
+
+### Priority 4: 6.4 — Visual "3D Git" Implementation
+- [ ] Connect the Monaco editor's GitHub tracking into the Three.js viewport.
+- [ ] Visualize geometrical additions (green) and deletions (red) directly on the realtime 3D mesh.
 

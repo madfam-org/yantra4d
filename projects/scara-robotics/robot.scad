@@ -1,5 +1,5 @@
 // Yantra4D — SCARA Robotics Robot (BOSL2)
-include <BOSL2/std.scad>
+include <../../libs/BOSL2/std.scad>
 
 $fn = 128;
 

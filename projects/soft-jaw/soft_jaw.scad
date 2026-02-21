@@ -1,4 +1,4 @@
-include <BOSL2/std.scad>
+include <../../libs/BOSL2/std.scad>
 
 // Yantra4D Parameters
 jaw_width_inch = 6; // [4, 6, 8]

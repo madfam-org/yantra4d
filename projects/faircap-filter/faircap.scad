@@ -1,5 +1,5 @@
-include <BOSL2/std.scad>
-include <BOSL2/threading.scad>
+include <../../libs/BOSL2/std.scad>
+include <../../libs/BOSL2/threading.scad>
 
 // Yantra4D Parameters
 filter_type = "charcoal"; // [charcoal, ceramic, mesh, empty]

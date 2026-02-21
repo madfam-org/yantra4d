@@ -158,7 +158,7 @@ export default function StudioSidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <div data-testid="studio-sidebar" className="hidden lg:flex w-80 min-w-[20rem] border-r border-border bg-card p-4 flex-col gap-4 overflow-y-auto shrink-0">
+      <div data-testid="studio-sidebar" className="hidden lg:flex w-full h-full min-w-[20rem] bg-card p-4 flex-col gap-4 overflow-y-auto shrink-0">
         <SidebarContent />
       </div>
 

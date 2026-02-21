@@ -206,7 +206,7 @@ def render_stl():
                         size_bytes = None
                     generated_parts.append({
                         "type": part,
-                        "url": f"{request.host_url}api/projects/{project_slug}/parts/{static_path.name}",
+                        "url": f"/api/projects/{project_slug}/parts/{static_path.name}",
                         "size_bytes": size_bytes
                     })
                     continue
@@ -222,7 +222,7 @@ def render_stl():
                 combined_log += f"[{part}] cache HIT\n"
                 generated_parts.append({
                     "type": part,
-                    "url": f"{request.host_url}static/{output_filename}",
+                    "url": f"/static/{output_filename}",
                     "size_bytes": cached["size_bytes"]
                 })
                 continue
@@ -256,7 +256,7 @@ def render_stl():
 
             generated_parts.append({
                 "type": part,
-                "url": f"{request.host_url}static/{output_filename}",
+                "url": f"/static/{output_filename}",
                 "size_bytes": size_bytes
             })
 
@@ -300,7 +300,7 @@ def render_stl_stream():
     project_slug = data.get('project', '')
 
     num_parts = len(parts_to_render)
-    host_url = request.host_url
+    num_parts = len(parts_to_render)
 
     cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
 
@@ -316,7 +316,7 @@ def render_stl_stream():
                         size_bytes = os.path.getsize(static_path)
                     except OSError:
                         size_bytes = None
-                    part_url = f"{host_url}api/projects/{project_slug}/parts/{static_path.name}"
+                    part_url = f"/api/projects/{project_slug}/parts/{static_path.name}"
                     generated_parts.append({
                         "type": part,
                         "url": part_url,
@@ -360,7 +360,7 @@ def render_stl_stream():
                         size_bytes = None
                     generated_parts.append({
                         "type": part,
-                        "url": f"{host_url}static/{output_filename}",
+                        "url": f"/static/{output_filename}",
                         "size_bytes": size_bytes
                     })
 

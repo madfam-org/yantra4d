@@ -40,18 +40,34 @@ export function isProjectsView(hash) {
 export function parseHash(hash, presets, modes) {
   const parts = parseHashParts(hash)
   let presetId, modeId
+
   if (parts.length >= 3) {
     presetId = parts[1]
     modeId = parts[2]
+  } else if (parts.length === 2) {
+    presetId = parts[1]
+    modeId = null
   } else {
-    presetId = parts[0]
-    modeId = parts[1]
+    presetId = null
+    modeId = null
   }
+
   const preset = presets.find(p => p.id === presetId)
-  const mode = modes.find(m => m.id === modeId)
+  let mode = modes.find(m => m.id === modeId)
+
+  // If no explict mode matched but we found a valid preset, default to its first allowed mode
+  if (!mode && preset && preset.visible_in_modes && preset.visible_in_modes.length > 0) {
+    mode = modes.find(m => m.id === preset.visible_in_modes[0])
+  }
+
+  // Final fallback
+  if (!mode) {
+    mode = modes.length > 0 ? modes[0] : null
+  }
+
   return {
     preset: preset || presets[0] || null,
-    mode: mode || (modes.length > 0 ? modes[0] : null),
+    mode: mode,
   }
 }
 

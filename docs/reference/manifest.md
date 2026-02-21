@@ -207,7 +207,7 @@ Projects can optionally declare `hyperobject` metadata to be classified as **Bou
       "en": "Enables labs to fabricate precision slide holders",
       "es": "Permite a laboratorios fabricar portaobjetos de precisión"
     },
-    "commons_license": "CERN-OHL-S-2.0"  // SPDX license identifier
+    "commons_license": "CERN-OHL-W-2.0"  // SPDX license identifier
   }
 }
 ```

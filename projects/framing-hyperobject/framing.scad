@@ -33,11 +33,11 @@ module frame_assembly() {
 
   // Select Profile Generator
   if (profile_style == "ogee") {
-    color("saddlebrown") render_profile(path, "ogee", 30, depth);
+    color("saddlebrown") render_profile(width, height, "ogee", 30, depth);
   } else if (profile_style == "bevel") {
-    color("saddlebrown") render_profile(path, "bevel", 30, depth);
+    color("saddlebrown") render_profile(width, height, "bevel", 30, depth);
   } else if (profile_style == "box") {
-    color("saddlebrown") render_profile(path, "box", 20, depth);
+    color("saddlebrown") render_profile(width, height, "box", 20, depth);
   } else if (profile_style == "stretcher") {
     color("burlywood") render_textile_profile(path, "stretcher", 45, 19);
   } else if (profile_style == "seg") {

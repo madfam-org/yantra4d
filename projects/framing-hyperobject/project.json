@@ -30,6 +30,7 @@
     {
       "id": "frame",
       "scad_file": "framing.scad",
+      "cq_file": "framing.py",
       "label": {
         "en": "Frame Assembly",
         "es": "Ensamblaje del Marco"

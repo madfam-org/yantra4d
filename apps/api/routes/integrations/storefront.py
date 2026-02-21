@@ -17,7 +17,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from config import Config
-from services.route_helpers import error_response
+from utils.route_helpers import error_response
 
 storefront_bp = Blueprint("storefront", __name__)
 logger = logging.getLogger(__name__)

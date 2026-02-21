@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.github_token import get_github_token, _fetch_github_token_from_janua, validate_github_token
+from services.editor.github_token import get_github_token, _fetch_github_token_from_janua, validate_github_token
 
 
 class TestGetGithubToken:
@@ -20,7 +20,7 @@ class TestGetGithubToken:
         claims = {"github_token": "ghp_abc123"}
         assert get_github_token(claims) == "ghp_abc123"
 
-    @patch("services.github_token._fetch_github_token_from_janua", return_value="ghp_from_janua")
+    @patch("services.editor.github_token._fetch_github_token_from_janua", return_value="ghp_from_janua")
     def test_fallback_to_janua(self, mock_fetch, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "JANUA_API_KEY", "test-key")
@@ -34,7 +34,7 @@ class TestGetGithubToken:
         claims = {"sub": "user123"}
         assert get_github_token(claims) is None
 
-    @patch("services.github_token._fetch_github_token_from_janua", return_value=None)
+    @patch("services.editor.github_token._fetch_github_token_from_janua", return_value=None)
     def test_janua_returns_none(self, mock_fetch, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "JANUA_API_KEY", "test-key")
@@ -43,7 +43,7 @@ class TestGetGithubToken:
 
 
 class TestFetchFromJanua:
-    @patch("services.github_token.requests.get")
+    @patch("services.editor.github_token.requests.get")
     def test_success(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.status_code = 200
@@ -51,20 +51,20 @@ class TestFetchFromJanua:
         mock_get.return_value = mock_resp
         assert _fetch_github_token_from_janua("user123") == "ghp_from_api"
 
-    @patch("services.github_token.requests.get")
+    @patch("services.editor.github_token.requests.get")
     def test_not_found(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.status_code = 404
         mock_get.return_value = mock_resp
         assert _fetch_github_token_from_janua("user123") is None
 
-    @patch("services.github_token.requests.get", side_effect=Exception("network error"))
+    @patch("services.editor.github_token.requests.get", side_effect=Exception("network error"))
     def test_exception(self, mock_get):
         assert _fetch_github_token_from_janua("user123") is None
 
 
 class TestValidateGithubToken:
-    @patch("services.github_token.requests.get")
+    @patch("services.editor.github_token.requests.get")
     def test_valid_token(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.status_code = 200
@@ -73,13 +73,13 @@ class TestValidateGithubToken:
         result = validate_github_token("ghp_valid")
         assert result["login"] == "testuser"
 
-    @patch("services.github_token.requests.get")
+    @patch("services.editor.github_token.requests.get")
     def test_invalid_token(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.status_code = 401
         mock_get.return_value = mock_resp
         assert validate_github_token("ghp_bad") is None
 
-    @patch("services.github_token.requests.get", side_effect=Exception("timeout"))
+    @patch("services.editor.github_token.requests.get", side_effect=Exception("timeout"))
     def test_exception(self, mock_get):
         assert validate_github_token("ghp_any") is None

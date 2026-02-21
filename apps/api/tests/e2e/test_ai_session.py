@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.ai_session import (
+from services.ai.ai_session import (
     create_session, get_session, append_message, get_messages, cleanup_expired, _sessions,
 )
 
@@ -68,7 +68,7 @@ class TestAiSession:
         # Mock get to return None first (cache miss) then data
         # actually create_session sets data.
         
-        with patch("services.ai_session.redis_client", mock_redis):
+        with patch("services.ai.ai_session.redis_client", mock_redis):
             # Create session
             sid = create_session("redis-proj", "code-editor")
             
@@ -102,7 +102,7 @@ class TestAiSession:
         # Simulate Redis failure on setex
         mock_redis.setex.side_effect = redis.RedisError("Connection failed")
         
-        with patch("services.ai_session.redis_client", mock_redis):
+        with patch("services.ai.ai_session.redis_client", mock_redis):
             # Should not raise, but fall back to memory
             sid = create_session("fallback-proj", "configurator")
             

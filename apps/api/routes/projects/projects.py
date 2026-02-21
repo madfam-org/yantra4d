@@ -19,7 +19,7 @@ from extensions import limiter
 import rate_limits
 from manifest import discover_projects, get_manifest, invalidate_cache
 from middleware.auth import optional_auth, require_tier
-from services.route_helpers import error_response
+from utils.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 

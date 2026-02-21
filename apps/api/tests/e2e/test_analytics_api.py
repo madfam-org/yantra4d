@@ -14,7 +14,7 @@ def app(tmp_path, monkeypatch):
     monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
 
     # Analytics module reads DB_PATH at import time, so patch it
-    import routes.analytics as analytics_mod
+    import routes.integrations.analytics as analytics_mod
     monkeypatch.setattr(analytics_mod, "DB_PATH", str(tmp_path / ".analytics.db"))
     analytics_mod._init_db()
 

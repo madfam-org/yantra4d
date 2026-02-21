@@ -90,7 +90,7 @@ class TestDatasheetPDF:
         assert res.headers.get("Content-Disposition")
 
     def test_pdf_fallback_to_html(self, client, monkeypatch):
-        monkeypatch.setattr("routes.datasheet.HAS_REPORTLAB", False)
+        monkeypatch.setattr("routes.projects.datasheet.HAS_REPORTLAB", False)
         res = client.get("/api/projects/test-project/datasheet?format=pdf")
         assert res.status_code == 200
         assert res.content_type.startswith("text/html")

@@ -6,7 +6,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.git_operations import git_init, git_status, git_diff, git_commit, git_push, git_pull, _run_git, _inject_token_url, _get_remote_url
+from services.editor.git_operations import git_init, git_status, git_diff, git_commit, git_push, git_pull, _run_git, _inject_token_url, _get_remote_url
 
 
 @pytest.fixture

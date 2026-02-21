@@ -5,7 +5,7 @@ from pathlib import Path
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.scad_analyzer import analyze_file, analyze_directory
+from services.core.scad_analyzer import analyze_file, analyze_directory
 
 
 def _write_scad(tmpdir, name, content):

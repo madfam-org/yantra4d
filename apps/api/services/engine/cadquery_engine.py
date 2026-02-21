@@ -9,7 +9,7 @@ import json
 import threading
 
 from config import Config
-from services.render_engine import RENDER_TIMEOUT_S, ProcessManager
+from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager
 
 logger = logging.getLogger(__name__)
 

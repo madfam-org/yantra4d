@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.manifest_generator import generate_manifest
+from services.core.manifest_generator import generate_manifest
 
 
 def _write_scad(tmpdir, name, content):

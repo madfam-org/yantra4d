@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.render_cache import RenderCache
+from services.engine.render_cache import RenderCache
 
 
 class TestRenderCache:

@@ -10,8 +10,8 @@ from config import Config
 from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
-from services.route_helpers import error_response, safe_join_path
-from services.git_operations import git_init
+from utils.route_helpers import error_response, safe_join_path
+from services.editor.git_operations import git_init
 
 logger = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ from flask import Blueprint, jsonify, request, Response
 from config import Config
 from manifest import discover_projects, get_manifest
 from middleware.auth import require_role, optional_auth
-from services.route_helpers import error_response
+from utils.route_helpers import error_response
 
 admin_bp = Blueprint('admin', __name__)
 logger = logging.getLogger(__name__)

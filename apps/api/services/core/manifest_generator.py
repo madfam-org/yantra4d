@@ -3,7 +3,7 @@ Manifest Generator — produces a draft project.json from SCAD analyzer output.
 """
 from pathlib import Path
 
-from services.scad_analyzer import analyze_directory
+from services.core.scad_analyzer import analyze_directory
 
 
 def generate_manifest(directory: Path, slug: str | None = None) -> dict:

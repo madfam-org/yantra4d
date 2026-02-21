@@ -123,7 +123,7 @@ class TestSafeEvalFormula:
 
     @pytest.fixture(autouse=True)
     def _import(self):
-        from routes.bom import _safe_eval_formula
+        from routes.projects.bom import _safe_eval_formula
         self.eval_formula = _safe_eval_formula
 
     def test_rejects_import(self):

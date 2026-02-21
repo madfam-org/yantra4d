@@ -10,9 +10,9 @@ from config import Config
 from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
-from services.route_helpers import error_response, require_json_body
-from services.github_import import validate_repo, import_repo, sync_repo
-from services.github_token import get_github_token
+from utils.route_helpers import error_response, require_json_body
+from services.editor.github_import import validate_repo, import_repo, sync_repo
+from services.editor.github_token import get_github_token
 from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)

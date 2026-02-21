@@ -19,27 +19,27 @@ from flask_cors import CORS
 
 from config import Config
 from extensions import limiter
-from routes.render import render_bp
-from routes.health import health_bp
-from routes.verify import verify_bp
-from routes.config_route import config_bp
-from routes.manifest_route import manifest_bp
-from routes.projects import projects_bp
-from routes.onboard import onboard_bp
-from routes.admin import admin_bp
-from routes.download import download_bp
-from routes.bom import bom_bp
-from routes.datasheet import datasheet_bp
-from routes.analytics import analytics_bp
-from routes.user import user_bp
-from routes.github import github_bp
-from routes.editor import editor_bp
-from routes.git_ops import git_ops_bp
-from routes.ai import ai_bp
-from routes.assembly import assembly_bp
-from routes.storefront import storefront_bp
-from routes.catalog import catalog_bp
-from services.mqtt_telemetry import telemetry_service
+from routes.engine.render import render_bp
+from routes.core.health import health_bp
+from routes.engine.verify import verify_bp
+from routes.core.config_route import config_bp
+from routes.core.manifest_route import manifest_bp
+from routes.projects.projects import projects_bp
+from routes.users.onboard import onboard_bp
+from routes.users.admin import admin_bp
+from routes.engine.download import download_bp
+from routes.projects.bom import bom_bp
+from routes.projects.datasheet import datasheet_bp
+from routes.integrations.analytics import analytics_bp
+from routes.users.user import user_bp
+from routes.editor.github import github_bp
+from routes.editor.editor import editor_bp
+from routes.editor.git_ops import git_ops_bp
+from routes.integrations.ai import ai_bp
+from routes.projects.assembly import assembly_bp
+from routes.integrations.storefront import storefront_bp
+from routes.projects.catalog import catalog_bp
+from services.core.mqtt_telemetry import telemetry_service
 
 # Configure logging
 logging.basicConfig(

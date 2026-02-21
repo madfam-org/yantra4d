@@ -38,8 +38,8 @@ def client(app):
 
 
 class TestValidateEndpoint:
-    @patch("routes.github.validate_repo")
-    @patch("routes.github.get_github_token", return_value=None)
+    @patch("routes.editor.github.validate_repo")
+    @patch("routes.editor.github.get_github_token", return_value=None)
     def test_validate_success(self, mock_token, mock_validate, client):
         mock_validate.return_value = {
             "valid": True,
@@ -50,8 +50,8 @@ class TestValidateEndpoint:
         res = client.post("/api/github/validate", json={"repo_url": "https://github.com/u/r"})
         assert res.status_code == 200
 
-    @patch("routes.github.validate_repo")
-    @patch("routes.github.get_github_token", return_value=None)
+    @patch("routes.editor.github.validate_repo")
+    @patch("routes.editor.github.get_github_token", return_value=None)
     def test_validate_invalid_repo(self, mock_token, mock_validate, client):
         mock_validate.return_value = {"valid": False, "error": "Not found"}
         res = client.post("/api/github/validate", json={"repo_url": "https://github.com/u/r"})
@@ -69,8 +69,8 @@ class TestValidateEndpoint:
 
 
 class TestImportEndpoint:
-    @patch("routes.github.import_repo")
-    @patch("routes.github.get_github_token", return_value=None)
+    @patch("routes.editor.github.import_repo")
+    @patch("routes.editor.github.get_github_token", return_value=None)
     def test_import_success(self, mock_token, mock_import, client):
         mock_import.return_value = {"success": True, "slug": "new-proj"}
         res = client.post("/api/github/import", json={
@@ -109,8 +109,8 @@ class TestImportEndpoint:
         })
         assert res.status_code == 400
 
-    @patch("routes.github.import_repo")
-    @patch("routes.github.get_github_token", return_value=None)
+    @patch("routes.editor.github.import_repo")
+    @patch("routes.editor.github.get_github_token", return_value=None)
     def test_import_failure(self, mock_token, mock_import, client):
         mock_import.return_value = {"success": False, "error": "Already exists"}
         res = client.post("/api/github/import", json={
@@ -122,15 +122,15 @@ class TestImportEndpoint:
 
 
 class TestSyncEndpoint:
-    @patch("routes.github.sync_repo")
-    @patch("routes.github.get_github_token", return_value=None)
+    @patch("routes.editor.github.sync_repo")
+    @patch("routes.editor.github.get_github_token", return_value=None)
     def test_sync_success(self, mock_token, mock_sync, client):
         mock_sync.return_value = {"success": True, "updated_files": ["main.scad"]}
         res = client.post("/api/github/sync", json={"slug": "test-project"})
         assert res.status_code == 200
 
-    @patch("routes.github.sync_repo")
-    @patch("routes.github.get_github_token", return_value=None)
+    @patch("routes.editor.github.sync_repo")
+    @patch("routes.editor.github.get_github_token", return_value=None)
     def test_sync_failure(self, mock_token, mock_sync, client):
         mock_sync.return_value = {"success": False, "error": "No metadata"}
         res = client.post("/api/github/sync", json={"slug": "test-project"})

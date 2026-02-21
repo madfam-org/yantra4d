@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.ai_configurator import build_configurator_prompt, parse_response
+from services.ai.ai_configurator import build_configurator_prompt, parse_response
 
 
 SAMPLE_MANIFEST = {

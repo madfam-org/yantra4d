@@ -12,7 +12,7 @@ _tiers: dict | None = None
 
 TIER_HIERARCHY = {"guest": 0, "basic": 1, "pro": 2, "madfam": 3}
 
-TIERS_FILE = Path(__file__).parent.parent / "tiers.json"
+TIERS_FILE = Path(__file__).parent.parent.parent / "tiers.json"
 
 
 def load_tiers() -> dict:

@@ -14,8 +14,8 @@ import logging
 
 from flask import Blueprint, jsonify
 
-from services.route_helpers import error_response
-from services.nopscadlib_catalog import get_catalog, list_categories
+from utils.route_helpers import error_response
+from services.core.nopscadlib_catalog import get_catalog, list_categories
 
 catalog_bp = Blueprint("catalog", __name__)
 logger = logging.getLogger(__name__)

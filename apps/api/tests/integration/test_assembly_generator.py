@@ -1,8 +1,7 @@
 """
 Unit tests for assembly_generator.py
 """
-import pytest
-from services.assembly_generator import (
+from services.core.assembly_generator import (
     generate_assembly_steps,
     merge_assembly_steps,
     _topological_sort,

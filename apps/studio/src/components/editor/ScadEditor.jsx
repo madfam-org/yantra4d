@@ -16,7 +16,7 @@ import { FileCode, Plus, X, Loader2, Sparkles } from 'lucide-react'
 
 const AiChatPanel = lazy(() => import('../ai/AiChatPanel'))
 import { useTheme } from '../../contexts/ThemeProvider'
-import { listFiles, readFile, createFile, deleteFile } from '../../services/editorService'
+import { listFiles, readFile, createFile, deleteFile } from '../../services/domain/editorService'
 import { registerScadLanguage, SCAD_LANGUAGE_ID } from '../../lib/scad-language'
 import { useEditorRender } from '../../hooks/useEditorRender'
 

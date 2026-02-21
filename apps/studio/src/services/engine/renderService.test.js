@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createSSEStream } from '../test/mock-streams'
+import { createSSEStream } from '../../test/mock-streams'
 
 // We need to reset module state between tests because detectMode caches _mode
 let renderService

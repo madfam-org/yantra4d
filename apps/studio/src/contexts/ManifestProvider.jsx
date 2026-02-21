@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react"
 import { useLocation } from "react-router-dom"
 import fallbackManifest from "../config/fallback-manifest.json"
-import { getApiBase } from "../services/backendDetection"
+import { getApiBase } from "../services/core/backendDetection"
 
 const ManifestContext = createContext()
 
@@ -44,6 +44,7 @@ export function ManifestProvider({ children }) {
         setProjectsResolved(true)
         setLoading(false)
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Fetch manifest when projectSlug changes — only after projects list resolves
@@ -51,7 +52,7 @@ export function ManifestProvider({ children }) {
     if (!projectSlug || !projectsResolved) return
 
     const controller = new AbortController()
-    setLoading(true) // eslint-disable-line react-hooks/set-state-in-effect -- intentional loading indicator before async fetch
+    setLoading(true)  
     const url = projects.length > 0
       ? `${getApiBase()}/api/projects/${projectSlug}/manifest`
       : `${getApiBase()}/api/manifest`
@@ -78,6 +79,7 @@ export function ManifestProvider({ children }) {
   useEffect(() => {
     const newSlug = _getProjectSlug(location)
     if (newSlug && newSlug !== projectSlug) {
+       
       setProjectSlug(newSlug)
     }
   }, [location, projectSlug])

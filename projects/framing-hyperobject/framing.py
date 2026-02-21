@@ -16,9 +16,12 @@ def build(params):
     height = float(params.get("height", 250))
     depth = float(params.get("depth", 20))
     
+    # CDG Interface parameters mapped from project.json
+    glazing_thickness = float(params.get("glazing_thickness", 2))
+    
     w = 30
     d = depth
-    rabbet_d = 10
+    rabbet_d = 10 + glazing_thickness # Rabbet adjusts based on glazing CDG
     rabbet_w = 5
     
     p0 = (w/3, 0)

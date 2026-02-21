@@ -2,7 +2,7 @@ import { useRef, useMemo, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Image, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { getApiBase } from '../../services/backendDetection'
+import { getApiBase } from '../../services/core/backendDetection'
 
 export default function CarouselItem({ project, position, gap }) {
     const groupRef = useRef()

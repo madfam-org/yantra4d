@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 
-vi.mock('../services/aiService', () => ({
+vi.mock('../services/domain/aiService', () => ({
   createSession: vi.fn().mockResolvedValue('session-123'),
   streamChat: vi.fn(),
 }))
 
 import { useAiChat } from './useAiChat'
-import { createSession, streamChat } from '../services/aiService'
+import { createSession, streamChat } from '../services/domain/aiService'
 
 beforeEach(() => {
   vi.clearAllMocks()

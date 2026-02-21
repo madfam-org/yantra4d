@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { GitBranch, GitCommit, ArrowUp, ArrowDown, RefreshCw, Loader2, Check, Link } from 'lucide-react'
-import { getStatus, getDiff, commit, push, pull, connectRemote } from '../../services/gitService'
+import { getStatus, getDiff, commit, push, pull, connectRemote } from '../../services/domain/gitService'
 
 const SUCCESS_TOAST_DURATION_MS = 2000
 

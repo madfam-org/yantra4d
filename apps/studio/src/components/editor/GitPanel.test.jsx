@@ -9,7 +9,7 @@ const mockPush = vi.fn()
 const mockPull = vi.fn()
 const mockConnectRemote = vi.fn()
 
-vi.mock('../../services/gitService', () => ({
+vi.mock('../../services/domain/gitService', () => ({
   getStatus: (...args) => mockGetStatus(...args),
   getDiff: (...args) => mockGetDiff(...args),
   commit: (...args) => mockCommit(...args),

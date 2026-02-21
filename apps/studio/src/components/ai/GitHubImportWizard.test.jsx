@@ -3,10 +3,10 @@ import { vi, describe, it, expect, afterEach } from 'vitest'
 import GitHubImportWizard from './GitHubImportWizard'
 
 // Mock API client
-vi.mock('../../services/apiClient', () => ({
+vi.mock('../../services/core/apiClient', () => ({
   apiFetch: vi.fn()
 }))
-import { apiFetch } from '../../services/apiClient'
+import { apiFetch } from '../../services/core/apiClient'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', () => ({

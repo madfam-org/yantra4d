@@ -8,14 +8,14 @@ vi.mock('../lib/downloadUtils', () => ({
   downloadFile: vi.fn(),
   downloadZip: vi.fn().mockResolvedValue(),
 }))
-vi.mock('../services/verifyService', () => ({
+vi.mock('../services/engine/verifyService', () => ({
   verify: vi.fn(),
 }))
 
 import { useProjectActions } from './useProjectActions'
 import { toast } from 'sonner'
 import { downloadFile, downloadZip } from '../lib/downloadUtils'
-import { verify } from '../services/verifyService'
+import { verify } from '../services/engine/verifyService'
 
 const t = (key) => key
 

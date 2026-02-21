@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { toast } from 'sonner'
-import { apiFetch } from '../services/apiClient'
+import { apiFetch } from '../services/core/apiClient'
 
 /**
  * Hook for managing assembly step editing state.

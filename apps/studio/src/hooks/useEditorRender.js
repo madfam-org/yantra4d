@@ -6,7 +6,7 @@
  * the updated .scad from disk on next render — no render pipeline changes needed.
  */
 import { useRef, useCallback } from 'react'
-import { writeFile } from '../services/editorService'
+import { writeFile } from '../services/domain/editorService'
 
 const DEBOUNCE_MS = 800
 

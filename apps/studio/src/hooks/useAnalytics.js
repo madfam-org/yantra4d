@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { getApiBase } from '../services/backendDetection'
+import { getApiBase } from '../services/core/backendDetection'
 
 /**
  * Lightweight analytics hook.

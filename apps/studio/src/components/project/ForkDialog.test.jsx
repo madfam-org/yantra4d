@@ -2,15 +2,15 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import ForkDialog from './ForkDialog'
 
-vi.mock('../../services/backendDetection', () => ({
+vi.mock('../../services/core/backendDetection', () => ({
   getApiBase: () => 'http://localhost:5000',
 }))
 
-vi.mock('../../services/apiClient', () => ({
+vi.mock('../../services/core/apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
-import { apiFetch } from '../../services/apiClient'
+import { apiFetch } from '../../services/core/apiClient'
 
 const defaultProps = {
   slug: 'gridfinity',

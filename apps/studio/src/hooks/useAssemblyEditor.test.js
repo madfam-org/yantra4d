@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 
-vi.mock('../services/apiClient', () => ({
+vi.mock('../services/core/apiClient', () => ({
   apiFetch: vi.fn().mockResolvedValue({ ok: true }),
 }))
 
@@ -10,7 +10,7 @@ vi.mock('sonner', () => ({
 }))
 
 import { useAssemblyEditor } from './useAssemblyEditor'
-import { apiFetch } from '../services/apiClient'
+import { apiFetch } from '../services/core/apiClient'
 import { toast } from 'sonner'
 
 const baseManifest = {

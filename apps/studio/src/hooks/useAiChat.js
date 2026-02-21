@@ -2,7 +2,7 @@
  * Shared chat state management hook for AI Configurator and Code Editor.
  */
 import { useState, useCallback, useRef } from 'react'
-import { createSession, streamChat } from '../services/aiService'
+import { createSession, streamChat } from '../services/domain/aiService'
 
 export function useAiChat({ projectSlug, mode, params, setParams }) {
   const [messages, setMessages] = useState([])

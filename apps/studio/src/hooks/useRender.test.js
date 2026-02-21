@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useRender } from './useRender'
 
-vi.mock('../services/renderService', () => ({
+vi.mock('../services/engine/renderService', () => ({
   renderParts: vi.fn(() => Promise.resolve([{ type: 'main', url: 'blob:mock' }])),
   cancelRender: vi.fn(() => Promise.resolve()),
   estimateRenderTime: vi.fn(() => 10),
@@ -43,7 +43,7 @@ describe('useRender', () => {
   })
 
   it('handleGenerate calls renderParts and sets parts', async () => {
-    const { renderParts } = await import('../services/renderService')
+    const { renderParts } = await import('../services/engine/renderService')
     const { result } = renderUseRender()
 
     await act(async () => {
@@ -55,7 +55,7 @@ describe('useRender', () => {
   })
 
   it('cache hit returns cached parts without calling renderParts', async () => {
-    const { renderParts } = await import('../services/renderService')
+    const { renderParts } = await import('../services/engine/renderService')
     const { result } = renderUseRender()
 
     // First call populates cache
@@ -72,7 +72,7 @@ describe('useRender', () => {
   })
 
   it('estimate above threshold opens confirm dialog', async () => {
-    const { estimateRenderTime } = await import('../services/renderService')
+    const { estimateRenderTime } = await import('../services/engine/renderService')
     estimateRenderTime.mockReturnValue(120)
 
     const { result } = renderUseRender()
@@ -86,7 +86,7 @@ describe('useRender', () => {
   })
 
   it('handleCancelRender closes dialog', async () => {
-    const { estimateRenderTime } = await import('../services/renderService')
+    const { estimateRenderTime } = await import('../services/engine/renderService')
     estimateRenderTime.mockReturnValue(120)
 
     const { result } = renderUseRender()
@@ -103,7 +103,7 @@ describe('useRender', () => {
   })
 
   it('handleCancelGenerate aborts and calls cancelRender', async () => {
-    const { cancelRender } = await import('../services/renderService')
+    const { cancelRender } = await import('../services/engine/renderService')
     const { result } = renderUseRender()
 
     await act(async () => {

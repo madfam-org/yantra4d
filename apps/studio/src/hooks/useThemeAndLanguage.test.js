@@ -31,7 +31,7 @@ vi.mock('../contexts/AuthProvider', () => ({
   }),
 }))
 
-vi.mock('../services/apiClient', () => ({
+vi.mock('../services/core/apiClient', () => ({
   setTokenGetter: (...args) => mockSetTokenGetter(...args),
 }))
 

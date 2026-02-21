@@ -147,12 +147,12 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
             {/* Size Presets */}
             {visiblePresets.length > 0 && (
-                <div className="flex gap-2">
+                <div className="flex overflow-x-auto gap-2 pb-3 no-scrollbar">
                     {visiblePresets.map(p => (
                         <button
                             key={p.id}
                             type="button"
-                            className={`flex-[1_1_0%] px-2 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex items-center justify-center whitespace-normal break-words leading-tight min-h-[44px] ${activePresetId === p.id
+                            className={`flex-shrink-0 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex items-center justify-center whitespace-nowrap min-h-[44px] ${activePresetId === p.id
                                 ? 'bg-primary text-primary-foreground border-primary'
                                 : 'bg-background text-muted-foreground border-border hover:text-foreground'
                                 }`}

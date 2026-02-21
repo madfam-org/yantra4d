@@ -137,7 +137,7 @@ function App() {
         )}
         {/* φ split: Sidebar ≈ 38.2% | Main ≈ 61.8% */}
         {!editorOpen && (
-          <div className="flex flex-col min-h-0 border-r border-border overflow-y-auto" style={{ flex: 1, minWidth: '280px', maxWidth: '420px' }}>
+          <div className="flex flex-col min-h-0 border-r border-border overflow-y-auto" style={{ flex: 1, minWidth: '280px' }}>
             <StudioSidebar />
           </div>
         )}

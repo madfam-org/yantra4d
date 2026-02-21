@@ -276,7 +276,6 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         })
     }, [onGeometryStats])
 
-
     const handleGeometry = useCallback((partType, geometry) => {
         geometriesRef.current[partType] = geometry
         // DEBUG: Check geometry bounds on load
@@ -322,11 +321,10 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const [activeView, setActiveView] = useState('iso')
     const [animReady, setAnimReady] = useState(false)
 
-    // When the mode changes, position the camera immediately using the precomputed bbox
-    // This runs BEFORE any STLs are fetched, giving instant visual feedback
+    // When the mode changes AND loading completes (progress reaches 100), position the camera
     useEffect(() => {
         const bbox = getModeBbox(mode)
-        if (!bbox || !sceneRef.current) return
+        if (!bbox || !sceneRef.current || progress < 100) return
 
         const [cx, cy, cz] = bbox.center_mm
         const maxDim = bbox.max_dim_mm
@@ -339,7 +337,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         prevMaxDimRef.current = maxDim
 
         sceneRef.current.animateTo(camPos, [cx, cy, cz], 0.4)
-    }, [mode, getModeBbox])
+    }, [mode, getModeBbox, progress])
 
     // Reset animReady when animation is toggled off or mode changes
     useEffect(() => {

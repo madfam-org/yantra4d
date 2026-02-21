@@ -1,13 +1,12 @@
 // Yantra4D wrapper — Parametric Bolt (BOSL2)
-include <../../libs/BOSL2/std.scad>
-include <../../libs/BOSL2/threading.scad>
+include <../../libs/scad_core/core.scad>
 
 diameter = 5;
 length = 20;
 pitch = 0.8;
-head_diameter = 0;  // 0 = auto (1.7x diameter)
-head_height = 0;    // 0 = auto (0.7x diameter)
-head_style_id = 0;  // 0=hex, 1=socket, 2=button
+head_diameter = 0; // 0 = auto (1.7x diameter)
+head_height = 0; // 0 = auto (0.7x diameter)
+head_style_id = 0; // 0=hex, 1=socket, 2=button
 thread_enabled = true;
 render_mode = 0;
 fn = 0;
@@ -27,19 +26,19 @@ if (head_style_id == 0) {
   translate([0, 0, length]) {
     difference() {
       cylinder(d=_head_d, h=_head_h);
-      translate([0, 0, _head_h/2])
-        cylinder(d=diameter*0.6, h=_head_h/2+0.1, $fn=6);
+      translate([0, 0, _head_h / 2])
+        cylinder(d=diameter * 0.6, h=_head_h / 2 + 0.1, $fn=6);
     }
   }
 } else {
   // Button head (dome)
   translate([0, 0, length])
-    cylinder(d=_head_d, h=_head_h*0.6);
+    cylinder(d=_head_d, h=_head_h * 0.6);
 }
 
 // Shaft with or without thread
 if (thread_enabled) {
-  threaded_rod(d=diameter, l=length, pitch=pitch, anchor=BOT);
+  y4d_standard_thread(d=diameter, p=pitch, l=length, anchor=BOT);
 } else {
   cylinder(d=diameter, h=length, anchor=BOT);
 }

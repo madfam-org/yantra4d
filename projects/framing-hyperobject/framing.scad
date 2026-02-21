@@ -1,4 +1,5 @@
 include <BOSL2/std.scad>
+include <../../libs/scad_core/core.scad>
 use <profiles/classic.scad>
 use <profiles/industrial.scad>
 use <mounting/vesa.scad>
@@ -6,7 +7,6 @@ use <mounting/standoffs.scad>
 use <containers/slabs.scad>
 use <containers/slabs.scad>
 use <containers/capsules.scad>
-use <mounting/french_cleat.scad>
 
 // --- Parameters (Updated for Exhaustiveness) ---
 
@@ -54,7 +54,7 @@ module frame_assembly() {
   } else if (mounting_style == "standoffs") {
     color("silver") standoff_set(width - 40, height - 40, 25);
   } else if (mounting_style == "french_cleat") {
-    translate([0, height / 3, -depth / 2]) color("peru") french_cleat(length=width - 40);
+    translate([0, height / 3, -depth / 2]) color("peru") y4d_french_cleat(length=width - 40);
   }
 
   // Containers

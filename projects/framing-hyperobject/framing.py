@@ -1,6 +1,11 @@
 import cadquery as cq
 import json
 import argparse
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+from libs.cq_core import cdg_french_cleat
 
 def cubic_bezier(p0, p1, p2, p3, steps=20):
     pts = []
@@ -15,6 +20,7 @@ def build(params):
     width = float(params.get("width", 200))
     height = float(params.get("height", 250))
     depth = float(params.get("depth", 20))
+    mounting_style = params.get("mounting_style", "none")
     
     # CDG Interface parameters mapped from project.json
     glazing_thickness = float(params.get("glazing_thickness", 2))
@@ -81,7 +87,12 @@ def build(params):
     
     frame = top_edge.union(bottom_edge).union(right_edge).union(left_edge)
     
-    return frame
+    if mounting_style == "french_cleat":
+        cleat = cdg_french_cleat(length=width - 40)
+        cleat = cleat.translate((0, height/3, -depth/2))
+        frame = frame.union(cleat)
+    
+    return frame.clean()
 
 # Parse parameters injected by cq_runner or fall back to defaults
 width_val = float(globals().get("width", 200))

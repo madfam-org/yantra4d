@@ -178,6 +178,9 @@ def render_stl():
         bad_name = _resolve_render_context(data)[4]
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
+    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf'} and not check_feature(tier, "premium_export"):
+        return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
+
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']
     export_format = payload['export_format']
@@ -296,6 +299,10 @@ def render_stl_stream():
     if payload is None:
         bad_name = _resolve_render_context(data)[4]
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
+
+    tier = resolve_tier(getattr(request, "auth_claims", None))
+    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf'} and not check_feature(tier, "premium_export"):
+        return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
 
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']

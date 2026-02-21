@@ -56,10 +56,15 @@ export function useWorkerLoader(url, isGLTF = false) {
     useEffect(() => {
         if (isGLTF || !url) return
 
-        // Check cache first in case it just arrived
-        if (geometryCache.has(url)) {
-            // Delaying state update to avoid synchronous cascade render during effect
+        // 1) If we already have a resolved geometry in cache, just use it
+        if (geometryCache.has(url) && geometryCache.get(url) instanceof BufferGeometry) {
             Promise.resolve().then(() => setGeometry(geometryCache.get(url)))
+            return
+        }
+
+        // 2) If a fetch/parse is already in progress for this URL, wait for it
+        if (geometryCache.has(url) && geometryCache.get(url) instanceof Promise) {
+            geometryCache.get(url).then(geom => setGeometry(geom)).catch(console.error)
             return
         }
 
@@ -72,17 +77,27 @@ export function useWorkerLoader(url, isGLTF = false) {
 
         const taskId = `task_${Math.random().toString(36).substring(7)}`
 
+        // 3) Create a new Promise for this URL and put it in the cache immediately
+        let resolveCache
+        let rejectCache
+        const loaderPromise = new Promise((resolve, reject) => {
+            resolveCache = resolve
+            rejectCache = reject
+        })
+        geometryCache.set(url, loaderPromise)
+
         const handleMessage = (e) => {
             const { id, success, geometryData, error } = e.data
             if (id !== taskId) return
 
             if (!success) {
                 console.error('[WorkerLoader] Failed to parse STL:', error)
+                rejectCache(new Error(error))
+                geometryCache.delete(url)
                 return
             }
 
             // Reconstruct the Three.js BufferGeometry on the main thread
-            // from the raw Float32 arrays sent by the worker.
             const newGeom = new BufferGeometry()
             newGeom.setAttribute('position', new BufferAttribute(geometryData.positions, 3))
 
@@ -96,9 +111,11 @@ export function useWorkerLoader(url, isGLTF = false) {
             newGeom.computeBoundingSphere()
             newGeom.computeBoundingBox()
 
-            // Cache the result
+            // Update cache with the actual resolved geometry
             geometryCache.set(url, newGeom)
 
+            // Resolve the promise for any pending awaiters
+            resolveCache(newGeom)
             setGeometry(newGeom)
 
             // Cleanup the listener
@@ -111,8 +128,6 @@ export function useWorkerLoader(url, isGLTF = false) {
         stlWorkerInstance.postMessage({ url, id: taskId })
 
         return () => {
-            // If the component unmounts before finishing, we cleanup the listener
-            // to avoid memory leaks. The worker will still finish but the result is discarded.
             stlWorkerInstance?.removeEventListener('message', handleMessage)
         }
     }, [url, isGLTF])

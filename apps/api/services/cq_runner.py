@@ -48,19 +48,38 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
 
         print(f"Exporting to {export_format}: {output_path}")
         
-        # GLTF/GLB requires an Assembly wrapper in CadQuery
         is_gltf_or_glb = export_format.upper() in ["GLTF", "GLB"]
-        if is_gltf_or_glb and not isinstance(result, cq.Assembly):
-            result = cq.Assembly(result)
 
-        if isinstance(result, cq.Assembly):
-            if is_gltf_or_glb:
-                result.save(output_path, "GLTF")
-            else:
-                result.save(output_path, export_format.upper())
+        if is_gltf_or_glb:
+            import tempfile
+            import os
+            try:
+                import cascadio
+            except ImportError:
+                print("Error: cascadio library is missing. Cannot export high-quality GLB.")
+                sys.exit(1)
+            
+            # Export to a temporary STEP file first
+            with tempfile.NamedTemporaryFile(suffix=".step", delete=False) as tmp:
+                temp_step_path = tmp.name
+                
+            try:
+                if isinstance(result, cq.Assembly):
+                    result.save(temp_step_path, "STEP")
+                else:
+                    cq.exporters.export(result, temp_step_path, "STEP")
+                    
+                print("Transcoding STEP to GLB via cascadio...")
+                # cascadio creates a far superior, optimized binary GLB mesh
+                cascadio.step_to_glb(temp_step_path, output_path)
+            finally:
+                if os.path.exists(temp_step_path):
+                    os.remove(temp_step_path)
+                    
+        elif isinstance(result, cq.Assembly):
+            result.save(output_path, export_format.upper())
         else:
-            cq_format = "GLTF" if export_format.upper() == "GLB" else export_format.upper()
-            cq.exporters.export(result, output_path, cq_format)
+            cq.exporters.export(result, output_path, export_format.upper())
             
         print("Rendering complete.")
 

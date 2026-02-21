@@ -8,20 +8,42 @@ vi.mock('./apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
-// Mock THREE's STLLoader
-vi.mock('three/examples/jsm/loaders/STLLoader', () => ({
-  STLLoader: class {
-    parse() {
-      return { computeVertexNormals: vi.fn() }
-    }
-  },
-}))
-
 import { apiFetch } from './apiClient'
+
+const mockPostMessage = vi.fn()
+
+class MockWorker {
+  constructor() {
+    this.addEventListener = vi.fn()
+    this.removeEventListener = vi.fn()
+  }
+
+  postMessage(data) {
+    mockPostMessage(data)
+    // Find the message event listener
+    const handlerCall = this.addEventListener.mock.calls.find(call => call[0] === 'message')
+    if (handlerCall) {
+      const handler = handlerCall[1]
+      // Simulate success response immediately
+      setTimeout(() => {
+        handler({
+          data: {
+            id: data.id,
+            success: true,
+            geometryData: {
+              positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+            }
+          }
+        })
+      }, 0)
+    }
+  }
+}
 
 beforeEach(async () => {
   vi.clearAllMocks()
   vi.resetModules()
+  globalThis.Worker = MockWorker
 })
 
 describe('fetchAssemblyGeometries', () => {
@@ -35,11 +57,6 @@ describe('fetchAssemblyGeometries', () => {
           { type: 'bottom', url: 'http://localhost:5000/static/bottom.stl' },
         ],
       }),
-    })
-
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      arrayBuffer: () => Promise.resolve(new ArrayBuffer(10)),
     })
 
     const result = await fetchAssemblyGeometries({ size: 20 }, ['size'])

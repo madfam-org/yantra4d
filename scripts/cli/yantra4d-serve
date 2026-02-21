@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""
+yantra4d-serve — Generate decentralized instancing configuration for Yantra4D.
+
+Usage:
+  yantra4d-serve [--name "My Platform"] [--slug "my-platform"] [--logo "./logo.png"] [--port 8080] [--license-key "ey..."]
+"""
+import argparse
+import os
+from pathlib import Path
+
+DOCKER_COMPOSE_TEMPLATE = """\
+version: '3.8'
+
+services:
+  yantra4d:
+    image: yantra4d/core:latest
+    ports:
+      - "${PORT:-8080}:80"
+    environment:
+      - PLATFORM_NAME=${PLATFORM_NAME}
+      - PLATFORM_LOGO=${PLATFORM_LOGO}
+      - PROJECT_SLUG=${PROJECT_SLUG}
+      - YANTRA4D_LICENSE_KEY=${YANTRA4D_LICENSE_KEY}
+    volumes:
+      - ./projects:/app/projects
+      - ./data:/app/data
+    restart: unless-stopped
+"""
+
+def main():
+    parser = argparse.ArgumentParser(description="Generate decentralized Yantra4D node configuration.")
+    parser.add_argument("--name", type=str, default="Decentralized Yantra4D", help="Platform name")
+    parser.add_argument("--slug", type=str, default="my-project", help="Default project slug to serve")
+    parser.add_argument("--logo", type=str, default="/logo.png", help="Path to logo")
+    parser.add_argument("--port", type=int, default=8080, help="Port to map")
+    parser.add_argument("--license-key", type=str, default="", help="JWT license key obtained from your yantra4d.com account for white-labeling")
+    parser.add_argument("--outdir", type=str, default=".", help="Output directory")
+    
+    args = parser.parse_args()
+    
+    outdir = Path(args.outdir).resolve()
+    outdir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate .env
+    env_path = outdir / ".env"
+    with open(env_path, "w") as f:
+        f.write(f"PORT={args.port}\n")
+        f.write(f"PLATFORM_NAME={args.name}\n")
+        f.write(f"PLATFORM_LOGO={args.logo}\n")
+        f.write(f"PROJECT_SLUG={args.slug}\n")
+        f.write(f"YANTRA4D_LICENSE_KEY={args.license_key}\n")
+        
+    print(f"  ✓ Wrote {env_path}")
+    
+    # Generate docker-compose.yml
+    dc_path = outdir / "docker-compose.yml"
+    with open(dc_path, "w") as f:
+        f.write(DOCKER_COMPOSE_TEMPLATE)
+        
+    print(f"  ✓ Wrote {dc_path}")
+    
+    print("\n  Decentralized node configuration generated successfully!")
+    print("  To start your standalone white-labeled node, run:")
+    print(f"    cd {outdir} && docker-compose up -d")
+
+if __name__ == "__main__":
+    main()

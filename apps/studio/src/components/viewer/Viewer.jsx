@@ -3,11 +3,11 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
-import { useWorkerLoader } from '../../hooks/useWorkerLoader'
+import { useWorkerLoader } from '../../hooks/render/useWorkerLoader'
 import { Box3, Box3Helper, Vector3, Color } from 'three'
-import { useLanguage } from "../../contexts/LanguageProvider"
-import { useTheme } from "../../contexts/ThemeProvider"
-import { useManifest } from "../../contexts/ManifestProvider"
+import { useLanguage } from "../../contexts/system/LanguageProvider"
+import { useTheme } from "../../contexts/system/ThemeProvider"
+import { useManifest } from "../../contexts/project/ManifestProvider"
 import { ErrorBoundary } from '../feedback/ErrorBoundary'
 import SceneController from './SceneController'
 import NumberedAxes from './NumberedAxes'
@@ -167,7 +167,7 @@ const BoundingBoxHelper = ({ boundingBox, box, children }) => {
     )
 }
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [] }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [] }, ref) => {
     const geometriesRef = React.useRef({})
     const prevCenterRef = React.useRef(null)
     const prevMaxDimRef = React.useRef(null)
@@ -444,46 +444,82 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                         {parts.length > 0 ? (
                             <>
                                 <BoundingBoxHelper boundingBox={boundingBox} box={sceneBox}>
-                                    {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
-                                    <group>
-                                        {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => {
-                                            const partDef = manifest?.parts?.find(p => p.id === part.type)
-                                            return (
+                                    {/* 3D Git Diff Mode */}
+                                    {headDiffMode ? (
+                                        <group>
+                                            {headParts.map((part) => (
                                                 <Model
-                                                    key={part.type}
+                                                    key={`head-${part.type}`}
                                                     url={part.url}
-                                                    partType={part.type}
-                                                    color={colors[part.type] || defaultColor}
-                                                    wireframe={wireframe}
-                                                    glass={partDef?.glass === true}
+                                                    partType={`head-${part.type}`}
+                                                    color="#ef4444" // red
+                                                    wireframe={false}
+                                                    glass={false}
                                                     onGeometry={handleGeometry}
                                                     onGeometryRemove={handleGeometryRemove}
-                                                    highlightMode={getHighlightMode(part.type)}
+                                                    highlightMode="ghost"
                                                     isDark={isDark}
                                                 />
-                                            )
-                                        })}
-                                    </group>
-                                    {/* Assembly parts — hidden when animated grid is active */}
-                                    <group visible={!(animating && mode === 'grid' && animReady)}>
-                                        {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => {
-                                            const partDef = manifest?.parts?.find(p => p.id === part.type)
-                                            return (
+                                            ))}
+                                            {parts.map((part) => (
                                                 <Model
-                                                    key={part.type}
+                                                    key={`diff-${part.type}`}
                                                     url={part.url}
-                                                    partType={part.type}
-                                                    color={colors[part.type] || defaultColor}
-                                                    wireframe={wireframe}
-                                                    glass={partDef?.glass === true}
+                                                    partType={`diff-${part.type}`}
+                                                    color="#22c55e" // green
+                                                    wireframe={false}
+                                                    glass={false}
                                                     onGeometry={handleGeometry}
                                                     onGeometryRemove={handleGeometryRemove}
-                                                    highlightMode={getHighlightMode(part.type)}
+                                                    highlightMode="ghost"
                                                     isDark={isDark}
                                                 />
-                                            )
-                                        })}
-                                    </group>
+                                            ))}
+                                        </group>
+                                    ) : (
+                                        <>
+                                            {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
+                                            <group>
+                                                {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => {
+                                                    const partDef = manifest?.parts?.find(p => p.id === part.type)
+                                                    return (
+                                                        <Model
+                                                            key={part.type}
+                                                            url={part.url}
+                                                            partType={part.type}
+                                                            color={colors[part.type] || defaultColor}
+                                                            wireframe={wireframe}
+                                                            glass={partDef?.glass === true}
+                                                            onGeometry={handleGeometry}
+                                                            onGeometryRemove={handleGeometryRemove}
+                                                            highlightMode={getHighlightMode(part.type)}
+                                                            isDark={isDark}
+                                                        />
+                                                    )
+                                                })}
+                                            </group>
+                                            {/* Assembly parts — hidden when animated grid is active */}
+                                            <group visible={!(animating && mode === 'grid' && animReady)}>
+                                                {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => {
+                                                    const partDef = manifest?.parts?.find(p => p.id === part.type)
+                                                    return (
+                                                        <Model
+                                                            key={part.type}
+                                                            url={part.url}
+                                                            partType={part.type}
+                                                            color={colors[part.type] || defaultColor}
+                                                            wireframe={wireframe}
+                                                            glass={partDef?.glass === true}
+                                                            onGeometry={handleGeometry}
+                                                            onGeometryRemove={handleGeometryRemove}
+                                                            highlightMode={getHighlightMode(part.type)}
+                                                            isDark={isDark}
+                                                        />
+                                                    )
+                                                })}
+                                            </group>
+                                        </>
+                                    )}
                                 </BoundingBoxHelper>
                                 {/* Animated grid — mounted when animating, visible once ready */}
                                 {animating && mode === 'grid' && (

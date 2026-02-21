@@ -10,12 +10,12 @@ const mockAuth = {
   signInWithOAuth: vi.fn(),
 }
 
-vi.mock('../../contexts/AuthProvider', () => ({
+vi.mock('../../contexts/auth/AuthProvider', () => ({
   useAuth: () => mockAuth,
   isAuthEnabled: true,
 }))
 
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({
     t: (key) => key,
     language: 'en',

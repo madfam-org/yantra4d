@@ -8,7 +8,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useLanguage } from "../../contexts/LanguageProvider"
+import { useLanguage } from "../../contexts/system/LanguageProvider"
 
 export default function ConfirmRenderDialog({ open, onConfirm, onCancel, estimatedTime }) {
     const { t } = useLanguage()

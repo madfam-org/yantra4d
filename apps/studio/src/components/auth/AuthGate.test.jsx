@@ -5,12 +5,12 @@ import AuthGate from './AuthGate'
 const mockAuth = { isAuthenticated: false }
 const mockManifest = { manifest: {} }
 
-vi.mock('../../contexts/AuthProvider', () => ({
+vi.mock('../../contexts/auth/AuthProvider', () => ({
   useAuth: () => mockAuth,
   isAuthEnabled: true,
 }))
 
-vi.mock('../../contexts/ManifestProvider', () => ({
+vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => mockManifest,
 }))
 

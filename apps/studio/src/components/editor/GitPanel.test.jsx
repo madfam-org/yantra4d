@@ -18,6 +18,14 @@ vi.mock('../../services/domain/gitService', () => ({
   connectRemote: (...args) => mockConnectRemote(...args),
 }))
 
+vi.mock('../../contexts/project/ProjectProvider', () => ({
+  useProject: () => ({
+    mode: 'test', params: {}, parts: [], exportFormat: 'stl',
+    headDiffMode: false, setHeadDiffMode: vi.fn(),
+    setHeadParts: vi.fn(), loadingHeadDiff: false, setLoadingHeadDiff: vi.fn()
+  })
+}))
+
 import GitPanel from './GitPanel'
 
 const cleanStatus = {

@@ -62,6 +62,11 @@ class AppConfig:
     JANUA_API_URL: str = field(init=False)
     JANUA_API_KEY: str = field(default_factory=lambda: os.getenv("JANUA_API_KEY", ""))
 
+    # White-labeling Runtime Configuration
+    PLATFORM_NAME: str = field(default_factory=lambda: os.getenv("PLATFORM_NAME", "Yantra4D"))
+    PLATFORM_LOGO: str = field(default_factory=lambda: os.getenv("PLATFORM_LOGO", "/logo.png"))
+    YANTRA4D_LICENSE_KEY: str = field(default_factory=lambda: os.getenv("YANTRA4D_LICENSE_KEY", ""))
+
     def __post_init__(self):
         # Initialize paths and computed fields
         parent = self.BASE_DIR.parent.parent

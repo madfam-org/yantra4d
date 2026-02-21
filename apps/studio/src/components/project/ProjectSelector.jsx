@@ -1,4 +1,4 @@
-import { useManifest } from "../../contexts/ManifestProvider"
+import { useManifest } from "../../contexts/project/ManifestProvider"
 import { Github } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 

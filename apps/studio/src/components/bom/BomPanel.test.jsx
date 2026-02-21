@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import BomPanel from './BomPanel'
 
 // Mock useLanguage
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({
     language: 'en',
     t: (key) => {
@@ -38,7 +38,7 @@ const mockManifest = {
   },
 }
 
-vi.mock('../../contexts/ManifestProvider', () => ({
+vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => ({
     manifest: mockManifest,
     getLabel: (obj, key, lang) => {

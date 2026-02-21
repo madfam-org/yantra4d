@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-vi.mock('../../hooks/useAssemblyEditor', () => ({
+vi.mock('../../hooks/editor/useAssemblyEditor', () => ({
   useAssemblyEditor: () => ({
     steps: [
       { step: 1, label: { en: 'Step 1' }, notes: { en: '' }, visible_parts: ['bottom'], highlight_parts: [] },
@@ -22,11 +22,11 @@ vi.mock('../../hooks/useAssemblyEditor', () => ({
   }),
 }))
 
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({ language: 'en', t: (k) => k }),
 }))
 
-vi.mock('../../contexts/ManifestProvider', () => ({
+vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => ({
     manifest: {
       parts: [{ id: 'bottom' }, { id: 'top' }],

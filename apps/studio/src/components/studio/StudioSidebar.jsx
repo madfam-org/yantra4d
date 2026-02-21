@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Square, RotateCcw, Menu, Wrench } from 'lucide-react'
-import { useProject } from '../../contexts/ProjectProvider'
-import { useLanguage } from '../../contexts/LanguageProvider'
+import { useProject } from '../../contexts/project/ProjectProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
 
 function SidebarContent() {
   const {

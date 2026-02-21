@@ -10,11 +10,11 @@ vi.mock('../../services/core/apiClient', () => ({
   useRateLimit: () => mockRateLimit,
 }))
 
-vi.mock('../../hooks/useTier', () => ({
+vi.mock('../../hooks/system/useTier', () => ({
   useTier: () => ({ canAccess: mockCanAccess }),
 }))
 
-vi.mock('../../contexts/AuthProvider', () => ({
+vi.mock('../../contexts/auth/AuthProvider', () => ({
   get isAuthEnabled() { return mockIsAuthEnabled },
 }))
 

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import Viewer from '../viewer/Viewer'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
-import { useProject } from '../../contexts/ProjectProvider'
-import { useLanguage } from '../../contexts/LanguageProvider'
+import { useProject } from '../../contexts/project/ProjectProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
@@ -36,6 +36,7 @@ export default function StudioMainView() {
     animating, setAnimating, mode, params,
     printEstimate, setPrintEstimate,
     assemblyActive, highlightedParts, visibleParts,
+    headDiffMode, headParts,
     logs,
   } = useProject()
 
@@ -66,6 +67,8 @@ export default function StudioMainView() {
           assemblyActive={assemblyActive}
           highlightedParts={highlightedParts}
           visibleParts={visibleParts}
+          headDiffMode={headDiffMode}
+          headParts={headParts}
         />
         <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
         {/* Accessible live region for render status */}

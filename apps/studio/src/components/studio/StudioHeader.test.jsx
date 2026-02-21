@@ -3,15 +3,15 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import StudioHeader from './StudioHeader'
 
 // Mock dependencies
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: vi.fn(),
 }))
 
-vi.mock('../../contexts/ThemeProvider', () => ({
+vi.mock('../../contexts/system/ThemeProvider', () => ({
   useTheme: vi.fn(),
 }))
 
-vi.mock('../../contexts/ProjectProvider', () => ({
+vi.mock('../../contexts/project/ProjectProvider', () => ({
   useProject: vi.fn(),
 }))
 
@@ -27,7 +27,7 @@ vi.mock('../project/ProjectSelector', () => ({
   default: () => <div data-testid="project-selector">Projects</div>,
 }))
 
-vi.mock('../../hooks/useProjectMeta', () => ({
+vi.mock('../../hooks/project/useProjectMeta', () => ({
   useProjectMeta: () => ({ source: { type: 'github' } }),
 }))
 
@@ -38,9 +38,9 @@ vi.mock('../../config/languages', () => ({
   ],
 }))
 
-import { useLanguage } from '../../contexts/LanguageProvider'
-import { useTheme } from '../../contexts/ThemeProvider'
-import { useProject } from '../../contexts/ProjectProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useTheme } from '../../contexts/system/ThemeProvider'
+import { useProject } from '../../contexts/project/ProjectProvider'
 
 const baseProjectContext = {
   manifest: { project: { name: 'Test Project' } },

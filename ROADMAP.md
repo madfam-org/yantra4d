@@ -82,12 +82,12 @@ Before expanding with new features or new hyperobject projects, the platform mus
 - [x] Construct `mqtt_telemetry.py` to stream live external data architectures directly into procedural CadQuery param loops.
 
 ### 3.8 — Technical Health & Engineering
-- [ ] Refactor core project geometry to reduce duplication.
+- [x] Refactor core project geometry to reduce duplication.
 - [x] Implement memory optimizations for WASM rendering.
 - [x] Optimize the Docker rendering pipeline.
 
 ### 3.9 — Visual "3D Git" & Decentralized Ecosystem
-- [ ] **Visual Version Control (3D Diffing):** Implement a Three.js-based visual diffing tool.
+- [x] **Visual Version Control (3D Diffing):** Implement a Three.js-based visual diffing tool.
 - [ ] **Decentralized Instancing:** Enhance the CLI and multi-project tools to allow independent creators to easily spin up their own white-labeled Yantra4D nodes.
 
 ### 3.10 — Reliability & Documentation

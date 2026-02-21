@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
-import { useLanguage } from "../../contexts/LanguageProvider"
-import { useManifest } from "../../contexts/ManifestProvider"
+import { useLanguage } from "../../contexts/system/LanguageProvider"
+import { useManifest } from "../../contexts/project/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
 
 import SliderControl from './SliderControl'

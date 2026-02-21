@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Send, RotateCcw, Loader2, Check, X } from 'lucide-react'
-import { useAiChat } from '../../hooks/useAiChat'
+import { useAiChat } from '../../hooks/ai/useAiChat'
 
 /**
  * Chat UI for AI Configurator and Code Editor modes.

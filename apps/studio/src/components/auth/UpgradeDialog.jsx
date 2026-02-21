@@ -8,7 +8,7 @@ import {
     AlertDialogFooter,
     AlertDialogCancel,
 } from '../ui/alert-dialog';
-import { useLanguage } from '../../contexts/LanguageProvider';
+import { useLanguage } from '../../contexts/system/LanguageProvider';
 
 export default function UpgradeDialog({ isOpen, onClose, feature }) {
     const { t } = useLanguage();

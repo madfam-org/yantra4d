@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import PrintEstimateOverlay from './PrintEstimateOverlay'
-import { LanguageProvider } from '../../contexts/LanguageProvider'
-import { ManifestProvider } from '../../contexts/ManifestProvider'
+import { LanguageProvider } from '../../contexts/system/LanguageProvider'
+import { ManifestProvider } from '../../contexts/project/ManifestProvider'
 import { MemoryRouter } from 'react-router-dom'
 
 beforeEach(() => {

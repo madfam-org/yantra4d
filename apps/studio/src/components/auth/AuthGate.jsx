@@ -1,6 +1,6 @@
-import { useAuth, isAuthEnabled } from "../../contexts/AuthProvider"
-import { useManifest } from "../../contexts/ManifestProvider"
-import { useTier } from "../../hooks/useTier"
+import { useAuth, isAuthEnabled } from "../../contexts/auth/AuthProvider"
+import { useManifest } from "../../contexts/project/ManifestProvider"
+import { useTier } from "../../hooks/system/useTier"
 
 /**
  * Conditionally renders children based on manifest access_control, auth state, and tier.

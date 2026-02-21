@@ -11,9 +11,16 @@ from config import Config
 from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
-from utils.route_helpers import error_response, require_json_body
-from services.editor.git_operations import git_status, git_diff, git_commit, git_push, git_pull
+from utils.route_helpers import error_response, require_json_body, cleanup_old_stl_files
+from services.editor.git_operations import git_status, git_diff, git_commit, git_push, git_pull, git_archive_head
 from services.editor.github_token import get_github_token
+import tempfile
+import os
+
+from routes.engine.render import _extract_render_payload, STATIC_FOLDER
+from services.engine.openscad import build_openscad_command, run_render as run_openscad_render
+from services.engine.cadquery_engine import build_cadquery_command, run_render as run_cadquery_render
+from manifest import get_manifest
 
 import re
 
@@ -218,3 +225,78 @@ def pull(slug):
     if not result["success"]:
         return error_response(result["error"], 500)
     return jsonify(result)
+
+
+@git_ops_bp.route("/api/projects/<slug>/git/render-head", methods=["POST"])
+@require_tier("pro")
+@require_json_body
+def render_head(slug):
+    """Render the HEAD version of the selected SCAD file's parts."""
+    project_dir, err = _get_git_project(slug)
+    if err:
+        return error_response(err, 404 if "not found" in err.lower() else 400)
+
+    data = request.json
+    payload = _extract_render_payload(data)
+    
+    if payload is None:
+        return error_response("Invalid SCAD file", 400)
+    
+    parts_to_render = payload['parts']
+    stl_prefix = payload['stl_prefix'] + "head_"
+    export_format = payload['export_format']
+    params = payload['params']
+    mode_map = payload['mode_map']
+    
+    generated_parts = []
+    combined_log = ""
+    
+    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
+    
+    manifest = get_manifest(slug)
+    engine = manifest.engine
+    
+    # Extract HEAD to a temp dir
+    with tempfile.TemporaryDirectory(prefix="yantra_head_") as tmpdir_name:
+        target_dir = Path(tmpdir_name)
+        archive_res = git_archive_head(project_dir, target_dir)
+        if not archive_res["success"]:
+            return error_response(archive_res["error"], 500)
+            
+        head_scad_path = str(target_dir / payload['scad_filename'])
+        if not os.path.exists(head_scad_path):
+            return error_response("SCAD file does not exist in HEAD", 404)
+            
+        try:
+            for part in parts_to_render:
+                output_filename = f"{stl_prefix}{part}.{export_format}"
+                output_path = os.path.join(STATIC_FOLDER, output_filename)
+                
+                if engine == "cadquery":
+                    cmd = build_cadquery_command(output_path, head_scad_path, params, export_format)
+                    success, stderr = run_cadquery_render(cmd, scad_path=head_scad_path)
+                else:
+                    render_mode = mode_map.get(part, 0)
+                    cmd = build_openscad_command(output_path, head_scad_path, params, render_mode)
+                    success, stderr = run_openscad_render(cmd, scad_path=head_scad_path)
+                    
+                if not success:
+                    # Ignore failures if the part simply didn't exist in HEAD or failed to compile
+                    combined_log += f"[{part}] HEAD render failed: {stderr}\n"
+                    continue
+                    
+                combined_log += f"[{part}] {stderr}\n"
+                generated_parts.append({
+                    "type": part,
+                    "url": f"/static/{output_filename}",
+                    "size_bytes": os.path.getsize(output_path) if os.path.exists(output_path) else None
+                })
+                
+            return jsonify({
+                "status": "success",
+                "parts": generated_parts,
+                "log": combined_log
+            })
+        except Exception as e:
+            logger.warning(f"Unexpected error during HEAD render: {e}")
+            return error_response(str(e), 500)

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
-import { useAuth, isAuthEnabled } from '../../contexts/AuthProvider'
-import { useTier } from '../../hooks/useTier'
+import { useAuth, isAuthEnabled } from '../../contexts/auth/AuthProvider'
+import { useTier } from '../../hooks/system/useTier'
 
 export default function DemoBanner() {
   const [dismissed, setDismissed] = useState(false)

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import ConfirmRenderDialog from './ConfirmRenderDialog'
-import { LanguageProvider } from '../../contexts/LanguageProvider'
+import { LanguageProvider } from '../../contexts/system/LanguageProvider'
 
 const renderWithProviders = (ui) =>
   render(<LanguageProvider defaultLanguage="en">{ui}</LanguageProvider>)

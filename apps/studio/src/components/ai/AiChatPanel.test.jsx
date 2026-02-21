@@ -14,7 +14,7 @@ const mockSendMessage = vi.fn()
 const mockResetSession = vi.fn()
 const mockSetPendingEdits = vi.fn()
 
-vi.mock('../../hooks/useAiChat', () => ({
+vi.mock('../../hooks/ai/useAiChat', () => ({
   useAiChat: () => ({
     messages: mockMessages,
     sendMessage: mockSendMessage,

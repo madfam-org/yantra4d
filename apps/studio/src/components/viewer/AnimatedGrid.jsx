@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { Edges } from '@react-three/drei'
 import { fetchAssemblyGeometries } from '../../services/domain/assemblyFetcher'
-import { useManifest } from '../../contexts/ManifestProvider'
+import { useManifest } from '../../contexts/project/ManifestProvider'
 
 function getCombinedCenter(geometries) {
   const box = new THREE.Box3()

@@ -147,6 +147,33 @@ def git_diff(project_dir: Path, filepath: str | None = None) -> dict:
     return {"success": True, "diff": result.stdout}
 
 
+def git_show_head(project_dir: Path, filepath: str) -> dict:
+    """Get the HEAD version of a file."""
+    result = _run_git(project_dir, ["show", f"HEAD:{filepath}"])
+    if result.returncode != 0:
+        return {"success": False, "error": result.stderr.strip()}
+    return {"success": True, "content": result.stdout}
+
+
+def git_archive_head(project_dir: Path, target_dir: Path) -> dict:
+    """Extract the entire HEAD tree into target_dir."""
+    try:
+        # Provide output directory
+        target_dir.mkdir(parents=True, exist_ok=True)
+        # Use git archive piped to tar 
+        p1 = subprocess.Popen(["git", "archive", "HEAD"], cwd=str(project_dir), stdout=subprocess.PIPE)
+        p2 = subprocess.Popen(["tar", "-x", "-C", str(target_dir)], stdin=p1.stdout, stdout=subprocess.PIPE)
+        p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+        p2.communicate(timeout=GIT_TIMEOUT)
+        
+        if p2.returncode != 0:
+            return {"success": False, "error": "Failed to extract HEAD archive"}
+            
+        return {"success": True, "target_dir": target_dir}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 def git_commit(
     project_dir: Path,
     message: str,

@@ -58,3 +58,13 @@ export async function pull(slug) {
   if (!res.ok) throw new Error((await res.json()).error || 'Pull failed')
   return res.json()
 }
+
+export async function renderHead(slug, payload) {
+  const res = await apiFetch(`${base()}/api/projects/${slug}/git/render-head`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) throw new Error((await res.json()).error || 'Render HEAD failed')
+  return res.json()
+}

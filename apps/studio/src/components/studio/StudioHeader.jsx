@@ -5,10 +5,11 @@ import AuthButton from '../auth/AuthButton'
 import AuthGate from '../auth/AuthGate'
 import ProjectSelector from '../project/ProjectSelector'
 import { SUPPORTED_LANGUAGES } from '../../config/languages'
-import { useProjectMeta } from '../../hooks/useProjectMeta'
-import { useProject } from '../../contexts/ProjectProvider'
-import { useLanguage } from '../../contexts/LanguageProvider'
-import { useTheme } from '../../contexts/ThemeProvider'
+import { useProjectMeta } from '../../hooks/project/useProjectMeta'
+import { useProject } from '../../contexts/project/ProjectProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useTheme } from '../../contexts/system/ThemeProvider'
+import { usePlatform } from '../../contexts/system/PlatformProvider'
 
 export default function StudioHeader({
   editorOpen, toggleEditor,
@@ -22,6 +23,7 @@ export default function StudioHeader({
 
   const { language, setLanguage, t } = useLanguage()
   const { theme, setTheme } = useTheme()
+  const { platformName, platformLogo, loading: platformLoading } = usePlatform()
 
   const cycleTheme = () => {
     const themes = ['light', 'dark', 'system']
@@ -48,6 +50,9 @@ export default function StudioHeader({
       <div className="flex items-center gap-3">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
+            {!platformLoading && platformLogo !== '/logo.png' && (
+              <img src={platformLogo} alt="Logo" className="h-4 w-auto rounded-sm" onError={(e) => e.target.style.display = 'none'} />
+            )}
             <h1 className="text-lg font-bold tracking-tight">{manifest.project.name}</h1>
             {manifest.project.hyperobject?.is_hyperobject && (
               <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-500 ring-1 ring-inset ring-blue-500/20" title={`Domain: ${manifest.project.hyperobject.domain}`}>
@@ -55,7 +60,9 @@ export default function StudioHeader({
               </span>
             )}
           </div>
-          <span className="text-[10px] text-muted-foreground leading-tight">{t('platform.powered_by')}</span>
+          <span className="text-[10px] text-muted-foreground leading-tight">
+            {t('platform.powered_by')} {!platformLoading ? platformName : ''}
+          </span>
         </div>
         <ProjectSelector />
         <a href="#/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</a>

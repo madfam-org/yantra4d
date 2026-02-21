@@ -21,18 +21,18 @@ vi.mock('three/examples/jsm/loaders/STLLoader', () => ({
   STLLoader: class { },
 }))
 
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({
     language: 'en',
     t: (key) => key,
   }),
 }))
 
-vi.mock('../../contexts/ThemeProvider', () => ({
+vi.mock('../../contexts/system/ThemeProvider', () => ({
   useTheme: () => ({ theme: 'light' }),
 }))
 
-vi.mock('../../contexts/ManifestProvider', () => ({
+vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => ({
     getCameraViews: () => [
       { id: 'iso', label: 'Iso', position: [50, 50, 50] },

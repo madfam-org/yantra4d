@@ -1,6 +1,6 @@
 import { useRateLimit } from '../../services/core/apiClient'
-import { useTier } from '../../hooks/useTier'
-import { isAuthEnabled } from '../../contexts/AuthProvider'
+import { useTier } from '../../hooks/system/useTier'
+import { isAuthEnabled } from '../../contexts/auth/AuthProvider'
 
 export default function RateLimitBanner() {
   const { remaining, limit, tier } = useRateLimit()

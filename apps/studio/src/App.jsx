@@ -3,8 +3,9 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe } from 'lucide-react'
 import { Toaster } from "@/components/ui/sonner"
-import { useProject } from './contexts/ProjectProvider'
-import { useThemeAndLanguage } from './hooks/useThemeAndLanguage'
+import { useProject } from './contexts/project/ProjectProvider'
+import { useThemeAndLanguage } from './hooks/system/useThemeAndLanguage'
+import { usePlatform } from './contexts/system/PlatformProvider'
 import StudioHeader from './components/studio/StudioHeader'
 import StudioSidebar from './components/studio/StudioSidebar'
 import StudioMainView from './components/studio/StudioMainView'
@@ -57,6 +58,8 @@ function App() {
     projectName: manifest?.project?.name,
   })
 
+  const { platformName, platformLogo, loading: platformLoading } = usePlatform()
+
   const [forkDialogSlug, setForkDialogSlug] = useState(null)
   const handleForkRequest = useCallback(() => setForkDialogSlug(projectSlug), [projectSlug])
   const handleForked = useCallback((newSlug) => {
@@ -86,7 +89,14 @@ function App() {
     return (
       <div className="flex flex-col h-screen w-full bg-background text-foreground">
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-          <h1 className="text-lg font-bold tracking-tight">Yantra4D</h1>
+          <div className="flex items-center gap-2">
+            {!platformLoading && (
+              <>
+                <img src={platformLogo} alt="Logo" className="h-6 w-auto" onError={(e) => e.target.style.display = 'none'} />
+                <h1 className="text-lg font-bold tracking-tight">{platformName}</h1>
+              </>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <AuthButton />
             <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Parser } from 'expr-eval'
-import { useLanguage } from '../../contexts/LanguageProvider'
-import { useManifest } from '../../contexts/ManifestProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useManifest } from '../../contexts/project/ManifestProvider'
 
 const parser = new Parser()
 

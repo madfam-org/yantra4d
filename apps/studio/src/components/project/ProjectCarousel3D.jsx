@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { ScrollControls, Scroll, useScroll, Environment, ContactShadows } from '@react-three/drei'
-import { useLanguage } from '../../contexts/LanguageProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
 import CarouselItem from './CarouselItem'
 import CarouselUIOverlay from './CarouselUIOverlay'
 

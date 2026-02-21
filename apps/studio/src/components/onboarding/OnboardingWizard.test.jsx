@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import OnboardingWizard from './OnboardingWizard'
 
 // Mock dependencies
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({ t: (key) => key }),
 }))
 

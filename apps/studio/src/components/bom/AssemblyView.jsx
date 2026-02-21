@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useLanguage } from '../../contexts/LanguageProvider'
-import { useManifest } from '../../contexts/ManifestProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useManifest } from '../../contexts/project/ManifestProvider'
 
 export default function AssemblyView({ onStepChange }) {
   const { language, t } = useLanguage()

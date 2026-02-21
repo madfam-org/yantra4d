@@ -6,12 +6,12 @@ let mockIsAuthEnabled = true
 let mockIsAuthenticated = false
 let mockTier = 'guest'
 
-vi.mock('../../contexts/AuthProvider', () => ({
+vi.mock('../../contexts/auth/AuthProvider', () => ({
   useAuth: () => ({ isAuthenticated: mockIsAuthenticated }),
   get isAuthEnabled() { return mockIsAuthEnabled },
 }))
 
-vi.mock('../../hooks/useTier', () => ({
+vi.mock('../../hooks/system/useTier', () => ({
   useTier: () => ({ tier: mockTier }),
 }))
 

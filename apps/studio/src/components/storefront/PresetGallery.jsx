@@ -1,6 +1,6 @@
 import React from 'react'
-import { useLanguage } from '../../contexts/LanguageProvider'
-import { useManifest } from '../../contexts/ManifestProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useManifest } from '../../contexts/project/ManifestProvider'
 
 /**
  * PresetGallery — visual grid of preset cards for the storefront view.

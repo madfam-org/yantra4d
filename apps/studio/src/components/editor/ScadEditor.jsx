@@ -15,10 +15,10 @@ import {
 import { FileCode, Plus, X, Loader2, Sparkles } from 'lucide-react'
 
 const AiChatPanel = lazy(() => import('../ai/AiChatPanel'))
-import { useTheme } from '../../contexts/ThemeProvider'
+import { useTheme } from '../../contexts/system/ThemeProvider'
 import { listFiles, readFile, createFile, deleteFile } from '../../services/domain/editorService'
 import { registerScadLanguage, SCAD_LANGUAGE_ID } from '../../lib/scad-language'
-import { useEditorRender } from '../../hooks/useEditorRender'
+import { useEditorRender } from '../../hooks/editor/useEditorRender'
 
 /**
  * Monaco-based SCAD code editor with file tree, tabs, and auto-render.

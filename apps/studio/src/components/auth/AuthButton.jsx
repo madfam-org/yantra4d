@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { LogIn, LogOut } from 'lucide-react'
-import { useAuth, isAuthEnabled } from "../../contexts/AuthProvider"
-import { useLanguage } from "../../contexts/LanguageProvider"
+import { useAuth, isAuthEnabled } from "../../contexts/auth/AuthProvider"
+import { useLanguage } from "../../contexts/system/LanguageProvider"
 
 export default function AuthButton() {
   const { t } = useLanguage()

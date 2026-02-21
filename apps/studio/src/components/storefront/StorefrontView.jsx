@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react'
 import { Download, Share2, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useLanguage } from '../../contexts/LanguageProvider'
-import { useManifest } from '../../contexts/ManifestProvider'
-import { useProject } from '../../contexts/ProjectProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useManifest } from '../../contexts/project/ManifestProvider'
+import { useProject } from '../../contexts/project/ProjectProvider'
 import PresetGallery from './PresetGallery'
 
 /**

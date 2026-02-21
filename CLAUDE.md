@@ -16,7 +16,8 @@ projects/
        │        └── middleware/  auth (JWT + tier gating)
        │
        ├──► apps/studio/   (React 19 + Vite + Three.js + Shadcn UI)
-       │        ├── contexts/  ManifestProvider (multi-project), Theme, Language, Auth, Tier
+       │        ├── contexts/  auth, project, system
+       │        ├── hooks/     ai, editor, project, render, system
        │        ├── components/  Controls, Viewer, ProjectSelector, OnboardingWizard, ScadEditor, GitPanel, AiChatPanel, ForkDialog, BomPanel
        │        └── services/  renderService, verifyService, openscad-worker (WASM)
        │
@@ -49,7 +50,7 @@ packages/
 | `apps/studio/src/App.jsx` | Main shell, state management | RARELY |
 | `apps/studio/src/components/Controls.jsx` | Data-driven param controls (reads manifest) | RARELY |
 | `apps/studio/src/components/Viewer.jsx` | Three.js 3D STL viewer | RARELY |
-| `apps/studio/src/contexts/ManifestProvider.jsx` | Fetches & provides manifest to app | RARELY |
+| `apps/studio/src/contexts/project/ManifestProvider.jsx` | Fetches & provides manifest to app | RARELY |
 | `apps/api/routes/projects.py` | Multi-project listing API | RARELY |
 | `apps/api/routes/onboard.py` | Project onboarding API | RARELY |
 | `apps/api/services/scad_analyzer.py` | SCAD file analysis engine | RARELY |
@@ -58,8 +59,8 @@ packages/
 | `apps/studio/src/components/OnboardingWizard.jsx` | Web-based project onboarding wizard | RARELY |
 | `apps/studio/src/components/ExportPanel.jsx` | Export controls with multi-format selector | RARELY |
 | `apps/studio/src/components/PrintEstimateOverlay.jsx` | Print time/filament/cost overlay | RARELY |
-| `apps/studio/src/hooks/useShareableUrl.js` | Shareable URL generation (base64url params) | RARELY |
-| `apps/studio/src/hooks/useUndoRedo.js` | Parameter undo/redo history stack | RARELY |
+| `apps/studio/src/hooks/project/useShareableUrl.js` | Shareable URL generation (base64url params) | RARELY |
+| `apps/studio/src/hooks/editor/useUndoRedo.js` | Parameter undo/redo history stack | RARELY |
 | `apps/studio/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
 | `apps/landing/src/pages/index.astro` | Landing page (composes all sections) | RARELY |
 | `apps/landing/src/components/InteractiveShowcase.tsx` | React island — iframe embed of studio with project tabs | RARELY |
@@ -67,7 +68,7 @@ packages/
 | `docs/strategy/competitive-landscape.md` | Competitive research & feature roadmap | YES |
 | `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
 | `apps/studio/src/components/ui/*` | Shadcn primitives | **NEVER** |
-| `tools/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
+| `scripts/cli/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
@@ -87,8 +88,8 @@ packages/
 | `apps/api/services/ai_code_editor.py` | NL → SCAD code edit mapping | RARELY |
 | `apps/api/services/github_import.py` | GitHub repo clone and project creation | RARELY |
 | `apps/api/services/tier_service.py` | Tier lookup and feature gating | RARELY |
-| `apps/studio/src/contexts/AuthProvider.jsx` | JWT auth context + login/logout | RARELY |
-| `apps/studio/src/contexts/TierProvider.jsx` | User tier context + feature flags | RARELY |
+| `apps/studio/src/contexts/auth/AuthProvider.jsx` | JWT auth context + login/logout | RARELY |
+| `apps/studio/src/contexts/auth/TierProvider.jsx` | User tier context + feature flags | RARELY |
 | `apps/studio/src/components/AiChatPanel.jsx` | AI chat UI (configurator + code-editor modes) | RARELY |
 | `apps/studio/src/components/GitPanel.jsx` | Git status, diff, commit, push/pull UI | RARELY |
 | `apps/studio/src/components/ScadEditor.jsx` | Monaco-based SCAD code editor | RARELY |

@@ -8,7 +8,7 @@ vi.mock('../viewer/Viewer', () => ({
 }))
 
 // Mock useLanguage hook directly
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({ t: (key) => key }),
   LanguageProvider: ({ children }) => children
 }))

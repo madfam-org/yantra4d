@@ -11,7 +11,6 @@ Given a manifest and per-file SCAD analysis, this service:
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 # ---------------------------------------------------------------------------
@@ -71,7 +70,6 @@ def _build_attachment_graph(analysis: dict, manifest_parts: list[dict]) -> dict[
         graph.setdefault(parent_part_id, [])
 
         for att in file_data.get("attachments", []):
-            child = att.get("child", "")
             child_module = att.get("child", "")
             if child_module:
                 child_part_id = _match_part(child_module)

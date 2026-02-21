@@ -33,14 +33,14 @@ vi.mock('../../services/domain/editorService', () => ({
 const mockSaveAndRender = vi.fn()
 const mockSaveImmediate = vi.fn()
 
-vi.mock('../../hooks/useEditorRender', () => ({
+vi.mock('../../hooks/editor/useEditorRender', () => ({
   useEditorRender: () => ({
     saveAndRender: mockSaveAndRender,
     saveImmediate: mockSaveImmediate,
   }),
 }))
 
-vi.mock('../../contexts/ThemeProvider', () => ({
+vi.mock('../../contexts/system/ThemeProvider', () => ({
   useTheme: () => ({ theme: 'light' }),
 }))
 

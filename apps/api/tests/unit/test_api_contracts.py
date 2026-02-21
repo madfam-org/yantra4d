@@ -46,10 +46,7 @@ def sample_project(tmp_path):
             "name": "Contract Test Project",
             "slug": slug,
             "version": "1.0.0",
-            "description": {"en": "Test project for contract validation", "es": "Proyecto de prueba"},
-            "thumbnail": f"/projects/{slug}.webp",
-            "tags": ["test"],
-            "difficulty": "beginner",
+            "description": {"en": "Test project for contract validation", "es": "Proyecto de prueba"}
         },
         "modes": [
             {

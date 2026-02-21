@@ -15,16 +15,16 @@ vi.mock('../export/PrintEstimateOverlay', () => ({
 }))
 
 // Mock Contexts
-vi.mock('../../contexts/ProjectProvider', () => ({
+vi.mock('../../contexts/project/ProjectProvider', () => ({
   useProject: vi.fn(),
 }))
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: vi.fn(),
 }))
 
 import StudioMainView from './StudioMainView'
-import { useProject } from '../../contexts/ProjectProvider'
-import { useLanguage } from '../../contexts/LanguageProvider'
+import { useProject } from '../../contexts/project/ProjectProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
 
 const t = (key) => ({
   'status.rendering': 'Rendering',

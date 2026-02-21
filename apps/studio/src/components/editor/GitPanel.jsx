@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { GitBranch, GitCommit, ArrowUp, ArrowDown, RefreshCw, Loader2, Check, Link } from 'lucide-react'
-import { getStatus, getDiff, commit, push, pull, connectRemote } from '../../services/domain/gitService'
+import { useProject } from '../../contexts/project/ProjectProvider'
+import { getStatus, getDiff, commit, push, pull, connectRemote, renderHead } from '../../services/domain/gitService'
 
 const SUCCESS_TOAST_DURATION_MS = 2000
 
@@ -18,6 +19,12 @@ export default function GitPanel({ slug }) {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [remoteUrl, setRemoteUrl] = useState('')
+
+  const {
+    mode, params, parts, exportFormat,
+    headDiffMode, setHeadDiffMode,
+    setHeadParts, loadingHeadDiff, setLoadingHeadDiff
+  } = useProject()
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -49,7 +56,7 @@ export default function GitPanel({ slug }) {
         const allChanged = [...(s.modified || []), ...(s.added || []), ...(s.untracked || [])]
         setSelectedFiles(allChanged)
         if (allChanged.length > 0) {
-          getDiff(slug).then(d => { if (!cancelled) setDiff(d.diff || '') }).catch(() => {})
+          getDiff(slug).then(d => { if (!cancelled) setDiff(d.diff || '') }).catch(() => { })
         }
         setLoading(false)
       })
@@ -123,6 +130,35 @@ export default function GitPanel({ slug }) {
       setError(e.message)
     }
     setActionLoading(null)
+  }
+
+  const toggleHeadDiff = async () => {
+    if (headDiffMode) {
+      setHeadDiffMode(false)
+      setHeadParts([])
+      return
+    }
+
+    setLoadingHeadDiff(true)
+    setError(null)
+    try {
+      const payload = {
+        mode,
+        parameters: params,
+        parts: parts.map(p => p.type),
+        export_format: exportFormat,
+        project: slug
+      }
+      const res = await renderHead(slug, payload)
+      if (res.status === 'success') {
+        setHeadParts(res.parts)
+        setHeadDiffMode(true)
+      }
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setLoadingHeadDiff(false)
+    }
   }
 
   const allChanged = status
@@ -241,8 +277,21 @@ export default function GitPanel({ slug }) {
       {/* Diff preview */}
       {diff && (
         <details className="border-t border-border">
-          <summary className="px-3 py-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground">
-            Diff preview
+          <summary className="flex items-center justify-between px-3 py-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+            <span>Diff preview</span>
+            <Button
+              variant={headDiffMode ? "secondary" : "outline"}
+              size="sm"
+              className="h-5 px-2 text-[10px]"
+              disabled={loadingHeadDiff}
+              onClick={(e) => {
+                e.preventDefault()
+                toggleHeadDiff()
+              }}
+            >
+              {loadingHeadDiff ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+              {headDiffMode ? "3D Diff On" : "3D Diff Off"}
+            </Button>
           </summary>
           <pre className="px-3 py-1 text-[11px] max-h-40 overflow-auto bg-muted/30 font-mono whitespace-pre-wrap">{diff}</pre>
         </details>

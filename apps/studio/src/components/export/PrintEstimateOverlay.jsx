@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
-import { useLanguage } from '../../contexts/LanguageProvider'
-import { useManifest } from '../../contexts/ManifestProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useManifest } from '../../contexts/project/ManifestProvider'
 import { estimatePrint, getMaterialProfiles, buildMaterialLookup } from '../../lib/printEstimator'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 

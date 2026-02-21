@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Plus, X, Copy } from 'lucide-react'
-import { useLanguage } from '../../contexts/LanguageProvider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
 import Viewer from '../viewer/Viewer'
 
 /**

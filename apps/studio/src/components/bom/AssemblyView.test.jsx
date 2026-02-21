@@ -7,13 +7,13 @@ const mockSteps = [
   { step: 2, label: { en: 'Add top' }, notes: { en: 'Snap on' }, visible_parts: ['bottom', 'top'], highlight_parts: ['top'] },
 ]
 
-vi.mock('../../contexts/LanguageProvider', () => ({
+vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({ language: 'en', t: (k) => k }),
 }))
 
 let mockManifest = { assembly_steps: mockSteps }
 
-vi.mock('../../contexts/ManifestProvider', () => ({
+vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => ({
     manifest: mockManifest,
     getLabel: (obj, field, lang) => obj?.[field]?.[lang] || '',

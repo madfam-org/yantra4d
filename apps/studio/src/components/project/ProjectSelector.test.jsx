@@ -6,7 +6,7 @@ const mockSwitchProject = vi.fn()
 let mockProjects = []
 let mockProjectSlug = 'gridfinity'
 
-vi.mock('../../contexts/ManifestProvider', () => ({
+vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => ({
     projects: mockProjects,
     projectSlug: mockProjectSlug,

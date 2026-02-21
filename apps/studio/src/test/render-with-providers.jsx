@@ -1,11 +1,11 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '../contexts/ThemeProvider'
-import { LanguageProvider } from '../contexts/LanguageProvider'
-import { AuthProvider } from '../contexts/AuthProvider'
-import { ManifestProvider } from '../contexts/ManifestProvider'
-import { ProjectProvider } from '../contexts/ProjectProvider'
-import { TierContext } from '../contexts/TierProvider'
+import { ThemeProvider } from '../contexts/system/ThemeProvider'
+import { LanguageProvider } from '../contexts/system/LanguageProvider'
+import { AuthProvider } from '../contexts/auth/AuthProvider'
+import { ManifestProvider } from '../contexts/project/ManifestProvider'
+import { ProjectProvider } from '../contexts/project/ProjectProvider'
+import { TierContext } from '../contexts/auth/TierProvider'
 import { MemoryRouter } from 'react-router-dom'
 
 const TIER_HIERARCHY = { guest: 0, basic: 1, pro: 2, madfam: 3 }

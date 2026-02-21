@@ -7,9 +7,11 @@ import logging
 import subprocess
 import threading
 
+import os
+
 logger = logging.getLogger(__name__)
 
-RENDER_TIMEOUT_S = 300
+RENDER_TIMEOUT_S = int(os.getenv("RENDER_TIMEOUT_S", 300))
 
 
 class ProcessManager:

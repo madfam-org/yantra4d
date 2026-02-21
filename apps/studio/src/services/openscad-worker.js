@@ -30,6 +30,8 @@ let initialized = false
 async function createFreshInstance() {
   const wrapper = await createOpenSCAD({
     noInitialRun: true,
+    TOTAL_MEMORY: 536870912, // 512MB
+    ALLOW_MEMORY_GROWTH: 1,
     printErr: (text) => {
       const phase = detectPhase(text)
       if (phase || isLogWorthy(text)) {

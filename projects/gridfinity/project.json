@@ -24,6 +24,7 @@
     {
       "id": "cup",
       "scad_file": "cup.scad",
+      "cq_file": "cup.py",
       "label": {
         "es": "Contenedor",
         "en": "Bin"
@@ -39,6 +40,7 @@
     {
       "id": "baseplate",
       "scad_file": "baseplate.scad",
+      "cq_file": "baseplate.py",
       "label": {
         "es": "Placa Base",
         "en": "Baseplate"
@@ -54,6 +56,7 @@
     {
       "id": "lid",
       "scad_file": "lid.scad",
+      "cq_file": "lid.py",
       "label": {
         "es": "Tapa",
         "en": "Lid"

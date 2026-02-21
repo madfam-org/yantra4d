@@ -1,0 +1,36 @@
+---
+title: Welcome to 4D Docs
+description: The official documentation for Yantra4D and the Hyperobjects Commons.
+template: splash
+hero:
+  tagline: Visualization, configuration, and editing for Parametric CDG Hyperobjects.
+  image:
+    file: ../../../public/logo.svg
+  actions:
+    - text: Welcome Guide
+      link: /overview/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: Explore Hyperobjects Commons
+      link: /commons/manifest-specs/
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Next steps
+
+<CardGrid stagger>
+	<Card title="The Platform" icon="pencil">
+		Learn about the Yantra4D Studio UI, realtime rendering, and the OpenSCAD/CadQuery Dual-Kernel pipelines.
+	</Card>
+	<Card title="Hyperobjects Commons" icon="add-document">
+		Dive into the JSON Schema specs establishing the open-source hardware registry.
+	</Card>
+	<Card title="AI Integration" icon="setting">
+		Build with Agentic AI pipelines natively parsing and exporting our B-Rep assemblies.
+	</Card>
+	<Card title="Read the roadmap" icon="open-book">
+		Explore the architectural phases leading the engineering priorities.
+	</Card>
+</CardGrid>

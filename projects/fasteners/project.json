@@ -28,6 +28,7 @@
         "es": "Tornillo"
       },
       "scad_file": "bolt.scad",
+      "cq_file": "bolt.py",
       "parts": [
         "bolt"
       ],
@@ -44,6 +45,7 @@
         "es": "Tuerca"
       },
       "scad_file": "nut.scad",
+      "cq_file": "nut.py",
       "parts": [
         "nut"
       ],

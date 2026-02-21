@@ -1,0 +1,11 @@
+# Yantra4D - The Hyperobjects Commons
+
+This is an AI-readable endpoint containing key ecosystem locations to accelerate developer context parsing for Yantra4D.
+
+## Architecture
+- `apps/studio`: The main React 19 / Vite frontend application utilizing Monaco and Drei for rendering parameterized `.scad` documents on the fly.
+- `apps/docs`: This repository (Astro Starlight).
+- `projects/`: The 4D Commons directory holding the `project.json` schemas mapped to `*.scad` and `*.py` files governing rendering logic.
+
+## Tools
+You can find further LLM reading materials directly in the monorepo root: `/llms.txt` and `/llms-full.txt`.

@@ -28,6 +28,7 @@
     {
       "id": "transtibial_socket",
       "scad_file": "socket.scad",
+      "cq_file": "socket.py",
       "label": {
         "en": "Transtibial Socket",
         "es": "Socket Transtibial"
@@ -43,6 +44,7 @@
     {
       "id": "transfemoral_socket",
       "scad_file": "socket.scad",
+      "cq_file": "socket.py",
       "label": {
         "en": "Transfemoral Socket",
         "es": "Socket Transfemoral"

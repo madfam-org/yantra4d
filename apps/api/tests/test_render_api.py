@@ -94,6 +94,31 @@ class TestRenderExportFormat:
         assert "3mf" in ALLOWED_EXPORT_FORMATS
         assert "off" in ALLOWED_EXPORT_FORMATS
 
+class TestTierEnforcementRender:
+    def test_guest_blocked_from_cadquery(self, client, monkeypatch):
+        monkeypatch.setattr("routes.render._extract_render_payload", lambda *args: {
+            "parts": ["m"], "export_format": "glb", "params": {}, "scad_path": "mock", "mode_map": {"m": 0}, "stl_prefix": "pre_", "project_slug": "cq", "scad_filename": "mock.scad"
+        })
+        class MockManifest:
+            def __init__(self): self.engine = "cadquery"
+        monkeypatch.setattr("routes.render.get_manifest", lambda *args: MockManifest())
+        
+        res = client.post("/api/render", json={"project": "cq"})
+        assert res.status_code == 403
+        assert "CadQuery engine is not available" in res.get_json()["error"]
+
+    def test_guest_blocked_from_premium_export(self, client, monkeypatch):
+        monkeypatch.setattr("routes.render._extract_render_payload", lambda *args: {
+            "parts": ["m"], "export_format": "step", "params": {}, "scad_path": "mock", "mode_map": {"m": 0}, "stl_prefix": "pre_", "project_slug": "os", "scad_filename": "mock.scad"
+        })
+        class MockManifest:
+            def __init__(self): self.engine = "openscad"
+        monkeypatch.setattr("routes.render.get_manifest", lambda *args: MockManifest())
+        
+        res = client.post("/api/render", json={"project": "os"})
+        assert res.status_code == 403
+        assert "requires Pro tier" in res.get_json()["error"]
+
 
 class TestCancelAPI:
     def test_cancel_no_active_render(self, client):

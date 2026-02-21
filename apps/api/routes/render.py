@@ -12,12 +12,12 @@ from config import Config
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.tier_service import resolve_tier, get_tier_limits
+from services.tier_service import resolve_tier, get_tier_limits, check_feature
 from services.openscad import (
-    build_openscad_command, 
-    run_render as run_openscad_render, 
-    stream_render as stream_openscad_render, 
-    cancel_render as cancel_openscad_render, 
+    build_openscad_command,
+    run_render as run_openscad_render,
+    stream_render as stream_openscad_render,
+    cancel_render as cancel_openscad_render,
     validate_params
 )
 from services.cadquery_engine import (
@@ -32,7 +32,7 @@ from services.mqtt_telemetry import telemetry_service, telemetry_queue
 import rate_limits
 import queue
 
-ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf'}
+ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf', 'glb'}
 PROGRESS_TOTAL = 100  # SSE progress is in the range 0–100
 
 logger = logging.getLogger(__name__)
@@ -123,6 +123,7 @@ def _extract_render_payload(data):
         'export_format': export_format,
         'params': params,
         'static_stl_map': static_stl_map,
+        'project_slug': project_slug,
     }
 
 
@@ -184,10 +185,10 @@ def render_stl():
     scad_path = payload['scad_path']
     mode_map = payload['mode_map']
     static_stl_map = payload.get('static_stl_map', {})
+    project_slug = payload['project_slug']
 
     generated_parts = []
     combined_log = ""
-    project_slug = data.get('project', '')
     cache_hits = 0
     cache_total = 0
 
@@ -229,7 +230,13 @@ def render_stl():
 
             manifest = get_manifest(project_slug)
             engine = manifest.engine
-            
+
+            if engine == "cadquery":
+                if not check_feature(tier, "cadquery_engine"):
+                    return error_response("CadQuery engine is not available for your tier.", 403)
+                if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
+                    return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
+
             # Inject continuous telemetry temporal state into static parameters
             # using a conventional topic structure based on the project slug
             project_topic = f"yantra4d/telemetry/projects/{project_slug}"
@@ -297,7 +304,7 @@ def render_stl_stream():
     scad_path = payload['scad_path']
     mode_map = payload['mode_map']
     static_stl_map = payload.get('static_stl_map', {})
-    project_slug = data.get('project', '')
+    project_slug = payload['project_slug']
 
     num_parts = len(parts_to_render)
     num_parts = len(parts_to_render)

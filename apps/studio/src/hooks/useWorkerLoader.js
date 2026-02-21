@@ -117,5 +117,8 @@ export function useWorkerLoader(url, isGLTF = false) {
         }
     }, [url, isGLTF])
 
-    return isGLTF ? gltfMergedGeom : geometry
+    return {
+        geometry: isGLTF ? gltfMergedGeom : geometry,
+        scene: isGLTF ? gltfData?.scene : null
+    }
 }

@@ -27,7 +27,7 @@ const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryR
     const isGLTF = url?.toLowerCase().endsWith('.gltf') || url?.toLowerCase().endsWith('.glb')
 
     // Asynchronously loads geometries; .stl via WebWorker, .gltf natively.
-    const geom = useWorkerLoader(url, isGLTF)
+    const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF)
 
     useEffect(() => {
         if (geom && onGeometry) onGeometry(partType, geom)
@@ -68,6 +68,16 @@ const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryR
     }
 
     const opacity = wireframe ? 0.2 : isGhost ? 0.15 : 1
+
+    // If it's a native GLTF scene and we have no material overrides (like wireframe/ghost), render the rich scene!
+    if (gltfScene && !wireframe && !isGhost && !glass) {
+        return (
+            <group>
+                <primitive object={gltfScene} />
+                {!isGhost && <Edges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
+            </group>
+        )
+    }
 
     return (
         <mesh geometry={geom}>

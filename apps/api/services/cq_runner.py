@@ -1,7 +1,6 @@
 import sys
 import json
 import logging
-import ast
 
 logger = logging.getLogger(__name__)
 
@@ -49,17 +48,19 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
 
         print(f"Exporting to {export_format}: {output_path}")
         
-        # GLTF requires an Assembly wrapper in CadQuery
-        if export_format.upper() == "GLTF" and not isinstance(result, cq.Assembly):
+        # GLTF/GLB requires an Assembly wrapper in CadQuery
+        is_gltf_or_glb = export_format.upper() in ["GLTF", "GLB"]
+        if is_gltf_or_glb and not isinstance(result, cq.Assembly):
             result = cq.Assembly(result)
 
         if isinstance(result, cq.Assembly):
-            if export_format.upper() == "GLTF":
-                result.export(output_path, export_format.upper())
+            if is_gltf_or_glb:
+                result.save(output_path, "GLTF")
             else:
                 result.save(output_path, export_format.upper())
         else:
-            cq.exporters.export(result, output_path, export_format.upper())
+            cq_format = "GLTF" if export_format.upper() == "GLB" else export_format.upper()
+            cq.exporters.export(result, output_path, cq_format)
             
         print("Rendering complete.")
 

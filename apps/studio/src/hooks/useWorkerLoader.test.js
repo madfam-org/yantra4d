@@ -44,9 +44,9 @@ describe('useWorkerLoader', () => {
         delete globalThis.Worker
     })
 
-    it('should return null initially for STL', () => {
+    it('should return null geometry initially for STL', () => {
         const { result } = renderHook(() => useWorkerLoader('test.stl', false))
-        expect(result.current).toBeNull()
+        expect(result.current).toEqual({ geometry: null, scene: null })
     })
 
     it('should call loadAsync for GLTF files', async () => {
@@ -55,8 +55,9 @@ describe('useWorkerLoader', () => {
         // Wait for the async effect to settle. Since BufferGeometryUtils.mergeGeometries
         // takes the single mock geometry, it will just return the cloned geometry mock object.
         await vi.waitFor(() => {
-            expect(result.current).not.toBeNull()
-            expect(result.current.applyMatrix4).toBeDefined()
+            expect(result.current.geometry).not.toBeNull()
+            expect(result.current.scene).not.toBeNull()
+            expect(result.current.geometry.applyMatrix4).toBeDefined()
         })
     })
 })

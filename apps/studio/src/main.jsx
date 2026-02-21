@@ -6,6 +6,7 @@ import { AuthProvider } from "./contexts/AuthProvider.jsx"
 import { ManifestProvider } from "./contexts/ManifestProvider.jsx"
 import { ProjectProvider } from "./contexts/ProjectProvider.jsx"
 import { TierProvider } from "./contexts/TierProvider.jsx"
+import { UpgradePromptProvider } from "./contexts/UpgradePromptProvider.jsx"
 import ManifestAwareLanguageProvider from "./contexts/ManifestAwareLanguageProvider.jsx"
 import { ErrorBoundary } from "./components/feedback/ErrorBoundary.jsx"
 import { BrowserRouter } from 'react-router-dom'
@@ -18,13 +19,15 @@ createRoot(document.getElementById('root')).render(
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
           <AuthProvider>
             <TierProvider>
-              <ManifestProvider>
-                <ManifestAwareLanguageProvider>
-                  <ProjectProvider>
-                    <App />
-                  </ProjectProvider>
-                </ManifestAwareLanguageProvider>
-              </ManifestProvider>
+              <UpgradePromptProvider>
+                <ManifestProvider>
+                  <ManifestAwareLanguageProvider>
+                    <ProjectProvider>
+                      <App />
+                    </ProjectProvider>
+                  </ManifestAwareLanguageProvider>
+                </ManifestProvider>
+              </UpgradePromptProvider>
             </TierProvider>
           </AuthProvider>
         </ThemeProvider>

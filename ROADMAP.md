@@ -36,3 +36,13 @@ STL is antiquated and lacks native support for colors, materials, and distinct s
 To ensure sustainable development and manage computational expenses from the cloud fallback architecture.
 - **Tier Enforcements:** Define clear usage boundaries (e.g., Free, Pro, Enterprise).
 - **Premium Features:** Cloud fallback rendering, high-fidelity export generation (STEP, raw scripts), and complex multi-part CadQuery compilations will be gated behind premium tiers, while WASM-based generation remains freely accessible.
+
+### Phase 6: The Hyperobjects Commons & CDG Standardization
+To establish Yantra4D as the universal API for physical objects and completely differentiate from walled-garden competitors.
+- **CDG Interface Formalization:** Formalize Common Denominator Geometry (CDG) interfaces within the `project.json` schema to allow seamless interoperability between distinct hyperobjects across the commons.
+- **AI-Driven Manifest Generation:** Upgrade the AI Configurator to generate entirely new module definitions and manifest files (`project.json`) from natural language prompts, democratizing the creation of new parametric configurators.
+
+### Phase 7: Visual "3D Git" & Decentralized Ecosystem
+To bridge the gap with visual version control platforms while maintaining open-source, decentralized ethos.
+- **Visual Version Control (3D Diffing):** Implement a Three.js-based visual diffing tool that overlays and highlights geometric additions/subtractions between git commits, augmenting the existing text-based SCAD Monaco editor.
+- **Decentralized Instancing:** Enhance the CLI and multi-project tools to allow independent creators to easily spin up and host their own white-labeled Yantra4D nodes, federating the Hyperobjects Commons.

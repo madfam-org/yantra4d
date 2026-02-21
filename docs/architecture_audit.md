@@ -58,13 +58,25 @@ To truly achieve mastery over hardware fabrication, we cannot be locked into a s
 *   **Geometric Parity CI/CD**: Our pipeline will automatically render both the OpenSCAD and CadQuery definitions and mathematically test their output volumes and bounding boxes against each other. If the definitions drift or produce microscopic inaccuracies, the CI/CD pipeline fails, ensuring geometric truth.
 *   **Top-Tier Power User Access**: Free/standard users receive the lightest, fastest, decimated mesh (glTF/STL). Subscribers and "Pro" users are granted unadulterated access to the original mathematical definitions, triggering CadQuery to export pristine, mathematically perfect `.STEP` assemblies and raw generator scripts for their own engineering pipelines.
 
-### 3. Upgrade the Export/Transmission Format to glTF 2.0
+### 3. Monetization & Computational Tiering (The Funnel to Mastery)
+Providing a world-class hyperobject configurator is computationally expensive. Our architecture must act as a seamless marketing funnel: hooking users with lightning-fast, zero-friction free tools (which cost us nothing), and upselling them when they hit the boundaries of their hardware or require pristine engineering exports.
+
+*   **Free Tier (The Hook)**:
+    *   **Compute Rule**: 100% Client-Side Engine. All generations happen natively in the user's browser via WASM OpenSCAD. This costs Yantra4D **zero dollars** in server compute.
+    *   **Export Rule**: Users can exclusively export decimated mesh formats formats (STL / glTF).
+    *   **Experience**: They get the "WOW" factor of 60FPS fluid configuration without creating an account. If their device is too weak to run WASM, they are prompted to start a trial of the Premium Cloud Engine.
+*   **Pro Tier (The Margin Engine)**:
+    *   **Compute Rule**: Hybrid Engine. If the user's device struggles, they are seamlessly routed to the low-latency Server GPU/CPU cluster. The subscription fee vastly exceeds the fractional cents required for server API compute, ensuring handsome margins.
+    *   **Export Rule**: Unrestricted access to the **Dual-Kernel Pipeline**. Pro users can trigger CadQuery server-side to generate and download mathematically perfect `.STEP` assemblies and raw Python generation scripts.
+    *   **Value Proposition**: Professionals willingly pay for geometric fidelity (.STEP) and time saved (Cloud Rendering). By gating the expensive CadQuery B-Rep kernel and Server Compute behind a paywall, we completely insulate ourselves from infrastructure billing spikes while providing a premium, uncompromised engineering service.
+
+### 4. Upgrade the Export/Transmission Format to glTF 2.0
 We should deprecate STL for viewport transmission. Generating and transmitting **glTF/GLB** instead brings massive benefits:
 *   Draco compression reduces file boundaries dynamically.
 *   Materials, colors (e.g., glass logic), and nested hierarchical structures are embedded directly in the file. The frontend would simply load the glTF scene graph, avoiding custom color-mapping logic.
 
-### 4. Web Worker Geometry Processing
+### 5. Web Worker Geometry Processing
 In the Studio frontend, all STL/glTF parsing and Three.js buffer generation must be moved into **Web Workers** or `OffscreenCanvas`. This ensures the main thread is never blocked, keeping the UI silky smooth, responsive, and free of jank while heavy 3D math executes in the background.
 
-### 5. Standardized Hyperobject Ontology
+### 6. Standardized Hyperobject Ontology
 Establish a strict, schema-driven architectural standard for `project.json` (perhaps defining it in `packages/schemas`). Move away from arbitrary parameter injections and enforce a unified API contract that governs bounds, dependencies, and material properties across all commons items, enabling automated AI generation and validation of hyperobjects.

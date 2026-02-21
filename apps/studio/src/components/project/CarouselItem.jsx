@@ -120,8 +120,6 @@ function LiveModel({ project, defaults }) {
         }
     }, [project.slug, project.modes, defaults])
 
-    const gltf = useGLTF(renderResult || '/default-placeholder.glb')
-
     if (loading) {
         return (
             <mesh>
@@ -131,7 +129,21 @@ function LiveModel({ project, defaults }) {
         )
     }
 
-    if (!renderResult || !gltf.scene) return null
+    if (!renderResult) {
+        return (
+            <mesh>
+                <boxGeometry args={[1, 1, 1]} />
+                <meshStandardMaterial color="red" wireframe />
+            </mesh>
+        )
+    }
+
+    return <GLTFRenderer url={renderResult} />
+}
+
+function GLTFRenderer({ url }) {
+    const gltf = useGLTF(url)
+    if (!gltf.scene) return null
 
     // Center and normalize the imported GLTF scale for uniform gallery viewing
     const box = new THREE.Box3().setFromObject(gltf.scene)
@@ -148,6 +160,3 @@ function LiveModel({ project, defaults }) {
         </group>
     )
 }
-
-// Preload the placeholder just in case
-useGLTF.preload('/default-placeholder.glb')

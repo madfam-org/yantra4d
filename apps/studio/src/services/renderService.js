@@ -35,6 +35,11 @@ async function detectMode(manifest) {
     return 'backend'
   }
 
+  // Always use backend if project explicitly requires it (e.g. complex BOSL2 SCAD dependencies)
+  if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
+    return 'backend'
+  }
+
   if (_hardwareMode) return _hardwareMode
 
   // If backend is NOT available, we MUST use WASM (offline mode fallback)

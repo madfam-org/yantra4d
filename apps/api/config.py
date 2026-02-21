@@ -17,6 +17,7 @@ class AppConfig:
 
     SCAD_DIR: Path = field(init=False)
     PROJECTS_DIR: Path = field(init=False)
+    CARTRIDGES_DIRS: list[Path] = field(init=False)
     LIBS_DIR: Path = field(init=False)
     OPENSCADPATH: str = field(init=False)
     MULTI_PROJECT: bool = field(init=False)
@@ -69,6 +70,22 @@ class AppConfig:
 
         default_projects = parent / "projects"
         self.PROJECTS_DIR = Path(os.getenv("PROJECTS_DIR", default_projects))
+
+        # Dynamic search paths for cartridges
+        cartridge_paths = [self.PROJECTS_DIR]
+        # Support node_modules cartridges if present
+        root_node_modules = parent / "node_modules" / "@yantra4d"
+        if root_node_modules.is_dir():
+            cartridge_paths.append(root_node_modules)
+        
+        env_paths = os.getenv("CARTRIDGES_DIRS")
+        if env_paths:
+            for p in env_paths.split(os.pathsep):
+                path = Path(p)
+                if path.is_dir():
+                    cartridge_paths.append(path)
+        
+        self.CARTRIDGES_DIRS = cartridge_paths
 
         default_libs = parent / "libs"
         self.LIBS_DIR = Path(os.getenv("LIBS_DIR", default_libs))

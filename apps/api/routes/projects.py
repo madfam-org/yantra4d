@@ -17,7 +17,7 @@ from flask import Blueprint, jsonify, send_from_directory, abort, request, make_
 from config import Config
 from extensions import limiter
 import rate_limits
-from manifest import discover_projects, get_manifest, _manifest_cache
+from manifest import discover_projects, get_manifest, invalidate_cache
 from middleware.auth import optional_auth, require_tier
 from services.route_helpers import error_response
 
@@ -79,12 +79,13 @@ def list_projects():
 @projects_bp.route('/api/projects/<slug>/manifest', methods=['GET'])
 def get_project_manifest(slug):
     """Return full manifest for a specific project."""
-    project_dir = Config.PROJECTS_DIR / slug
-    if not project_dir.is_dir() or not (project_dir / "project.json").exists():
-        return jsonify({"status": "error", "error": f"Project '{slug}' not found"}), 404
-
     try:
         manifest = get_manifest(slug)
+    except RuntimeError as e:
+        return jsonify({"status": "error", "error": str(e)}), 404
+
+    try:
+        body = json.dumps(manifest.as_json(), sort_keys=True)
         body = json.dumps(manifest.as_json(), sort_keys=True)
         etag = hashlib.md5(body.encode()).hexdigest()
 
@@ -103,8 +104,12 @@ def get_project_manifest(slug):
 @projects_bp.route('/api/projects/<slug>/meta', methods=['GET'])
 def get_project_meta(slug):
     """Return project.meta.json if it exists."""
-    project_dir = Config.PROJECTS_DIR / slug
-    meta_path = project_dir / "project.meta.json"
+    try:
+        manifest = get_manifest(slug)
+    except RuntimeError:
+        return jsonify(None)
+    
+    meta_path = manifest.project_dir / "project.meta.json"
     if not meta_path.is_file():
         return jsonify(None)
     try:
@@ -117,8 +122,12 @@ def get_project_meta(slug):
 @projects_bp.route('/api/projects/<slug>/parts/<path:filename>', methods=['GET'])
 def serve_static_part(slug, filename):
     """Serve a pre-existing STL file from a project's parts/ directory."""
-    project_dir = Config.PROJECTS_DIR / slug
-    parts_dir = project_dir / "parts"
+    try:
+        manifest = get_manifest(slug)
+    except RuntimeError:
+        abort(404)
+        
+    parts_dir = manifest.project_dir / "parts"
     if not parts_dir.is_dir():
         abort(404)
     requested = (parts_dir / filename).resolve()
@@ -136,9 +145,12 @@ def serve_static_part(slug, filename):
 @limiter.limit(rate_limits.PROJECT_FORK)
 def fork_project(slug):
     """Fork a project: copy files to a new slug owned by the user."""
-    src_dir = Config.PROJECTS_DIR / slug
-    if not src_dir.is_dir() or not (src_dir / "project.json").exists():
+    try:
+        manifest = get_manifest(slug)
+    except RuntimeError:
         return error_response(f"Project '{slug}' not found", 404)
+
+    src_dir = manifest.project_dir
 
     data = request.get_json(silent=True) or {}
     new_slug = data.get("new_slug", "").strip()
@@ -178,10 +190,12 @@ def fork_project(slug):
 @optional_auth
 def update_assembly_steps(slug):
     """Update assembly_steps in a project's project.json."""
-    project_dir = Config.PROJECTS_DIR / slug
-    manifest_path = project_dir / "project.json"
-    if not manifest_path.is_file():
+    try:
+        manifest = get_manifest(slug)
+    except RuntimeError:
         return jsonify({"status": "error", "error": f"Project '{slug}' not found"}), 404
+
+    manifest_path = manifest.project_dir / "project.json"
 
     data = request.get_json(silent=True)
     if not data or "assembly_steps" not in data:
@@ -198,7 +212,7 @@ def update_assembly_steps(slug):
             f.write("\n")
 
         # Invalidate manifest cache
-        _manifest_cache.pop(slug, None)
+        invalidate_cache(slug)
 
         return jsonify({"status": "success"})
     except Exception as e:

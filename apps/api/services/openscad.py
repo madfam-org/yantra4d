@@ -24,16 +24,17 @@ _fontconfig_cache: dict[str, str] = {}
 def _openscad_env(scad_path: str | None = None):
     """Return environment with OPENSCADPATH and optional font config set.
 
-    When *scad_path* is provided and the parent directory contains a ``fonts/``
-    subdirectory, a minimal fontconfig configuration is generated that adds
-    that directory to the font search path.  This lets OpenSCAD resolve
-    project-bundled fonts (e.g. Allerta Stencil for tablaco).
+    When *scad_path* is provided, its parent directory is prepended to
+    OPENSCADPATH. If the directory contains a ``fonts/`` subdirectory,
+    a minimal fontconfig configuration is generated.
     """
     env = os.environ.copy()
-    env["OPENSCADPATH"] = Config.OPENSCADPATH
+    paths = [Config.OPENSCADPATH]
 
     if scad_path:
         project_dir = str(Path(scad_path).parent)
+        paths.insert(0, project_dir)
+        
         fonts_dir = os.path.join(project_dir, "fonts")
         if os.path.isdir(fonts_dir):
             if fonts_dir not in _fontconfig_cache:
@@ -51,6 +52,7 @@ def _openscad_env(scad_path: str | None = None):
                 logger.info("Created fontconfig for %s → %s", fonts_dir, conf_path)
             env["FONTCONFIG_FILE"] = _fontconfig_cache[fonts_dir]
 
+    env["OPENSCADPATH"] = os.pathsep.join(paths)
     return env
 
 # Per-engine process manager for cancellation support

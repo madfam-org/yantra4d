@@ -19,15 +19,15 @@ createRoot(document.getElementById('root')).render(
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
           <AuthProvider>
             <TierProvider>
-              <UpgradePromptProvider>
-                <ManifestProvider>
-                  <ManifestAwareLanguageProvider>
+              <ManifestProvider>
+                <ManifestAwareLanguageProvider>
+                  <UpgradePromptProvider>
                     <ProjectProvider>
                       <App />
                     </ProjectProvider>
-                  </ManifestAwareLanguageProvider>
-                </ManifestProvider>
-              </UpgradePromptProvider>
+                  </UpgradePromptProvider>
+                </ManifestAwareLanguageProvider>
+              </ManifestProvider>
             </TierProvider>
           </AuthProvider>
         </ThemeProvider>

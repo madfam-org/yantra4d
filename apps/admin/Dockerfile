@@ -21,6 +21,7 @@ RUN npm ci --legacy-peer-deps
 COPY packages/ /app/packages/
 COPY apps/admin/ ./
 COPY apps/studio/ /app/apps/studio/
+RUN ln -s /app/apps/admin/node_modules /app/node_modules
 RUN npm run build
 
 # Stage 2: Production Nginx Server

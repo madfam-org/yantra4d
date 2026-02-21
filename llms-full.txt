@@ -240,7 +240,7 @@ Projects can be classified as Bounded 4D Hyperobjects with CDG interfaces:
       "tolerance_by_material": true
     },
     "societal_benefit": { "en": "Enables labs to fabricate precision slide holders" },
-    "commons_license": "CERN-OHL-S-2.0"
+    "commons_license": "CERN-OHL-W-2.0"
   }
 }
 ```

@@ -292,7 +292,7 @@
       "en": "Empowers local manufacturing shops to rapidly tool up for new jobs without waiting for custom fixture delivery.",
       "es": "Empodera a talleres de manufactura locales para equiparse r\u00e1pidamente para nuevos trabajos sin esperar la entrega de accesorios personalizados."
     },
-    "commons_license": "CERN-OHL-S-2.0",
+    "commons_license": "CERN-OHL-W-2.0",
     "bosl2_modules_used": [
       "cuboid",
       "diff",

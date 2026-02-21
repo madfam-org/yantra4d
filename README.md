@@ -1,113 +1,73 @@
-# Yantra4D — Parametric 3D Print Design Platform
+# ⌬ Yantra4D: The Hyperobjects Commons
 
-A manifest-driven platform for parametric OpenSCAD models with a web-based 3D preview studio, evolving into a **Hyperobjects Commons**.
+> **Manifest-driven parametric design for the decentralized manufacturing age.**
 
-![Yantra4D](/docs/images/half_cube_iso.png)
+Yantra4D is not just a CAD tool; it is a **Poly-Kernel Engine** and a thriving **Hyperobjects Commons**. It bridges the mathematical precision of programmatic CAD with the accessibility of a visual, web-native storefront.
 
-Ships with 36 built-in projects including **gridfinity** (modular storage), **slide-holder** 🔷 (microscope slide retention — first hyperobject), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), **rugged-box** (hinged latching box), **motor-mount** (NEMA stepper mounts), **scara-robotics** (precision SCARA robotics Harmonic Drive), and **microscope-slide-hyperobject** (unified slide geometry). See [`projects/`](./projects/) for all projects.
+[![Astro](https://img.shields.io/badge/Docs-Starlight-blueviolet)](https://4d-docs.madfam.io)
+[![License](https://img.shields.io/badge/License-AGPL%20v3-red.svg)](./LICENSE)
+[![React](https://img.shields.io/badge/Studio-React%2019-61dafb)](https://4d-app.madfam.io)
 
-## Features
--   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
--   **Multi-Project**: Serve and switch between multiple SCAD projects from a single instance.
--   **White-Label Studio**: Each project white-labels the studio header with its own name via `manifest.project.name`, with a "powered by Yantra4D" tagline.
-    -   **Theme Toggle**: Light, Dark, and System (Auto) modes.
-    -   **Bilingual UI**: Spanish (default) and English.
-    -   **Export**: Download STL files and capture images (Iso, Top, Front, Right).
--   **AI-Assisted Design**: Natural language chat adjusts parameters (AI Configurator, basic+) or generates SCAD code edits (AI Code Editor, pro+).
--   **GitHub Integration**: Import repos, edit SCAD files in a Monaco editor, git status/diff/commit/push/pull.
--   **Live 3D Carousel Gallery**: Immersive Project Gallery with infinite scrolling, dynamic LOD (Level-of-Detail), and live on-the-fly rendering.
--   **Tiered Access Control**: Four tiers (guest, basic, pro, madfam) gating export formats, project limits, GitHub, and AI features.
--   **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save, and auto-render.
--   **Onboarding**: CLI tool and web wizard for onboarding external SCAD projects.
+---
 
-## Documentation
+## 🛰️ The Vision: Hyperobjects & CDG
+We are building the **Hyperobjects Commons** — a repository of "Bounded 4D Hyperobjects" designed for interoperability. By leveraging **Common Denominator Geometry (CDG)** interfaces (standardized snaps, threads, and joints), projects in the Yantra4D ecosystem can physically and mathematically interface with one another natively.
 
-Platform documentation is available in the [`docs/`](./docs/index.md) directory:
+### 📼 Cartridge-Like Architecture
+Every project in Yantra4D is a self-contained **"Cartridge"**. 
+- **The Manifest**: A `project.json` file serves as the single source of truth, defining parameters, modes, and parts.
+- **Poly-Kernel**: High-performance OpenSCAD (CSG) for browser-side WASM reactivity + mathematically exact CadQuery (B-Rep) for engineering-grade STEP exports.
+- **Portability**: Drop a project folder into `projects/` and the platform instantly white-labels the UI to serve it.
 
--   [Verification Suite](./docs/guides/verification.md) — Automated STL quality checks
--   [Web Interface](./docs/architecture/web_interface.md) — Full-stack architecture (Flask/React)
--   [Project Manifest](./docs/reference/manifest.md) — Extensible manifest schema and how to add new projects
--   [Multi-Project Platform](./docs/guides/multi-project.md) — Multi-project setup and configuration
--   [Developer Experience](./docs/guides/devx-guide.md) — Onboarding external SCAD projects
--   [AI Features](./docs/guides/ai-features.md) — AI Configurator and Code Editor
--   [llms.txt](./llms.txt) — LLM-optimized project overview for AI agents
+---
 
-Per-project docs live in `projects/{slug}/docs/`. Browse all 21 built-in projects under [`projects/`](./projects/).
+## 🛠️ The Stack
+- **CAD Engines**: Dual-execution via [OpenSCAD](https://openscad.org/) and [CadQuery](https://cadquery.readthedocs.io/).
+- **The Studio**: React 19 + Three.js + Manifold-3d for blisteringly fast volumetric browser rendering.
+- **The API**: Python Flask backend with Docker-orchestrated render clusters.
+- **The Knowledge Base**: [4D Docs](https://4d-docs.madfam.io) — Powered by Astro Starlight.
 
-## Tech Stack
--   **CAD**: OpenSCAD
--   **Backend**: Python 3 (Flask + Blueprints, gunicorn)
--   **Frontend**: React (Vite), Tailwind CSS, Shadcn UI, Three.js
--   **Containerization**: Docker + docker-compose
--   **Testing**: Vitest + RTL (frontend), pytest (backend), jest-axe (a11y)
--   **Security**: Flask-Limiter (rate limiting), CSP headers (nginx)
+---
 
-## Project Structure
+## 📦 The Commons Catalog (36+ Projects)
+From modular storage systems like **Gridfinity** to precision robotics like **SCARA Harmonic Drives**, the Commons provides a massive library of ready-to-print hyperobjects.
 
-```
-yantra4d/
-├── projects/
-│   ├── gridfinity/              # Flagship project (modular storage bins)
-│   │   ├── *.scad               # OpenSCAD geometry files
-│   │   ├── project.json         # Project manifest (modes, params, parts)
-│   │   └── exports/models/      # Reference STL exports
-│   ├── polydice/                # Parametric dice set
-│   ├── ultimate-box/            # Parametric box maker
-│   └── ...                      # 36 built-in projects total
-├── apps/
-│   ├── api/                     # Flask API server
-│   │   ├── app.py               # App factory + blueprint registration
-│   │   ├── routes/              # API endpoints
-│   │   ├── services/            # OpenSCAD, analyzer, manifest generator
-│   │   └── tests/               # Backend tests (pytest)
-│   ├── studio/                  # React SPA (parametric editor)
-│   │   └── src/
-│   │       ├── App.jsx          # Main app shell + state management
-│   │       ├── components/      # Controls, Viewer, UI primitives
-│   │       ├── contexts/        # Manifest, Language, Theme providers
-│   │       └── config/          # Bundled fallback manifest
-│   └── landing/                 # Astro marketing site
-│       └── src/
-│           ├── pages/           # index.astro
-│           └── components/      # Header, Hero, InteractiveShowcase (React island)
-├── packages/
-│   ├── schemas/                 # JSON Schema for project manifests
-│   └── tokens/                  # Shared CSS custom properties
-├── docs/                        # Platform documentation
-└── docker-compose.yml
-```
+| Ecosystem | Description |
+| :--- | :--- |
+| **Gridfinity** | The world-standard modular storage system, optimized for WASM. |
+| **Microscope Commons** | Standardized lab hardware including the **Slide-Holder** hyperobject. |
+| **Fasteners** | Parametric bolts, nuts, and threads with exact B-Rep parity. |
+| **Scara-Robotics** | High-precision parametric robotic limbs and reducers. |
 
-## Usage
+---
 
-### Prerequisites
--   OpenSCAD
--   Python 3.10+ (`pip install -r apps/api/requirements.txt`)
--   pytest (`pip install pytest pytest-cov` — for running backend tests)
--   Node.js (v18+)
+## 📖 Deep Documentation
+For peak Developer Experience and Agentic Discovery, consult our interconnected docs:
 
-### Quick Run
-Generate the default model:
+- [**Getting Started**](https://4d-docs.madfam.io/overview/getting-started/) — Launch your first project.
+- [**Manifest Specs**](https://4d-docs.madfam.io/commons/manifest-specs/) — How to author a "Cartridge".
+- [**Poly-Kernel Logic**](https://4d-docs.madfam.io/commons/poly-kernel/) — Understanding the dual SCAD/Python pipeline.
+- [**LLM Context** (llms.txt)](./llms.txt) — Structured entry point for AI Agents.
+
+---
+
+## 🚀 Quick Start
+
+### Development
 ```bash
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD -o projects/gridfinity/exports/models/cup.stl projects/gridfinity/yantra4d_cup.scad
+./scripts/dev.sh          # Full Stack (Backend + Studio + Landing)
+./scripts/dev-stop.sh     # Cleanup
 ```
 
-### Launching Yantra4D
-
-#### Development
+### Docker (Production-Ready)
 ```bash
-./scripts/dev.sh                  # start backend + frontend
-./scripts/dev-stop.sh             # stop all dev servers
-./scripts/dev.sh --frontend-only  # frontend only (WASM mode, no backend needed)
+docker compose up --build
 ```
-Open http://localhost:5173
+Open [localhost:3000](http://localhost:3000) to enter the Studio.
 
-#### Docker
-```bash
-docker compose up --build   # start
-docker compose down         # stop
-```
-Open http://localhost:3000
+---
 
-## License
+## 🤝 Community & License
+Yantra4D is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. Our hyperobjects are always released under the **CERN-OHL-W-2.0** (Weakly Reciprocal) open hardware license.
 
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](./LICENSE) file for more details.
+**Join the movement. Print the Hyperobjects.**

@@ -326,7 +326,7 @@
       "en": "Scalable, localized production of prosthetic sockets \u2014 reduces cost from $5000+ to <$50. Voronoi pattern improves hygiene in hot climates.",
       "es": "Producci\u00f3n escalable y localizada de sockets prot\u00e9sicos \u2014 reduce el costo de $5000+ a <$50. El patr\u00f3n Voronoi mejora la higiene en climas c\u00e1lidos."
     },
-    "commons_license": "CERN-OHL-S-2.0",
+    "commons_license": "CERN-OHL-W-2.0",
     "bosl2_modules_used": [
       "hull",
       "cyl",

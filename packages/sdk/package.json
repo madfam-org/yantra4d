@@ -1,0 +1,27 @@
+{
+  "name": "@yantra4d/sdk",
+  "version": "1.0.0",
+  "description": "Headless SDK for Yantra4D hyperobjects",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}

@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import PrintEstimateOverlay from './PrintEstimateOverlay'
 import { LanguageProvider } from '../../contexts/LanguageProvider'
 import { ManifestProvider } from '../../contexts/ManifestProvider'
+import { MemoryRouter } from 'react-router-dom'
 
 beforeEach(() => {
   vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
@@ -10,11 +11,13 @@ beforeEach(() => {
 
 function renderWithProviders(ui) {
   return render(
-    <LanguageProvider defaultLanguage="en">
-      <ManifestProvider>
-        {ui}
-      </ManifestProvider>
-    </LanguageProvider>
+    <MemoryRouter>
+      <LanguageProvider defaultLanguage="en">
+        <ManifestProvider>
+          {ui}
+        </ManifestProvider>
+      </LanguageProvider>
+    </MemoryRouter>
   )
 }
 

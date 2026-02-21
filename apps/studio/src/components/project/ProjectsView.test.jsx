@@ -310,8 +310,8 @@ describe('ProjectsView', () => {
       expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
     })
     const links = screen.getAllByRole('link')
-    const projectLinks = links.filter(l => l.getAttribute('href')?.startsWith('#/'))
-    expect(projectLinks.some(l => l.getAttribute('href') === '#/gridfinity')).toBe(true)
+    const projectLinks = links.filter(l => l.getAttribute('href')?.startsWith('/project/'))
+    expect(projectLinks.some(l => l.getAttribute('href') === '/project/gridfinity')).toBe(true)
   })
 
   it('renders translated strings in Spanish', async () => {

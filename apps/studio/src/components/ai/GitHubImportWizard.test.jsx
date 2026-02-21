@@ -8,6 +8,11 @@ vi.mock('../../services/apiClient', () => ({
 }))
 import { apiFetch } from '../../services/apiClient'
 
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate
+}))
+
 describe('GitHubImportWizard', () => {
   const mockOnClose = vi.fn()
   const mockOnImported = vi.fn()
@@ -109,6 +114,7 @@ describe('GitHubImportWizard', () => {
     // Verify opening editor
     fireEvent.click(screen.getByRole('button', { name: 'Open in Editor' }))
     expect(mockOnClose).toHaveBeenCalled()
+    expect(mockNavigate).toHaveBeenCalledWith('/project/r')
   })
 
   it('handles validation network error', async () => {

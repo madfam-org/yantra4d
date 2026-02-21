@@ -202,23 +202,25 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
           <ul className="max-h-40 overflow-y-auto text-xs" role="listbox" aria-label="Project files">
             {files.map(f => (
               <li key={f.path} role="option" aria-selected={activeTab === f.path}>
-                <button
-                  type="button"
-                  className={`w-full text-left px-3 py-1 hover:bg-muted flex items-center gap-1.5 group ${activeTab === f.path ? 'bg-muted font-medium' : ''}`}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && openFile(f.path)}
+                  className={`w-full text-left px-3 py-1 hover:bg-muted focus-visible:bg-muted focus-visible:outline-none flex items-center gap-1.5 group cursor-pointer ${activeTab === f.path ? 'bg-muted font-medium' : ''}`}
                   onClick={() => openFile(f.path)}
                 >
                   <FileCode className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                   <span className="truncate flex-1">{f.path}</span>
                   <button
                     type="button"
-                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive focus-visible:opacity-100"
                     onClick={(e) => handleDeleteFile(f.path, e)}
                     title="Delete file"
                   >
                     <X className="h-3 w-3" />
                     <span className="sr-only">Delete {f.path}</span>
                   </button>
-                </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -234,9 +236,8 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
               type="button"
               role="tab"
               aria-selected={t.path === activeTab}
-              className={`flex items-center gap-1 px-3 py-1.5 text-xs border-r border-border whitespace-nowrap ${
-                t.path === activeTab ? 'bg-background text-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-              }`}
+              className={`flex items-center gap-1 px-3 py-1.5 text-xs border-r border-border whitespace-nowrap ${t.path === activeTab ? 'bg-background text-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                }`}
               onClick={() => setActiveTab(t.path)}
             >
               {t.dirty && <span className="w-1.5 h-1.5 rounded-full bg-primary" title="Unsaved changes" />}

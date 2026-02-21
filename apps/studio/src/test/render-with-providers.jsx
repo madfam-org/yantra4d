@@ -6,6 +6,7 @@ import { AuthProvider } from '../contexts/AuthProvider'
 import { ManifestProvider } from '../contexts/ManifestProvider'
 import { ProjectProvider } from '../contexts/ProjectProvider'
 import { TierContext } from '../contexts/TierProvider'
+import { MemoryRouter } from 'react-router-dom'
 
 const TIER_HIERARCHY = { guest: 0, basic: 1, pro: 2, madfam: 3 }
 
@@ -20,7 +21,7 @@ const TIER_HIERARCHY = { guest: 0, basic: 1, pro: 2, madfam: 3 }
  * @param {object} [options.renderOptions] - Additional options passed to RTL render
  * @returns RTL render result
  */
-export function renderWithProviders(ui, { language = 'en', theme = 'light', tier = 'guest', ...renderOptions } = {}) {
+export function renderWithProviders(ui, { language = 'en', theme = 'light', tier = 'guest', initialEntries = ['/'], ...renderOptions } = {}) {
   const tierValue = {
     tier,
     tierConfig: null,
@@ -31,19 +32,21 @@ export function renderWithProviders(ui, { language = 'en', theme = 'light', tier
   }
 
   return render(
-    <ThemeProvider defaultTheme={theme} storageKey="test-theme">
-      <LanguageProvider defaultLanguage={language} storageKey="test-lang">
-        <AuthProvider>
-          <ManifestProvider>
-            <TierContext.Provider value={tierValue}>
-              <ProjectProvider>
-                {ui}
-              </ProjectProvider>
-            </TierContext.Provider>
-          </ManifestProvider>
-        </AuthProvider>
-      </LanguageProvider>
-    </ThemeProvider>,
+    <MemoryRouter initialEntries={initialEntries}>
+      <ThemeProvider defaultTheme={theme} storageKey="test-theme">
+        <LanguageProvider defaultLanguage={language} storageKey="test-lang">
+          <AuthProvider>
+            <ManifestProvider>
+              <TierContext.Provider value={tierValue}>
+                <ProjectProvider>
+                  {ui}
+                </ProjectProvider>
+              </TierContext.Provider>
+            </ManifestProvider>
+          </AuthProvider>
+        </LanguageProvider>
+      </ThemeProvider>
+    </MemoryRouter>,
     renderOptions
   )
 }

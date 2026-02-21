@@ -4,6 +4,11 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { ManifestProvider, useManifest } from './ManifestProvider'
 import fallbackManifest from '../config/fallback-manifest.json'
 
+vi.mock('react-router-dom', () => ({
+  useLocation: () => ({ pathname: '/project/gridfinity', hash: '' }),
+  useNavigate: () => vi.fn()
+}))
+
 // Mock fetch so the provider doesn't hit the network
 beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('no backend'))))

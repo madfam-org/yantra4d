@@ -5,6 +5,7 @@ import { axe, toHaveNoViolations } from 'jest-axe'
 import App from './App'
 import { renderWithProviders } from './test/render-with-providers'
 import fallbackManifest from './config/fallback-manifest.json'
+import { useLocation } from 'react-router-dom'
 
 expect.extend(toHaveNoViolations)
 
@@ -42,20 +43,29 @@ beforeEach(() => {
   })
   localStorage.clear()
   sessionStorage.clear()
-  // Default to studio view for these tests
-  window.location.hash = '#/gridfinity'
 })
 
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
-  window.location.hash = ''
 })
 
-async function renderApp() {
+let testLocation = {}
+function LocationObserver() {
+  testLocation = useLocation()
+  return null
+}
+
+async function renderApp(initialEntries = ['/project/gridfinity']) {
   let result
   await act(async () => {
-    result = renderWithProviders(<App />)
+    result = renderWithProviders(
+      <>
+        <LocationObserver />
+        <App />
+      </>,
+      { initialEntries }
+    )
   })
   return result
 }
@@ -184,13 +194,14 @@ describe('App', { timeout: 30000 }, () => {
     expect(results).toHaveNoViolations()
   })
 
-  it('sets 3-segment URL hash with project slug', async () => {
+  it('sets 4-segment URL path with project slug', async () => {
     await renderApp()
-    const hash = window.location.hash
-    // Hash should now be #/{projectSlug}/{presetId}/{modeId}
-    const segments = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-    expect(segments.length).toBe(3)
-    expect(segments[0]).toBe('gridfinity') // project slug
+    const pathname = testLocation.pathname
+    // Path should now be /project/{projectSlug}/{presetId}/{modeId}
+    const segments = pathname.replace(/^\/?/, '').split('/').filter(Boolean)
+    expect(segments.length).toBe(4) // e.g. ["project", "gridfinity", "default", "baseplate"]
+    expect(segments[0]).toBe('project')
+    expect(segments[1]).toBe('gridfinity') // project slug
   })
 
   it('renders share button', async () => {

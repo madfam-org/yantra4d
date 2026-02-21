@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useManifest } from '../contexts/ManifestProvider'
 import { useLanguage } from '../contexts/LanguageProvider'
@@ -32,11 +33,14 @@ export function useProjectParams({ viewerRef }) {
   const { t } = useLanguage()
   const { manifest, getDefaultParams, getDefaultColors, getLabel, getCameraViews, projectSlug, presets } = useManifest()
 
+  const location = useLocation()
+  const navigate = useNavigate()
+
   const defaultParams = getDefaultParams()
   const defaultColors = getDefaultColors()
   const modes = manifest.modes
 
-  const initialHash = parseHash(window.location.hash, presets, modes)
+  const initialHash = parseHash(location.pathname, presets, modes)
   const initialPresetValues = initialHash.preset?.values || {}
 
   const [mode, setModeState] = useState(() => initialHash.mode?.id || (modes.length > 0 ? modes[0].id : null))
@@ -117,7 +121,7 @@ export function useProjectParams({ viewerRef }) {
 
     const presetIdToHash = validPresetId || presets[0]?.id
     if (presetIdToHash) {
-      window.location.hash = buildHash(projectSlug, presetIdToHash, newMode)
+      navigate(buildHash(projectSlug, presetIdToHash, newMode))
     }
   }
 
@@ -194,7 +198,7 @@ export function useProjectParams({ viewerRef }) {
     })
     setActivePresetId(preset.id)
     setGridPresetId(defaultGridPreset)
-    window.location.hash = buildHash(projectSlug, preset.id, mode)
+    navigate(buildHash(projectSlug, preset.id, mode))
   }
 
   // Debounced auto-generate with cache check

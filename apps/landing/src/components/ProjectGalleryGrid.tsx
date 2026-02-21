@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { PROJECTS, CATEGORIES } from '../data/projects';
+import { CATEGORIES } from '../data/projects';
 import { STUDIO_URL } from '../lib/env';
 import type { Translations } from '../lib/i18n';
 
 type Props = {
   lang?: string;
   t?: Translations;
+  projects: any[];
+  activeCategory: string;
+  setActiveCategory: (val: string) => void;
 };
 
 const DOMAIN_LABELS: Record<string, { en: string; es: string }> = {
@@ -17,15 +19,10 @@ const DOMAIN_LABELS: Record<string, { en: string; es: string }> = {
   culture: { en: 'Culture', es: 'Cultura' },
 };
 
-export default function ProjectGalleryGrid({ lang = 'es', t }: Props) {
-  const [activeCategory, setActiveCategory] = useState<string>('all');
+export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCategory, setActiveCategory }: Props) {
   const isEs = lang === 'es';
 
-  const filtered = activeCategory === 'commons'
-    ? PROJECTS.filter(p => p.isHyperobject)
-    : activeCategory === 'all'
-      ? PROJECTS
-      : PROJECTS.filter(p => p.category === activeCategory);
+  const filtered = projects;
 
   const categoryLabels: Record<string, string> = {
     all: t?.gallery.categories.all ?? 'Todos',
@@ -50,12 +47,8 @@ export default function ProjectGalleryGrid({ lang = 'es', t }: Props) {
             aria-selected={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
             className={`px-4 py-1.5 text-sm rounded-full border transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activeCategory === cat
-              ? cat === 'commons'
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-500'
-                : 'bg-primary text-primary-foreground border-primary'
-              : cat === 'commons'
-                ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40'
-                : 'bg-background text-muted-foreground border-border hover:text-foreground'
+              ? 'bg-primary text-primary-foreground border-primary'
+              : 'bg-background text-muted-foreground border-border hover:text-foreground'
               }`}
           >
             {categoryLabels[cat]}

@@ -1,21 +1,26 @@
 ---
-import type { Translations } from '../lib/i18n';
-import ProjectGalleryGrid from './ProjectGalleryGrid';
+import type { Translations } from "../lib/i18n";
+import ProjectGalleryContainer from "./ProjectGalleryContainer";
 
 interface Props {
   lang?: string;
   t?: Translations;
 }
 
-const { lang = 'es', t } = Astro.props;
+const { lang = "es", t } = Astro.props;
 ---
 
 <section id="gallery" class="py-24 px-6">
   <div class="mx-auto max-w-6xl">
-    <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t?.gallery.heading ?? 'Galería de Proyectos'}</h2>
+    <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
+      {t?.gallery.heading ?? "Galería de Proyectos"}
+    </h2>
     <p class="mb-12 text-center text-muted-foreground max-w-2xl mx-auto">
-      {t?.gallery.subtitle ?? '21 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.'}
+      {
+        t?.gallery.subtitle ??
+          "21 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo."
+      }
     </p>
-    <ProjectGalleryGrid lang={lang} t={t} client:visible />
+    <ProjectGalleryContainer lang={lang} t={t} client:only="react" />
   </div>
 </section>

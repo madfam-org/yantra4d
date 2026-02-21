@@ -9,6 +9,7 @@
 - **Multi-Project Platform**: Serve and switch between multiple SCAD projects. See [Multi-Project Platform](./multi-project.md).
 - **Data-Driven UI**: All modes, parameters, parts, camera views, parameter group labels, viewer defaults, and estimation constants are declared in a [project manifest](./manifest.md) (`projects/{slug}/project.json`). No hardcoded control definitions, camera positions, or UI labels in the frontend.
 - **Interactive 3D Viewer**: Real-time rendering of generated STL files with loading progress. Uses Z-up axis convention (matching OpenSCAD) with an orientation gizmo widget.
+- **3D Carousel Gallery**: Immersive browsing interface with dynamic **Level-of-Detail (LOD)**. Optimized 2D thumbnails are used for inactive items, while the active centered item triggers a live WebGL on-the-fly rendering.
 - **One-Click Verification**: Run the `verify_design.py` suite directly from the UI.
 - **Live Parameter Controls**: Sliders and toggles update the model dynamically (debounced auto-render).
 - **Advanced Visibility**: The Visibility section has a Basic/Advanced toggle. Basic mode shows coarse toggles (Base, Walls, Mechanism, Letters, Bottom Unit, Top Unit). Advanced mode adds sub-component toggles (e.g., Left Wall, Right Wall, Base Ring, Pillars, Snap Beams) indented under their parent. In Assembly/Grid modes, Advanced also shows per-half overrides (e.g., Bottom Base, Bottom Walls). When a parent toggle is unchecked, its children are grayed out.
@@ -315,6 +316,21 @@ src/
 - **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.
 - **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
+- **`ProjectCarousel3D.jsx`**: Implements a large-scale horizontal scrolling scene using `@react-three/drei`'s `ScrollControls`. It manages the spatial distribution of 36+ projects in a unified 3D space.
+- **`CarouselItem.jsx`**: The core LOD component. It uses `useFrame` to calculate its distance from the world center. When centered, it activates a `LiveModel` component which fetches a high-fidelity GLTF/GLB from the `/api/render` endpoint.
+
+---
+
+## 3D Performance Engine (LOD Strategy)
+
+Yantra4D implements a "Zero-Waste" rendering strategy for the project gallery:
+
+1. **Phase 1: Thumbnail Cold Storage**: Inactive carousel items render a single `Image` plane using the project's pre-rendered thumbnail. This keeps the draw call count low.
+2. **Phase 2: Live Hydration**: As a project scrolls into the center (Active Zone), the `CarouselItem` triggers a backend render request with default parameters.
+3. **Phase 3: GLTF Seamless Swap**: Once the backend produces a GLTF/GLB blob, the UI swaps the 2D plane for a live 3D mesh. 
+4. **Phase 4: Turntable Interaction**: Active models auto-rotate on a turntable and respond to scale/parallax animations based on scroll position.
+
+This architecture allows the platform to showcase 36+ complex parametric models in a single scene without browser memory exhaustion.
 
 #### Build Optimization
 

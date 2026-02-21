@@ -10,39 +10,34 @@ This roadmap outlines the strategic path towards a world-class hyperobject commo
 - [x] **Zero UI Freezing:** Eliminated browser jitter during complex, high-poly geometry ingestion, allowing sliders and interactive elements to remain 100% fluid.
 - [x] **Schema Validation:** Standardized all hyperobject ontology definitions (`project.json`) by integrating robust JSON Schema validation into the CI pipeline.
 
----
-
-## The Road Ahead (Towards Excellence)
-
-The following phases define the core architectural transformations required to scale Yantra4D globally with maximum performance and minimal server overhead.
-
 ### Phase 2: Hybrid Compute Architecture (WASM + Cloud Fallback)
-The primary bottleneck in parametric generation is the client-server rendering loop. 
-- **WASM Execution:** We will compile the core CAD engine (e.g., OpenSCAD) to WebAssembly. This allows capable devices (laptops, modern smartphones) to calculate geometry entirely client-side, enabling near real-time interaction (60FPS) and eliminating server rendering costs.
-- **Intelligent Cloud Fallback:** For low-powered devices, we will dynamically detect hardware limitations (`hardwareConcurrency`, `deviceMemory`) and route computation requests to a scalable backend server cluster.
+- [x] **WASM Execution:** Core CAD engine (OpenSCAD) compiled to WebAssembly for zero-latency client-side generation.
+- [x] **Intelligent Cloud Fallback:** Dynamic detection of hardware limitations with automatic routing to backend clusters for complex CadQuery operations.
+
+### Phase 4: glTF 2.0 Viewport Transmission
+- [x] **Format Upgrade:** Deprecated STL for active viewport transmission in favor of high-fidelity `glTF`/`GLB`.
+- [x] **Rich Assemblies:** Enabled hierarchical structures and material properties, significantly improving visual quality in the Studio environment.
+
+### Phase 5: Monetization & Computational Tiering
+- [x] **Tier Enforcements:** Defined usage boundaries (Free, Pro, MadFam) across API and UI level.
+- [x] **Premium Gating:** Cloud rendering and high-fidelity CadQuery exports are successfully gated behind authorized tiers.
+
+### Phase 6: The Hyperobjects Commons & CDG Standardization
+- [x] **CDG Interface Formalization:** Integrated Common Denominator Geometry interfaces into the manifest schema.
+- [x] **Unified Geometry:** Successfully localized shared primitives (e.g. microscope slides) into standalone hyperobjects.
+
+### Phase 7: Live 3D Carousel Gallery
+- [x] **Immersive Browsing:** Replaced the flat grid with an interactive 3D carousel.
+- [x] **Dynamic LOD:** Smooth transition between optimized thumbnails and live, morphable 3D hyperobjects.
+
+---
 
 ### Phase 3: Dual-Kernel Compute Engine (OpenSCAD + CadQuery)
 CSG modeling (OpenSCAD) excels at basic primitives but struggles with complex fillets and modern CAD integrations.
-- **B-Rep Integration:** We will introduce a CadQuery (OpenCASCADE) kernel alongside OpenSCAD.
-- **Dual Definitions:** Top-tier hyperobjects will be defined in both kernels, allowing the platform to intelligently route generation depending on the requested outcome (e.g., OpenSCAD for lightweight mesh, CadQuery for high-fidelity STEP exports).
-- **Geometric Parity:** CI pipelines will be upgraded with automated diffing algorithms to ensure perfect parity between the OpenSCAD and CadQuery definitions.
+- [ ] **Dual Definitions:** Top-tier hyperobjects will be defined in both kernels, allowing the platform to intelligently route generation depending on the requested outcome.
+- [ ] **Geometric Parity:** CI pipelines will be upgraded with automated diffing algorithms to ensure perfect parity between the OpenSCAD and CadQuery definitions.
 
-### Phase 4: glTF 2.0 Viewport Transmission
-STL is antiquated and lacks native support for colors, materials, and distinct sub-assembly components.
-- **Format Upgrade:** We will deprecate STL for viewport transmission in favor of `glTF` or `GLB`.
-- **Rich Assemblies:** This will allow hyperobjects to transmit their hierarchical structures and material properties, drastically improving the visual fidelity of the Studio configuration environment.
-
-### Phase 5: Monetization & Computational Tiering
-To ensure sustainable development and manage computational expenses from the cloud fallback architecture.
-- **Tier Enforcements:** Define clear usage boundaries (e.g., Free, Pro, Enterprise).
-- **Premium Features:** Cloud fallback rendering, high-fidelity export generation (STEP, raw scripts), and complex multi-part CadQuery compilations will be gated behind premium tiers, while WASM-based generation remains freely accessible.
-
-### Phase 6: The Hyperobjects Commons & CDG Standardization
-To establish Yantra4D as the universal API for physical objects and completely differentiate from walled-garden competitors.
-- **CDG Interface Formalization:** Formalize Common Denominator Geometry (CDG) interfaces within the `project.json` schema to allow seamless interoperability between distinct hyperobjects across the commons.
-- **AI-Driven Manifest Generation:** Upgrade the AI Configurator to generate entirely new module definitions and manifest files (`project.json`) from natural language prompts, democratizing the creation of new parametric configurators.
-
-### Phase 7: Visual "3D Git" & Decentralized Ecosystem
+### Phase 8: Visual "3D Git" & Decentralized Ecosystem
 To bridge the gap with visual version control platforms while maintaining open-source, decentralized ethos.
-- **Visual Version Control (3D Diffing):** Implement a Three.js-based visual diffing tool that overlays and highlights geometric additions/subtractions between git commits, augmenting the existing text-based SCAD Monaco editor.
-- **Decentralized Instancing:** Enhance the CLI and multi-project tools to allow independent creators to easily spin up and host their own white-labeled Yantra4D nodes, federating the Hyperobjects Commons.
+- [ ] **Visual Version Control (3D Diffing):** Implement a Three.js-based visual diffing tool that overlays and highlights geometric additions/subtractions between git commits.
+- [ ] **Decentralized Instancing:** Enhance the CLI and multi-project tools to allow independent creators to easily spin up and host their own white-labeled Yantra4D nodes, federating the Hyperobjects Commons.

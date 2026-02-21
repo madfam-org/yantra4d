@@ -19,7 +19,10 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
   "project": {
     "name": "Gridfinity Extended", // Display name (used in header)
     "slug": "gridfinity",         // Used for localStorage keys, export filenames
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "thumbnail": "/docs/images/gridfinity_thumb.png", // Path to gallery image
+    "tags": ["storage", "modular", "organization"],
+    "difficulty": "beginner"
   },
 
   "modes": [

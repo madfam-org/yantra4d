@@ -108,6 +108,10 @@
             "type": "string",
             "pattern": "\\.(scad|py)$"
           },
+          "cq_file": {
+            "type": "string",
+            "pattern": "\\.py$"
+          },
           "label": {
             "$ref": "#/$defs/i18nString"
           },
@@ -1028,16 +1032,24 @@
     }
   },
   "then": {
+    "required": [
+      "estimate_constants"
+    ],
     "properties": {
       "modes": {
         "items": {
           "required": [
-            "scad_file"
+            "scad_file",
+            "cq_file"
           ],
           "properties": {
             "scad_file": {
               "type": "string",
               "pattern": "\\.scad$"
+            },
+            "cq_file": {
+              "type": "string",
+              "pattern": "\\.py$"
             }
           }
         }

@@ -16,8 +16,8 @@ api_path = Path(__file__).parent.parent / "apps" / "api"
 sys.path.append(str(api_path))
 
 try:
-    from services.openscad import build_openscad_command, run_render
-    from services.cq_runner import run_cadquery_script
+    from services.engine.openscad import build_openscad_command, run_render
+    from services.engine.cq_runner import run_cadquery_script
 except ImportError as e:
     logger.error(f"Failed to import Yantra4D engine services: {e}")
     sys.exit(1)

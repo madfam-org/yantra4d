@@ -10,7 +10,9 @@
       "id": "default",
       "label": "Basic Box",
       "scad_file": "box.py",
-      "parts": ["box"],
+      "parts": [
+        "box"
+      ],
       "estimate": {
         "base_units": 100
       }

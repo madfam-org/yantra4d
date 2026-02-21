@@ -25,6 +25,7 @@
     {
       "id": "mount",
       "scad_file": "mount.scad",
+      "cq_file": "mount.py",
       "label": {
         "es": "Soporte",
         "en": "Mount"

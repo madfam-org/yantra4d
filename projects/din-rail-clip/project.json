@@ -27,6 +27,7 @@
     {
       "id": "Standard",
       "scad_file": "din_clip.scad",
+      "cq_file": "clip.py",
       "label": {
         "en": "Clip Body",
         "es": "Cuerpo del Clip"

@@ -27,6 +27,7 @@
     {
       "id": "Standard",
       "scad_file": "connector.scad",
+      "cq_file": "connector.py",
       "label": {
         "en": "Pipe Connector",
         "es": "Conector de Tuber\u00eda"

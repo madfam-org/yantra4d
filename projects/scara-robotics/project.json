@@ -32,6 +32,7 @@
     {
       "id": "Standard",
       "scad_file": "robot.scad",
+      "cq_file": "robot.py",
       "label": {
         "en": "Full Assembly",
         "es": "Ensamblaje Completo"

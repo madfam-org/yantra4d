@@ -1,0 +1,13 @@
+/* Custom styling for 4D Docs */
+:root {
+  --sl-hue-accent: 250;
+  --sl-color-accent-high: #b4a0ff;
+  --sl-color-accent: #7b59ff;
+  --sl-color-accent-low: #3c248b;
+  --sl-color-bg: #0f1115;
+  --sl-color-text-accent: var(--sl-color-accent-high);
+}
+
+[data-theme='light'] {
+  --sl-color-bg: #ffffff;
+}

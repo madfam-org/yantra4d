@@ -24,6 +24,7 @@
     {
       "id": "spur_gear",
       "scad_file": "spur_gear.scad",
+      "cq_file": "spur_gear.py",
       "label": {
         "en": "Spur Gear",
         "es": "Engranaje Recto"
@@ -39,6 +40,7 @@
     {
       "id": "herringbone_gear",
       "scad_file": "herringbone_gear.scad",
+      "cq_file": "herringbone_gear.py",
       "label": {
         "en": "Herringbone Gear",
         "es": "Engranaje Espiga"

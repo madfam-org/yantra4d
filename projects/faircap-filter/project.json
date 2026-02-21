@@ -29,6 +29,7 @@
     {
       "id": "Standard",
       "scad_file": "faircap.scad",
+      "cq_file": "faircap.py",
       "label": {
         "en": "Standard Filter",
         "es": "Filtro Est\u00e1ndar"

@@ -23,6 +23,7 @@
     {
       "id": "beam",
       "scad_file": "beam.scad",
+      "cq_file": "beam.py",
       "label": {
         "en": "Beam",
         "es": "Viga"
@@ -38,6 +39,7 @@
     {
       "id": "brace",
       "scad_file": "brace.scad",
+      "cq_file": "brace.py",
       "label": {
         "en": "Brace",
         "es": "Escuadra"
@@ -53,6 +55,7 @@
     {
       "id": "fastener",
       "scad_file": "fastener.scad",
+      "cq_file": "fastener.py",
       "label": {
         "en": "Fastener",
         "es": "Sujetador"

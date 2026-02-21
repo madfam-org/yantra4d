@@ -29,6 +29,7 @@
     {
       "id": "Standard",
       "scad_file": "soft_jaw.scad",
+      "cq_file": "soft_jaw.py",
       "label": {
         "en": "Soft Jaw",
         "es": "Mordaza Blanda"

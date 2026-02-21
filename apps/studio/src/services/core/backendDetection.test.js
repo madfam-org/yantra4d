@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { isBackendAvailable, getApiBase, resetDetection } from './backendDetection'
+import { isBackendAvailable, getApiBase, resetDetection } from '../core/backendDetection'
 
 beforeEach(() => {
   resetDetection()

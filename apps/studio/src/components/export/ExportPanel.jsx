@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Download, FileCode, FileText } from 'lucide-react'
 import { useLanguage } from "../../contexts/LanguageProvider"
 import { useManifest } from "../../contexts/ManifestProvider"
-import { getApiBase } from "../../services/backendDetection"
+import { getApiBase } from "../../services/core/backendDetection"
 import { useTier } from "../../hooks/useTier"
 import { useUpgradePrompt } from '../../hooks/useUpgradePrompt'
 import AuthGate from "../auth/AuthGate"

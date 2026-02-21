@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 
-vi.mock('../services/editorService', () => ({
+vi.mock('../services/domain/editorService', () => ({
   writeFile: vi.fn().mockResolvedValue({ path: 'main.scad', size: 10 }),
 }))
 
 import { useEditorRender } from './useEditorRender'
-import { writeFile } from '../services/editorService'
+import { writeFile } from '../services/domain/editorService'
 
 beforeEach(() => {
   vi.clearAllMocks()

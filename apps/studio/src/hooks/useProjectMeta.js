@@ -3,8 +3,8 @@
  * Returns the parsed meta object or null if not available.
  */
 import { useState, useEffect } from 'react'
-import { getApiBase } from '../services/backendDetection'
-import { apiFetch } from '../services/apiClient'
+import { getApiBase } from '../services/core/backendDetection'
+import { apiFetch } from '../services/core/apiClient'
 
 export function useProjectMeta(slug) {
   const [meta, setMeta] = useState(null)

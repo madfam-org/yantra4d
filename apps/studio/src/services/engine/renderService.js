@@ -6,9 +6,9 @@
  * Auto-detects which mode to use by checking if the backend is reachable.
  */
 
-import { isBackendAvailable, getApiBase } from './backendDetection'
-import { detectPhase, isLogWorthy } from '../lib/openscad-phases'
-import { apiFetch } from './apiClient'
+import { isBackendAvailable, getApiBase } from '../core/backendDetection'
+import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
+import { apiFetch } from '../core/apiClient'
 
 const API_BASE = getApiBase()
 
@@ -181,6 +181,12 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
       part: partId,
       log: `[${partId}] Done (${Math.round(((i + 1) / totalParts) * 100)}%)`
     })
+  }
+
+  if (_worker) {
+    _worker.terminate()
+    _worker = null
+    _initPromise = null
   }
 
   return parts

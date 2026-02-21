@@ -23,7 +23,7 @@ const mockReadFile = vi.fn()
 const mockCreateFile = vi.fn()
 const mockDeleteFile = vi.fn()
 
-vi.mock('../../services/editorService', () => ({
+vi.mock('../../services/domain/editorService', () => ({
   listFiles: (...args) => mockListFiles(...args),
   readFile: (...args) => mockReadFile(...args),
   createFile: (...args) => mockCreateFile(...args),

@@ -1,8 +1,8 @@
 /**
  * Git operations API wrappers.
  */
-import { getApiBase } from './backendDetection'
-import { apiFetch } from './apiClient'
+import { getApiBase } from '../core/backendDetection'
+import { apiFetch } from '../core/apiClient'
 
 const base = () => getApiBase()
 

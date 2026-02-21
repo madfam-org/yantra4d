@@ -7,7 +7,7 @@ vi.mock('../../contexts/LanguageProvider', () => ({
   useLanguage: () => ({ t: (key) => key }),
 }))
 
-vi.mock('../../services/backendDetection', () => ({
+vi.mock('../../services/core/backendDetection', () => ({
   getApiBase: () => 'http://localhost:5000',
 }))
 

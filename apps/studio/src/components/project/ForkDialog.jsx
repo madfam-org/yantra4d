@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2, GitFork } from 'lucide-react'
-import { getApiBase } from '../../services/backendDetection'
-import { apiFetch } from '../../services/apiClient'
+import { getApiBase } from '../../services/core/backendDetection'
+import { apiFetch } from '../../services/core/apiClient'
 import { validateSlug, sanitizeSlug } from '../../lib/slugUtils'
 
 /**

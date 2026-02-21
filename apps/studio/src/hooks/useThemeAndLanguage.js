@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react'
 import { useTheme } from '../contexts/ThemeProvider'
 import { useLanguage } from '../contexts/LanguageProvider'
 import { useAuth } from '../contexts/AuthProvider'
-import { setTokenGetter } from '../services/apiClient'
+import { setTokenGetter } from '../services/core/apiClient'
 
 /**
  * Composes theme cycling, language toggling, document-title sync,

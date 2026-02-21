@@ -4,9 +4,9 @@
  * - Client mode: uses manifold-3d for in-browser mesh verification
  */
 
-import { isBackendAvailable, getApiBase } from './backendDetection'
-import { parseSTL, getBoundingBox } from '../lib/stl-utils'
-import { apiFetch } from './apiClient'
+import { isBackendAvailable, getApiBase } from '../core/backendDetection'
+import { parseSTL, getBoundingBox } from '../../lib/stl-utils'
+import { apiFetch } from '../core/apiClient'
 
 const API_BASE = getApiBase()
 

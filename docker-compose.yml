@@ -14,6 +14,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    shm_size: '2gb'
     restart: unless-stopped
     ports:
       - "5000:5000"

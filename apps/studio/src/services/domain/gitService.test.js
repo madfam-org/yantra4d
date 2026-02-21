@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('./backendDetection', () => ({
+vi.mock('../core/backendDetection', () => ({
   getApiBase: () => 'http://localhost:5000',
 }))
 
-vi.mock('./apiClient', () => ({
+vi.mock('../core/apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
 import { getStatus, getDiff, commit, push, pull, connectRemote } from './gitService'
-import { apiFetch } from './apiClient'
+import { apiFetch } from '../core/apiClient'
 
 beforeEach(() => {
   vi.clearAllMocks()

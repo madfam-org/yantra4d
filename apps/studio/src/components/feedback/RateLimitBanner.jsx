@@ -1,4 +1,4 @@
-import { useRateLimit } from '../../services/apiClient'
+import { useRateLimit } from '../../services/core/apiClient'
 import { useTier } from '../../hooks/useTier'
 import { isAuthEnabled } from '../../contexts/AuthProvider'
 

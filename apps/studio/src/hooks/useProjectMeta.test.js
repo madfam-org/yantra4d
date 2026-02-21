@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 
-vi.mock('../services/backendDetection', () => ({
+vi.mock('../services/core/backendDetection', () => ({
   getApiBase: () => 'http://localhost:5000',
 }))
 
-vi.mock('../services/apiClient', () => ({
+vi.mock('../services/core/apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
 import { useProjectMeta } from './useProjectMeta'
-import { apiFetch } from '../services/apiClient'
+import { apiFetch } from '../services/core/apiClient'
 
 beforeEach(() => {
   vi.clearAllMocks()

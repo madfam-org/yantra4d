@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { getApiBase } from '../services/backendDetection'
+import { getApiBase } from '../services/core/backendDetection'
 import { useAuth, isAuthEnabled } from './AuthProvider'
-import { apiFetch } from '../services/apiClient'
+import { apiFetch } from '../services/core/apiClient'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const TierContext = createContext(null)

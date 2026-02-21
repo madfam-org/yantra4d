@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
@@ -10,14 +10,14 @@ import { useLocation } from 'react-router-dom'
 expect.extend(toHaveNoViolations)
 
 // Mock services
-vi.mock('./services/renderService', () => ({
+vi.mock('./services/engine/renderService', () => ({
   renderParts: vi.fn(() => Promise.resolve([{ type: 'main', url: 'blob:mock-url', blob: new Blob() }])),
   cancelRender: vi.fn(() => Promise.resolve()),
   estimateRenderTime: vi.fn(() => 10),
   getRenderMode: vi.fn(() => 'detecting'),
 }))
 
-vi.mock('./services/verifyService', () => ({
+vi.mock('./services/engine/verifyService', () => ({
   verify: vi.fn(() => Promise.resolve({ status: 'passed', passed: true, output: 'All checks passed', parts_checked: 1 })),
 }))
 
@@ -52,7 +52,10 @@ afterEach(() => {
 
 let testLocation = {}
 function LocationObserver() {
-  testLocation = useLocation()
+  const loc = useLocation()
+  useEffect(() => {
+    testLocation = loc
+  }, [loc])
   return null
 }
 
@@ -99,7 +102,7 @@ describe('App', { timeout: 30000 }, () => {
   })
 
   it('generate button calls renderParts', async () => {
-    const { renderParts } = await import('./services/renderService')
+    const { renderParts } = await import('./services/engine/renderService')
     await renderApp()
 
     // Auto-generate fires on mount (debounced 500ms), so renderParts
@@ -114,7 +117,7 @@ describe('App', { timeout: 30000 }, () => {
   })
 
   it('verify button calls verify with project slug after parts are loaded', async () => {
-    const { verify } = await import('./services/verifyService')
+    const { verify } = await import('./services/engine/verifyService')
     await renderApp()
 
     // Auto-generate fires on mount (debounced), producing parts via the mock.
@@ -143,7 +146,7 @@ describe('App', { timeout: 30000 }, () => {
   })
 
   it('long render estimate shows ConfirmRenderDialog', async () => {
-    const { estimateRenderTime } = await import('./services/renderService')
+    const { estimateRenderTime } = await import('./services/engine/renderService')
     estimateRenderTime.mockReturnValue(120) // > 60s threshold
 
     await renderApp()

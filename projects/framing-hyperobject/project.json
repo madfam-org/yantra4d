@@ -18,11 +18,61 @@
     "hyperobject": {
       "is_hyperobject": true,
       "domain": "household",
-      "interfaces": [
-        "rabbet",
-        "vesa_pattern",
-        "french_cleat",
-        "standoff_bore"
+      "commons_license": "cdg-open",
+      "material_awareness": true,
+      "societal_benefit": "Enables modular construction and reuse via standardized mechanical interfaces.",
+      "cdg_interfaces": [
+        {
+          "id": "rabbet",
+          "label": "Rabbet Joint",
+          "geometry_type": "pocket",
+          "standard": "cdg-pocket-v1",
+          "parameters": [
+            "mat_width",
+            "glazing_thickness"
+          ]
+        },
+        {
+          "id": "seg_channel",
+          "label": "T-Slot Extrusion Channel",
+          "geometry_type": "profile",
+          "standard": "cdg-profile-v1",
+          "parameters": []
+        },
+        {
+          "id": "snap_profile",
+          "label": "Snap-Fit Interface",
+          "geometry_type": "snap",
+          "standard": "cdg-snap-v1",
+          "parameters": []
+        },
+        {
+          "id": "vesa_pattern",
+          "label": "VESA Mount",
+          "geometry_type": "bolt_pattern",
+          "standard": "cdg-bolt_pattern-v1",
+          "parameters": [
+            "mounting_style"
+          ]
+        },
+        {
+          "id": "french_cleat",
+          "label": "French Cleat Profile",
+          "geometry_type": "profile",
+          "standard": "cdg-profile-v1",
+          "parameters": [
+            "mounting_style"
+          ]
+        },
+        {
+          "id": "standoff_bore",
+          "label": "Threaded Standoff",
+          "geometry_type": "socket",
+          "standard": "cdg-socket-v1",
+          "parameters": [
+            "mounting_style"
+          ]
+        }
       ]
     }
   },

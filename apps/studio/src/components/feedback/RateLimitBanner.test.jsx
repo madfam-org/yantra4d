@@ -6,7 +6,7 @@ let mockRateLimit = { remaining: null, limit: null, tier: null }
 let mockCanAccess = () => true
 let mockIsAuthEnabled = true
 
-vi.mock('../../services/apiClient', () => ({
+vi.mock('../../services/core/apiClient', () => ({
   useRateLimit: () => mockRateLimit,
 }))
 

@@ -1,8 +1,8 @@
 /**
  * AI chat API client — session creation and SSE streaming.
  */
-import { getApiBase } from './backendDetection'
-import { apiFetch } from './apiClient'
+import { getApiBase } from '../core/backendDetection'
+import { apiFetch } from '../core/apiClient'
 
 const base = () => getApiBase()
 

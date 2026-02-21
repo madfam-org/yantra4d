@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('./backendDetection', () => ({
+vi.mock('../core/backendDetection', () => ({
   getApiBase: () => 'http://localhost:5000',
 }))
 
-vi.mock('./apiClient', () => ({
+vi.mock('../core/apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
-import { apiFetch } from './apiClient'
+import { apiFetch } from '../core/apiClient'
 
 const mockPostMessage = vi.fn()
 

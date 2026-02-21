@@ -18,7 +18,7 @@
  */
 
 import { createOpenSCAD } from 'openscad-wasm'
-import { detectPhase, isLogWorthy } from '../lib/openscad-phases'
+import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
 
 /** Cached SCAD file contents: Map<filename, string> */
 let scadFileCache = new Map()

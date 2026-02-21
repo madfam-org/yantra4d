@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
-import { renderParts, cancelRender, estimateRenderTime } from '../services/renderService'
+import { renderParts, cancelRender, estimateRenderTime } from '../services/engine/renderService'
 import { useUpgradePrompt } from './useUpgradePrompt'
 
 const INITIAL_PROGRESS = 5

@@ -3,11 +3,11 @@ import { renderHook, waitFor } from '@testing-library/react'
 import React from 'react'
 
 // Mock dependencies
-vi.mock('../services/backendDetection', () => ({
+vi.mock('../services/core/backendDetection', () => ({
   getApiBase: () => 'http://localhost:5000',
 }))
 
-vi.mock('../services/apiClient', () => ({
+vi.mock('../services/core/apiClient', () => ({
   apiFetch: vi.fn().mockResolvedValue({
     ok: true,
     json: () => Promise.resolve({ tier: 'pro', user: { sub: '1' }, limits: { renders_per_hour: 200 } }),

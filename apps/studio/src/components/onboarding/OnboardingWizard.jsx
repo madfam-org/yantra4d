@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react"
-import { getApiBase } from "../../services/backendDetection"
+import { getApiBase } from "../../services/core/backendDetection"
 import { useLanguage } from "../../contexts/LanguageProvider"
 import UploadStep from "./UploadStep"
 import ReviewStep from "./ReviewStep"

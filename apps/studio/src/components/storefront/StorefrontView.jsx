@@ -14,12 +14,12 @@ import PresetGallery from './PresetGallery'
  * Shows: product name, description, preset gallery, BOM, Download CTA.
  */
 export default function StorefrontView({ onExitStorefront }) {
-    const { t, language } = useLanguage()
+    const { t } = useLanguage()
     const { manifest, getLabel } = useManifest()
-    const { params, setParams, handleGenerate, projectSlug } = useProject()
+    const { setParams, handleGenerate, projectSlug } = useProject()
 
     const [activePreset, setActivePreset] = useState(null)
-    const [shareUrl, setShareUrl] = useState(null)
+    const [, setShareUrl] = useState(null)
     const [copied, setCopied] = useState(false)
 
     const project = manifest?.project ?? {}

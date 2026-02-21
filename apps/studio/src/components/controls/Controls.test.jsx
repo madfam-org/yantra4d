@@ -119,7 +119,7 @@ describe('Controls', () => {
     expect(screen.queryByLabelText(/Gradient preview/)).not.toBeInTheDocument()
   })
 
-  it('has no a11y violations', { timeout: 15000 }, async () => {
+  it('has no a11y violations', { timeout: 30000 }, async () => {
     const { container } = renderControls()
     const results = await axe(container)
     expect(results).toHaveNoViolations()

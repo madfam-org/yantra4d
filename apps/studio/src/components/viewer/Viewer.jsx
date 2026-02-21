@@ -1,9 +1,9 @@
 import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
-import { Canvas, useLoader } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
+import { useWorkerLoader } from '../../hooks/useWorkerLoader'
 import { Box3, Box3Helper, Vector3, Color } from 'three'
 import { useLanguage } from "../../contexts/LanguageProvider"
 import { useTheme } from "../../contexts/ThemeProvider"
@@ -25,28 +25,9 @@ const SCENE_UP_VECTOR = [0, 0, 1]   // Z-up coordinate system
 
 const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
     const isGLTF = url?.toLowerCase().endsWith('.gltf') || url?.toLowerCase().endsWith('.glb')
-    const loader = isGLTF ? GLTFLoader : STLLoader
-    const modelData = useLoader(loader, url)
 
-    const geom = useMemo(() => {
-        if (!isGLTF) return modelData
-
-        // GLTF returns a full scene graph. We must extract and merge all meshes into a single BufferGeometry
-        // so that the standard Viewer materials and edge highlights apply uniformly to the parsed B-Rep.
-        const geometries = []
-        modelData.scene.updateMatrixWorld(true)
-        modelData.scene.traverse((child) => {
-            if (child.isMesh && child.geometry) {
-                const clonedGeom = child.geometry.clone()
-                clonedGeom.applyMatrix4(child.matrixWorld)
-                geometries.push(clonedGeom)
-            }
-        })
-
-        if (geometries.length === 0) return null
-        if (geometries.length === 1) return geometries[0]
-        return BufferGeometryUtils.mergeGeometries(geometries, false)
-    }, [modelData, isGLTF])
+    // Asynchronously loads geometries; .stl via WebWorker, .gltf natively.
+    const geom = useWorkerLoader(url, isGLTF)
 
     useEffect(() => {
         if (geom && onGeometry) onGeometry(partType, geom)

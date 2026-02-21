@@ -83,8 +83,8 @@ Before expanding with new features or new hyperobject projects, the platform mus
 
 ### 3.8 — Technical Health & Engineering
 - [ ] Refactor core project geometry to reduce duplication.
-- [ ] Implement memory optimizations for WASM rendering.
-- [ ] Optimize the Docker rendering pipeline.
+- [x] Implement memory optimizations for WASM rendering.
+- [x] Optimize the Docker rendering pipeline.
 
 ### 3.9 — Visual "3D Git" & Decentralized Ecosystem
 - [ ] **Visual Version Control (3D Diffing):** Implement a Three.js-based visual diffing tool.
@@ -100,7 +100,7 @@ Before expanding with new features or new hyperobject projects, the platform mus
 ## Phase 4 — New Hyperobject Projects (Post-Stability)
 
 ### 4.1 — `framing-hyperobject` — The Containing Frames Hyperobject
-- [ ] Implement the `framing-hyperobject` parametric SCAD design incorporating `rabbet`, `seg_channel`, `snap_profile`, `vesa_pattern`, `french_cleat`, and `standoff_bore` CDG interfaces.
+- [x] Implement the `framing-hyperobject` parametric SCAD design incorporating `rabbet`, `seg_channel`, `snap_profile`, `vesa_pattern`, `french_cleat`, and `standoff_bore` CDG interfaces.
 
 ---
 
@@ -109,8 +109,8 @@ Before expanding with new features or new hyperobject projects, the platform mus
 This phase focuses on reaching 100% architectural parity across the entire Hyperobject Commons, ensuring every project is a "first-class citizen" in both OpenSCAD and CadQuery kernels.
 
 ### 5.1 — Strict Schema Compliance
-- [ ] **Enforce strict manifest rules:** Re-enable mandatory `cq_file` and `estimate_constants` requirements in the core JSON Schema.
-- [ ] **Hyperobject Integrity:** Formalize that `is_hyperobject: true` is invalid without a geometrically parity-matched CadQuery definition.
+- [x] **Enforce strict manifest rules:** Re-enable mandatory `cq_file` and `estimate_constants` requirements in the core JSON Schema.
+- [x] **Hyperobject Integrity:** Formalize that `is_hyperobject: true` is invalid without a geometrically parity-matched CadQuery definition.
 
 ### 5.2 — Geometric Parity Execution
 - [ ] **Poly-Kernel Implementations:** Author CadQuery (`.py`) equivalents for all 36+ projects in the commons that are currently SCAD-only.

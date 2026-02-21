@@ -4,7 +4,7 @@ A manifest-driven platform for parametric OpenSCAD models with a web-based 3D pr
 
 ![Yantra4D](/docs/images/half_cube_iso.png)
 
-Ships with 22 built-in projects including **gridfinity** (modular storage), **slide-holder** 🔷 (microscope slide retention — first hyperobject), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), **rugged-box** (hinged latching box), **motor-mount** (NEMA stepper mounts), and **scara-robotics** (precision SCARA robotics Harmonic Drive). See [`projects/`](./projects/) for all projects.
+Ships with 36 built-in projects including **gridfinity** (modular storage), **slide-holder** 🔷 (microscope slide retention — first hyperobject), **ultimate-box**, **keyv2** (keycaps), **multiboard** (pegboard), **fasteners**, **gears**, **yapp-box**, **stemfie** (STEM kit), **polydice** (dice), **julia-vase** (fractal vases), **portacosas**, **voronoi** (organic patterns), **maze** (puzzle mazes), **relief** (text plaques & signs), **gear-reducer** (BOSL2 parametric gears), **torus-knot** (mathematical sculpture), **superformula** (generative vases), **spiral-planter** (archimedean planters), **rugged-box** (hinged latching box), **motor-mount** (NEMA stepper mounts), **scara-robotics** (precision SCARA robotics Harmonic Drive), and **microscope-slide-hyperobject** (unified slide geometry). See [`projects/`](./projects/) for all projects.
 
 ## Features
 -   **Manifest-Driven**: The webapp is data-driven via `project.json` manifests. Swapping SCAD projects requires only a new manifest file.
@@ -15,6 +15,7 @@ Ships with 22 built-in projects including **gridfinity** (modular storage), **sl
     -   **Export**: Download STL files and capture images (Iso, Top, Front, Right).
 -   **AI-Assisted Design**: Natural language chat adjusts parameters (AI Configurator, basic+) or generates SCAD code edits (AI Code Editor, pro+).
 -   **GitHub Integration**: Import repos, edit SCAD files in a Monaco editor, git status/diff/commit/push/pull.
+-   **Live 3D Carousel Gallery**: Immersive Project Gallery with infinite scrolling, dynamic LOD (Level-of-Detail), and live on-the-fly rendering.
 -   **Tiered Access Control**: Four tiers (guest, basic, pro, madfam) gating export formats, project limits, GitHub, and AI features.
 -   **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save, and auto-render.
 -   **Onboarding**: CLI tool and web wizard for onboarding external SCAD projects.
@@ -52,7 +53,7 @@ yantra4d/
 │   │   └── exports/models/      # Reference STL exports
 │   ├── polydice/                # Parametric dice set
 │   ├── ultimate-box/            # Parametric box maker
-│   └── ...                      # 22 built-in projects total
+│   └── ...                      # 36 built-in projects total
 ├── apps/
 │   ├── api/                     # Flask API server
 │   │   ├── app.py               # App factory + blueprint registration

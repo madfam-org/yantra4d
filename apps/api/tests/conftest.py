@@ -12,6 +12,7 @@ def _isolate_config(tmp_path, monkeypatch):
     """Ensure Config paths point to tmp_path and manifest cache is cleared for every test."""
     from config import Config
     monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
+    monkeypatch.setattr(Config, "CARTRIDGES_DIRS", [tmp_path])
     monkeypatch.setattr(Config, "SCAD_DIR", tmp_path)
     monkeypatch.setattr(Config, "MULTI_PROJECT", True)
     monkeypatch.setattr(Config, "AUTH_ENABLED", False)
@@ -19,9 +20,9 @@ def _isolate_config(tmp_path, monkeypatch):
     monkeypatch.setattr(Config, "OPENSCADPATH", str(tmp_path / "libs"))
 
     import manifest as manifest_mod
-    manifest_mod._manifest_cache.clear()
+    manifest_mod.manifest_service._manifest_cache.clear()
     yield
-    manifest_mod._manifest_cache.clear()
+    manifest_mod.manifest_service._manifest_cache.clear()
 
 
 @pytest.fixture(autouse=True)

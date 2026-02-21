@@ -160,24 +160,33 @@ class ManifestService:
         self._manifest_cache: dict[str, "ProjectManifest"] = {}
 
     def discover_projects(self) -> list[dict]:
-        """Scan PROJECTS_DIR for projects, return metadata list."""
+        """Scan all CARTRIDGES_DIRS for projects, return metadata list."""
         projects = []
-        projects_dir = Config.PROJECTS_DIR
+        seen_slugs = set()
 
-        if projects_dir.is_dir():
-            for child in sorted(projects_dir.iterdir()):
+        for directory in Config.CARTRIDGES_DIRS:
+            if not directory.is_dir():
+                continue
+            
+            for child in sorted(directory.iterdir()):
                 manifest_path = child / "project.json"
                 if child.is_dir() and manifest_path.exists():
                     try:
                         with open(manifest_path, "r") as f:
                             data = json.load(f)
                         proj = data.get("project", {})
+                        slug = proj.get("slug", child.name)
+                        
+                        if slug in seen_slugs:
+                            continue
+                        
                         projects.append({
-                            "slug": proj.get("slug", child.name),
+                            "slug": slug,
                             "name": proj.get("name", child.name),
                             "version": proj.get("version", "0.0.0"),
                             "description": proj.get("description", ""),
                         })
+                        seen_slugs.add(slug)
                     except (json.JSONDecodeError, KeyError) as e:
                         logger.warning(f"Skipping invalid project at {child}: {e}")
 
@@ -201,12 +210,17 @@ class ManifestService:
         return projects
 
     def _resolve_project_dir(self, slug: str | None) -> Path:
-        """Resolve the project directory for a given slug."""
+        """Resolve the project directory for a given slug by searching CARTRIDGES_DIRS."""
         if slug:
-            # Try PROJECTS_DIR first
-            candidate = Config.PROJECTS_DIR / slug
-            if candidate.is_dir() and (candidate / "project.json").exists():
-                return candidate
+            for directory in Config.CARTRIDGES_DIRS:
+                candidate = directory / slug
+                if candidate.is_dir() and (candidate / "project.json").exists():
+                    return candidate
+            
+            # Fallback for slugs that might be in project.json but folder has different name
+            # (Though our standard is folder name == slug or slug in project.json)
+            # We could scan all subdirs if needed, but let's stick to folder names for performance
+            # and consistency for now.
 
         # Fallback to SCAD_DIR (single-project mode)
         return Config.SCAD_DIR

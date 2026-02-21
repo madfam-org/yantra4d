@@ -56,21 +56,21 @@ Before expanding with new features or new hyperobject projects, the platform mus
 ## Phase 3 — Platform Expansion (Post-Stability)
 
 ### 3.1 — Product Configurator Storefront Mode
-- [ ] "Customer view" layout that hides developer UI.
-- [ ] Datasheet PDF generation from manifest + rendered STL thumbnail.
-- [ ] Storefront landing page per project (public URL, product description, preset gallery).
+- [x] "Customer view" layout that hides developer UI.
+- [x] Datasheet PDF generation from manifest + rendered STL thumbnail.
+- [x] Storefront landing page per project (public URL, product description, preset gallery).
 
 ### 3.2 — BOSL2 Attachment-Aware Auto-Assembly
 - [x] Extend `scad_analyzer.py` to parse `attach()`.
 - [x] Topological sort → ordered assembly sequence.
 
 ### 3.3 — NopSCADlib Component Catalog Widget
-- [ ] Parse NopSCADlib catalog metadata.
-- [ ] New widget type in `Controls.jsx`: visual grid of hardware components.
-- [ ] Selection updates dependent parameters.
+- [x] Parse NopSCADlib catalog metadata.
+- [x] New widget type in `Controls.jsx`: visual grid of hardware components.
+- [x] Selection updates dependent parameters.
 
 ### 3.4 — MCAD to BOSL2 Gear Migration
-- [ ] Replace MCAD `involute_gears` with BOSL2 `gears.scad` across existing projects.
+- [x] Replace MCAD `involute_gears` with BOSL2 `gears.scad` across existing projects.
 
 ### 3.5 — Hyperobjects Commons Rollout
 - [x] Transform designated projects into standardized Hyperobjects with CDG interfaces. *(Note: 13 out of 13 declared Hyperprojects migrated to native Phase 3.5 BOSL2).*
@@ -101,3 +101,19 @@ Before expanding with new features or new hyperobject projects, the platform mus
 
 ### 4.1 — `framing-hyperobject` — The Containing Frames Hyperobject
 - [ ] Implement the `framing-hyperobject` parametric SCAD design incorporating `rabbet`, `seg_channel`, `snap_profile`, `vesa_pattern`, `french_cleat`, and `standoff_bore` CDG interfaces.
+
+---
+
+## Phase 5 — Full Poly-Kernel Implementation & Strict Compliance (Proposed)
+
+This phase focuses on reaching 100% architectural parity across the entire Hyperobject Commons, ensuring every project is a "first-class citizen" in both OpenSCAD and CadQuery kernels.
+
+### 5.1 — Strict Schema Compliance
+- [ ] **Enforce strict manifest rules:** Re-enable mandatory `cq_file` and `estimate_constants` requirements in the core JSON Schema.
+- [ ] **Hyperobject Integrity:** Formalize that `is_hyperobject: true` is invalid without a geometrically parity-matched CadQuery definition.
+
+### 5.2 — Geometric Parity Execution
+- [ ] **Poly-Kernel Implementations:** Author CadQuery (`.py`) equivalents for all 36+ projects in the commons that are currently SCAD-only.
+- [ ] **Verified Parity:** Implement automated geometric verification to ensure `.scad` and `.py` kernels produce identical B-Rep/Mesh outputs for given parameter sets.
+- [ ] **CDG Interface Parity:** Ensure all 6 CDG interfaces are natively and correctly executed across both kernels for all Hyperobjects.
+

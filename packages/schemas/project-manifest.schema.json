@@ -8,8 +8,7 @@
     "project",
     "modes",
     "parts",
-    "parameters",
-    "estimate_constants"
+    "parameters"
   ],
   "properties": {
     "project": {
@@ -59,17 +58,30 @@
         "hyperobject": {
           "type": "object",
           "properties": {
-            "is_hyperobject": { "type": "boolean" },
-            "domain": { 
-              "type": "string",
-              "enum": ["household", "industrial", "medical", "commercial", "hybrid"]
+            "is_hyperobject": {
+              "type": "boolean"
             },
-            "cdg_interface": { "type": "string" }
+            "domain": {
+              "type": "string",
+              "enum": [
+                "household",
+                "industrial",
+                "medical",
+                "commercial",
+                "hybrid"
+              ]
+            },
+            "cdg_interface": {
+              "type": "string"
+            }
           }
         },
         "engine": {
           "type": "string",
-          "enum": ["openscad", "cadquery"],
+          "enum": [
+            "openscad",
+            "cadquery"
+          ],
           "default": "openscad"
         }
       }
@@ -95,10 +107,6 @@
           "scad_file": {
             "type": "string",
             "pattern": "\\.(scad|py)$"
-          },
-          "cq_file": {
-            "type": "string",
-            "pattern": "\\.py$"
           },
           "label": {
             "$ref": "#/$defs/i18nString"
@@ -996,15 +1004,23 @@
     }
   },
   "if": {
-    "required": ["project"],
+    "required": [
+      "project"
+    ],
     "properties": {
       "project": {
-        "required": ["hyperobject"],
+        "required": [
+          "hyperobject"
+        ],
         "properties": {
           "hyperobject": {
-            "required": ["is_hyperobject"],
+            "required": [
+              "is_hyperobject"
+            ],
             "properties": {
-              "is_hyperobject": { "const": true }
+              "is_hyperobject": {
+                "const": true
+              }
             }
           }
         }
@@ -1015,10 +1031,14 @@
     "properties": {
       "modes": {
         "items": {
-          "required": ["scad_file", "cq_file"],
+          "required": [
+            "scad_file"
+          ],
           "properties": {
-            "scad_file": { "type": "string", "pattern": "\\.scad$" },
-            "cq_file": { "type": "string", "pattern": "\\.py$" }
+            "scad_file": {
+              "type": "string",
+              "pattern": "\\.scad$"
+            }
           }
         }
       }

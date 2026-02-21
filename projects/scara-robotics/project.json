@@ -19,15 +19,19 @@
     "difficulty": "advanced",
     "hyperobject": {
       "is_hyperobject": true,
-      "domain": "robotics",
-      "cdg_interface": "nema17_mount"
+      "domain": "industrial",
+      "interfaces": [
+        "mounting_plate",
+        "linear_rail",
+        "nema17_stepper",
+        "endstop_switch"
+      ]
     }
   },
   "modes": [
     {
       "id": "Standard",
       "scad_file": "robot.scad",
-      "cq_file": "robot.py",
       "label": {
         "en": "Full Assembly",
         "es": "Ensamblaje Completo"
@@ -133,5 +137,10 @@
     "stl",
     "step",
     "3mf"
-  ]
+  ],
+  "estimate_constants": {
+    "base_time": 5,
+    "per_unit": 1,
+    "per_part": 5
+  }
 }

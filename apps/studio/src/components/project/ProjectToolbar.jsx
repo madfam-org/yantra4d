@@ -1,4 +1,4 @@
-import { Search, LayoutGrid, List as ListIcon } from 'lucide-react'
+import { Search, LayoutGrid, List as ListIcon, GalleryHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
     Select,
@@ -41,6 +41,9 @@ export function ProjectToolbar({
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     {/* View Mode Toggle */}
                     <ToggleGroup type="single" value={viewMode} onValueChange={(val) => val && onViewModeChange(val)}>
+                        <ToggleGroupItem value="carousel3D" aria-label="3D Carousel view" className="h-9 w-9 p-0">
+                            <GalleryHorizontal className="h-4 w-4" />
+                        </ToggleGroupItem>
                         <ToggleGroupItem value="grid" aria-label="Grid view" className="h-9 w-9 p-0">
                             <LayoutGrid className="h-4 w-4" />
                         </ToggleGroupItem>

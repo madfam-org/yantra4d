@@ -10,6 +10,7 @@ import { ProjectToolbar } from './ProjectToolbar'
 import { ProjectList } from './ProjectList'
 
 const GitHubImportWizard = lazy(() => import('../ai/GitHubImportWizard'))
+const ProjectCarousel3D = lazy(() => import('./ProjectCarousel3D'))
 
 const DIFFICULTY_COLORS = {
   beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
@@ -206,86 +207,88 @@ export default function ProjectsView() {
         <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
           {t('projects.no_results')}
         </div>
+      ) : viewMode === 'carousel3D' ? (
+        <Suspense fallback={<div className="flex h-96 items-center justify-center text-muted-foreground">Loading 3D Experience...</div>}>
+          <ProjectCarousel3D projects={processedProjects} />
+        </Suspense>
+      ) : viewMode === 'list' ? (
+        <ProjectList projects={processedProjects} loc={loc} t={t} />
       ) : (
-        viewMode === 'list' ? (
-          <ProjectList projects={processedProjects} loc={loc} t={t} />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {processedProjects.map(project => (
-              <Link
-                key={project.slug}
-                to={`/project/${project.slug}`}
-                className="block hover:ring-2 hover:ring-ring rounded-lg transition-shadow"
-              >
-                <Card className="h-full flex flex-col">
-                  {project.thumbnail && (
-                    <div className="aspect-video overflow-hidden rounded-t-lg bg-muted">
-                      <img
-                        src={project.thumbnail}
-                        alt={project.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {processedProjects.map(project => (
+            <Link
+              key={project.slug}
+              to={`/project/${project.slug}`}
+              className="block hover:ring-2 hover:ring-ring rounded-lg transition-shadow"
+            >
+              <Card className="h-full flex flex-col">
+                {project.thumbnail && (
+                  <div className="aspect-video overflow-hidden rounded-t-lg bg-muted">
+                    <img
+                      src={project.thumbnail}
+                      alt={project.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-lg">{project.name}</CardTitle>
+                    <span className="text-xs text-muted-foreground shrink-0">v{project.version}</span>
+                  </div>
+                  {project.description && (
+                    <CardDescription className="line-clamp-2">{loc(project.description)}</CardDescription>
+                  )}
+                </CardHeader>
+                <CardContent className="flex-1">
+                  <div className="flex flex-wrap gap-1.5 text-xs text-muted-foreground px-0">
+                    <span>{project.mode_count} mode{project.mode_count !== 1 ? 's' : ''}</span>
+                    <span>·</span>
+                    <span>{project.parameter_count} param{project.parameter_count !== 1 ? 's' : ''}</span>
+                    {project.stats?.renders > 0 && (
+                      <>
+                        <span>·</span>
+                        <span data-testid="stats-renders">{project.stats.renders} renders</span>
+                      </>
+                    )}
+                    {project.stats?.exports > 0 && (
+                      <>
+                        <span>·</span>
+                        <span data-testid="stats-exports">{project.stats.exports} exports</span>
+                      </>
+                    )}
+                  </div>
+                  {(project.tags || []).length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {project.tags.map(tag => (
+                        <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">{tag}</span>
+                      ))}
                     </div>
                   )}
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-lg">{project.name}</CardTitle>
-                      <span className="text-xs text-muted-foreground shrink-0">v{project.version}</span>
-                    </div>
-                    {project.description && (
-                      <CardDescription className="line-clamp-2">{loc(project.description)}</CardDescription>
-                    )}
-                  </CardHeader>
-                  <CardContent className="flex-1">
-                    <div className="flex flex-wrap gap-1.5 text-xs text-muted-foreground px-0">
-                      <span>{project.mode_count} mode{project.mode_count !== 1 ? 's' : ''}</span>
-                      <span>·</span>
-                      <span>{project.parameter_count} param{project.parameter_count !== 1 ? 's' : ''}</span>
-                      {project.stats?.renders > 0 && (
-                        <>
-                          <span>·</span>
-                          <span data-testid="stats-renders">{project.stats.renders} renders</span>
-                        </>
-                      )}
-                      {project.stats?.exports > 0 && (
-                        <>
-                          <span>·</span>
-                          <span data-testid="stats-exports">{project.stats.exports} exports</span>
-                        </>
-                      )}
-                    </div>
-                    {(project.tags || []).length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {project.tags.map(tag => (
-                          <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">{tag}</span>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter className="gap-2 flex-wrap">
-                    {project.difficulty && (
-                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${DIFFICULTY_COLORS[project.difficulty] || ''}`}>
-                        {project.difficulty}
+                </CardContent>
+                <CardFooter className="gap-2 flex-wrap">
+                  {project.difficulty && (
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${DIFFICULTY_COLORS[project.difficulty] || ''}`}>
+                      {project.difficulty}
+                    </span>
+                  )}
+                  {(() => {
+                    const speed = getRenderSpeed(project.estimate_constants)
+                    if (!speed) return null
+                    return (
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${speed.color}`}>
+                        {speed.label}
                       </span>
-                    )}
-                    {(() => {
-                      const speed = getRenderSpeed(project.estimate_constants)
-                      if (!speed) return null
-                      return (
-                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${speed.color}`}>
-                          {speed.label}
-                        </span>
-                      )
-                    })()}
-                    {project.has_manifest && <span data-testid="manifest-badge" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.manifest')}</span>}
-                    {project.has_exports && <span data-testid="exports-badge" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )
+                    )
+                  })()}
+                  {project.has_manifest && <span data-testid="manifest-badge" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.manifest')}</span>}
+                  {project.has_exports && <span data-testid="exports-badge" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
+                </CardFooter>
+              </Card>
+            </Link>
+          ))}
+        </div>
       )}
 
       {showImport && (

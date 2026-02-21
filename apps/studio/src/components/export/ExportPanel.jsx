@@ -3,6 +3,8 @@ import { Download, FileCode, FileText } from 'lucide-react'
 import { useLanguage } from "../../contexts/LanguageProvider"
 import { useManifest } from "../../contexts/ManifestProvider"
 import { getApiBase } from "../../services/backendDetection"
+import { useTier } from "../../hooks/useTier"
+import { useUpgradePrompt } from '../../hooks/useUpgradePrompt'
 import AuthGate from "../auth/AuthGate"
 
 const EXPORT_FORMATS = [
@@ -30,25 +32,41 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
     ? EXPORT_FORMATS.filter(f => manifest.export_formats.includes(f.id))
     : EXPORT_FORMATS.filter(f => f.id === 'stl')
 
+  const { limits } = useTier()
+  const userAllowedFormats = limits?.export_formats || ['stl']
+  const { triggerUpgradePrompt } = useUpgradePrompt()
+
   return (
     <div data-testid="export-panel" className="flex flex-col gap-2 border-t border-border pt-4">
       {supportedFormats.length > 1 && (
         <div className="flex items-center gap-2 text-xs">
           <span className="text-muted-foreground">{t("act.format")}:</span>
           <div className="flex gap-1">
-            {supportedFormats.map(f => (
-              <button
-                key={f.id}
-                type="button"
-                className={`px-2 py-0.5 rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${(exportFormat || 'stl') === f.id
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background text-muted-foreground border-border hover:text-foreground'
-                  }`}
-                onClick={() => onExportFormatChange?.(f.id)}
-              >
-                {f.label}
-              </button>
-            ))}
+            {supportedFormats.map(f => {
+              const isLocked = !userAllowedFormats.includes(f.id)
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  title={isLocked ? t("tier.pro_required") : undefined}
+                  className={`px-2 py-0.5 rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 
+                  ${isLocked ? 'hover:bg-muted text-muted-foreground border-border' :
+                      (exportFormat || 'stl') === f.id
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background text-muted-foreground border-border hover:text-foreground'
+                    }`}
+                  onClick={() => {
+                    if (isLocked) {
+                      triggerUpgradePrompt(`Premium Export Formats (${f.label})`)
+                    } else {
+                      onExportFormatChange?.(f.id)
+                    }
+                  }}
+                >
+                  {f.label} {isLocked && "🔒"}
+                </button>
+              )
+            })}
           </div>
         </div>
       )}

@@ -190,7 +190,7 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
   if (project) payload.project = project
 
   if (manifest && manifest.engine === 'cadquery') {
-    payload.export_format = 'gltf'
+    payload.export_format = 'glb'
   }
 
   const response = await apiFetch(`${API_BASE}/api/render-stream`, {

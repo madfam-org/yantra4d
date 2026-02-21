@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { renderParts, cancelRender, estimateRenderTime } from '../services/renderService'
+import { useUpgradePrompt } from './useUpgradePrompt'
 
 const INITIAL_PROGRESS = 5
 const LOADING_RESET_DELAY_MS = 500
@@ -13,6 +14,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [progressPhase, setProgressPhase] = useState('')
+  const { triggerUpgradePrompt } = useUpgradePrompt()
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [pendingEstimate, setPendingEstimate] = useState(0)
@@ -74,7 +76,15 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
       if (e.name === 'AbortError') {
         setLogs(prev => prev + `\n${t("log.cancelled")}`)
       } else {
-        setLogs(prev => prev + `\n${t("log.error")}` + e.message)
+        const isProGate = e.message.includes('HTTP 403') || e.message.includes('Pro tier required');
+        const msg = isProGate
+          ? "✨ Unlock cloud rendering by upgrading to a Pro or MadFam plan."
+          : e.message;
+        setLogs(prev => prev + `\n${t("log.error")} ${msg}`)
+
+        if (isProGate) {
+          triggerUpgradePrompt('CadQuery Cloud Rendering')
+        }
       }
     } finally {
       abortControllerRef.current = null
@@ -84,7 +94,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
         setProgress(0)
       }, LOADING_RESET_DELAY_MS)
     }
-  }, [mode, params, manifest, t, getCacheKey, project])
+  }, [mode, params, manifest, t, getCacheKey, project, triggerUpgradePrompt])
 
   const handleCancelGenerate = useCallback(async () => {
     if (abortControllerRef.current) {

@@ -3,13 +3,15 @@
  * Caches results by parameter hash to avoid redundant renders.
  */
 
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { BufferGeometry, BufferAttribute } from 'three'
 import { getApiBase } from './backendDetection'
 import { apiFetch } from './apiClient'
 
 const API_BASE = getApiBase()
 const cache = new Map()
-const loader = new STLLoader()
+
+// Singleton worker to avoid thread explosion
+let stlWorkerInstance = null
 
 function paramHash(params, geometryKeys) {
   const obj = {}
@@ -17,6 +19,46 @@ function paramHash(params, geometryKeys) {
     if (params[k] !== undefined) obj[k] = params[k]
   }
   return JSON.stringify(obj)
+}
+
+function parseSTLWithWorker(fullUrl) {
+  return new Promise((resolve, reject) => {
+    if (!stlWorkerInstance) {
+      stlWorkerInstance = new Worker(new URL('../workers/stlWorker.js', import.meta.url), {
+        type: 'module'
+      })
+    }
+
+    const taskId = `assembly_${Math.random().toString(36).substring(7)}`
+
+    const handleMessage = (e) => {
+      const { id, success, geometryData, error } = e.data
+      if (id !== taskId) return
+
+      stlWorkerInstance.removeEventListener('message', handleMessage)
+
+      if (!success) {
+        return reject(new Error(error))
+      }
+
+      const geom = new BufferGeometry()
+      geom.setAttribute('position', new BufferAttribute(geometryData.positions, 3))
+
+      if (geometryData.normals) {
+        geom.setAttribute('normal', new BufferAttribute(geometryData.normals, 3))
+      } else {
+        geom.computeVertexNormals()
+      }
+
+      geom.computeBoundingSphere()
+      geom.computeBoundingBox()
+
+      resolve(geom)
+    }
+
+    stlWorkerInstance.addEventListener('message', handleMessage)
+    stlWorkerInstance.postMessage({ url: fullUrl, id: taskId })
+  })
 }
 
 /**
@@ -45,11 +87,9 @@ export async function fetchAssemblyGeometries(params, geometryKeys) {
     data.parts.map(async (part) => {
       const url = part.url + '?t=' + timestamp
       const fullUrl = url.startsWith('http') ? url : `${API_BASE}${url}`
-      const res = await fetch(fullUrl)
-      if (!res.ok) throw new Error(`Failed to fetch STL: ${fullUrl}`)
-      const buffer = await res.arrayBuffer()
-      const geometry = loader.parse(buffer)
-      geometry.computeVertexNormals()
+
+      const geometry = await parseSTLWithWorker(fullUrl)
+
       return { type: part.type, geometry }
     })
   )

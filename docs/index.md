@@ -4,17 +4,27 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 
 ## Documentation Index
 
--   [Verification Suite](./verification.md): Automated STL quality checks — watertightness, volume count, assembly fit.
--   [Web Interface](./web_interface.md): Full-stack architecture (Flask/React), API reference, component structure.
--   [Project Manifest](./manifest.md): Extensible manifest schema, how the webapp is data-driven, and how to add new projects.
--   [Multi-Project Platform](./multi-project.md): Multi-project setup, project switching, and Docker configuration.
--   [Developer Experience Guide](./devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
--   [WASM Mode](./wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
--   [Dual-Engine Architecture](./dual-engine.md): Benefits of OpenSCAD + CadQuery parity and B-Rep export.
--   [AI Features](./ai-features.md): AI Configurator and Code Editor — setup, API reference, tier access.
--   [Troubleshooting](./troubleshooting.md): Common issues — render timeouts, CORS, git submodules, Docker env vars.
--   [Competitive Landscape](./competitive-landscape.md): Market research, competitor analysis, and feature roadmap.
--   [Roadmap](./roadmap.md): Strategic features planned for future implementation.
+### Architecture
+-   [Architecture Audit](./architecture/architecture_audit.md): Deep dive into platform architecture and components.
+-   [Dual-Engine Architecture](./architecture/dual-engine.md): Benefits of OpenSCAD + CadQuery parity and B-Rep export.
+-   [Web Interface](./architecture/web_interface.md): Full-stack architecture (Flask/React), API reference, component structure.
+
+### Guides
+-   [Verification Suite](./guides/verification.md): Automated STL quality checks — watertightness, volume count, assembly fit.
+-   [Developer Experience Guide](./guides/devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
+-   [WASM Mode](./guides/wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
+-   [Multi-Project Platform](./guides/multi-project.md): Multi-project setup, project switching, and Docker configuration.
+-   [AI Features](./guides/ai-features.md): AI Configurator and Code Editor — setup, API reference, tier access.
+-   [Troubleshooting](./guides/troubleshooting.md): Common issues — render timeouts, CORS, Docker.
+
+### Strategy & Planning
+-   [Platform Manifesto](./strategy/MANIFESTO.md): Vision and philosophical hyperobject principles.
+-   [Competitive Landscape](./strategy/competitive-landscape.md): Market research, competitor analysis, and feature context.
+-   [Roadmap](../ROADMAP.md): Strategic features planned for future implementation.
+
+### Reference
+-   [Project Manifest](./reference/manifest.md): Extensible json schema, how the webapp is data-driven, and how to add new projects.
+-   [OpenAPI Specification](./reference/openapi.yaml): Endpoint architecture and schema bounds.
 
 ### LLM Context
 

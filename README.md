@@ -24,12 +24,12 @@ Ships with 36 built-in projects including **gridfinity** (modular storage), **sl
 
 Platform documentation is available in the [`docs/`](./docs/index.md) directory:
 
--   [Verification Suite](./docs/verification.md) — Automated STL quality checks
--   [Web Interface](./docs/web_interface.md) — Full-stack architecture (Flask/React)
--   [Project Manifest](./docs/manifest.md) — Extensible manifest schema and how to add new projects
--   [Multi-Project Platform](./docs/multi-project.md) — Multi-project setup and configuration
--   [Developer Experience](./docs/devx-guide.md) — Onboarding external SCAD projects
--   [AI Features](./docs/ai-features.md) — AI Configurator and Code Editor
+-   [Verification Suite](./docs/guides/verification.md) — Automated STL quality checks
+-   [Web Interface](./docs/architecture/web_interface.md) — Full-stack architecture (Flask/React)
+-   [Project Manifest](./docs/reference/manifest.md) — Extensible manifest schema and how to add new projects
+-   [Multi-Project Platform](./docs/guides/multi-project.md) — Multi-project setup and configuration
+-   [Developer Experience](./docs/guides/devx-guide.md) — Onboarding external SCAD projects
+-   [AI Features](./docs/guides/ai-features.md) — AI Configurator and Code Editor
 -   [llms.txt](./llms.txt) — LLM-optimized project overview for AI agents
 
 Per-project docs live in `projects/{slug}/docs/`. Browse all 21 built-in projects under [`projects/`](./projects/).
@@ -107,3 +107,7 @@ docker compose up --build   # start
 docker compose down         # stop
 ```
 Open http://localhost:3000
+
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](./LICENSE) file for more details.

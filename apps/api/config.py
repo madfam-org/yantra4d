@@ -38,6 +38,7 @@ class AppConfig:
     ))
 
     STL_PREFIX: str = "preview_"
+    CADQUERY_ALLOWED_EXPORT_FORMATS: set = field(default_factory=lambda: {'stl', 'step', 'glb', 'gltf', 'obj', 'vrml', 'amf', '3mf'})
 
     # Janua Auth
     JANUA_ISSUER: str = field(default_factory=lambda: os.getenv("JANUA_ISSUER", "https://auth.madfam.io"))

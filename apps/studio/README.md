@@ -13,7 +13,7 @@ npm run preview   # Preview production build
 
 ## Architecture
 
-The frontend is data-driven via a **project manifest** fetched from the backend at `/api/manifest`. See [Project Manifest docs](../../docs/manifest.md) for the schema.
+The frontend is data-driven via a **project manifest** fetched from the backend at `/api/manifest`. See [Project Manifest docs](../../docs/reference/manifest.md) for the schema.
 
 ### Provider Hierarchy (`main.jsx`)
 
@@ -74,3 +74,7 @@ npm run analyze       # Bundle size visualization (opens stats.html)
 
 - **Linting**: `eslint-plugin-jsx-a11y` enforces WCAG rules at lint time
 - **Audits**: `jest-axe` runs axe-core checks in component tests (`it('has no a11y violations')`)
+
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](../../LICENSE) file for more details.

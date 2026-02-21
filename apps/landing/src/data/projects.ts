@@ -54,4 +54,4 @@ export const PROJECTS: Project[] = [
   { slug: 'keyv2', name: 'KeyV2 Keycaps', description: 'Customizable mechanical keyboard keycaps with multiple profiles', descriptionEs: 'Keycaps personalizables para teclado mecánico con múltiples perfiles', category: 'electronics', thumbnail: '/projects/keyv2.webp', isHyperobject: true, domain: 'commercial' },
 ];
 
-export const CATEGORIES = ['all', 'storage', 'mechanical', 'art', 'tabletop', 'education', 'electronics'] as const;
+export const CATEGORIES = ['all', 'commons', 'storage', 'mechanical', 'art', 'tabletop', 'education', 'electronics'] as const;

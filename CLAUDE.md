@@ -64,7 +64,7 @@ packages/
 | `apps/landing/src/pages/index.astro` | Landing page (composes all sections) | RARELY |
 | `apps/landing/src/components/InteractiveShowcase.tsx` | React island — iframe embed of studio with project tabs | RARELY |
 | `packages/tokens/colors.css` | Shared CSS custom properties (both apps import) | RARELY |
-| `docs/competitive-landscape.md` | Competitive research & feature roadmap | YES |
+| `docs/strategy/competitive-landscape.md` | Competitive research & feature roadmap | YES |
 | `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
 | `apps/studio/src/components/ui/*` | Shadcn primitives | **NEVER** |
 | `tools/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
@@ -137,7 +137,7 @@ Or use the web UI: upload `.scad` files → review analysis → edit manifest �
 5. See `projects/microscope-slide-holder/project.json` for the reference implementation
 
 ### Add a new SCAD project
-1. Create `projects/{slug}/project.json` following the manifest schema (see `docs/manifest.md`)
+1. Create `projects/{slug}/project.json` following the manifest schema (see `docs/reference/manifest.md`)
 2. Add `.scad` files to `projects/{slug}/`
 
 ### Run tests
@@ -237,7 +237,7 @@ Two AI-powered features use LLMs to assist with parametric design:
 
 Both stream responses via SSE. Env vars: `AI_PROVIDER` (anthropic|openai), `AI_API_KEY` (required), `AI_MODEL` (optional override). Sessions are in-memory, expire after 1 hour.
 
-See [`docs/ai-features.md`](docs/ai-features.md) for full API reference and SSE event format.
+See [`docs/guides/ai-features.md`](docs/guides/ai-features.md) for full API reference and SSE event format.
 
 ## GitHub Integration
 
@@ -320,13 +320,13 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`llms.txt`](llms.txt) — LLM-optimized project overview (llmstxt.org spec)
 - [`llms-full.txt`](llms-full.txt) — Comprehensive LLM context (all docs inlined)
 - [`docs/index.md`](docs/index.md) — Platform documentation hub
-- [`docs/manifest.md`](docs/manifest.md) — Manifest schema and extension guide
-- [`docs/web_interface.md`](docs/web_interface.md) — Full-stack architecture details
-- [`docs/ai-features.md`](docs/ai-features.md) — AI Configurator and Code Editor
-- [`docs/verification.md`](docs/verification.md) — STL quality verification system
-- [`docs/wasm-mode.md`](docs/wasm-mode.md) — Client-side rendering fallback
-- [`docs/devx-guide.md`](docs/devx-guide.md) — Onboarding external SCAD projects
-- [`docs/troubleshooting.md`](docs/troubleshooting.md) — Common issues and solutions
+- [`docs/reference/manifest.md`](docs/reference/manifest.md) — Manifest schema and extension guide
+- [`docs/architecture/web_interface.md`](docs/architecture/web_interface.md) — Full-stack architecture details
+- [`docs/guides/ai-features.md`](docs/guides/ai-features.md) — AI Configurator and Code Editor
+- [`docs/guides/verification.md`](docs/guides/verification.md) — STL quality verification system
+- [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md) — Client-side rendering fallback
+- [`docs/guides/devx-guide.md`](docs/guides/devx-guide.md) — Onboarding external SCAD projects
+- [`docs/guides/troubleshooting.md`](docs/guides/troubleshooting.md) — Common issues and solutions
 - [`claudedocs/codebase-audit.md`](claudedocs/codebase-audit.md) — Full platform assessment
 - [`claudedocs/usability-audit.md`](claudedocs/usability-audit.md) — Browser-based UX testing
 - [`claudedocs/enclii-verification-prompt.md`](claudedocs/enclii-verification-prompt.md) — Deployment verification steps

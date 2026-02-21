@@ -174,6 +174,9 @@ class ManifestService:
                     try:
                         with open(manifest_path, "r") as f:
                             data = json.load(f)
+                            
+                        self._validate_manifest_strictness(data, manifest_path)
+                        
                         proj = data.get("project", {})
                         slug = proj.get("slug", child.name)
                         
@@ -187,7 +190,7 @@ class ManifestService:
                             "description": proj.get("description", ""),
                         })
                         seen_slugs.add(slug)
-                    except (json.JSONDecodeError, KeyError) as e:
+                    except (json.JSONDecodeError, KeyError, RuntimeError) as e:
                         logger.warning(f"Skipping invalid project at {child}: {e}")
 
         # Fallback: single-project mode via SCAD_DIR
@@ -197,6 +200,9 @@ class ManifestService:
                 try:
                     with open(manifest_path, "r") as f:
                         data = json.load(f)
+                        
+                    self._validate_manifest_strictness(data, manifest_path)
+                    
                     proj = data.get("project", {})
                     projects.append({
                         "slug": proj.get("slug", "default"),
@@ -204,7 +210,7 @@ class ManifestService:
                         "version": proj.get("version", "0.0.0"),
                         "description": proj.get("description", ""),
                     })
-                except (json.JSONDecodeError, KeyError) as e:
+                except (json.JSONDecodeError, KeyError, RuntimeError) as e:
                     logger.error(f"Failed to load fallback manifest: {e}")
 
         return projects
@@ -224,6 +230,24 @@ class ManifestService:
 
         # Fallback to SCAD_DIR (single-project mode)
         return Config.SCAD_DIR
+
+    def _validate_manifest_strictness(self, data: dict, manifest_path: Path):
+        """Enforces quality metadata constraints on the loaded manifest."""
+        proj = data.get("project", {})
+        
+        # 1. Thumbnail
+        if not proj.get("thumbnail") or not isinstance(proj["thumbnail"], str):
+            raise RuntimeError(f"Manifest {manifest_path} is missing a required string 'thumbnail' property in 'project'.")
+            
+        # 2. Tags
+        tags = proj.get("tags")
+        if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
+            raise RuntimeError(f"Manifest {manifest_path} must have a 'tags' array of strings in 'project'.")
+            
+        # 3. Difficulty
+        difficulty = proj.get("difficulty")
+        if difficulty not in ("beginner", "intermediate", "advanced"):
+            raise RuntimeError(f"Manifest {manifest_path} 'difficulty' must be one of: beginner, intermediate, advanced. Got: {difficulty}")
 
     def load_manifest(self, slug: str | None = None) -> ProjectManifest:
         """Load and cache the project manifest for a given slug."""
@@ -245,6 +269,8 @@ class ManifestService:
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON in manifest {manifest_path}: {e}")
             raise RuntimeError(f"Project manifest contains invalid JSON: {e}")
+
+        self._validate_manifest_strictness(data, manifest_path)
 
         manifest = ProjectManifest(data, project_dir)
         self._manifest_cache[cache_key] = manifest

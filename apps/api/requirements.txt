@@ -13,3 +13,4 @@ anthropic>=0.40
 openai>=1.50
 redis~=5.0
 paho-mqtt~=2.1
+cadquery==2.7.0

@@ -12,18 +12,41 @@ import { apiFetch } from './apiClient'
 
 const API_BASE = getApiBase()
 
-let _mode = null // 'backend' | 'wasm'
+let _hardwareMode = null // Cached hardware capability check
 let _worker = null
 let _initPromise = null
 
 /**
- * Detect whether backend is available. Caches result.
+ * Detect hardware capabilities
  */
-async function detectMode() {
-  if (_mode) return _mode
+function hasWasmCapabilities() {
+  const cores = navigator.hardwareConcurrency || 2
+  const mem = navigator.deviceMemory || 4 // in GB, 4 is usually a safe desktop assumption if missing
+  // Require at least 4 cores and 4GB RAM to prefer WASM
+  return cores >= 4 && mem >= 4
+}
+
+/**
+ * Detect whether to use 'backend' or 'wasm' rendering mode.
+ */
+async function detectMode(manifest) {
+  // Always use backend for CadQuery engine
+  if (manifest && manifest.engine === 'cadquery') {
+    return 'backend'
+  }
+
+  if (_hardwareMode) return _hardwareMode
+
+  // If backend is NOT available, we MUST use WASM (offline mode fallback)
   const available = await isBackendAvailable()
-  _mode = available ? 'backend' : 'wasm'
-  return _mode
+  if (!available) {
+    _hardwareMode = 'wasm'
+    return _hardwareMode
+  }
+
+  // Backend is available, route based on device capabilities
+  _hardwareMode = hasWasmCapabilities() ? 'wasm' : 'backend'
+  return _hardwareMode
 }
 
 /**
@@ -238,7 +261,7 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
  * Main entry point: render parts for the given mode and parameters.
  */
 export async function renderParts(mode, params, manifest, { onProgress, abortSignal, project } = {}) {
-  const currentMode = await detectMode()
+  const currentMode = await detectMode(manifest)
   if (currentMode === 'backend') {
     return renderBackend(mode, params, manifest, onProgress, abortSignal, project)
   } else {
@@ -250,12 +273,11 @@ export async function renderParts(mode, params, manifest, { onProgress, abortSig
  * Cancel the current render.
  */
 export async function cancelRender() {
-  const currentMode = await detectMode()
-  if (currentMode === 'backend') {
-    try {
-      await apiFetch(`${API_BASE}/api/render-cancel`, { method: 'POST' })
-    } catch { /* best-effort cancel */ }
-  } else if (_worker) {
+  try {
+    await apiFetch(`${API_BASE}/api/render-cancel`, { method: 'POST' })
+  } catch { /* best-effort cancel */ }
+
+  if (_worker) {
     _worker.terminate()
     _worker = null
     _initPromise = null
@@ -284,7 +306,7 @@ export function estimateRenderTime(mode, params, manifest) {
   const estimate = constants.base_time + (units * constants.per_unit) + (numParts * constants.per_part)
 
   // WASM is typically slower than native
-  const currentMode = _mode
+  const currentMode = _hardwareMode || (hasWasmCapabilities() ? 'wasm' : 'backend')
   if (currentMode === 'wasm') {
     return estimate * (constants.wasm_multiplier || 3)
   }
@@ -295,5 +317,5 @@ export function estimateRenderTime(mode, params, manifest) {
  * Get current render mode for diagnostics.
  */
 export function getRenderMode() {
-  return _mode || 'detecting'
+  return _hardwareMode || 'detecting'
 }

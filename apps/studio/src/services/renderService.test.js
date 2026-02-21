@@ -6,6 +6,13 @@ let renderService
 
 beforeEach(async () => {
   vi.restoreAllMocks()
+
+  // Default to weak device to pass backend-specific tests
+  vi.stubGlobal('navigator', {
+    hardwareConcurrency: 2,
+    deviceMemory: 2
+  })
+
   // Re-import fresh module to reset cached _mode
   vi.resetModules()
   renderService = await import('./renderService')
@@ -69,28 +76,15 @@ describe('getRenderMode', () => {
 })
 
 describe('cancelRender', () => {
-  it('in backend mode, calls /api/render-cancel', async () => {
-    // First, make detectMode resolve to 'backend'
+  it('calls /api/render-cancel proactively without a mode health check', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockResolvedValueOnce({ ok: true }) // health check → backend
     fetchMock.mockResolvedValueOnce({ ok: true }) // cancel call
 
-    // Trigger detection by calling cancelRender (which calls detectMode internally)
     await renderService.cancelRender()
 
-    expect(fetchMock).toHaveBeenCalledTimes(2)
-    expect(fetchMock.mock.calls[1][0]).toContain('/api/render-cancel')
-    expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: 'POST' })
-  })
-
-  it('in wasm mode, does not call fetch for cancel', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockRejectedValueOnce(new Error('unreachable')) // health check fails → wasm
-
-    await renderService.cancelRender()
-
-    // Only the health check fetch, no cancel fetch
     expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock.mock.calls[0][0]).toContain('/api/render-cancel')
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'POST' })
   })
 })
 
@@ -126,7 +120,7 @@ describe('renderParts (backend mode)', () => {
   })
 
   it('warns on malformed SSE JSON and continues', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { })
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
     fetchMock.mockResolvedValueOnce({

@@ -12,7 +12,7 @@ class TestGetPhaseFromLine:
 
     @pytest.fixture(autouse=True)
     def _import(self):
-        from services.openscad import get_phase_from_line
+        from services.engine.openscad import get_phase_from_line
         self.get_phase = get_phase_from_line
 
     @pytest.mark.parametrize(
@@ -49,8 +49,8 @@ class TestValidateParams:
                 {"id": "show_base", "type": "checkbox"},
             ]
         )
-        with patch("services.openscad.get_manifest", return_value=mock_manifest):
-            from services.openscad import validate_params
+        with patch("services.engine.openscad.get_manifest", return_value=mock_manifest):
+            from services.engine.openscad import validate_params
             self.validate = validate_params
             yield
 
@@ -106,7 +106,7 @@ class TestBuildOpenscadCommand:
     @pytest.fixture(autouse=True)
     def _patch_config(self, monkeypatch):
         monkeypatch.setattr("config.Config.OPENSCAD_PATH", "openscad")
-        from services.openscad import build_openscad_command
+        from services.engine.openscad import build_openscad_command
         self.build_cmd = build_openscad_command
 
     def test_bool_param(self):
@@ -156,7 +156,7 @@ class TestOpenscadEnv:
 
     @pytest.fixture(autouse=True)
     def _import(self):
-        from services.openscad import _openscad_env
+        from services.engine.openscad import _openscad_env
         self.openscad_env = _openscad_env
 
     def test_openscad_env_sets_openscadpath(self):
@@ -169,8 +169,8 @@ class TestOpenscadEnv:
         assert "PATH" in env
 
     def test_run_render_passes_env(self):
-        from services.openscad import run_render
-        with patch("services.openscad.subprocess.run") as mock_run:
+        from services.engine.openscad import run_render
+        with patch("services.engine.openscad.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(stderr="")
             run_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"])
             mock_run.assert_called_once()
@@ -178,8 +178,8 @@ class TestOpenscadEnv:
             assert "OPENSCADPATH" in call_kwargs["env"]
 
     def test_stream_render_passes_env(self):
-        from services.openscad import stream_render
-        with patch("services.openscad.subprocess.Popen") as mock_popen:
+        from services.engine.openscad import stream_render
+        with patch("services.engine.openscad.subprocess.Popen") as mock_popen:
             mock_proc = MagicMock()
             mock_proc.stderr = iter([])
             mock_proc.returncode = 0
@@ -201,9 +201,9 @@ class TestStreamRenderTimeout:
     """Tests for stream_render kill timer."""
 
     def test_stream_render_starts_and_cancels_timer(self):
-        from services.openscad import stream_render
-        with patch("services.openscad.subprocess.Popen") as mock_popen, \
-             patch("services.openscad.threading.Timer") as mock_timer_cls:
+        from services.engine.openscad import stream_render
+        with patch("services.engine.openscad.subprocess.Popen") as mock_popen, \
+             patch("services.engine.openscad.threading.Timer") as mock_timer_cls:
             mock_proc = MagicMock()
             mock_proc.stderr = iter([])
             mock_proc.returncode = 0

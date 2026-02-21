@@ -9,7 +9,7 @@ from flask import Blueprint, request, send_file, Response
 from config import Config
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.route_helpers import safe_join_path, error_response
+from utils.route_helpers import safe_join_path, error_response
 
 logger = logging.getLogger(__name__)
 

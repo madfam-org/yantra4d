@@ -13,7 +13,7 @@ from pathlib import Path
 
 from config import Config
 from manifest import get_manifest
-from services.render_engine import RENDER_TIMEOUT_S, ProcessManager
+from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager
 
 logger = logging.getLogger(__name__)
 

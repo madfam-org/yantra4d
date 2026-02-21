@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.github_import import (
+from services.editor.github_import import (
     validate_repo_url, _build_clone_url, _clean_repo_url,
     check_repo_exists, clone_repo, find_scad_files, check_manifest,
     validate_repo, import_repo, sync_repo,
@@ -55,33 +55,33 @@ class TestCleanRepoUrl:
 
 
 class TestCheckRepoExists:
-    @patch("services.github_import.subprocess.run")
+    @patch("services.editor.github_import.subprocess.run")
     def test_accessible(self, mock_run):
         mock_run.return_value = MagicMock(returncode=0)
         assert check_repo_exists("https://github.com/u/r") is True
 
-    @patch("services.github_import.subprocess.run")
+    @patch("services.editor.github_import.subprocess.run")
     def test_not_accessible(self, mock_run):
         mock_run.return_value = MagicMock(returncode=128)
         assert check_repo_exists("https://github.com/u/r") is False
 
-    @patch("services.github_import.subprocess.run", side_effect=FileNotFoundError)
+    @patch("services.editor.github_import.subprocess.run", side_effect=FileNotFoundError)
     def test_git_not_found(self, mock_run):
         assert check_repo_exists("https://github.com/u/r") is False
 
-    @patch("services.github_import.subprocess.run", side_effect=__import__("subprocess").TimeoutExpired(cmd="git", timeout=15))
+    @patch("services.editor.github_import.subprocess.run", side_effect=__import__("subprocess").TimeoutExpired(cmd="git", timeout=15))
     def test_timeout(self, mock_run):
         assert check_repo_exists("https://github.com/u/r") is False
 
 
 class TestCloneRepo:
-    @patch("services.github_import.subprocess.run")
+    @patch("services.editor.github_import.subprocess.run")
     def test_clone_success(self, mock_run, tmp_path):
         mock_run.return_value = MagicMock(returncode=0, stderr="")
         dest = tmp_path / "repo"
         assert clone_repo("https://github.com/u/r", dest) is True
 
-    @patch("services.github_import.subprocess.run")
+    @patch("services.editor.github_import.subprocess.run")
     def test_clone_shallow(self, mock_run, tmp_path):
         mock_run.return_value = MagicMock(returncode=0, stderr="")
         dest = tmp_path / "repo"
@@ -89,18 +89,18 @@ class TestCloneRepo:
         cmd = mock_run.call_args_list[0][0][0]
         assert "--depth" in cmd
 
-    @patch("services.github_import.subprocess.run")
+    @patch("services.editor.github_import.subprocess.run")
     def test_clone_failure(self, mock_run, tmp_path):
         mock_run.return_value = MagicMock(returncode=128, stderr="fatal error")
         dest = tmp_path / "repo"
         assert clone_repo("https://github.com/u/r", dest) is False
 
-    @patch("services.github_import.subprocess.run", side_effect=FileNotFoundError)
+    @patch("services.editor.github_import.subprocess.run", side_effect=FileNotFoundError)
     def test_clone_git_not_installed(self, mock_run, tmp_path):
         dest = tmp_path / "repo"
         assert clone_repo("https://github.com/u/r", dest) is False
 
-    @patch("services.github_import.subprocess.run")
+    @patch("services.editor.github_import.subprocess.run")
     def test_clone_with_token_resets_remote(self, mock_run, tmp_path):
         mock_run.return_value = MagicMock(returncode=0, stderr="")
         dest = tmp_path / "repo"
@@ -148,20 +148,20 @@ class TestValidateRepo:
         result = validate_repo("not-a-url")
         assert result["valid"] is False
 
-    @patch("services.github_import.check_repo_exists", return_value=False)
+    @patch("services.editor.github_import.check_repo_exists", return_value=False)
     def test_repo_not_found(self, mock_check):
         result = validate_repo("https://github.com/u/r")
         assert result["valid"] is False
         assert "not found" in result["error"].lower() or "not accessible" in result["error"].lower()
 
-    @patch("services.github_import.clone_repo", return_value=False)
-    @patch("services.github_import.check_repo_exists", return_value=True)
+    @patch("services.editor.github_import.clone_repo", return_value=False)
+    @patch("services.editor.github_import.check_repo_exists", return_value=True)
     def test_clone_failure(self, mock_check, mock_clone):
         result = validate_repo("https://github.com/u/r")
         assert result["valid"] is False
 
-    @patch("services.github_import.clone_repo")
-    @patch("services.github_import.check_repo_exists", return_value=True)
+    @patch("services.editor.github_import.clone_repo")
+    @patch("services.editor.github_import.check_repo_exists", return_value=True)
     def test_no_scad_files(self, mock_check, mock_clone):
         def fake_clone(url, dest, github_token=None, shallow=False):
             dest.mkdir(parents=True, exist_ok=True)
@@ -171,8 +171,8 @@ class TestValidateRepo:
         assert result["valid"] is False
         assert "No .scad" in result["error"]
 
-    @patch("services.github_import.clone_repo")
-    @patch("services.github_import.check_repo_exists", return_value=True)
+    @patch("services.editor.github_import.clone_repo")
+    @patch("services.editor.github_import.check_repo_exists", return_value=True)
     def test_success(self, mock_check, mock_clone):
         def fake_clone(url, dest, github_token=None, shallow=False):
             dest.mkdir(parents=True, exist_ok=True)
@@ -185,7 +185,7 @@ class TestValidateRepo:
 
 
 class TestImportRepo:
-    @patch("services.github_import.clone_repo")
+    @patch("services.editor.github_import.clone_repo")
     def test_import_success(self, mock_clone, tmp_path, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
@@ -201,7 +201,7 @@ class TestImportRepo:
         assert (tmp_path / "test-import" / "project.json").exists()
         assert (tmp_path / "test-import" / "project.meta.json").exists()
 
-    @patch("services.github_import.clone_repo", return_value=True)
+    @patch("services.editor.github_import.clone_repo", return_value=True)
     def test_import_already_exists(self, mock_clone, tmp_path, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
@@ -210,7 +210,7 @@ class TestImportRepo:
         assert result["success"] is False
         assert "already exists" in result["error"]
 
-    @patch("services.github_import.clone_repo", return_value=False)
+    @patch("services.editor.github_import.clone_repo", return_value=False)
     def test_import_clone_fails(self, mock_clone, tmp_path, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
@@ -244,7 +244,7 @@ class TestSyncRepo:
         result = sync_repo("proj")
         assert result["success"] is False
 
-    @patch("services.github_import.clone_repo")
+    @patch("services.editor.github_import.clone_repo")
     def test_sync_legacy_reclone(self, mock_clone, tmp_path, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)

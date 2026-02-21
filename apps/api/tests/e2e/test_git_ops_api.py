@@ -39,7 +39,7 @@ def client(app):
 
 def _init_git(project_dir):
     """Initialize git repo in project dir."""
-    from services.git_operations import git_init
+    from services.editor.git_operations import git_init
     git_init(project_dir)
 
 
@@ -131,14 +131,14 @@ class TestGitCommit:
 
 
 class TestGitPush:
-    @patch("routes.git_ops.get_github_token", return_value="ghp_test123")
-    @patch("routes.git_ops.git_push", return_value={"success": True})
+    @patch("routes.editor.git_ops.get_github_token", return_value="ghp_test123")
+    @patch("routes.editor.git_ops.git_push", return_value={"success": True})
     def test_push_success(self, mock_push, mock_token, client, tmp_path):
         _make_github_project(tmp_path)
         res = client.post("/api/projects/my-project/git/push")
         assert res.status_code == 200
 
-    @patch("routes.git_ops.get_github_token", return_value=None)
+    @patch("routes.editor.git_ops.get_github_token", return_value=None)
     def test_push_no_token(self, mock_token, client, tmp_path):
         _make_github_project(tmp_path)
         res = client.post("/api/projects/my-project/git/push")
@@ -155,14 +155,14 @@ class TestGitPush:
 
 
 class TestGitPull:
-    @patch("routes.git_ops.get_github_token", return_value="ghp_test123")
-    @patch("routes.git_ops.git_pull", return_value={"success": True})
+    @patch("routes.editor.git_ops.get_github_token", return_value="ghp_test123")
+    @patch("routes.editor.git_ops.git_pull", return_value={"success": True})
     def test_pull_success(self, mock_pull, mock_token, client, tmp_path):
         _make_github_project(tmp_path)
         res = client.post("/api/projects/my-project/git/pull")
         assert res.status_code == 200
 
-    @patch("routes.git_ops.get_github_token", return_value=None)
+    @patch("routes.editor.git_ops.get_github_token", return_value=None)
     def test_pull_no_token(self, mock_token, client, tmp_path):
         _make_github_project(tmp_path)
         res = client.post("/api/projects/my-project/git/pull")

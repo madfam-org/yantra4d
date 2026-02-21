@@ -10,7 +10,7 @@ from flask import request
 from jwt import PyJWKClient
 
 from config import Config
-from services.route_helpers import error_response
+from utils.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +110,7 @@ def require_role(role: str):
 
 def require_tier(min_tier: str):
     """Decorator factory: optional_auth + check tier hierarchy."""
-    from services.tier_service import resolve_tier, has_tier
+    from services.core.tier_service import resolve_tier, has_tier
 
     def decorator(f):
         @functools.wraps(f)

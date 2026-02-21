@@ -8,8 +8,8 @@ import logging
 import re
 from typing import Iterator
 
-from services.ai_provider import stream_chat
-from services.ai_session import append_message, get_messages
+from services.ai.ai_provider import stream_chat
+from services.ai.ai_session import append_message, get_messages
 
 logger = logging.getLogger(__name__)
 

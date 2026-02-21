@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, request
 
 from config import Config
 from middleware.auth import optional_auth
-from services.tier_service import load_tiers, resolve_tier, get_tier_limits
+from services.core.tier_service import load_tiers, resolve_tier, get_tier_limits
 
 user_bp = Blueprint("user", __name__)
 

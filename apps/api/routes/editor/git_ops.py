@@ -11,9 +11,9 @@ from config import Config
 from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
-from services.route_helpers import error_response, require_json_body
-from services.git_operations import git_status, git_diff, git_commit, git_push, git_pull
-from services.github_token import get_github_token
+from utils.route_helpers import error_response, require_json_body
+from services.editor.git_operations import git_status, git_diff, git_commit, git_push, git_pull
+from services.editor.github_token import get_github_token
 
 import re
 
@@ -86,7 +86,7 @@ def connect_remote(slug):
         return error_response("Invalid GitHub repository URL", 400)
 
     # Add or set origin remote
-    from services.git_operations import _run_git, _get_remote_url
+    from services.editor.git_operations import _run_git, _get_remote_url
     existing = _get_remote_url(project_dir)
     if existing:
         result = _run_git(project_dir, ["remote", "set-url", "origin", remote_url], timeout=10)

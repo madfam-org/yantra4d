@@ -17,9 +17,9 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from config import Config
-from services.route_helpers import error_response
-from services.scad_analyzer import analyze_directory
-from services.assembly_generator import generate_assembly_steps, merge_assembly_steps
+from utils.route_helpers import error_response
+from services.core.scad_analyzer import analyze_directory
+from services.core.assembly_generator import generate_assembly_steps, merge_assembly_steps
 
 assembly_bp = Blueprint("assembly", __name__)
 logger = logging.getLogger(__name__)

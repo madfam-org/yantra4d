@@ -15,8 +15,8 @@ from extensions import limiter
 import rate_limits
 from manifest import invalidate_cache
 from middleware.auth import require_role
-from services.manifest_generator import generate_manifest
-from services.route_helpers import error_response
+from services.core.manifest_generator import generate_manifest
+from utils.route_helpers import error_response
 from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)

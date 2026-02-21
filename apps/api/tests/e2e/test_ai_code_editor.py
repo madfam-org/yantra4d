@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.ai_code_editor import build_code_editor_prompt, parse_edits
+from services.ai.ai_code_editor import build_code_editor_prompt, parse_edits
 
 
 SAMPLE_MANIFEST = {

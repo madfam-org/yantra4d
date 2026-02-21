@@ -209,7 +209,7 @@ def sync_repo(slug: str, github_token: str | None = None) -> dict:
 
     # New-style: project has .git dir — use git pull
     if (project_dir / ".git").is_dir():
-        from services.git_operations import git_pull
+        from services.editor.git_operations import git_pull
         result = git_pull(project_dir, github_token or "")
         if not result["success"]:
             return result

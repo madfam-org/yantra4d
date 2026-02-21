@@ -12,23 +12,23 @@ from config import Config
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.tier_service import resolve_tier, get_tier_limits, check_feature
-from services.openscad import (
+from services.core.tier_service import resolve_tier, get_tier_limits, check_feature
+from services.engine.openscad import (
     build_openscad_command,
     run_render as run_openscad_render,
     stream_render as stream_openscad_render,
     cancel_render as cancel_openscad_render,
     validate_params
 )
-from services.cadquery_engine import (
+from services.engine.cadquery_engine import (
     build_cadquery_command,
     run_render as run_cadquery_render,
     stream_render as stream_cadquery_render,
     cancel_render as cancel_cadquery_render
 )
-from services.render_cache import render_cache
-from services.route_helpers import cleanup_old_stl_files, error_response, require_json_body
-from services.mqtt_telemetry import telemetry_service, telemetry_queue
+from services.engine.render_cache import render_cache
+from utils.route_helpers import cleanup_old_stl_files, error_response, require_json_body
+from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
 import rate_limits
 import queue
 

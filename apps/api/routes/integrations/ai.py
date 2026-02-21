@@ -10,11 +10,11 @@ from config import Config
 from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
-from services.route_helpers import error_response, require_json_body
-from services.tier_service import resolve_tier, get_tier_limits
-from services.ai_session import create_session, get_session
-from services.ai_configurator import stream_response as stream_configurator
-from services.ai_code_editor import stream_response as stream_code_editor
+from utils.route_helpers import error_response, require_json_body
+from services.core.tier_service import resolve_tier, get_tier_limits
+from services.ai.ai_session import create_session, get_session
+from services.ai.ai_configurator import stream_response as stream_configurator
+from services.ai.ai_code_editor import stream_response as stream_code_editor
 
 logger = logging.getLogger(__name__)
 

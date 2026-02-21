@@ -14,7 +14,7 @@ from extensions import limiter
 import rate_limits
 from manifest import get_manifest, resolve_part_config
 from middleware.auth import require_auth
-from services.route_helpers import safe_join_path
+from utils.route_helpers import safe_join_path
 
 logger = logging.getLogger(__name__)
 

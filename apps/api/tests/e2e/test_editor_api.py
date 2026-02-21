@@ -106,7 +106,7 @@ class TestWriteFile:
         res = client.put("/api/projects/my-project/files/readme.txt", json={"content": "hi"})
         assert res.status_code == 400
 
-    @patch("routes.editor.git_init")
+    @patch("routes.editor.editor.git_init")
     def test_write_auto_inits_git(self, mock_git_init, client):
         client.put("/api/projects/my-project/files/main.scad", json={"content": "cube(30);"})
         mock_git_init.assert_called_once()

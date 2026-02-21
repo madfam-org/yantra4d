@@ -1,4 +1,12 @@
 #!/bin/sh
+
+# Sync fallback manifest if out of sync
+if ! cmp -s projects/gridfinity/project.json apps/studio/src/config/fallback-manifest.json; then
+  echo "husky: Syncing fallback manifest before commit..."
+  cp projects/gridfinity/project.json apps/studio/src/config/fallback-manifest.json
+  git add apps/studio/src/config/fallback-manifest.json
+fi
+
 # Run Lint Staged in Studio
 (cd apps/studio && npx lint-staged) || exit 1
 

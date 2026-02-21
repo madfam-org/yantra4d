@@ -37,18 +37,18 @@ class TestVerifyAPI:
     def test_verify_no_stls(self, client):
         """Verify with no rendered STLs returns expected structure."""
         res = client.post("/api/verify", json={"mode": "default", "project": "test-project"})
-        assert res.status_code == 200
+        assert res.status_code == 409
         data = res.get_json()
-        assert "status" in data
-        assert "output" in data
-        assert "passed" in data
+        assert data["status"] == "error"
+        assert data["error"] == "not_rendered"
+        assert "not been rendered yet" in data["message"]
 
     def test_verify_default_mode(self, client):
         """Verify without explicit mode falls back to first mode."""
         res = client.post("/api/verify", json={"project": "test-project"})
-        assert res.status_code == 200
+        assert res.status_code == 409
         data = res.get_json()
-        assert data["parts_checked"] == 1
+        assert data["error"] == "not_rendered"
 
     def test_verify_with_stl(self, client, tmp_path, monkeypatch):
         """Verify with actual STL file runs verification script."""

@@ -56,9 +56,11 @@ def verify_design():
             continue
 
         if not resolved.exists():
-            results.append(f"--- {part} ---\n[SKIP] File not found: {stl_filename}\n")
-            all_passed = False
-            continue
+            return jsonify({
+                "status": "error",
+                "error": "not_rendered",
+                "message": f"Part '{part}' has not been rendered yet. Render before verifying."
+            }), 409
 
         # Build part-specific config
         if verify_cfg is not None:

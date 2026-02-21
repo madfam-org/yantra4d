@@ -1,4 +1,4 @@
-include <BOSL2/std.scad>
+include <../../libs/BOSL2/std.scad>
 
 // Yantra4D Parameters
 pipe_od_mm = 21.3; // Nominal OD

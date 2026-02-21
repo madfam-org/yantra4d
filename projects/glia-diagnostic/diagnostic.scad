@@ -1,4 +1,4 @@
-include <BOSL2/std.scad>
+include <../../libs/BOSL2/std.scad>
 
 // Yantra4D Parameters
 tool_type = "stethoscope_head"; // [stethoscope_head, otoscope_specula]

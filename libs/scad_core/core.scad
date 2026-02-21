@@ -3,8 +3,8 @@
 // Wrappers for BOSL2 standard usage across all projects.
 // =============================================================================
 
-include <BOSL2/std.scad>
-include <BOSL2/threading.scad>
+include <../BOSL2/std.scad>
+include <../BOSL2/threading.scad>
 
 module y4d_standard_thread(d, p, l, internal = false, anchor = CENTER) {
   // A standard wrapper around BOSL2's threading to enforce Yantra4D defaults

@@ -1,8 +1,8 @@
 // Yantra4D Gear Reducer — Gear Set Only
 // Renders the input and output gears for print plate layout
 
-include <BOSL2/std.scad>
-include <BOSL2/gears.scad>
+include <../../libs/BOSL2/std.scad>
+include <../../libs/BOSL2/gears.scad>
 
 input_teeth = 12;
 output_teeth = 36;

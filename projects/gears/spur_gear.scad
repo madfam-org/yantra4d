@@ -1,8 +1,8 @@
 // Yantra4D wrapper — Spur Gear (BOSL2)
 // Migrated from MCAD/involute_gears.scad → BOSL2 gears.scad
 // BOSL2 advantages: active maintenance, shaft bore, helical support, rack-and-pinion
-include <BOSL2/std.scad>
-include <BOSL2/gears.scad>
+include <../../libs/BOSL2/std.scad>
+include <../../libs/BOSL2/gears.scad>
 
 // Parameters (injected by Yantra4D platform via -D flags)
 teeth_count = 20;

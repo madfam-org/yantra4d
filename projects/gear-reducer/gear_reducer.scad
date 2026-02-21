@@ -3,8 +3,8 @@
 //
 // Parameters injected by Yantra4D platform via -D flags
 
-include <BOSL2/std.scad>
-include <BOSL2/gears.scad>
+include <../../libs/BOSL2/std.scad>
+include <../../libs/BOSL2/gears.scad>
 
 // --- Parameters (overridden by platform) ---
 input_teeth = 12;

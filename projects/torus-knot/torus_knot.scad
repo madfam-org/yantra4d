@@ -5,8 +5,8 @@
 // curve winds around the torus surface.
 
 use <dotSCAD/src/torus_knot.scad>
-include <BOSL2/std.scad>
-include <BOSL2/skin.scad>
+include <../../libs/BOSL2/std.scad>
+include <../../libs/BOSL2/skin.scad>
 
 // --- Parameters (overridden by platform) ---
 p = 2;

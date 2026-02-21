@@ -1,4 +1,4 @@
-include <BOSL2/std.scad>
+include <../../libs/BOSL2/std.scad>
 include <../../libs/scad_core/core.scad>
 use <profiles/classic.scad>
 use <profiles/industrial.scad>

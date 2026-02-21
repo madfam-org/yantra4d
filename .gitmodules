@@ -55,3 +55,6 @@
 [submodule "projects/microscope-slide-holder"]
 	path = projects/microscope-slide-holder
 	url = https://github.com/madfam-org/microscope-slide-holder.git
+[submodule "extrusion-hyperobject"]
+	path = projects/extrusion-hyperobject
+	url = https://github.com/madfam-org/extrusion-hyperobject

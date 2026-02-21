@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'
+import { Link } from 'react-router-dom'
 import { getApiBase } from '../../services/backendDetection'
 import { useLanguage } from '../../contexts/LanguageProvider'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
@@ -211,9 +212,9 @@ export default function ProjectsView() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {processedProjects.map(project => (
-              <a
+              <Link
                 key={project.slug}
-                href={`#/${project.slug}`}
+                to={`/project/${project.slug}`}
                 className="block hover:ring-2 hover:ring-ring rounded-lg transition-shadow"
               >
                 <Card className="h-full flex flex-col">
@@ -281,7 +282,7 @@ export default function ProjectsView() {
                     {project.has_exports && <span data-testid="exports-badge" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('projects.exports')}</span>}
                   </CardFooter>
                 </Card>
-              </a>
+              </Link>
             ))}
           </div>
         )

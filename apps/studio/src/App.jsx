@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, useCallback } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe } from 'lucide-react'
 import { Toaster } from "@/components/ui/sonner"
@@ -21,11 +22,13 @@ const AiChatPanel = lazy(() => import('./components/ai/AiChatPanel'))
 const ForkDialog = lazy(() => import('./components/project/ForkDialog'))
 const StorefrontView = lazy(() => import('./components/storefront/StorefrontView'))
 
-const _searchParams = new URLSearchParams(window.location.search)
-const isEmbed = _searchParams.get('embed') === 'true'
-const isStorefront = _searchParams.get('mode') === 'storefront'
 
 function App() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+
+  const isEmbed = searchParams.get('embed') === 'true'
+  const isStorefront = searchParams.get('mode') === 'storefront'
   const [editorOpen, setEditorOpen] = useState(() => sessionStorage.getItem('yantra4d-editor-open') === 'true')
   const toggleEditor = () => setEditorOpen(prev => {
     const next = !prev
@@ -58,10 +61,10 @@ function App() {
   const handleForkRequest = useCallback(() => setForkDialogSlug(projectSlug), [projectSlug])
   const handleForked = useCallback((newSlug) => {
     setForkDialogSlug(null)
-    window.location.hash = `#/${newSlug}`
+    navigate(`/project/${newSlug}`)
     setEditorOpen(true)
     sessionStorage.setItem('yantra4d-editor-open', 'true')
-  }, [])
+  }, [navigate])
 
   if (isStorefront) {
     return (
@@ -69,9 +72,8 @@ function App() {
         <Suspense fallback={<div className="flex items-center justify-center h-screen text-muted-foreground">Loading storefront...</div>}>
           <StorefrontView
             onExitStorefront={() => {
-              const url = new URL(window.location.href)
-              url.searchParams.delete('mode')
-              window.location.href = url.toString()
+              searchParams.delete('mode')
+              setSearchParams(searchParams)
             }}
           />
         </Suspense>

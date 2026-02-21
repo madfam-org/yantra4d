@@ -14,6 +14,11 @@ vi.mock('../../contexts/ManifestProvider', () => ({
   }),
 }))
 
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate
+}))
+
 import ProjectSelector from './ProjectSelector'
 
 describe('ProjectSelector', () => {
@@ -50,13 +55,13 @@ describe('ProjectSelector', () => {
     expect(mockSwitchProject).toHaveBeenCalledWith('demo')
   })
 
-  it('sets hash for github import option', () => {
+  it('navigates to projects for github import option', () => {
     mockProjects = [
       { slug: 'gridfinity', name: 'Gridfinity Extended' },
       { slug: 'demo', name: 'Demo' },
     ]
     render(<ProjectSelector />)
     fireEvent.change(screen.getByLabelText('Select project'), { target: { value: '__github_import__' } })
-    expect(window.location.hash).toBe('#/projects')
+    expect(mockNavigate).toHaveBeenCalledWith('/projects')
   })
 })

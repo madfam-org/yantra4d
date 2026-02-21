@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { getApiBase } from '../../services/backendDetection'
@@ -6,6 +7,7 @@ import { apiFetch } from '../../services/apiClient'
 const STEPS = ['url', 'review', 'confirm']
 
 export default function GitHubImportWizard({ onClose, onImported }) {
+  const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [repoUrl, setRepoUrl] = useState('')
   const [loading, setLoading] = useState(false)
@@ -169,7 +171,7 @@ export default function GitHubImportWizard({ onClose, onImported }) {
             </>
           )}
           {step === 2 && (
-            <Button onClick={() => { onClose(); window.location.hash = `#/${slug}`; sessionStorage.setItem('yantra4d-editor-open', 'true') }}>
+            <Button onClick={() => { onClose(); navigate(`/project/${slug}`); sessionStorage.setItem('yantra4d-editor-open', 'true') }}>
               Open in Editor
             </Button>
           )}

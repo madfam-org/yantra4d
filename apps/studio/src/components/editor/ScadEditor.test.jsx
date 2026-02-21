@@ -76,7 +76,7 @@ beforeEach(() => {
 
 describe('ScadEditor', () => {
   it('shows loading state initially', () => {
-    mockListFiles.mockImplementation(() => new Promise(() => {}))
+    mockListFiles.mockImplementation(() => new Promise(() => { }))
     render(<ScadEditor {...defaultProps} />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
@@ -104,7 +104,7 @@ describe('ScadEditor', () => {
 
     // Click the file button (the one in the file tree, not the tab)
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(mockReadFile).toHaveBeenCalledWith('test-project', 'main.scad')
@@ -119,7 +119,7 @@ describe('ScadEditor', () => {
     })
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(screen.getByRole('tab')).toBeInTheDocument()
@@ -166,7 +166,7 @@ describe('ScadEditor', () => {
     })
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(screen.getByText('AI')).toBeInTheDocument()
@@ -180,7 +180,7 @@ describe('ScadEditor', () => {
     })
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(screen.getByText('AI')).toBeInTheDocument()
@@ -206,7 +206,7 @@ describe('ScadEditor', () => {
 
     // Open a file
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(screen.getByTestId('monaco-editor')).toBeInTheDocument()
@@ -232,7 +232,7 @@ describe('ScadEditor', () => {
     })
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(screen.getByTestId('monaco-editor')).toBeInTheDocument()
@@ -253,11 +253,11 @@ describe('ScadEditor', () => {
 
     // Open two files
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
     await waitFor(() => expect(screen.getByTestId('monaco-editor')).toBeInTheDocument())
 
     mockReadFile.mockResolvedValueOnce({ content: '// parts file' })
-    fireEvent.click(fileButtons[1].querySelector('button'))
+    fireEvent.click(fileButtons[1].querySelector('div[role="button"]'))
     await waitFor(() => expect(mockReadFile).toHaveBeenCalledTimes(2))
 
     // Close active tab (parts.scad) via the close button
@@ -279,7 +279,7 @@ describe('ScadEditor', () => {
     })
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(screen.getByText('File not found')).toBeInTheDocument()
@@ -293,7 +293,7 @@ describe('ScadEditor', () => {
     })
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
     await waitFor(() => expect(screen.getByTestId('monaco-editor')).toBeInTheDocument())
 
     fireEvent.change(screen.getByTestId('monaco-editor'), {
@@ -311,7 +311,7 @@ describe('ScadEditor', () => {
     await waitFor(() => expect(screen.getByText('main.scad')).toBeInTheDocument())
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
     await waitFor(() => expect(screen.getByTestId('monaco-editor')).toBeInTheDocument())
 
     // Modify
@@ -334,14 +334,14 @@ describe('ScadEditor', () => {
     })
 
     const fileButtons = screen.getAllByRole('option')
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
 
     await waitFor(() => {
       expect(mockReadFile).toHaveBeenCalledTimes(1)
     })
 
     // Click same file again
-    fireEvent.click(fileButtons[0].querySelector('button'))
+    fireEvent.click(fileButtons[0].querySelector('div[role="button"]'))
     // Should not read file again
     expect(mockReadFile).toHaveBeenCalledTimes(1)
   })

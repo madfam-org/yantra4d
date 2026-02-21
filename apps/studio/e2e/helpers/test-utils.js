@@ -18,14 +18,14 @@ export async function waitForAppReady(page) {
  * @param {string} [slug='test']
  */
 export async function goToStudio(page, slug = 'test') {
-  await page.goto(`/#/${slug}`)
+  await page.goto(`/project/${slug}`)
   await waitForAppReady(page)
   // Wait for mock manifest to load (Test Project appears in header).
   // The fallback manifest loads instantly but the mock API response takes
   // ~500-1000ms to propagate through React state.
   await page.locator('header h1', { hasText: 'Test Project' })
     .waitFor({ timeout: 8000 })
-    .catch(() => {}) // fallback: continue even if mock didn't load
+    .catch(() => { }) // fallback: continue even if mock didn't load
   // Ensure a mode tab is active. After mock manifest loads, the mode state
   // may still reference the fallback's modes. Click the first tab to fix.
   const activeTab = page.locator('[role="tab"][data-state="active"]')
@@ -39,11 +39,11 @@ export async function goToStudio(page, slug = 'test') {
   // Wait for controls to render (sliders/buttons should be visible)
   await page.locator('[role="slider"]').first()
     .waitFor({ timeout: 5000 })
-    .catch(() => {})
+    .catch(() => { })
   // Wait for slider values to be populated (guards against manifest-params race)
   await page.locator('[role="button"]').filter({ hasText: /^\d/ }).first()
     .waitFor({ timeout: 3000 })
-    .catch(() => {})
+    .catch(() => { })
 }
 
 /**
@@ -51,11 +51,8 @@ export async function goToStudio(page, slug = 'test') {
  * @param {import('@playwright/test').Page} page
  */
 export async function goToProjects(page) {
-  // First load the app (initial mount overwrites hash), then navigate to projects
-  await page.goto('/')
+  await page.goto('/projects')
   await waitForAppReady(page)
-  await page.waitForTimeout(500)
-  await page.evaluate(() => { window.location.hash = '#/projects' })
   await page.waitForTimeout(500)
 }
 
@@ -93,11 +90,11 @@ export async function setTheme(page, theme) {
 }
 
 /**
- * Get the current URL hash.
+ * Get the current URL pathname.
  * @param {import('@playwright/test').Page} page
  */
-export async function getHash(page) {
-  return page.evaluate(() => window.location.hash)
+export async function getPathname(page) {
+  return page.evaluate(() => window.location.pathname)
 }
 
 /**

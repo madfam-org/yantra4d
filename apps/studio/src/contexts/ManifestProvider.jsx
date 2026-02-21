@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react"
+import { useLocation } from "react-router-dom"
 import fallbackManifest from "../config/fallback-manifest.json"
 import { getApiBase } from "../services/backendDetection"
 
@@ -7,9 +8,10 @@ const ManifestContext = createContext()
 const PROJECTS_FETCH_TIMEOUT_MS = 2000
 
 export function ManifestProvider({ children }) {
+  const location = useLocation()
   const [manifest, setManifest] = useState(fallbackManifest)
   const [projects, setProjects] = useState([])
-  const [projectSlug, setProjectSlug] = useState(() => _getProjectSlugFromHash())
+  const [projectSlug, setProjectSlug] = useState(() => _getProjectSlug(location))
   const [loading, setLoading] = useState(true)
   // Track whether the projects list has been fetched (or failed).
   // The manifest fetch must wait for this so it can use the correct endpoint.
@@ -24,9 +26,9 @@ export function ManifestProvider({ children }) {
       })
       .then((data) => {
         setProjects(data)
-        // Determine initial project from URL hash
-        const hashSlug = _getProjectSlugFromHash()
-        const slug = data.find(p => p.slug === hashSlug)?.slug
+        // Determine initial project from URL location
+        const foundSlug = _getProjectSlug(location)
+        const slug = data.find(p => p.slug === foundSlug)?.slug
         if (slug) {
           setProjectSlug(slug)
         } else {
@@ -72,17 +74,13 @@ export function ManifestProvider({ children }) {
     return () => controller.abort()
   }, [projectSlug, projects.length, projectsResolved])
 
-  // Listen for hash changes to detect cross-project navigation
+  // Listen for location changes to detect cross-project navigation
   useEffect(() => {
-    const onHashChange = () => {
-      const newSlug = _getProjectSlugFromHash()
-      if (newSlug && newSlug !== projectSlug) {
-        setProjectSlug(newSlug)
-      }
+    const newSlug = _getProjectSlug(location)
+    if (newSlug && newSlug !== projectSlug) {
+      setProjectSlug(newSlug)
     }
-    window.addEventListener('hashchange', onHashChange)
-    return () => window.removeEventListener('hashchange', onHashChange)
-  }, [projectSlug])
+  }, [location, projectSlug])
 
   // ready = manifest has loaded and matches the requested project
   const ready = !loading && manifest.project?.slug === projectSlug
@@ -161,11 +159,19 @@ export function ManifestProvider({ children }) {
   return <ManifestContext.Provider value={value}>{children}</ManifestContext.Provider>
 }
 
-function _getProjectSlugFromHash() {
-  const hash = window.location.hash.replace(/^#\/?/, '')
-  const parts = hash.split('/').filter(Boolean)
-  // 1-segment: project, 3-segment: project/preset/mode
-  return parts.length >= 1 ? parts[0] : null
+function _getProjectSlug(location) {
+  if (!location) return null;
+  // Support both hash-based #/slug and path-based /project/slug
+  const hash = location.hash.replace(/^#\/?/, '')
+  const hashParts = hash.split('/').filter(Boolean)
+  if (hashParts.length >= 1) return hashParts[0]
+
+  const pathParts = location.pathname.split('/').filter(Boolean)
+  if (pathParts[0] === 'project' && pathParts.length >= 2) {
+    return pathParts[1]
+  }
+
+  return null
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

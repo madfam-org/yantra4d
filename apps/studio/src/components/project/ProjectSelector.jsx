@@ -1,8 +1,10 @@
 import { useManifest } from "../../contexts/ManifestProvider"
 import { Github } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function ProjectSelector() {
   const { projects, projectSlug, switchProject } = useManifest()
+  const navigate = useNavigate()
 
   if (!projects || projects.length <= 1) return null
 
@@ -12,7 +14,7 @@ export default function ProjectSelector() {
         value={projectSlug}
         onChange={(e) => {
           if (e.target.value === '__github_import__') {
-            window.location.hash = '#/projects'
+            navigate('/projects')
             return
           }
           switchProject(e.target.value)

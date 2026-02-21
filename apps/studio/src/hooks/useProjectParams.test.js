@@ -3,6 +3,11 @@ import { renderHook, act } from '@testing-library/react'
 import { useProjectParams } from './useProjectParams'
 
 // Mock all dependencies to isolate the hook logic
+vi.mock('react-router-dom', () => ({
+  useLocation: () => ({ pathname: '/test' }),
+  useNavigate: () => vi.fn()
+}))
+
 vi.mock('../contexts/ManifestProvider', () => ({
   useManifest: () => ({
     manifest: {
@@ -83,11 +88,11 @@ vi.mock('./useKeyboardShortcuts', () => ({
 describe('useProjectParams', () => {
   it('toggles grid preset', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
-    
+
     act(() => {
       result.current.handleGridPresetToggle()
     })
-    
+
     // Just verify it runs without error, which covers the function lines
     expect(true).toBe(true)
   })
@@ -95,11 +100,11 @@ describe('useProjectParams', () => {
   it('applies preset', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
     const preset = { id: 'test', values: { a: 1 } }
-    
+
     act(() => {
       result.current.handleApplyPreset(preset)
     })
-    
+
     expect(true).toBe(true)
   })
 })

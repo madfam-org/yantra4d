@@ -5,7 +5,7 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from libs.cq_core import cdg_french_cleat
+from libs.yantra4d.cdg_interfaces import cdg_french_cleat
 
 def cubic_bezier(p0, p1, p2, p3, steps=20):
     pts = []

@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 # Paths
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 PROJECTS_DIR = ROOT_DIR / "projects"
 SCHEMA_PATH = ROOT_DIR / "packages" / "schemas" / "project-manifest.schema.json"
 

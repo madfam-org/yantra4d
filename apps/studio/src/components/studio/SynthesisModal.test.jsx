@@ -60,7 +60,7 @@ describe('SynthesisModal', () => {
       })
     }
     
-    vi.spyOn(global, 'fetch').mockImplementation(async (url) => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => {
       if (url.toString().includes('/api/ai/synthesize')) {
         return {
           ok: true,
@@ -86,7 +86,7 @@ describe('SynthesisModal', () => {
     const generateBtn = screen.getByText('Generate Cartridge')
     fireEvent.click(generateBtn)
     
-    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1)
     
     await waitFor(() => {
       expect(mockOnSynthesisComplete).toHaveBeenCalledWith('generated-slug')

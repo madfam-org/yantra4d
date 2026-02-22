@@ -56,9 +56,9 @@ The goal is to ensure all Yantra4D projects are fully self-contained, standardiz
 
 - [x] **Universal Compliance Tooling:** Implemented `scripts/audit_compliance.py`.
 - [x] **Ecosystem Attribution:** Accredited Zack Freedman, Paulo Kiefe, Keep Making in manifests.
-- [/] **Vendor Eradication:** Flattening `vendor/` folders into project roots.
-- [/] **Cross-Project Dependency Resolution:** Eliminating unsafe parent-relative paths (`../`).
-- [ ] **100% Audit Passing:** Reaching zero violations across all 36+ projects.
+- [x] **Vendor Eradication:** Flattening `vendor/` folders into project roots.
+- [x] **Cross-Project Dependency Resolution:** Eliminating unsafe parent-relative paths (`../`).
+- [x] **100% Audit Passing:** Reaching zero violations across all 36+ projects.
 
 ---
 

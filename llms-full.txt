@@ -2,9 +2,10 @@
 
 > Manifest-driven parametric 3D print design platform evolving into a
 > Hyperobjects Commons. Flask API + React/Vite studio + Astro landing page.
-> 21 built-in OpenSCAD projects with dual rendering (server-side CLI +
-> client-side WASM), tiered access control, AI-assisted design, and GitHub
-> integration.
+> 33 built-in projects (each an independent GitHub submodule under madfam-org)
+> with dual rendering (server-side CLI + client-side WASM), tiered access
+> control, AI-assisted design, and GitHub integration. All hyperobject projects
+> carry CERN-OHL-W-2.0. Clone with --recurse-submodules.
 
 ---
 
@@ -34,6 +35,10 @@ libs/
   BOSL2/               (git submodule — BSD-2 — attachments, rounding, math)
   NopSCADlib/          (git submodule — GPL-3 — real-world hardware models)
   Round-Anything/      (git submodule — MIT — coordinate-based filleting)
+
+note: every projects/{slug}/ is also an independent git submodule pointing to
+  https://github.com/madfam-org/{slug}  (CERN-OHL-W-2.0)
+  clone: git clone --recurse-submodules https://github.com/madfam-org/yantra4d
 
 packages/
   schemas/             (JSON Schema for project manifests)
@@ -633,6 +638,8 @@ docker compose down         # stop
 | Env vars | Backend reads `OPENSCAD_PATH`, `SCAD_DIR`, `VERIFY_SCRIPT` |
 | CORS origins | Backend restricts CORS via `CORS_ORIGINS`; add your domain |
 | Global SCAD libs | `libs/` are git submodules — `git submodule update --init --recursive` |
+| Project submodules | Every `projects/{slug}/` is its own GitHub submodule — `git clone --recurse-submodules` |
+| Project licenses | All hyperobject projects carry CERN-OHL-W-2.0 (see `docs/licenses/CERN-OHL-W-2.0.txt`) |
 | Client-side WASM | `openscad-worker.js` runs in Web Worker; no DOM access |
 | Rate limiting | Flask-Limiter: Render 100/hr, Estimate 200/hr, Verify 50/hr |
 | CSP headers | Production nginx requires `wasm-unsafe-eval` for WASM |
@@ -648,33 +655,47 @@ docker compose down         # stop
 
 ## Projects Catalog
 
-21 built-in parametric SCAD projects in `projects/`:
+33 built-in hyperobject projects in `projects/` — each is a standalone git submodule at `https://github.com/madfam-org/<slug>` licensed under CERN-OHL-W-2.0.
 
-| Slug | Name | Description |
-|------|------|-------------|
-| `gridfinity` | Gridfinity Extended | Modular storage bins (flagship project) |
-| `polydice` | PolyDice Generator | Parametric dice set |
-| `ultimate-box` | Ultimate Box Maker | Parametric enclosure box |
-| `yapp-box` | YAPP Box Generator | Yet Another Parametric Project box |
-| `keyv2` | KeyV2 Keycaps | Parametric mechanical keyboard keycaps |
-| `multiboard` | Multiboard Wall Storage | Pegboard wall storage system |
-| `gears` | Parametric Gears | Configurable gear generator |
-| `gear-reducer` | Parametric Gear Reducer | BOSL2-based gear reduction system |
-| `fasteners` | Fastener Generator | Screws, bolts, nuts, washers |
-| `stemfie` | STEMFIE | STEM education construction kit |
-| `voronoi` | Voronoi Generator | Organic Voronoi patterns |
-| `maze` | Maze Generator | Parametric puzzle mazes |
-| `relief` | Text Relief Generator | Text plaques and signs |
-| `julia-vase` | Julia Vase | Fractal Julia set vases |
-| `superformula` | Superformula Vase | Generative superformula vases |
-| `torus-knot` | Torus Knot Sculpture | Mathematical torus knot sculptures |
-| `spiral-planter` | Spiral Planter | Archimedean spiral planters |
-| `motor-mount` | NEMA Motor Mount | NEMA stepper motor mounts |
-| `portacosas` | Portacosas | Customizable container/holder |
-| `microscope-slide-holder` 🔷 | Microscope Slide Holder | Slide retention system — first hyperobject |
-| `rugged-box` | Rugged Box | Hinged box with latches and gasket seal |
+| Slug | Name | GitHub | Notes |
+|------|------|--------|-------|
+| `cq-hyperobject-test` | CQ Hyperobject Test | [↗](https://github.com/madfam-org/cq-hyperobject-test) | CadQuery B-Rep test |
+| `custom-msh` | Custom Slide Holder | [↗](https://github.com/madfam-org/custom-msh) | Custom microscope slide holder |
+| `din-rail-clip` | DIN Rail Clip | [↗](https://github.com/madfam-org/din-rail-clip) | Parametric DIN rail clip |
+| `extrusion-hyperobject` | Extrusion Hyperobject | [↗](https://github.com/madfam-org/extrusion-hyperobject) | Aluminum extrusion framing |
+| `faircap-filter` | Faircap Filter | [↗](https://github.com/madfam-org/faircap-filter) | Open-source water filter |
+| `fasteners` | Fastener Generator | [↗](https://github.com/madfam-org/fasteners) | Screws, bolts, nuts, washers |
+| `framing-hyperobject` | Framing Hyperobject | [↗](https://github.com/madfam-org/framing-hyperobject) | Containment/framing systems |
+| `gear-reducer` | Gear Reducer | [↗](https://github.com/madfam-org/gear-reducer) | BOSL2-based gear reduction |
+| `gears` | Parametric Gears | [↗](https://github.com/madfam-org/gears) | Configurable gear generator |
+| `glia-diagnostic` | Glia Diagnostic | [↗](https://github.com/madfam-org/glia-diagnostic) | Open-source diagnostic tool |
+| `gridfinity` | Gridfinity Extended | [↗](https://github.com/madfam-org/gridfinity) | Modular storage bins (flagship) |
+| `implicit-lattice-hyperobject` | Implicit Lattice | [↗](https://github.com/madfam-org/implicit-lattice-hyperobject) | TPMS lattices (Gyroid/Diamond) |
+| `julia-vase` | Julia Vase | [↗](https://github.com/madfam-org/julia-vase) | Fractal Julia set vases |
+| `keyv2` | KeyV2 Keycaps | [↗](https://github.com/madfam-org/keyv2) | Mechanical keyboard keycaps |
+| `maze` | Maze Generator | [↗](https://github.com/madfam-org/maze) | Parametric puzzle mazes |
+| `microscope-slide-holder` 🔷 | Slide Holder | [↗](https://github.com/madfam-org/microscope-slide-holder) | First hyperobject |
+| `microscope-slide-hyperobject` 🔷 | Slide Hyperobject | [↗](https://github.com/madfam-org/microscope-slide-hyperobject) | Full slide hyperobject |
+| `motor-mount` | Motor Mount | [↗](https://github.com/madfam-org/motor-mount) | NEMA stepper motor mounts |
+| `multiboard` | Multiboard | [↗](https://github.com/madfam-org/multiboard) | Wall storage panel system |
+| `parametric-connector` | Parametric Connector | [↗](https://github.com/madfam-org/parametric-connector) | CDG connector interfaces |
+| `polydice` | PolyDice Generator | [↗](https://github.com/madfam-org/polydice) | Parametric dice set |
+| `portacosas` | Portacosas | [↗](https://github.com/madfam-org/portacosas) | Customizable holder |
+| `prosthetic-socket` | Prosthetic Socket | [↗](https://github.com/madfam-org/prosthetic-socket) | Open-source prosthetic |
+| `relief` | Text Relief | [↗](https://github.com/madfam-org/relief) | Text plaques and signs |
+| `rugged-box` | Rugged Box | [↗](https://github.com/madfam-org/rugged-box) | Hinged waterproof box |
+| `scara-robotics` | Chronos-SCARA | [↗](https://github.com/madfam-org/scara-robotics) | 4D SCARA robotic arm (harmonic drives) |
+| `soft-jaw` | Soft Jaw | [↗](https://github.com/madfam-org/soft-jaw) | CNC vise soft jaw |
+| `spiral-planter` | Spiral Planter | [↗](https://github.com/madfam-org/spiral-planter) | Archimedean spiral planter |
+| `stemfie` | STEMFIE | [↗](https://github.com/madfam-org/stemfie) | STEM construction kit |
+| `superformula` | Superformula Vase | [↗](https://github.com/madfam-org/superformula) | Generative superformula |
+| `tablaco` | Tablaco | 🔒 private | Modular table system |
+| `torus-knot` | Torus Knot | [↗](https://github.com/madfam-org/torus-knot) | Mathematical sculpture |
+| `voronoi` | Voronoi Generator | [↗](https://github.com/madfam-org/voronoi) | Organic Voronoi patterns |
+| `ultimate-box` | Ultimate Box | [↗](https://github.com/madfam-org/ultimate-box) | Parametric enclosure box |
+| `yapp-box` | YAPP Box | [↗](https://github.com/madfam-org/yapp-box) | Yet Another Parametric box |
 
-Each project has: `project.json` (manifest), `*.scad` (geometry files), optional `exports/` (reference STLs) and `docs/` (project-specific docs).
+Each project has: `project.json` (manifest), `*.scad` / `*.py` (geometry), `LICENSE` (CERN-OHL-W-2.0), optional `exports/` and `docs/`.
 
 ---
 

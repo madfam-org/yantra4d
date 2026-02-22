@@ -1,18 +1,21 @@
 # Yantra4D
 
-> Manifest-driven parametric 3D print design platform evolving into a
-> Hyperobjects Commons. Flask API + React/Vite studio + Astro landing page.
-> 36 built-in projects with dual rendering (server-side CLI +
+> Manifest-driven parametric 3D print design platform — a Hyperobjects Commons.
+> Flask API + React/Vite studio + Astro landing page. 33 built-in projects
+> (all individual GitHub submodules) with dual rendering (server-side CLI +
 > client-side WASM), tiered access control, 3D Carousel gallery,
-> AI-assisted design, and GitHub integration.
+> AI-assisted design, and GitHub integration. Every project carries
+> CERN-OHL-W-2.0 and lives at github.com/madfam-org/<slug>.
 
 Yantra4D is a multi-project platform for parametric OpenSCAD models with a web-based 3D preview studio, evolving into a **Hyperobjects Commons** — a platform for Bounded 4D Hyperobjects with Common Denominator Geometry (CDG) interfaces that enable interoperability across the commons. Each project is defined by a `project.json` manifest that declares modes, parameters, parts, colors, labels, estimation formulas, verification checks, bill of materials, and optional `hyperobject` metadata (domain, CDG interfaces, material awareness, societal benefit). The UI and backend are fully data-driven from this manifest — most new features require only manifest edits with zero code changes.
+
+Every project in `projects/` is an **independent git submodule** pointing to its own public repository under the `madfam-org` GitHub organization. Clone with `git clone --recurse-submodules https://github.com/madfam-org/yantra4d` to get all project sources.
 
 The architecture has three layers: a Flask API backend that renders models via the OpenSCAD CLI, a React 19 + Vite + Three.js frontend studio with Shadcn UI components (features include wireframe mode, bounding box visualization, and dark mode), and an Astro marketing landing page with React islands. When the backend is unreachable, the studio falls back to client-side rendering via OpenSCAD compiled to WebAssembly.
 
 The platform supports four user tiers (guest, basic, pro, madfam) that gate features like export formats (STL/3MF/OFF), GitHub import and sync, AI-assisted parameter configuration, AI-powered SCAD code editing, and project limits. AI features use streaming SSE with support for Anthropic and OpenAI providers. GitHub integration enables repo import, file editing via a Monaco-based SCAD editor, and git operations (status, diff, commit, push, pull).
 
-The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite, Tailwind CSS, Shadcn UI, Three.js), Astro, Docker, Vitest + RTL + jest-axe (frontend testing), and pytest (backend testing). The platform ships with 36 built-in projects including gridfinity (modular storage), microscope-slide-holder (microscope slide retention — first hyperobject), polydice (dice), gears, scara-robotics (precision SCARA robotics Harmonic Drive), microscope-slide-hyperobject, voronoi, maze, relief, and more.
+The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite, Tailwind CSS, Shadcn UI, Three.js), Astro, Docker, Vitest + RTL + jest-axe (frontend testing), and pytest (backend testing).
 
 ## Documentation
 
@@ -26,10 +29,45 @@ The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite,
 - [Verification](./docs/verification.md): Automated STL quality checks — watertightness, printability, assembly fit
 - [Manifest Schema](./packages/schemas/project-manifest.schema.json): JSON Schema for project.json validation
 - [Troubleshooting](./docs/troubleshooting.md): Render timeouts, CORS, git submodules, Docker env vars
+- [CERN-OHL-W-2.0 License](./docs/licenses/CERN-OHL-W-2.0.txt): License text for all hyperobject projects
 
-## Projects
+## Projects (33 — each an independent GitHub repo)
 
-- [projects/](./projects/): 36 built-in parametric SCAD projects (gridfinity, microscope-slide-holder, polydice, gears, scara-robotics, voronoi, maze, relief, and more)
+All projects live at `https://github.com/madfam-org/<slug>` under CERN-OHL-W-2.0.
+
+- [projects/cq-hyperobject-test](https://github.com/madfam-org/cq-hyperobject-test): CadQuery B-Rep hyperobject test
+- [projects/custom-msh](https://github.com/madfam-org/custom-msh): Custom microscope slide holder
+- [projects/din-rail-clip](https://github.com/madfam-org/din-rail-clip): Parametric DIN rail clip
+- [projects/extrusion-hyperobject](https://github.com/madfam-org/extrusion-hyperobject): Aluminum extrusion framing
+- [projects/faircap-filter](https://github.com/madfam-org/faircap-filter): Faircap water filter
+- [projects/fasteners](https://github.com/madfam-org/fasteners): Bolts, nuts, threads
+- [projects/framing-hyperobject](https://github.com/madfam-org/framing-hyperobject): Framing/containment systems
+- [projects/gear-reducer](https://github.com/madfam-org/gear-reducer): Parametric gear reducer
+- [projects/gears](https://github.com/madfam-org/gears): Parametric gear generator
+- [projects/glia-diagnostic](https://github.com/madfam-org/glia-diagnostic): Open-source Glia diagnostic tool
+- [projects/gridfinity](https://github.com/madfam-org/gridfinity): Gridfinity modular storage system
+- [projects/implicit-lattice-hyperobject](https://github.com/madfam-org/implicit-lattice-hyperobject): TPMS lattices (Gyroid/Diamond)
+- [projects/julia-vase](https://github.com/madfam-org/julia-vase): Julia set fractal vases
+- [projects/keyv2](https://github.com/madfam-org/keyv2): Mechanical keyboard keycaps
+- [projects/maze](https://github.com/madfam-org/maze): Parametric maze/labyrinth
+- [projects/microscope-slide-holder](https://github.com/madfam-org/microscope-slide-holder): Slide retention — first hyperobject 🔷
+- [projects/microscope-slide-hyperobject](https://github.com/madfam-org/microscope-slide-hyperobject): Full microscope slide hyperobject
+- [projects/motor-mount](https://github.com/madfam-org/motor-mount): NEMA stepper motor mount
+- [projects/multiboard](https://github.com/madfam-org/multiboard): Multiboard wall storage
+- [projects/parametric-connector](https://github.com/madfam-org/parametric-connector): CDG connector interfaces
+- [projects/polydice](https://github.com/madfam-org/polydice): Polyhedral dice set
+- [projects/portacosas](https://github.com/madfam-org/portacosas): Customizable container/holder
+- [projects/prosthetic-socket](https://github.com/madfam-org/prosthetic-socket): Open-source prosthetic socket
+- [projects/relief](https://github.com/madfam-org/relief): Text relief plaques and signs
+- [projects/rugged-box](https://github.com/madfam-org/rugged-box): Hinged waterproof box with gasket
+- [projects/scara-robotics](https://github.com/madfam-org/scara-robotics): Chronos-SCARA 4D robotic arm (harmonic drives)
+- [projects/soft-jaw](https://github.com/madfam-org/soft-jaw): CNC vise soft jaw
+- [projects/spiral-planter](https://github.com/madfam-org/spiral-planter): Archimedean spiral planter
+- [projects/stemfie](https://github.com/madfam-org/stemfie): STEMFIE construction set
+- [projects/superformula](https://github.com/madfam-org/superformula): Generative superformula vases
+- [projects/tablaco](https://github.com/madfam-org/tablaco): Tablaco modular table (private)
+- [projects/torus-knot](https://github.com/madfam-org/torus-knot): Mathematical torus knot sculpture
+- [projects/voronoi](https://github.com/madfam-org/voronoi): Parametric Voronoi patterns
 
 ## Internal Audits
 

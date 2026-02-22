@@ -35,15 +35,19 @@ Yantra4D is the first browser-native platform to simulate **temporal phasing (4D
 
 ---
 
-## 📦 The Commons Catalog (36+ Projects)
-From modular storage systems like **Gridfinity** to precision robotics like **SCARA Harmonic Drives**, the Commons provides a massive library of ready-to-print hyperobjects.
+## 📦 The Commons Catalog (33 Projects — each an independent GitHub repo)
 
-| Ecosystem | Description |
+All 33 projects are public repos under `madfam-org`, licensed **CERN-OHL-W-2.0**. Every `projects/<slug>/` is a git submodule.
+
+| Ecosystem | Projects |
 | :--- | :--- |
-| **Gridfinity** | The world-standard modular storage system, optimized for WASM. |
-| **Microscope Commons** | Standardized lab hardware including the **Slide-Holder** hyperobject. |
-| **Fasteners** | Parametric bolts, nuts, and threads with exact B-Rep parity. |
-| **Scara-Robotics** | High-precision parametric robotic limbs and reducers. |
+| **Storage & Enclosures** | Gridfinity · Multiboard · Rugged Box · Ultimate Box · YAPP Box · Portacosas |
+| **Precision Robotics** | Chronos-SCARA (Harmonic Drive) · Motor Mount · Gear Reducer · Gears · Fasteners · Parametric Connector |
+| **Generative Art** | Voronoi · Superformula · Torus Knot · Julia Vase · Maze · Spiral Planter · Relief |
+| **Medical & Bio** | Microscope Slide Holder 🔷 · Microscope Slide Hyperobject 🔷 · Glia Diagnostic · Prosthetic Socket |
+| **Hyperobjects** | Implicit Lattice (TPMS) · Extrusion · Framing · Custom MSH · Faircap Filter · DIN Rail Clip |
+| **Input Devices** | KeyV2 Keycaps · Soft Jaw |
+| **Construction** | STEMFIE · Tablaco (private) · PolyDice · CQ Hyperobject Test |
 
 ---
 
@@ -58,6 +62,11 @@ For peak Developer Experience and Agentic Discovery, consult our interconnected 
 ---
 
 ## 🚀 Quick Start
+
+### Clone (with all project submodules)
+```bash
+git clone --recurse-submodules https://github.com/madfam-org/yantra4d
+```
 
 ### Development
 ```bash

@@ -70,7 +70,7 @@ export function useWorkerLoader(url, isGLTF = false) {
 
         // Initialize singleton worker
         if (!stlWorkerInstance) {
-            stlWorkerInstance = new Worker(new URL('../workers/stlWorker.js', import.meta.url), {
+            stlWorkerInstance = new Worker(new URL('../../workers/stlWorker.js', import.meta.url), {
                 type: 'module'
             })
         }

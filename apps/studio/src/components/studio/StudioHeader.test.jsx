@@ -196,6 +196,7 @@ describe('StudioHeader', () => {
   it('renders auth gates for AI and editor', () => {
     render(<StudioHeader {...defaultProps} />)
     expect(screen.getByTestId('auth-gate-basic')).toBeInTheDocument()
-    expect(screen.getByTestId('auth-gate-pro')).toBeInTheDocument()
+    // There are now two pro gates (Synthesis Engine + Code Editor)
+    expect(screen.getAllByTestId('auth-gate-pro')).toHaveLength(2)
   })
 })

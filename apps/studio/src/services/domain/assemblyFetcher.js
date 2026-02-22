@@ -24,7 +24,7 @@ function paramHash(params, geometryKeys) {
 function parseSTLWithWorker(fullUrl) {
   return new Promise((resolve, reject) => {
     if (!stlWorkerInstance) {
-      stlWorkerInstance = new Worker(new URL('../workers/stlWorker.js', import.meta.url), {
+      stlWorkerInstance = new Worker(new URL('../../workers/stlWorker.js', import.meta.url), {
         type: 'module'
       })
     }

@@ -58,7 +58,7 @@ The goal is to ensure all Yantra4D projects are fully self-contained, standardiz
 - [x] **Ecosystem Attribution:** Accredited Zack Freedman, Paulo Kiefe, Keep Making in manifests.
 - [x] **Vendor Eradication:** Flattening `vendor/` folders into project roots.
 - [x] **Cross-Project Dependency Resolution:** Eliminating unsafe parent-relative paths (`../`).
-- [x] **100% Audit Passing:** Reaching zero violations across all 36+ projects.
+- [x] **100% Audit Passing:** Reaching zero violations across all 33 projects.
 
 ### Phase 10 — Nanoscale Material Hyperobjects & Physical Intelligence (Completed)
 Treating additive manufacturing substrates as phased, nested hyperobjects to grant macroscopic geometries emergent "physical intelligence."
@@ -87,8 +87,19 @@ Holistic codebase audit ensuring absolute inner coherence between research docum
 - [x] **Browser-Based E2E Verification:** Expand Playwright test suites to validate Digital Twin UI, WASM Circuit Breaker, and Undo/Redo state management.
 - [x] **Structural Lock-In:** Achieve peak platform coherence with zero drift between documentation claims and programmatic reality.
 
+### Phase 12 — Federated Commons: Projects-as-Independent-Repos (Completed)
+Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign, fork-friendly GitHub repository — individually versionable, independently forkable, and importable as a git submodule.
+
+- [x] **Independent GitHub Repositories:** All 33 hyperobject projects extracted from the monorepo and published as individual public repos under `madfam-org` (32 public, 1 private).
+- [x] **CERN-OHL-W-2.0 Licensing:** Every project repo carries the CERN Open Hardware Licence Version 2 — Weakly Reciprocal. License text archived at `docs/licenses/CERN-OHL-W-2.0.txt`.
+- [x] **Git Submodule Architecture:** All `projects/<slug>/` directories are now registered git submodules in `.gitmodules`, enabling `git clone --recurse-submodules` for full checkout.
+- [x] **Stub Eradication:** Orphaned `sdk-test` and `slide-holder` stub directories removed from the monorepo.
+- [x] **LLM / Agentic Discovery:** `llms.txt` and `llms-full.txt` updated with full 33-project catalog, GitHub URLs, submodule clone instructions, and CERN license references — enabling native LLM scraping and AI agent discoverability.
+- [x] **Documentation Sync:** `README.md`, `llms.txt`, and `llms-full.txt` reflect the federated repo architecture with per-ecosystem project groupings and correct project count.
+
+---
+
 ## Future Expansion
 - **Real-time Printing Integration:** OctoPrint/Mainsail hooks.
 - **BOM-to-Cart:** Auto-generate hardware shopping carts.
 - **Parametric Assembly Animation:** Live instruction animations.
-- **Agentic Discovery:** Formalize `/llms.txt` specifications for native LLM scraping.

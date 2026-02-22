@@ -14,6 +14,7 @@ import { usePlatform } from '../../contexts/system/PlatformProvider'
 export default function StudioHeader({
   editorOpen, toggleEditor,
   aiPanelOpen, toggleAiPanel, onForkRequest,
+  setSynthesisModalOpen
 }) {
   const {
     manifest, projectSlug,
@@ -78,6 +79,17 @@ export default function StudioHeader({
           >
             <Sparkles className="h-4 w-4" />
             <span className="sr-only">{aiPanelOpen ? 'Close AI configurator' : 'Open AI configurator'}</span>
+          </Button>
+        </AuthGate>
+        <AuthGate tier="pro">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSynthesisModalOpen(true)}
+            title="Synthesize Project"
+          >
+            <Sparkles className="h-4 w-4 text-purple-500" />
+            <span className="sr-only">Synthesize Project</span>
           </Button>
         </AuthGate>
         <AuthGate tier="pro">

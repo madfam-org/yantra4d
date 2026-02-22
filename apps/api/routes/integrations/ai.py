@@ -15,6 +15,7 @@ from services.core.tier_service import resolve_tier, get_tier_limits
 from services.ai.ai_session import create_session, get_session
 from services.ai.ai_configurator import stream_response as stream_configurator
 from services.ai.ai_code_editor import stream_response as stream_code_editor
+from services.ai.ai_synthesizer import stream_synthesis_response
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +109,39 @@ def chat_stream():
                 yield f"data: {json.dumps(event)}\n\n"
         except Exception as e:
             logger.error("AI stream error: %s", e)
+            yield f"data: {json.dumps({'event': 'error', 'error': str(e)})}\n\n"
+
+    return Response(generate(), mimetype="text/event-stream")
+
+@ai_bp.route("/api/ai/synthesize", methods=["POST"])
+@require_tier("pro")
+@limiter.limit(_get_ai_rate_limit)
+@require_json_body
+def synthesize_project():
+    """SSE streaming endpoint for synthesizing a new Yantra4D Project."""
+    if not Config.AI_API_KEY:
+        return error_response("AI features are not configured", 503)
+
+    data = request.json
+    prompt = data.get("prompt", "").strip()
+
+    if not prompt:
+        return error_response("prompt is required", 400)
+    if len(prompt) > MAX_AI_MESSAGE_CHARS:
+        return error_response(f"Prompt must be {MAX_AI_MESSAGE_CHARS} characters or less", 400)
+
+    # Note: Using random string or session generation for tracking the synthesizing state
+    import uuid
+    session_id = str(uuid.uuid4())
+    create_session("synthesis", "synthesizer", session_id)
+
+    def generate():
+        try:
+            events = stream_synthesis_response(session_id, prompt)
+            for event in events:
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as e:
+            logger.error("Synthesis stream error: %s", e)
             yield f"data: {json.dumps({'event': 'error', 'error': str(e)})}\n\n"
 
     return Response(generate(), mimetype="text/event-stream")

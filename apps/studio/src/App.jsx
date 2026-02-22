@@ -13,6 +13,7 @@ import ConfirmRenderDialog from './components/feedback/ConfirmRenderDialog'
 import AuthButton from './components/auth/AuthButton'
 import DemoBanner from './components/feedback/DemoBanner'
 import RateLimitBanner from './components/feedback/RateLimitBanner'
+import SynthesisModal from './components/studio/SynthesisModal'
 import { ErrorBoundary } from './components/feedback/ErrorBoundary'
 import './index.css'
 
@@ -43,6 +44,11 @@ function App() {
     sessionStorage.setItem('yantra4d-ai-panel', String(next))
     return next
   })
+
+  const [synthesisModalOpen, setSynthesisModalOpen] = useState(false)
+  const handleSynthesisComplete = useCallback((newSlug) => {
+    navigate(`/project/${newSlug}`)
+  }, [navigate])
 
   // Get state from ProjectContext
   const {
@@ -132,6 +138,7 @@ function App() {
           aiPanelOpen={aiPanelOpen}
           toggleAiPanel={toggleAiPanel}
           onForkRequest={handleForkRequest}
+          setSynthesisModalOpen={setSynthesisModalOpen}
         />
       )}
 
@@ -196,6 +203,13 @@ function App() {
         onCancel={handleCancelRender}
         estimatedTime={pendingEstimate}
       />
+      
+      <SynthesisModal 
+        open={synthesisModalOpen}
+        onOpenChange={setSynthesisModalOpen}
+        onSynthesisComplete={handleSynthesisComplete}
+      />
+
       <Toaster richColors position="bottom-right" />
     </div>
   )

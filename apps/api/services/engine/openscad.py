@@ -261,26 +261,49 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         return
 
     try:
-        for line in process.stderr:
-            line = line.strip()
-            if not line:
-                continue
+        import queue
+        q = queue.Queue()
+        
+        def reader(stream):
+            for line_val in iter(stream.readline, ''):
+                q.put(line_val)
+            q.put(None)
+            
+        t = threading.Thread(target=reader, args=(process.stderr,))
+        t.daemon = True
+        t.start()
 
-            # Detect phase transitions
-            detected_phase = get_phase_from_line(line)
-            if detected_phase and detected_phase in PHASE_ORDER:
-                phase_idx = PHASE_ORDER.index(detected_phase)
-                current_phase_progress = sum(PHASE_WEIGHTS.get(p, 0) for p in PHASE_ORDER[:phase_idx + 1])
+        while True:
+            try:
+                line = q.get(timeout=10.0)
+                if line is None:
+                    break
+                    
+                line = line.strip()
+                if not line:
+                    continue
 
-            # Calculate overall progress
-            overall_progress = part_base + (current_phase_progress / 100) * part_weight
+                # Detect phase transitions
+                detected_phase = get_phase_from_line(line)
+                if detected_phase and detected_phase in PHASE_ORDER:
+                    phase_idx = PHASE_ORDER.index(detected_phase)
+                    current_phase_progress = sum(PHASE_WEIGHTS.get(p, 0) for p in PHASE_ORDER[:phase_idx + 1])
 
-            yield json.dumps({
-                'event': 'output',
-                'part': part,
-                'line': line,
-                'progress': round(overall_progress)
-            })
+                # Calculate overall progress
+                overall_progress = part_base + (current_phase_progress / 100) * part_weight
+
+                yield json.dumps({
+                    'event': 'output',
+                    'part': part,
+                    'line': line,
+                    'progress': round(overall_progress)
+                })
+            except queue.Empty:
+                yield json.dumps({
+                    'event': 'ping',
+                    'part': part,
+                    'message': 'keep-alive'
+                })
 
         process.wait()
     finally:

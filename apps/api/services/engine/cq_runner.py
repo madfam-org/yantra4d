@@ -21,10 +21,14 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
         script_content = f.text() if hasattr(f, 'text') else f.read()
 
     # Create an execution environment and inject parameters
-    exec_globals = {"cq": cq}
+    exec_globals = {"cq": cq, "__file__": script_path, "__name__": "__main__"}
     exec_globals.update(params)
 
     try:
+        # Mock sys.argv so script's argparse doesn't break
+        old_argv = sys.argv
+        sys.argv = [script_path, "--params", params_json, "--out", output_path]
+
         # Execute the script. The script should assign the final shape to an 'assembly', 'result', or 'part' variable.
         exec(script_content, exec_globals)
         
@@ -86,6 +90,8 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     except Exception as e:
         print(f"Error executing CadQuery script: {e}")
         sys.exit(1)
+    finally:
+        sys.argv = old_argv
 
 if __name__ == "__main__":
     if len(sys.argv) < 5:

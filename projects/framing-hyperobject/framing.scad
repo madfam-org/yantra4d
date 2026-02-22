@@ -2,8 +2,7 @@ include <../../libs/BOSL2/std.scad>
 include <../../libs/scad_core/core.scad>
 use <profiles/classic.scad>
 use <profiles/industrial.scad>
-use <mounting/vesa.scad>
-use <mounting/standoffs.scad>
+include <../../libs/yantra4d/cdg_interfaces.scad>
 use <containers/slabs.scad>
 use <containers/slabs.scad>
 use <containers/capsules.scad>
@@ -48,11 +47,11 @@ module frame_assembly() {
 
   // Mounting
   if (mounting_style == "vesa_75") {
-    translate([0, 0, -1]) color("dimgray") vesa_pattern("MIS-D 75");
+    translate([0, 0, -1]) color("dimgray") y4d_vesa_pattern("MIS-D 75");
   } else if (mounting_style == "vesa_100") {
-    translate([0, 0, -1]) color("dimgray") vesa_pattern("MIS-D 100");
+    translate([0, 0, -1]) color("dimgray") y4d_vesa_pattern("MIS-D 100");
   } else if (mounting_style == "standoffs") {
-    color("silver") standoff_set(width - 40, height - 40, 25);
+    color("silver") y4d_standoff_set(width - 40, height - 40, 25);
   } else if (mounting_style == "french_cleat") {
     translate([0, height / 3, -depth / 2]) color("peru") y4d_french_cleat(length=width - 40);
   }

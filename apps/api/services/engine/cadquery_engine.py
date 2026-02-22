@@ -81,23 +81,46 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         return
 
     try:
+        import queue
+        q = queue.Queue()
+        
+        def reader(stream):
+            for line_val in iter(stream.readline, ''):
+                q.put(line_val)
+            q.put(None)
+            
+        t = threading.Thread(target=reader, args=(process.stdout,))
+        t.daemon = True
+        t.start()
+
         lines_read = 0
-        for line in process.stdout:
-            line = line.strip()
-            if not line:
-                continue
+        while True:
+            try:
+                line = q.get(timeout=10.0)
+                if line is None:
+                    break
+                    
+                line = line.strip()
+                if not line:
+                    continue
 
-            lines_read += 1
-            # Fake progress based on output lines (since we don't have exact phases)
-            progress_incr = min(80, lines_read * 5)
-            overall_progress = part_base + (progress_incr / 100) * part_weight
+                lines_read += 1
+                # Fake progress based on output lines (since we don't have exact phases)
+                progress_incr = min(80, lines_read * 5)
+                overall_progress = part_base + (progress_incr / 100) * part_weight
 
-            yield json.dumps({
-                'event': 'output',
-                'part': part,
-                'line': line,
-                'progress': round(overall_progress)
-            })
+                yield json.dumps({
+                    'event': 'output',
+                    'part': part,
+                    'line': line,
+                    'progress': round(overall_progress)
+                })
+            except queue.Empty:
+                yield json.dumps({
+                    'event': 'ping',
+                    'part': part,
+                    'message': 'keep-alive'
+                })
 
         process.wait()
     finally:

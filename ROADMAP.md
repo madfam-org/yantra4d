@@ -88,7 +88,7 @@ Before expanding with new features or new hyperobject projects, the platform mus
 
 ### 3.9 — Visual "3D Git" & Decentralized Ecosystem
 - [x] **Visual Version Control (3D Diffing):** Implement a Three.js-based visual diffing tool.
-- [ ] **Decentralized Instancing:** Enhance the CLI and multi-project tools to allow independent creators to easily spin up their own white-labeled Yantra4D nodes.
+- [x] **Decentralized Instancing:** Enhance the CLI and multi-project tools to allow independent creators to easily spin up their own white-labeled Yantra4D nodes.
 
 ### 3.10 — Reliability & Documentation
 - [x] **4D Docs Application:** Deployed an Astro Starlight `apps/docs` portal at `4d-docs.madfam.io` for "peak devX".
@@ -125,17 +125,17 @@ This phase focuses on reaching 100% architectural parity across the entire Hyper
 To solidify our status as an elite Hyperobjects Commons platform, the immediate next focus must turn toward mathematical verification, deduplication, and collaborative viewing.
 
 ### Priority 1: 6.1 — Automated Geometric Regression Testing
-- [ ] Build a CI pipeline testing script to dynamically generate meshes via both CSG (OpenSCAD) and B-Rep (CadQuery) algorithms.
-- [ ] Conduct volumetric and bounding-box analysis to guarantee the Python output mathematically matches the original SCAD geometry.
+- [x] Build a CI pipeline testing script to dynamically generate meshes via both CSG (OpenSCAD) and B-Rep (CadQuery) algorithms.
+- [x] Conduct volumetric and bounding-box analysis to guarantee the Python output mathematically matches the original SCAD geometry.
 
 ### Priority 2: 6.2 — Core Library Geometry Refactoring (Tech Debt)
-- [ ] Eliminate fragmented mathematical logic across the 36 projects. 
-- [ ] Centralize reusable constructs (threads, snaps, specific module functions) deeply into Yantra4D's integrated `libs/` namespace.
+- [x] Eliminate fragmented mathematical logic across the 36 projects. 
+- [x] Centralize reusable constructs (threads, snaps, specific module functions) deeply into Yantra4D's integrated `libs/` namespace.
 
 ### Priority 3: 6.3 — Dual-Kernel CDG Interface Compliance
-- [ ] Explicitly verify that the 6 required Common Denominator Geometry (CDG) interfaces (e.g. `rabbet`, `french_cleat`) physically slice flawless bounds natively across BOTH kernels.
+- [x] Explicitly verify that the 6 required Common Denominator Geometry (CDG) interfaces (e.g. `rabbet`, `french_cleat`) physically slice flawless bounds natively across BOTH kernels.
 
 ### Priority 4: 6.4 — Visual "3D Git" Implementation
-- [ ] Connect the Monaco editor's GitHub tracking into the Three.js viewport.
-- [ ] Visualize geometrical additions (green) and deletions (red) directly on the realtime 3D mesh.
+- [x] Connect the Monaco editor's GitHub tracking into the Three.js viewport.
+- [x] Visualize geometrical additions (green) and deletions (red) directly on the realtime 3D mesh.
 

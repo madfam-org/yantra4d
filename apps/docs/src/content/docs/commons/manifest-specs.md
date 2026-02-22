@@ -45,3 +45,4 @@ The JSON structure is strictly validated by `scripts/validate_manifests.py` agai
 1. **`modes`**: Defines the different visual variants of a project. A hyperobject **must** specify both `scad_file` (OpenSCAD fallback) and `cq_file` (CadQuery dual-kernel execution).
 2. **`parameters`**: Declares UI interactive components for the Yantra4D React workspace to auto-generate.
 3. **`estimate_constants`**: Required numerical heuristics allowing the AI logic to predict the exact time a user's browser/backend CPU will take compiling the STL depending on parameter densities.
+4. **`material_awareness`**: When defined, connects the geometric cartridge to the intelligence pipeline of Yantra4D's **Material Hyperobjects**. It allows the object to attain "hyperawareness", ingesting nanoscale variables (TDA), spatial compensations (shrinkage), and semantic data from physical AM substrates to dynamically adapt its geometry.

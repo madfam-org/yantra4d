@@ -19,6 +19,9 @@ Every project in Yantra4D is a self-contained **"Cartridge"**.
 - **Poly-Kernel**: High-performance OpenSCAD (CSG) for browser-side WASM reactivity + mathematically exact CadQuery (B-Rep) for engineering-grade STEP exports.
 - **Portability**: Drop a project folder into `projects/` and the platform instantly white-labels the UI to serve it.
 
+### 🧠 Material Hyperobjects & Hyperawareness
+Geometry is meaningless without material context. The Yantra4D Commons pioneers the integration of **Material Hyperobjects**—metadata modules (`/materials/`) capturing the Topological Data Analysis (TDA), spatial compensations, and semantic ontologies of physical AM substrates. By feeding this nanoscale intelligence directly into the geometric compiler, our additively manufacturable hyperobjects are imbued with **"hyperawareness"**, actively warping and adapting their dimensions to survive physical reality.
+
 ---
 
 ## 🛠️ The Stack

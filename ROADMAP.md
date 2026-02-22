@@ -99,7 +99,59 @@ Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign,
 
 ---
 
-## Future Expansion
-- **Real-time Printing Integration:** OctoPrint/Mainsail hooks.
-- **BOM-to-Cart:** Auto-generate hardware shopping carts.
-- **Parametric Assembly Animation:** Live instruction animations.
+## Upcoming Sprints
+
+> Platform stability is confirmed (588 Studio unit tests passing, 33/33 compliance audit clean, CI green). The following sprints are sequenced for maximum architectural leverage.
+
+---
+
+### Sprint 13 — Per-Project CI & Federated Repo Health
+_Dependency: None — can start immediately._
+
+Each of the 33 independent project repos now needs its own CI to catch regressions independently of the yantra4d monorepo pipeline.
+
+- [ ] **GitHub Actions template:** Create a reusable `.github/workflows/project-ci.yml` workflow (lint SCAD, validate `project.json` against schema, run `audit_compliance.py` for the single project).
+- [ ] **Propagate to all 33 repos:** Script to apply the CI template across all `madfam-org/<slug>` repositories via GitHub CLI.
+- [ ] **Submodule update automation:** GitHub Action in yantra4d that auto-bumps submodule SHA refs when a project repo's `main` branch passes CI.
+- [ ] **`tablaco` exclusion hardening:** Confirm `update = none` in `.gitmodules` propagates correctly so public clones never block on the private repo.
+
+---
+
+### Sprint 14 — Parametric Assembly Animation
+_Dependency: None — Three.js viewer already in place._
+
+Enable the Yantra4D Studio to animate parametric transitions between two named states (e.g., "collapsed → expanded", "open → closed"), producing in-browser assembly instruction animations.
+
+- [ ] **Manifest keyframes:** Extend `project.json` schema with an `animations[]` block (from-state params, to-state params, duration, easing, label).
+- [ ] **Three.js interpolation engine:** STL-to-STL morph via `THREE.BufferGeometry` lerp, or render N keyframes and play as a flipbook.
+- [ ] **Assembly sequence panel:** UI panel to play/pause/scrub animation, export as GIF or WebM.
+- [ ] **Reference implementation:** Add animation manifest to `gridfinity` (baseplate → cup assembly sequence).
+
+---
+
+### Sprint 15 — Real-time Printing Integration (OctoPrint / Mainsail)
+_Dependency: None — new subsystem from scratch._
+
+Allow users to send a rendered STL directly from the Yantra4D Studio to a connected 3D printer via OctoPrint REST API or Mainsail/Moonraker WebSocket.
+
+- [ ] **Printer profile manifest:** New `/printers/` directory with `printer.json` files (API endpoint, auth token, bed dimensions, nozzle diameter).
+- [ ] **OctoPrint REST client:** Backend service (`services/integrations/octoprint.py`) — upload STL, start print, poll status.
+- [ ] **Moonraker/Klipper WebSocket client:** Alternative for Mainsail users.
+- [ ] **Print Queue UI:** Studio panel for printer selection, print status, temperature graphs.
+- [ ] **Tier gating:** Print dispatch available at `pro+` tier only.
+
+---
+
+### Sprint 16 — BOM-to-Cart (ForgeSight Integration)
+_Dependency: **[ForgeSight](https://github.com/madfam-org/forgesight) platform must be production-ready.**_
+
+> [!IMPORTANT]
+> This sprint is explicitly blocked on the ForgeSight platform reaching production stability. ForgeSight is the commercial and industry data layer for Yantra4D — it provides real-time pricing, supplier availability, materials data, and consumables intelligence. Do not begin this sprint until ForgeSight's API is stable and versioned.
+
+The BOM API (`routes/bom.py`) and `BomPanel.jsx` already exist, and `supplier_url` is in the manifest schema. Sprint 16 adds the aggregation, pricing, and checkout layers powered by ForgeSight.
+
+- [ ] **ForgeSight API client:** Backend service (`services/integrations/forgesight.py`) — query materials pricing, supplier stock, lead times.
+- [ ] **Cart aggregation endpoint:** `POST /api/projects/<slug>/bom/cart` — resolves BOM hardware items against ForgeSight catalog, returns cart with live pricing.
+- [ ] **BOM-to-Cart UI:** Studio panel extension — "Add all to cart" button, per-item supplier selection, estimated total cost.
+- [ ] **Material hyperobject linking:** Auto-match `target_material` manifest param to ForgeSight material catalog entries for live `mat_shrinkage` / `mat_clearance` compensation values.
+- [ ] **Tier gating:** Cart export available at `basic+` tier; live pricing at `pro+`.

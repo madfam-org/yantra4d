@@ -48,36 +48,39 @@ def client(app):
 
 class TestEstimateAPI:
     def test_estimate_constant_mode(self, client):
-        """Constant mode: base_time + base_units*per_unit + 1_part*per_part = 5 + 1*2 + 1*8 = 15"""
+        """Constant mode: slicer-grade estimate. 1 unit, 1 part.
+        Formula: (1 * 0.20 / 8.0) + (1 * 180.0) = 180.025 → rounds to 180.0"""
         res = client.post("/api/estimate", json={"mode": "single", "project": "test-project"})
         assert res.status_code == 200
         data = res.get_json()
-        assert data["estimated_seconds"] == 15
+        assert data["estimated_seconds"] == 180.0
         assert data["num_parts"] == 1
-        assert data["num_units"] == 1
+        assert data["metrics"] == "slicer_grade_heuristic"
 
     def test_estimate_grid_mode(self, client):
-        """Grid mode with rows=10, cols=10: base_time + 100*per_unit + 2*per_part = 5 + 200 + 16 = 221"""
+        """Grid mode 10x10: slicer-grade estimate. 100 units, 2 parts.
+        Formula: (100 * 0.20 / 8.0) + (2 * 180.0) = 2.5 + 360.0 = 362.5"""
         res = client.post("/api/estimate", json={
             "mode": "grid", "project": "test-project",
             "rows": 10, "cols": 10,
         })
         assert res.status_code == 200
         data = res.get_json()
-        assert data["estimated_seconds"] == 221
+        assert data["estimated_seconds"] == 362.5
         assert data["num_parts"] == 2
-        assert data["num_units"] == 100
+        assert data["metrics"] == "slicer_grade_heuristic"
 
 
 class TestEstimateExportFormat:
     def test_estimate_ignores_export_format(self, client):
-        """export_format is a render param, not an estimate param — estimate should still work."""
+        """export_format is a render param — estimate should still work and return 180.0 for single mode."""
         res = client.post("/api/estimate", json={
             "mode": "single", "project": "test-project", "export_format": "3mf",
         })
         assert res.status_code == 200
         data = res.get_json()
-        assert data["estimated_seconds"] == 15
+        assert data["estimated_seconds"] == 180.0
+        assert data["metrics"] == "slicer_grade_heuristic"
 
 
 class TestRenderExportFormat:

@@ -118,3 +118,4 @@
 [submodule "projects/tablaco"]
 	path = projects/tablaco
 	url = https://github.com/madfam-org/tablaco.git
+	update = none

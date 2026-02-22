@@ -1,0 +1,1 @@
+function _pnoise_fade(t) = t ^ 3 * (t * (t * 6 - 15) + 10);

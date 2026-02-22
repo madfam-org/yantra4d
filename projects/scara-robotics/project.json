@@ -1,41 +1,107 @@
 {
   "project": {
-    "name": "SCARA Robotics",
+    "name": "Chronos-SCARA",
     "slug": "scara-robotics",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": {
-      "en": "Precision Strain Wave Gear (Harmonic Drive) for SCADA-controlled robotic arm joints. High-torque reduction in a compact form factor.",
-      "es": "Engranaje de onda de tensi\u00f3n de precisi\u00f3n (Harmonic Drive) para articulaciones de brazos rob\u00f3ticos controlados por SCADA."
+      "en": "The Chronos-SCARA: a 4D Bounded Hyperobject robotic arm system.\n\nThis is not a simple CAD model — it is a parametric instantiation of a full robotic system-of-systems. Inspired by the open-source lineage of PyBot, RepRap Morgan, and ROS2-based projects, the Chronos-SCARA treats the SCARA arm as a distributed, temporal, relational entity: a Hyperobject in the sense defined by Timothy Morton.\n\nThe architecture is a hierarchy of three layers:\n1. Kinetic Layer — Aluminum-frame SCARA linkages with Strain Wave (Harmonic) Gear joints. Commercial harmonic drives maintain zero-backlash, preserving the integrity of the 4D bounded manifold.\n2. Sensory Layer (Panopticon) — Endstop anchors and Z-probe for proprioception, vision integration hooks for Visual Servoing.\n3. Kinematic Engine — Inverse Kinematics (IK) solver outputs, Singularity Manifold visualization, and a Bounded C-Space workspace envelope.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El Chronos-SCARA: un sistema de brazo robótico como Hiperobjeto 4D Acotado.\n\nNo es un modelo CAD simple, sino una instanciación paramétrica de un sistema-de-sistemas robótico completo. Configurador oficial: Yantra4D"
     },
-    "thumbnail": "/projects/scada-robotics.webp",
+    "thumbnail": "/projects/scara-robotics.webp",
     "tags": [
       "robotics",
       "industrial",
-      "scada",
-      "gear",
+      "scara",
+      "harmonic-drive",
+      "kinematics",
       "hyperobject",
-      "precision"
+      "precision",
+      "4d",
+      "chronos"
     ],
     "difficulty": "advanced",
     "hyperobject": {
       "is_hyperobject": true,
       "domain": "industrial",
-      "interfaces": [
-        "mounting_plate",
-        "linear_rail",
-        "nema17_stepper",
-        "endstop_switch"
+      "commons_license": "cdg-open",
+      "material_awareness": true,
+      "societal_benefit": "Democratizes precision robotic manipulation for open-source R&D and educational contexts, enabling closed-loop SCARA arms to be fabricated and maintained without commercial IP dependencies.",
+      "ontological_framework": "4D Bounded Hyperobject — Chronos-SCARA exists as a distributed, temporal, relational entity across repositories, supply chains, and firmware histories. Its physical footprint is merely a local phase of a massively distributed robotic hyperobject.",
+      "layers": {
+        "cloud": "Git repository (URDF, Firmware Config, Vision Models) — Immortal, Non-local Memory.",
+        "compute": "Raspberry Pi 5 + ROS2 Humble + Klipper Host — 4D Trajectory Planner and IK Solver.",
+        "kinetic": "Aluminum-frame SCARA with commercial harmonic drives and closed-loop steppers (STM32 MCU).",
+        "sensory": "Endstops, Z-probe, and vision integration hooks — the Panopticon Sensorium."
+      },
+      "cdg_interfaces": [
+        {
+          "id": "nema17_mount",
+          "label": "NEMA 17 Stepper Motor Mount",
+          "geometry_type": "bolt_pattern",
+          "standard": "cdg-bolt_pattern-v1",
+          "parameters": [
+            "motor_frame_size"
+          ]
+        },
+        {
+          "id": "harmonic_output_flange",
+          "label": "Harmonic Drive Output Flange",
+          "geometry_type": "socket",
+          "standard": "cdg-socket-v1",
+          "parameters": [
+            "bore_diameter",
+            "harmonic_ratio"
+          ]
+        },
+        {
+          "id": "linear_rail_carriage",
+          "label": "MGN12 Linear Rail Carriage",
+          "geometry_type": "profile",
+          "standard": "cdg-profile-v1",
+          "parameters": [
+            "rail_width"
+          ]
+        },
+        {
+          "id": "endstop_mount",
+          "label": "Endstop / Limit Switch Mount",
+          "geometry_type": "socket",
+          "standard": "cdg-socket-v1",
+          "parameters": []
+        }
+      ]
+    },
+    "attribution": {
+      "lineage": [
+        {
+          "project": "PyBot (JJRobots)",
+          "url": "https://www.hackster.io/news/pybot-is-an-accurate-open-source-scara-robotic-arm-with-3dof-and-can-be-3d-printed-with-ease-fe7191e06fc9",
+          "contribution": "Accessible SCARA morphology with decoupled Z-axis and NEMA 17 actuator ecosystem."
+        },
+        {
+          "project": "RepRap Morgan",
+          "url": "https://reprap.org/forum/read.php?185,291292",
+          "contribution": "Kinematic non-locality via parallel linkage — both motors at the base reduces moving mass."
+        },
+        {
+          "project": "MySCARABot (ROS2)",
+          "url": "https://discourse.openrobotics.org/t/myscarabot-a-ros2-enabled-scara-robot-for-learning/27706",
+          "contribution": "ROS2/Gazebo integration, treating the robot as a computational graph node."
+        }
       ]
     }
   },
   "modes": [
     {
-      "id": "Standard",
+      "id": "harmonic_drive",
       "scad_file": "robot.scad",
       "cq_file": "robot.py",
       "label": {
-        "en": "Full Assembly",
-        "es": "Ensamblaje Completo"
+        "en": "Harmonic Drive Joint",
+        "es": "Articulación de Harmonic Drive"
+      },
+      "description": {
+        "en": "Parametric Strain Wave Gear (Harmonic Drive): the zero-backlash actuator at the heart of the Chronos-SCARA Kinetic Layer. Maintains perfect viscosity between input and output shafts."
       },
       "parts": [
         "wave_generator",
@@ -43,8 +109,50 @@
         "circular_spline"
       ],
       "estimate": {
-        "base_units": 1,
-        "formula": "constant"
+        "base_units": 3,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "kinematic_chain",
+      "scad_file": "robot.scad",
+      "cq_file": "robot.py",
+      "label": {
+        "en": "Full Kinematic Chain (SCARA Assembly)",
+        "es": "Cadena Cinemática Completa (Ensamblaje SCARA)"
+      },
+      "description": {
+        "en": "Full upper-arm and forearm linkage assembly. Exhibits the defining SCARA morphology: horizontal XY motion fully decoupled from the vertical Z-axis, minimizing gravitational viscosity on the primary movers."
+      },
+      "parts": [
+        "shoulder_link",
+        "elbow_link",
+        "z_spindle",
+        "end_effector_mount"
+      ],
+      "estimate": {
+        "base_units": 4,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "sensorium",
+      "scad_file": "robot.scad",
+      "label": {
+        "en": "Sensorium (Panopticon Layer)",
+        "es": "Sensorium (Capa Panóptico)"
+      },
+      "description": {
+        "en": "The Panopticon Sensorium: endstop reference anchors and Z-probe mount. Ties the floating abstract coordinate system to the hard physical reality of the machine frame — without homing, the robot is unmoored in its manifold."
+      },
+      "parts": [
+        "endstop_bracket_x",
+        "endstop_bracket_y",
+        "z_probe_mount"
+      ],
+      "estimate": {
+        "base_units": 3,
+        "formula": "per_part"
       }
     }
   ],
@@ -53,8 +161,8 @@
       "id": "wave_generator",
       "render_mode": 1,
       "label": {
-        "en": "Wave Generator",
-        "es": "Generador de Ondas"
+        "en": "Wave Generator (Cam + Bearing)",
+        "es": "Generador de Ondas (Leva + Rodamiento)"
       },
       "default_color": "#4a90e2"
     },
@@ -62,8 +170,8 @@
       "id": "flexspline",
       "render_mode": 2,
       "label": {
-        "en": "Flexspline",
-        "es": "Flexspline"
+        "en": "Flexspline (Elastic Cup Gear)",
+        "es": "Flexspline (Engranaje Copa Elástica)"
       },
       "default_color": "#e24a4a"
     },
@@ -71,13 +179,96 @@
       "id": "circular_spline",
       "render_mode": 3,
       "label": {
-        "en": "Circular Spline",
-        "es": "Spline Circular"
+        "en": "Circular Spline (Rigid Ring Gear)",
+        "es": "Spline Circular (Corona Rígida)"
       },
       "default_color": "#2d2d2d"
+    },
+    {
+      "id": "shoulder_link",
+      "render_mode": 0,
+      "label": {
+        "en": "Shoulder Link (Upper Arm)",
+        "es": "Eslabón de Hombro (Brazo Superior)"
+      },
+      "default_color": "#d4a017"
+    },
+    {
+      "id": "elbow_link",
+      "render_mode": 0,
+      "label": {
+        "en": "Elbow Link (Forearm)",
+        "es": "Eslabón de Codo (Antebrazo)"
+      },
+      "default_color": "#aaa9a9"
+    },
+    {
+      "id": "z_spindle",
+      "render_mode": 0,
+      "label": {
+        "en": "Z-Spindle (Decoupled Vertical Axis)",
+        "es": "Husillo Z (Eje Vertical Desacoplado)"
+      },
+      "default_color": "#555555"
+    },
+    {
+      "id": "end_effector_mount",
+      "render_mode": 0,
+      "label": {
+        "en": "End Effector Mount",
+        "es": "Soporte de Efector Final"
+      },
+      "default_color": "#222222"
+    },
+    {
+      "id": "endstop_bracket_x",
+      "render_mode": 0,
+      "label": {
+        "en": "X-Axis Endstop Bracket",
+        "es": "Soporte Finales de Carrera X"
+      },
+      "default_color": "#cc3333"
+    },
+    {
+      "id": "endstop_bracket_y",
+      "render_mode": 0,
+      "label": {
+        "en": "Y-Axis Endstop Bracket",
+        "es": "Soporte Finales de Carrera Y"
+      },
+      "default_color": "#cc3333"
+    },
+    {
+      "id": "z_probe_mount",
+      "render_mode": 0,
+      "label": {
+        "en": "Z-Probe Mount (BLTouch / CRTouch)",
+        "es": "Soporte Sonda Z (BLTouch / CRTouch)"
+      },
+      "default_color": "#884ea0"
     }
   ],
   "parameters": [
+    {
+      "id": "target_material",
+      "type": "select",
+      "default": "polymaker-polylite-pla",
+      "options": [
+        {
+          "value": "polymaker-polylite-pla",
+          "label": "Polymaker PolyLite PLA"
+        },
+        {
+          "value": "formlabs-clear-v4",
+          "label": "Formlabs Clear V4 (SLA)"
+        }
+      ],
+      "label": {
+        "en": "Target Material",
+        "es": "Material Objetivo"
+      },
+      "group": "material"
+    },
     {
       "id": "num_teeth",
       "type": "slider",
@@ -86,8 +277,21 @@
       "max": 200,
       "step": 2,
       "label": {
-        "en": "Number of Teeth",
-        "es": "N\u00famero de Dientes"
+        "en": "Harmonic Drive Tooth Count",
+        "es": "Número de Dientes (Harmonic Drive)"
+      },
+      "group": "gear_spec"
+    },
+    {
+      "id": "harmonic_ratio",
+      "type": "slider",
+      "default": 50,
+      "min": 30,
+      "max": 160,
+      "step": 5,
+      "label": {
+        "en": "Gear Reduction Ratio",
+        "es": "Relación de Reducción"
       },
       "group": "gear_spec"
     },
@@ -100,48 +304,171 @@
       "step": 0.1,
       "label": {
         "en": "Gear Module",
-        "es": "M\u00f3dulo de Engranaje"
+        "es": "Módulo de Engranaje"
       },
       "group": "gear_spec"
     },
     {
       "id": "bore_diameter",
       "type": "slider",
-      "default": 5,
+      "default": 8,
       "min": 3,
-      "max": 20,
+      "max": 25,
       "step": 1,
       "label": {
-        "en": "Input Bore (mm)",
-        "es": "Di\u00e1metro de Eje (mm)"
+        "en": "Input Bore Diameter (mm)",
+        "es": "Diámetro de Eje de Entrada (mm)"
+      },
+      "group": "dimensions"
+    },
+    {
+      "id": "link1_length",
+      "type": "slider",
+      "default": 200,
+      "min": 100,
+      "max": 450,
+      "step": 5,
+      "label": {
+        "en": "Shoulder Link Length — L1 (mm)",
+        "es": "Longitud Eslabón Hombro — L1 (mm)"
+      },
+      "group": "dimensions"
+    },
+    {
+      "id": "link2_length",
+      "type": "slider",
+      "default": 150,
+      "min": 80,
+      "max": 350,
+      "step": 5,
+      "label": {
+        "en": "Elbow Link Length — L2 (mm)",
+        "es": "Longitud Eslabón Codo — L2 (mm)"
+      },
+      "group": "dimensions"
+    },
+    {
+      "id": "z_travel",
+      "type": "slider",
+      "default": 100,
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "label": {
+        "en": "Z-Axis Travel (mm)",
+        "es": "Recorrido Eje Z (mm)"
+      },
+      "group": "dimensions"
+    },
+    {
+      "id": "motor_frame_size",
+      "type": "select",
+      "default": "nema17",
+      "options": [
+        {
+          "value": "nema17",
+          "label": "NEMA 17 (42mm) — Hobbyist Grade"
+        },
+        {
+          "value": "nema23",
+          "label": "NEMA 23 (57mm) — Industrial Grade"
+        }
+      ],
+      "label": {
+        "en": "Actuator Frame (Motor Size)",
+        "es": "Tipo de Actuador (Tamaño Motor)"
+      },
+      "group": "actuator"
+    },
+    {
+      "id": "drive_type",
+      "type": "select",
+      "default": "harmonic",
+      "options": [
+        {
+          "value": "harmonic",
+          "label": "Harmonic Drive (Zero Backlash)"
+        },
+        {
+          "value": "belt_gt2",
+          "label": "GT2 Belt Drive (Low Friction)"
+        },
+        {
+          "value": "spur_gear",
+          "label": "Spur Gear (Direct — Educational)"
+        }
+      ],
+      "label": {
+        "en": "Transmission Type",
+        "es": "Tipo de Transmisión"
+      },
+      "group": "actuator"
+    },
+    {
+      "id": "rail_width",
+      "type": "select",
+      "default": 12,
+      "options": [
+        {
+          "value": 9,
+          "label": "MGN9 (9mm)"
+        },
+        {
+          "value": 12,
+          "label": "MGN12 (12mm) — Recommended"
+        },
+        {
+          "value": 15,
+          "label": "MGN15 (15mm)"
+        }
+      ],
+      "label": {
+        "en": "Z-Axis Linear Rail Width (mm)",
+        "es": "Ancho Guía Lineal Eje Z (mm)"
       },
       "group": "dimensions"
     }
   ],
   "parameter_groups": [
     {
+      "id": "material",
+      "label": {
+        "en": "Material Hyperobject",
+        "es": "Hiperobjeto de Material"
+      }
+    },
+    {
       "id": "gear_spec",
       "label": {
-        "en": "Gear Specifications",
-        "es": "Especificaciones de Engranaje"
+        "en": "Harmonic Drive Specifications",
+        "es": "Especificaciones del Harmonic Drive"
       }
     },
     {
       "id": "dimensions",
       "label": {
-        "en": "Dimensions",
-        "es": "Dimensiones"
+        "en": "Kinematic Dimensions (Bounded Manifold)",
+        "es": "Dimensiones Cinemáticas (Manifold Acotado)"
+      }
+    },
+    {
+      "id": "actuator",
+      "label": {
+        "en": "Actuator & Transmission",
+        "es": "Actuador y Transmisión"
       }
     }
   ],
   "export_formats": [
     "stl",
     "step",
-    "3mf"
+    "3mf",
+    "urdf"
   ],
   "estimate_constants": {
-    "base_time": 5,
+    "base_time": 8,
     "per_unit": 1,
-    "per_part": 5
+    "per_part": 6,
+    "wasm_multiplier": 1.5
   }
 }

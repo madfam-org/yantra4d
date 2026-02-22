@@ -22,6 +22,7 @@ class AppConfig:
     OPENSCADPATH: str = field(init=False)
     MULTI_PROJECT: bool = field(init=False)
     STATIC_DIR: Path = field(init=False)
+    FONTS_DIR: Path = field(init=False)
     VERIFY_SCRIPT: Path = field(init=False)
     ANALYTICS_DB_PATH: Path = field(init=False)
 
@@ -104,6 +105,9 @@ class AppConfig:
         self.MULTI_PROJECT = os.getenv("PROJECTS_DIR") is not None or default_projects.is_dir()
 
         self.STATIC_DIR = self.BASE_DIR / "static"
+
+        default_fonts = parent / "libs" / "yantra4d" / "fonts"
+        self.FONTS_DIR = Path(os.getenv("FONTS_DIR", default_fonts))
 
         default_verify = self.BASE_DIR / "tests" / "verify_design.py"
         self.VERIFY_SCRIPT = Path(os.getenv("VERIFY_SCRIPT", default_verify))

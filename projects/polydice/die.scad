@@ -1,4 +1,4 @@
-include <vendor/polydice/PolyDiceGenerator.scad>
+include <PolyDiceGenerator.scad>
 // Yantra4D wrapper — PolyDiceGenerator
 // render_mode: 0=d4, 1=d6, 2=d8, 3=d12, 4=d20
 

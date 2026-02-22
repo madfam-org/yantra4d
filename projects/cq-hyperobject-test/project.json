@@ -3,6 +3,13 @@
     "name": "CadQuery Hyperobject Test",
     "slug": "cq-hyperobject-test",
     "version": "1.0.0",
+    "thumbnail": "/projects/cq-test.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "test",
+      "cadquery",
+      "hyperobject"
+    ],
     "engine": "cadquery"
   },
   "modes": [

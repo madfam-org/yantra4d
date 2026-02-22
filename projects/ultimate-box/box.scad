@@ -31,4 +31,4 @@ ScrewHole = screw_hole_dia;
 
 $fn = fn > 0 ? fn : 32;
 
-include <vendor/box-maker/scad/Advanced-Ultimate-Box-Maker-main.scad>
+include <scad/Advanced-Ultimate-Box-Maker-main.scad>

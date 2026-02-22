@@ -11,9 +11,9 @@ Interlocking half-cube construction system with snap-fit mechanism and grid asse
 
 | ID | Label | SCAD File | Parts |
 |---|---|---|---|
-| `unit` | Unit | `vendor/tablaco/half_cube.scad` | main |
-| `assembly` | Assembly | `vendor/tablaco/assembly.scad` | bottom, top |
-| `grid` | Grid | `vendor/tablaco/tablaco.scad` | bottom, top, rods, stoppers, tubing |
+| `unit` | Unit | `half_cube.scad` | main |
+| `assembly` | Assembly | `assembly.scad` | bottom, top |
+| `grid` | Grid | `tablaco.scad` | bottom, top, rods, stoppers, tubing |
 
 ## Parameters
 

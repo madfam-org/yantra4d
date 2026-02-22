@@ -30,27 +30,39 @@ def _openscad_env(scad_path: str | None = None):
     """
     env = os.environ.copy()
     paths = [Config.OPENSCADPATH]
+    fonts_dirs = []
+
+    if Config.FONTS_DIR and Config.FONTS_DIR.is_dir():
+        fonts_dirs.append(str(Config.FONTS_DIR))
 
     if scad_path:
         project_dir = str(Path(scad_path).parent)
         paths.insert(0, project_dir)
         
-        fonts_dir = os.path.join(project_dir, "fonts")
-        if os.path.isdir(fonts_dir):
-            if fonts_dir not in _fontconfig_cache:
-                fd, conf_path = tempfile.mkstemp(suffix=".conf", prefix="fc_yantra_")
-                os.write(fd, (
-                    '<?xml version="1.0"?>\n'
-                    '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n'
-                    '<fontconfig>\n'
-                    f'  <dir>{fonts_dir}</dir>\n'
-                    '  <include ignore_missing="yes">/etc/fonts/fonts.conf</include>\n'
-                    '</fontconfig>\n'
-                ).encode())
-                os.close(fd)
-                _fontconfig_cache[fonts_dir] = conf_path
-                logger.info("Created fontconfig for %s → %s", fonts_dir, conf_path)
-            env["FONTCONFIG_FILE"] = _fontconfig_cache[fonts_dir]
+        local_fonts = os.path.join(project_dir, "fonts")
+        if os.path.isdir(local_fonts):
+            if local_fonts not in fonts_dirs:
+                fonts_dirs.append(local_fonts)
+                
+    if fonts_dirs:
+        cache_key = ":".join(fonts_dirs)
+        if cache_key not in _fontconfig_cache:
+            fd, conf_path = tempfile.mkstemp(suffix=".conf", prefix="fc_yantra_")
+            
+            dir_tags = "\n".join([f'  <dir>{d}</dir>' for d in fonts_dirs])
+            
+            os.write(fd, (
+                '<?xml version="1.0"?>\n'
+                '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n'
+                '<fontconfig>\n'
+                f'{dir_tags}\n'
+                '  <include ignore_missing="yes">/etc/fonts/fonts.conf</include>\n'
+                '</fontconfig>\n'
+            ).encode())
+            os.close(fd)
+            _fontconfig_cache[cache_key] = conf_path
+            logger.info("Created fontconfig for %s → %s", cache_key, conf_path)
+        env["FONTCONFIG_FILE"] = _fontconfig_cache[cache_key]
 
     env["OPENSCADPATH"] = os.pathsep.join(paths)
     return env

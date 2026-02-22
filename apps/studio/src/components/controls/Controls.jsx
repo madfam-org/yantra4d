@@ -10,6 +10,57 @@ import SliderControl from './SliderControl'
 import ColorGradientControl from './ColorGradientControl'
 
 // ---------------------------------------------------------------------------
+// MaterialPickerWidget — selects materials from the physical Commons registry
+// ---------------------------------------------------------------------------
+function MaterialPickerWidget({ params, setParams }) {
+    const [materials, setMaterials] = useState([])
+    const [loading, setLoading] = useState(false)
+    const selected = params.target_material || null
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setLoading(true)
+        fetch('/api/materials')
+            .then(r => r.json())
+            .then(data => {
+                setMaterials(Array.isArray(data) ? data : [])
+                setLoading(false)
+            })
+            .catch(() => setLoading(false))
+    }, [])
+
+    const handleSelect = useCallback((e) => {
+        const val = e.target.value
+        setParams(prev => ({ ...prev, target_material: val || undefined }))
+    }, [setParams])
+
+    return (
+        <div className="space-y-2 pb-4 border-b border-border">
+            <Label htmlFor="material-target" className="text-sm font-semibold flex items-center justify-between">
+                <span>Material Target</span>
+                {loading && <span className="text-xs font-normal text-muted-foreground animate-pulse">Loading...</span>}
+            </Label>
+            <select
+                id="material-target"
+                className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                value={selected || ""}
+                onChange={handleSelect}
+            >
+                <option value="">Theoretical (No Compensations)</option>
+                {materials.map(mat => {
+                    const m = mat.material
+                    return (
+                        <option key={m.slug} value={m.slug}>
+                            {m.am_technology} | {m.vendor} {m.name}
+                        </option>
+                    )
+                })}
+            </select>
+        </div>
+    )
+}
+
+// ---------------------------------------------------------------------------
 // ComponentPickerWidget — visual hardware selector backed by NopSCADlib catalog
 // ---------------------------------------------------------------------------
 function ComponentPickerWidget({ param, setParams, getLabel, language }) {
@@ -139,8 +190,14 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
     const visiblePresets = presets.filter(p => !p.visible_in_modes || p.visible_in_modes.includes(mode))
 
+    const isMaterialAware = !!manifest?.hyperobject?.material_awareness
+
     return (
         <div className="flex flex-col gap-6">
+            {isMaterialAware && (
+                <MaterialPickerWidget params={params} setParams={setParams} language={language} />
+            )}
+
             {hasNoParameters && visiblePresets.length === 0 && partColors.length === 0 && (
                 <p className="text-sm text-muted-foreground px-4 py-6 text-center">No parameters available for this mode.</p>
             )}

@@ -1,0 +1,31 @@
+{
+    "material": {
+        "slug": "formlabs-clear-v4",
+        "name": "Formlabs Clear Resin V4",
+        "category": "photopolymer-resin",
+        "am_technology": "SLA",
+        "vendor": "Formlabs",
+        "color": "#e0f7fa66"
+    },
+    "nanoscale": {
+        "refractive_index": 1.527,
+        "autofluorescence": "low",
+        "glass_transition_temp": 73.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.006,
+            "y": 1.006,
+            "z": 1.012
+        },
+        "clearances": {
+            "press_fit": 0.05,
+            "sliding_fit": 0.15,
+            "loose_fit": 0.3
+        },
+        "minimum_features": {
+            "wall_thickness": 0.2,
+            "hole_diameter": 0.4
+        }
+    }
+}

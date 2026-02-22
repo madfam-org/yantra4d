@@ -62,6 +62,12 @@ The goal is to ensure all Yantra4D projects are fully self-contained, standardiz
 
 ---
 
+## Known Bottlenecks & UX Improvements (Backlog)
+- **Slicer-Grade Estimations:** Replace bounding-box volume heuristics with true path-based cost/time/filament estimations.
+- **Complex Render Stability:** Address browser WASM timeouts for highly complex models (e.g., dense grid arrays) to reduce reliance on the Docker backend fallback.
+- **Robust State Management:** Refactor the Undo/Redo history stack to prevent truncation during parametric state updates.
+- **Verification Accuracy:** Eliminate false positives in the geometric verification pipeline by decoupling checks from pre-rendered STLs.
+
 ## Future Expansion
 - **Real-time Printing Integration:** OctoPrint/Mainsail hooks.
 - **BOM-to-Cart:** Auto-generate hardware shopping carts.

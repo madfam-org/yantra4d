@@ -1,0 +1,31 @@
+{
+    "material": {
+        "slug": "polymaker-polylite-pla",
+        "name": "PolyMaker PolyLite PLA",
+        "category": "thermoplastic-filament",
+        "am_technology": "FDM",
+        "vendor": "PolyMaker",
+        "color": "#cfd8dc"
+    },
+    "nanoscale": {
+        "refractive_index": 1.48,
+        "autofluorescence": "high",
+        "glass_transition_temp": 61.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.002,
+            "y": 1.002,
+            "z": 1.0
+        },
+        "clearances": {
+            "press_fit": 0.15,
+            "sliding_fit": 0.3,
+            "loose_fit": 0.5
+        },
+        "minimum_features": {
+            "wall_thickness": 0.8,
+            "hole_diameter": 1.2
+        }
+    }
+}

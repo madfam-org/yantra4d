@@ -112,7 +112,29 @@ def _extract_render_payload(data):
     if export_format not in ALLOWED_EXPORT_FORMATS:
         export_format = 'stl'
 
+    # Filter raw parameters strictly defined by the project manifest
     params = validate_params(data.get('parameters', data), project_slug or None)
+    
+    # Inject Material Hyperobject Compensations
+    target_mat = data.get('parameters', {}).get('target_material')
+    if target_mat:
+        from services.core.material_service import get_material
+        try:
+            mat_manifest = get_material(target_mat)
+            comps = mat_manifest.get("am_compensations", {})
+            shrink = comps.get("shrinkage", {})
+            clear = comps.get("clearances", {})
+            
+            # Map into the SCAD-compatible uniform structure defined in architecture
+            params["mat_shrinkage_x"] = float(shrink.get("x", 1.0))
+            params["mat_shrinkage_y"] = float(shrink.get("y", 1.0))
+            params["mat_shrinkage_z"] = float(shrink.get("z", 1.0))
+            params["mat_clear_press"] = float(clear.get("press_fit", 0.0))
+            params["mat_clear_slide"] = float(clear.get("sliding_fit", 0.0))
+            params["mat_clear_loose"] = float(clear.get("loose_fit", 0.0))
+            logger.info(f"Injected Material Hyperobject parameters for: {target_mat}")
+        except Exception as e:
+            logger.warning(f"Failed to inject material compensations for {target_mat}: {e}")
 
     return {
         'scad_filename': scad_filename,

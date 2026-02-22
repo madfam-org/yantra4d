@@ -24,6 +24,7 @@ from routes.core.health import health_bp
 from routes.engine.verify import verify_bp
 from routes.core.config_route import config_bp
 from routes.core.manifest_route import manifest_bp
+from routes.core.materials import materials_bp
 from routes.projects.projects import projects_bp
 from routes.users.onboard import onboard_bp
 from routes.users.admin import admin_bp
@@ -68,6 +69,7 @@ def create_app():
     app.register_blueprint(config_bp)
     app.register_blueprint(manifest_bp)
     app.register_blueprint(projects_bp)
+    app.register_blueprint(materials_bp)
     app.register_blueprint(onboard_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(download_bp)

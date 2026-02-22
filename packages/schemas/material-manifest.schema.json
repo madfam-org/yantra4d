@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://madfam.io/schemas/material-manifest.schema.json",
+    "title": "Material Hyperobject Manifest",
+    "description": "Schema for defining nanoscale material properties and additive manufacturing compensations.",
+    "type": "object",
+    "required": [
+        "material",
+        "am_compensations"
+    ],
+    "properties": {
+        "material": {
+            "type": "object",
+            "required": [
+                "slug",
+                "name",
+                "category",
+                "am_technology"
+            ],
+            "properties": {
+                "slug": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9-]+$",
+                    "description": "Unique identifier for the material."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name of the material."
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "photopolymer-resin",
+                        "thermoplastic-filament",
+                        "metal-powder",
+                        "other"
+                    ],
+                    "description": "Broad category of the substrate class."
+                },
+                "am_technology": {
+                    "type": "string",
+                    "enum": [
+                        "SLA",
+                        "DLP",
+                        "MSLA",
+                        "FDM",
+                        "SLS",
+                        "SLM",
+                        "other"
+                    ],
+                    "description": "Target additive manufacturing technology."
+                },
+                "vendor": {
+                    "type": "string",
+                    "description": "Manufacturer or brand of the material."
+                },
+                "color": {
+                    "type": "string",
+                    "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|(?:[A-Fa-f0-9]{8}))?$",
+                    "description": "Default hex color representation in the viewer."
+                }
+            }
+        },
+        "nanoscale": {
+            "type": "object",
+            "description": "Optical, chemical, and atomic properties of the material.",
+            "properties": {
+                "refractive_index": {
+                    "type": "number",
+                    "description": "Principal refractive index (n_e or n_d)."
+                },
+                "autofluorescence": {
+                    "type": "string",
+                    "enum": [
+                        "none",
+                        "low",
+                        "medium",
+                        "high"
+                    ],
+                    "description": "Level of background autofluorescence under UV/laser excitation."
+                },
+                "glass_transition_temp": {
+                    "type": "number",
+                    "description": "Glass transition temperature (Tg) in Celsius."
+                }
+            }
+        },
+        "am_compensations": {
+            "type": "object",
+            "description": "Dimensional compensations required for accurate manufacturing.",
+            "required": [
+                "shrinkage",
+                "clearances"
+            ],
+            "properties": {
+                "shrinkage": {
+                    "type": "object",
+                    "required": [
+                        "x",
+                        "y",
+                        "z"
+                    ],
+                    "description": "Multiplier scaling factors to counteract material cooling shrinkage.",
+                    "properties": {
+                        "x": {
+                            "type": "number",
+                            "minimum": 0.5,
+                            "maximum": 2.0
+                        },
+                        "y": {
+                            "type": "number",
+                            "minimum": 0.5,
+                            "maximum": 2.0
+                        },
+                        "z": {
+                            "type": "number",
+                            "minimum": 0.5,
+                            "maximum": 2.0
+                        }
+                    }
+                },
+                "clearances": {
+                    "type": "object",
+                    "required": [
+                        "press_fit",
+                        "sliding_fit",
+                        "loose_fit"
+                    ],
+                    "description": "Tolerance offsets in millimeters for mechanical mating.",
+                    "properties": {
+                        "press_fit": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "description": "Interference or tight friction fit."
+                        },
+                        "sliding_fit": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "description": "Smooth movement without slop."
+                        },
+                        "loose_fit": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "description": "Free rotation or wide gap."
+                        }
+                    }
+                },
+                "minimum_features": {
+                    "type": "object",
+                    "description": "The lowest geometric resolution this material can resolve.",
+                    "properties": {
+                        "wall_thickness": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "description": "Minimum supported wall thickness in mm."
+                        },
+                        "hole_diameter": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "description": "Minimum through-hole diameter in mm."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

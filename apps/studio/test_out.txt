@@ -1,0 +1,663 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/Users/aldoruizluna/labspace/yantra4d/apps/studio[39m
+
+ [32m✓[39m src/components/project/ForkDialog.test.jsx[2m > [22mForkDialog[2m > [22mrenders with project name[32m 274[2mms[22m[39m
+ [32m✓[39m src/components/studio/SynthesisModal.test.jsx[2m > [22mSynthesisModal[2m > [22mrenders correctly when open[33m 475[2mms[22m[39m
+ [32m✓[39m src/components/studio/SynthesisModal.test.jsx[2m > [22mSynthesisModal[2m > [22mdoes not render when closed[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mdisplays branch name after loading[33m 560[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mrenders initial URL input step[33m 609[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mrenders project name from manifest[33m 336[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mrenders powered-by tagline[32m 234[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mrenders auth button and project selector[32m 112[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows clean status indicator[32m 130[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mrenders steps with labels[33m 443[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22menables validate button when URL is entered[33m 323[2mms[22m[39m
+ [32m✓[39m src/components/project/ForkDialog.test.jsx[2m > [22mForkDialog[2m > [22mpre-fills slug with my- prefix[32m 163[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mcalls onSelect when step clicked[32m 138[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mcalls onAdd when Add clicked[32m 47[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 0: Upload[2m > [22mrenders upload step initially[33m 477[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 0: Upload[2m > [22mrenders all step indicators[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mrenders projects link[32m 109[2mms[22m[39m
+ [32m✓[39m src/components/project/ForkDialog.test.jsx[2m > [22mForkDialog[2m > [22mhas fork button[33m 430[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mhandles validation success and advances to step 2[32m 203[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mhandles validation failure[32m 23[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows changed file count when dirty[32m 194[2mms[22m[39m
+ [32m✓[39m src/components/project/ForkDialog.test.jsx[2m > [22mForkDialog[2m > [22mhas cancel button[32m 173[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows loading state initially[33m 442[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mdisables undo button when canUndo is false[32m 113[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22menables undo button when canUndo is true[32m 56[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 0: Upload[2m > [22mrenders slug input with default value[32m 121[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 0: Upload[2m > [22mdisables analyze button when no files uploaded[32m 53[2mms[22m[39m
+ [32m✓[39m src/components/project/ForkDialog.test.jsx[2m > [22mForkDialog[2m > [22mcalls API and onForked on success[32m 260[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mcalls undoParams when undo button clicked[32m 236[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mdisables redo button when canRedo is false[32m 72[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mlists changed files with checkboxes[33m 408[2mms[22m[39m
+ [32m✓[39m src/components/project/ForkDialog.test.jsx[2m > [22mForkDialog[2m > [22mshows error on API failure[32m 136[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mhandles import success[33m 401[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mhandles validation network error[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mfalls back to step number for missing label[32m 64[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mrenders reorder/remove buttons for selected step[33m 594[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mhandles Enter key on step item[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mdisplays file list after loading[32m 230[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows empty editor state when no file selected[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 0: Upload[2m > [22mshows error when analyze fails[32m 276[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 0: Upload[2m > [22mshows file list after file selection[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22menables redo and calls redoParams on click[32m 59[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mtoggles file selection[32m 238[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mhandles import without manifest[32m 186[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 0: Upload[2m > [22madvances to step 1 on successful analysis[32m 227[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mcalls handleShare when share button clicked[32m 142[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mshows share toast when shareToast is true[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows file status indicators (M for modified, ? for untracked)[32m 142[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows commit input when files changed[32m 82[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mhandles Space key on step item[32m 127[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepList[2m > [22mhandles string label[32m 80[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mdoes not show share toast when shareToast is false[32m 80[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 1: Review[2m > [22mshows file analysis details[32m 121[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mhandles import error response[32m 185[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 1: Review[2m > [22mshows warnings when present[32m 138[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mhandles import network error[32m 175[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mcalls setTheme to cycle theme when theme button clicked[32m 114[2mms[22m[39m
+ [32m✓[39m src/components/studio/SynthesisModal.test.jsx[2m > [22mSynthesisModal[2m > [22mhandles input and generation[33m 1803[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mallows user to navigate back[32m 132[2mms[22m[39m
+ [32m✓[39m src/components/ai/GitHubImportWizard.test.jsx[2m > [22mGitHubImportWizard[2m > [22mallows user to modify slug[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mdisables commit button when message is empty[32m 209[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepDetailForm[2m > [22mrenders label and notes inputs[32m 64[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepDetailForm[2m > [22mcalls onUpdate when label changes[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mStepDetailForm[2m > [22mcalls onUpdate when notes change[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mtoggles language dropdown[32m 146[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 1: Review[2m > [22mnavigates back to upload step[32m 131[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mopens file when clicked in file tree[33m 666[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mPartVisibilityPicker[2m > [22mrenders all parts[32m 172[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mrenders project cards on successful fetch
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mperforms commit action[32m 166[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mcalls setLanguage when a language is selected[32m 193[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mrenders file tabs for open files[32m 229[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 1: Review[2m > [22mnavigates forward to edit step[32m 267[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows error when file list fails to load[32m 93[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mcalls toggleAiPanel when AI button clicked[32m 63[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mcalls toggleEditor when code button clicked for non-built-in project[32m 81[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioHeader.test.jsx[2m > [22mStudioHeader[2m > [22mrenders auth gates for AI and editor[32m 155[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mPartVisibilityPicker[2m > [22mtoggles visibility via checkbox[32m 162[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 2: Edit Manifest[2m > [22mrenders parameter list[32m 102[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows success message after commit[32m 200[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mhas file tree with accessible listbox role[32m 154[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mPartVisibilityPicker[2m > [22madds part to visible[33m 307[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows error on commit failure[33m 401[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mhas push and pull buttons with screen reader labels[32m 53[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mperforms push action[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows Files header and new file button[32m 196[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows error dismiss button[32m 55[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows AI toggle button when file is open[32m 36[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mPartVisibilityPicker[2m > [22mtoggles highlight for visible part[32m 180[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mCameraCaptureButton[2m > [22mrenders and calls onCapture[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mAssemblyEditorToolbar[2m > [22mrenders all buttons[32m 112[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mAssemblyEditorToolbar[2m > [22mdisables save when not dirty[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mAssemblyEditorToolbar[2m > [22mshows Saving... when saving[32m 46[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditor.test.jsx[2m > [22mAssemblyEditorToolbar[2m > [22mcalls onSave, onDiscard, onPreview, onClose[32m 60[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mperforms pull action[32m 128[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows connect remote form when no remote[32m 25[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mdisables push/pull when no remote[32m 95[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 2: Edit Manifest[2m > [22mupdates parameter min/max[33m 734[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mperforms connect remote action[32m 156[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mtoggles AI panel on button click[33m 526[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 2: Edit Manifest[2m > [22mnavigates to save step[32m 259[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mcommits on Enter key in commit input[32m 198[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mconnects remote on Enter key in remote URL input[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders loading state[33m 387[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mrenders project cards on successful fetch
+[22m[39m[DEBUG] Mock fetch: /api/render-stream
+
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 3: Save[2m > [22mrenders save summary[32m 173[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows error on connect remote failure[32m 167[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows ahead/behind indicators[32m 21[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows diff preview when diff exists[32m 22[2mms[22m[39m
+ [32m✓[39m src/components/editor/GitPanel.test.jsx[2m > [22mGitPanel[2m > [22mshows error when status fetch fails[32m 21[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mhandles Ctrl+S keyboard shortcut[32m 205[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mcalls saveAndRender on content change[32m 29[2mms[22m[39m
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 3: Save[2m > [22msaves project on create click[32m 122[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders project cards on successful fetch[33m 1485[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mrenders empty state with CTA link
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mcard links point to #/{slug}
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/onboarding/OnboardingWizard.test.jsx[2m > [22mOnboardingWizard[2m > [22mStep 3: Save[2m > [22mshows error if save fails[32m 181[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mcloses tab and switches to remaining tab[33m 302[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows error when readFile fails[32m 112[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mshows dirty indicator when content modified[32m 39[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mclears dirty state after save[32m 35[2mms[22m[39m
+ [32m✓[39m src/components/editor/ScadEditor.test.jsx[2m > [22mScadEditor[2m > [22mdoes not open same file twice[32m 21[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mrenders slider labels for cup mode parameters[33m 1862[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders error message on fetch failure[32m 144[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders empty state with CTA link[32m 9[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mcard links point to #/{slug}
+[22m[39m[DEBUG] Mock fetch: /api/render-stream
+
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mrenders color picker for cup mode (cup part)[33m 807[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mrenders translated strings in Spanish
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mhas no a11y violations
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mcard links point to #/{slug}[33m 1245[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mcolor change calls setColors[33m 747[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mrenders baseplate parameters when mode is baseplate[33m 377[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders translated strings in Spanish[33m 493[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mrenders colors group label for part color controls[33m 480[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22msliders are labelled via aria-labelledby pointing to the parameter label[33m 515[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mhas no a11y violations
+[22m[39m[DEBUG] Mock fetch: /api/render-stream
+
+ [32m✓[39m src/hooks/render/useImageExport.test.js[2m > [22museImageExport[2m > [22mhandleExportImage captures and downloads snapshot[32m 176[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useImageExport.test.js[2m > [22museImageExport[2m > [22mhandleExportImage does nothing without viewer ref[32m 3[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mrenders analytics stats badges when present
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mvalue displays have descriptive aria-label[33m 493[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mrenders mode tabs for each mode in manifest[32m 241[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mrenders generate button[32m 58[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mrenders configurator mode header[32m 260[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mrenders code-editor mode header[32m 8[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mshows placeholder text for configurator[32m 30[2mms[22m[39m
+ [32m✓[39m src/components/feedback/ConfirmRenderDialog.test.jsx[2m > [22mConfirmRenderDialog[2m > [22mrenders when open=true and shows estimated time in seconds[33m 523[2mms[22m[39m
+ [32m✓[39m src/components/feedback/ConfirmRenderDialog.test.jsx[2m > [22mConfirmRenderDialog[2m > [22mshows estimated time in minutes for >= 60s[32m 69[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mshows processing text when loading[32m 47[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mshows cancel button when loading[32m 49[2mms[22m[39m
+ [32m✓[39m src/components/feedback/ConfirmRenderDialog.test.jsx[2m > [22mConfirmRenderDialog[2m > [22mcalls onConfirm when confirm clicked[32m 36[2mms[22m[39m
+ [32m✓[39m src/components/feedback/ConfirmRenderDialog.test.jsx[2m > [22mConfirmRenderDialog[2m > [22mcalls onCancel when cancel clicked[32m 93[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useImageExport.test.js[2m > [22museImageExport[2m > [22mhandleExportAllViews captures all views and creates zip[33m 307[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mhas send button disabled when input is empty[32m 226[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mhas new conversation button[32m 33[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mrenders user and assistant messages[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mrenders param change system messages[32m 6[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useImageExport.test.js[2m > [22museImageExport[2m > [22mhandleExportAllViews handles error[32m 155[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useImageExport.test.js[2m > [22museImageExport[2m > [22mhandleExportAllViews does nothing with empty parts[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mdisables generate button when loading[32m 60[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mdisables generate button when constraint errors[32m 47[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mdisables verify button when no parts[32m 44[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mhas no a11y violations[33m 1530[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22msends message on Enter key[32m 101[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mdoes not send empty message[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mdisables input when streaming[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mshows streaming text[32m 39[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mshows thinking indicator when streaming without text[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mshows pending edits banner in code-editor mode[32m 26[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mrenders default star indicators on slider tracks[32m 294[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mrenders Manifest and Exports badges
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mapply all calls onApplyEdits[32m 45[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mreject clears pending edits[32m 23[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mreset button calls resetSession[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/ai/AiChatPanel.test.jsx[2m > [22mAiChatPanel[2m > [22mdoes not show pending edits in configurator mode[32m 20[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22menables verify button when parts available[32m 53[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mcalls handleGenerate when clicking generate button[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mcalls handleReset when clicking reset button[32m 56[2mms[22m[39m
+ [32m✓[39m src/components/assembly-editor/AssemblyEditorPanel.test.jsx[2m > [22mAssemblyEditorPanel[2m > [22mrenders with title and step list[33m 501[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mrenders child panels: controls, export, bom[32m 35[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mrenders assembly view when mode parts overlap with assembly step parts[32m 44[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mhides assembly view when mode parts do not overlap with assembly steps[32m 68[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mshows assembly editor toggle when assembly steps exist[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mhides assembly editor toggle when no assembly steps[32m 66[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioSidebar.test.jsx[2m > [22mStudioSidebar[2m > [22mrenders mobile menu button with screen reader text[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders analytics stats badges when present[33m 363[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mrenders render speed badges correctly
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/feedback/ErrorBoundary.test.jsx[2m > [22mErrorBoundary[2m > [22mrenders children when no error[32m 163[2mms[22m[39m
+ [32m✓[39m src/components/feedback/ErrorBoundary.test.jsx[2m > [22mErrorBoundary[2m > [22mshows error message when child throws[32m 50[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mdefault star remains when value differs from default[33m 364[2mms[22m[39m
+ [32m✓[39m src/components/project/ComparisonView.test.jsx[2m > [22mComparisonView[2m > [22mrenders empty state when no slots provided[32m 194[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders Manifest and Exports badges[33m 322[2mms[22m[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mfilters projects by search and tags
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/feedback/ErrorBoundary.test.jsx[2m > [22mErrorBoundary[2m > [22mreset button clears the error[32m 58[2mms[22m[39m
+ [32m✓[39m src/components/project/ComparisonView.test.jsx[2m > [22mComparisonView[2m > [22mcalls onAddCurrent when add button clicked in empty state[32m 226[2mms[22m[39m
+ [32m✓[39m src/components/project/ComparisonView.test.jsx[2m > [22mComparisonView[2m > [22mrenders populated slots[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/project/ComparisonView.test.jsx[2m > [22mComparisonView[2m > [22mcalls onRemoveSlot when remove button clicked[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/feedback/ErrorBoundary.test.jsx[2m > [22mErrorBoundary[2m > [22mhas no a11y violations[32m 182[2mms[22m[39m
+ [32m✓[39m src/components/feedback/ErrorBoundary.test.jsx[2m > [22mErrorBoundary[2m > [22mfalls back to key identity when no t prop provided[32m 97[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mrenders viewer and console log area[33m 302[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22msets aria-busy when loading[32m 93[2mms[22m[39m
+ [32m✓[39m src/components/project/ComparisonView.test.jsx[2m > [22mComparisonView[2m > [22mcalls onAddCurrent when slots exist but less than 4[32m 72[2mms[22m[39m
+ [32m✓[39m src/components/project/ComparisonView.test.jsx[2m > [22mComparisonView[2m > [22mtoggles sync camera state[32m 99[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mdoes not set aria-busy when idle[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mshows rendering status chip when loading[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mshows ready status chip when parts available[32m 62[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mshows no status chip when idle with no parts[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mrenders render speed badges correctly[32m 185[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mannounces render status via live region[32m 75[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mdisplays console logs[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mrenders print estimate overlay when estimate exists[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/studio/StudioMainView.test.jsx[2m > [22mStudioMainView[2m > [22mdoes not render print estimate overlay when no estimate[32m 30[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mrenders header with project name[33m 1683[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+[90mstdout[2m | src/components/project/ProjectsView.test.jsx[2m > [22m[2mProjectsView[2m > [22m[2mopens import wizard and refreshes list on success
+[22m[39m[DEBUG] Mock fetch: /api/admin/projects?stats=1
+[DEBUG] Mock fetch: /api/projects
+
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mfilters projects by search and tags[33m 635[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectsView.test.jsx[2m > [22mProjectsView[2m > [22mopens import wizard and refreshes list on success[33m 359[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mrenders mode tabs for all manifest modes[33m 971[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mdoes not render color-gradient widget when manifest has no gradient params[33m 374[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mcreateSession[2m > [22mcalls POST /api/ai/session and returns session_id[32m 5[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mcreateSession[2m > [22mthrows on error response[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mcalls onChunk and onDone for SSE events[32m 54[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mcalls onResult for params event[32m 52[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mcalls onError for SSE error event[32m 52[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mall mode tabs render as interactive tab elements[33m 743[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mcalls onResult for edits event[32m 51[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mdoes not call onError for AbortError[32m 51[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mskips malformed SSE lines[32m 50[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mreturns abort function[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/domain/aiService.test.js[2m > [22mstreamChat[2m > [22mcalls onError on HTTP failure[32m 51[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mprovides fallback manifest data[32m 215[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mgetCameraViews returns views from manifest[32m 34[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mgetGroupLabel returns translated group label[32m 18[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mgetGroupLabel returns groupId for unknown groups[32m 9[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mgetViewerConfig returns viewer settings[32m 12[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mgetEstimateConstants returns extended constants[32m 9[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mprojectSlug is derived from manifest[32m 7[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mgetParametersForMode filters correctly for baseplate[32m 10[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mprojects list is empty when fetch fails (fallback mode)[32m 12[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mexposes switchProject function[32m 7[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mexport_formats from fallback manifest and print_estimation undefined[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mrenders nothing when volume is 0[32m 90[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mrenders nothing when volume is null[32m 5[2mms[22m[39m
+ [32m✓[39m src/contexts/project/ManifestProvider.test.jsx[2m > [22mManifestProvider[2m > [22mfetches projects list from /api/projects on mount[32m 231[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mrenders BOM table with hardware items[33m 327[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mevaluates quantity_formula with current params[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mcomputes baseplate magnet quantities correctly[32m 8[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mrenders estimate with valid volume and bounding box[32m 240[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mshows material selector with PLA default[32m 79[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mrenders unit column[32m 73[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mrenders nothing when no BOM in manifest[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mrenders nothing when hardware array is empty[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mhandles numeric quantity_formula[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/bom/BomPanel.test.jsx[2m > [22mBomPanel[2m > [22mrenders table headers[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mshows infill selector with 20% default[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mupdates estimate when material changes[32m 31[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mdisplays weight as a number with g suffix[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/export/PrintEstimateOverlay.test.jsx[2m > [22mPrintEstimateOverlay[2m > [22mdisplays cost with dollar sign[32m 16[2mms[22m[39m
+ [32m✓[39m src/components/controls/Controls.test.jsx[2m > [22mControls[2m > [22mhas no a11y violations[33m 2933[2mms[22m[39m
+ [32m✓[39m src/components/export/ExportPanel.test.jsx[2m > [22mExportPanel[2m > [22mrenders download button[33m 392[2mms[22m[39m
+ [32m✓[39m src/components/export/ExportPanel.test.jsx[2m > [22mExportPanel[2m > [22mdownload button is disabled when no parts[32m 35[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mgenerate button calls renderParts[33m 896[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/components/export/ExportPanel.test.jsx[2m > [22mExportPanel[2m > [22mdownload button is enabled when parts exist[32m 65[2mms[22m[39m
+ [32m✓[39m src/components/export/ExportPanel.test.jsx[2m > [22mExportPanel[2m > [22mrenders export all views button[32m 20[2mms[22m[39m
+ [32m✓[39m src/components/export/ExportPanel.test.jsx[2m > [22mExportPanel[2m > [22mcalls onDownloadStl when download clicked[32m 39[2mms[22m[39m
+ [32m✓[39m src/components/export/ExportPanel.test.jsx[2m > [22mExportPanel[2m > [22mshows format selector when manifest has export_formats[32m 16[2mms[22m[39m
+ [32m✓[39m src/components/export/ExportPanel.test.jsx[2m > [22mExportPanel[2m > [22mcalls onExportFormatChange when format button clicked[32m 65[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mrenders the 3D canvas container[32m 186[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mshows loading overlay when loading is true[32m 31[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mdoes not show loading overlay when loading is false[32m 32[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mshows progress phase when provided during loading[32m 9[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mdefaults to Spanish and translates correctly[32m 125[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mreturns English text when language is en[32m 45[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mreturns key when key not found[32m 8[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mpersists language to localStorage[32m 63[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mreads default language from localStorage[32m 3[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mhas theme translation keys in both languages[32m 5[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mhas i18n keys for error, nav, viewer, controls, and onboarding in English[32m 4[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mhas i18n keys for error, nav, viewer, controls, and onboarding in Spanish[32m 4[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mhas Phase 1 translation keys (share, undo/redo, format, print) in English[32m 33[2mms[22m[39m
+ [32m✓[39m src/contexts/system/LanguageProvider.test.jsx[2m > [22mLanguageProvider[2m > [22mhas Phase 1 translation keys (share, undo/redo, format, print) in Spanish[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mrenders camera view buttons from manifest[32m 30[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mrenders axes toggle button[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mtoggles axes visibility on click[32m 60[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mdoes not show animation button when mode is not grid[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mshows animation button when mode is grid[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mcalls setAnimating when animation button is clicked[32m 24[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mhighlights active camera view button[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/viewer/Viewer.test.jsx[2m > [22mViewer[2m > [22mswitches active view on camera button click[32m 22[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mrenders step navigation[32m 208[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mnavigates to next step[32m 106[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mnavigates via keyboard[32m 25[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mdisables prev on first step[32m 20[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mreturns null when no steps[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mdoes not auto-activate step on mount[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mcalls onStepChange(null) on unmount[32m 23[2mms[22m[39m
+ [32m✓[39m src/components/bom/AssemblyView.test.jsx[2m > [22mAssemblyView[2m > [22mshows notes when present[32m 9[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mverify button calls verify with project slug after parts are loaded[33m 926[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/components/feedback/DemoBanner.test.jsx[2m > [22mDemoBanner[2m > [22mrenders for unauthenticated guest users[32m 116[2mms[22m[39m
+ [32m✓[39m src/components/feedback/DemoBanner.test.jsx[2m > [22mDemoBanner[2m > [22mshows sign up link[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/feedback/DemoBanner.test.jsx[2m > [22mDemoBanner[2m > [22mdismiss button hides banner[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/feedback/DemoBanner.test.jsx[2m > [22mDemoBanner[2m > [22mhidden when authenticated[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/feedback/DemoBanner.test.jsx[2m > [22mDemoBanner[2m > [22mhidden when tier is not guest[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/feedback/DemoBanner.test.jsx[2m > [22mDemoBanner[2m > [22mhidden when auth disabled[32m 1[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mreset button restores default params[33m 912[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/components/feedback/RateLimitBanner.test.jsx[2m > [22mRateLimitBanner[2m > [22mhidden when no rate limit info[32m 72[2mms[22m[39m
+ [32m✓[39m src/components/feedback/RateLimitBanner.test.jsx[2m > [22mRateLimitBanner[2m > [22mhidden when auth disabled[32m 28[2mms[22m[39m
+ [32m✓[39m src/components/feedback/RateLimitBanner.test.jsx[2m > [22mRateLimitBanner[2m > [22mhidden when plenty remaining[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/feedback/RateLimitBanner.test.jsx[2m > [22mRateLimitBanner[2m > [22mshows warning when low remaining[32m 93[2mms[22m[39m
+ [32m✓[39m src/components/feedback/RateLimitBanner.test.jsx[2m > [22mRateLimitBanner[2m > [22mshows exhausted message when remaining is 0[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/feedback/RateLimitBanner.test.jsx[2m > [22mRateLimitBanner[2m > [22mshows upgrade link for non-pro users[32m 37[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mlong render estimate shows ConfirmRenderDialog[33m 730[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22minitializes with manifest steps[32m 67[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22minitializes empty when no manifest[32m 16[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mselectStep clamps index[32m 6[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22maddStep appends and selects new step[32m 32[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22maddStep captures camera when available[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mremoveStep removes and renumbers[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mremoveStep does nothing when only one step[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mupdateStep modifies step[32m 41[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mreorderStep swaps steps[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mreorderStep does nothing for out-of-bounds[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mcaptureCamera updates selected step[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mcaptureCamera does nothing without viewer[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22msave calls API and resets dirty[32m 14[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22msave shows error on failure[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useAssemblyEditor.test.js[2m > [22museAssemblyEditor[2m > [22mdiscard restores original steps[32m 2[2mms[22m[39m
+ [32m✓[39m src/contexts/auth/TierProvider.test.jsx[2m > [22museTier[2m > [22mreturns tier context with canAccess[32m 103[2mms[22m[39m
+ [32m✓[39m src/contexts/auth/TierProvider.test.jsx[2m > [22museTier[2m > [22mcanAccess returns true when auth disabled[32m 55[2mms[22m[39m
+ [32m✓[39m src/contexts/auth/TierProvider.test.jsx[2m > [22museTier[2m > [22mreturns tier from /api/me response[32m 58[2mms[22m[39m
+ [32m✓[39m src/contexts/auth/TierProvider.test.jsx[2m > [22museTier fallback[2m > [22mreturns fallback when used outside provider[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectSelector.test.jsx[2m > [22mProjectSelector[2m > [22mreturns null when no projects[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectSelector.test.jsx[2m > [22mProjectSelector[2m > [22mreturns null when single project[32m 53[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectSelector.test.jsx[2m > [22mProjectSelector[2m > [22mrenders select with projects[32m 149[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectSelector.test.jsx[2m > [22mProjectSelector[2m > [22mcalls switchProject on change[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/project/ProjectSelector.test.jsx[2m > [22mProjectSelector[2m > [22mnavigates to projects for github import option[32m 7[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mfires onUndo on Ctrl+Z[32m 134[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mfires onUndo on Meta+Z (Mac)[32m 6[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mprevents default on Ctrl+Z[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mfires onRedo on Ctrl+Shift+Z[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mfires onRedo on Meta+Shift+Z (Mac)[32m 5[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mfires onRender on Ctrl+Enter[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mfires onRender on Meta+Enter[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mfires onCancelRender on Escape when loading[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mdoes NOT fire onCancelRender on Escape when not loading[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mswitches to mode 1 on Ctrl+1[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mswitches to mode 2 on Ctrl+2[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mswitches to mode 3 on Meta+3[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mignores Ctrl+N when N > modes.length[32m 41[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mignores Ctrl+0[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mdoes nothing for unmodified letter keys[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mhandles null callbacks gracefully[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mcleans up event listener on unmount[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mhandles empty modes array[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useKeyboardShortcuts.test.js[2m > [22museKeyboardShortcuts[2m > [22mhandles undefined modes[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthButton.test.jsx[2m > [22mAuthButton[2m > [22mrenders sign in when unauthenticated[32m 162[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthButton.test.jsx[2m > [22mAuthButton[2m > [22mcalls signInWithOAuth on sign in click[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthButton.test.jsx[2m > [22mAuthButton[2m > [22mshows loading state[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthButton.test.jsx[2m > [22mAuthButton[2m > [22mrenders sign out when authenticated[32m 48[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthButton.test.jsx[2m > [22mAuthButton[2m > [22mcalls signOut on sign out click[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthButton.test.jsx[2m > [22mAuthButton[2m > [22mshows email when no display_name[32m 30[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthButton.test.jsx[2m > [22mAuthButton (auth disabled)[2m > [22mrenders nothing when auth disabled[32m 8[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22mreturns theme, cycleTheme, language, setLanguage, toggleLanguage, t[32m 83[2mms[22m[39m
+ [32m✓[39m src/contexts/auth/AuthProvider.test.jsx[2m > [22mAuthProvider (bypass mode)[2m > [22mrenders children[32m 118[2mms[22m[39m
+ [32m✓[39m src/contexts/auth/AuthProvider.test.jsx[2m > [22mAuthProvider (bypass mode)[2m > [22mprovides no-op auth context[32m 8[2mms[22m[39m
+ [32m✓[39m src/contexts/auth/AuthProvider.test.jsx[2m > [22mAuthProvider (bypass mode)[2m > [22mgetAccessToken returns null[32m 183[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22mwires auth token getter into API client on mount[32m 50[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22msets document title with project name for studio view[32m 9[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22msets document title to Yantra4D for projects view[32m 5[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22mcycles theme from light to dark[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22mtoggles language from en to es[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22mt function returns translation key[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22mhandles OAuth callback when code and state are in URL[32m 141[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useThemeAndLanguage.test.js[2m > [22museThemeAndLanguage[2m > [22mdoes not call handleOAuth when no code/state in URL[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mgetSharedParams[2m > [22mreturns null when no ?p= param[32m 156[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mgetSharedParams[2m > [22mdecodes base64url-encoded param diff[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mgetSharedParams[2m > [22mreturns null for malformed base64[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mgetSharedParams[2m > [22mreturns null for valid base64 but invalid JSON[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mgenerateShareUrl[2m > [22mgenerates URL with encoded param diff[32m 59[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mgenerateShareUrl[2m > [22momits ?p= when params match defaults[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mgenerateShareUrl[2m > [22mencodes multiple differing params[32m 41[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mcopyShareUrl[2m > [22mcopies to clipboard and returns true on success[32m 5[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useShareableUrl.test.js[2m > [22museShareableUrl[2m > [22mcopyShareUrl[2m > [22mreturns false when clipboard fails[32m 4[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mlanguage selector switches en to es[33m 780[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mdownload STL button is disabled when no parts[33m 897[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22minitializes with given value[32m 107[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22minitializes with lazy initializer function[32m 23[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mstarts with canUndo=false and canRedo=false[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mtracks changes and enables undo[32m 5[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mundo restores previous value[32m 15[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mredo re-applies undone change[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mundo on empty history is a no-op[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mredo with nothing to redo is a no-op[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mnew change after undo truncates redo history[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22msupports functional updater[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mskips duplicate values (no-op if unchanged)[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useUndoRedo.test.js[2m > [22museUndoRedo[2m > [22mhandles multiple undo steps[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/domain/assemblyFetcher.test.js[2m > [22mfetchAssemblyGeometries[2m > [22mfetches and parses assembly parts[32m 204[2mms[22m[39m
+ [32m✓[39m src/services/domain/assemblyFetcher.test.js[2m > [22mfetchAssemblyGeometries[2m > [22mthrows on failed render[32m 2[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mtheme toggle shows translated tooltip[33m 811[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/hooks/system/useLocalStoragePersistence.test.js[2m > [22museLocalStoragePersistence[2m > [22mwrites JSON-serialized value to localStorage after debounce[32m 67[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useLocalStoragePersistence.test.js[2m > [22museLocalStoragePersistence[2m > [22mwrites immediately when debounce is 0[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useLocalStoragePersistence.test.js[2m > [22museLocalStoragePersistence[2m > [22mstores raw string when serialize=false[32m 40[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useLocalStoragePersistence.test.js[2m > [22museLocalStoragePersistence[2m > [22mcleans up timer on key change[32m 12[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRenderQueue.test.js[2m > [22museRenderQueue[2m > [22mreturns initial state[32m 129[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRenderQueue.test.js[2m > [22museRenderQueue[2m > [22menqueue adds items[32m 6[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRenderQueue.test.js[2m > [22museRenderQueue[2m > [22mcancelItem marks item as cancelled[32m 47[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRenderQueue.test.js[2m > [22museRenderQueue[2m > [22mclearCompleted removes non-pending items[32m 17[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRenderQueue.test.js[2m > [22museRenderQueue[2m > [22mprocessQueue starts processing[32m 55[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRenderQueue.test.js[2m > [22museRenderQueue[2m > [22mmultiple enqueue items are processed[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useAnalytics.test.js[2m > [22museAnalytics[2m > [22mreturns track function[32m 92[2mms[22m[39m
+ [32m✓[39m src/components/feedback/PluginLoader.test.jsx[2m > [22mPluginLoader[2m > [22mrenders nothing when no url is provided[32m 18[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useAnalytics.test.js[2m > [22museAnalytics[2m > [22mtrack uses sendBeacon when available[32m 11[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useAnalytics.test.js[2m > [22museAnalytics[2m > [22mtrack falls back to fetch when sendBeacon is unavailable[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useAnalytics.test.js[2m > [22museAnalytics[2m > [22mtrack silently catches errors[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/feedback/PluginLoader.test.jsx[2m > [22mPluginLoader[2m > [22mshows error for cross-origin URLs not in allowlist[32m 161[2mms[22m[39m
+ [32m✓[39m src/components/feedback/PluginLoader.test.jsx[2m > [22mPluginLoader[2m > [22mshows error for invalid URLs[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/feedback/PluginLoader.test.jsx[2m > [22mPluginLoader[2m > [22mshows loading state initially[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mreturns empty when no constraints[32m 52[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mreturns empty when constraints is empty array[32m 31[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mreturns no violations when all constraints pass[32m 6[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mdetects grid cell count violation[32m 18[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mdetects compartment count violation[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mdetects multiple violations simultaneously[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mindexes violations by parameter ID[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mhasErrors is true only for error severity[32m 14[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mhasErrors is false for warning-only violations[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useConstraints.test.js[2m > [22museConstraints[2m > [22mskips constraints with missing params gracefully[32m 1[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mhas no a11y violations[33m 769[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/contexts/system/ThemeProvider.test.jsx[2m > [22mThemeProvider[2m > [22mdefaults to system theme[32m 112[2mms[22m[39m
+ [32m✓[39m src/contexts/system/ThemeProvider.test.jsx[2m > [22mThemeProvider[2m > [22msetTheme updates theme and persists to localStorage[32m 68[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleShare[2m > [22mcopies share URL and shows success toast[32m 77[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleShare[2m > [22msets shareToast temporarily on success[32m 6[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleShare[2m > [22mshows error toast when copy fails[32m 43[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleVerify[2m > [22mcalls verify and appends passed log[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleVerify[2m > [22mappends fail log when verify fails[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleVerify[2m > [22mhandles verify error gracefully[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleDownloadStl[2m > [22mis a no-op when parts is empty[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleDownloadStl[2m > [22mdownloads single part directly[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleDownloadStl[2m > [22mdownloads multiple parts as zip[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleDownloadStl[2m > [22mhandles zip download error[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mhandleReset[2m > [22mresets params, colors, and wireframe[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mpasses through handleExportImage[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mpasses through handleExportAllViews[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectActions.test.js[2m > [22museProjectActions[2m > [22mshareToast initializes to false[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthGate.test.jsx[2m > [22mAuthGate[2m > [22mshows children when action is public[32m 140[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthGate.test.jsx[2m > [22mAuthGate[2m > [22mshows children when action is public explicitly[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthGate.test.jsx[2m > [22mAuthGate[2m > [22mshows children when authenticated and action requires auth[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthGate.test.jsx[2m > [22mAuthGate[2m > [22mshows fallback when unauthenticated and action requires auth[32m 31[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22msets 4-segment URL path with project slug[33m 758[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mreturns initial state[32m 50[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22msendMessage adds user message and starts streaming[32m 29[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mignores empty messages[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mhandles params event in configurator mode[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mhandles edits event in editor mode[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mhandles onError from streaming[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mresetSession clears state and aborts[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mapplyEdit removes edit at index[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mrejectEdit removes edit at index[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mreuses existing session[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/ai/useAiChat.test.js[2m > [22museAiChat[2m > [22mhandles errors gracefully[32m 46[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mrenders share button[33m 809[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/hooks/editor/useEditorRender.test.js[2m > [22museEditorRender[2m > [22msaveAndRender debounces writes[32m 61[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useEditorRender.test.js[2m > [22museEditorRender[2m > [22msaveImmediate writes without debounce[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useEditorRender.test.js[2m > [22museEditorRender[2m > [22mcancel clears pending debounce[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/editor/useEditorRender.test.js[2m > [22museEditorRender[2m > [22msaveImmediate cancels pending debounce[32m 17[2mms[22m[39m
+ [32m✓[39m src/services/engine/verifyService.test.js[2m > [22mverify[2m > [22min backend mode, calls /api/verify with mode[32m 15[2mms[22m[39m
+ [32m✓[39m src/services/engine/verifyService.test.js[2m > [22mverify[2m > [22min backend mode, sends project slug when provided[32m 108[2mms[22m[39m
+ [32m✓[39m src/services/engine/verifyService.test.js[2m > [22mverify[2m > [22min backend mode, omits project field when not provided[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/engine/verifyService.test.js[2m > [22mverify[2m > [22min backend mode, throws on non-ok response[32m 3[2mms[22m[39m
+ [32m✓[39m src/services/engine/verifyService.test.js[2m > [22mverify[2m > [22min client mode, throws on non-ok STL fetch[32m 39[2mms[22m[39m
+ [32m✓[39m src/services/engine/verifyService.test.js[2m > [22mverify[2m > [22mcheckBackend caches result on second call[32m 27[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mestimateRenderTime[2m > [22munit mode: base_time + 1*per_unit + 1*per_part[32m 14[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mestimateRenderTime[2m > [22massembly mode: base_time + 2*per_unit + 2*per_part[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mestimateRenderTime[2m > [22mgrid mode 4x4: base_time + 16*per_unit + 4*per_part[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mestimateRenderTime[2m > [22mreturns 0 when estimate_constants is missing[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mestimateRenderTime[2m > [22mreturns 0 for unknown mode[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mestimateRenderTime[2m > [22muses formula_vars to compute units generically[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mestimateRenderTime[2m > [22muses wasm_multiplier from estimate_constants[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mgetRenderMode[2m > [22mreturns "detecting" when mode has not been detected yet[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mcancelRender[2m > [22mcalls /api/render-cancel proactively without a mode health check[32m 4[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mrenderParts (backend mode)[2m > [22mthrows on non-ok HTTP response[32m 88[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mrenderParts (backend mode)[2m > [22mthrows when stream produces no parts[32m 8[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mrenderParts (backend mode)[2m > [22mwarns on malformed SSE JSON and continues[32m 24[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mrenderParts (backend mode)[2m > [22mincludes project slug in render payload when provided[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/renderService.test.js[2m > [22mrenderParts (backend mode)[2m > [22momits project field from payload when not provided[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectMeta.test.js[2m > [22museProjectMeta[2m > [22mfetches meta for a slug[32m 135[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectMeta.test.js[2m > [22museProjectMeta[2m > [22mreturns null if no slug[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectMeta.test.js[2m > [22museProjectMeta[2m > [22mreturns null on error[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectMeta.test.js[2m > [22museProjectMeta[2m > [22mreturns null on non-ok response[32m 4[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mrenders undo and redo buttons[33m 632[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mlistFiles[2m > [22mreturns file list on success[32m 3[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mlistFiles[2m > [22mthrows on error[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mreadFile[2m > [22mreturns file content[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mreadFile[2m > [22mthrows on error[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mwriteFile[2m > [22msends PUT with content[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mwriteFile[2m > [22mthrows on error[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mcreateFile[2m > [22msends POST with path and content[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mcreateFile[2m > [22mthrows on conflict[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mdeleteFile[2m > [22msends DELETE[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/domain/editorService.test.js[2m > [22mdeleteFile[2m > [22mthrows on error[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/core/apiClient.test.js[2m > [22mapiFetch[2m > [22mmakes a basic fetch call[32m 137[2mms[22m[39m
+ [32m✓[39m src/services/core/apiClient.test.js[2m > [22mapiFetch[2m > [22minjects Authorization header when token getter is set[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/core/apiClient.test.js[2m > [22mapiFetch[2m > [22mproceeds without auth if token getter returns null[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/core/apiClient.test.js[2m > [22mapiFetch[2m > [22mproceeds without auth if token getter throws[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/core/apiClient.test.js[2m > [22mapiFetch[2m > [22mextracts rate limit headers[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/core/apiClient.test.js[2m > [22mapiFetch[2m > [22mpasses through custom options[32m 1[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useWorkerLoader.test.js[2m > [22museWorkerLoader[2m > [22mshould return null geometry initially for STL[32m 112[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useWorkerLoader.test.js[2m > [22museWorkerLoader[2m > [22mshould call loadAsync for GLTF files[32m 54[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectParams.test.js[2m > [22museProjectParams[2m > [22mtoggles grid preset[32m 98[2mms[22m[39m
+ [32m✓[39m src/hooks/project/useProjectParams.test.js[2m > [22museProjectParams[2m > [22mapplies preset[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRender.test.js[2m > [22museRender[2m > [22mreturns initial state[32m 134[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRender.test.js[2m > [22museRender[2m > [22mhandleGenerate calls renderParts and sets parts[32m 10[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRender.test.js[2m > [22museRender[2m > [22mcache hit returns cached parts without calling renderParts[32m 4[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRender.test.js[2m > [22museRender[2m > [22mestimate above threshold opens confirm dialog[32m 2[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRender.test.js[2m > [22museRender[2m > [22mhandleCancelRender closes dialog[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/render/useRender.test.js[2m > [22museRender[2m > [22mhandleCancelGenerate aborts and calls cancelRender[32m 2[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mundo button is disabled initially (no history)[33m 977[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mgetStatus[2m > [22mreturns git status[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mgetStatus[2m > [22mthrows on error[32m 13[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mgetDiff[2m > [22mreturns diff without file param[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mgetDiff[2m > [22mincludes file param when provided[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mcommit[2m > [22msends POST with message and files[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mcommit[2m > [22mthrows on error[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mpush[2m > [22msends POST[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mpull[2m > [22msends POST[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/domain/gitService.test.js[2m > [22mconnectRemote[2m > [22msends POST with remote_url[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/utils.test.js[2m > [22mcn[2m > [22mmerges multiple class strings[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/utils.test.js[2m > [22mcn[2m > [22mhandles conditional classes via clsx[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/utils.test.js[2m > [22mcn[2m > [22mresolves Tailwind conflicts (last wins)[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/utils.test.js[2m > [22mcn[2m > [22mresolves conflicting text colors[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/utils.test.js[2m > [22mcn[2m > [22mkeeps non-conflicting classes[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/utils.test.js[2m > [22mcn[2m > [22mhandles empty/undefined inputs[32m 0[2mms[22m[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mredo button is disabled initially (no future)[33m 849[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [31m×[39m src/App.test.jsx[2m > [22mApp[2m > [22mstudio view renders "powered by Yantra4D" tagline[33m 596[2mms[22m[39m
+[31m   → materials.map is not a function[39m
+ [32m✓[39m src/lib/downloadUtils.test.js[2m > [22mdownloadUtils[2m > [22mdownloadFile creates and clicks an anchor element[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/downloadUtils.test.js[2m > [22mdownloadUtils[2m > [22mdownloadDataUrl delegates to downloadFile[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/downloadUtils.test.js[2m > [22mdownloadZip[2m > [22mfetches items, creates zip, and triggers download[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/downloadUtils.test.js[2m > [22mdownloadZipFromData[2m > [22mcreates zip from data arrays and triggers download[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/stl-utils.test.js[2m > [22mparseSTL[2m > [22mparses valid single-face STL[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/stl-utils.test.js[2m > [22mparseSTL[2m > [22mthrows on too-small buffer[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/stl-utils.test.js[2m > [22mparseSTL[2m > [22mthrows on face count overflow[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/stl-utils.test.js[2m > [22mparseSTL[2m > [22mthrows on truncated buffer[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/stl-utils.test.js[2m > [22mgetBoundingBox[2m > [22mcomputes bounding box for known vertices[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/monacoAiDiff.test.js[2m > [22mhighlightEdits[2m > [22mcreates decorations for matching edits[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/monacoAiDiff.test.js[2m > [22mhighlightEdits[2m > [22mskips edits with no match in content[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/monacoAiDiff.test.js[2m > [22mhighlightEdits[2m > [22mreturns empty when no model[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/monacoAiDiff.test.js[2m > [22macceptEdit[2m > [22mcalls executeEdits with replacement[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/monacoAiDiff.test.js[2m > [22macceptEdit[2m > [22mdoes nothing if search not found[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/monacoAiDiff.test.js[2m > [22mrejectEdit[2m > [22mremoves decorations[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeVolumeMm3[2m > [22mreturns 0 for null geometry[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeVolumeMm3[2m > [22mreturns 0 for geometry without position attribute[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeVolumeMm3[2m > [22mcomputes volume of a simple tetrahedron[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeVolumeMm3[2m > [22mcomputes volume with indexed geometry[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeBoundingBox[2m > [22mreturns zeros for null geometry[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeBoundingBox[2m > [22mcomputes bounding box dimensions[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeCentroid[2m > [22mreturns zero vector for null geometry[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeCentroid[2m > [22mcomputes centroid of a simple tetrahedron[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mcomputeCentroid[2m > [22mcomputes centroid of a cube[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mestimatePrint[2m > [22mreturns time, filament, and material for PLA[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mestimatePrint[2m > [22mcalculates positive filament weight[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mestimatePrint[2m > [22mPLA is denser than ABS[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mestimatePrint[2m > [22mhigher infill increases weight[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mestimatePrint[2m > [22mfalls back to PLA for unknown material[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mestimatePrint[2m > [22mrespects speed override[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mgetMaterialProfiles[2m > [22mreturns array of material profiles[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/printEstimator.test.js[2m > [22mprintEstimator[2m > [22mgetMaterialProfiles[2m > [22meach profile has id and name[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/viewer/SceneController.test.jsx[2m > [22mSceneController view positions (Z-up convention)[2m > [22msets Z-up for all views[32m 16[2mms[22m[39m
+ [32m✓[39m src/components/viewer/SceneController.test.jsx[2m > [22mSceneController view positions (Z-up convention)[2m > [22miso view: camera at (80, 80, 80)[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/viewer/SceneController.test.jsx[2m > [22mSceneController view positions (Z-up convention)[2m > [22mtop view: looks down Z axis from (0, 0, 150)[32m 0[2mms[22m[39m
+ [32m✓[39m src/components/viewer/SceneController.test.jsx[2m > [22mSceneController view positions (Z-up convention)[2m > [22mfront view: looks along +Y from (0, -150, 0)[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/viewer/SceneController.test.jsx[2m > [22mSceneController view positions (Z-up convention)[2m > [22mright view: looks along -X from (150, 0, 0)[32m 0[2mms[22m[39m
+ [32m✓[39m src/components/viewer/SceneController.test.jsx[2m > [22mSceneController view positions (Z-up convention)[2m > [22mall views call lookAt(0,0,0) and updateProjectionMatrix[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgridPitch formula[2m > [22mcomputes size * √2 + rotationClearance (defaults)[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgridPitch formula[2m > [22mscales with size[32m 0[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgridPitch formula[2m > [22mrespects custom rotation_clearance[32m 0[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgrid position computation[2m > [22mcolumns spread along Y axis[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgrid position computation[2m > [22mrows stack along Z axis with tubing spacers[32m 0[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgrid position computation[2m > [22msingle cell (1×1) sits at the center offset[32m 0[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgrid position computation[2m > [22mapplies geometry center offset to all cells[32m 0[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mgrid position computation[2m > [22mtubingH defaults to 0 (flush stacking)[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/viewer/AnimatedGrid.test.jsx[2m > [22mAnimatedGrid positioning logic[2m > [22mdefaults[2m > [22mdefault size=20 and rotation_clearance=2 match component[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/core/backendDetection.test.js[2m > [22misBackendAvailable[2m > [22mreturns true and caches when health check succeeds[32m 3[2mms[22m[39m
+ [32m✓[39m src/services/core/backendDetection.test.js[2m > [22misBackendAvailable[2m > [22mreturns false on fetch failure[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/core/backendDetection.test.js[2m > [22misBackendAvailable[2m > [22mreturns false when response is not ok[32m 45[2mms[22m[39m
+ [32m✓[39m src/services/core/backendDetection.test.js[2m > [22mgetApiBase[2m > [22mreturns default localhost URL[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/core/backendDetection.test.js[2m > [22mresetDetection[2m > [22mclears cached result so next call fetches again[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22mdetectPhase[2m > [22mreturns "compiling" for lines containing Compiling[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22mdetectPhase[2m > [22mreturns "cgal" for lines containing CGAL[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22mdetectPhase[2m > [22mreturns "rendering" for lines containing Rendering[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22mdetectPhase[2m > [22mreturns "rendering" for lines containing Geometries[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22mdetectPhase[2m > [22mreturns "geometry" for lines containing Parsing[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22mdetectPhase[2m > [22mreturns null for unrecognized lines[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22mdetectPhase[2m > [22mreturns null for empty string[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns true for "Compiling design"[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns true for "Parsing design"[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns true for "CGAL cache miss"[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns true for "Geometries in cache"[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns true for "Rendering Polygon Mesh"[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns true for "Total rendering time: 5s"[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns true for "Simple: yes"[32m 0[2mms[22m[39m
+ [32m✓[39m src/services/engine/openscad-worker.test.js[2m > [22misLogWorthy[2m > [22mreturns false for noise lines[32m 0[2mms[22m[39m
+ [32m✓[39m src/hooks/system/useTier.test.js[2m > [22museTier re-export[2m > [22mre-exports useTier from TierProvider[32m 1[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m67 passed[39m[22m[90m (68)[39m
+[2m      Tests [22m [1m[31m17 failed[39m[22m[2m | [22m[1m[32m571 passed[39m[22m[90m (588)[39m
+[2m   Start at [22m 14:59:21
+[2m   Duration [22m 27.46s[2m (transform 10.81s, setup 16.08s, import 49.34s, tests 67.69s, environment 127.19s)[22m
+

@@ -58,3 +58,6 @@
 [submodule "extrusion-hyperobject"]
 	path = projects/extrusion-hyperobject
 	url = https://github.com/madfam-org/extrusion-hyperobject
+[submodule "projects/microscope-slide-hyperobject"]
+	path = projects/microscope-slide-hyperobject
+	url = https://github.com/madfam-org/microscope-slide-hyperobject.git

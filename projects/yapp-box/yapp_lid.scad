@@ -15,7 +15,7 @@ paddingRight = 2;
 render_mode = 0;
 fn = 0;
 
-include <vendor/yapp/YAPPgenerator_v3.scad>
+include <YAPPgenerator_v3.scad>
 
 printBaseShell = false;
 printLidShell = true;

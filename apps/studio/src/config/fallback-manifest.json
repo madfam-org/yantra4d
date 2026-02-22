@@ -18,7 +18,12 @@
       "is_hyperobject": true
     },
     "is_demo": true,
-    "force_backend": true
+    "force_backend": true,
+    "attribution": {
+      "author": "Zack Freedman",
+      "url": "https://thangs.com/designer/ZackFreedman",
+      "license": "MIT"
+    }
   },
   "modes": [
     {

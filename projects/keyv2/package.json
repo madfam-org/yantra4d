@@ -1,26 +1,31 @@
 {
-  "name": "@yantra4d/keyv2",
+  "name": "keyv2",
   "version": "1.0.0",
-  "description": "keyv2 Yantra4D Hyperobject Cartridge",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
+  "description": "automated stl build platform for KeyV2",
+  "main": "gulpfile.js",
   "scripts": {
-    "build": "tsup index.ts --format cjs,esm --dts"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsheldiii/openSCAD-projects.git"
+  },
+  "keywords": [
+    "mechanical",
+    "keyboard"
+  ],
+  "author": "rsheldiii",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/rsheldiii/openSCAD-projects/issues"
+  },
+  "homepage": "https://github.com/rsheldiii/openSCAD-projects#readme",
   "dependencies": {
-    "@yantra4d/sdk": "file:../../packages/sdk"
+    "gulp-changed": "^3.2.0",
+    "gulp-changed-in-place": "^2.3.0",
+    "gulp-shell": "^0.8.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "gulp": "4.0.2"
   }
 }

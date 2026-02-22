@@ -83,6 +83,26 @@
             "cadquery"
           ],
           "default": "openscad"
+        },
+        "attribution": {
+          "type": "object",
+          "required": [
+            "author"
+          ],
+          "properties": {
+            "author": {
+              "type": "string",
+              "description": "Original author or creator of the ecosystem"
+            },
+            "url": {
+              "type": "string",
+              "description": "URL to the original project or author's site"
+            },
+            "license": {
+              "type": "string",
+              "description": "Original license"
+            }
+          }
         }
       }
     },

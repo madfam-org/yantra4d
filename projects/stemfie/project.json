@@ -17,6 +17,11 @@
     "difficulty": "advanced",
     "hyperobject": {
       "is_hyperobject": true
+    },
+    "attribution": {
+      "author": "Paulo Kiefe",
+      "url": "https://stemfie.org/",
+      "license": "CC-BY-SA 4.0"
     }
   },
   "modes": [

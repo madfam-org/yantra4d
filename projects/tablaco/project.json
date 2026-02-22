@@ -3,26 +3,22 @@
     "name": "Tablaco Studio",
     "slug": "tablaco",
     "version": "1.0.0",
+    "thumbnail": "/projects/tablaco.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "construction",
+      "modular",
+      "educational"
+    ],
     "description": {
       "en": "Interlocking half-cube construction system with snap-fit mechanism and grid assembly",
       "es": "Sistema de construcci\u00f3n de medio-cubos entrelazados con mecanismo de ensamble a presi\u00f3n y ret\u00edcula"
-    },
-    "thumbnail": "/projects/tablaco.webp",
-    "tags": [
-      "furniture",
-      "connector",
-      "modular",
-      "construction",
-      "snap-fit",
-      "hyperobject",
-      "commons"
-    ],
-    "is_demo": true
+    }
   },
   "modes": [
     {
       "id": "unit",
-      "scad_file": "vendor/tablaco/half_cube.scad",
+      "scad_file": "half_cube.scad",
       "label": {
         "en": "Unit",
         "es": "Unidad"
@@ -37,7 +33,7 @@
     },
     {
       "id": "assembly",
-      "scad_file": "vendor/tablaco/assembly.scad",
+      "scad_file": "assembly.scad",
       "label": {
         "en": "Assembly",
         "es": "Ensamble"
@@ -53,7 +49,7 @@
     },
     {
       "id": "grid",
-      "scad_file": "vendor/tablaco/tablaco.scad",
+      "scad_file": "tablaco.scad",
       "label": {
         "en": "Grid",
         "es": "Ret\u00edcula"

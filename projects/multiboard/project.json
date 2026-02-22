@@ -15,7 +15,12 @@
       "modular"
     ],
     "difficulty": "intermediate",
-    "commons_license": "CERN-OHL-W-2.0"
+    "commons_license": "CERN-OHL-W-2.0",
+    "attribution": {
+      "author": "Jonathan (Keep Making)",
+      "url": "https://www.multiboard.io/",
+      "license": "CC-BY-NC-SA 4.0"
+    }
   },
   "modes": [
     {

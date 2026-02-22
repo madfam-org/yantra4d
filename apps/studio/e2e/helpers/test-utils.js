@@ -106,6 +106,14 @@ export async function getSearchParams(page) {
 }
 
 /**
+ * Get the current URL hash.
+ * @param {import('@playwright/test').Page} page
+ */
+export async function getHash(page) {
+  return page.evaluate(() => window.location.hash)
+}
+
+/**
  * Simulate keyboard shortcut.
  * @param {import('@playwright/test').Page} page
  * @param {string} key - e.g. 'z', 'Enter'

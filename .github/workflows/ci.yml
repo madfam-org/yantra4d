@@ -137,7 +137,7 @@ jobs:
           python-version: "3.12"
       - run: pip install jsonschema
       - name: Validate Project Manifests
-        run: python3 scripts/validate_manifests.py
+        run: python3 scripts/qa/validate_manifests.py
 
   ci-success:
     runs-on: ubuntu-latest

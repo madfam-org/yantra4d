@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
+import sys
 
 # ---------------------------------------------------------------------------
 # Module-level defaults (single source of truth for server address constants)
@@ -35,7 +36,7 @@ class AppConfig:
     # OpenSCAD
     OPENSCAD_PATH: str = field(default_factory=lambda: os.getenv(
         "OPENSCAD_PATH",
-        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
+        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" if sys.platform == "darwin" else "openscad"
     ))
 
     STL_PREFIX: str = "preview_"

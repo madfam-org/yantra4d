@@ -13,39 +13,9 @@
 [submodule "libs/MCAD"]
 	path = libs/MCAD
 	url = https://github.com/openscad/MCAD.git
-[submodule "projects/ultimate-box/vendor/box-maker"]
-	path = projects/ultimate-box/vendor/box-maker
-	url = https://github.com/M-oster/Advanced-Ultimate-Box-Maker.git
-[submodule "projects/keyv2/vendor/keyv2"]
-	path = projects/keyv2/vendor/keyv2
-	url = https://github.com/rsheldiii/KeyV2.git
-[submodule "projects/multiboard/vendor/multiboard-parametric"]
-	path = projects/multiboard/vendor/multiboard-parametric
-	url = https://github.com/shaggyone/multiboard-parametric.git
-[submodule "projects/yapp-box/vendor/yapp"]
-	path = projects/yapp-box/vendor/yapp
-	url = https://github.com/mrWheel/YAPP_Box.git
-[submodule "projects/stemfie/vendor/stemfie"]
-	path = projects/stemfie/vendor/stemfie
-	url = https://github.com/Cantareus/Stemfie_OpenSCAD.git
-[submodule "projects/polydice/vendor/polydice"]
-	path = projects/polydice/vendor/polydice
-	url = https://github.com/charmaur/PolyDiceGenerator.git
 [submodule "libs/dotSCAD"]
 	path = libs/dotSCAD
 	url = https://github.com/JustinSDK/dotSCAD.git
-[submodule "projects/rugged-box/vendor/rugged-box"]
-	path = projects/rugged-box/vendor/rugged-box
-	url = https://github.com/madfam-org/rugged-box
-[submodule "projects/slide-holder/vendor/slide-holder"]
-	path = projects/slide-holder/vendor/slide-holder
-	url = https://github.com/madfam-org/slide-holder
-[submodule "projects/gridfinity/gridfinity_extended"]
-	path = projects/gridfinity/gridfinity_extended
-	url = https://github.com/madfam-org/gridfinity_extended_openscad.git
-[submodule "projects/tablaco/vendor/tablaco"]
-	path = projects/tablaco/vendor/tablaco
-	url = https://github.com/madfam-org/tablaco
 [submodule "projects/custom-msh/vendor/microscope-slide-holder"]
 	path = projects/custom-msh/vendor/microscope-slide-holder
 	url = https://github.com/madfam-org/microscope-slide-holder
@@ -127,3 +97,24 @@
 [submodule "projects/voronoi"]
 	path = projects/voronoi
 	url = https://github.com/madfam-org/voronoi.git
+[submodule "projects/gridfinity"]
+	path = projects/gridfinity
+	url = https://github.com/madfam-org/gridfinity.git
+[submodule "projects/keyv2"]
+	path = projects/keyv2
+	url = https://github.com/madfam-org/keyv2.git
+[submodule "projects/multiboard"]
+	path = projects/multiboard
+	url = https://github.com/madfam-org/multiboard.git
+[submodule "projects/polydice"]
+	path = projects/polydice
+	url = https://github.com/madfam-org/polydice.git
+[submodule "projects/rugged-box"]
+	path = projects/rugged-box
+	url = https://github.com/madfam-org/rugged-box.git
+[submodule "projects/stemfie"]
+	path = projects/stemfie
+	url = https://github.com/madfam-org/stemfie.git
+[submodule "projects/tablaco"]
+	path = projects/tablaco
+	url = https://github.com/madfam-org/tablaco.git

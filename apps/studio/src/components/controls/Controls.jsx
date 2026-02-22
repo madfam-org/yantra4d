@@ -34,28 +34,63 @@ function MaterialPickerWidget({ params, setParams }) {
         setParams(prev => ({ ...prev, target_material: val || undefined }))
     }, [setParams])
 
+    const activeMaterialData = materials.find(m => m.material.slug === selected)
+
     return (
-        <div className="space-y-2 pb-4 border-b border-border">
-            <Label htmlFor="material-target" className="text-sm font-semibold flex items-center justify-between">
-                <span>Material Target</span>
-                {loading && <span className="text-xs font-normal text-muted-foreground animate-pulse">Loading...</span>}
-            </Label>
-            <select
-                id="material-target"
-                className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                value={selected || ""}
-                onChange={handleSelect}
-            >
-                <option value="">Theoretical (No Compensations)</option>
-                {materials.map(mat => {
-                    const m = mat.material
-                    return (
-                        <option key={m.slug} value={m.slug}>
-                            {m.am_technology} | {m.vendor} {m.name}
-                        </option>
-                    )
-                })}
-            </select>
+        <div className="space-y-4 pb-4 border-b border-border">
+            <div className="space-y-2">
+                <Label htmlFor="material-target" className="text-sm font-semibold flex items-center justify-between">
+                    <span>Material Target</span>
+                    {loading && <span className="text-xs font-normal text-muted-foreground animate-pulse">Loading...</span>}
+                </Label>
+                <select
+                    id="material-target"
+                    className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    value={selected || ""}
+                    onChange={handleSelect}
+                >
+                    <option value="">Theoretical (No Compensations)</option>
+                    {materials.map(mat => {
+                        const m = mat.material
+                        return (
+                            <option key={m.slug} value={m.slug}>
+                                {m.am_technology} | {m.vendor} {m.name}
+                            </option>
+                        )
+                    })}
+                </select>
+            </div>
+
+            {/* Cognitive Visualization Array (Phase 10) */}
+            {activeMaterialData?.tda && activeMaterialData?.semantic_ontology && (
+                <div className="bg-muted/30 rounded-lg border border-border p-3 space-y-3 text-xs">
+                    <div>
+                        <span className="font-semibold block mb-1">Semantic Ontology (ISO/EMMO)</span>
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-muted-foreground">
+                            <span>Category:</span>
+                            <span className="text-foreground text-right">{activeMaterialData.semantic_ontology.iso_52900_category}</span>
+                            <span>Class URI:</span>
+                            <Tooltip content={activeMaterialData.semantic_ontology.emmo_class}>
+                                <span className="text-foreground text-right truncate cursor-help">Hover to view</span>
+                            </Tooltip>
+                        </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-border/50">
+                        <span className="font-semibold block mb-1">Topological Data Analysis (TDA)</span>
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-muted-foreground">
+                            <span>Euler Characteristic:</span>
+                            <span className="text-foreground text-right font-mono">{activeMaterialData.tda.euler_characteristic}</span>
+                            <span>Betti 0 (Components):</span>
+                            <span className="text-foreground text-right font-mono">{activeMaterialData.tda.persistent_homology.betti_0}</span>
+                            <span>Betti 1 (Holes):</span>
+                            <span className="text-foreground text-right font-mono">{activeMaterialData.tda.persistent_homology.betti_1}</span>
+                            <span>Betti 2 (Voids):</span>
+                            <span className="text-foreground text-right font-mono">{activeMaterialData.tda.persistent_homology.betti_2}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

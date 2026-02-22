@@ -27,5 +27,19 @@
             "wall_thickness": 0.2,
             "hole_diameter": 0.4
         }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Vat Photopolymerization",
+        "emmo_class": "http://emmo.info/emmo#Polymer",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/photopolymers"
+    },
+    "tda": {
+        "euler_characteristic": -584,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 585,
+            "betti_2": 0
+        },
+        "filtration_metric": "superlevel-set"
     }
 }

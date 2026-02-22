@@ -27,5 +27,19 @@
             "wall_thickness": 0.8,
             "hole_diameter": 1.2
         }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Material Extrusion",
+        "emmo_class": "http://emmo.info/emmo#Thermoplastic",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/thermoplastics"
+    },
+    "tda": {
+        "euler_characteristic": 12,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 0,
+            "betti_2": 11
+        },
+        "filtration_metric": "Vietoris-Rips"
     }
 }

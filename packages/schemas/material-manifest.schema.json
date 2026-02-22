@@ -162,6 +162,68 @@
                     }
                 }
             }
+        },
+        "semantic_ontology": {
+            "type": "object",
+            "description": "Machine-readable context aligning the substrate to global material terminologies and standards.",
+            "required": [
+                "iso_52900_category"
+            ],
+            "properties": {
+                "iso_52900_category": {
+                    "type": "string",
+                    "description": "Officially recognized AM process category (e.g., 'Vat Photopolymerization', 'Material Extrusion')."
+                },
+                "emmo_class": {
+                    "type": "string",
+                    "description": "URI linking to the Elementary Multiperspective Material Ontology class."
+                },
+                "knowledge_graph_uri": {
+                    "type": "string",
+                    "description": "URI linking to a secondary or proprietary Knowledge Graph for context-aware analytics."
+                }
+            }
+        },
+        "tda": {
+            "type": "object",
+            "description": "Topological Data Analysis traits representing the material's phased, subwavelength spatial network.",
+            "required": [
+                "euler_characteristic",
+                "persistent_homology"
+            ],
+            "properties": {
+                "euler_characteristic": {
+                    "type": "integer",
+                    "description": "An invariant topological descriptor denoting the relationship between vertices, edges, and faces within the microstructure."
+                },
+                "persistent_homology": {
+                    "type": "object",
+                    "description": "Array of Betti numbers representing the emergent topological features (components, holes, voids) of the material.",
+                    "required": [
+                        "betti_0",
+                        "betti_1",
+                        "betti_2"
+                    ],
+                    "properties": {
+                        "betti_0": {
+                            "type": "integer",
+                            "description": "Number of connected components."
+                        },
+                        "betti_1": {
+                            "type": "integer",
+                            "description": "Number of one-dimensional or 'circular' holes."
+                        },
+                        "betti_2": {
+                            "type": "integer",
+                            "description": "Number of two-dimensional 'voids' or cavities."
+                        }
+                    }
+                },
+                "filtration_metric": {
+                    "type": "string",
+                    "description": "The metric utilized to calculate the Persistence Diagram (e.g., 'superlevel-set', 'Vietoris-Rips')."
+                }
+            }
         }
     }
 }

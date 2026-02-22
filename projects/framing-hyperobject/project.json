@@ -127,6 +127,23 @@
   ],
   "parameters": [
     {
+      "id": "target_material",
+      "type": "select",
+      "default": "polymaker-polylite-pla",
+      "options": [
+        {
+          "value": "polymaker-polylite-pla",
+          "label": "Polymaker PolyLite PLA"
+        },
+        {
+          "value": "formlabs-clear-v4",
+          "label": "Formlabs Clear V4"
+        }
+      ],
+      "label": "Target Material",
+      "hidden": true
+    },
+    {
       "id": "width",
       "type": "slider",
       "default": 200,

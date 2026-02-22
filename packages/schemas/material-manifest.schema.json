@@ -225,5 +225,27 @@
                 }
             }
         }
+    },
+    "thermodynamics": {
+        "type": "object",
+        "description": "Physical energy limits detailing how the material responds to thermal and kinetic environments.",
+        "required": [
+            "glass_transition_temp",
+            "melting_temp"
+        ],
+        "properties": {
+            "glass_transition_temp": {
+                "type": "number",
+                "description": "Temperature (C) at which the material shifts from rigid/glassy to a rubbery phase."
+            },
+            "melting_temp": {
+                "type": "number",
+                "description": "Temperature (C) at which the material structurally flows or melts."
+            },
+            "yield_strength": {
+                "type": "number",
+                "description": "Stress threshold (MPa) before the geometry begins to permanently deform."
+            }
+        }
     }
 }

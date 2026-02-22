@@ -29,7 +29,7 @@ function hasWasmCapabilities() {
 /**
  * Detect whether to use 'backend' or 'wasm' rendering mode.
  */
-async function detectMode(manifest) {
+async function detectMode(manifest, mode, params) {
   // Always use backend for CadQuery engine
   if (manifest && manifest.engine === 'cadquery') {
     return 'backend'
@@ -38,6 +38,21 @@ async function detectMode(manifest) {
   // Always use backend if project explicitly requires it (e.g. complex BOSL2 SCAD dependencies)
   if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
     return 'backend'
+  }
+
+  // CIRCUIT BREAKER: Evaluate topological complexity
+  // If the basic mesh estimate exceeds 15.0 workload seconds, WASM will freeze the UI thread.
+  if (manifest && mode && params) {
+    // We intentionally ignore the hardware WASM multiplier and use the raw base complexity
+    const tempMode = _hardwareMode
+    _hardwareMode = 'backend'
+    const est = estimateRenderTime(mode, params, manifest)
+    _hardwareMode = tempMode
+
+    if (est > 15.0) {
+      console.warn(`[Circuit Breaker] Mesh complexity too high (est. ${est.toFixed(1)}s). Bypassing WASM and falling back to Server Backend.`)
+      return 'backend'
+    }
   }
 
   if (_hardwareMode) return _hardwareMode
@@ -272,7 +287,7 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
  * Main entry point: render parts for the given mode and parameters.
  */
 export async function renderParts(mode, params, manifest, { onProgress, abortSignal, project } = {}) {
-  const currentMode = await detectMode(manifest)
+  const currentMode = await detectMode(manifest, mode, params)
   if (currentMode === 'backend') {
     return renderBackend(mode, params, manifest, onProgress, abortSignal, project)
   } else {

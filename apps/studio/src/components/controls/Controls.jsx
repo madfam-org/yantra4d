@@ -8,16 +8,19 @@ import { Tooltip } from "@/components/ui/tooltip"
 
 import SliderControl from './SliderControl'
 import ColorGradientControl from './ColorGradientControl'
+import TpmsTopologyControl from './TpmsTopologyControl'
+import EnergySliderControl from './EnergySliderControl'
 
 // ---------------------------------------------------------------------------
 // MaterialPickerWidget — selects materials from the physical Commons registry
 // ---------------------------------------------------------------------------
-function MaterialPickerWidget({ params, setParams }) {
-    const [materials, setMaterials] = useState([])
+function MaterialPickerWidget({ params, setParams, materials, setMaterials }) {
     const [loading, setLoading] = useState(false)
     const selected = params.target_material || null
 
     useEffect(() => {
+        if (materials.length > 0) return // Skip if already loaded
+
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true)
         fetch('/api/materials')
@@ -27,7 +30,7 @@ function MaterialPickerWidget({ params, setParams }) {
                 setLoading(false)
             })
             .catch(() => setLoading(false))
-    }, [])
+    }, [materials.length, setMaterials])
 
     const handleSelect = useCallback((e) => {
         const val = e.target.value
@@ -170,6 +173,9 @@ const DEFAULT_TEXT_MAX_LENGTH = 255
 export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, boundingBox, setBoundingBox, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {} }) {
     const { language, t } = useLanguage()
     const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
+
+    const [materials, setMaterials] = useState([])
+
     const [visibilityLevel, setVisibilityLevel] = useState(() => {
         const visGroup = manifest.parameter_groups?.find(g => g.id === 'visibility')
         return visGroup?.levels?.[0]?.id || 'basic'
@@ -197,6 +203,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
     const checkboxes = parametersForMode.filter(p => p.type === 'checkbox')
     const gradientParams = parametersForMode.filter(p => p.widget?.type === 'color-gradient')
     const componentPickers = parametersForMode.filter(p => p.widget?.type === 'component-picker')
+    const tpmsControls = parametersForMode.filter(p => p.widget?.type === 'tpms-topology')
     const visibilityCheckboxes = checkboxes.filter(p => p.group === 'visibility')
     const otherCheckboxes = checkboxes.filter(p => p.group !== 'visibility')
 
@@ -226,11 +233,21 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
     const visiblePresets = presets.filter(p => !p.visible_in_modes || p.visible_in_modes.includes(mode))
 
     const isMaterialAware = !!manifest?.hyperobject?.material_awareness
+    const activeMaterialData = materials.find(m => m.material.slug === params.target_material)
 
     return (
         <div className="flex flex-col gap-6">
             {isMaterialAware && (
-                <MaterialPickerWidget params={params} setParams={setParams} language={language} />
+                <>
+                    <MaterialPickerWidget params={params} setParams={setParams} materials={materials} setMaterials={setMaterials} />
+                    {/* The Energy Slider automatically pulls from the lifted materials state */}
+                    <EnergySliderControl
+                        value={params.simulated_energy}
+                        onChange={handleSliderChange}
+                        thermodynamics={activeMaterialData?.thermodynamics || null}
+                        language={language}
+                    />
+                </>
             )}
 
             {hasNoParameters && visiblePresets.length === 0 && partColors.length === 0 && (
@@ -360,6 +377,22 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             param={param}
                             params={params}
                             setParams={setParams}
+                            getLabel={getLabel}
+                            language={language}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* TPMS Topology Controls */}
+            {tpmsControls.length > 0 && (
+                <div className="space-y-4 border-t border-border pt-4">
+                    {tpmsControls.map(param => (
+                        <TpmsTopologyControl
+                            key={param.id}
+                            param={param}
+                            value={params[param.id]}
+                            onChange={handleSliderChange}
                             getLabel={getLabel}
                             language={language}
                         />

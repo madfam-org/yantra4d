@@ -7,7 +7,8 @@ const MAX_HISTORY = 50
  * Returns [value, setValue, { undo, redo, canUndo, canRedo }].
  *
  * setValue pushes to history. undo/redo navigate history without pushing.
- * Both update the same React state but through separate code paths.
+ * canUndo/canRedo are stored as proper React state so they are safe to read
+ * during render (no ref access in render path).
  */
 export function useUndoRedo(initialValue) {
   const resolved = typeof initialValue === 'function' ? initialValue() : initialValue
@@ -18,53 +19,57 @@ export function useUndoRedo(initialValue) {
   const historyRef = useRef([resolved])
   const indexRef = useRef(0)
 
-  const syncFlags = useCallback(() => {
-    setCanUndo(indexRef.current > 0)
-    setCanRedo(indexRef.current < historyRef.current.length - 1)
-  }, [])
+  const latestValueRef = useRef(resolved)
 
   // setValue: pushes a new entry to history (normal user action)
   // options: { history: boolean } - if false, update state but skip history push
   const setValue = useCallback((updater, options = {}) => {
     const { history = true } = options
-    const prev = historyRef.current[indexRef.current]
-    const next = typeof updater === 'function' ? updater(prev) : updater
 
-    if (JSON.stringify(prev) === JSON.stringify(next)) {
-      // console.log('useUndoRedo: skipping update (no change)', next)
-      return
-    }
+    setValueRaw(prevRaw => {
+      const next = typeof updater === 'function' ? updater(prevRaw) : updater
 
-    if (history) {
-      // Truncate redo history and push
-      const newHistory = historyRef.current.slice(0, indexRef.current + 1)
-      newHistory.push(next)
-      if (newHistory.length > MAX_HISTORY) newHistory.shift()
-      historyRef.current = newHistory
-      indexRef.current = newHistory.length - 1
-    }
+      if (JSON.stringify(prevRaw) === JSON.stringify(next)) {
+        return prevRaw
+      }
 
-    setValueRaw(next)
-    syncFlags()
-  }, [syncFlags])
+      if (history) {
+        // Truncate redo history and push
+        const newHistory = historyRef.current.slice(0, indexRef.current + 1)
+        newHistory.push(next)
+        if (newHistory.length > MAX_HISTORY) newHistory.shift()
+        historyRef.current = newHistory
+        indexRef.current = newHistory.length - 1
+        setCanUndo(indexRef.current > 0)
+        setCanRedo(false)
+      }
+
+      latestValueRef.current = next
+      return next
+    })
+  }, [])
 
   // undo: move back in history (no push)
   const undo = useCallback(() => {
     if (indexRef.current <= 0) return
     indexRef.current -= 1
     const val = historyRef.current[indexRef.current]
+    latestValueRef.current = val
     setValueRaw(val)
-    syncFlags()
-  }, [syncFlags])
+    setCanUndo(indexRef.current > 0)
+    setCanRedo(true)
+  }, [])
 
   // redo: move forward in history (no push)
   const redo = useCallback(() => {
     if (indexRef.current >= historyRef.current.length - 1) return
     indexRef.current += 1
     const val = historyRef.current[indexRef.current]
+    latestValueRef.current = val
     setValueRaw(val)
-    syncFlags()
-  }, [syncFlags])
+    setCanUndo(true)
+    setCanRedo(indexRef.current < historyRef.current.length - 1)
+  }, [])
 
   return [value, setValue, { undo, redo, canUndo, canRedo }]
 }

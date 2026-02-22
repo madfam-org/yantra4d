@@ -41,5 +41,10 @@
             "betti_2": 11
         },
         "filtration_metric": "Vietoris-Rips"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 61.0,
+        "melting_temp": 210.0,
+        "yield_strength": 30.0
     }
 }

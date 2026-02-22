@@ -34,7 +34,10 @@ class ProjectManifest:
 
     @property
     def engine(self) -> str:
-        return self._data["project"].get("engine", "openscad")
+        hyperobject = self.project.get("hyperobject", {})
+        if "implicit_field" in hyperobject:
+            return "implicit"
+        return self.project.get("engine", "openscad")
 
     @property
     def modes(self) -> list:

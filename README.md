@@ -2,7 +2,7 @@
 
 > **Manifest-driven parametric design for the decentralized manufacturing age.**
 
-Yantra4D is not just a CAD tool; it is a **Poly-Kernel Engine** and a thriving **Hyperobjects Commons**. It bridges the mathematical precision of programmatic CAD with the accessibility of a visual, web-native storefront.
+Yantra4D is not just a CAD tool; it is a **Poly-Kernel Engine**, a **Continuous SDF Geometry Compiler**, and a thriving **Hyperobjects Commons**. It bridges the mathematical precision of programmatic CAD with the accessibility of a visual, web-native storefront — and uniquely integrates **nanoscale material intelligence** and **interactive Digital Twin simulation** directly into the browser.
 
 [![Astro](https://img.shields.io/badge/Docs-Starlight-blueviolet)](https://4d-docs.madfam.io)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-red.svg)](./LICENSE)
@@ -22,12 +22,15 @@ Every project in Yantra4D is a self-contained **"Cartridge"**.
 ### 🧠 Material Hyperobjects & Hyperawareness
 Geometry is meaningless without material context. The Yantra4D Commons pioneers the integration of **Material Hyperobjects**—metadata modules (`/materials/`) capturing the Topological Data Analysis (TDA), spatial compensations, and semantic ontologies of physical AM substrates. By feeding this nanoscale intelligence directly into the geometric compiler, our additively manufacturable hyperobjects are imbued with **"hyperawareness"**, actively warping and adapting their dimensions to survive physical reality.
 
+### 🌡️ Interactive Digital Twin (4D Simulation)
+Yantra4D is the first browser-native platform to simulate **temporal phasing (4D printing)**. Users can apply simulated energy to any hyperobject and watch the continuous SDF morph in real-time as it crosses material phase boundaries (glass transition, yield, melt). An intelligent **WASM Circuit Breaker** automatically routes computationally intensive renders to the Docker backend, keeping the UI perfectly fluid regardless of topological complexity.
+
 ---
 
 ## 🛠️ The Stack
-- **CAD Engines**: Dual-execution via [OpenSCAD](https://openscad.org/) and [CadQuery](https://cadquery.readthedocs.io/).
+- **CAD Engines**: Tri-kernel execution via [OpenSCAD](https://openscad.org/) (CSG), [CadQuery](https://cadquery.readthedocs.io/) (B-Rep), and a native **Implicit SDF Engine** (TPMS/Lattice).
 - **The Studio**: React 19 + Three.js + Manifold-3d for blisteringly fast volumetric browser rendering.
-- **The API**: Python Flask backend with Docker-orchestrated render clusters.
+- **The API**: Python Flask backend with Docker-orchestrated render clusters and slicer-grade physics estimation.
 - **The Knowledge Base**: [4D Docs](https://4d-docs.madfam.io) — Powered by Astro Starlight.
 
 ---

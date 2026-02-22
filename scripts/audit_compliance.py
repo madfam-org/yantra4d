@@ -102,6 +102,68 @@ def check_rule_4_standardization(project_dir: Path) -> list:
             errors.append(f"Manifest validation failed: {e}")
     return errors
 
+def check_rule_5_hyperobject_coherence(project_dir: Path) -> list:
+    """Validate that material-aware hyperobjects have structurally complete
+    thermodynamic and topological data blocks in their manifests."""
+    errors = []
+    manifest_path = project_dir / "project.json"
+    if not manifest_path.exists():
+        return errors
+
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError:
+        return errors
+
+    hyperobject = data.get("project", {}).get("hyperobject", {})
+    is_hyperobject = hyperobject.get("is_hyperobject", False)
+    material_awareness = hyperobject.get("material_awareness", False)
+
+    if not is_hyperobject or not material_awareness:
+        return errors
+
+    slug = data.get("project", {}).get("slug", project_dir.name)
+
+    # Check that at least one material manifest is referenced and valid
+    target_mat = None
+    all_params = data.get("params", data.get("parameters", []))
+    for param in all_params:
+        if param.get("id") == "target_material":
+            target_mat = param.get("default")
+            break
+
+    if not target_mat:
+        errors.append(f"'{slug}' is material-aware but has no 'target_material' param with a default.")
+        return errors
+
+    # Resolve material manifest
+    materials_dir = Path(os.path.join(os.path.dirname(__file__), '../materials')).resolve()
+    mat_manifest_path = materials_dir / target_mat / "material.json"
+
+    if not mat_manifest_path.exists():
+        errors.append(f"'{slug}' references material '{target_mat}' but {mat_manifest_path} does not exist.")
+        return errors
+
+    try:
+        with open(mat_manifest_path, "r", encoding="utf-8") as f:
+            mat_data = json.load(f)
+    except json.JSONDecodeError:
+        errors.append(f"'{slug}' material manifest for '{target_mat}' is invalid JSON.")
+        return errors
+
+    # Validate thermodynamics block
+    thermo = mat_data.get("thermodynamics")
+    if thermo is None:
+        errors.append(f"'{slug}' material '{target_mat}' is missing 'thermodynamics' block.")
+    else:
+        required_thermo_keys = ["glass_transition_temp", "melting_temp"]
+        for key in required_thermo_keys:
+            if key not in thermo:
+                errors.append(f"'{slug}' material '{target_mat}' thermodynamics missing '{key}'.")
+
+    return errors
+
 def main():
     if not PROJECTS_DIR.is_dir():
         logger.error(f"Projects directory not found at {PROJECTS_DIR}")
@@ -121,6 +183,7 @@ def main():
         errors.extend(check_rule_2_no_vendor(project_dir))
         errors.extend(check_rule_3_attribution(project_dir))
         errors.extend(check_rule_4_standardization(project_dir))
+        errors.extend(check_rule_5_hyperobject_coherence(project_dir))
         
         if errors:
             logger.error(f"❌ {project_dir.name} failed compliance:")

@@ -1,0 +1,86 @@
+{
+    "project": {
+        "name": "Maths: TPMS Implicit Lattice",
+        "slug": "implicit-lattice-hyperobject",
+        "description": "A field-driven Triply Periodic Minimal Surface (TPMS). Uses continuous Signed Distance Fields rather than explicit BSP trees.",
+        "version": "1.0.0",
+        "author": "Yantra4D",
+        "license": "CERN-OHL-W-2.0",
+        "thumbnail": "thumbnail.png",
+        "tags": [
+            "math",
+            "implicit",
+            "tpms",
+            "lattice",
+            "tda"
+        ],
+        "difficulty": "advanced",
+        "hyperobject": {
+            "is_hyperobject": true,
+            "material_awareness": true,
+            "implicit_field": {
+                "type": "tpms",
+                "topology": "gyroid",
+                "base_frequency": 5.0,
+                "resolution": 48
+            }
+        }
+    },
+    "estimate_constants": {
+        "base_time": 1,
+        "per_unit": 0,
+        "per_part": 1,
+        "wasm_multiplier": 1
+    },
+    "modes": [
+        {
+            "id": "single",
+            "scad_file": "tpms.scad",
+            "parts": [
+                "lattice"
+            ]
+        }
+    ],
+    "parameters": [
+        {
+            "id": "target_material",
+            "type": "select",
+            "default": "polymaker-polylite-pla",
+            "options": [
+                {
+                    "value": "polymaker-polylite-pla",
+                    "label": "Polymaker PolyLite PLA"
+                },
+                {
+                    "value": "formlabs-clear-v4",
+                    "label": "Formlabs Clear V4"
+                },
+                {
+                    "value": "pet-cf",
+                    "label": "PETG Carbon Fiber"
+                }
+            ],
+            "label": "Target Material",
+            "hidden": true
+        },
+        {
+            "id": "topology_type",
+            "type": "slider",
+            "widget": {
+                "type": "tpms-topology"
+            },
+            "min": 0,
+            "max": 2,
+            "default": 0,
+            "label": "Topology: 0=Gyroid, 1=Diamond, 2=Schwarz P"
+        },
+        {
+            "id": "frequency",
+            "type": "slider",
+            "min": 1,
+            "max": 20,
+            "default": 5,
+            "label": "Spatial Frequency"
+        }
+    ]
+}

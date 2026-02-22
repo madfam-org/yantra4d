@@ -41,5 +41,10 @@
             "betti_2": 0
         },
         "filtration_metric": "superlevel-set"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 73.0,
+        "melting_temp": 250.0,
+        "yield_strength": 65.0
     }
 }

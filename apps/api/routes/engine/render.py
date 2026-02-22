@@ -26,6 +26,10 @@ from services.engine.cadquery_engine import (
     stream_render as stream_cadquery_render,
     cancel_render as cancel_cadquery_render
 )
+from services.core.implicit_engine import (
+    run_render as run_implicit_render,
+    stream_render as stream_implicit_render
+)
 from services.engine.render_cache import render_cache
 from utils.route_helpers import cleanup_old_stl_files, error_response, require_json_body
 from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
@@ -132,6 +136,13 @@ def _extract_render_payload(data):
             params["mat_clear_press"] = float(clear.get("press_fit", 0.0))
             params["mat_clear_slide"] = float(clear.get("sliding_fit", 0.0))
             params["mat_clear_loose"] = float(clear.get("loose_fit", 0.0))
+            
+            # Map Thermodynamic Limits
+            thermo = mat_manifest.get("thermodynamics", {})
+            params["thermo_glass_transition_temp"] = float(thermo.get("glass_transition_temp", 999.0))
+            params["thermo_melting_temp"] = float(thermo.get("melting_temp", 999.0))
+            params["thermo_yield_strength"] = float(thermo.get("yield_strength", 999.0))
+            
             logger.info(f"Injected Material Hyperobject parameters for: {target_mat}")
         except Exception as e:
             logger.warning(f"Failed to inject material compensations for {target_mat}: {e}")
@@ -158,8 +169,6 @@ def estimate_render_time():
     data = request.json
     project_slug = data.get('project')
     manifest = get_manifest(project_slug)
-    constants = manifest.estimate_constants
-
     mode_id = data.get('mode')
     scad_file = data.get('scad_file')
 
@@ -172,17 +181,32 @@ def estimate_render_time():
     if not mode_id:
         mode_id = manifest.modes[0]["id"]
 
+    # Basic heuristic (bounding boxes from manifest config)
     num_units = manifest.calculate_estimate_units(mode_id, data)
     num_parts = len(manifest.get_parts_for_mode(mode_id))
-
-    est = (constants["base_time"] +
-           num_units * constants["per_unit"] +
-           num_parts * constants["per_part"])
+    
+    # Simulate a true Slicer-Grade path estimation using theoretical volumetric flow
+    # instead of just arbitrary scalar constants.
+    volumetric_flow_rate = 8.0 # mm^3/s (typical for common FDM)
+    material_density = 1.24 # g/cm^3 (PLA average)
+    spool_cost = 25.00 # USD per kg
+    
+    # Convert 'units' (which are generally bounding box volumes in mm^3) to realistic print metrics
+    # If a parametric model isn't rendering yet, we use the bounding box minus an assumed 80% porosity for infill.
+    theoretical_volume_mm3 = num_units * 0.20 
+    theoretical_weight_g = (theoretical_volume_mm3 / 1000.0) * material_density
+    
+    # The actual print time (seconds): Volume / FlowRate + Traversal Penalties
+    path_time_seconds = (theoretical_volume_mm3 / volumetric_flow_rate) + (num_parts * 180.0) # 3 min per part overhead
+    
+    est_cost = (theoretical_weight_g / 1000.0) * spool_cost
 
     return jsonify({
-        "estimated_seconds": round(est, 1),
+        "estimated_seconds": round(path_time_seconds, 1),
+        "estimated_weight_g": round(theoretical_weight_g, 2),
+        "estimated_cost_usd": round(est_cost, 2),
         "num_parts": num_parts,
-        "num_units": num_units
+        "metrics": "slicer_grade_heuristic"
     })
 
 
@@ -270,6 +294,9 @@ def render_stl():
             if engine == "cadquery":
                 cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
                 success, stderr = run_cadquery_render(cmd, scad_path=scad_path)
+            elif engine == "implicit":
+                config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
+                success, stderr = run_implicit_render(output_path, config, computed_params)
             else:
                 render_mode = mode_map.get(part, 0)
                 cmd = build_openscad_command(output_path, scad_path, params, render_mode)
@@ -377,6 +404,9 @@ def render_stl_stream():
             if engine == "cadquery":
                 cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
                 stream_gen = stream_cadquery_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
+            elif engine == "implicit":
+                config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
+                stream_gen = stream_implicit_render(output_path, config, computed_params, part, part_base, part_weight, i, num_parts)
             else:
                 render_mode = mode_map.get(part, 0)
                 cmd = build_openscad_command(output_path, scad_path, params, render_mode)

@@ -16,18 +16,15 @@
 [submodule "libs/dotSCAD"]
 	path = libs/dotSCAD
 	url = https://github.com/JustinSDK/dotSCAD.git
-[submodule "projects/custom-msh/vendor/microscope-slide-holder"]
-	path = projects/custom-msh/vendor/microscope-slide-holder
-	url = https://github.com/madfam-org/microscope-slide-holder
 [submodule "projects/custom-msh"]
 	path = projects/custom-msh
 	url = https://github.com/madfam-org/custom-msh.git
 [submodule "projects/microscope-slide-holder"]
 	path = projects/microscope-slide-holder
 	url = https://github.com/madfam-org/microscope-slide-holder.git
-[submodule "extrusion-hyperobject"]
+[submodule "projects/extrusion-hyperobject"]
 	path = projects/extrusion-hyperobject
-	url = https://github.com/madfam-org/extrusion-hyperobject
+	url = https://github.com/madfam-org/extrusion-hyperobject.git
 [submodule "projects/microscope-slide-hyperobject"]
 	path = projects/microscope-slide-hyperobject
 	url = https://github.com/madfam-org/microscope-slide-hyperobject.git
@@ -119,3 +116,9 @@
 	path = projects/tablaco
 	url = https://github.com/madfam-org/tablaco.git
 	update = none
+[submodule "projects/hinge-hyperobject"]
+	path = projects/hinge-hyperobject
+	url = https://github.com/madfam-org/hinge-hyperobject.git
+[submodule "projects/locking-mechanism-hyperobject"]
+	path = projects/locking-mechanism-hyperobject
+	url = https://github.com/madfam-org/locking-mechanism-hyperobject.git

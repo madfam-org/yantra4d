@@ -91,3 +91,31 @@ describe('deleteFile', () => {
     await expect(deleteFile('proj', 'x.scad')).rejects.toThrow('Not found')
   })
 })
+
+// Fallback error branches — when server returns no error field
+describe('fallback error messages', () => {
+  it('listFiles throws fallback', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(listFiles('proj')).rejects.toThrow('Failed to list files')
+  })
+
+  it('readFile throws fallback', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(readFile('proj', 'f.scad')).rejects.toThrow('Failed to read file')
+  })
+
+  it('writeFile throws fallback', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(writeFile('proj', 'f.scad', 'x')).rejects.toThrow('Failed to write file')
+  })
+
+  it('createFile throws fallback', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(createFile('proj', 'f.scad')).rejects.toThrow('Failed to create file')
+  })
+
+  it('deleteFile throws fallback', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(deleteFile('proj', 'f.scad')).rejects.toThrow('Failed to delete file')
+  })
+})

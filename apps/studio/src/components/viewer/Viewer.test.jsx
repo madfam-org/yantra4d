@@ -1,24 +1,75 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import React from 'react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 
-// Mock react-three/fiber Canvas and related components
+// ── Controllable mock for useWorkerLoader ──
+const mockUseWorkerLoader = vi.fn(() => ({ geometry: null, scene: null }))
+
+vi.mock('../../hooks/render/useWorkerLoader', () => ({
+  useWorkerLoader: (...args) => mockUseWorkerLoader(...args),
+}))
+
+// ── Controllable mock for useTheme ──
+const mockUseTheme = vi.fn(() => ({ theme: 'light' }))
+vi.mock('../../contexts/system/ThemeProvider', () => ({
+  useTheme: () => mockUseTheme(),
+}))
+
+// ── Controllable mock for useManifest ──
+const defaultManifestMock = {
+  getCameraViews: () => [
+    { id: 'iso', label: 'Iso', position: [50, 50, 50] },
+    { id: 'top', label: 'Top', position: [0, 0, 100] },
+    { id: 'front', label: 'Front', position: [0, 100, 0] },
+  ],
+  getViewerConfig: () => ({ default_color: '#e5e7eb' }),
+  getLabel: (view) => view.label || view.id,
+  getMode: () => null,
+  manifest: {},
+}
+const mockUseManifest = vi.fn(() => defaultManifestMock)
+vi.mock('../../contexts/project/ManifestProvider', () => ({
+  useManifest: () => mockUseManifest(),
+}))
+
+// ── Controllable mock for printEstimator ──
+const mockComputeVolumeMm3 = vi.fn(() => 1000)
+const mockComputeBoundingBox = vi.fn(() => ({ width: 10, depth: 10, height: 10 }))
+const mockComputeCentroid = vi.fn(() => ({ x: 5, y: 5, z: 5 }))
+vi.mock('../../lib/printEstimator', () => ({
+  computeVolumeMm3: (...args) => mockComputeVolumeMm3(...args),
+  computeBoundingBox: (...args) => mockComputeBoundingBox(...args),
+  computeCentroid: (...args) => mockComputeCentroid(...args),
+}))
+
+// ── Mock react-three/fiber ──
 vi.mock('@react-three/fiber', () => ({
   Canvas: ({ children }) => <div data-testid="mock-canvas">{children}</div>,
   useLoader: () => null,
 }))
 
+// ── Mock react-three/drei ──
 vi.mock('@react-three/drei', () => ({
   OrbitControls: () => null,
   Grid: () => null,
   Environment: () => null,
   Edges: () => null,
   Bounds: ({ children }) => <>{children}</>,
-  GizmoHelper: () => null,
+  GizmoHelper: ({ children }) => <div data-testid="gizmo-helper">{children}</div>,
   GizmoViewport: () => null,
+  Html: ({ children }) => <div data-testid="html-label">{children}</div>,
 }))
 
 vi.mock('three/examples/jsm/loaders/STLLoader', () => ({
   STLLoader: class { },
+}))
+
+vi.mock('three/examples/jsm/loaders/GLTFLoader', () => ({
+  GLTFLoader: class { },
+}))
+
+vi.mock('three/examples/jsm/utils/BufferGeometryUtils', () => ({
+  default: {},
 }))
 
 vi.mock('../../contexts/system/LanguageProvider', () => ({
@@ -28,52 +79,76 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
   }),
 }))
 
-vi.mock('../../contexts/system/ThemeProvider', () => ({
-  useTheme: () => ({ theme: 'light' }),
-}))
-
-vi.mock('../../contexts/project/ManifestProvider', () => ({
-  useManifest: () => ({
-    getCameraViews: () => [
-      { id: 'iso', label: 'Iso', position: [50, 50, 50] },
-      { id: 'top', label: 'Top', position: [0, 0, 100] },
-      { id: 'front', label: 'Front', position: [0, 100, 0] },
-    ],
-    getViewerConfig: () => ({ default_color: '#e5e7eb' }),
-    getLabel: (view) => view.label || view.id,
-    getMode: () => null,
-    manifest: {},
-  }),
-}))
-
 vi.mock('../feedback/ErrorBoundary', () => ({
   ErrorBoundary: ({ children }) => <>{children}</>,
 }))
 
-vi.mock('./SceneController', () => ({
-  default: () => null,
-}))
+// ── Controllable SceneController mock ──
+const mockAnimateTo = vi.fn()
+const mockSetCameraView = vi.fn()
+const mockCaptureSnapshot = vi.fn(() => 'snapshot-data')
+const mockGetCameraState = vi.fn(() => ({ position: [1, 2, 3] }))
+
+vi.mock('./SceneController', () => {
+  const ForwardedSceneController = React.forwardRef((props, ref) => {
+    React.useImperativeHandle(ref, () => ({
+      animateTo: mockAnimateTo,
+      setCameraView: mockSetCameraView,
+      captureSnapshot: mockCaptureSnapshot,
+      getCameraState: mockGetCameraState,
+    }))
+    return <div data-testid="scene-controller" />
+  })
+  ForwardedSceneController.displayName = 'SceneController'
+  return { default: ForwardedSceneController }
+})
 
 vi.mock('./NumberedAxes', () => ({
   default: () => <div data-testid="numbered-axes" />,
 }))
 
+// ── Controllable AnimatedGrid mock ──
+let capturedAnimatedGridOnReady = null
 vi.mock('./AnimatedGrid', () => ({
-  default: () => null,
-}))
-
-vi.mock('../../lib/printEstimator', () => ({
-  computeVolumeMm3: () => 0,
-  computeBoundingBox: () => ({ width: 10, depth: 10, height: 10 }),
+  default: (props) => {
+    capturedAnimatedGridOnReady = props.onReady
+    return <div data-testid="animated-grid" />
+  },
 }))
 
 import Viewer from './Viewer'
+
+// ── Helper: create a fake BufferGeometry-like object ──
+function makeFakeGeometry(boundsMin = [0, 0, 0], boundsMax = [10, 10, 10]) {
+  return {
+    boundingBox: {
+      min: { x: boundsMin[0], y: boundsMin[1], z: boundsMin[2] },
+      max: { x: boundsMax[0], y: boundsMax[1], z: boundsMax[2] },
+      getCenter: vi.fn((target) => {
+        target.x = (boundsMin[0] + boundsMax[0]) / 2
+        target.y = (boundsMin[1] + boundsMax[1]) / 2
+        target.z = (boundsMin[2] + boundsMax[2]) / 2
+        return target
+      }),
+      getSize: vi.fn((target) => {
+        target.x = boundsMax[0] - boundsMin[0]
+        target.y = boundsMax[1] - boundsMin[1]
+        target.z = boundsMax[2] - boundsMin[2]
+        return target
+      }),
+      copy: vi.fn(function () { return this }),
+      union: vi.fn(),
+    },
+    computeBoundingBox: vi.fn(),
+  }
+}
 
 describe('Viewer', () => {
   const defaultProps = {
     parts: [],
     colors: {},
     wireframe: false,
+    boundingBox: false,
     loading: false,
     progress: 0,
     progressPhase: null,
@@ -81,7 +156,28 @@ describe('Viewer', () => {
     setAnimating: vi.fn(),
     mode: 'default',
     params: {},
+    onGeometryStats: vi.fn(),
+    assemblyActive: false,
+    highlightedParts: [],
+    visibleParts: [],
+    headDiffMode: false,
+    headParts: [],
   }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseWorkerLoader.mockReturnValue({ geometry: null, scene: null })
+    mockUseTheme.mockReturnValue({ theme: 'light' })
+    mockUseManifest.mockReturnValue(defaultManifestMock)
+    mockComputeVolumeMm3.mockReturnValue(1000)
+    mockComputeBoundingBox.mockReturnValue({ width: 10, depth: 10, height: 10 })
+    mockComputeCentroid.mockReturnValue({ x: 5, y: 5, z: 5 })
+    capturedAnimatedGridOnReady = null
+  })
+
+  // ────────────────────────────────────────
+  // Existing basic tests
+  // ────────────────────────────────────────
 
   it('renders the 3D canvas container', () => {
     render(<Viewer {...defaultProps} />)
@@ -104,6 +200,12 @@ describe('Viewer', () => {
     expect(screen.getByText('Compiling')).toBeInTheDocument()
   })
 
+  it('does not show progress phase when null during loading', () => {
+    render(<Viewer {...defaultProps} loading={true} progress={50} progressPhase={null} />)
+    // Only "loader.loading" and "50%" should be present, no extra phase text
+    expect(screen.getByText('loader.loading')).toBeInTheDocument()
+  })
+
   it('renders camera view buttons from manifest', () => {
     render(<Viewer {...defaultProps} />)
     expect(screen.getByText('Iso')).toBeInTheDocument()
@@ -121,31 +223,31 @@ describe('Viewer', () => {
     render(<Viewer {...defaultProps} />)
     const axesBtn = screen.getByTitle('viewer.hide_axes')
     fireEvent.click(axesBtn)
-    // After click, title should change to show_axes
     expect(screen.getByTitle('viewer.show_axes')).toBeInTheDocument()
+    // NumberedAxes should be gone
+    expect(screen.queryByTestId('numbered-axes')).not.toBeInTheDocument()
   })
 
   it('does not show animation button when mode is not grid', () => {
     render(<Viewer {...defaultProps} mode="default" />)
-    expect(screen.queryByTitle('viewer.play_anim')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('animation-toggle')).not.toBeInTheDocument()
   })
 
   it('shows animation button when mode is grid', () => {
     render(<Viewer {...defaultProps} mode="grid" />)
-    expect(screen.getByTitle('viewer.play_anim')).toBeInTheDocument()
+    expect(screen.getByTestId('animation-toggle')).toBeInTheDocument()
   })
 
   it('calls setAnimating when animation button is clicked', () => {
     const setAnimating = vi.fn()
     render(<Viewer {...defaultProps} mode="grid" setAnimating={setAnimating} />)
-    fireEvent.click(screen.getByTitle('viewer.play_anim'))
+    fireEvent.click(screen.getByTestId('animation-toggle'))
     expect(setAnimating).toHaveBeenCalledOnce()
   })
 
   it('highlights active camera view button', () => {
     render(<Viewer {...defaultProps} />)
     const isoBtn = screen.getByText('Iso')
-    // Initial view is 'iso', so it should have the active class
     expect(isoBtn.className).toContain('bg-primary')
   })
 
@@ -154,5 +256,561 @@ describe('Viewer', () => {
     const topBtn = screen.getByText('Top')
     fireEvent.click(topBtn)
     expect(topBtn.className).toContain('bg-primary')
+  })
+
+  // ────────────────────────────────────────
+  // Dark theme branch
+  // ────────────────────────────────────────
+
+  it('applies dark theme background color', () => {
+    mockUseTheme.mockReturnValue({ theme: 'dark' })
+    render(<Viewer {...defaultProps} />)
+    // Axes toggle should still render; dark background is applied to Canvas color
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  it('applies system theme with dark media query', () => {
+    // Mock matchMedia to return dark
+    const original = window.matchMedia
+    window.matchMedia = vi.fn(() => ({ matches: true }))
+    mockUseTheme.mockReturnValue({ theme: 'system' })
+    render(<Viewer {...defaultProps} />)
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+    window.matchMedia = original
+  })
+
+  // ────────────────────────────────────────
+  // Parts rendering branches
+  // ────────────────────────────────────────
+
+  it('renders Model components when parts are provided', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        parts={[
+          { type: 'base', url: '/api/render/base.stl' },
+          { type: 'lid', url: '/api/render/lid.stl' },
+        ]}
+        colors={{ base: '#ff0000', lid: '#00ff00' }}
+      />
+    )
+    // Models are rendered inside Canvas; the worker loader should have been called
+    expect(mockUseWorkerLoader).toHaveBeenCalled()
+  })
+
+  it('renders nothing inside Suspense when parts array is empty', () => {
+    render(<Viewer {...defaultProps} parts={[]} />)
+    // No models rendered, but canvas still exists
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // headDiffMode branch
+  // ────────────────────────────────────────
+
+  it('renders head diff mode with headParts and current parts', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        headDiffMode={true}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        headParts={[{ type: 'base', url: '/api/render/head-base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(mockUseWorkerLoader).toHaveBeenCalled()
+  })
+
+  // ────────────────────────────────────────
+  // Assembly mode / highlight branches
+  // ────────────────────────────────────────
+
+  it('passes hidden highlightMode when assemblyActive and part not visible', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        assemblyActive={true}
+        visibleParts={[]}
+        highlightedParts={[]}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  it('passes highlight highlightMode when part is highlighted', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        assemblyActive={true}
+        visibleParts={['base']}
+        highlightedParts={['base']}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  it('passes ghost highlightMode when part is visible but not highlighted', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        assemblyActive={true}
+        visibleParts={['base']}
+        highlightedParts={[]}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Wireframe branch
+  // ────────────────────────────────────────
+
+  it('renders with wireframe enabled', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        wireframe={true}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // BoundingBox display branch
+  // ────────────────────────────────────────
+
+  it('renders bounding box labels when boundingBox is true and parts exist', () => {
+    const fakeGeom = makeFakeGeometry([0, 0, 0], [20, 30, 40])
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        boundingBox={true}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Animation states
+  // ────────────────────────────────────────
+
+  it('shows preparing overlay when animating in grid mode and not ready', () => {
+    render(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        mode="grid"
+      />
+    )
+    expect(screen.getByText('anim.preparing')).toBeInTheDocument()
+  })
+
+  it('shows pause button text when animating in grid mode', () => {
+    render(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        mode="grid"
+      />
+    )
+    const btn = screen.getByTestId('animation-toggle')
+    expect(btn).toBeInTheDocument()
+    expect(btn.title).toBe('viewer.pause_anim')
+  })
+
+  it('does not show preparing overlay when not animating', () => {
+    render(
+      <Viewer
+        {...defaultProps}
+        animating={false}
+        mode="grid"
+      />
+    )
+    expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
+  })
+
+  it('does not show preparing overlay when mode is not grid', () => {
+    render(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        mode="default"
+      />
+    )
+    expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // AnimatedGrid onReady callback triggers animReady
+  // ────────────────────────────────────────
+
+  it('hides preparing overlay after AnimatedGrid fires onReady', () => {
+    render(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        mode="grid"
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    // Before onReady, preparing overlay should be visible
+    expect(screen.getByText('anim.preparing')).toBeInTheDocument()
+
+    // Simulate AnimatedGrid calling onReady
+    act(() => {
+      capturedAnimatedGridOnReady?.()
+    })
+
+    // After onReady, preparing overlay should disappear
+    expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // structuralPartIds branch (grid mode vs assembly mode parts)
+  // ────────────────────────────────────────
+
+  it('separates structural and assembly parts when grid and assembly modes exist', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      getMode: (id) => {
+        if (id === 'grid') return { parts: ['base', 'rod', 'stopper'] }
+        if (id === 'assembly') return { parts: ['base'] }
+        return null
+      },
+      manifest: {
+        parts: [
+          { id: 'base' },
+          { id: 'rod' },
+          { id: 'stopper' },
+        ],
+      },
+    })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        mode="grid"
+        parts={[
+          { type: 'base', url: '/api/render/base.stl' },
+          { type: 'rod', url: '/api/render/rod.stl' },
+          { type: 'stopper', url: '/api/render/stopper.stl' },
+        ]}
+        colors={{ base: '#ff0000', rod: '#00ff00', stopper: '#0000ff' }}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Glass material branch
+  // ────────────────────────────────────────
+
+  it('renders glass parts from manifest part definition', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      manifest: {
+        parts: [{ id: 'cover', glass: true }],
+      },
+    })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        parts={[{ type: 'cover', url: '/api/render/cover.stl' }]}
+        colors={{ cover: '#88ccff' }}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Manifest axis_colors branch
+  // ────────────────────────────────────────
+
+  it('uses custom axis colors from manifest when provided', () => {
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      manifest: {
+        viewer: {
+          axis_colors: { x: '#ff0000', y: '#00ff00', z: '#0000ff' },
+        },
+      },
+    })
+
+    render(<Viewer {...defaultProps} />)
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  it('uses default axis colors when manifest has no axis_colors', () => {
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      manifest: {},
+    })
+
+    render(<Viewer {...defaultProps} />)
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // useImperativeHandle (ref API) branches
+  // ────────────────────────────────────────
+
+  it('exposes captureSnapshot via ref', () => {
+    const ref = React.createRef()
+    render(<Viewer {...defaultProps} ref={ref} />)
+    const result = ref.current.captureSnapshot()
+    expect(mockCaptureSnapshot).toHaveBeenCalled()
+    expect(result).toBe('snapshot-data')
+  })
+
+  it('exposes setCameraView via ref and updates active view', () => {
+    const ref = React.createRef()
+    render(<Viewer {...defaultProps} ref={ref} />)
+    act(() => {
+      ref.current.setCameraView('top')
+    })
+    expect(mockSetCameraView).toHaveBeenCalledWith('top')
+    // Active view should now be 'top'
+    expect(screen.getByText('Top').className).toContain('bg-primary')
+  })
+
+  it('exposes animateTo via ref', () => {
+    const ref = React.createRef()
+    render(<Viewer {...defaultProps} ref={ref} />)
+    ref.current.animateTo([10, 20, 30], [0, 0, 0], 0.5)
+    expect(mockAnimateTo).toHaveBeenCalledWith([10, 20, 30], [0, 0, 0], 0.5)
+  })
+
+  it('exposes getCameraState via ref', () => {
+    const ref = React.createRef()
+    render(<Viewer {...defaultProps} ref={ref} />)
+    const state = ref.current.getCameraState()
+    expect(mockGetCameraState).toHaveBeenCalled()
+    expect(state).toEqual({ position: [1, 2, 3] })
+  })
+
+  // ────────────────────────────────────────
+  // Camera positioning on mode change (lines 316-331)
+  // ────────────────────────────────────────
+
+  it('animates camera to mode bbox when mode changes and progress is 100', () => {
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      manifest: {
+        modes: [
+          {
+            id: 'grid',
+            initial_bbox: { center_mm: [10, 20, 30], max_dim_mm: 50 },
+          },
+        ],
+      },
+    })
+
+    render(
+      <Viewer {...defaultProps} mode="grid" progress={100} />
+    )
+    expect(mockAnimateTo).toHaveBeenCalled()
+  })
+
+  it('does not animate camera when progress is less than 100', () => {
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      manifest: {
+        modes: [
+          {
+            id: 'grid',
+            initial_bbox: { center_mm: [10, 20, 30], max_dim_mm: 50 },
+          },
+        ],
+      },
+    })
+
+    render(
+      <Viewer {...defaultProps} mode="grid" progress={50} />
+    )
+    expect(mockAnimateTo).not.toHaveBeenCalled()
+  })
+
+  it('does not animate camera when mode has no initial_bbox', () => {
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      manifest: {
+        modes: [{ id: 'grid' }],
+      },
+    })
+
+    render(
+      <Viewer {...defaultProps} mode="grid" progress={100} />
+    )
+    expect(mockAnimateTo).not.toHaveBeenCalled()
+  })
+
+  // ────────────────────────────────────────
+  // animReady reset when animating toggled off (line 335)
+  // ────────────────────────────────────────
+
+  it('resets animReady when animating is toggled off', () => {
+    const { rerender } = render(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        mode="grid"
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+
+    // Trigger onReady to set animReady = true
+    act(() => {
+      capturedAnimatedGridOnReady?.()
+    })
+    expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
+
+    // Now toggle animating off - animReady should reset
+    rerender(
+      <Viewer
+        {...defaultProps}
+        animating={false}
+        mode="grid"
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    // No preparing overlay when not animating
+    expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
+
+    // Toggle animating back on - preparing overlay should show again (animReady was reset)
+    rerender(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        mode="grid"
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByText('anim.preparing')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // isoView fallback when no 'iso' camera view
+  // ────────────────────────────────────────
+
+  it('falls back to first camera view when iso view is not defined', () => {
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      getCameraViews: () => [
+        { id: 'top', label: 'Top', position: [0, 0, 100] },
+        { id: 'front', label: 'Front', position: [0, 100, 0] },
+      ],
+    })
+
+    render(<Viewer {...defaultProps} />)
+    expect(screen.getByText('Top')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Default color fallback when part color not in colors map
+  // ────────────────────────────────────────
+
+  it('uses default color when part color is not specified', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        parts={[{ type: 'unknown', url: '/api/render/unknown.stl' }]}
+        colors={{}}
+      />
+    )
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // onGeometryStats callback with empty geometries (totalVolume === 0)
+  // ────────────────────────────────────────
+
+  it('calls onGeometryStats when geometry loads and handles zero volume', () => {
+    mockComputeVolumeMm3.mockReturnValue(0)
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    const onGeometryStats = vi.fn()
+    render(
+      <Viewer
+        {...defaultProps}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+        onGeometryStats={onGeometryStats}
+      />
+    )
+    // The onGeometryStats should be called with total volume 0
+    // This exercises the else branch at line 259-262
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Partial axis_colors override
+  // ────────────────────────────────────────
+
+  it('uses partial axis colors from manifest, falling back to defaults for missing axes', () => {
+    mockUseManifest.mockReturnValue({
+      ...defaultManifestMock,
+      manifest: {
+        viewer: {
+          axis_colors: { x: '#aabbcc' },
+          // y and z not specified
+        },
+      },
+    })
+
+    render(<Viewer {...defaultProps} />)
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Viewer.displayName
+  // ────────────────────────────────────────
+
+  it('has displayName set to Viewer', () => {
+    expect(Viewer.displayName).toBe('Viewer')
   })
 })

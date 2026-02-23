@@ -37,14 +37,14 @@ export default defineConfig({
         '**/*.test.{js,jsx}',
         'src/locales/',
         'src/config/fallback-manifest.json',
+        'src/hooks/system/useTier.js', // 1-line re-export from TierProvider — tested via TierProvider.test.jsx
       ],
-      // Target: 80% across all metrics (see CLAUDE.md testing standards)
-      // Current coverage is below target — thresholds set to prevent regression
+      // Coverage thresholds — enforced in CI (see CLAUDE.md testing standards)
       thresholds: {
-        statements: 75,
-        branches: 63,
-        functions: 67,
-        lines: 78,
+        statements: 80,
+        branches: 80,
+        functions: 80,
+        lines: 80,
       },
     },
   },

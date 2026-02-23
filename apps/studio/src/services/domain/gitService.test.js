@@ -8,7 +8,7 @@ vi.mock('../core/apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
-import { getStatus, getDiff, commit, push, pull, connectRemote } from './gitService'
+import { getStatus, getDiff, commit, push, pull, connectRemote, renderHead } from './gitService'
 import { apiFetch } from '../core/apiClient'
 
 beforeEach(() => {
@@ -90,5 +90,88 @@ describe('connectRemote', () => {
       'http://localhost:5000/api/projects/proj/git/connect-remote',
       expect.objectContaining({ method: 'POST' })
     )
+  })
+
+  it('throws on error with server message', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({ error: 'Invalid URL' }) })
+    await expect(connectRemote('proj', 'bad')).rejects.toThrow('Invalid URL')
+  })
+
+  it('throws fallback message when no error field', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(connectRemote('proj', 'bad')).rejects.toThrow('Failed to connect remote')
+  })
+})
+
+describe('renderHead', () => {
+  it('returns render result on success', async () => {
+    const data = { parts: [{ type: 'main', url: 'blob:x' }] }
+    apiFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve(data) })
+    const result = await renderHead('proj', { mode: 'unit', file: 'main.scad' })
+    expect(result).toEqual(data)
+    expect(apiFetch).toHaveBeenCalledWith(
+      'http://localhost:5000/api/projects/proj/git/render-head',
+      expect.objectContaining({ method: 'POST' })
+    )
+  })
+
+  it('throws on error with server message', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({ error: 'Git conflict' }) })
+    await expect(renderHead('proj', {})).rejects.toThrow('Git conflict')
+  })
+
+  it('throws fallback message when no error field', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(renderHead('proj', {})).rejects.toThrow('Render HEAD failed')
+  })
+})
+
+describe('getDiff error branches', () => {
+  it('throws on error with server message', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({ error: 'Repo locked' }) })
+    await expect(getDiff('proj')).rejects.toThrow('Repo locked')
+  })
+
+  it('throws fallback message when no error field', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(getDiff('proj')).rejects.toThrow('Failed to get diff')
+  })
+})
+
+describe('push error branches', () => {
+  it('throws on error with server message', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({ error: 'No remote' }) })
+    await expect(push('proj')).rejects.toThrow('No remote')
+  })
+
+  it('throws fallback message when no error field', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(push('proj')).rejects.toThrow('Push failed')
+  })
+})
+
+describe('pull error branches', () => {
+  it('throws on error with server message', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({ error: 'Merge conflict' }) })
+    await expect(pull('proj')).rejects.toThrow('Merge conflict')
+  })
+
+  it('throws fallback message when no error field', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(pull('proj')).rejects.toThrow('Pull failed')
+  })
+})
+
+describe('getStatus fallback error', () => {
+  it('throws fallback message when no error field', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(getStatus('proj')).rejects.toThrow('Failed to get git status')
+  })
+})
+
+describe('commit fallback error', () => {
+  it('throws fallback message when no error field', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(commit('proj', 'msg', [])).rejects.toThrow('Commit failed')
   })
 })

@@ -232,4 +232,36 @@ describe('App', { timeout: 30000 }, () => {
     await renderApp()
     expect(screen.getByText('powered by Yantra4D')).toBeInTheDocument()
   })
+
+  it('embed mode hides header and skip link', async () => {
+    await renderApp(['/project/gridfinity?embed=true'])
+    // Skip link should not be visible
+    expect(screen.queryByText('Skip to main content')).not.toBeInTheDocument()
+    // Rate limit banner should not be present
+    expect(screen.queryByTestId('rate-limit-banner')).not.toBeInTheDocument()
+  })
+
+  it('projects view renders when navigating to /', async () => {
+    await renderApp(['/'])
+    // Should show projects view - it fetches from /api/projects
+    await waitFor(() => {
+      // The projects view header or loading state should appear
+      expect(screen.getByText(/Projects|Loading/)).toBeInTheDocument()
+    })
+  })
+
+  it('storefront mode renders StorefrontView', async () => {
+    await renderApp(['/project/gridfinity?mode=storefront'])
+    await waitFor(() => {
+      // Storefront wraps content in ErrorBoundary, the view should render
+      expect(document.querySelector('[data-testid="viewer-mock"]') ||
+        screen.queryByText(/Storefront|gridfinity/i)).toBeTruthy()
+    })
+  })
+
+  it('persists editor panel state in sessionStorage', async () => {
+    await renderApp()
+    // Editor is closed by default (sessionStorage is clear)
+    expect(sessionStorage.getItem('yantra4d-editor-open')).toBeNull()
+  })
 })

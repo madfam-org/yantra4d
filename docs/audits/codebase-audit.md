@@ -393,7 +393,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 | Metric | Status |
 |--------|--------|
 | Backend coverage | 80%+ enforced |
-| Studio coverage | 80%/82%/65%/73% enforced |
+| Studio coverage | 80%/80%/80%/80% enforced (stmts/branches/funcs/lines) |
 | E2E tests written | 18 suites |
 | E2E in CI | Not yet |
 | Linting (JS) | ESLint + jsx-a11y |
@@ -407,8 +407,8 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 
 | Area | Score | Notes |
 |------|-------|-------|
-| Backend testing | 9/10 | Strong: 80%+ coverage, 35 test files, all routes covered |
-| Studio testing | 9/10 | Strong: 80%+ thresholds, 52 test files, accessibility audits |
+| Backend testing | 9/10 | Strong: 86%+ coverage, 51 test files, all routes covered |
+| Studio testing | 9/10 | Strong: 80%+ thresholds enforced on all 4 metrics, 81 test files, 986 tests, accessibility audits |
 | E2E testing | 7/10 | Good: 18 suites written but not yet in CI |
 | Landing testing | 5/10 | Adequate: build-only validation, no component tests |
 | Code quality | 9/10 | Excellent: dual linting, pre-commit hooks, dependency audits |

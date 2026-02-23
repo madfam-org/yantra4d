@@ -80,3 +80,67 @@ class TestAdminAPI:
     def test_project_detail_nonexistent(self, client):
         res = client.get("/api/admin/projects/nonexistent")
         assert res.status_code == 404
+
+    def test_patch_flags_set_is_demo(self, client):
+        """PATCH /api/admin/projects/<slug>/flags sets is_demo in project.json."""
+        res = client.patch(
+            "/api/admin/projects/test-project/flags",
+            json={"is_demo": True},
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["slug"] == "test-project"
+        assert data["updated"]["is_demo"] is True
+
+    def test_patch_flags_set_is_hyperobject(self, client):
+        """PATCH sets is_hyperobject inside project.hyperobject."""
+        res = client.patch(
+            "/api/admin/projects/test-project/flags",
+            json={"is_hyperobject": True},
+        )
+        assert res.status_code == 200
+        assert res.get_json()["updated"]["is_hyperobject"] is True
+
+    def test_patch_flags_unknown_flag_rejected(self, client):
+        """Unknown flags in body return 400."""
+        res = client.patch(
+            "/api/admin/projects/test-project/flags",
+            json={"bad_flag": True},
+        )
+        assert res.status_code == 400
+        assert "Unknown flags" in res.get_json()["error"]
+
+    def test_patch_flags_empty_body(self, client):
+        """Empty JSON body returns 400 — no valid flags provided."""
+        res = client.patch(
+            "/api/admin/projects/test-project/flags",
+            json={},
+        )
+        assert res.status_code == 400
+        assert "No valid flags" in res.get_json()["error"]
+
+    def test_patch_flags_nonexistent_project(self, client):
+        """PATCH on missing project returns 404."""
+        res = client.patch(
+            "/api/admin/projects/nonexistent/flags",
+            json={"is_demo": True},
+        )
+        assert res.status_code == 404
+
+    def test_list_projects_empty(self, client, monkeypatch):
+        """When PROJECTS_DIR has no project subdirs with manifests, list returns no enriched projects."""
+        import tempfile
+        from config import Config
+        with tempfile.TemporaryDirectory() as empty:
+            monkeypatch.setattr(Config, "PROJECTS_DIR", Path(empty))
+            res = client.get("/api/admin/projects")
+            assert res.status_code == 200
+            data = res.get_json()
+            # Empty dir has no subdirs with project.json, so no enriched projects
+            assert isinstance(data, list)
+            assert all(p.get("has_manifest") is False for p in data)
+
+    def test_project_detail_invalid_slug(self, client):
+        """Slug with path traversal characters is rejected by require_valid_slug."""
+        res = client.get("/api/admin/projects/../etc")
+        assert res.status_code in (400, 404)

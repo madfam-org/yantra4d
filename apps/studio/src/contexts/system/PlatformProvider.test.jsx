@@ -45,4 +45,36 @@ describe('PlatformProvider', () => {
         expect(result.current.platformLogo).toBe('/logo.png')
         warnSpy.mockRestore()
     })
+
+    it('falls back to defaults if response is not ok', async () => {
+        apiFetch.mockResolvedValueOnce({ ok: false })
+
+        const wrapper = ({ children }) => <PlatformProvider>{children}</PlatformProvider>
+        const { result } = renderHook(() => usePlatform(), { wrapper })
+
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false)
+        })
+
+        expect(result.current.platformName).toBe('Yantra4D')
+        expect(result.current.platformLogo).toBe('/logo.png')
+    })
+
+    it('uses fallback name/logo when api returns empty values', async () => {
+        apiFetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ platformName: '', platformLogo: '' })
+        })
+
+        const wrapper = ({ children }) => <PlatformProvider>{children}</PlatformProvider>
+        const { result } = renderHook(() => usePlatform(), { wrapper })
+
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false)
+        })
+
+        // Empty strings are falsy, so || fallback kicks in
+        expect(result.current.platformName).toBe('Yantra4D')
+        expect(result.current.platformLogo).toBe('/logo.png')
+    })
 })

@@ -61,4 +61,71 @@ describe('AuthProvider (bypass mode)', () => {
     )
     await vi.waitFor(() => expect(screen.getByTestId('token')).toHaveTextContent('null'))
   })
+
+  it('useAuth returns BYPASS_VALUE when context is null', () => {
+    function DirectConsumer() {
+      const auth = useAuth()
+      return <span data-testid="is-auth">{String(auth.isAuthenticated)}</span>
+    }
+    // Render outside AuthProvider, context is null → returns bypass
+    render(<DirectConsumer />)
+    expect(screen.getByTestId('is-auth')).toHaveTextContent('false')
+  })
+
+  it('isAuthEnabled is false in bypass mode', async () => {
+    const { isAuthEnabled } = await import('./AuthProvider')
+    expect(isAuthEnabled).toBe(false)
+  })
+})
+
+describe('AuthProvider (Janua mode)', () => {
+  it('renders JanuaAuthProvider when JANUA_BASE_URL is set', async () => {
+    vi.resetModules()
+    vi.stubEnv('VITE_JANUA_BASE_URL', 'https://auth.example.com')
+
+    // Re-mock @janua/react-sdk with useJanua returning mock auth state
+    vi.doMock('@janua/react-sdk', () => ({
+      JanuaProvider: ({ children }) => <div data-testid="janua-provider">{children}</div>,
+      useJanua: () => ({
+        user: { email: 'test@example.com' },
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+        signIn: async () => {},
+        signUp: async () => {},
+        signOut: async () => {},
+        signInWithOAuth: async () => {},
+        handleOAuthCallback: async () => {},
+        getAccessToken: async () => 'mock-token',
+        getIdToken: async () => 'mock-id-token',
+        clearError: () => {},
+        refreshSession: async () => {},
+      }),
+    }))
+
+    const { AuthProvider: JanuaAuthProvider, useAuth: useJanuaAuth } = await import('./AuthProvider')
+
+    function JanuaConsumer() {
+      const auth = useJanuaAuth()
+      return (
+        <div>
+          <span data-testid="janua-authenticated">{String(auth.isAuthenticated)}</span>
+          <span data-testid="janua-user">{auth.user?.email || 'null'}</span>
+        </div>
+      )
+    }
+
+    render(
+      <JanuaAuthProvider>
+        <JanuaConsumer />
+      </JanuaAuthProvider>
+    )
+
+    expect(screen.getByTestId('janua-provider')).toBeInTheDocument()
+    expect(screen.getByTestId('janua-authenticated')).toHaveTextContent('true')
+    expect(screen.getByTestId('janua-user')).toHaveTextContent('test@example.com')
+
+    // Restore env
+    vi.stubEnv('VITE_JANUA_BASE_URL', '')
+  })
 })

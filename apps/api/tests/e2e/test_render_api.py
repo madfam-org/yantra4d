@@ -129,3 +129,57 @@ class TestCancelAPI:
         assert res.status_code == 200
         data = res.get_json()
         assert data["cancelled"] is False
+
+    def test_cancel_returns_status_field(self, client):
+        """Cancel response includes a status field indicating no_active_render."""
+        res = client.post("/api/render-cancel")
+        data = res.get_json()
+        assert data["status"] == "no_active_render"
+
+
+class TestEstimateEdgeCases:
+    def test_estimate_no_mode_falls_back_to_first(self, client):
+        """Estimate without mode falls back to first manifest mode."""
+        res = client.post("/api/estimate", json={"project": "test-project"})
+        assert res.status_code == 200
+        data = res.get_json()
+        # Falls back to 'single' mode: 1 unit, 1 part -> 180.0s
+        assert data["estimated_seconds"] == 180.0
+        assert data["num_parts"] == 1
+
+    def test_estimate_legacy_scad_file_field(self, client):
+        """Estimate with legacy scad_file field instead of mode resolves correctly."""
+        res = client.post("/api/estimate", json={
+            "project": "test-project",
+            "scad_file": "grid.scad",
+            "rows": 5, "cols": 5,
+        })
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["num_parts"] == 2  # grid mode has 2 parts
+
+    def test_estimate_missing_project(self, client):
+        """Estimate with non-existent project raises unhandled RuntimeError."""
+        with pytest.raises(RuntimeError, match="Project manifest not found"):
+            client.post("/api/estimate", json={"project": "no-such-project", "mode": "single"})
+
+    def test_estimate_non_json_body(self, client):
+        """Estimate with non-JSON content type returns 415."""
+        res = client.post("/api/estimate", data="not json", content_type="text/plain")
+        assert res.status_code in (400, 415)
+
+
+class TestRenderPayloadValidation:
+    def test_render_invalid_scad_file(self, client):
+        """Render with an invalid scad file name returns 400."""
+        res = client.post("/api/render", json={
+            "project": "test-project",
+            "scad_file": "../../etc/passwd",
+        })
+        assert res.status_code == 400
+        assert "Invalid SCAD file" in res.get_json()["error"]
+
+    def test_render_non_json_body(self, client):
+        """Render without JSON content type returns 415."""
+        res = client.post("/api/render", data="not json", content_type="text/plain")
+        assert res.status_code in (400, 415)

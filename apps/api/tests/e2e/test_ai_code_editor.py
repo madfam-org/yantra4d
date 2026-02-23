@@ -62,3 +62,43 @@ class TestParseEdits:
         raw = '```json\n{"edits": [{"file": "main.scad", "search": "sphere(r=3);", "replace": "sphere(r=5);"}, {"file": "helper.scad", "search": "cube(10);", "replace": "cube(20);"}]}\n```'
         result = parse_edits(raw, SAMPLE_FILES)
         assert len(result["edits"]) == 2
+
+    def test_empty_search_string_ignored(self):
+        """An edit with an empty search string should be ignored."""
+        raw = '```json\n{"edits": [{"file": "main.scad", "search": "", "replace": "new code"}]}\n```'
+        result = parse_edits(raw, SAMPLE_FILES)
+        assert len(result["edits"]) == 0
+
+    def test_malformed_json_returns_empty(self):
+        """Malformed JSON inside code fence returns empty edits with full text as explanation."""
+        raw = '```json\n{edits: broken}\n```'
+        result = parse_edits(raw, SAMPLE_FILES)
+        assert result["edits"] == []
+
+    def test_json_without_code_fence(self):
+        """JSON object with 'edits' key found without code fences."""
+        raw = 'Here is the change: {"edits": [{"file": "main.scad", "search": "sphere(r=3);", "replace": "sphere(r=7);"}]}'
+        result = parse_edits(raw, SAMPLE_FILES)
+        assert len(result["edits"]) == 1
+        assert result["edits"][0]["replace"] == "sphere(r=7);"
+
+    def test_edit_with_empty_replace_is_deletion(self):
+        """An edit with empty replace string acts as deletion and is valid."""
+        raw = '```json\n{"edits": [{"file": "main.scad", "search": "sphere(r=3);", "replace": ""}]}\n```'
+        result = parse_edits(raw, SAMPLE_FILES)
+        assert len(result["edits"]) == 1
+        assert result["edits"][0]["replace"] == ""
+
+
+class TestBuildCodeEditorPromptEdgeCases:
+    def test_empty_files_dict(self):
+        """Prompt with no files still contains parameter info."""
+        prompt = build_code_editor_prompt(SAMPLE_MANIFEST, {})
+        assert "$width" in prompt
+        assert "Test Project" in prompt
+
+    def test_no_parameters_manifest(self):
+        """Manifest with no parameters shows placeholder text."""
+        manifest = {"project": {"name": "Empty"}, "parameters": []}
+        prompt = build_code_editor_prompt(manifest, SAMPLE_FILES)
+        assert "(no parameters)" in prompt

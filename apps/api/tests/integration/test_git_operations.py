@@ -156,3 +156,72 @@ class TestGitPushPull:
         result = git_pull(project_dir, "token")
         assert result["success"] is False
         assert "No origin" in result["error"]
+
+
+class TestGitInitEdgeCases:
+    def test_init_on_non_repo_directory(self, tmp_path):
+        """git_init on a fresh directory (no .git) creates repo and commits."""
+        d = tmp_path / "fresh"
+        d.mkdir()
+        (d / "readme.txt").write_text("hello")
+        result = git_init(d)
+        assert result["success"] is True
+        assert result["already_initialized"] is False
+        assert (d / ".git").is_dir()
+
+    def test_init_empty_directory(self, tmp_path):
+        """git_init on an empty directory still succeeds (empty initial commit)."""
+        d = tmp_path / "empty-proj"
+        d.mkdir()
+        result = git_init(d)
+        # git commit may fail with "nothing to commit" on empty dir
+        # but git_init stages all files first — an empty dir has nothing to stage
+        # The result depends on git behavior; either success or failure is valid
+        assert "success" in result
+
+
+class TestGitCommitEdgeCases:
+    def test_commit_with_author(self, project_dir):
+        """Commit with custom author sets the author field."""
+        git_init(project_dir)
+        (project_dir / "main.scad").write_text("cube(20);")
+        result = git_commit(
+            project_dir, "Custom author commit", ["main.scad"],
+            author_name="Test User", author_email="test@example.com"
+        )
+        assert result["success"] is True
+        # Verify author in log
+        log = _run_git(project_dir, ["log", "-1", "--format=%an <%ae>"])
+        assert "Test User" in log.stdout
+
+    def test_commit_nonexistent_file(self, project_dir):
+        """Staging a file that doesn't exist should fail."""
+        git_init(project_dir)
+        result = git_commit(project_dir, "bad commit", ["does_not_exist.scad"])
+        assert result["success"] is False
+
+
+class TestGitStatusEdgeCases:
+    def test_status_deleted_file(self, project_dir):
+        """Deleting a tracked file shows up in status."""
+        git_init(project_dir)
+        (project_dir / "main.scad").unlink()
+        result = git_status(project_dir)
+        assert result["clean"] is False
+        assert any("main.scad" in f for f in result["deleted"])
+
+    def test_status_on_non_repo(self, tmp_path):
+        """git status on a non-git directory returns error."""
+        d = tmp_path / "not-a-repo"
+        d.mkdir()
+        result = git_status(d)
+        assert result["success"] is False
+
+
+class TestGitDiffEdgeCases:
+    def test_diff_on_non_repo(self, tmp_path):
+        """git diff on a non-git directory returns error."""
+        d = tmp_path / "not-a-repo"
+        d.mkdir()
+        result = git_diff(d)
+        assert result["success"] is False

@@ -77,4 +77,52 @@ describe('apiFetch', () => {
       body: '{}',
     }))
   })
+
+  it('handles partial rate limit headers (only remaining)', async () => {
+    const headers = new Map([
+      ['X-RateLimit-Remaining', '42'],
+    ])
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      headers: { get: (k) => headers.get(k) || null },
+    })
+
+    await apiFetch('http://api/test')
+    expect(fetch).toHaveBeenCalled()
+  })
+})
+
+describe('useRateLimit', () => {
+  it('returns initial rate limit state', async () => {
+    const { renderHook } = await import('@testing-library/react')
+    const mod = await import('./apiClient')
+    const { result } = renderHook(() => mod.useRateLimit())
+    expect(result.current).toHaveProperty('remaining')
+    expect(result.current).toHaveProperty('limit')
+    expect(result.current).toHaveProperty('tier')
+  })
+
+  it('updates state when rate limit headers change', async () => {
+    const { renderHook, act } = await import('@testing-library/react')
+    const mod = await import('./apiClient')
+    const { result } = renderHook(() => mod.useRateLimit())
+
+    const headers = new Map([
+      ['X-RateLimit-Limit', '200'],
+      ['X-RateLimit-Remaining', '180'],
+      ['X-RateLimit-Tier', 'madfam'],
+    ])
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      headers: { get: (k) => headers.get(k) || null },
+    })
+
+    await act(async () => {
+      await mod.apiFetch('http://api/test')
+    })
+
+    expect(result.current.limit).toBe(200)
+    expect(result.current.remaining).toBe(180)
+    expect(result.current.tier).toBe('madfam')
+  })
 })

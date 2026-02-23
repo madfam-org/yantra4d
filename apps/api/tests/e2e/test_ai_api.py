@@ -78,3 +78,53 @@ class TestChatStreamEndpoint:
     def test_expired_session(self, client):
         res = client.post("/api/ai/chat-stream", json={"session_id": "nonexistent", "message": "hello"})
         assert res.status_code == 404
+
+    def test_no_api_key_returns_503(self, client, monkeypatch):
+        """chat-stream with no API key configured returns 503."""
+        from config import Config
+        monkeypatch.setattr(Config, "AI_API_KEY", "")
+        res = client.post("/api/ai/chat-stream", json={"session_id": "x", "message": "hello"})
+        assert res.status_code == 503
+        assert "not configured" in res.get_json()["error"]
+
+    def test_message_too_long(self, client):
+        """Message exceeding MAX_AI_MESSAGE_CHARS is rejected."""
+        # Create a session first
+        res = client.post("/api/ai/session", json={"project": "test-project", "mode": "configurator"})
+        sid = res.get_json()["session_id"]
+        long_msg = "x" * 5001
+        res = client.post("/api/ai/chat-stream", json={"session_id": sid, "message": long_msg})
+        assert res.status_code == 400
+        assert "characters or less" in res.get_json()["error"]
+
+    def test_empty_message_rejected(self, client):
+        """Empty/whitespace-only message is rejected as missing."""
+        res = client.post("/api/ai/chat-stream", json={"session_id": "any", "message": "   "})
+        assert res.status_code == 400
+
+
+class TestAiSessionValidation:
+    def test_missing_project_slug(self, client):
+        """Session creation without project slug returns 400."""
+        res = client.post("/api/ai/session", json={"mode": "configurator"})
+        assert res.status_code == 400
+
+    def test_session_missing_both_fields(self, client):
+        """Session creation with empty body returns 400."""
+        res = client.post("/api/ai/session", json={})
+        assert res.status_code == 400
+
+
+class TestSynthesizeEndpoint:
+    def test_missing_prompt(self, client):
+        """Synthesize without prompt returns 400."""
+        res = client.post("/api/ai/synthesize", json={"prompt": ""})
+        assert res.status_code == 400
+        assert "prompt is required" in res.get_json()["error"]
+
+    def test_no_api_key_returns_503(self, client, monkeypatch):
+        """Synthesize with no API key returns 503."""
+        from config import Config
+        monkeypatch.setattr(Config, "AI_API_KEY", "")
+        res = client.post("/api/ai/synthesize", json={"prompt": "make a box"})
+        assert res.status_code == 503

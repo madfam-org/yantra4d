@@ -20,6 +20,7 @@ import rate_limits
 from manifest import discover_projects, get_manifest, invalidate_cache
 from middleware.auth import optional_auth, require_tier
 from utils.route_helpers import error_response
+from utils.validators import require_valid_slug
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,7 @@ def list_projects():
 
 
 @projects_bp.route('/api/projects/<slug>/manifest', methods=['GET'])
+@require_valid_slug
 def get_project_manifest(slug):
     """Return full manifest for a specific project."""
     try:
@@ -102,6 +104,7 @@ def get_project_manifest(slug):
 
 
 @projects_bp.route('/api/projects/<slug>/meta', methods=['GET'])
+@require_valid_slug
 def get_project_meta(slug):
     """Return project.meta.json if it exists."""
     try:
@@ -120,6 +123,7 @@ def get_project_meta(slug):
 
 
 @projects_bp.route('/api/projects/<slug>/parts/<path:filename>', methods=['GET'])
+@require_valid_slug
 def serve_static_part(slug, filename):
     """Serve a pre-existing STL file from a project's parts/ directory."""
     try:
@@ -141,6 +145,7 @@ def serve_static_part(slug, filename):
 
 
 @projects_bp.route('/api/projects/<slug>/fork', methods=['POST'])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.PROJECT_FORK)
 def fork_project(slug):
@@ -187,6 +192,7 @@ def fork_project(slug):
 
 
 @projects_bp.route('/api/projects/<slug>/manifest/assembly-steps', methods=['PUT'])
+@require_valid_slug
 @optional_auth
 def update_assembly_steps(slug):
     """Update assembly_steps in a project's project.json."""

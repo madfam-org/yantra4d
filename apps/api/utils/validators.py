@@ -2,6 +2,9 @@
 Shared validation utilities for API routes.
 """
 import re
+from functools import wraps
+
+from flask import jsonify
 
 # Project slug: lowercase alphanumeric, hyphens, underscores. 3-50 chars.
 _SLUG_RE = re.compile(r'^[a-z0-9][a-z0-9_-]{1,48}[a-z0-9]$')
@@ -14,3 +17,18 @@ def validate_project_slug(slug: str) -> str | None:
     if not _SLUG_RE.match(slug):
         return "Invalid slug: must be 3-50 lowercase alphanumeric characters, hyphens, or underscores"
     return None
+
+
+def require_valid_slug(fn):
+    """Route decorator that validates the ``slug`` path parameter.
+
+    Returns 400 with a JSON error if the slug is malformed, otherwise
+    passes through to the wrapped view function.
+    """
+    @wraps(fn)
+    def wrapper(*args, slug: str, **kwargs):
+        err = validate_project_slug(slug)
+        if err:
+            return jsonify({"error": err}), 400
+        return fn(*args, slug=slug, **kwargs)
+    return wrapper

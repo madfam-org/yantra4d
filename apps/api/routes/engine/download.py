@@ -10,6 +10,7 @@ from config import Config
 from manifest import get_manifest
 from middleware.auth import optional_auth
 from utils.route_helpers import safe_join_path, error_response
+from utils.validators import require_valid_slug
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ def _check_access(manifest_data, action: str, claims) -> tuple | None:
 
 
 @download_bp.route('/api/projects/<slug>/download/stl/<filename>', methods=['GET'])
+@require_valid_slug
 @optional_auth
 def download_stl(slug: str, filename: str) -> Response | tuple[Response, int]:
     """Download an STL file for a project."""
@@ -56,6 +58,7 @@ def download_stl(slug: str, filename: str) -> Response | tuple[Response, int]:
 
 
 @download_bp.route('/api/projects/<slug>/download/scad/<filename>', methods=['GET'])
+@require_valid_slug
 @optional_auth
 def download_scad(slug: str, filename: str) -> Response | tuple[Response, int]:
     """Download a SCAD source file for a project."""

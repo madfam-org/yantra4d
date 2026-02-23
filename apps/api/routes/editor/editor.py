@@ -11,6 +11,7 @@ from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
 from utils.route_helpers import error_response, safe_join_path
+from utils.validators import require_valid_slug
 from services.editor.git_operations import git_init
 
 logger = logging.getLogger(__name__)
@@ -44,6 +45,7 @@ def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
 
 
 @editor_bp.route("/api/projects/<slug>/files", methods=["GET"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_READ)
 def list_files(slug):
@@ -68,6 +70,7 @@ def list_files(slug):
 
 
 @editor_bp.route("/api/projects/<slug>/files/<path:filepath>", methods=["GET"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_READ)
 def read_file(slug, filepath):
@@ -91,6 +94,7 @@ def read_file(slug, filepath):
 
 
 @editor_bp.route("/api/projects/<slug>/files/<path:filepath>", methods=["PUT"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_WRITE)
 def write_file(slug, filepath):
@@ -122,6 +126,7 @@ def write_file(slug, filepath):
 
 
 @editor_bp.route("/api/projects/<slug>/files", methods=["POST"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_CREATE)
 def create_file(slug):
@@ -156,6 +161,7 @@ def create_file(slug):
 
 
 @editor_bp.route("/api/projects/<slug>/files/<path:filepath>", methods=["DELETE"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_DELETE)
 def delete_file(slug, filepath):

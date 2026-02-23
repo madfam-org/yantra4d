@@ -18,3 +18,4 @@ cascadio~=0.0.17
 openapi-schema-validator~=0.6.2
 openapi-core~=0.19.1
 scikit-image~=0.22
+rtree~=1.2

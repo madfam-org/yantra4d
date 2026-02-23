@@ -17,6 +17,7 @@ from flask import Blueprint, jsonify, request
 
 from config import Config
 from utils.route_helpers import error_response
+from utils.validators import require_valid_slug
 from services.core.scad_analyzer import analyze_directory
 from services.core.assembly_generator import generate_assembly_steps, merge_assembly_steps
 
@@ -40,6 +41,7 @@ def _load_manifest(slug: str) -> dict | None:
 
 
 @assembly_bp.route("/api/projects/<slug>/assembly-steps", methods=["GET"])
+@require_valid_slug
 def get_assembly_steps(slug: str):
     """
     Auto-generate assembly steps from BOSL2 attach() calls in the project's SCAD files.
@@ -78,6 +80,7 @@ def get_assembly_steps(slug: str):
 
 
 @assembly_bp.route("/api/projects/<slug>/assembly-steps/write", methods=["POST"])
+@require_valid_slug
 def write_assembly_steps(slug: str):
     """
     Write auto-generated assembly steps back into project.json.

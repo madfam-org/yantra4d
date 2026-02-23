@@ -94,7 +94,7 @@ packages/
 | `apps/studio/src/components/GitPanel.jsx` | Git status, diff, commit, push/pull UI | RARELY |
 | `apps/studio/src/components/ScadEditor.jsx` | Monaco-based SCAD code editor | RARELY |
 | `apps/studio/src/components/ForkDialog.jsx` | Fork-to-edit modal for built-in projects | RARELY |
-| `claudedocs/*.md` | Internal audits (codebase, usability, deployment) | YES |
+| `docs/audits/*.md` | Internal audits (codebase, usability, deployment) | YES |
 | `llms.txt` | LLM-optimized project overview (llmstxt.org spec) | RARELY |
 | `llms-full.txt` | Comprehensive LLM context (all docs inlined) | RARELY |
 | `docs/*.md` | Deep-dive documentation | YES |
@@ -211,8 +211,23 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | GET | `/api/analytics/<slug>/summary` | `?days=30` | Aggregate analytics for project |
 | GET | `/api/tiers` | — | Public tier definitions |
 | GET | `/api/me` | — | Current user info and tier |
+| GET | `/api/config/client` | — | Client platform branding config |
+| GET | `/api/materials` | — | List material hyperobjects |
+| GET | `/api/materials/<slug>` | — | Material manifest by slug |
+| GET | `/api/projects/<slug>/meta` | — | Project meta.json file |
+| GET | `/api/projects/<slug>/parts/<path>` | — | Serve pre-built STL part files |
+| GET | `/api/projects/<slug>/assembly-steps` | — | Auto-generate assembly steps from BOSL2 |
+| POST | `/api/projects/<slug>/assembly-steps/write` | `{merge?}` | Write generated assembly steps to manifest |
+| PUT | `/api/projects/<slug>/manifest/assembly-steps` | `{assembly_steps}` | Update assembly steps in manifest |
+| GET | `/api/projects/<slug>/storefront` | — | Storefront-safe manifest (stripped) |
+| GET | `/api/projects/<slug>/share/<preset_id>` | — | Shareable preset configuration URL |
+| GET | `/api/catalog/nopscadlib` | — | NopSCADlib catalog categories |
+| GET | `/api/catalog/nopscadlib/<category>` | — | Components for catalog category |
+| POST | `/api/projects/<slug>/git/render-head` | `{file}` | Render HEAD version of SCAD file (pro+) |
+| POST | `/api/ai/synthesize` | `{prompt, ...}` | SSE streaming AI project synthesis (pro+) |
 | GET | `/api/admin/projects` | — | Admin: all projects with metadata (admin) |
 | GET | `/api/admin/projects/<slug>` | — | Admin: detailed project info (admin) |
+| PATCH | `/api/admin/projects/<slug>/flags` | `{is_demo?, is_hyperobject?}` | Toggle project flags (admin) |
 
 ## Tiered Access Control
 
@@ -328,7 +343,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md) — Client-side rendering fallback
 - [`docs/guides/devx-guide.md`](docs/guides/devx-guide.md) — Onboarding external SCAD projects
 - [`docs/guides/troubleshooting.md`](docs/guides/troubleshooting.md) — Common issues and solutions
-- [`claudedocs/codebase-audit.md`](claudedocs/codebase-audit.md) — Full platform assessment
-- [`claudedocs/usability-audit.md`](claudedocs/usability-audit.md) — Browser-based UX testing
-- [`claudedocs/enclii-verification-prompt.md`](claudedocs/enclii-verification-prompt.md) — Deployment verification steps
+- [`docs/audits/codebase-audit.md`](docs/audits/codebase-audit.md) — Full platform assessment
+- [`docs/audits/usability-audit.md`](docs/audits/usability-audit.md) — Browser-based UX testing
+- [`docs/audits/enclii-verification-prompt.md`](docs/audits/enclii-verification-prompt.md) — Deployment verification steps
 Per-project docs live in `projects/{slug}/docs/`.

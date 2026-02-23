@@ -12,6 +12,7 @@ from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
 from utils.route_helpers import error_response, require_json_body, cleanup_old_stl_files
+from utils.validators import require_valid_slug
 from services.editor.git_operations import git_status, git_diff, git_commit, git_push, git_pull, git_archive_head
 from services.editor.github_token import get_github_token
 import tempfile
@@ -78,6 +79,7 @@ GITHUB_URL_PATTERN = re.compile(r"^https://github\.com/[\w.-]+/[\w.-]+(\.git)?$"
 
 
 @git_ops_bp.route("/api/projects/<slug>/git/connect-remote", methods=["POST"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_CONNECT)
 @require_json_body
@@ -125,6 +127,7 @@ def connect_remote(slug):
 
 
 @git_ops_bp.route("/api/projects/<slug>/git/status", methods=["GET"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_STATUS)
 def get_status(slug):
@@ -140,6 +143,7 @@ def get_status(slug):
 
 
 @git_ops_bp.route("/api/projects/<slug>/git/diff", methods=["GET"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_DIFF)
 def get_diff(slug):
@@ -156,6 +160,7 @@ def get_diff(slug):
 
 
 @git_ops_bp.route("/api/projects/<slug>/git/commit", methods=["POST"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_COMMIT)
 @require_json_body
@@ -188,6 +193,7 @@ def commit(slug):
 
 
 @git_ops_bp.route("/api/projects/<slug>/git/push", methods=["POST"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_PUSH)
 def push(slug):
@@ -208,6 +214,7 @@ def push(slug):
 
 
 @git_ops_bp.route("/api/projects/<slug>/git/pull", methods=["POST"])
+@require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_PULL)
 def pull(slug):
@@ -228,6 +235,7 @@ def pull(slug):
 
 
 @git_ops_bp.route("/api/projects/<slug>/git/render-head", methods=["POST"])
+@require_valid_slug
 @require_tier("pro")
 @require_json_body
 def render_head(slug):

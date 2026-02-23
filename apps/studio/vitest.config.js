@@ -38,11 +38,13 @@ export default defineConfig({
         'src/locales/',
         'src/config/fallback-manifest.json',
       ],
+      // Target: 80% across all metrics (see CLAUDE.md testing standards)
+      // Current coverage is below target — thresholds set to prevent regression
       thresholds: {
-        statements: 72,
-        branches: 61,
-        functions: 65,
-        lines: 74,
+        statements: 75,
+        branches: 63,
+        functions: 67,
+        lines: 78,
       },
     },
   },

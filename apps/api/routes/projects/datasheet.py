@@ -13,6 +13,7 @@ from flask import Blueprint, request, Response
 
 from config import Config
 from utils.route_helpers import error_response
+from utils.validators import require_valid_slug
 
 datasheet_bp = Blueprint("datasheet", __name__)
 logger = logging.getLogger(__name__)
@@ -149,6 +150,7 @@ def _generate_html(manifest: dict, params: dict, lang: str = "en") -> str:
 
 
 @datasheet_bp.route("/api/projects/<slug>/datasheet", methods=["GET"])
+@require_valid_slug
 def generate_datasheet(slug: str) -> Response | tuple[Response, int]:
     """Generate a project datasheet as PDF (if reportlab available) or HTML."""
     manifest = _load_manifest(slug)

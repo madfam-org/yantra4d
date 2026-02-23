@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from flask import Blueprint, request, jsonify, Response
 
 from config import Config
+from utils.validators import require_valid_slug
 
 analytics_bp = Blueprint("analytics", __name__)
 logger = logging.getLogger(__name__)
@@ -84,6 +85,7 @@ def track_event() -> tuple[Response, int]:
 
 
 @analytics_bp.route("/api/analytics/<slug>/summary", methods=["GET"])
+@require_valid_slug
 def get_summary(slug: str) -> Response:
     """Return aggregate analytics for a project."""
     days = int(request.args.get("days", 30))

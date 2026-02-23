@@ -13,6 +13,7 @@ from config import Config
 from manifest import discover_projects, get_manifest
 from middleware.auth import require_role, optional_auth
 from utils.route_helpers import error_response
+from utils.validators import require_valid_slug
 
 admin_bp = Blueprint('admin', __name__)
 logger = logging.getLogger(__name__)
@@ -133,6 +134,7 @@ def admin_list_projects() -> Response:
 
 
 @admin_bp.route('/api/admin/projects/<slug>', methods=['GET'])
+@require_valid_slug
 @require_role("admin")
 def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
     """Return detailed info for a single project."""
@@ -177,6 +179,7 @@ def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
 
 
 @admin_bp.route('/api/admin/projects/<slug>/flags', methods=['PATCH'])
+@require_valid_slug
 @require_role("admin")
 def patch_project_flags(slug: str) -> Response | tuple[Response, int]:
     """

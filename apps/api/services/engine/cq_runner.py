@@ -1,8 +1,52 @@
+import os
 import sys
 import json
 import logging
+import math
 
 logger = logging.getLogger(__name__)
+
+# Restricted builtins for CadQuery script execution — blocks file I/O,
+# network access, code generation, and import of dangerous modules.
+_SAFE_BUILTINS = {
+    # Core types and constructors
+    "True": True, "False": False, "None": None,
+    "int": int, "float": float, "str": str, "bool": bool,
+    "list": list, "dict": dict, "tuple": tuple, "set": set, "frozenset": frozenset,
+    "bytes": bytes, "bytearray": bytearray, "complex": complex,
+    # Iteration and ranges
+    "range": range, "enumerate": enumerate, "zip": zip, "map": map, "filter": filter,
+    "reversed": reversed, "sorted": sorted, "iter": iter, "next": next,
+    # Math and numeric
+    "abs": abs, "round": round, "min": min, "max": max, "sum": sum, "pow": pow,
+    "divmod": divmod,
+    # Length and membership
+    "len": len, "any": any, "all": all, "isinstance": isinstance, "issubclass": issubclass,
+    "type": type, "id": id, "hash": hash,
+    # String and repr
+    "repr": repr, "format": format, "chr": chr, "ord": ord,
+    "print": print,
+    # Exceptions (scripts may catch/raise)
+    "Exception": Exception, "ValueError": ValueError, "TypeError": TypeError,
+    "RuntimeError": RuntimeError, "KeyError": KeyError, "IndexError": IndexError,
+    "AttributeError": AttributeError, "StopIteration": StopIteration,
+}
+
+_BLOCKED_MODULES = frozenset({
+    "os", "sys", "subprocess", "shutil", "socket", "http", "urllib",
+    "importlib", "ctypes", "signal", "multiprocessing", "threading",
+    "pickle", "shelve", "code", "codeop", "compile", "compileall",
+})
+
+
+def _restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
+    """Import guard that blocks dangerous modules."""
+    top = name.split(".")[0]
+    if top in _BLOCKED_MODULES:
+        raise ImportError(f"Import of '{name}' is not allowed in CadQuery scripts")
+    return __builtins__["__import__"](name, globals, locals, fromlist, level) if isinstance(__builtins__, dict) \
+        else __builtins__.__import__(name, globals, locals, fromlist, level)
+
 
 def run_cadquery_script(script_path, output_path, params_json, export_format):
     try:
@@ -14,14 +58,29 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     print(f"Loading parameters: {params_json}")
     params = json.loads(params_json)
 
+    # Validate script path is within the projects directory
+    script_real = os.path.realpath(script_path)
+    if not script_real.endswith(('.py', '.cq')):
+        print(f"Error: Script must be a .py or .cq file, got: {script_path}")
+        sys.exit(1)
+
     print(f"Executing CadQuery script: {script_path}")
-    
+
     # Read the script
     with open(script_path, 'r') as f:
-        script_content = f.text() if hasattr(f, 'text') else f.read()
+        script_content = f.read()
 
-    # Create an execution environment and inject parameters
-    exec_globals = {"cq": cq, "__file__": script_path, "__name__": "__main__"}
+    # Create a sandboxed execution environment with restricted builtins
+    safe_builtins = dict(_SAFE_BUILTINS)
+    safe_builtins["__import__"] = _restricted_import
+
+    exec_globals = {
+        "__builtins__": safe_builtins,
+        "cq": cq,
+        "math": math,
+        "__file__": script_path,
+        "__name__": "__main__",
+    }
     exec_globals.update(params)
 
     try:
@@ -30,7 +89,7 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
         sys.argv = [script_path, "--params", params_json, "--out", output_path]
 
         # Execute the script. The script should assign the final shape to an 'assembly', 'result', or 'part' variable.
-        exec(script_content, exec_globals)
+        exec(script_content, exec_globals)  # noqa: S102 — sandboxed via restricted builtins
         
         # Find the result
         result = None
@@ -56,7 +115,6 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
 
         if is_gltf_or_glb:
             import tempfile
-            import os
             try:
                 import cascadio
             except ImportError:

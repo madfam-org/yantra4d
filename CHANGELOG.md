@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Strict Testing Coverage Restrictions**: All backend (Pytest) and frontend (Vitest) suites now enforce a strict 80% minimum coverage threshold to maintain the quality lock-in.
 - **glTF 2.0 Export Pipeline**: Integrated `cascadio` parsing so CadQuery now defaults to exporting pristine `.glb` representations instead of relying on CadQuery's native experimental `.gltf` writer.
 - **WASM Component Tests**: Vitest integrated to enforce safety of React components on the landing page specifically for Astro islands (`ProjectGalleryGrid`, `InteractiveShowcase`).
 - **Telemetry Module**: Integrated core MQTT subscriptions via `paho-mqtt` alongside `cadquery_engine.py` parametric generation.

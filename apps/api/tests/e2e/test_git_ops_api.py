@@ -221,3 +221,51 @@ class TestConnectRemote:
             "remote_url": "https://github.com/user/repo2.git",
         })
         assert res.status_code == 200
+
+class TestGitRenderHead:
+    @patch("routes.editor.git_ops.git_archive_head")
+    @patch("routes.editor.git_ops.run_openscad_render")
+    def test_render_head_success(self, mock_render, mock_archive, client, tmp_path):
+        _init_git(tmp_path / "my-project")
+        
+        # Mock successful archive
+        def fake_archive(src, dst):
+            with open(dst / "main.scad", "w") as f:
+                f.write("test")
+            return {"success": True}
+        mock_archive.side_effect = fake_archive
+        mock_render.return_value = (True, "output")
+        
+        payload = {"project": "my-project", "parts": ["main"], "stl_prefix": "pref_", "export_format": "stl", "params": {}, "mode_map": {}, "scad_filename": "main.scad", "scad_file": "main.scad"}
+        res = client.post("/api/projects/my-project/git/render-head", json=payload)
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["status"] == "success"
+
+    def test_render_head_no_scad(self, client, tmp_path):
+        _init_git(tmp_path / "my-project")
+        res = client.post("/api/projects/my-project/git/render-head", json={"project": "my-project"})
+        # Note _extract_render_payload falls back to defaults, so it succeeds and returns 200
+        assert res.status_code == 200
+
+    @patch("routes.editor.git_ops.git_archive_head")
+    def test_render_head_archive_fails(self, mock_archive, client, tmp_path):
+        _init_git(tmp_path / "my-project")
+        mock_archive.return_value = {"success": False, "error": "fatal"}
+        payload = {"project": "my-project", "parts": ["main"], "stl_prefix": "pref_", "export_format": "stl", "params": {}, "mode_map": {}, "scad_filename": "main.scad", "scad_file": "main.scad"}
+        res = client.post("/api/projects/my-project/git/render-head", json=payload)
+        assert res.status_code == 500
+
+class TestGitOpsErrors:
+    def test_commit_message_too_long(self, client, tmp_path):
+        _init_git(tmp_path / "my-project")
+        res = client.post("/api/projects/my-project/git/commit", json={"message": "x"*1001, "files": ["ab"]})
+        assert res.status_code == 400
+
+    @patch("routes.editor.git_ops.git_status")
+    def test_status_fails(self, mock_status, client, tmp_path):
+        _init_git(tmp_path / "my-project")
+        mock_status.return_value = {"success": False, "error": "err"}
+        res = client.get("/api/projects/my-project/git/status")
+        assert res.status_code == 500
+

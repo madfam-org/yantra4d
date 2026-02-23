@@ -58,6 +58,14 @@ class TestValidateParams:
         result = self.validate({"size": 5})
         assert result["size"] == 10.0
 
+    def test_slider_rejects_non_numeric(self):
+        result = self.validate({"size": "abc"})
+        assert "size" not in result
+
+    def test_slider_rejects_none(self):
+        result = self.validate({"size": None})
+        assert "size" not in result
+
     def test_slider_clamps_above_max(self):
         result = self.validate({"size": 999})
         assert result["size"] == 50.0
@@ -81,6 +89,10 @@ class TestValidateParams:
     def test_checkbox_coerces_false_string(self):
         result = self.validate({"show_base": "false"})
         assert result["show_base"] is False
+
+    def test_checkbox_rejects_non_bool_like(self):
+        result = self.validate({"show_base": "maybe"})
+        assert "show_base" not in result
 
     def test_checkbox_accepts_bool(self):
         result = self.validate({"show_base": True})
@@ -125,6 +137,10 @@ class TestBuildOpenscadCommand:
     def test_string_param(self):
         cmd = self.build_cmd("/out.stl", "/in.scad", {"name": "hello"})
         assert 'name="hello"' in cmd
+
+    def test_build_cmd_skips_invalid_types(self):
+        cmd = self.build_cmd("/out.stl", "/in.scad", {"bad": {"dict": 1}})
+        assert "bad" not in " ".join(cmd)
 
     def test_mode_id_zero_no_render_mode(self):
         cmd = self.build_cmd("/out.stl", "/in.scad", {}, mode_id=0)
@@ -181,7 +197,9 @@ class TestOpenscadEnv:
         from services.engine.openscad import stream_render
         with patch("services.engine.openscad.subprocess.Popen") as mock_popen:
             mock_proc = MagicMock()
-            mock_proc.stderr = iter([])
+            mock_stderr = MagicMock()
+            mock_stderr.readline.side_effect = ['']
+            mock_proc.stderr = mock_stderr
             mock_proc.returncode = 0
             mock_proc.wait.return_value = 0
             mock_proc.poll.return_value = 0
@@ -205,7 +223,9 @@ class TestStreamRenderTimeout:
         with patch("services.engine.openscad.subprocess.Popen") as mock_popen, \
              patch("services.engine.openscad.threading.Timer") as mock_timer_cls:
             mock_proc = MagicMock()
-            mock_proc.stderr = iter([])
+            mock_stderr = MagicMock()
+            mock_stderr.readline.side_effect = ['']
+            mock_proc.stderr = mock_stderr
             mock_proc.returncode = 0
             mock_proc.wait.return_value = 0
             mock_proc.poll.return_value = 0

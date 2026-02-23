@@ -19,6 +19,13 @@ beforeEach(async () => {
 })
 
 const manifest = {
+  parts: [
+    { id: 'main', render_mode: '3D' },
+    { id: 'bottom', render_mode: '3D' },
+    { id: 'top', render_mode: '3D' },
+    { id: 'rods', render_mode: '3D' },
+    { id: 'stoppers', render_mode: '3D' }
+  ],
   modes: [
     { id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } },
     { id: 'assembly', parts: ['bottom', 'top'], estimate: { base_units: 2, formula: 'constant' } },
@@ -341,5 +348,89 @@ describe('estimateRenderTime — WASM multiplier path', () => {
     const est = renderService.estimateRenderTime('unit', {}, wasmManifest)
     // 14.5 × 2 = 29 (if wasm) or 14.5 (if backend)
     expect([14.5, 29]).toContain(est)
+  })
+})
+
+describe('renderParts (wasm mode)', () => {
+  let originalCreateObjectURL
+  beforeEach(() => {
+    originalCreateObjectURL = URL.createObjectURL
+    URL.createObjectURL = vi.fn(() => 'blob:abc')
+  })
+  afterEach(() => {
+    URL.createObjectURL = originalCreateObjectURL
+  })
+
+  it('initializes worker and resolves parts', async () => {
+    class MockWorker {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
+        } else if (msg.type === 'render') {
+          setTimeout(() => {
+            this.listeners['message']?.({ data: { type: 'progress', phase: 'compiling', percent: 50 } })
+            this.listeners['message']?.({ data: { type: 'result', stl: new Uint8Array([1,2,3]).buffer } })
+          }, 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if(this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorker)
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockRejectedValue(new Error('no backend')) // force WASM fallback
+
+    const progressEvents = []
+    const result = await renderService.renderParts('unit', {}, manifest, { onProgress: e => progressEvents.push(e) })
+
+    expect(result).toHaveLength(1)
+    expect(result[0].type).toBe('main')
+    expect(result[0].url).toBe('blob:abc')
+    expect(progressEvents.length).toBeGreaterThan(0)
+  })
+
+  it('rejects if worker initialization fails', async () => {
+    class MockWorkerError {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-error', error: 'init failed' } }), 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if(this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorkerError)
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockRejectedValue(new Error('no backend'))
+
+    await expect(renderService.renderParts('unit', {}, manifest, {})).rejects.toThrow('init failed')
+  })
+
+  it('rejects if worker render fails', async () => {
+    class MockWorkerRenderError {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
+        } else if (msg.type === 'render') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'error', message: 'render failed' } }), 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if(this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorkerRenderError)
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockRejectedValue(new Error('no backend'))
+
+    await expect(renderService.renderParts('unit', {}, manifest, {})).rejects.toThrow('render failed')
   })
 })

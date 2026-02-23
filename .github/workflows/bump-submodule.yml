@@ -1,0 +1,50 @@
+name: Auto-Bump Submodule
+
+on:
+  repository_dispatch:
+    types: [bump-submodule]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Extract payload
+        id: payload
+        run: |
+          REPO="${{ github.event.client_payload.repository }}"
+          SLUG="${REPO#madfam-org/}"
+          SHA="${{ github.event.client_payload.sha }}"
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Update submodule
+        run: |
+          SLUG="${{ steps.payload.outputs.slug }}"
+          SHA="${{ steps.payload.outputs.sha }}"
+          echo "Bumping submodule $SLUG to $SHA"
+          
+          # Initialize only the target submodule
+          git submodule update --init "projects/$SLUG"
+          
+          cd "projects/$SLUG"
+          git fetch origin
+          git checkout "$SHA"
+          cd ../..
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add "projects/$SLUG"
+          if git diff --staged --quiet; then
+            echo "Submodule is already at $SHA. No changes."
+          else
+            git commit -m "chore(deps): auto-update submodule $SLUG to $SHA"
+            git push origin HEAD:main
+          fi

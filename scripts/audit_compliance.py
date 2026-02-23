@@ -8,6 +8,7 @@ import os
 import json
 import logging
 import sys
+import argparse
 from pathlib import Path
 
 # Adjust path to import from apps.api
@@ -165,17 +166,26 @@ def check_rule_5_hyperobject_coherence(project_dir: Path) -> list:
     return errors
 
 def main():
-    if not PROJECTS_DIR.is_dir():
-        logger.error(f"Projects directory not found at {PROJECTS_DIR}")
-        sys.exit(1)
-        
+    parser = argparse.ArgumentParser(description="Audit Compliance Script for Yantra4D Projects")
+    parser.add_argument("--project-dir", type=str, help="Audit a single project directory instead of the entire projects/ folder")
+    args = parser.parse_args()
+
+    if args.project_dir:
+        target_dir = Path(args.project_dir).resolve()
+        if not target_dir.is_dir() or not (target_dir / "project.json").exists():
+            logger.error(f"Single project directory not found or missing project.json at {target_dir}")
+            sys.exit(1)
+        projects_to_audit = [target_dir]
+    else:
+        if not PROJECTS_DIR.is_dir():
+            logger.error(f"Projects directory not found at {PROJECTS_DIR}")
+            sys.exit(1)
+        projects_to_audit = [d for d in sorted(PROJECTS_DIR.iterdir()) if d.is_dir() and (d / "project.json").exists()]
+
     total_projects = 0
     total_errors = 0
     
-    for project_dir in sorted(PROJECTS_DIR.iterdir()):
-        if not project_dir.is_dir() or not (project_dir / "project.json").exists():
-            continue
-            
+    for project_dir in projects_to_audit:
         total_projects += 1
         
         errors = []
@@ -197,7 +207,10 @@ def main():
         logger.error(f"\nAudit Failed: Found {total_errors} compliance violations across {total_projects} projects.")
         sys.exit(1)
     else:
-        logger.info(f"\nAudit Passed: All {total_projects} projects are fully compliant! 🎉")
+        if total_projects > 0:
+            logger.info(f"\nAudit Passed: All {total_projects} projects are fully compliant! 🎉")
+        else:
+            logger.info("\nAudit Passed: No projects found to audit.")
         sys.exit(0)
 
 if __name__ == "__main__":

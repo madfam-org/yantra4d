@@ -1,0 +1,51 @@
+name: Project CI Reusable Workflow
+
+on:
+  workflow_call:
+    secrets:
+      DISPATCH_TOKEN:
+        required: true
+        description: 'PAT with repo access to send repository_dispatch to yantra4d'
+
+jobs:
+  validate-and-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout project repository
+        uses: actions/checkout@v4
+        with:
+          path: project
+      
+      - name: Checkout yantra4d repository
+        uses: actions/checkout@v4
+        with:
+          repository: madfam-org/yantra4d
+          path: yantra4d
+          
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Install dependencies
+        run: |
+          pip install jsonschema
+          pip install -r yantra4d/apps/api/requirements.txt
+          
+      - name: Validate manifest against schema
+        run: |
+          jsonschema -i project/project.json yantra4d/packages/schemas/project-manifest.schema.json
+          
+      - name: Run compliance audit
+        run: |
+          python3 yantra4d/scripts/audit_compliance.py --project-dir project
+          
+      - name: Trigger Submodule Update
+        if: github.ref == 'refs/heads/main' && success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DISPATCH_TOKEN }}
+          repository: madfam-org/yantra4d
+          event-type: bump-submodule
+          client-payload: '{"repository": "${{ github.repository }}", "sha": "${{ github.sha }}"}'

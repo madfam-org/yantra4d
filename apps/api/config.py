@@ -116,7 +116,7 @@ class AppConfig:
         self.JANUA_JWKS_URL = os.getenv("JANUA_JWKS_URL", f"{self.JANUA_ISSUER}/.well-known/jwks.json")
         self.TIERS_FILE = Path(os.getenv("TIERS_FILE", self.BASE_DIR / "tiers.json"))
         self.JANUA_API_URL = os.getenv("JANUA_API_URL", f"{self.JANUA_ISSUER}/api/v1")
-        self.ANALYTICS_DB_PATH = self.PROJECTS_DIR / ".analytics.db"
+        self.ANALYTICS_DB_PATH = Path(os.getenv("ANALYTICS_DB_PATH", "/tmp/.analytics.db"))
         self.CORS_ORIGINS = [
             o.strip()
             for o in os.getenv("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS).split(",")

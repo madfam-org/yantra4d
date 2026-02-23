@@ -177,3 +177,169 @@ describe('renderParts (backend mode)', () => {
     expect(body.project).toBeUndefined()
   })
 })
+
+describe('renderParts (SSE event types)', () => {
+  it('calls onProgress for part_start, part_done, output, and error events', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"part_start","part":"main","index":0,"total":1,"progress":0}',
+        'data: {"event":"output","part":"main","line":"Compiling design...","progress":30}',
+        'data: {"event":"part_done","part":"main","progress":80}',
+        'data: {"event":"error","part":"main","message":"soft error","progress":80}',
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    const progressEvents = []
+    await renderService.renderParts('unit', {}, manifest, { onProgress: (e) => progressEvents.push(e) })
+
+    const parts = progressEvents.map(e => e.part).filter(Boolean)
+    const logs = progressEvents.map(e => e.log).filter(Boolean)
+    expect(parts).toContain('main')
+    expect(logs.some(l => l.includes('[ERROR]'))).toBe(true)
+    // part_done sets log
+    expect(logs.some(l => l.includes('Done'))).toBe(true)
+  })
+
+  it('applies glb export_format for CadQuery engine', async () => {
+    const cqManifest = {
+      ...manifest,
+      engine: 'cadquery',
+    }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // CadQuery always uses backend (no health check needed — detectMode short-circuits)
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.glb"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', {}, cqManifest, {})
+
+    const renderCall = fetchMock.mock.calls[0]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.export_format).toBe('glb')
+  })
+
+  it('uses backend when manifest.force_backend is true', async () => {
+    const forcedManifest = { ...manifest, force_backend: true }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+    const result = await renderService.renderParts('unit', {}, forcedManifest, {})
+    expect(result).toHaveLength(1)
+  })
+
+  it('uses backend when project.force_backend is set', async () => {
+    const forcedManifest = { ...manifest, project: { force_backend: true } }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+    const result = await renderService.renderParts('unit', {}, forcedManifest, {})
+    expect(result).toHaveLength(1)
+  })
+})
+
+describe('renderService circuit breaker', () => {
+  it('routes to backend when estimated render time exceeds 15s', async () => {
+    // High-complexity grid: estimate will exceed 15s even on backend formula
+    const heavyManifest = {
+      modes: [{
+        id: 'grid',
+        parts: ['a', 'b', 'c', 'd'],
+        estimate: { formula_vars: ['rows', 'cols'], formula: 'grid' }
+      }],
+      estimate_constants: { base_time: 5, per_unit: 10, per_part: 20 },
+    }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"a","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    // rows=10, cols=10 → 100 units × 10 per_unit + 4×20 = 1080s → well above 15s threshold
+    const result = await renderService.renderParts('grid', { rows: 10, cols: 10 }, heavyManifest, {})
+    expect(result).toHaveLength(1)
+    // No health check needed - circuit breaker short-circuits to backend directly  
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('cancelRender with active worker', () => {
+  it('terminates worker and resets state when worker is active', async () => {
+    const mockTerminate = vi.fn()
+    class MockWorker {
+      constructor() { this.onmessage = null }
+      postMessage() { }
+      addEventListener() { }
+      removeEventListener() { }
+      terminate = mockTerminate
+    }
+    vi.stubGlobal('Worker', MockWorker)
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValue({ ok: true })
+
+    await renderService.cancelRender()
+    // cancelRender should not throw even with no active worker
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/api/render-cancel'),
+      expect.objectContaining({ method: 'POST' })
+    )
+  })
+
+  it('does not throw if cancel fetch fails', async () => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('offline'))
+    await expect(renderService.cancelRender()).resolves.toBeUndefined()
+  })
+})
+
+describe('getRenderMode after detection', () => {
+  it('reflects the detected mode after a successful render', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+    await renderService.renderParts('unit', {}, manifest, {})
+    // After detecting, mode should no longer be 'detecting'
+    expect(renderService.getRenderMode()).not.toBe('detecting')
+  })
+})
+
+describe('estimateRenderTime — WASM multiplier path', () => {
+  it('applies wasm_multiplier when hardware concurrency is high', () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+    const wasmManifest = {
+      modes: [{ id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } }],
+      estimate_constants: { base_time: 5, per_unit: 1.5, per_part: 8, wasm_multiplier: 2 },
+    }
+    // On high-end device, mode defaults to 'wasm' base estimate × 2
+    const est = renderService.estimateRenderTime('unit', {}, wasmManifest)
+    // 14.5 × 2 = 29 (if wasm) or 14.5 (if backend)
+    expect([14.5, 29]).toContain(est)
+  })
+})

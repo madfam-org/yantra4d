@@ -8,75 +8,122 @@ vi.mock('../../services/core/backendDetection', () => ({
 }))
 
 vi.mock('../../services/core/apiClient', () => ({
-  apiFetch: vi.fn().mockResolvedValue({
-    ok: true,
-    json: () => Promise.resolve({ tier: 'pro', user: { sub: '1' }, limits: { renders_per_hour: 200 } }),
-  }),
+  apiFetch: vi.fn(),
 }))
 
-vi.mock('./AuthProvider', () => ({
-  useAuth: () => ({ isAuthenticated: false }),
+const mockAuth = vi.hoisted(() => ({
+  isAuthenticated: false,
   isAuthEnabled: false,
 }))
 
-import { TierProvider, useTier } from './TierProvider'
+vi.mock('./AuthProvider', () => ({
+  useAuth: () => ({ isAuthenticated: mockAuth.isAuthenticated }),
+  get isAuthEnabled() { return mockAuth.isAuthEnabled }
+}))
 
-beforeEach(() => {
-  vi.clearAllMocks()
-  vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-    ok: true,
-    json: () => Promise.resolve({
-      guest: { renders_per_hour: 30 },
-      basic: { renders_per_hour: 50 },
-      pro: { renders_per_hour: 200 },
-      madfam: { renders_per_hour: 500 },
-    }),
+describe('TierProvider tests', () => {
+  let TierProvider, useTier
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    vi.resetModules() // Ensure fresh TierProvider with current mockAuth state
+    const module = await import('./TierProvider')
+    TierProvider = module.TierProvider
+    useTier = module.useTier
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        guest: { renders_per_hour: 30 },
+        basic: { renders_per_hour: 50 },
+        pro: { renders_per_hour: 200 },
+        madfam: { renders_per_hour: 500 },
+      }),
+    })
   })
-})
 
-function wrapper({ children }) {
-  return <TierProvider>{children}</TierProvider>
-}
+  const wrapper = ({ children }) => <TierProvider>{children}</TierProvider>
 
-describe('useTier', () => {
-  it('returns tier context with canAccess', async () => {
-    const { result } = renderHook(() => useTier(), { wrapper })
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
+  describe('useTier with auth DISABLED', () => {
+    beforeEach(() => {
+      mockAuth.isAuthenticated = false
+      mockAuth.isAuthEnabled = false
     })
 
-    expect(typeof result.current.canAccess).toBe('function')
-    expect(typeof result.current.tier).toBe('string')
-  })
+    it('returns tier context with canAccess', async () => {
+      const { apiFetch } = await import('../../services/core/apiClient')
+      apiFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ tier: 'pro', limits: { renders_per_hour: 200 } }),
+      })
 
-  it('canAccess returns true when auth disabled', async () => {
-    const { result } = renderHook(() => useTier(), { wrapper })
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
+      const { result } = renderHook(() => useTier(), { wrapper })
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(typeof result.current.canAccess).toBe('function')
+      expect(result.current.tier).toBe('pro')
     })
 
-    // Auth disabled -> canAccess always true
-    expect(result.current.canAccess('madfam')).toBe(true)
+    it('canAccess returns true when auth disabled', async () => {
+      const { apiFetch } = await import('../../services/core/apiClient')
+      apiFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({ tier: 'guest' }) })
+
+      const { result } = renderHook(() => useTier(), { wrapper })
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.canAccess('madfam')).toBe(true)
+    })
   })
 
-  it('returns tier from /api/me response', async () => {
-    const { result } = renderHook(() => useTier(), { wrapper })
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
+  describe('useTier with auth ENABLED', () => {
+    beforeEach(() => {
+      mockAuth.isAuthenticated = true
+      mockAuth.isAuthEnabled = true
     })
 
-    // apiFetch mock returns tier: 'pro'
-    expect(result.current.tier).toBe('pro')
-  })
-})
+    it('canAccess respects tier hierarchy when auth is enabled', async () => {
+      const { apiFetch } = await import('../../services/core/apiClient')
+      apiFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ tier: 'basic', limits: { renders_per_hour: 50 } }),
+      })
 
-describe('useTier fallback', () => {
-  it('returns fallback when used outside provider', () => {
-    const { result } = renderHook(() => useTier())
-    expect(result.current.tier).toBeDefined()
-    expect(typeof result.current.canAccess).toBe('function')
+      const { result } = renderHook(() => useTier(), { wrapper })
+      await waitFor(() => expect(result.current.loading).toBe(false))
+
+      // basic tier: can access guest + basic, NOT pro/madfam
+      expect(result.current.canAccess('guest')).toBe(true)
+      expect(result.current.canAccess('basic')).toBe(true)
+      expect(result.current.canAccess('pro')).toBe(false)
+      expect(result.current.canAccess('madfam')).toBe(false)
+    })
+
+    it('madfam tier can access everything', async () => {
+      const { apiFetch } = await import('../../services/core/apiClient')
+      apiFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ tier: 'madfam', limits: { renders_per_hour: 500 } }),
+      })
+
+      const { result } = renderHook(() => useTier(), { wrapper })
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.canAccess('pro')).toBe(true)
+      expect(result.current.canAccess('madfam')).toBe(true)
+    })
+
+    it('falls back to guest if /api/me fails', async () => {
+      const { apiFetch } = await import('../../services/core/apiClient')
+      apiFetch.mockRejectedValue(new Error('network error'))
+
+      const { result } = renderHook(() => useTier(), { wrapper })
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.tier).toBe('guest')
+    })
+  })
+
+  describe('useTier fallback', () => {
+    it('returns fallback when used outside provider', () => {
+      const { result } = renderHook(() => useTier())
+      expect(result.current.tier).toBeDefined()
+      expect(typeof result.current.canAccess).toBe('function')
+    })
   })
 })

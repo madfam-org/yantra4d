@@ -105,6 +105,18 @@ Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign,
 
 ---
 
+### Sprint 12.5 — Quality Lock-In: 80% Coverage Foundation
+_Dependency: None — currently in progress._
+
+Achieve a high-trust testing foundation across the fragmented monorepo to ensure future feature sprints (13-16) don't introduce regressions.
+
+- [ ] **Studio (Vitest) 80% Coverage:** Reach >80% coverage across all metrics (Statements, Branches, Functions, Lines) in `apps/studio`.
+- [ ] **API (Pytest) 80% Coverage:** Reach >80% coverage in `apps/api` with strict enforcement in the CI pipeline.
+- [ ] **Zero-Failure Verification:** Confirm all 600+ unit tests and 21+ E2E suites pass with absolute consistency.
+- [ ] **Branch Coverage Hardening:** Specifically target complex logic in `renderService.js`, `verifyService.js`, and the backend `openscad.py` engine.
+
+---
+
 ### Sprint 13 — Per-Project CI & Federated Repo Health
 _Dependency: None — can start immediately._
 

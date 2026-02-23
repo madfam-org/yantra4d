@@ -16,7 +16,7 @@ resources:
 - yantra4d-redis-service.yaml
 
 images:
-- digest: sha256:903ef6ebbe9babff087ce4023974f363b7869f27fcd93199856456ee781b217b
+- digest: sha256:7178f1b54fd9dc10c0d65106f287433d992594e65b44f083a6be2a735d049525
   name: ghcr.io/madfam-org/yantra4d/backend
   newName: ghcr.io/madfam-org/yantra4d/backend
 - digest: sha256:b1b827df57a6603a3ee63877f7fbf7a388796893f440888926aee9d5dd4706e3

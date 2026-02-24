@@ -50,10 +50,11 @@ export function useShareableUrl({ params, mode, projectSlug, defaultParams }) {
   const generateShareUrl = useCallback(() => {
     const encoded = encodeParams(params, defaultParams)
     const url = new URL(window.location.href)
-    // Strip existing search params
+    // Strip existing search params and hash
     url.search = ''
-    // Set hash to current project/mode
-    url.hash = `/${projectSlug}/share/${mode}`
+    url.hash = ''
+    // Set pathname to current project/mode
+    url.pathname = `/project/${projectSlug}/share/${mode}`
     if (encoded) {
       url.searchParams.set('p', encoded)
     }

@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, goToProjects, getHash, setLanguage } from '../../helpers/test-utils.js'
+import { goToStudio, goToProjects, getPathname, setLanguage } from '../../helpers/test-utils.js'
 
 test.describe('Navigation', () => {
   test('3-segment hash navigates to studio view', async ({ page }) => {
@@ -8,12 +8,10 @@ test.describe('Navigation', () => {
     await page.waitForSelector('header', { timeout: 15000 })
     // Wait for mock manifest to load and app to settle
     await expect(page.locator('header h1')).toContainText('Test Project', { timeout: 10000 })
-    // The app resolves 3-segment hash and may rewrite it.
-    // Wait for app to fully settle after route resolution.
+    // Hash redirect converts /#/test/small/grid → /project/test/small/grid
     await page.waitForTimeout(1000)
-    const hash = await getHash(page)
-    // Hash should contain the project slug (test) and the mode (grid) 
-    expect(hash).toContain('test')
+    const pathname = await getPathname(page)
+    expect(pathname).toContain('/project/test')
   })
 
   test('legacy 2-segment hash #/preset/mode falls back correctly', async ({ page }) => {
@@ -38,17 +36,17 @@ test.describe('Navigation', () => {
     await expect(page.locator('header h1')).toContainText('Test Project', { timeout: 10000 })
 
     await goToProjects(page)
-    const hash1 = await getHash(page)
-    expect(hash1).toBe('#/projects')
+    const path1 = await getPathname(page)
+    expect(path1).toBe('/projects')
 
     await page.goBack()
     await page.waitForTimeout(500)
-    const hash2 = await getHash(page)
-    expect(hash2).not.toBe('#/projects')
+    const path2 = await getPathname(page)
+    expect(path2).not.toBe('/projects')
 
     await page.goForward()
     await page.waitForTimeout(500)
-    const hash3 = await getHash(page)
-    expect(hash3).toBe('#/projects')
+    const path3 = await getPathname(page)
+    expect(path3).toBe('/projects')
   })
 })

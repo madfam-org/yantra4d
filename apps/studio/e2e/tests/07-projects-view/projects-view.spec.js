@@ -38,8 +38,8 @@ test.describe('Projects View', () => {
     await goToProjects(page)
     await projectsView.selectProject('test')
     await page.waitForTimeout(500)
-    const hash = await page.evaluate(() => window.location.hash)
-    expect(hash).toContain('test')
+    const pathname = await page.evaluate(() => window.location.pathname)
+    expect(pathname).toContain('test')
   })
 
   test('empty state shows message and CTA', async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe('Projects View', () => {
     })
     await goToProjects(page)
     await expect(page.getByText('No projects found').or(page.getByText('No se encontraron proyectos'))).toBeVisible({ timeout: 8000 })
-    await expect(page.locator('a[href="#/onboard"]')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('button', { hasText: /Import|Importar/ })).toBeVisible({ timeout: 5000 })
   })
 
   test('loading state shows loading text', async ({ page }) => {

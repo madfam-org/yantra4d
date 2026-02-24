@@ -22,7 +22,12 @@ export class BasePage {
     return this.page.isVisible(selector)
   }
 
-  /** Get current URL hash. */
+  /** Get current URL pathname. */
+  async getPathname() {
+    return this.page.evaluate(() => window.location.pathname)
+  }
+
+  /** Get current URL hash (legacy — prefer getPathname). */
   async getHash() {
     return this.page.evaluate(() => window.location.hash)
   }

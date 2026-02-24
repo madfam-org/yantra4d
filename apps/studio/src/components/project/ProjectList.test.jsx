@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { ProjectList } from './ProjectList'
 
 const t = (key) => {
@@ -40,22 +41,26 @@ const sampleProjects = [
 ]
 
 function renderList(projects = sampleProjects) {
-  return render(<ProjectList projects={projects} t={t} />)
+  return render(
+    <MemoryRouter>
+      <ProjectList projects={projects} t={t} />
+    </MemoryRouter>
+  )
 }
 
 describe('ProjectList', () => {
   it('returns null for empty array', () => {
-    const { container } = render(<ProjectList projects={[]} t={t} />)
+    const { container } = render(<MemoryRouter><ProjectList projects={[]} t={t} /></MemoryRouter>)
     expect(container.innerHTML).toBe('')
   })
 
   it('returns null for null projects', () => {
-    const { container } = render(<ProjectList projects={null} t={t} />)
+    const { container } = render(<MemoryRouter><ProjectList projects={null} t={t} /></MemoryRouter>)
     expect(container.innerHTML).toBe('')
   })
 
   it('returns null for undefined projects', () => {
-    const { container } = render(<ProjectList projects={undefined} t={t} />)
+    const { container } = render(<MemoryRouter><ProjectList projects={undefined} t={t} /></MemoryRouter>)
     expect(container.innerHTML).toBe('')
   })
 
@@ -134,13 +139,13 @@ describe('ProjectList', () => {
   it('renders open project links with correct hrefs', () => {
     renderList()
     const links = screen.getAllByTitle('Open Project')
-    expect(links[0].closest('a')).toHaveAttribute('href', '#/gridfinity')
-    expect(links[1].closest('a')).toHaveAttribute('href', '#/slide-holder')
+    expect(links[0].closest('a')).toHaveAttribute('href', '/project/gridfinity')
+    expect(links[1].closest('a')).toHaveAttribute('href', '/project/slide-holder')
   })
 
   it('uses fallback text when t returns empty strings', () => {
     const tEmpty = () => ''
-    render(<ProjectList projects={sampleProjects} t={tEmpty} />)
+    render(<MemoryRouter><ProjectList projects={sampleProjects} t={tEmpty} /></MemoryRouter>)
     // Fallback values from || operator
     expect(screen.getByText('Image')).toBeInTheDocument()
     expect(screen.getByText('Name')).toBeInTheDocument()

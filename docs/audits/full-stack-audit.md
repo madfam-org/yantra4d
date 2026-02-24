@@ -63,11 +63,11 @@
 **Root cause**: Hardcoded `/Applications/OpenSCAD-Snapshot.app/Contents/MacOS/OpenSCAD`
 **Fix**: Auto-detect — prefer Snapshot, fall back to stable release.
 
-### 4. ProjectsView → Studio navigation doesn't switch project (NOT FIXED)
+### 4. ProjectsView → Studio navigation doesn't switch project (FIXED)
 
 **Severity**: Medium — UX issue
-**Repro**: Navigate to `#/projects` → click a project card → URL updates to `#/julia-vase` but project selector stays on previous project and controls don't update.
-**Root cause**: Hash-based navigation from ProjectsView card links doesn't trigger project switch in ManifestProvider. The dropdown selector works because it calls `setProject()` directly.
+**Repro**: Navigate to `/projects` → click a project card → URL updates to `/project/julia-vase` but project selector stays on previous project and controls don't update.
+**Root cause**: Was hash-based navigation from ProjectsView card links not triggering project switch in ManifestProvider. Fixed by converting all navigation to path-based routing (`/project/slug`) with React Router `<Link>` components. Legacy hash URLs auto-redirect via pre-mount script in `main.jsx`.
 
 ### 5. Julia Vase slider values all show 100 (NOT FIXED)
 

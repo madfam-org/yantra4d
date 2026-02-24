@@ -41,7 +41,7 @@ describe('useShareableUrl', () => {
         useShareableUrl({ params, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
       const url = result.current.generateShareUrl()
-      expect(url).toContain('#/gridfinity/share/single')
+      expect(url).toContain('/project/gridfinity/share/single')
       expect(url).toContain('p=')
 
       // Decode and verify
@@ -58,7 +58,7 @@ describe('useShareableUrl', () => {
         useShareableUrl({ params: defaultParams, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
       const url = result.current.generateShareUrl()
-      expect(url).toContain('#/gridfinity/share/single')
+      expect(url).toContain('/project/gridfinity/share/single')
       expect(url).not.toContain('p=')
     })
 
@@ -90,7 +90,7 @@ describe('useShareableUrl', () => {
       await act(async () => { ok = await result.current.copyShareUrl() })
       expect(ok).toBe(true)
       expect(writeText).toHaveBeenCalledOnce()
-      expect(writeText.mock.calls[0][0]).toContain('#/gridfinity/share/single')
+      expect(writeText.mock.calls[0][0]).toContain('/project/gridfinity/share/single')
     })
 
     it('returns false when clipboard fails', async () => {

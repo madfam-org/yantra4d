@@ -299,7 +299,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Issue | Detail |
 |-------|--------|
 | Manifest sync | After editing `project.json`, update `fallback-manifest.json` for Pages mode |
-| URL format | Hash changed from `#/preset/mode` to `#/project/preset/mode` — old 2-segment format still supported |
+| URL format | Path-based routing: `/project/slug/preset/mode`. Legacy hash URLs (`#/slug/preset/mode`) auto-redirect via pre-mount script in `main.jsx` |
 | Shadcn UI | **Never** hand-edit `components/ui/*` — use shadcn CLI to regenerate |
 | Verify false positives | Verification needs rendered STLs to exist first; render before verifying |
 | Render timeouts | Complex grid renders (high rows×cols) can exceed default timeout; Docker uses 300s |
@@ -311,7 +311,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: 100/hr, Estimate: 200/hr, Verify: 50/hr |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
-| Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links restore params on load. Hash normalization uses `replaceState` (not `location.hash =`) to avoid re-triggering preset values over shared params |
+| Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links use path-based format `/project/slug/share/mode?p=...`. Legacy hash-based shared links auto-redirect via `main.jsx` |
 | Undo/Redo | Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z for parameter undo/redo; 50-entry history stack. Any `setParams()` call with `history: true` (default) truncates the redo stack |
 | E2E test patterns | Use Playwright's `toHaveText`/`toBeEnabled` assertions instead of `waitForTimeout` + `textContent()`. Auto-render caches results — change a param to bust cache before testing slow/error mocks. `editSliderValue` commits via Enter key. Native `<input type="color">` cannot be programmatically set in Playwright |
 | Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf/obj/vrml/amf). All STL renders auto-convert to GLB for web delivery. Format selector only visible when manifest declares `export_formats` |

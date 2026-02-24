@@ -4,10 +4,9 @@ import { goToStudio, setLanguage, getSearchParams, waitForAppReady, enableClipbo
 
 /**
  * Navigate to a URL with ?p= param and ensure controls are ready.
- * Uses a 1-segment hash (#/test) to avoid preset overrides.
- * After mock manifest loads, explicitly activates the 'Single' mode tab
- * since the fallback manifest initializes mode to 'cup' which doesn't
- * exist in the mock manifest.
+ * Uses a path-based URL (/project/test) to avoid preset overrides.
+ * The pre-mount hash redirect in main.jsx converts any legacy hash
+ * URLs to path-based equivalents before React mounts.
  */
 async function goToWithParams(page, url) {
   await page.goto(url)
@@ -49,8 +48,8 @@ test.describe('Shareable URLs', () => {
 
   test('loading URL with ?p= restores params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 100 })).toString('base64url')
-    // Use 1-segment hash to avoid preset override
-    await goToWithParams(page, `/?p=${diff}#/test`)
+    // Use path-based URL to avoid preset override
+    await goToWithParams(page, `/project/test?p=${diff}`)
     await page.waitForTimeout(800)
     const valEl = sidebar.sliderValue('width')
     await expect(valEl).toHaveText('100', { timeout: 8000 })
@@ -58,27 +57,27 @@ test.describe('Shareable URLs', () => {
 
   test('?p= with default values is equivalent to no params', async ({ page, sidebar }) => {
     const diff = Buffer.from(JSON.stringify({ width: 50 })).toString('base64url')
-    // Use 1-segment hash to avoid preset override
-    await goToWithParams(page, `/?p=${diff}#/test`)
+    // Use path-based URL to avoid preset override
+    await goToWithParams(page, `/project/test?p=${diff}`)
     await page.waitForTimeout(800)
     const valEl = sidebar.sliderValue('width')
     await expect(valEl).toHaveText('50', { timeout: 8000 })
   })
 
   test('invalid ?p= value is gracefully ignored', async ({ page }) => {
-    await page.goto('/?p=not-valid-base64#/test')
+    await page.goto('/project/test?p=not-valid-base64')
     await page.waitForSelector('header')
     // App should load without crashing
     await expect(page.locator('header h1')).toBeVisible()
   })
 
   test('empty ?p= value is ignored', async ({ page }) => {
-    await page.goto('/?p=#/test')
+    await page.goto('/project/test?p=')
     await page.waitForSelector('header')
     await expect(page.locator('header h1')).toBeVisible()
   })
 
-  test('shared URL preserves mode in hash', async ({ page, sidebar, header }) => {
+  test('shared URL preserves mode in path', async ({ page, sidebar, header }) => {
     await goToStudio(page)
     await enableClipboard(page)
     await sidebar.selectMode('grid')
@@ -108,7 +107,7 @@ test.describe('Shareable URLs', () => {
     expect(clipboardText).toContain('p=')
   })
 
-  test('legacy 2-segment URL format still works', async ({ page }) => {
+  test('legacy 2-segment hash URL format still works via redirect', async ({ page }) => {
     await page.goto('/#/small/single')
     await page.waitForSelector('header')
     await expect(page.locator('header h1')).toBeVisible()

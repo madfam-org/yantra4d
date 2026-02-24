@@ -631,7 +631,7 @@ docker compose down         # stop
 | Issue | Detail |
 |-------|--------|
 | Manifest sync | After editing `project.json`, update `fallback-manifest.json` for Pages mode |
-| URL format | Hash changed from `#/preset/mode` to `#/project/preset/mode` — old format still supported |
+| URL format | Path-based routing: `/project/slug/preset/mode`. Legacy hash URLs (`#/slug/preset/mode`) auto-redirect via pre-mount script in `main.jsx` |
 | Shadcn UI | Never hand-edit `components/ui/*` — use shadcn CLI |
 | Verify false positives | Verification needs rendered STLs first; render before verifying |
 | Render timeouts | Complex grids can exceed default timeout; Docker uses 300s |

@@ -43,8 +43,8 @@ Render, verify, and estimate endpoints accept an optional `project` field in the
 
 ## Frontend
 
-- **URL hash**: `#/{projectSlug}/{presetId}/{modeId}` (3-segment)
-- **Backward compat**: 2-segment hash `#/{presetId}/{modeId}` still works (uses default project)
+- **URL path**: `/project/{projectSlug}/{presetId}/{modeId}` (path-based routing via BrowserRouter)
+- **Legacy redirect**: Hash URLs (`#/{slug}/{preset}/{mode}`) auto-redirect to path equivalents via pre-mount script in `main.jsx`
 - **Project selector**: Dropdown appears in header when multiple projects are available. Includes "Import from GitHub…" option that navigates to the projects gallery.
 - **Per-project localStorage**: Parameters stored as `{slug}-params`, `{slug}-colors`, etc.
 

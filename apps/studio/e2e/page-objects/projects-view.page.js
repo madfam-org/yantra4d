@@ -4,16 +4,16 @@ export class ProjectsViewPage extends BasePage {
   constructor(page) {
     super(page)
     this.title = page.locator('h2', { hasText: /Projects|Proyectos/ })
-    this.projectCards = page.locator('a[href^="#/"] .h-full')
+    this.projectCards = page.locator('a[href^="/project/"] .h-full')
     this.loadingText = page.locator('text=Loading projects, text=Cargando proyectos')
     this.errorText = page.locator('.text-destructive')
     this.emptyText = page.locator('text=No projects found, text=No se encontraron proyectos')
-    this.createCTA = page.locator('a[href="#/onboard"]')
+    this.createCTA = page.locator('button', { hasText: /Import|Importar/ })
   }
 
   /** Get a project card by slug. */
   projectCard(slug) {
-    return this.page.locator(`a[href="#/${slug}"]`)
+    return this.page.locator(`a[href="/project/${slug}"]`)
   }
 
   /** Click a project card. */

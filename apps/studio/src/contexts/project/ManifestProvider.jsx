@@ -163,15 +163,16 @@ export function ManifestProvider({ children }) {
 
 function _getProjectSlug(location) {
   if (!location) return null;
-  // Support both hash-based #/slug and path-based /project/slug
-  const hash = location.hash.replace(/^#\/?/, '')
-  const hashParts = hash.split('/').filter(Boolean)
-  if (hashParts.length >= 1) return hashParts[0]
-
+  // Primary: path-based /project/slug (BrowserRouter)
   const pathParts = location.pathname.split('/').filter(Boolean)
   if (pathParts[0] === 'project' && pathParts.length >= 2) {
     return pathParts[1]
   }
+
+  // Legacy fallback: hash-based #/slug (auto-redirected by main.jsx pre-mount script)
+  const hash = location.hash.replace(/^#\/?/, '')
+  const hashParts = hash.split('/').filter(Boolean)
+  if (hashParts.length >= 1) return hashParts[0]
 
   return null
 }

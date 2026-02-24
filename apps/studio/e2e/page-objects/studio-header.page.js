@@ -6,7 +6,7 @@ export class StudioHeaderPage extends BasePage {
     this.header = page.locator('header').first()
     this.projectName = this.header.locator('h1')
     this.projectSelector = this.header.locator('select[aria-label="Select project"]')
-    this.projectsLink = this.header.locator('a[href="#/projects"]')
+    this.projectsLink = this.header.locator('a[href="/projects"]')
     this.undoButton = this.header.locator('button:has(.lucide-undo-2)')
     this.redoButton = this.header.locator('button:has(.lucide-redo-2)')
     this.shareButton = this.header.locator('button:has(.lucide-share-2)')

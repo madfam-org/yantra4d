@@ -10,6 +10,7 @@ import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTheme } from '../../contexts/system/ThemeProvider'
 import { usePlatform } from '../../contexts/system/PlatformProvider'
+import { Link } from 'react-router-dom'
 
 export default function StudioHeader({
   editorOpen, toggleEditor,
@@ -66,7 +67,7 @@ export default function StudioHeader({
           </span>
         </div>
         <ProjectSelector />
-        <a href="#/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</a>
+        <Link to="/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</Link>
       </div>
       <div className="flex items-center gap-1">
         <AuthButton />

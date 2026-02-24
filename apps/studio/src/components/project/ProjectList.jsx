@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink } from "lucide-react"
+import { Link } from 'react-router-dom'
 
 export function ProjectList({ projects, t }) {
     if (!projects || projects.length === 0) return null
@@ -70,11 +71,11 @@ export function ProjectList({ projects, t }) {
                                 {project.modified_at ? new Date(project.modified_at * 1000).toLocaleDateString() : '-'}
                             </TableCell>
                             <TableCell>
-                                <a href={`#/${project.slug}`}>
+                                <Link to={`/project/${project.slug}`}>
                                     <Button variant="ghost" size="icon" title={t('projects.open') || 'Open Project'}>
                                         <ExternalLink className="h-4 w-4" />
                                     </Button>
-                                </a>
+                                </Link>
                             </TableCell>
                         </TableRow>
                     ))}

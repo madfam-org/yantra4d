@@ -31,6 +31,10 @@ vi.mock('../../hooks/project/useProjectMeta', () => ({
   useProjectMeta: () => ({ source: { type: 'github' } }),
 }))
 
+vi.mock('react-router-dom', () => ({
+  Link: ({ to, children, ...props }) => <a href={to} {...props}>{children}</a>,
+}))
+
 vi.mock('../../config/languages', () => ({
   SUPPORTED_LANGUAGES: [
     { id: 'en', label: 'English' },

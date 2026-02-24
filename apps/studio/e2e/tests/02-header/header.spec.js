@@ -30,8 +30,8 @@ test.describe('Studio Header', () => {
   test('Projects link navigates to projects view', async ({ page, header }) => {
     await header.projectsLink.click()
     await page.waitForTimeout(500)
-    const hash = await page.evaluate(() => window.location.hash)
-    expect(hash).toBe('#/projects')
+    const pathname = await page.evaluate(() => window.location.pathname)
+    expect(pathname).toBe('/projects')
   })
 
   test('undo reverts parameter change', async ({ header, sidebar }) => {

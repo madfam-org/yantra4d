@@ -62,7 +62,7 @@ test.describe('Error Handling', () => {
     await page.route('**/api/projects/*/manifest', (route) => {
       route.fulfill({ status: 500, json: { error: 'Server error' } })
     })
-    await page.goto('/#/test')
+    await page.goto('/project/test')
     await page.waitForTimeout(3000)
     // Should fall back to fallback manifest and still render
     await expect(page.locator('header')).toBeVisible()
@@ -106,14 +106,14 @@ test.describe('Error Handling', () => {
     await page.route('**/api/projects/*/manifest', (route) => {
       route.fulfill({ contentType: 'application/json', body: 'not valid json' })
     })
-    await page.goto('/#/test')
+    await page.goto('/project/test')
     await page.waitForTimeout(3000)
     await expect(page.locator('header')).toBeVisible()
   })
 
   test('backend unavailable shows warning in console', async ({ page }) => {
     await page.route('**/api/**', (route) => route.abort('connectionrefused'))
-    await page.goto('/#/test')
+    await page.goto('/project/test')
     await page.waitForTimeout(3000)
     // Should still render with fallback manifest
     await expect(page.locator('header')).toBeVisible()
@@ -126,12 +126,12 @@ test.describe('Error Handling', () => {
     await expect(page.locator('header')).toBeVisible()
   })
 
-  // Skipped: OnboardingWizard route (#/onboard) not integrated into app routing
+  // Skipped: OnboardingWizard route (/onboard) not integrated into app routing
   test.skip('onboarding API error shows error banner', async ({ page }) => {
     await page.route('**/api/projects/analyze', (route) => {
       route.fulfill({ status: 500, json: { error: 'Analysis failed' } })
     })
-    await page.goto('/#/onboard')
+    await page.goto('/onboard')
     await page.waitForSelector('header')
     await page.locator('#scad-upload').setInputFiles({
       name: 'test.scad', mimeType: 'text/plain', buffer: Buffer.from('cube(10);'),
@@ -156,7 +156,7 @@ test.describe('Error Handling', () => {
       route.fulfill({ status: 500, json: { error: 'Create failed' } })
     })
 
-    await page.goto('/#/onboard')
+    await page.goto('/onboard')
     await page.waitForSelector('header')
     await page.locator('#scad-upload').setInputFiles({
       name: 'test.scad', mimeType: 'text/plain', buffer: Buffer.from('cube(10);'),

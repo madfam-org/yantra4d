@@ -18,11 +18,11 @@ test.describe('Studio Sidebar', () => {
     expect(active).toBe('grid')
   })
 
-  test('mode switch updates URL hash', async ({ page, sidebar }) => {
+  test('mode switch updates URL path', async ({ page, sidebar }) => {
     await sidebar.selectMode('grid')
     await page.waitForTimeout(300)
-    const hash = await page.evaluate(() => window.location.hash)
-    expect(hash).toContain('grid')
+    const pathname = await page.evaluate(() => window.location.pathname)
+    expect(pathname).toContain('grid')
   })
 
   test('controls filter by visible_in_modes', async ({ page, sidebar }) => {

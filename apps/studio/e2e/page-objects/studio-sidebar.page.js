@@ -3,7 +3,7 @@ import { BasePage } from './base.page.js'
 export class StudioSidebarPage extends BasePage {
   constructor(page) {
     super(page)
-    this.sidebar = page.locator('.w-80').first()
+    this.sidebar = page.locator('[data-testid="studio-sidebar"]')
     this.generateButton = this.sidebar.locator('button', { hasText: /Generate|Generar/ }).first()
     this.cancelButton = this.sidebar.locator('button', { hasText: /Cancel|Cancelar/ }).first()
     this.verifyButton = this.sidebar.locator('button', { hasText: /Verification|Verificación/ }).first()

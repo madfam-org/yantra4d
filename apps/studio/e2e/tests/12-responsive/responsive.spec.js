@@ -3,11 +3,11 @@ import { goToStudio, goToProjects, setLanguage, waitForAppReady } from '../../he
 
 /**
  * Lightweight studio navigation for mobile viewports.
- * Unlike goToStudio, this does NOT wait for desktop sidebar (.w-80) or sliders,
+ * Unlike goToStudio, this does NOT wait for desktop sidebar or sliders,
  * which are hidden at mobile and cause 13s of wasted timeouts.
  */
 async function goToStudioMobile(page, slug = 'test') {
-  await page.goto(`/#/${slug}`)
+  await page.goto(`/project/${slug}`)
   await waitForAppReady(page)
   // Wait for mock manifest to load
   await page.locator('header h1', { hasText: 'Test Project' })
@@ -109,7 +109,7 @@ test.describe('Responsive Design', () => {
   test('tablet: sidebar is visible', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 }) // lg breakpoint
     await goToStudio(page)
-    const sidebar = page.locator('.w-80').first()
+    const sidebar = page.locator('[data-testid="studio-sidebar"]')
     await expect(sidebar).toBeVisible()
   })
 
@@ -147,7 +147,7 @@ test.describe('Responsive Design', () => {
     await goToStudio(page)
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.waitForTimeout(500)
-    const sidebar = page.locator('.w-80').first()
+    const sidebar = page.locator('[data-testid="studio-sidebar"]')
     await expect(sidebar).toBeVisible({ timeout: 5000 })
     const box = await sidebar.boundingBox()
     if (box) {
@@ -155,11 +155,11 @@ test.describe('Responsive Design', () => {
     }
   })
 
-  test('mobile: console is visible below viewer', async ({ page }) => {
+  test('mobile: console is hidden below lg breakpoint', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
-    const console_ = page.locator('[role="log"]')
-    await expect(console_).toBeVisible()
+    const console_ = page.locator('[role="log"]').first()
+    await expect(console_).toBeHidden()
   })
 
   test('mobile: export panel is accessible via scroll', async ({ page }) => {

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yantra4d-admin
+  labels:
+    app.kubernetes.io/name: yantra4d-admin
+    app.kubernetes.io/part-of: yantra4d
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: yantra4d-admin
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP

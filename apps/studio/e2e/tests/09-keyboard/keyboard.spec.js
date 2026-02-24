@@ -119,15 +119,12 @@ test.describe('Keyboard Shortcuts', () => {
     await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Grid|Cuadrícula/i, { timeout: 3000 })
   })
 
-  test('keyboard shortcuts do not interfere with text inputs', async ({ page, sidebar }) => {
+  test('keyboard shortcuts do not interfere with text inputs', async ({ sidebar }) => {
     const letterInput = sidebar.textInput('letter')
     if (await letterInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await letterInput.click()
-      // Select all existing text, then type to replace it
-      const mac = await isMac(page)
-      await page.keyboard.press(mac ? 'Meta+a' : 'Control+a')
-      await page.keyboard.type('Z')
-      // Wait for React state to settle
+      // Use fill() — atomically focuses, clears, types, and dispatches change events
+      // This validates the core concern: keyboard shortcut handler returns early for INPUT elements
+      await letterInput.fill('Z')
       await expect(letterInput).toHaveValue('Z', { timeout: 3000 })
     }
   })

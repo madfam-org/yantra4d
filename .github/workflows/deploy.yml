@@ -7,6 +7,7 @@ on:
       - 'apps/api/**'
       - 'apps/studio/**'
       - 'apps/landing/**'
+      - 'apps/admin/**'
       - 'projects/**'
       - 'libs/**'
       - 'packages/**'
@@ -35,6 +36,7 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
       studio: ${{ steps.filter.outputs.studio }}
       landing: ${{ steps.filter.outputs.landing }}
+      admin: ${{ steps.filter.outputs.admin }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,6 +57,9 @@ jobs:
             landing:
               - 'apps/landing/**'
               - 'packages/**'
+            admin:
+              - 'apps/admin/**'
+              - 'packages/**'
 
       - name: Force all on workflow_dispatch
         if: github.event.inputs.force_deploy == 'true'
@@ -62,6 +67,7 @@ jobs:
           echo "backend=true" >> $GITHUB_OUTPUT
           echo "studio=true" >> $GITHUB_OUTPUT
           echo "landing=true" >> $GITHUB_OUTPUT
+          echo "admin=true" >> $GITHUB_OUTPUT
 
   build-backend:
     name: Build Backend
@@ -217,17 +223,72 @@ jobs:
           provenance: false
           sbom: false
 
+  build-admin:
+    name: Build Admin
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.admin == 'true' || github.event.inputs.force_deploy == 'true'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: image=moby/buildkit:v0.13.1
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: madfam-bot
+          password: ${{ secrets.MADFAM_BOT_PAT }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/admin
+          tags: |
+            type=sha,prefix=
+            type=raw,value=main,enable={{is_default_branch}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/admin/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=admin,ignore-error=true
+          cache-to: type=gha,scope=admin,mode=max,ignore-error=true
+          provenance: false
+          sbom: false
+          build-args: |
+            VITE_API_BASE=https://4d-api.madfam.io
+            VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
+            VITE_JANUA_CLIENT_ID=yantra4d-admin
+            VITE_JANUA_REDIRECT_URI=https://4d-admin.madfam.io
+
   commit-digests:
     name: Commit Image Digests
     runs-on: ubuntu-latest
-    needs: [detect-changes, build-backend, build-studio, build-landing]
+    needs: [detect-changes, build-backend, build-studio, build-landing, build-admin]
     if: |
       always() &&
       needs.detect-changes.result == 'success' &&
       (needs.build-backend.result == 'success' || needs.build-backend.result == 'skipped') &&
       (needs.build-studio.result == 'success' || needs.build-studio.result == 'skipped') &&
       (needs.build-landing.result == 'success' || needs.build-landing.result == 'skipped') &&
-      (needs.build-backend.outputs.image_digest != '' || needs.build-studio.outputs.image_digest != '' || needs.build-landing.outputs.image_digest != '')
+      (needs.build-admin.result == 'success' || needs.build-admin.result == 'skipped') &&
+      (needs.build-backend.outputs.image_digest != '' || needs.build-studio.outputs.image_digest != '' || needs.build-landing.outputs.image_digest != '' || needs.build-admin.outputs.image_digest != '')
     permissions:
       contents: write
     steps:
@@ -247,6 +308,7 @@ jobs:
           BACKEND_DIGEST="${{ needs.build-backend.outputs.image_digest }}"
           STUDIO_DIGEST="${{ needs.build-studio.outputs.image_digest }}"
           LANDING_DIGEST="${{ needs.build-landing.outputs.image_digest }}"
+          ADMIN_DIGEST="${{ needs.build-admin.outputs.image_digest }}"
 
           for ATTEMPT in 1 2 3; do
             git fetch origin main
@@ -262,6 +324,9 @@ jobs:
             fi
             if [ -n "$LANDING_DIGEST" ]; then
               kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${LANDING_DIGEST}
+            fi
+            if [ -n "$ADMIN_DIGEST" ]; then
+              kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/admin=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/admin@${ADMIN_DIGEST}
             fi
 
             cd ../..
@@ -279,7 +344,7 @@ jobs:
   lifecycle-events:
     name: Report Lifecycle Events
     runs-on: ubuntu-latest
-    needs: [build-backend, build-studio, build-landing]
+    needs: [build-backend, build-studio, build-landing, build-admin]
     if: always()
     steps:
       - name: Report backend event
@@ -361,6 +426,34 @@ jobs:
                 \"service\": \"yantra4d-landing\",
                 \"image\": \"${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing\",
                 \"digest\": \"${{ needs.build-landing.outputs.image_digest }}\",
+                \"workflow\": \"deploy\",
+                \"actor\": \"${{ github.actor }}\"
+              }
+            }" || true
+
+      - name: Report admin event
+        if: needs.build-admin.result == 'success' || needs.build-admin.result == 'failure'
+        run: |
+          if [ "${{ needs.build-admin.result }}" = "success" ]; then
+            EVENT_TYPE="image_pushed"
+          else
+            EVENT_TYPE="build_failed"
+          fi
+          curl -s -X POST "https://api.enclii.dev/v1/callbacks/lifecycle-event" \
+            -H "Authorization: Bearer ${{ secrets.ENCLII_CALLBACK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"repo_full_name\": \"madfam-org/yantra4d\",
+              \"commit_sha\": \"${{ github.sha }}\",
+              \"branch\": \"${{ github.ref_name }}\",
+              \"ref\": \"${{ github.ref }}\",
+              \"event_type\": \"${EVENT_TYPE}\",
+              \"source\": \"ci_callback\",
+              \"message\": \"yantra4d-admin ${EVENT_TYPE} (digest: ${{ needs.build-admin.outputs.image_digest }})\",
+              \"metadata\": {
+                \"service\": \"yantra4d-admin\",
+                \"image\": \"${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/admin\",
+                \"digest\": \"${{ needs.build-admin.outputs.image_digest }}\",
                 \"workflow\": \"deploy\",
                 \"actor\": \"${{ github.actor }}\"
               }

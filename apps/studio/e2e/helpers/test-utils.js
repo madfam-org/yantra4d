@@ -26,6 +26,13 @@ export async function goToStudio(page, slug = 'test') {
   await page.locator('header h1', { hasText: 'Test Project' })
     .waitFor({ timeout: 8000 })
     .catch(() => { }) // fallback: continue even if mock didn't load
+
+  // Wait for URL to fully settle (auto-redirect adds preset/mode segments).
+  // This prevents the race condition where preset application fires after
+  // goToStudio returns, overwriting values the test just edited.
+  await page.waitForURL(/\/project\/[^/]+\/[^/]+\/[^/]+/, { timeout: 5000 })
+    .catch(() => { })
+
   // Ensure a mode tab is active. After mock manifest loads, the mode state
   // may still reference the fallback's modes. Click the first tab to fix.
   const activeTab = page.locator('[role="tab"][data-state="active"]')
@@ -44,6 +51,9 @@ export async function goToStudio(page, slug = 'test') {
   await page.locator('[role="button"]').filter({ hasText: /^\d/ }).first()
     .waitFor({ timeout: 3000 })
     .catch(() => { })
+
+  // Give React time to apply preset values and settle after all waits
+  await page.waitForTimeout(500)
 }
 
 /**

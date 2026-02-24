@@ -15,13 +15,16 @@ async function goToWithParams(page, url) {
   await page.locator('header h1', { hasText: 'Test Project' })
     .waitFor({ timeout: 8000 }).catch(() => { })
 
-  // With MOCK_MANIFEST now supporting 'cup' mode (default from fallback),
-  // we don't need to switch modes. The 'width' slider should be visible
-  // immediately once mock loads.
+  // Wait for URL to settle (auto-redirect adds preset/mode segments)
+  await page.waitForURL(/\/project\/[^/]+\/[^/]+\/[^/]+/, { timeout: 5000 })
+    .catch(() => { })
 
   // Wait for sliders to render
   await page.locator('[role="slider"]').first()
     .waitFor({ timeout: 5000 }).catch(() => { })
+
+  // Allow React state to settle after redirect and param restoration
+  await page.waitForTimeout(500)
 }
 
 test.describe('Shareable URLs', () => {
@@ -107,9 +110,10 @@ test.describe('Shareable URLs', () => {
     expect(clipboardText).toContain('p=')
   })
 
-  test('legacy 2-segment hash URL format still works via redirect', async ({ page }) => {
-    await page.goto('/#/small/single')
-    await page.waitForSelector('header')
-    await expect(page.locator('header h1')).toBeVisible()
+  test('legacy 3-segment hash URL format still works via redirect', async ({ page }) => {
+    // Use 3-segment hash (slug/preset/mode) which correctly maps to path-based routing
+    await page.goto('/#/test/small/single')
+    await page.waitForSelector('header', { timeout: 15000 })
+    await expect(page.locator('header h1')).toBeVisible({ timeout: 10000 })
   })
 })

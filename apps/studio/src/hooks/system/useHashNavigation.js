@@ -118,7 +118,7 @@ export function useHashNavigation({ presets, modes, projectSlug, onHashChange })
     // Only replace if the path doesn't already have these set
     const expectedPath = buildHash(projectSlug, presetId, modeId)
     if (presetId && modeId && location.pathname !== expectedPath && !location.pathname.includes(expectedPath)) {
-      navigate(expectedPath, { replace: true })
+      navigate(expectedPath + location.search, { replace: true })
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

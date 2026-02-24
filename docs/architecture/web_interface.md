@@ -399,7 +399,7 @@ Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 | `PORT` | `5000` | Backend server port |
 | `HOST` | `0.0.0.0` | Backend bind address |
 | `VITE_API_BASE` | `http://localhost:5000` | Frontend → backend API base URL |
-| `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3000` | Comma-separated allowed CORS origins for backend |
+| `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3000,http://localhost:3001` | Comma-separated allowed CORS origins for backend |
 | `AI_PROVIDER` | `anthropic` | AI provider: `anthropic` or `openai` |
 | `AI_API_KEY` | (none) | API key for the configured AI provider |
 | `AI_MODEL` | (auto) | Model override (defaults: `claude-sonnet-4-20250514` / `gpt-4o`) |

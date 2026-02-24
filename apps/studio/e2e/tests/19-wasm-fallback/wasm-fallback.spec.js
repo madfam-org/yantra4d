@@ -47,8 +47,8 @@ test.describe('WASM Fallback Mode', () => {
         // The app should render its main UI — not a blank page or error screen.
         await expect(page.locator('body')).toBeVisible()
 
-        // The sidebar / controls panel should be present.
-        const sidebar = page.locator('[data-testid="sidebar"], aside, [role="complementary"]').first()
+        // The sidebar / controls panel should be present (sliders or mode tabs).
+        const sidebar = page.locator('[data-testid="sidebar"], aside, [role="complementary"], .space-y-2').first()
         await expect(sidebar).toBeVisible({ timeout: 10_000 })
     })
 

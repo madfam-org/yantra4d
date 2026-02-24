@@ -40,13 +40,13 @@ export function useKeyboardShortcuts({
       }
 
       const mod = e.metaKey || e.ctrlKey
-      if (mod && e.key === 'z' && !e.shiftKey) {
-        // ... existing logic ...
+      const key = e.key.toLowerCase()
+      if (mod && key === 'z' && !e.shiftKey) {
         e.preventDefault()
         e.stopPropagation()
         onUndo?.()
         return
-      } else if (mod && e.key === 'z' && e.shiftKey) {
+      } else if (mod && key === 'z' && e.shiftKey) {
         e.preventDefault()
         e.stopPropagation()
         onRedo?.()

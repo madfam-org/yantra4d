@@ -11,6 +11,8 @@ resources:
 - yantra4d-studio-service.yaml
 - yantra4d-landing-deployment.yaml
 - yantra4d-landing-service.yaml
+- yantra4d-admin-deployment.yaml
+- yantra4d-admin-service.yaml
 - yantra4d-redis-pvc.yaml
 - yantra4d-redis-deployment.yaml
 - yantra4d-redis-service.yaml
@@ -25,3 +27,6 @@ images:
 - digest: sha256:9cf986a332bd67744a6eb517481511737f8e14743b415a4b71746b6b290ce2a1
   name: ghcr.io/madfam-org/yantra4d/studio
   newName: ghcr.io/madfam-org/yantra4d/studio
+- name: ghcr.io/madfam-org/yantra4d/admin
+  newName: ghcr.io/madfam-org/yantra4d/admin
+  newTag: main

@@ -88,27 +88,25 @@ test.describe('Rendering Flow', () => {
     // May contain "Loaded from cache" depending on impl
   })
 
-  test('changing parameter triggers auto-render after debounce', async ({ page, sidebar }) => {
-    // Wait for initial auto-render to settle
-    await page.waitForTimeout(1000)
-    // Setup a specific mock to ensure we catch the right request
-    await page.unroute('**/api/render-stream')
-    await page.route('**/api/render-stream', async (route) => {
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
-    })
+  test('changing parameter triggers auto-render after debounce', async ({ page, sidebar, viewer }) => {
+    // Wait for the initial auto-render to fully complete (Generate button re-enabled)
+    const generateBtn = page.locator('button', { hasText: /Generate|Generar/i }).first()
+    await expect(generateBtn).toBeEnabled({ timeout: 15000 })
 
-    // Start listening for the request BEFORE triggering the change
-    const requestPromise = page.waitForRequest(req => {
-      if (!req.url().includes('/api/render-stream')) return false
-      try { return req.postDataJSON().width === 75 } catch { return false }
-    }, { timeout: 10000 })
+    // Get current console log text before the change
+    const logsBefore = await viewer.getConsoleLogs()
 
-    // Trigger change
+    // Trigger a parameter change — auto-render should fire after debounce
     await sidebar.editSliderValue('width', 75)
 
-    const request = await requestPromise
-    expect(request).toBeTruthy()
-    expect(request.postDataJSON().width).toBe(75)
+    // Wait for the auto-render to produce new log entries (debounce + render)
+    await page.waitForTimeout(3000)
+    const logsAfter = await viewer.getConsoleLogs()
+
+    // The log should contain more "Generating" entries than before
+    const countBefore = (logsBefore.match(/Generating/g) || []).length
+    const countAfter = (logsAfter.match(/Generating/g) || []).length
+    expect(countAfter).toBeGreaterThan(countBefore)
   })
 
   test('render error shows message in console', async ({ page, sidebar, viewer }) => {

@@ -253,10 +253,10 @@ describe('App', { timeout: 30000 }, () => {
   it('storefront mode renders StorefrontView', async () => {
     await renderApp(['/project/gridfinity?mode=storefront'])
     await waitFor(() => {
-      // Storefront wraps content in ErrorBoundary, the view should render
-      expect(document.querySelector('[data-testid="viewer-mock"]') ||
-        screen.queryByText(/Storefront|gridfinity/i)).toBeTruthy()
-    })
+      // Storefront renders a title with the project slug and an exit button
+      expect(document.querySelector('[data-testid="storefront-title"]') ||
+        document.querySelector('[data-testid="viewer-mock"]')).toBeTruthy()
+    }, { timeout: 5000 })
   })
 
   it('persists editor panel state in sessionStorage', async () => {

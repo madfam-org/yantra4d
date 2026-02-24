@@ -76,12 +76,18 @@ export function useProjectParams({ viewerRef }) {
   // Shareable URL
   const { copyShareUrl } = useShareableUrl({ params, mode, projectSlug, defaultParams })
 
-  // Hash navigation
+  // Hash navigation — only re-apply preset values when the preset actually
+  // changes.  During auto-redirect (e.g. /project/test → /project/test/small/cup),
+  // the preset stays the same as the one already applied during initialisation,
+  // so we skip the redundant (and destructive, for ?p= shared params) setParams.
   const handleHashChange = (parsed) => {
     if (parsed.mode) setModeState(parsed.mode.id)
     if (parsed.preset) {
+      const presetChanged = parsed.preset.id !== activePresetId
       setActivePresetId(parsed.preset.id)
-      setParams(prev => ({ ...prev, ...parsed.preset.values }))
+      if (presetChanged) {
+        setParams(prev => ({ ...prev, ...parsed.preset.values }))
+      }
     }
   }
 

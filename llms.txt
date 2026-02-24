@@ -1,7 +1,7 @@
 # Yantra4D
 
 > Manifest-driven parametric 3D print design platform — a Hyperobjects Commons.
-> Flask API + React/Vite studio + Astro landing page. 33 built-in projects
+> Flask API + React/Vite studio + React admin dashboard + Astro landing page. 33 built-in projects
 > (all individual GitHub submodules) with dual rendering (server-side CLI +
 > client-side WASM), tiered access control, 3D Carousel gallery,
 > AI-assisted design, and GitHub integration. Every project carries
@@ -11,7 +11,7 @@ Yantra4D is a multi-project platform for parametric OpenSCAD models with a web-b
 
 Every project in `projects/` is an **independent git submodule** pointing to its own public repository under the `madfam-org` GitHub organization. Clone with `git clone --recurse-submodules https://github.com/madfam-org/yantra4d` to get all project sources.
 
-The architecture has three layers: a Flask API backend that renders models via the OpenSCAD CLI, a React 19 + Vite + Three.js frontend studio with Shadcn UI components (features include wireframe mode, bounding box visualization, and dark mode), and an Astro marketing landing page with React islands. When the backend is unreachable, the studio falls back to client-side rendering via OpenSCAD compiled to WebAssembly.
+The architecture has four layers: a Flask API backend that renders models via the OpenSCAD CLI, a React 19 + Vite + Three.js frontend studio with Shadcn UI components (features include wireframe mode, bounding box visualization, and dark mode), a React + Vite admin dashboard for project management, and an Astro marketing landing page with React islands. When the backend is unreachable, the studio falls back to client-side rendering via OpenSCAD compiled to WebAssembly.
 
 The platform supports four user tiers (guest, basic, pro, madfam) that gate features like export formats (STL/3MF/OFF for OpenSCAD; STEP/GLB/GLTF/3MF for CadQuery at Pro+), GitHub import and sync, AI-assisted parameter configuration, AI-powered SCAD code editing, and project limits. All engines auto-convert STL to GLB for optimized web delivery. AI features use streaming SSE with support for Anthropic and OpenAI providers. GitHub integration enables repo import, file editing via a Monaco-based SCAD editor, and git operations (status, diff, commit, push, pull).
 

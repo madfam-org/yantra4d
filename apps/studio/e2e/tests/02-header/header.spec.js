@@ -116,27 +116,22 @@ test.describe('Studio Header', () => {
     // Wait for app to fully hydrate
     await expect(page.locator('[role="tab"]').first()).toBeVisible({ timeout: 8000 })
 
-    // Dispatch click via JS to avoid Playwright click intermittency after reload
-    const clickThemeButton = async () => {
-      await page.evaluate(() => {
-        const btn = document.querySelector('header button[title^="Theme:"]')
-          || document.querySelector('header button[title^="Tema:"]')
-        if (btn) btn.click()
-      })
-    }
+    // Use Playwright locator — waits for actionability (visible, stable, event handlers attached)
+    const themeBtn = page.locator('header button[title^="Theme:"], header button[title^="Tema:"]')
+    await expect(themeBtn).toBeVisible({ timeout: 3000 })
 
     const getTheme = () => page.evaluate(() => localStorage.getItem('vite-ui-theme'))
 
     // Cycle light → dark
-    await clickThemeButton()
+    await themeBtn.click()
     await expect(async () => expect(await getTheme()).toBe('dark')).toPass({ timeout: 3000 })
 
     // Cycle dark → system
-    await clickThemeButton()
+    await themeBtn.click()
     await expect(async () => expect(await getTheme()).toBe('system')).toPass({ timeout: 3000 })
 
     // Cycle system → light
-    await clickThemeButton()
+    await themeBtn.click()
     await expect(async () => expect(await getTheme()).toBe('light')).toPass({ timeout: 3000 })
   })
 

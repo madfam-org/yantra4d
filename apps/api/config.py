@@ -7,7 +7,7 @@ import sys
 # Module-level defaults (single source of truth for server address constants)
 # ---------------------------------------------------------------------------
 DEFAULT_API_PORT = 5000
-_DEFAULT_CORS_ORIGINS = "http://localhost:5173,http://localhost:3000"
+_DEFAULT_CORS_ORIGINS = "http://localhost:5173,http://localhost:3000,http://localhost:3001"
 
 @dataclass
 class AppConfig:

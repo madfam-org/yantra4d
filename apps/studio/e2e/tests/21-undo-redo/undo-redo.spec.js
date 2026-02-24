@@ -34,7 +34,7 @@ test.describe('Undo/Redo State Management', () => {
 
     test('undo restores previous parameter value', async ({ page, sidebar }) => {
         // Get initial value
-        const initialValue = await sidebar.getSliderValue('width')
+        const initialValue = await sidebar.sliderValue('width').textContent()
 
         // Change the value
         await sidebar.editSliderValue('width', 150)
@@ -47,7 +47,7 @@ test.describe('Undo/Redo State Management', () => {
             await page.waitForTimeout(300)
 
             // Value should be restored
-            const restoredValue = await sidebar.getSliderValue('width')
+            const restoredValue = await sidebar.sliderValue('width').textContent()
             expect(restoredValue).toBe(initialValue)
         }
     })
@@ -69,8 +69,8 @@ test.describe('Undo/Redo State Management', () => {
                 await redoBtn.click()
                 await page.waitForTimeout(300)
 
-                const value = await sidebar.getSliderValue('width')
-                expect(value).toBe(200)
+                const value = await sidebar.sliderValue('width').textContent()
+                expect(value).toBe('200')
             }
         }
     })
@@ -100,7 +100,7 @@ test.describe('Undo/Redo State Management', () => {
         await page.keyboard.press('Control+Shift+z')
         await page.waitForTimeout(300)
 
-        const value = await sidebar.getSliderValue('width')
-        expect(value).toBe(175)
+        const value = await sidebar.sliderValue('width').textContent()
+        expect(value).toBe('175')
     })
 })

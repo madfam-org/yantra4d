@@ -21,9 +21,12 @@ projects/
        │        ├── components/  Controls, Viewer, ProjectSelector, OnboardingWizard, ScadEditor, GitPanel, AiChatPanel, ForkDialog, BomPanel
        │        └── services/  renderService, verifyService, openscad-worker (WASM)
        │
-       └──► apps/landing/  (Astro + React islands — marketing site)
-                ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, InteractiveShowcase
-                └── public/  static assets
+       ├──► apps/landing/  (Astro + React islands — marketing site)
+       │        ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, InteractiveShowcase
+       │        └── public/  static assets
+       │
+       └──► apps/admin/   (React + Vite + Shadcn UI — admin dashboard)
+                └── src/  project management, flags, analytics
 
 libs/
   BOSL2/               (git submodule — BSD-2 — attachments, rounding, math)
@@ -35,7 +38,7 @@ packages/
   tokens/              (shared CSS custom properties — colors, spacing)
 ```
 
-**Domains**: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api)
+**Domains**: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api), `4d-admin.madfam.io` (admin)
 
 ## Critical File Map
 
@@ -291,7 +294,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - **Backend**: pytest + pytest-cov, coverage threshold 80%, tests in `apps/api/tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` → ESLint fix + Vitest on changed files
 - **CI**: `.github/workflows/ci.yml` — studio (lint+test+coverage), landing (build), backend (lint+test+coverage), manifest-sync
-- **Deploy**: Enclii PaaS — auto-deploy on push to main (`apps/api/enclii.yaml`, `apps/studio/enclii.yaml`, `apps/landing/enclii.yaml`)
+- **Deploy**: Enclii PaaS — auto-deploy on push to main (deploy.yml builds Docker images → GHCR → K8s via ArgoCD)
 - **Accessibility**: `eslint-plugin-jsx-a11y` enforces a11y rules; jest-axe audits in component tests
 
 ## Known Gotchas
@@ -329,9 +332,9 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 
 | Target | Method |
 |--------|--------|
-| Enclii PaaS | Auto-deploy on push to main — `yantra4d-landing` at 4d.madfam.io, `yantra4d-studio` at 4d-app.madfam.io, `yantra4d-backend` at 4d-api.madfam.io |
-| Docker | `docker compose up` (backend + studio + landing, local) |
-| Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) |
+| Enclii PaaS | Auto-deploy on push to main — `yantra4d-landing` at 4d.madfam.io, `yantra4d-studio` at 4d-app.madfam.io, `yantra4d-backend` at 4d-api.madfam.io, `yantra4d-admin` at 4d-admin.madfam.io |
+| Docker | `docker compose up` (backend + studio + landing + admin, local) |
+| Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) + Admin dev server (5174) |
 
 ## Further Docs
 

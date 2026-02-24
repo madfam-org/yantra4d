@@ -40,6 +40,12 @@ async function detectMode(manifest, mode, params) {
     return 'backend'
   }
 
+  // Production: SCAD files aren't bundled in the Vite build, so WASM mode
+  // would 404 on every .scad fetch. Use backend (native OpenSCAD, faster too).
+  if (API_BASE) {
+    return 'backend'
+  }
+
   // CIRCUIT BREAKER: Evaluate topological complexity
   // If the basic mesh estimate exceeds 15.0 workload seconds, WASM will freeze the UI thread.
   if (manifest && mode && params) {

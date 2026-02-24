@@ -260,6 +260,15 @@ describe('renderCache', () => {
       expect(storeData['glb-key'].parts[0].isGlb).toBe(true)
     })
 
+    it('marks GLB URLs with query string cache-buster as isGlb', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      }))
+      const { put } = await loadModule()
+      await put('glb-qs-key', [{ type: 'base', url: 'http://example.com/model.glb?t=1708611200000' }])
+      expect(storeData['glb-qs-key'].parts[0].isGlb).toBe(true)
+    })
+
     it('does not throw when storing blobs', async () => {
       const { put } = await loadModule()
       const blob = new Blob(['data'], { type: 'model/stl' })

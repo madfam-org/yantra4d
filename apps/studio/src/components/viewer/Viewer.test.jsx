@@ -807,6 +807,60 @@ describe('Viewer', () => {
   })
 
   // ────────────────────────────────────────
+  // GLB detection with query params (cache-buster fix)
+  // ────────────────────────────────────────
+
+  it('detects GLB format when URL has query string cache-buster', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        parts={[{ type: 'body', url: '/static/model.glb?t=1708611200000' }]}
+        colors={{ body: '#ff0000' }}
+      />
+    )
+    // useWorkerLoader should be called with isGLTF=true despite ?t= suffix
+    const call = mockUseWorkerLoader.mock.calls.find(c => c[0]?.includes('.glb'))
+    expect(call).toBeDefined()
+    expect(call[1]).toBe(true)
+  })
+
+  it('detects STL format when URL has query string cache-buster', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        parts={[{ type: 'body', url: '/static/model.stl?t=1708611200000' }]}
+        colors={{ body: '#ff0000' }}
+      />
+    )
+    const call = mockUseWorkerLoader.mock.calls.find(c => c[0]?.includes('.stl'))
+    expect(call).toBeDefined()
+    expect(call[1]).toBe(false)
+  })
+
+  it('uses isGlb prop from part to detect format for blob URLs', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    render(
+      <Viewer
+        {...defaultProps}
+        parts={[{ type: 'body', url: 'blob:http://localhost/abc123', isGlb: true }]}
+        colors={{ body: '#ff0000' }}
+      />
+    )
+    // blob URL has no extension, but isGlb=true should make isGLTF=true
+    const call = mockUseWorkerLoader.mock.calls.find(c => c[0]?.includes('blob:'))
+    expect(call).toBeDefined()
+    expect(call[1]).toBe(true)
+  })
+
+  // ────────────────────────────────────────
   // Viewer.displayName
   // ────────────────────────────────────────
 

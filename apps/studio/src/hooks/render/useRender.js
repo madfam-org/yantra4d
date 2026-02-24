@@ -44,7 +44,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
         if (cached) {
           const restoredParts = cached.map(p => ({
             type: p.type,
-            url: URL.createObjectURL(p.blob)
+            url: URL.createObjectURL(p.blob),
+            isGlb: p.blob.type === 'model/gltf-binary'
           }))
           setParts(restoredParts)
           partsCacheRef.current[cacheKey] = restoredParts

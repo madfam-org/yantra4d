@@ -105,7 +105,8 @@ export async function put(key, parts) {
         } else {
           return null
         }
-        return { type: p.type, arrayBuffer, isGlb: p.url?.endsWith('.glb') || false }
+        const urlPath = (p.url || '').split('?')[0].toLowerCase()
+        return { type: p.type, arrayBuffer, isGlb: urlPath.endsWith('.glb') }
       })
     )
 

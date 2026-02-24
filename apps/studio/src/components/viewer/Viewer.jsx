@@ -24,8 +24,9 @@ const ORBIT_MIN_DISTANCE_MM = 0.5
 const ORBIT_MAX_DISTANCE_MM = 5000  // far enough for large assemblies (mm)
 const SCENE_UP_VECTOR = [0, 0, 1]   // Z-up coordinate system
 
-const Model = ({ url, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
-    const isGLTF = url?.toLowerCase().endsWith('.gltf') || url?.toLowerCase().endsWith('.glb')
+const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark }) => {
+    const bareUrl = (url || '').split('?')[0].toLowerCase()
+    const isGLTF = isGlb || bareUrl.endsWith('.gltf') || bareUrl.endsWith('.glb')
 
     // Asynchronously loads geometries; .stl via WebWorker, .gltf natively.
     const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF)
@@ -466,6 +467,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                                 <Model
                                                     key={`head-${part.type}`}
                                                     url={part.url}
+                                                    isGlb={part.isGlb}
                                                     partType={`head-${part.type}`}
                                                     color="#ef4444" // red
                                                     wireframe={false}
@@ -480,6 +482,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                                 <Model
                                                     key={`diff-${part.type}`}
                                                     url={part.url}
+                                                    isGlb={part.isGlb}
                                                     partType={`diff-${part.type}`}
                                                     color="#22c55e" // green
                                                     wireframe={false}
@@ -501,6 +504,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                                         <Model
                                                             key={part.type}
                                                             url={part.url}
+                                                            isGlb={part.isGlb}
                                                             partType={part.type}
                                                             color={colors[part.type] || defaultColor}
                                                             wireframe={wireframe}
@@ -521,6 +525,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                                         <Model
                                                             key={part.type}
                                                             url={part.url}
+                                                            isGlb={part.isGlb}
                                                             partType={part.type}
                                                             color={colors[part.type] || defaultColor}
                                                             wireframe={wireframe}

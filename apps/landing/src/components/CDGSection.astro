@@ -8,7 +8,7 @@ interface Props {
 const { t } = Astro.props;
 const c = t?.cdg;
 
-import cdgRegistry from '../../../../commons/cdg.json';
+import cdgRegistry from '../../../../packages/schemas/cdg.json';
 
 const entries = cdgRegistry.cdg_registry.map(entry => {
   let key = entry.id;

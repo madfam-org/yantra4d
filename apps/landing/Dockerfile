@@ -3,7 +3,6 @@ WORKDIR /app/apps/landing
 COPY apps/landing/package*.json ./
 RUN npm ci
 COPY packages/ /app/packages/
-COPY commons/ /app/commons/
 COPY apps/landing/ ./
 ARG PUBLIC_STUDIO_URL
 ENV PUBLIC_STUDIO_URL=$PUBLIC_STUDIO_URL

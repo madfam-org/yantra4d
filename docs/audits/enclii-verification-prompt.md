@@ -189,14 +189,7 @@ curl -sS https://4d-app.madfam.io | grep -o 'VITE_JANUA_BASE_URL[^"]*"[^"]*"'
 
 ### 10. Cross-Service Connectivity
 
-#### 10a. Landing embeds Studio (iframe)
-```bash
-curl -sS https://4d.madfam.io | grep -o '4d-app\.madfam\.io'
-```
-
-**Expected**: At least one match (InteractiveShowcase iframe src or link href).
-
-#### 10b. Studio connects to API
+#### 10a. Studio connects to API
 ```bash
 curl -sS https://4d-app.madfam.io | grep -o '4d-api\.madfam\.io'
 ```

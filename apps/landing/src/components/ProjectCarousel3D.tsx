@@ -16,6 +16,7 @@ const MoveHorizontalIcon = ({ className }: { className?: string }) => (
         <line x1="2" y1="12" x2="22" y2="12"></line>
     </svg>
 );
+import { GLBErrorBoundary } from './GLBErrorBoundary';
 import { STUDIO_URL } from '../lib/env';
 import { CATEGORIES } from '../data/projects';
 import type { Translations } from '../lib/i18n';
@@ -53,18 +54,24 @@ function LoadedModel({ url }: { url: string }) {
     );
 }
 
+function WireframeFallback() {
+    return (
+        <mesh>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color="gray" wireframe />
+        </mesh>
+    );
+}
+
 function LiveModel({ project }: { project: any }) {
     const modelUrl = `/models/${project.slug}.glb`;
 
     return (
-        <Suspense fallback={
-            <mesh>
-                <boxGeometry args={[1, 1, 1]} />
-                <meshStandardMaterial color="gray" wireframe />
-            </mesh>
-        }>
-            <LoadedModel url={modelUrl} />
-        </Suspense>
+        <GLBErrorBoundary fallback={<WireframeFallback />}>
+            <Suspense fallback={<WireframeFallback />}>
+                <LoadedModel url={modelUrl} />
+            </Suspense>
+        </GLBErrorBoundary>
     );
 }
 
@@ -208,7 +215,7 @@ function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t
                         <div className="w-full border-t border-border/40 pt-4 flex flex-row items-center justify-between">
                             <p className="text-xs text-muted-foreground italic">Live 3D Rendering Active</p>
                             <a
-                                href={`${STUDIO_URL}#/${project.slug}`}
+                                href={`${STUDIO_URL}/project/${project.slug}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2 group"

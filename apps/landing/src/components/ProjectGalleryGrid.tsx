@@ -60,7 +60,7 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
         {filtered.map(project => (
           <a
             key={project.slug}
-            href={`${STUDIO_URL}#/${project.slug}`}
+            href={`${STUDIO_URL}/project/${project.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className={`group rounded-xl border overflow-hidden transition-shadow hover:shadow-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${project.isHyperobject

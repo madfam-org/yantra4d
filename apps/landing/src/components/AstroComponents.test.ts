@@ -329,23 +329,6 @@ describe('OpenSource.astro', () => {
   })
 })
 
-// ─── LiveDemo ───────────────────────────────────────────────────────────────
-describe('LiveDemo.astro', () => {
-  let html: string
-
-  beforeAll(() => {
-    html = loadTemplate('LiveDemo.astro')
-  })
-
-  it('has a section element', () => {
-    expect(html).toContain('<section')
-  })
-
-  it('has demo id for anchor navigation', () => {
-    expect(html).toContain('id="demo"')
-  })
-})
-
 // ─── ProjectGallery ─────────────────────────────────────────────────────────
 describe('ProjectGallery.astro', () => {
   let html: string

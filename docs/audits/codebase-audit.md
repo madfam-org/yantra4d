@@ -252,12 +252,10 @@ The platform currently ships **20 built-in parametric projects** across three we
 | `Hero.astro` | Astro | Main headline, CTA, feature highlights |
 | `HowItWorks.astro` | Astro | Step-by-step platform guide |
 | `BeforeAfter.astro` | Astro | Visual comparison slider |
-| `InteractiveShowcase.tsx` | React | Iframe embed of studio with project tabs |
 | `ProjectGalleryGrid.tsx` | React | Gallery grid with thumbnails and metadata |
 | `OpenSource.astro` | Astro | Open-source libraries section |
 | `ForCreators.astro` | Astro | Value prop for creators/makers |
 | `ForMakers.astro` | Astro | Value prop for engineers |
-| `LiveDemo.astro` | Astro | Live demo embed section |
 | `ProjectGallery.astro` | Astro | Project listing container |
 | `CallToAction.astro` | Astro | Bottom CTA with signup |
 | `Footer.astro` | Astro | Footer with links and copyright |

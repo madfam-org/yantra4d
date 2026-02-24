@@ -28,7 +28,7 @@ projects/
        │        └── services/  renderService, verifyService, openscad-worker (WASM), editorService, gitService, aiService
        │
        └──► apps/landing/  (Astro + React islands — marketing site)
-                ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, InteractiveShowcase
+                ├── src/components/  Header, Hero, FeaturesGrid, ProjectGallery, ProjectCarousel3D, ProjectGalleryGrid
                 └── public/  static assets
 
 libs/
@@ -100,7 +100,6 @@ packages/
 | `apps/studio/src/hooks/useAiChat.js` | AI chat state management hook | RARELY |
 | `apps/studio/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
 | `apps/landing/src/pages/index.astro` | Landing page (composes all sections) | RARELY |
-| `apps/landing/src/components/InteractiveShowcase.tsx` | React island — iframe embed of studio | RARELY |
 | `packages/tokens/colors.css` | Shared CSS custom properties (both apps import) | RARELY |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |

@@ -22,7 +22,7 @@ projects/
        │        └── services/  renderService, verifyService, openscad-worker (WASM)
        │
        ├──► apps/landing/  (Astro + React islands — marketing site)
-       │        ├── src/components/  Header, Hero, FeaturesGrid, LiveDemo, InteractiveShowcase
+       │        ├── src/components/  Header, Hero, FeaturesGrid, ProjectGallery, ProjectCarousel3D, ProjectGalleryGrid
        │        └── public/  static assets
        │
        └──► apps/admin/   (React + Vite + Shadcn UI — admin dashboard)
@@ -66,7 +66,6 @@ packages/
 | `apps/studio/src/hooks/editor/useUndoRedo.js` | Parameter undo/redo history stack | RARELY |
 | `apps/studio/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
 | `apps/landing/src/pages/index.astro` | Landing page (composes all sections) | RARELY |
-| `apps/landing/src/components/InteractiveShowcase.tsx` | React island — iframe embed of studio with project tabs | RARELY |
 | `packages/tokens/colors.css` | Shared CSS custom properties (both apps import) | RARELY |
 | `docs/strategy/competitive-landscape.md` | Competitive research & feature roadmap | YES |
 | `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
@@ -320,7 +319,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf/obj/vrml/amf). All STL renders auto-convert to GLB for web delivery. Format selector only visible when manifest declares `export_formats` |
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` — edit tokens there, not in individual app CSS |
-| Embed mode | `?embed=true` hides studio header/banners for iframe embedding; landing uses `InteractiveShowcase` to embed studio via iframe. Production nginx must allow `frame-ancestors` from `4d.madfam.io` |
+| Embed mode | `?embed=true` hides studio header/banners for iframe embedding. Production nginx must allow `frame-ancestors` for embedding domains |
 
 ## Do NOT Edit
 

@@ -884,6 +884,7 @@
           "industrial",
           "medical",
           "commercial",
+          "infrastructure",
           "hybrid"
         ],
         "description": "Primary deployment domain per the Hyperobject taxonomy."
@@ -920,6 +921,7 @@
                 "bolt_pattern",
                 "profile",
                 "spline",
+                "surface",
                 "custom"
               ],
               "description": "Category of the geometric interface."
@@ -1025,55 +1027,6 @@
           ]
         }
       ]
-    }
-  },
-  "if": {
-    "required": [
-      "project"
-    ],
-    "properties": {
-      "project": {
-        "required": [
-          "hyperobject"
-        ],
-        "properties": {
-          "hyperobject": {
-            "required": [
-              "is_hyperobject"
-            ],
-            "properties": {
-              "is_hyperobject": {
-                "const": true
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "estimate_constants"
-    ],
-    "properties": {
-      "modes": {
-        "items": {
-          "required": [
-            "scad_file",
-            "cq_file"
-          ],
-          "properties": {
-            "scad_file": {
-              "type": "string",
-              "pattern": "\\.scad$"
-            },
-            "cq_file": {
-              "type": "string",
-              "pattern": "\\.py$"
-            }
-          }
-        }
-      }
     }
   }
 }

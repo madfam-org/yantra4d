@@ -83,7 +83,8 @@ def verify_project(project_dir: Path, tolerance: float = 0.001) -> bool:
         return False
 
     is_hyperobject = manifest.get("project", {}).get("hyperobject", {}).get("is_hyperobject", False)
-    if not is_hyperobject:
+    has_top_level_ho = bool(manifest.get("hyperobject", {}).get("cdg_interfaces"))
+    if not is_hyperobject and not has_top_level_ho:
         return True
 
     logger.info(f"\n🔍 Analyzing Hyperobject parity: {project_dir.name}")
@@ -99,9 +100,12 @@ def verify_project(project_dir: Path, tolerance: float = 0.001) -> bool:
         scad_file = mode.get("scad_file")
         cq_file = mode.get("cq_file")
         
-        if not scad_file or not cq_file:
-            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: Missing scad_file or cq_file.")
+        if not scad_file:
+            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: Missing scad_file.")
             all_passed = False
+            continue
+        if not cq_file:
+            logger.warning(f"⚠️  {project_dir.name} [{mode.get('id')}]: No cq_file declared (skipping parity check).")
             continue
             
         scad_path = project_dir / scad_file
@@ -178,7 +182,9 @@ def main():
             
         with open(p/ "project.json", 'r') as f:
             manifest = json.load(f)
-            if not manifest.get("project", {}).get("hyperobject", {}).get("is_hyperobject", False):
+            is_ho = manifest.get("project", {}).get("hyperobject", {}).get("is_hyperobject", False)
+            has_top_ho = bool(manifest.get("hyperobject", {}).get("cdg_interfaces"))
+            if not is_ho and not has_top_ho:
                 skipped += 1
                 continue
                 

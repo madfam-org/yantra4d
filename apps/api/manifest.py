@@ -32,12 +32,18 @@ class ProjectManifest:
     def slug(self) -> str:
         return self._data["project"]["slug"]
 
+    KNOWN_ENGINES = {"openscad", "cadquery", "implicit"}
+
     @property
     def engine(self) -> str:
         hyperobject = self.project.get("hyperobject", {})
         if "implicit_field" in hyperobject:
             return "implicit"
-        return self.project.get("engine", "openscad")
+        engine = self.project.get("engine", "openscad")
+        if engine not in self.KNOWN_ENGINES:
+            logger.warning(f"Unknown engine '{engine}' in {self.slug}, falling back to openscad")
+            return "openscad"
+        return engine
 
     @property
     def modes(self) -> list:

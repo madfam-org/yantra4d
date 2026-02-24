@@ -133,7 +133,7 @@ Or use the web UI: upload `.scad` files → review analysis → edit manifest �
 
 ### Classify a project as a Hyperobject
 1. Add `hyperobject` block to `projects/{slug}/project.json` with `domain`, `cdg_interfaces[]`, `material_awareness`, `societal_benefit`, `commons_license`
-2. Each `cdg_interfaces` entry declares: `id`, `label`, `geometry_type` (grid/rail/thread/socket/pocket/snap/bolt_pattern/profile/spline/custom), `standard`, and `parameters[]` (referencing manifest param IDs)
+2. Each `cdg_interfaces` entry declares: `id`, `label`, `geometry_type` (grid/rail/thread/socket/pocket/snap/bolt_pattern/profile/spline/surface/custom), `standard`, and `parameters[]` (referencing manifest param IDs)
 3. Add `hyperobject` and `commons` to `project.tags`
 4. Update `projects/{slug}/docs/README.md` with a Hyperobject Profile section
 5. See `projects/microscope-slide-holder/project.json` for the reference implementation

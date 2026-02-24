@@ -74,6 +74,26 @@ class TestProjectManifest:
         m = ProjectManifest(raw, d)
         assert m.as_json() == raw
 
+    def test_engine_default_openscad(self, tmp_path):
+        d = _write_manifest(tmp_path)
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.engine == "openscad"
+
+    def test_engine_cadquery(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={"project": {"thumbnail": "thumb.png", "tags": ["test"], "difficulty": "beginner", "name": "CQ", "slug": "cq", "version": "1.0.0", "description": "CQ test", "engine": "cadquery"}})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.engine == "cadquery"
+
+    def test_engine_implicit_from_field(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={"project": {"thumbnail": "thumb.png", "tags": ["test"], "difficulty": "beginner", "name": "Imp", "slug": "imp", "version": "1.0.0", "description": "Implicit test", "hyperobject": {"is_hyperobject": True, "implicit_field": {"type": "tpms"}}}})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.engine == "implicit"
+
+    def test_engine_unknown_falls_back(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={"project": {"thumbnail": "thumb.png", "tags": ["test"], "difficulty": "beginner", "name": "Bad", "slug": "bad", "version": "1.0.0", "description": "Bad engine", "engine": "blender"}})
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.engine == "openscad"
+
     def test_bom_hardware_structure(self, tmp_path):
         bom = {
             "hardware": [

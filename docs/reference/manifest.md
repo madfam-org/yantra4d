@@ -188,12 +188,12 @@ Projects can optionally declare `hyperobject` metadata to be classified as **Bou
 ```jsonc
 {
   "hyperobject": {
-    "domain": "medical",               // household | industrial | medical | commercial | hybrid
+    "domain": "medical",               // household | industrial | medical | commercial | infrastructure | hybrid
     "cdg_interfaces": [                // Common Denominator Geometry interfaces
       {
         "id": "iso_8037_standard",
         "label": { "en": "ISO 8037 Microscope Slide", "es": "Estándar ISO 8037" },
-        "geometry_type": "pocket",     // grid | rail | thread | socket | pocket | snap | bolt_pattern | profile | spline | custom
+        "geometry_type": "pocket",     // grid | rail | thread | socket | pocket | snap | bolt_pattern | profile | spline | surface | custom
         "standard": "ISO 8037-1:2003", // ISO/internal standard
         "parameters": ["slide_standard", "custom_slide_length"]  // References to manifest param IDs
       }

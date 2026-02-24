@@ -132,6 +132,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -139,9 +141,22 @@ jobs:
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
 
+  metadata-consistency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run metadata consistency audit
+        run: python3 scripts/qa/compliance_audit.py --strict
+
   ci-success:
     runs-on: ubuntu-latest
-    needs: [studio, landing, backend, e2e, test-geometric-parity, manifest-validation]
+    needs: [studio, landing, backend, e2e, test-geometric-parity, manifest-validation, metadata-consistency]
     steps:
       - name: All checks passed
         run: echo "All CI checks passed successfully!"

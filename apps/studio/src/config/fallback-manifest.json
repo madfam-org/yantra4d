@@ -5,13 +5,15 @@
     "version": "1.0.0",
     "description": {
       "en": "Modular storage system with bins, baseplates, and lids in the Gridfinity grid standard\n\nOfficial Visualizer and Configurator: Yantra4D",
-      "es": "Sistema de almacenamiento modular con contenedores, placas base y tapas en el est\u00e1ndar Gridfinity\n\nVisualizador y configurador oficial: Yantra4D"
+      "es": "Sistema de almacenamiento modular con contenedores, placas base y tapas en el estándar Gridfinity\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/gridfinity.webp",
     "tags": [
       "storage",
       "modular",
-      "snap-fit"
+      "snap-fit",
+      "hyperobject",
+      "commons"
     ],
     "difficulty": "advanced",
     "hyperobject": {
@@ -108,8 +110,8 @@
     {
       "id": "small_bin",
       "label": {
-        "es": "Contenedor Peque\u00f1o (2\u00d71\u00d73)",
-        "en": "Small Parts Bin (2\u00d71\u00d73)"
+        "es": "Contenedor Pequeño (2×1×3)",
+        "en": "Small Parts Bin (2×1×3)"
       },
       "values": {
         "width_units": 2,
@@ -122,8 +124,8 @@
     {
       "id": "battery_holder",
       "label": {
-        "es": "Porta Bater\u00edas (3\u00d72\u00d73)",
-        "en": "Battery Holder (3\u00d72\u00d73)"
+        "es": "Porta Baterías (3×2×3)",
+        "en": "Battery Holder (3×2×3)"
       },
       "values": {
         "width_units": 3,
@@ -137,8 +139,8 @@
     {
       "id": "tool_drawer",
       "label": {
-        "es": "Caj\u00f3n de Herramientas (4\u00d72\u00d72)",
-        "en": "Tool Drawer (4\u00d72\u00d72)"
+        "es": "Cajón de Herramientas (4×2×2)",
+        "en": "Tool Drawer (4×2×2)"
       },
       "values": {
         "width_units": 4,
@@ -151,8 +153,8 @@
     {
       "id": "baseplate_std",
       "label": {
-        "es": "Placa Base Est\u00e1ndar (2\u00d72)",
-        "en": "Standard Baseplate (2\u00d72)"
+        "es": "Placa Base Estándar (2×2)",
+        "en": "Standard Baseplate (2×2)"
       },
       "values": {
         "width_units": 2,
@@ -163,8 +165,8 @@
     {
       "id": "lid_std",
       "label": {
-        "es": "Tapa Est\u00e1ndar (2\u00d71)",
-        "en": "Standard Lid (2\u00d71)"
+        "es": "Tapa Estándar (2×1)",
+        "en": "Standard Lid (2×1)"
       },
       "values": {
         "width_units": 2,
@@ -175,8 +177,8 @@
     {
       "id": "screw_organizer",
       "label": {
-        "es": "Organizador de Tornillos (3\u00d72\u00d74)",
-        "en": "Screw Organizer (3\u00d72\u00d74)"
+        "es": "Organizador de Tornillos (3×2×4)",
+        "en": "Screw Organizer (3×2×4)"
       },
       "values": {
         "width_units": 3,
@@ -191,8 +193,8 @@
     {
       "id": "pen_cup",
       "label": {
-        "es": "Porta Plumas (1\u00d71\u00d76)",
-        "en": "Pen Cup (1\u00d71\u00d76)"
+        "es": "Porta Plumas (1×1×6)",
+        "en": "Pen Cup (1×1×6)"
       },
       "values": {
         "width_units": 1,
@@ -216,7 +218,7 @@
         "en": "Width (units)"
       },
       "tooltip": {
-        "es": "Unidades de rejilla en X (m\u00faltiplos de 42mm)",
+        "es": "Unidades de rejilla en X (múltiplos de 42mm)",
         "en": "Grid units in X (multiples of 42mm)"
       },
       "visible_in_modes": [
@@ -238,7 +240,7 @@
         "en": "Depth (units)"
       },
       "tooltip": {
-        "es": "Unidades de rejilla en Y (m\u00faltiplos de 42mm)",
+        "es": "Unidades de rejilla en Y (múltiplos de 42mm)",
         "en": "Grid units in Y (multiples of 42mm)"
       },
       "visible_in_modes": [
@@ -260,7 +262,7 @@
         "en": "Height (units)"
       },
       "tooltip": {
-        "es": "Unidades de altura (m\u00faltiplos de 7mm)",
+        "es": "Unidades de altura (múltiplos de 7mm)",
         "en": "Height units (multiples of 7mm)"
       },
       "visible_in_modes": [
@@ -280,7 +282,7 @@
         "en": "Wall Thickness (mm)"
       },
       "tooltip": {
-        "es": "0 = autom\u00e1tico seg\u00fan altura",
+        "es": "0 = automático según altura",
         "en": "0 = auto based on height"
       },
       "visible_in_modes": [
@@ -301,7 +303,7 @@
         "en": "Floor Thickness (mm)"
       },
       "tooltip": {
-        "es": "Grosor m\u00ednimo del piso sobre los imanes",
+        "es": "Grosor mínimo del piso sobre los imanes",
         "en": "Minimum floor thickness above magnets"
       },
       "visible_in_modes": [
@@ -322,7 +324,7 @@
         "en": "Vertical Chambers"
       },
       "tooltip": {
-        "es": "N\u00famero de divisiones a lo largo del eje Y",
+        "es": "Número de divisiones a lo largo del eje Y",
         "en": "Number of compartments along Y axis"
       },
       "visible_in_modes": [
@@ -342,7 +344,7 @@
         "en": "Horizontal Chambers"
       },
       "tooltip": {
-        "es": "N\u00famero de divisiones a lo largo del eje X",
+        "es": "Número de divisiones a lo largo del eje X",
         "en": "Number of compartments along X axis"
       },
       "visible_in_modes": [
@@ -362,7 +364,7 @@
         "en": "Lip Style"
       },
       "tooltip": {
-        "es": "0=normal, 1=reducido, 2=m\u00ednimo, 3=sin labio",
+        "es": "0=normal, 1=reducido, 2=mínimo, 3=sin labio",
         "en": "0=normal, 1=reduced, 2=minimum, 3=none"
       },
       "visible_in_modes": [
@@ -383,7 +385,7 @@
         "en": "Headroom (mm)"
       },
       "tooltip": {
-        "es": "Reducci\u00f3n del borde superior para mejor apilamiento",
+        "es": "Reducción del borde superior para mejor apilamiento",
         "en": "Top undersizing for better stacking"
       },
       "visible_in_modes": [
@@ -404,8 +406,8 @@
         "en": "Efficient Floor"
       },
       "tooltip": {
-        "es": "0=desactivado, 1=activado, 2=redondeado, 3=suave \u2014 ahorra 30-40% material",
-        "en": "0=off, 1=on, 2=rounded, 3=smooth \u2014 saves 30-40% material"
+        "es": "0=desactivado, 1=activado, 2=redondeado, 3=suave — ahorra 30-40% material",
+        "en": "0=off, 1=on, 2=rounded, 3=smooth — saves 30-40% material"
       },
       "visible_in_modes": [
         "cup"
@@ -422,7 +424,7 @@
         "en": "Finger Slide"
       },
       "tooltip": {
-        "es": "Agrega rampa frontal para acceso f\u00e1cil",
+        "es": "Agrega rampa frontal para acceso fácil",
         "en": "Add front ramp for easy access"
       },
       "visible_in_modes": [
@@ -469,11 +471,11 @@
       "type": "checkbox",
       "default": false,
       "label": {
-        "es": "Patr\u00f3n de Pared",
+        "es": "Patrón de Pared",
         "en": "Wall Pattern"
       },
       "tooltip": {
-        "es": "Habilitar patr\u00f3n decorativo en las paredes",
+        "es": "Habilitar patrón decorativo en las paredes",
         "en": "Enable decorative wall pattern"
       },
       "visible_in_modes": [
@@ -489,7 +491,7 @@
       "max": 3,
       "step": 1,
       "label": {
-        "es": "Estilo de Patr\u00f3n",
+        "es": "Estilo de Patrón",
         "en": "Pattern Style"
       },
       "tooltip": {
@@ -511,7 +513,7 @@
       "max": 2,
       "step": 1,
       "label": {
-        "es": "Esquina C\u00f3nica",
+        "es": "Esquina Cónica",
         "en": "Tapered Corner"
       },
       "tooltip": {
@@ -532,11 +534,11 @@
       "max": 20,
       "step": 1,
       "label": {
-        "es": "Tama\u00f1o de Esquina C\u00f3nica (mm)",
+        "es": "Tamaño de Esquina Cónica (mm)",
         "en": "Tapered Corner Size (mm)"
       },
       "tooltip": {
-        "es": "Radio/tama\u00f1o del chafl\u00e1n de esquina",
+        "es": "Radio/tamaño del chaflán de esquina",
         "en": "Corner taper radius/size"
       },
       "visible_in_modes": [
@@ -555,8 +557,8 @@
         "en": "Magnets (Bin)"
       },
       "tooltip": {
-        "es": "Agregar cavidades para imanes 6\u00d72mm en las esquinas",
-        "en": "Add 6\u00d72mm magnet cavities in corners"
+        "es": "Agregar cavidades para imanes 6×2mm en las esquinas",
+        "en": "Add 6×2mm magnet cavities in corners"
       },
       "visible_in_modes": [
         "cup"
@@ -572,8 +574,8 @@
         "en": "Screws (Bin)"
       },
       "tooltip": {
-        "es": "Agregar orificios para tornillos M3\u00d76 en las esquinas",
-        "en": "Add M3\u00d76 screw holes in corners"
+        "es": "Agregar orificios para tornillos M3×6 en las esquinas",
+        "en": "Add M3×6 screw holes in corners"
       },
       "visible_in_modes": [
         "cup"
@@ -742,7 +744,7 @@
         "en": "Quality ($fn)"
       },
       "tooltip": {
-        "es": "0 = autom\u00e1tico; mayor = m\u00e1s detalle pero m\u00e1s lento",
+        "es": "0 = automático; mayor = más detalle pero más lento",
         "en": "0 = auto; higher = more detail but slower"
       },
       "visible_in_modes": [
@@ -757,7 +759,7 @@
     {
       "rule": "width_units * depth_units <= 24",
       "message": {
-        "es": "M\u00e1ximo 24 celdas (riesgo de timeout)",
+        "es": "Máximo 24 celdas (riesgo de timeout)",
         "en": "Max 24 grid cells (render timeout risk)"
       },
       "severity": "warning",
@@ -769,7 +771,7 @@
     {
       "rule": "vertical_chambers * horizontal_chambers <= 12",
       "message": {
-        "es": "M\u00e1ximo 12 compartimentos",
+        "es": "Máximo 12 compartimentos",
         "en": "Max 12 compartments"
       },
       "severity": "warning",
@@ -784,8 +786,8 @@
       {
         "id": "magnets_6x2",
         "label": {
-          "es": "Imanes N52 6\u00d72mm",
-          "en": "N52 6\u00d72mm Magnets"
+          "es": "Imanes N52 6×2mm",
+          "en": "N52 6×2mm Magnets"
         },
         "quantity_formula": "(enable_magnets ? 4 : 0) + (bp_enable_magnets ? 4 * width_units * depth_units : 0) + (lid_include_magnets ? 4 * width_units * depth_units : 0)",
         "unit": "pcs"
@@ -793,8 +795,8 @@
       {
         "id": "screws_m3x6",
         "label": {
-          "es": "Tornillos M3\u00d76",
-          "en": "M3\u00d76 Screws"
+          "es": "Tornillos M3×6",
+          "en": "M3×6 Screws"
         },
         "quantity_formula": "(enable_screws ? 4 : 0) + (bp_enable_screws ? 4 : 0)",
         "unit": "pcs"
@@ -809,7 +811,7 @@
     {
       "id": "iso",
       "label": {
-        "es": "Isom\u00e9trico",
+        "es": "Isométrico",
         "en": "Isometric"
       },
       "position": [
@@ -873,7 +875,7 @@
         {
           "id": "basic",
           "label": {
-            "es": "B\u00e1sico",
+            "es": "Básico",
             "en": "Basic"
           }
         },
@@ -889,14 +891,14 @@
     {
       "id": "cup_features",
       "label": {
-        "es": "Caracter\u00edsticas del Contenedor",
+        "es": "Características del Contenedor",
         "en": "Bin Features"
       },
       "levels": [
         {
           "id": "basic",
           "label": {
-            "es": "B\u00e1sico",
+            "es": "Básico",
             "en": "Basic"
           }
         },
@@ -926,7 +928,7 @@
         {
           "id": "basic",
           "label": {
-            "es": "B\u00e1sico",
+            "es": "Básico",
             "en": "Basic"
           }
         },
@@ -949,7 +951,7 @@
         {
           "id": "basic",
           "label": {
-            "es": "B\u00e1sico",
+            "es": "Básico",
             "en": "Basic"
           }
         },
@@ -975,10 +977,10 @@
   },
   "grid_presets": {
     "rendering": {
-      "emoji": "\ud83e\udebd",
+      "emoji": "🪽",
       "label": {
         "en": "Quick Preview",
-        "es": "Vista R\u00e1pida"
+        "es": "Vista Rápida"
       },
       "values": {
         "width_units": 2,
@@ -986,7 +988,7 @@
       }
     },
     "manufacturing": {
-      "emoji": "\u2b50",
+      "emoji": "⭐",
       "label": {
         "en": "Large Grid",
         "es": "Rejilla Grande"
@@ -1033,7 +1035,7 @@
         "en": "Print the bins"
       },
       "notes": {
-        "es": "Boca arriba, sin soportes necesarios para dise\u00f1o est\u00e1ndar",
+        "es": "Boca arriba, sin soportes necesarios para diseño estándar",
         "en": "Opening up, no supports needed for standard design"
       },
       "visible_parts": [
@@ -1061,7 +1063,7 @@
         "en": "Place bins on baseplate"
       },
       "notes": {
-        "es": "Los contenedores encajan a presi\u00f3n en la rejilla. Los imanes son opcionales para mayor sujeci\u00f3n.",
+        "es": "Los contenedores encajan a presión en la rejilla. Los imanes son opcionales para mayor sujeción.",
         "en": "Bins snap into the grid. Magnets are optional for extra hold."
       },
       "visible_parts": [
@@ -1123,11 +1125,11 @@
       {
         "id": "magnet_socket_6x2",
         "label": {
-          "en": "6\u00d72mm Magnet Socket",
-          "es": "Alojamiento para Im\u00e1n 6\u00d72mm"
+          "en": "6×2mm Magnet Socket",
+          "es": "Alojamiento para Imán 6×2mm"
         },
         "geometry_type": "socket",
-        "standard": "6\u00d72mm N52 neodymium",
+        "standard": "6×2mm N52 neodymium",
         "parameters": [
           "enable_magnets"
         ]
@@ -1151,8 +1153,8 @@
       "tolerance_by_material": false
     },
     "societal_benefit": {
-      "en": "Universal modular storage system for workshops, offices, and homes \u2014 reduces single-use organizers",
-      "es": "Sistema de almacenamiento modular universal para talleres, oficinas y hogares \u2014 reduce organizadores de un solo uso"
+      "en": "Universal modular storage system for workshops, offices, and homes — reduces single-use organizers",
+      "es": "Sistema de almacenamiento modular universal para talleres, oficinas y hogares — reduce organizadores de un solo uso"
     },
     "commons_license": "CERN-OHL-W-2.0"
   },

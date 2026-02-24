@@ -31,6 +31,7 @@ from services.core.implicit_engine import (
     stream_render as stream_implicit_render
 )
 from services.engine.render_cache import render_cache
+from services.engine.format_converter import stl_to_glb
 from utils.route_helpers import cleanup_old_stl_files, error_response, require_json_body
 from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
 import rate_limits
@@ -236,12 +237,23 @@ def render_stl():
     static_stl_map = payload.get('static_stl_map', {})
     project_slug = payload['project_slug']
 
+    # Engine-aware format validation (before per-part loop)
+    manifest = get_manifest(project_slug)
+    engine = manifest.engine
+
+    if engine == "cadquery":
+        if not check_feature(tier, "cadquery_engine"):
+            return error_response("CadQuery engine is not available for your tier.", 403)
+        if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
+            return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
+    elif engine == "openscad":
+        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS:
+            return error_response(f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
+
     generated_parts = []
     combined_log = ""
     cache_hits = 0
     cache_total = 0
-
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
 
     try:
         for part in parts_to_render:
@@ -277,14 +289,8 @@ def render_stl():
                 })
                 continue
 
-            manifest = get_manifest(project_slug)
-            engine = manifest.engine
-
-            if engine == "cadquery":
-                if not check_feature(tier, "cadquery_engine"):
-                    return error_response("CadQuery engine is not available for your tier.", 403)
-                if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
-                    return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
+            # Cache miss — now safe to clean up this part's old file before re-rendering
+            cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
 
             # Inject continuous telemetry temporal state into static parameters
             # using a conventional topic structure based on the project slug
@@ -306,6 +312,15 @@ def render_stl():
                 return error_response(stderr)
 
             combined_log += f"[{part}] {stderr}\n"
+
+            # Post-render: convert STL to GLB for smaller web delivery (all engines)
+            if export_format == "stl":
+                glb_filename = f"{stl_prefix}{part}.glb"
+                glb_path = os.path.join(STATIC_FOLDER, glb_filename)
+                if stl_to_glb(output_path, glb_path):
+                    output_filename = glb_filename
+                    output_path = glb_path
+
             try:
                 size_bytes = os.path.getsize(output_path)
             except OSError:
@@ -362,10 +377,20 @@ def render_stl_stream():
     static_stl_map = payload.get('static_stl_map', {})
     project_slug = payload['project_slug']
 
-    num_parts = len(parts_to_render)
-    num_parts = len(parts_to_render)
+    # Engine-aware format validation (before streaming)
+    manifest = get_manifest(project_slug)
+    engine = manifest.engine
 
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
+    if engine == "cadquery":
+        if not check_feature(tier, "cadquery_engine"):
+            return error_response("CadQuery engine is not available for your tier.", 403)
+        if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
+            return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
+    elif engine == "openscad":
+        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS:
+            return error_response(f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
+
+    num_parts = len(parts_to_render)
 
     def generate():
         generated_parts = []
@@ -392,11 +417,23 @@ def render_stl_stream():
             output_filename = f"{stl_prefix}{part}.{export_format}"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
+            # Check render cache before starting engine
+            cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
+            if cached:
+                generated_parts.append({
+                    "type": part,
+                    "url": f"/static/{output_filename}",
+                    "size_bytes": cached["size_bytes"]
+                })
+                progress = ((i + 1) / num_parts) * 100
+                yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts, 'cached': True})}\n\n"
+                continue
+
+            # Cache miss — now safe to clean up this part's old file
+            cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
+
             part_base = (i / num_parts) * PROGRESS_TOTAL
             part_weight = PROGRESS_TOTAL / num_parts
-
-            manifest = get_manifest(project_slug)
-            engine = manifest.engine
 
             project_topic = f"yantra4d/telemetry/projects/{project_slug}"
             computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
@@ -420,13 +457,25 @@ def render_stl_stream():
                     logger.warning(f"Malformed SSE event data: {event_data!r}")
                     continue
                 if event.get('event') == 'part_done':
+                    # Post-render: convert STL to GLB for smaller web delivery (all engines)
+                    serve_filename = output_filename
+                    serve_path = output_path
+                    if export_format == "stl":
+                        glb_filename = f"{stl_prefix}{part}.glb"
+                        glb_path = os.path.join(STATIC_FOLDER, glb_filename)
+                        if stl_to_glb(output_path, glb_path):
+                            serve_filename = glb_filename
+                            serve_path = glb_path
+
                     try:
-                        size_bytes = os.path.getsize(output_path)
+                        size_bytes = os.path.getsize(serve_path)
                     except OSError:
                         size_bytes = None
+                    # Populate cache on successful render
+                    render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, serve_path, size_bytes)
                     generated_parts.append({
                         "type": part,
-                        "url": f"/static/{output_filename}",
+                        "url": f"/static/{serve_filename}",
                         "size_bytes": size_bytes
                     })
 

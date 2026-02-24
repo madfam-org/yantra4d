@@ -1,4 +1,7 @@
 """Unit tests for openscad service pure functions."""
+import json
+import subprocess
+
 import pytest
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
@@ -243,3 +246,91 @@ class TestStreamRenderTimeout:
             mock_timer.start.assert_called_once()
             # Timer should be cancelled in the finally block
             mock_timer.cancel.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# run_render success / timeout / error
+# ---------------------------------------------------------------------------
+class TestRunRender:
+    """Tests for synchronous run_render execution paths."""
+
+    @patch("services.engine.openscad.subprocess.run")
+    def test_run_render_success(self, mock_run):
+        from services.engine.openscad import run_render
+        mock_run.return_value = MagicMock(stderr="Rendering done")
+        success, stderr = run_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"])
+        assert success is True
+        assert stderr == "Rendering done"
+
+    @patch("services.engine.openscad.subprocess.run")
+    def test_run_render_timeout(self, mock_run):
+        from services.engine.openscad import run_render
+        mock_run.side_effect = subprocess.TimeoutExpired(["openscad"], 300)
+        success, stderr = run_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"])
+        assert success is False
+        assert "timed out" in stderr
+
+    @patch("services.engine.openscad.subprocess.run")
+    def test_run_render_error(self, mock_run):
+        from services.engine.openscad import run_render
+        mock_run.side_effect = subprocess.CalledProcessError(
+            1, ["openscad"], output="", stderr="ERROR: Compilation failed"
+        )
+        success, stderr = run_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"])
+        assert success is False
+        assert "Compilation failed" in stderr
+
+
+# ---------------------------------------------------------------------------
+# stream_render success / failure paths
+# ---------------------------------------------------------------------------
+class TestStreamRenderPaths:
+    """Tests for stream_render SSE event generation."""
+
+    @patch("services.engine.openscad.subprocess.Popen")
+    @patch("services.engine.openscad.threading.Timer")
+    def test_stream_render_success_emits_events(self, mock_timer_cls, mock_popen):
+        from services.engine.openscad import stream_render
+
+        mock_proc = MagicMock()
+        mock_stderr = MagicMock()
+        mock_stderr.readline.side_effect = ['Compiling design\n', 'Rendering polygon mesh\n', '']
+        mock_proc.stderr = mock_stderr
+        mock_proc.stdout = MagicMock()
+        mock_proc.returncode = 0
+        mock_proc.wait.return_value = 0
+        mock_proc.poll.return_value = 0
+        mock_popen.return_value = mock_proc
+
+        events = list(stream_render(
+            ["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"],
+            "main", 0.0, 100.0, 0, 1
+        ))
+
+        event_types = [json.loads(e)["event"] for e in events]
+        assert "part_start" in event_types
+        assert "output" in event_types
+        assert "part_done" in event_types
+
+    @patch("services.engine.openscad.subprocess.Popen")
+    @patch("services.engine.openscad.threading.Timer")
+    def test_stream_render_failure_emits_error(self, mock_timer_cls, mock_popen):
+        from services.engine.openscad import stream_render
+
+        mock_proc = MagicMock()
+        mock_stderr = MagicMock()
+        mock_stderr.readline.side_effect = ['']
+        mock_proc.stderr = mock_stderr
+        mock_proc.stdout = MagicMock()
+        mock_proc.returncode = 1
+        mock_proc.wait.return_value = 1
+        mock_proc.poll.return_value = 1
+        mock_popen.return_value = mock_proc
+
+        events = list(stream_render(
+            ["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"],
+            "main", 0.0, 100.0, 0, 1
+        ))
+
+        event_types = [json.loads(e)["event"] for e in events]
+        assert "error" in event_types

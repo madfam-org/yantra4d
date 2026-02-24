@@ -96,6 +96,38 @@ class TestRenderExportFormat:
         assert "stl" in ALLOWED_EXPORT_FORMATS
         assert "3mf" in ALLOWED_EXPORT_FORMATS
         assert "off" in ALLOWED_EXPORT_FORMATS
+        assert "step" in ALLOWED_EXPORT_FORMATS
+        assert "glb" in ALLOWED_EXPORT_FORMATS
+        assert "gltf" in ALLOWED_EXPORT_FORMATS
+
+class TestEngineFormatValidation:
+    def test_openscad_rejects_step_format(self, client, monkeypatch):
+        """OpenSCAD engine should reject unsupported formats like step."""
+        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+            "parts": ["m"], "export_format": "step", "params": {}, "scad_path": "mock",
+            "mode_map": {"m": 0}, "stl_prefix": "pre_", "project_slug": "os", "scad_filename": "mock.scad"
+        })
+        class MockManifest:
+            def __init__(self): self.engine = "openscad"
+        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
+        # Pro user bypasses premium export check but still hits engine format validation
+        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+
+        res = client.post("/api/render", json={"project": "os"})
+        assert res.status_code == 400
+        assert "not supported by OpenSCAD" in res.get_json()["error"]
+
+    def test_openscad_accepts_stl_format(self, client, monkeypatch):
+        """OpenSCAD engine should accept STL format."""
+        from config import Config
+        assert "stl" in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS
+
+    def test_cadquery_accepts_step_format(self, client, monkeypatch):
+        """CadQuery engine should accept STEP format."""
+        from config import Config
+        assert "step" in Config.CADQUERY_ALLOWED_EXPORT_FORMATS
+
 
 class TestTierEnforcementRender:
     def test_guest_blocked_from_cadquery(self, client, monkeypatch):

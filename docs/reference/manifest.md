@@ -232,7 +232,7 @@ The `ProjectManifest` class provides:
 | `calculate_estimate_units(mode_id, params)` | `int` | Unit count for time estimation |
 | `as_json()` | `dict` | Raw data for API serialization |
 
-The render route also accepts an optional `export_format` field (`"stl"`, `"3mf"`, `"off"`) in render payloads. OpenSCAD determines the output format from the file extension.
+The render route also accepts an optional `export_format` field in render payloads. Accepted values depend on the project's engine: OpenSCAD supports `"stl"`, `"3mf"`, `"off"`; CadQuery supports `"stl"`, `"step"`, `"glb"`, `"gltf"`, `"3mf"`, and others. Requesting an unsupported format for the engine returns a 400 error. When `export_format` is `"stl"`, the backend automatically converts the result to GLB for optimized web delivery (all engines).
 
 Module-level functions:
 - `discover_projects()` — Scan `PROJECTS_DIR` for subdirectories with `project.json`

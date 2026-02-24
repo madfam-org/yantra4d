@@ -2,7 +2,7 @@ import { useRef, useMemo, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Image, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { getApiBase } from '../../services/core/backendDetection'
+import { renderParts } from '../../services/engine/renderService'
 
 export default function CarouselItem({ project, position, gap }) {
     const groupRef = useRef()
@@ -81,42 +81,35 @@ export default function CarouselItem({ project, position, gap }) {
 }
 
 function LiveModel({ project, defaults }) {
-    // For simplicity in the gallery, we look for a cached `.glb` if possible?
-    // In Yantra4D, if it's a demo hyperobject like Tablaco, maybe it has a `project / tablaco / cache / main.glb`
-    // Alternatively, we use the `useWorkerLoader` hook which triggers OpenSCAD directly.
-
     const [renderResult, setRenderResult] = useState(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Trigger generic WebWorker compilation of default parameters
-        const url = `${getApiBase()}/api/render/${project.slug}`
+        let cancelled = false
 
-        const payload = {
-            mode: project.modes?.[0]?.id || 'default',
-            parameters: defaults,
-            format: 'gltf'
-        }
-
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-            .then(res => res.blob())
-            .then(blob => {
-                const objectUrl = URL.createObjectURL(blob)
-                setRenderResult(objectUrl)
+        renderParts(
+            project.modes?.[0]?.id || 'default',
+            defaults,
+            project, // manifest
+            { project: project.slug }
+        )
+            .then(parts => {
+                if (cancelled) return
+                // Use the first part's URL for the preview
+                const url = parts?.[0]?.url
+                if (url) {
+                    setRenderResult(url)
+                }
                 setLoading(false)
             })
             .catch(err => {
+                if (cancelled) return
                 console.error("Carousel live render failed:", err)
-                // Fallback to static if failed
                 setLoading(false)
             })
 
         return () => {
-            // Cleanup Object URLs here if we unmount
+            cancelled = true
         }
     }, [project.slug, project.modes, defaults])
 

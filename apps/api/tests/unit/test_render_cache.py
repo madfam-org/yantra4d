@@ -65,3 +65,17 @@ class TestRenderCache:
         key1 = RenderCache._make_key("p", "f.scad", {}, "main", "stl")
         key2 = RenderCache._make_key("p", "f.scad", {}, "main", "3mf")
         assert key1 != key2
+
+    def test_glb_format_different_from_stl(self):
+        key_stl = RenderCache._make_key("p", "f.scad", {}, "main", "stl")
+        key_glb = RenderCache._make_key("p", "f.scad", {}, "main", "glb")
+        assert key_stl != key_glb
+
+    def test_put_and_get_glb(self, tmp_path):
+        cache = RenderCache()
+        f = tmp_path / "test.glb"
+        f.write_bytes(b"\x00" * 20)
+        cache.put("proj", "main.scad", {"w": 10}, "main", "glb", str(f), 20)
+        result = cache.get("proj", "main.scad", {"w": 10}, "main", "glb")
+        assert result is not None
+        assert result["size_bytes"] == 20

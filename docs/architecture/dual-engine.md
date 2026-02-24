@@ -7,12 +7,14 @@ Yantra4D implements a **Dual-Engine Model Strategy** to bridge the gap between h
 ### OpenSCAD (CSG)
 - **Role**: Client-side visualization, rapid prototyping, and web-ready parametric previews.
 - **Technology**: Constructive Solid Geometry (CSG) rendered via WASM in the browser or via CLI on the backend.
-- **Output**: STL / WebGL meshes.
+- **Output**: STL, 3MF, OFF (native). STL renders are auto-converted to GLB for optimized web delivery.
+- **Supported export formats**: `stl`, `3mf`, `off`
 
 ### CadQuery (B-Rep)
 - **Role**: Industrial manufacturing, professional engineering, and simulation.
 - **Technology**: Boundary Representation (B-Rep) powered by OpenCASCADE.
-- **Output**: STEP files, high-precision BREP geometry.
+- **Output**: STEP, STL, GLB, GLTF, 3MF, OBJ, VRML, AMF. STL renders are auto-converted to GLB for web delivery.
+- **Supported export formats**: `stl`, `step`, `glb`, `gltf`, `3mf`, `obj`, `vrml`, `amf`
 
 ## Why Both?
 

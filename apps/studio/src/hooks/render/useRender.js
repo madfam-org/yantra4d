@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { renderParts, cancelRender, estimateRenderTime } from '../../services/engine/renderService'
 import { useUpgradePrompt } from '../system/useUpgradePrompt'
+import * as idbCache from '../../services/cache/renderCache'
 
 const INITIAL_PROGRESS = 5
 const LOADING_RESET_DELAY_MS = 500
@@ -28,10 +29,31 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
     const payload = overridePayload || { ...params, mode }
     const cacheKey = getCacheKey(mode, params)
 
+    // L1: In-memory cache (instant)
     if (!forceRender && partsCacheRef.current[cacheKey]) {
       setParts(partsCacheRef.current[cacheKey])
       setLogs(prev => prev + `\n⚡ ${t("log.cache_hit")}`)
       return
+    }
+
+    // L2: IndexedDB persistent cache (~5ms)
+    if (!forceRender) {
+      try {
+        const idbKey = await idbCache.makeCacheKey(project || '', mode, params, 'glb')
+        const cached = await idbCache.get(idbKey)
+        if (cached) {
+          const restoredParts = cached.map(p => ({
+            type: p.type,
+            url: URL.createObjectURL(p.blob)
+          }))
+          setParts(restoredParts)
+          partsCacheRef.current[cacheKey] = restoredParts
+          setLogs(prev => prev + `\n⚡ ${t("log.cache_hit")}`)
+          return
+        }
+      } catch {
+        // IndexedDB unavailable — fall through to backend
+      }
     }
 
     if (!forceRender) {
@@ -72,6 +94,11 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
       partsCacheRef.current[cacheKey] = result
       setProgress(100)
       setLogs(prev => prev + `\n${t("log.gen_stl")}`)
+
+      // Populate IndexedDB cache in the background
+      idbCache.makeCacheKey(project || '', mode, params, 'glb')
+        .then(idbKey => idbCache.put(idbKey, result))
+        .catch(() => {})
     } catch (e) {
       if (e.name === 'AbortError') {
         setLogs(prev => prev + `\n${t("log.cancelled")}`)

@@ -70,10 +70,10 @@ Providing a world-class hyperobject configurator is computationally expensive. O
     *   **Export Rule**: Unrestricted access to the **Dual-Kernel Pipeline**. Pro users can trigger CadQuery server-side to generate and download mathematically perfect `.STEP` assemblies and raw Python generation scripts.
     *   **Value Proposition**: Professionals willingly pay for geometric fidelity (.STEP) and time saved (Cloud Rendering). By gating the expensive CadQuery B-Rep kernel and Server Compute behind a paywall, we completely insulate ourselves from infrastructure billing spikes while providing a premium, uncompromised engineering service.
 
-### 4. Upgrade the Export/Transmission Format to glTF 2.0
-We should deprecate STL for viewport transmission. Generating and transmitting **glTF/GLB** instead brings massive benefits:
-*   Draco compression reduces file boundaries dynamically.
-*   Materials, colors (e.g., glass logic), and nested hierarchical structures are embedded directly in the file. The frontend would simply load the glTF scene graph, avoiding custom color-mapping logic.
+### 4. ~~Upgrade the Export/Transmission Format to glTF 2.0~~ (IMPLEMENTED)
+STL-to-GLB post-conversion is now applied engine-agnostically for all render engines (OpenSCAD, CadQuery, Implicit) when the requested format is STL. The backend uses trimesh to convert STL to binary GLB before serving, reducing payload size for web delivery. The frontend IndexedDB cache stores the correct MIME type (`model/gltf-binary`). Future improvements:
+*   Draco compression to further reduce file boundaries dynamically.
+*   Materials, colors (e.g., glass logic), and nested hierarchical structures embedded directly in the file.
 
 ### 5. Web Worker Geometry Processing
 In the Studio frontend, all STL/glTF parsing and Three.js buffer generation must be moved into **Web Workers** or `OffscreenCanvas`. This ensures the main thread is never blocked, keeping the UI silky smooth, responsive, and free of jank while heavy 3D math executes in the background.

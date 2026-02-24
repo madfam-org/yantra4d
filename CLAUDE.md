@@ -184,7 +184,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | POST | `/api/projects/analyze` | multipart `.scad` files | Analyze SCAD files, return draft manifest |
 | POST | `/api/projects/create` | multipart manifest + files | Create new project in PROJECTS_DIR |
 | POST | `/api/estimate` | `{mode, parameters, project?}` | Estimate render time |
-| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (stl/3mf/off) |
+| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (format validated per engine; STL auto-converts to GLB) |
 | POST | `/api/render-stream` | `{mode, parameters, parts, export_format?, project?}` | SSE streaming render |
 | POST | `/api/render-cancel` | — | Cancel active render |
 | POST | `/api/verify` | `{mode, project?}` | Run STL quality checks |
@@ -312,7 +312,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links restore params on load. Hash normalization uses `replaceState` (not `location.hash =`) to avoid re-triggering preset values over shared params |
 | Undo/Redo | Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z for parameter undo/redo; 50-entry history stack. Any `setParams()` call with `history: true` (default) truncates the redo stack |
 | E2E test patterns | Use Playwright's `toHaveText`/`toBeEnabled` assertions instead of `waitForTimeout` + `textContent()`. Auto-render caches results — change a param to bust cache before testing slow/error mocks. `editSliderValue` commits via Enter key. Native `<input type="color">` cannot be programmatically set in Playwright |
-| Export formats | `export_format` in render payloads (stl/3mf/off); format selector only visible when manifest declares `export_formats` |
+| Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf/obj/vrml/amf). All STL renders auto-convert to GLB for web delivery. Format selector only visible when manifest declares `export_formats` |
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` — edit tokens there, not in individual app CSS |
 | Embed mode | `?embed=true` hides studio header/banners for iframe embedding; landing uses `InteractiveShowcase` to embed studio via iframe. Production nginx must allow `frame-ancestors` from `4d.madfam.io` |

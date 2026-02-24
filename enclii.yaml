@@ -10,7 +10,7 @@ spec:
       port: 80
     - name: 4d-api.madfam.io
       environment: production
-      port: 5000
+      port: 80
     - name: 4d-app.madfam.io
       environment: production
       port: 80

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createSSEStream } from '../../test/mock-streams'
 
 // We need to reset module state between tests because detectMode caches _mode

@@ -1,5 +1,3 @@
-import pytest
-import os
 import json
 from unittest.mock import patch, MagicMock
 from services.engine.cadquery_engine import _cadquery_env, build_cadquery_command, run_render, stream_render, cancel_render

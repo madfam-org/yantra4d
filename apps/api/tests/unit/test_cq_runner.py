@@ -1,5 +1,4 @@
 import sys
-import json
 import pytest
 from unittest.mock import patch, MagicMock
 
@@ -8,8 +7,11 @@ def mock_cq_env():
     class Workplane: 
         def __init__(self, *args, **kwargs): pass
         def box(self, *args): return self
-    class Assembly: pass
-    class Shape: pass
+    class Assembly:
+        pass
+
+    class Shape:
+        pass
     
     mock_cq = MagicMock()
     mock_cq.Workplane = Workplane
@@ -66,5 +68,4 @@ def test_cq_runner_gltf_export(mock_cq_env, tmp_path):
     run_cadquery_script(str(script_path), "out.glb", "{}", "GLTF")
     
     # We didn't explicitly capture the mock for cascadio so let's check sys.modules
-    import sys
     assert sys.modules["cascadio"].step_to_glb.called

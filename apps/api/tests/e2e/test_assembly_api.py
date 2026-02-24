@@ -1,6 +1,6 @@
 import json
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 @pytest.fixture
 def app(tmp_path):
@@ -18,7 +18,6 @@ def app(tmp_path):
     flask_app.config["TESTING"] = True
     
     # Needs PROJECTS_DIR setup like conftest
-    from config import Config
     flask_app.config["PROJECTS_DIR"] = tmp_path
     return flask_app
 

@@ -1,8 +1,8 @@
-import React, { useRef, useState, useMemo, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { ScrollControls, Scroll, useScroll, Environment, ContactShadows, Image, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 const SearchIcon = ({ className }: { className?: string }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <circle cx="11" cy="11" r="8"></circle>
@@ -16,78 +16,45 @@ const MoveHorizontalIcon = ({ className }: { className?: string }) => (
         <line x1="2" y1="12" x2="22" y2="12"></line>
     </svg>
 );
-import { API_URL, STUDIO_URL } from '../lib/env';
+import { STUDIO_URL } from '../lib/env';
 import { CATEGORIES } from '../data/projects';
 import type { Translations } from '../lib/i18n';
 
 function LoadedModel({ url }: { url: string }) {
-    const geom = useLoader(STLLoader as any, url) as THREE.BufferGeometry;
-    if (!geom) return null;
+    const gltf = useLoader(GLTFLoader as any, url);
+    if (!gltf) return null;
 
-    geom.computeBoundingBox();
-    const box = geom.boundingBox || new THREE.Box3();
+    const scene = gltf.scene.clone(true);
+
+    // Compute bounding box across the whole scene to normalize scale
+    const box = new THREE.Box3().setFromObject(scene);
     const center = new THREE.Vector3();
     box.getCenter(center);
     const size = new THREE.Vector3();
     box.getSize(size);
     const maxDim = Math.max(size.x, size.y, size.z);
-    const normalizedScale = 2.5 / maxDim;
+    const normalizedScale = maxDim > 0 ? 2.5 / maxDim : 1;
+
+    // Apply a uniform material to all meshes (matches the previous STL look)
+    scene.traverse((child: any) => {
+        if (child.isMesh) {
+            child.material = new THREE.MeshStandardMaterial({
+                color: '#cbd5e1',
+                roughness: 0.4,
+                metalness: 0.1,
+            });
+        }
+    });
 
     return (
         <group scale={normalizedScale} position={[-center.x * normalizedScale, -center.y * normalizedScale, -center.z * normalizedScale]}>
-            <mesh geometry={geom}>
-                <meshStandardMaterial color="#cbd5e1" roughness={0.4} metalness={0.1} />
-            </mesh>
+            <primitive object={scene} />
         </group>
     );
 }
 
-function LiveModel({ project, defaults }: { project: any, defaults: any }) {
-    const [renderResult, setRenderResult] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const url = `${API_URL}/api/render`;
-        const payload = {
-            project: project.slug,
-            parameters: defaults,
-            export_format: 'stl'
-        };
-
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-            .then(res => {
-                if (!res.ok) throw new Error(`Render failed: ${res.status}`);
-                return res.json();
-            })
-            .then(data => {
-                if (data.status === 'success' && data.parts && data.parts.length > 0) {
-                    const stlUrl = `${API_URL}${data.parts[0].url}`;
-                    setRenderResult(stlUrl);
-                } else {
-                    throw new Error(data.error || 'No parts generated');
-                }
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error("Carousel live render failed:", err);
-                setLoading(false);
-            });
-
-        return () => { };
-    }, [project.slug, defaults]);
-
-    if (loading || !renderResult) {
-        return (
-            <mesh>
-                <boxGeometry args={[1, 1, 1]} />
-                <meshStandardMaterial color="gray" wireframe />
-            </mesh>
-        );
-    }
+function LiveModel({ project }: { project: any }) {
+    const modelUrl = `/models/${project.slug}.glb`;
 
     return (
         <Suspense fallback={
@@ -96,7 +63,7 @@ function LiveModel({ project, defaults }: { project: any, defaults: any }) {
                 <meshStandardMaterial color="gray" wireframe />
             </mesh>
         }>
-            <LoadedModel url={renderResult} />
+            <LoadedModel url={modelUrl} />
         </Suspense>
     );
 }
@@ -135,14 +102,9 @@ function CarouselItem({ project, index, total, radius }: { project: any, index: 
         groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
     });
 
-    const defaults = useMemo(() => {
-        return {};
-    }, [project]);
-
     return (
         <group ref={groupRef as any} position={[x, 0, z]} rotation={[0, angle, 0]}>
-            {/* Show LiveModel directly to pre-load all */}
-            <LiveModel project={project} defaults={defaults} />
+            <LiveModel project={project} />
         </group>
     );
 }

@@ -69,6 +69,7 @@ packages/
 | `libs/*` | Global OpenSCAD libraries (git submodules) | **NEVER** |
 | `apps/studio/src/components/ui/*` | Shadcn primitives | **NEVER** |
 | `scripts/cli/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
+| `scripts/prerender-carousel.sh` | Pre-render GLB models for landing carousel | RARELY |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
@@ -302,6 +303,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Shadcn UI | **Never** hand-edit `components/ui/*` — use shadcn CLI to regenerate |
 | Verify false positives | Verification needs rendered STLs to exist first; render before verifying |
 | Render timeouts | Complex grid renders (high rows×cols) can exceed default timeout; Docker uses 300s |
+| Render cache | Two-level LRU: L1 in-memory (per-process, 1hr TTL, 200 max) + L2 Redis DB 2 (shared, 24hr TTL). Set `REDIS_URL` to enable L2; falls back gracefully to L1-only |
 | Env vars | Backend reads `OPENSCAD_PATH`, `SCAD_DIR`, `VERIFY_SCRIPT` — set in Docker or `.env` |
 | CORS origins | Backend restricts CORS via `CORS_ORIGINS` env var; add your domain when deploying |
 | Global SCAD libs | `libs/` are git submodules — run `git submodule update --init --recursive` after clone |

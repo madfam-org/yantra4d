@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 def app(tmp_path, monkeypatch):
     from config import Config
     monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
+    monkeypatch.setattr(Config, "CARTRIDGES_DIRS", [tmp_path])
 
     project_dir = tmp_path / "my-project"
     project_dir.mkdir()
@@ -242,11 +243,13 @@ class TestGitRenderHead:
         data = res.get_json()
         assert data["status"] == "success"
 
-    def test_render_head_no_scad(self, client, tmp_path):
+    @patch("routes.editor.git_ops.git_archive_head")
+    def test_render_head_no_scad(self, mock_archive, client, tmp_path):
         _init_git(tmp_path / "my-project")
+        mock_archive.return_value = {"success": True}
         res = client.post("/api/projects/my-project/git/render-head", json={"project": "my-project"})
-        # Note _extract_render_payload falls back to defaults, so it succeeds and returns 200
-        assert res.status_code == 200
+        # Archive succeeds but SCAD file doesn't exist in HEAD → 404
+        assert res.status_code == 404
 
     @patch("routes.editor.git_ops.git_archive_head")
     def test_render_head_archive_fails(self, mock_archive, client, tmp_path):

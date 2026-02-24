@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeVolumeMm3, computeBoundingBox, computeCentroid, estimatePrint, getMaterialProfiles } from './printEstimator'
+import { computeVolumeMm3, computeBoundingBox, computeCentroid, estimatePrint, getMaterialProfiles, buildMaterialLookup } from './printEstimator'
 
 describe('printEstimator', () => {
   describe('computeVolumeMm3', () => {
@@ -220,6 +220,22 @@ describe('printEstimator', () => {
       const fastTotal = fast.time.hours * 60 + fast.time.minutes
       expect(slowTotal).toBeGreaterThan(fastTotal)
     })
+
+    it('uses custom material from lookup when provided', () => {
+      const customLookup = {
+        custom_resin: {
+          name: 'Custom Resin',
+          density: 1.2,
+          speed: 30,
+          layerHeight: 0.1,
+          costPerKg: 50,
+          nozzleDiameter: 0.4,
+        },
+      }
+      const result = estimatePrint(volumeMm3, bbox, 'custom_resin', {}, customLookup)
+      expect(result.material).toBe('Custom Resin')
+      expect(result.filament.grams).toBeGreaterThan(0)
+    })
   })
 
   describe('getMaterialProfiles', () => {
@@ -238,6 +254,66 @@ describe('printEstimator', () => {
         expect(p.id).toBeTruthy()
         expect(p.name).toBeTruthy()
       }
+    })
+
+    it('returns only built-in profiles when manifestMaterials is empty', () => {
+      const profiles = getMaterialProfiles([])
+      expect(profiles.length).toBeGreaterThanOrEqual(4)
+      expect(profiles.find(p => p.id === 'pla')).toBeTruthy()
+    })
+
+    it('merges custom manifest materials with built-in profiles', () => {
+      const custom = [{ id: 'nylon', name: 'Nylon PA12' }]
+      const profiles = getMaterialProfiles(custom)
+      expect(profiles.find(p => p.id === 'nylon')).toBeTruthy()
+      expect(profiles.find(p => p.id === 'nylon').name).toBe('Nylon PA12')
+      // Built-in profiles should still be present
+      expect(profiles.find(p => p.id === 'pla')).toBeTruthy()
+    })
+
+    it('custom materials override built-in profiles with same id', () => {
+      const custom = [{ id: 'pla', name: 'Custom PLA+' }]
+      const profiles = getMaterialProfiles(custom)
+      const plaEntries = profiles.filter(p => p.id === 'pla')
+      expect(plaEntries).toHaveLength(1)
+      expect(plaEntries[0].name).toBe('Custom PLA+')
+    })
+  })
+
+  describe('buildMaterialLookup', () => {
+    it('returns built-in profiles when manifestMaterials is null', () => {
+      const lookup = buildMaterialLookup(null)
+      expect(lookup.pla).toBeDefined()
+      expect(lookup.pla.name).toBe('PLA')
+      expect(lookup.abs).toBeDefined()
+    })
+
+    it('merges manifest materials into lookup', () => {
+      const manifestMaterials = [
+        {
+          id: 'nylon',
+          name: 'Nylon PA12',
+          density: 1.01,
+          cost_per_kg: 60,
+          print_speed_factor: 0.8,
+        },
+      ]
+      const lookup = buildMaterialLookup(manifestMaterials)
+      expect(lookup.nylon).toBeDefined()
+      expect(lookup.nylon.name).toBe('Nylon PA12')
+      expect(lookup.nylon.density).toBe(1.01)
+      expect(lookup.nylon.costPerKg).toBe(60)
+      expect(lookup.nylon.speed).toBe(40) // 50 * 0.8
+      // Built-in profiles should still be present
+      expect(lookup.pla).toBeDefined()
+    })
+
+    it('uses default speed factor when not provided', () => {
+      const manifestMaterials = [
+        { id: 'resin', name: 'Resin', density: 1.1, cost_per_kg: 45 },
+      ]
+      const lookup = buildMaterialLookup(manifestMaterials)
+      expect(lookup.resin.speed).toBe(50) // 50 * 1 (default factor)
     })
   })
 })

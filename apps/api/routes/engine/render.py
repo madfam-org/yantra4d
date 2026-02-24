@@ -282,9 +282,10 @@ def render_stl():
             if cached:
                 cache_hits += 1
                 combined_log += f"[{part}] cache HIT\n"
+                cached_filename = os.path.basename(cached["path"])
                 generated_parts.append({
                     "type": part,
-                    "url": f"/static/{output_filename}",
+                    "url": f"/static/{cached_filename}",
                     "size_bytes": cached["size_bytes"]
                 })
                 continue
@@ -420,9 +421,10 @@ def render_stl_stream():
             # Check render cache before starting engine
             cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
             if cached:
+                cached_filename = os.path.basename(cached["path"])
                 generated_parts.append({
                     "type": part,
-                    "url": f"/static/{output_filename}",
+                    "url": f"/static/{cached_filename}",
                     "size_bytes": cached["size_bytes"]
                 })
                 progress = ((i + 1) / num_parts) * 100

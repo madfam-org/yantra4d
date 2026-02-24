@@ -18,7 +18,8 @@ const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
 
 /** Camera constants — kept as named values to avoid magic numbers in JSX */
-const CAMERA_FOV_DEG = 45
+const CAMERA_FOV_DESKTOP = 45
+const CAMERA_FOV_MOBILE = 60
 const ORBIT_MIN_DISTANCE_MM = 0.5
 const ORBIT_MAX_DISTANCE_MM = 5000  // far enough for large assemblies (mm)
 const SCENE_UP_VECTOR = [0, 0, 1]   // Z-up coordinate system
@@ -165,6 +166,19 @@ const BoundingBoxHelper = ({ boundingBox, box, children }) => {
             )}
         </group>
     )
+}
+
+/** Use wider FOV on narrow viewports so models fit better on mobile */
+function useResponsiveFov() {
+    const [fov, setFov] = useState(() =>
+        typeof window !== 'undefined' && window.innerWidth < 768 ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
+    )
+    useEffect(() => {
+        const update = () => setFov(window.innerWidth < 768 ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP)
+        window.addEventListener('resize', update)
+        return () => window.removeEventListener('resize', update)
+    }, [])
+    return fov
 }
 
 const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [] }, ref) => {
@@ -361,6 +375,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
     const bgColor = isDark ? '#09090b' : '#f4f4f5'
+    const fov = useResponsiveFov()
 
     return (
         <div className="relative h-full w-full">
@@ -397,7 +412,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                 </button>
             )}
 
-            <div className="absolute top-2 right-2 z-10 flex gap-1 rounded bg-background/70 border border-border p-0.5 backdrop-blur-sm">
+            <div className="absolute top-2 right-2 z-10 flex flex-wrap gap-1 rounded bg-background/70 border border-border p-0.5 backdrop-blur-sm max-w-[calc(100%-5rem)]">
                 {cameraViews.map(view => (
                     <button
                         key={view.id}
@@ -413,7 +428,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
             </div>
 
             <ErrorBoundary t={t}>
-                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov: CAMERA_FOV_DEG, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true }}>
+                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true }}>
                     <color attach="background" args={[bgColor]} />
                     <SceneController ref={sceneRef} cameraViews={cameraViews} />
 

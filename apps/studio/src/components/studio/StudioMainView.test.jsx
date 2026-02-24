@@ -62,7 +62,8 @@ describe('StudioMainView', () => {
   it('renders viewer and console log area', () => {
     render(<StudioMainView />)
     expect(screen.getByTestId('viewer')).toBeInTheDocument()
-    expect(screen.getByRole('log')).toBeInTheDocument()
+    // Mobile + desktop console panels both present in DOM
+    expect(screen.getAllByRole('log').length).toBeGreaterThanOrEqual(1)
   })
 
   it('sets aria-busy when loading', () => {
@@ -99,7 +100,8 @@ describe('StudioMainView', () => {
     // Initial render loading
     useProject.mockReturnValue({ ...baseContext, loading: true })
     const { rerender, container } = render(<StudioMainView />)
-    const liveRegion = container.querySelector('[aria-live="polite"]')
+    // The sr-only live region is the one with class "sr-only"
+    const liveRegion = container.querySelector('.sr-only[aria-live="polite"]')
     expect(liveRegion).toBeInTheDocument()
     expect(liveRegion.textContent).toBe('Rendering in progress')
 
@@ -112,7 +114,13 @@ describe('StudioMainView', () => {
   it('displays console logs', () => {
     useProject.mockReturnValue({ ...baseContext, logs: 'ECHO: param=5' })
     render(<StudioMainView />)
-    expect(screen.getByText('ECHO: param=5')).toBeInTheDocument()
+    // Logs appear in both mobile (collapsed preview) and desktop console panels
+    expect(screen.getAllByText('ECHO: param=5').length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders mobile console toggle button', () => {
+    render(<StudioMainView />)
+    expect(screen.getByLabelText('Toggle console panel')).toBeInTheDocument()
   })
 
   it('renders print estimate overlay when estimate exists', () => {

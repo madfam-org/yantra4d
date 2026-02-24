@@ -3,7 +3,7 @@ import Viewer from '../viewer/Viewer'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
 
 function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
   if (loading) {
@@ -42,9 +42,15 @@ export default function StudioMainView() {
 
   const { t } = useLanguage()
   const [estimateOpen, setEstimateOpen] = useState(true)
+  const [consoleExpanded, setConsoleExpanded] = useState(false)
 
   // Only show the estimate toggle when there's something to show
   const hasEstimate = (printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3 ?? 0) > 0
+
+  // Last log line for collapsed console preview
+  const lastLogLine = typeof logs === 'string'
+    ? logs.trim().split('\n').pop() || ''
+    : ''
 
   return (
     <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
@@ -77,12 +83,50 @@ export default function StudioMainView() {
         </div>
       </div>
 
-      {/* Bottom panel — φ subordinate (≈38.2% of vertical space) with min/max height guard */}
-      <div className="flex shrink-0 border-t border-border" style={{ flex: 1, minHeight: '120px', maxHeight: '280px' }}>
+      {/* Mobile: collapsed console bar (tap to expand) */}
+      <div className="lg:hidden border-t border-border">
+        <button
+          onClick={() => setConsoleExpanded(e => !e)}
+          className="w-full flex items-center gap-2 px-3 py-2 bg-muted text-xs font-mono text-muted-foreground hover:bg-accent transition-colors min-h-[44px]"
+          aria-expanded={consoleExpanded}
+          aria-label="Toggle console panel"
+        >
+          {consoleExpanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronUp className="h-3 w-3 shrink-0" />}
+          <span className="font-medium text-foreground">Console</span>
+          <span className="truncate flex-1 text-left">{lastLogLine}</span>
+        </button>
+        {consoleExpanded && (
+          <div className="flex flex-col" style={{ maxHeight: '50vh' }}>
+            <div
+              ref={consoleRef}
+              className="bg-muted px-3 py-2 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap"
+              style={{ maxHeight: '35vh' }}
+              role="log"
+              aria-live="polite"
+              aria-label="Render console"
+            >
+              {logs}
+            </div>
+            {hasEstimate && (
+              <div className="bg-card border-t border-border overflow-y-auto" style={{ maxHeight: '15vh' }}>
+                <PrintEstimateOverlay
+                  volumeMm3={printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3}
+                  boundingBox={printEstimate?.total?.boundingBox ?? printEstimate?.boundingBox}
+                  perPartData={printEstimate?.parts}
+                  inline
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop: side-by-side console + estimate — φ subordinate (≈38.2% of vertical space) */}
+      <div className="hidden lg:flex shrink-0 border-t border-border" style={{ flex: 1, minHeight: '120px', maxHeight: '280px' }}>
 
         {/* Console logs — φ dominant within row (≈61.8% of row width) */}
         <div
-          ref={consoleRef}
+          ref={!consoleExpanded ? consoleRef : undefined}
           className="bg-muted p-4 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap min-w-0"
           style={{ flex: 1.618 }}
           role="log"

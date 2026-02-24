@@ -170,7 +170,7 @@ function App() {
 
       {/* AI Configurator overlay */}
       {aiPanelOpen && !editorOpen && (
-        <div className="fixed right-0 top-12 bottom-0 w-80 z-40 border-l border-border shadow-lg">
+        <div className="fixed right-0 top-12 bottom-0 w-full sm:w-80 z-40 border-l border-border shadow-lg bg-background">
           <ErrorBoundary t={t}>
             <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
               <AiChatPanel

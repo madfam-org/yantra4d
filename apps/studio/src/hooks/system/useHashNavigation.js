@@ -34,8 +34,8 @@ export function isProjectsView(pathname) {
 }
 
 /**
- * Parse the URL path to extract the active preset and mode.
- * Supports both 2-segment (/project/.../preset/mode) formats.
+ * Parse the URL path to extract the active mode and preset.
+ * URL format: /project/{slug}/{modeId}/{presetId}
  * @param {string} pathname
  * @param {Array} presets - available presets from manifest
  * @param {Array} modes - available modes from manifest
@@ -43,23 +43,23 @@ export function isProjectsView(pathname) {
  */
 export function parseHash(pathname, presets, modes) {
   const parts = parsePathParts(pathname)
-  let presetId, modeId
+  let modeId, presetId
 
   if (parts.length >= 3) {
-    presetId = parts[1]
-    modeId = parts[2]
+    modeId = parts[1]
+    presetId = parts[2]
   } else if (parts.length === 2) {
-    presetId = parts[1]
-    modeId = null
-  } else {
+    modeId = parts[1]
     presetId = null
+  } else {
     modeId = null
+    presetId = null
   }
 
-  const preset = presets.find(p => p.id === presetId)
   let mode = modes.find(m => m.id === modeId)
+  const preset = presets.find(p => p.id === presetId)
 
-  // If no explict mode matched but we found a valid preset, default to its first allowed mode
+  // If no explicit mode matched but we found a valid preset, default to its first allowed mode
   if (!mode && preset && preset.visible_in_modes && preset.visible_in_modes.length > 0) {
     mode = modes.find(m => m.id === preset.visible_in_modes[0])
   }
@@ -76,14 +76,17 @@ export function parseHash(pathname, presets, modes) {
 }
 
 /**
- * Build a canonical 3-segment path string.
+ * Build a canonical path string: /project/{slug}/{modeId}/{presetId}
  * @param {string} projectSlug
- * @param {string} presetId
  * @param {string} modeId
- * @returns {string} url string like /project/slug/preset/mode
+ * @param {string} [presetId] - omitted if null/undefined
+ * @returns {string} url string like /project/slug/mode/preset
  */
-export function buildHash(projectSlug, presetId, modeId) {
-  return `/project/${projectSlug}/${presetId}/${modeId}`
+export function buildHash(projectSlug, modeId, presetId) {
+  if (presetId) {
+    return `/project/${projectSlug}/${modeId}/${presetId}`
+  }
+  return `/project/${projectSlug}/${modeId}`
 }
 
 /**
@@ -116,7 +119,7 @@ export function useHashNavigation({ presets, modes, projectSlug, onHashChange })
     const modeId = parsed.mode?.id || modes[0]?.id
 
     // Only replace if the path doesn't already have these set
-    const expectedPath = buildHash(projectSlug, presetId, modeId)
+    const expectedPath = buildHash(projectSlug, modeId, presetId)
     if (presetId && modeId && location.pathname !== expectedPath && !location.pathname.includes(expectedPath)) {
       navigate(expectedPath + location.search, { replace: true })
     }

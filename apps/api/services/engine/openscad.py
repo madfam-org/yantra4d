@@ -146,9 +146,11 @@ def validate_params(params: dict, project_slug: str | None = None) -> dict:
             cleaned[key] = str_val
         elif param_type == "checkbox":
             if isinstance(value, bool):
-                cleaned[key] = value
+                cleaned[key] = 1 if value else 0
+            elif isinstance(value, (int, float)) and value in (0, 1, 0.0, 1.0):
+                cleaned[key] = int(value)
             elif str(value).lower() in ("true", "false"):
-                cleaned[key] = str(value).lower() == "true"
+                cleaned[key] = 1 if str(value).lower() == "true" else 0
             else:
                 logger.warning(f"Rejecting non-boolean value for {key}: {value}")
                 continue
@@ -174,7 +176,7 @@ def build_openscad_command(output_path: str, scad_path: str, params: dict, mode_
         if key == 'scad_file':
             continue
         if isinstance(value, bool):
-            val_str = str(value).lower()
+            val_str = "1" if value else "0"
         elif isinstance(value, (int, float)):
             val_str = str(value)
         elif isinstance(value, str):

@@ -132,7 +132,7 @@ export function useProjectParams({ viewerRef }) {
 
     const presetIdToHash = validPresetId || presets[0]?.id
     if (presetIdToHash) {
-      navigate(buildHash(projectSlug, presetIdToHash, newMode))
+      navigate(buildHash(projectSlug, newMode, presetIdToHash))
     }
   }
 
@@ -209,7 +209,7 @@ export function useProjectParams({ viewerRef }) {
     })
     setActivePresetId(preset.id)
     setGridPresetId(defaultGridPreset)
-    navigate(buildHash(projectSlug, preset.id, mode))
+    navigate(buildHash(projectSlug, mode, preset.id))
   }
 
   // Debounced auto-generate with cache check

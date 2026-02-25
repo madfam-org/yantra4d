@@ -27,7 +27,7 @@ services:
       # Covers studio (5173 dev / 3000 docker), landing (4321), admin (3001) and additional dev ports
       - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:4321,http://localhost:3001
       - JANUA_ISSUER=${JANUA_ISSUER:-https://auth.madfam.io}
-      - JANUA_AUDIENCE=${JANUA_AUDIENCE:-yantra4d}
+      - JANUA_AUDIENCE=${JANUA_AUDIENCE:-yantra4d-api}
       - AUTH_ENABLED=false
       - RATE_LIMIT_ENABLED=false
       - RATE_LIMIT_STORAGE=redis://redis:6379

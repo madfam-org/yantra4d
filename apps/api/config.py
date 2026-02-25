@@ -46,7 +46,7 @@ class AppConfig:
     # Janua Auth
     JANUA_ISSUER: str = field(default_factory=lambda: os.getenv("JANUA_ISSUER", "https://auth.madfam.io"))
     JANUA_JWKS_URL: str = field(init=False)
-    JANUA_AUDIENCE: str = field(default_factory=lambda: os.getenv("JANUA_AUDIENCE", "yantra4d"))
+    JANUA_AUDIENCE: str = field(default_factory=lambda: os.getenv("JANUA_AUDIENCE", "yantra4d-api"))
     AUTH_ENABLED: bool = field(default_factory=lambda: os.getenv("AUTH_ENABLED", "true").lower() == "true")
 
     # Tiers

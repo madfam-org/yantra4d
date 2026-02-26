@@ -16,6 +16,7 @@ resources:
 - yantra4d-redis-pvc.yaml
 - yantra4d-redis-deployment.yaml
 - yantra4d-redis-service.yaml
+- network-policies.yaml
 
 images:
 - digest: sha256:1fd83f23db19d581903579531192f7ad2c9693c7ecf05284e980d45e6f79b074

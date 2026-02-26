@@ -41,7 +41,7 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
       {supportedFormats.length > 1 && (
         <div className="flex items-center gap-2 text-xs">
           <span className="text-muted-foreground">{t("act.format")}:</span>
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap">
             {supportedFormats.map(f => {
               const isLocked = !userAllowedFormats.includes(f.id)
               return (

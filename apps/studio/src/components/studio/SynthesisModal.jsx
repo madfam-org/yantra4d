@@ -97,7 +97,7 @@ export default function SynthesisModal({ open, onOpenChange, onSynthesisComplete
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-background border border-border shadow-lg rounded-lg w-full max-w-lg flex flex-col max-h-[90vh]">
+      <div className="bg-background border border-border shadow-lg rounded-lg w-full max-w-[95vw] sm:max-w-lg flex flex-col max-h-[90dvh]">
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -108,9 +108,9 @@ export default function SynthesisModal({ open, onOpenChange, onSynthesisComplete
               Describe the parametric cartridge you want to build. The AI will generate the manifest and code.
             </p>
           </div>
-          <button 
-            onClick={() => !isGenerating && onOpenChange(false)} 
-            className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+          <button
+            onClick={() => !isGenerating && onOpenChange(false)}
+            className="text-muted-foreground hover:text-foreground disabled:opacity-50 min-h-[44px] min-w-[44px] flex items-center justify-center"
             disabled={isGenerating}
           >
             <X className="w-5 h-5" />
@@ -123,7 +123,7 @@ export default function SynthesisModal({ open, onOpenChange, onSynthesisComplete
               placeholder="e.g. Generate a stackable slide-holder box measuring 100x50x20mm..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+              className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base sm:text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none"
             />
           ) : (
             <div className="flex-1 bg-black text-green-400 p-4 rounded-md font-mono text-xs whitespace-pre-wrap min-h-[200px] overflow-y-auto">

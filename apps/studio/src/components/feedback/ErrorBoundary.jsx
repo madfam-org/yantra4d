@@ -24,7 +24,7 @@ export class ErrorBoundary extends React.Component {
 
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center h-screen bg-background text-foreground">
+        <div className="flex items-center justify-center h-dvh bg-background text-foreground">
           <div className="text-center space-y-4 max-w-md p-8">
             <h1 className="text-2xl font-bold">{translate("error.title")}</h1>
             <p className="text-muted-foreground text-sm font-mono">

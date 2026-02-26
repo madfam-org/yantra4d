@@ -23,7 +23,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
         <div className="text-lg font-semibold">{t("onboard.edit_title")}</div>
         <button
           type="button"
-          className="text-xs text-muted-foreground hover:text-foreground underline"
+          className="text-xs text-muted-foreground hover:text-foreground underline min-h-[44px]"
           onClick={() => setShowRawJson(prev => !prev)}
         >
           {showRawJson ? t("onboard.structured_view") : t("onboard.raw_json")}
@@ -80,7 +80,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                         modes[idx] = { ...modes[idx], id: e.target.value }
                         setManifest(prev => ({ ...prev, modes }))
                       }}
-                      className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background"
+                      className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background min-h-[44px]"
                       placeholder="Mode ID"
                     />
                     <input
@@ -91,7 +91,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                         modes[idx] = { ...modes[idx], label: e.target.value }
                         setManifest(prev => ({ ...prev, modes }))
                       }}
-                      className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background"
+                      className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background min-h-[44px]"
                       placeholder="Label"
                     />
                   </div>
@@ -130,7 +130,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                             parameters[idx] = { ...parameters[idx], default: val }
                             setManifest(prev => ({ ...prev, parameters }))
                           }}
-                          className="w-16 px-1 py-0.5 rounded border border-border bg-background text-xs"
+                          className="w-16 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-xs"
                         />
                       </td>
                       <td className="py-1 pr-2">
@@ -143,7 +143,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                               parameters[idx] = { ...parameters[idx], min: parseFloat(e.target.value) || 0 }
                               setManifest(prev => ({ ...prev, parameters }))
                             }}
-                            className="w-14 px-1 py-0.5 rounded border border-border bg-background text-xs"
+                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-xs"
                           />
                         )}
                       </td>
@@ -157,7 +157,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                               parameters[idx] = { ...parameters[idx], max: parseFloat(e.target.value) || 0 }
                               setManifest(prev => ({ ...prev, parameters }))
                             }}
-                            className="w-14 px-1 py-0.5 rounded border border-border bg-background text-xs"
+                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-xs"
                           />
                         )}
                       </td>
@@ -184,7 +184,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                         parts[idx] = { ...parts[idx], default_color: e.target.value }
                         setManifest(prev => ({ ...prev, parts }))
                       }}
-                      className="w-8 h-6 cursor-pointer"
+                      className="w-10 h-10 min-h-[44px] min-w-[44px] cursor-pointer"
                     />
                   </div>
                 ))}

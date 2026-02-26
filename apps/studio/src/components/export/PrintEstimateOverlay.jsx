@@ -71,7 +71,7 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
 
   if (inline) {
     return (
-      <div role="status" aria-label="Print estimate" className="p-3 text-xs space-y-2 h-full">
+      <div role="status" aria-label="Print estimate" className="p-3 text-xs space-y-2 h-full pb-safe">
         <div className="font-semibold text-sm text-foreground">{t('print.title')}</div>
 
         <div className="flex items-center gap-1.5 flex-wrap">

@@ -34,7 +34,7 @@ export default function UploadStep({ slug, setSlug, files, handleFileDrop, handl
           className="hidden"
           id="scad-upload"
         />
-        <label htmlFor="scad-upload" className="text-primary text-sm underline cursor-pointer">
+        <label htmlFor="scad-upload" className="text-primary text-sm underline cursor-pointer inline-block min-h-[44px] leading-[44px]">
           {t("onboard.browse")}
         </label>
       </div>

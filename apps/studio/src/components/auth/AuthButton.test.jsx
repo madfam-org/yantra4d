@@ -35,9 +35,20 @@ describe('AuthButton', () => {
     expect(screen.getByText('auth.sign_in')).toBeInTheDocument()
   })
 
-  it('calls signInWithOAuth on sign in click', () => {
+  it('opens provider dropdown on sign in click', () => {
     render(<AuthButton />)
     fireEvent.click(screen.getByTitle('auth.sign_in'))
+    // Dropdown should show all 4 providers
+    expect(screen.getByText(/Google/)).toBeInTheDocument()
+    expect(screen.getByText(/GitHub/)).toBeInTheDocument()
+    expect(screen.getByText(/Microsoft/)).toBeInTheDocument()
+    expect(screen.getByText(/Apple/)).toBeInTheDocument()
+  })
+
+  it('calls signInWithOAuth when provider is selected', () => {
+    render(<AuthButton />)
+    fireEvent.click(screen.getByTitle('auth.sign_in'))
+    fireEvent.click(screen.getByText(/GitHub/))
     expect(mockAuth.signInWithOAuth).toHaveBeenCalledWith('github')
   })
 

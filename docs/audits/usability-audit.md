@@ -216,11 +216,16 @@
 
 ## 17. Responsive Layout
 
-**Status**: ✅ PASS
+**Status**: ✅ PASS (enhanced in responsive overhaul)
 
-- 768×1024: sidebar stacks on top, viewer below (`08-responsive-768.png`)
-- 1280×800: sidebar left, viewer right (desktop layout)
+- **Mobile (<768px)**: Header actions collapse into overflow DropdownMenu. Editor opens as bottom Sheet. AI panel has dismiss backdrop. Camera views use compact `<select>` dropdown. Toaster at top-center.
+- **Tablet (768–1023px)**: sidebar stacks on top, viewer below (`08-responsive-768.png`)
+- **Desktop (1024+)**: sidebar left, viewer right (desktop layout)
+- **Landscape (<1024px)**: Header height reduced, console max-height capped at 30vh, sidebar padding compressed.
 - Controls scrollable at small heights via `overflow-y-auto`
+- All touch targets meet WCAG 44px minimum (slider inputs, buttons, links)
+- Safe-area padding for notched devices (`viewport-fit=cover` + `env(safe-area-inset-*)`)
+- Shared `useMediaQuery` hook powers all viewport-conditional rendering
 
 ---
 

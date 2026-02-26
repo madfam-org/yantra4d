@@ -208,9 +208,10 @@ describe('Viewer', () => {
 
   it('renders camera view buttons from manifest', () => {
     render(<Viewer {...defaultProps} />)
-    expect(screen.getByText('Iso')).toBeInTheDocument()
-    expect(screen.getByText('Top')).toBeInTheDocument()
-    expect(screen.getByText('Front')).toBeInTheDocument()
+    // Camera views appear in both mobile select and desktop buttons
+    expect(screen.getAllByText('Iso').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Top').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Front').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders axes toggle button', () => {
@@ -247,13 +248,19 @@ describe('Viewer', () => {
 
   it('highlights active camera view button', () => {
     render(<Viewer {...defaultProps} />)
-    const isoBtn = screen.getByText('Iso')
+    // Desktop buttons are inside the hidden sm:flex container
+    const isoBtns = screen.getAllByText('Iso')
+    const isoBtn = isoBtns.find(el => el.tagName === 'BUTTON')
+    expect(isoBtn).toBeTruthy()
     expect(isoBtn.className).toContain('bg-primary')
   })
 
   it('switches active view on camera button click', () => {
     render(<Viewer {...defaultProps} />)
-    const topBtn = screen.getByText('Top')
+    // Click the desktop button (not the select option)
+    const topBtns = screen.getAllByText('Top')
+    const topBtn = topBtns.find(el => el.tagName === 'BUTTON')
+    expect(topBtn).toBeTruthy()
     fireEvent.click(topBtn)
     expect(topBtn.className).toContain('bg-primary')
   })
@@ -272,7 +279,16 @@ describe('Viewer', () => {
   it('applies system theme with dark media query', () => {
     // Mock matchMedia to return dark
     const original = window.matchMedia
-    window.matchMedia = vi.fn(() => ({ matches: true }))
+    window.matchMedia = vi.fn((query) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => {},
+    }))
     mockUseTheme.mockReturnValue({ theme: 'system' })
     render(<Viewer {...defaultProps} />)
     expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
@@ -607,8 +623,10 @@ describe('Viewer', () => {
       ref.current.setCameraView('top')
     })
     expect(mockSetCameraView).toHaveBeenCalledWith('top')
-    // Active view should now be 'top'
-    expect(screen.getByText('Top').className).toContain('bg-primary')
+    // Active view should now be 'top' — find the desktop button
+    const topBtns = screen.getAllByText('Top')
+    const topBtn = topBtns.find(el => el.tagName === 'BUTTON')
+    expect(topBtn.className).toContain('bg-primary')
   })
 
   it('exposes animateTo via ref', () => {
@@ -743,7 +761,7 @@ describe('Viewer', () => {
     })
 
     render(<Viewer {...defaultProps} />)
-    expect(screen.getByText('Top')).toBeInTheDocument()
+    expect(screen.getAllByText('Top').length).toBeGreaterThanOrEqual(1)
   })
 
   // ────────────────────────────────────────

@@ -24,15 +24,15 @@ const t = getTranslations(lang);
     <Hero lang={lang} t={t} />
     
     <!-- Choose Your Own Adventure Section -->
-    <section id="adventure" class="py-24 px-6 min-h-screen flex flex-col items-center justify-center relative">
-       <div class="text-center mb-16 max-w-3xl">
+    <section id="adventure" class="py-12 md:py-24 px-4 md:px-6 min-h-screen flex flex-col items-center justify-center relative">
+       <div class="text-center mb-8 md:mb-16 max-w-3xl">
           <h2 class="text-3xl md:text-5xl font-bold mb-6">{t.choosePath.title}</h2>
           <p class="text-xl text-muted-foreground">
             {t.choosePath.subtitle}
           </p>
        </div>
 
-       <div class="grid md:grid-cols-3 gap-8 max-w-6xl w-full">
+       <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl w-full">
           <!-- Path 1: Hyperobjects -->
           <a href="/concepts/hyperobjects/" class="group relative overflow-hidden rounded-xl border border-border bg-card p-8 hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-900/20">
              <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>

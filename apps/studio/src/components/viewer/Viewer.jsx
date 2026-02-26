@@ -5,6 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { useWorkerLoader } from '../../hooks/render/useWorkerLoader'
 import { Box3, Box3Helper, Vector3, Color } from 'three'
+import { useIsMobile } from '../../hooks/system/useMediaQuery'
 import { useLanguage } from "../../contexts/system/LanguageProvider"
 import { useTheme } from "../../contexts/system/ThemeProvider"
 import { useManifest } from "../../contexts/project/ManifestProvider"
@@ -171,15 +172,8 @@ const BoundingBoxHelper = ({ boundingBox, box, children }) => {
 
 /** Use wider FOV on narrow viewports so models fit better on mobile */
 function useResponsiveFov() {
-    const [fov, setFov] = useState(() =>
-        typeof window !== 'undefined' && window.innerWidth < 768 ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
-    )
-    useEffect(() => {
-        const update = () => setFov(window.innerWidth < 768 ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP)
-        window.addEventListener('resize', update)
-        return () => window.removeEventListener('resize', update)
-    }, [])
-    return fov
+    const isMobile = useIsMobile()
+    return isMobile ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
 }
 
 const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [] }, ref) => {
@@ -413,19 +407,37 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                 </button>
             )}
 
-            <div className="absolute top-2 right-2 z-10 flex flex-wrap gap-1 rounded bg-background/70 border border-border p-0.5 backdrop-blur-sm max-w-[calc(100%-5rem)]">
-                {cameraViews.map(view => (
-                    <button
-                        key={view.id}
-                        onClick={() => handleViewChange(view.id)}
-                        className={`px-2 py-1 min-h-[44px] min-w-[44px] text-xs rounded font-medium transition-colors ${activeView === view.id
-                            ? 'bg-primary text-primary-foreground'
-                            : 'hover:bg-muted text-muted-foreground'
-                            }`}
-                    >
-                        {getLabel(view, 'label', language)}
-                    </button>
-                ))}
+            {/* Camera view controls — compact dropdown on mobile, button grid on desktop */}
+            <div className="absolute top-2 right-2 z-10">
+                {/* Mobile: compact select dropdown */}
+                <select
+                    value={activeView}
+                    onChange={(e) => handleViewChange(e.target.value)}
+                    className="sm:hidden min-h-[44px] px-2 py-1 text-xs font-medium rounded bg-background/70 border border-border backdrop-blur-sm appearance-none cursor-pointer"
+                    aria-label="Camera view"
+                >
+                    {cameraViews.map(view => (
+                        <option key={view.id} value={view.id}>
+                            {getLabel(view, 'label', language)}
+                        </option>
+                    ))}
+                </select>
+
+                {/* Desktop: button grid */}
+                <div className="hidden sm:flex flex-wrap gap-1 rounded bg-background/70 border border-border p-0.5 backdrop-blur-sm max-w-[calc(100vw-5rem)]">
+                    {cameraViews.map(view => (
+                        <button
+                            key={view.id}
+                            onClick={() => handleViewChange(view.id)}
+                            className={`px-2 py-1 min-h-[44px] min-w-[44px] text-xs rounded font-medium transition-colors ${activeView === view.id
+                                ? 'bg-primary text-primary-foreground'
+                                : 'hover:bg-muted text-muted-foreground'
+                                }`}
+                        >
+                            {getLabel(view, 'label', language)}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             <ErrorBoundary t={t}>

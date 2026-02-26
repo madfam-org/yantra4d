@@ -320,6 +320,9 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` — edit tokens there, not in individual app CSS |
 | Embed mode | `?embed=true` hides studio header/banners for iframe embedding. Production nginx must allow `frame-ancestors` for embedding domains |
+| Responsive hooks | `useIsMobile()` / `useIsTablet()` / `useIsDesktop()` / `useIsLandscape()` from `hooks/system/useMediaQuery.js`. Uses `window.matchMedia`; in tests, the global `setup.js` mock returns `matches: false` (desktop mode). Camera view buttons render as both `<select>` (mobile) and `<button>` (desktop) — use `getAllByText` in tests |
+| Mobile layout | Studio mobile (<768px): header overflow DropdownMenu, editor as bottom Sheet, AI dismiss backdrop. Landing mobile: carousel FOV 60°, ContactShadows skipped, dpr capped 1.5 |
+| Safe areas | Studio + Landing use `viewport-fit=cover` and `env(safe-area-inset-*)` CSS utilities for notched devices. Tailwind `xs: 360px` and `landscape` custom screen variants in both configs |
 
 ## Do NOT Edit
 

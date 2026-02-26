@@ -163,7 +163,7 @@ export default function StudioSidebar() {
       </div>
 
       {/* Mobile bottom sheet */}
-      <div className="lg:hidden flex items-center gap-2 border-b border-border bg-card px-4 py-2 shrink-0">
+      <div className="lg:hidden flex items-center gap-2 border-b border-border bg-card px-4 py-2 landscape:py-1 shrink-0">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="min-h-[44px] min-w-[44px]">

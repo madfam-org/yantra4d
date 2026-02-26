@@ -96,11 +96,10 @@ export default function StudioMainView() {
           <span className="truncate flex-1 text-left">{lastLogLine}</span>
         </button>
         {consoleExpanded && (
-          <div className="flex flex-col" style={{ maxHeight: '50vh' }}>
+          <div className="flex flex-col max-h-[50vh] landscape:max-h-[30vh]">
             <div
               ref={consoleRef}
-              className="bg-muted px-3 py-2 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap"
-              style={{ maxHeight: '35vh' }}
+              className="bg-muted px-3 py-2 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap max-h-[35vh] landscape:max-h-[25vh]"
               role="log"
               aria-live="polite"
               aria-label="Render console"

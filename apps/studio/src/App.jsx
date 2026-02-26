@@ -3,9 +3,11 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Sun, Moon, Monitor, Globe } from 'lucide-react'
 import { Toaster } from "@/components/ui/sonner"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { useProject } from './contexts/project/ProjectProvider'
 import { useThemeAndLanguage } from './hooks/system/useThemeAndLanguage'
 import { usePlatform } from './contexts/system/PlatformProvider'
+import { useIsMobile } from './hooks/system/useMediaQuery'
 import StudioHeader from './components/studio/StudioHeader'
 import StudioSidebar from './components/studio/StudioSidebar'
 import StudioMainView from './components/studio/StudioMainView'
@@ -49,6 +51,8 @@ function App() {
   const handleSynthesisComplete = useCallback((newSlug) => {
     navigate(`/project/${newSlug}`)
   }, [navigate])
+
+  const isMobile = useIsMobile()
 
   // Get state from ProjectContext
   const {
@@ -126,6 +130,9 @@ function App() {
     )
   }
 
+  // Whether editor should be shown as bottom sheet on mobile
+  const editorSheet = editorOpen && isMobile
+
   return (
     <div className="flex flex-col h-screen w-full bg-background text-foreground">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:text-sm focus:font-medium">
@@ -143,8 +150,9 @@ function App() {
       )}
 
       {!isEmbed && <RateLimitBanner />}
-      <div className={`flex flex-1 overflow-hidden flex-col lg:flex-row ${editorOpen ? 'editor-layout' : ''}`}>
-        {editorOpen && (
+      <div className={`flex flex-1 overflow-hidden flex-col lg:flex-row ${editorOpen && !isMobile ? 'editor-layout' : ''}`}>
+        {/* Desktop: editor side panel */}
+        {editorOpen && !isMobile && (
           <div className="w-full lg:w-[40%] flex flex-col min-h-0 border-r border-border">
             <ErrorBoundary t={t}>
               <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
@@ -154,6 +162,22 @@ function App() {
             </ErrorBoundary>
           </div>
         )}
+
+        {/* Mobile: editor as bottom sheet */}
+        {editorSheet && (
+          <Sheet open={editorSheet} onOpenChange={(open) => { if (!open) toggleEditor() }}>
+            <SheetContent side="bottom" className="max-h-[60vh] overflow-y-auto p-0 flex flex-col pb-safe">
+              <SheetTitle className="sr-only">Code Editor</SheetTitle>
+              <ErrorBoundary t={t}>
+                <Suspense fallback={<div className="flex items-center justify-center h-32 text-muted-foreground text-sm">Loading editor...</div>}>
+                  <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
+                  <GitPanel slug={projectSlug} />
+                </Suspense>
+              </ErrorBoundary>
+            </SheetContent>
+          </Sheet>
+        )}
+
         {/* φ split: Sidebar ≈ 38.2% | Main ≈ 61.8% */}
         {!editorOpen && (
           <div className="flex flex-col min-h-0 border-r border-border overflow-y-auto" style={{ flex: 1, minWidth: '280px' }}>
@@ -170,19 +194,29 @@ function App() {
 
       {/* AI Configurator overlay */}
       {aiPanelOpen && !editorOpen && (
-        <div className="fixed right-0 top-12 bottom-0 w-full sm:w-80 z-40 border-l border-border shadow-lg bg-background">
-          <ErrorBoundary t={t}>
-            <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
-              <AiChatPanel
-                mode="configurator"
-                projectSlug={projectSlug}
-                manifest={manifest}
-                params={params}
-                setParams={setParams}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        </div>
+        <>
+          {/* Mobile dismiss backdrop */}
+          {isMobile && (
+            <div
+              className="fixed inset-0 z-30 bg-black/20"
+              onClick={toggleAiPanel}
+              aria-hidden="true"
+            />
+          )}
+          <div className="fixed right-0 top-12 bottom-0 w-full sm:w-80 z-40 border-l border-border shadow-lg bg-background max-h-[calc(100dvh-3rem)] pb-safe">
+            <ErrorBoundary t={t}>
+              <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
+                <AiChatPanel
+                  mode="configurator"
+                  projectSlug={projectSlug}
+                  manifest={manifest}
+                  params={params}
+                  setParams={setParams}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          </div>
+        </>
       )}
 
       {/* Fork dialog */}
@@ -203,14 +237,14 @@ function App() {
         onCancel={handleCancelRender}
         estimatedTime={pendingEstimate}
       />
-      
-      <SynthesisModal 
+
+      <SynthesisModal
         open={synthesisModalOpen}
         onOpenChange={setSynthesisModalOpen}
         onSynthesisComplete={handleSynthesisComplete}
       />
 
-      <Toaster richColors position="bottom-right" />
+      <Toaster richColors position={isMobile ? "top-center" : "bottom-right"} />
     </div>
   )
 }

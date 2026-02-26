@@ -488,7 +488,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             aria-label={t('ctrl.bounds')}
                         />
                     </div>
-                    <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                    <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                         {partColors.map((part) => (
                             <div key={part.id} className="flex flex-col gap-1">
                                 <Label htmlFor={`color-${part.id}`} className="text-xs">{getLabel(part, 'label', language)}</Label>

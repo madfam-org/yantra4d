@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense, useMemo } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { ScrollControls, Scroll, useScroll, Environment, ContactShadows, Image, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -14,6 +14,16 @@ const MoveHorizontalIcon = ({ className }: { className?: string }) => (
         <polyline points="18 8 22 12 18 16"></polyline>
         <polyline points="6 8 2 12 6 16"></polyline>
         <line x1="2" y1="12" x2="22" y2="12"></line>
+    </svg>
+);
+const ChevronLeftIcon = ({ className }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+);
+const ChevronRightIcon = ({ className }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
 );
 import { GLBErrorBoundary } from './GLBErrorBoundary';
@@ -97,7 +107,7 @@ function CarouselItem({ project, index, total, radius }: { project: any, index: 
             setIsActive(active);
         }
 
-        // Slightly rotate it continuously if active to let user see the model spinning, 
+        // Slightly rotate it continuously if active to let user see the model spinning,
         // or just let it sit if inactive
         if (active) {
             groupRef.current.rotation.y += 0.005;
@@ -187,20 +197,20 @@ function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t
                 </div>
             </div>
 
-            <div className="w-full max-w-md pointer-events-auto mt-auto">
+            <div className="w-full max-w-[calc(100%-2rem)] sm:max-w-md pointer-events-auto mt-auto">
                 <div className="bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl rounded-xl overflow-hidden transition-all duration-300 flex flex-col">
-                    <div className="p-6 pb-3">
+                    <div className="p-4 sm:p-6 pb-2 sm:pb-3">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-2xl font-bold tracking-tight text-card-foreground">
+                            <h3 className="text-lg sm:text-2xl font-bold tracking-tight text-card-foreground">
                                 {project.name}
                             </h3>
                         </div>
-                        <p className="text-base text-muted-foreground line-clamp-2 leading-relaxed">
+                        <p className="text-base text-muted-foreground line-clamp-1 sm:line-clamp-2 leading-relaxed">
                             {isEs ? project.descriptionEs : project.description}
                         </p>
                     </div>
 
-                    <div className="p-6 pt-0 pb-4 flex flex-col items-start gap-4">
+                    <div className="p-4 sm:p-6 pt-0 pb-4 flex flex-col items-start gap-4">
                         <div className="flex flex-wrap gap-2">
                             {project.isHyperobject && (
                                 <span className="px-2.5 py-1 rounded border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium tracking-wide uppercase">
@@ -213,12 +223,12 @@ function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t
                         </div>
 
                         <div className="w-full border-t border-border/40 pt-4 flex flex-row items-center justify-between">
-                            <p className="text-xs text-muted-foreground italic">Live 3D Rendering Active</p>
+                            <p className="text-xs text-muted-foreground italic hidden sm:block">Live 3D Rendering Active</p>
                             <a
                                 href={`${STUDIO_URL}/project/${project.slug}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2 group"
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2 group min-h-[44px]"
                             >
                                 Open Studio
                                 <span className="transform group-hover:translate-x-1 transition-transform">→</span>
@@ -259,6 +269,10 @@ export default function ProjectCarousel3D({
 
     const carouselProjects = projects;
 
+    // Responsive FOV and performance settings
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const fov = isMobile ? 60 : 45;
+
     useEffect(() => {
         if (activeIndex >= carouselProjects.length) {
             setActiveIndex(Math.max(0, carouselProjects.length - 1));
@@ -269,17 +283,17 @@ export default function ProjectCarousel3D({
     const activeProject = carouselProjects[activeIndex];
 
     return (
-        <div className="relative w-full h-[70vh] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl flex flex-col hide-scrollcontrols-scrollbar">
+        <div className="relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl flex flex-col hide-scrollcontrols-scrollbar">
             {/* Top glassmorphic filter bar overlay */}
             <div className="absolute top-4 left-4 right-4 z-20 pointer-events-none flex flex-col gap-3">
-                <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center">
+                <div className="flex flex-col gap-3 items-stretch sm:flex-row sm:items-center sm:justify-between">
 
                     {/* Filter Pills */}
                     <div className="pointer-events-auto flex flex-wrap gap-2 items-center bg-black/40 backdrop-blur-md p-1.5 rounded-xl border border-white/10 shadow-lg">
                         <select
                             value={activeCategory}
                             onChange={e => setActiveCategory(e.target.value)}
-                            className="bg-transparent text-white text-sm outline-none px-2 py-1 appearance-none cursor-pointer hover:text-blue-400 transition-colors"
+                            className="bg-transparent text-white text-sm outline-none px-2 py-2 min-h-[44px] appearance-none cursor-pointer hover:text-blue-400 transition-colors"
                         >
                             <option value="all" className="bg-zinc-900">{isEs ? 'Todas las Categorías' : 'All Categories'}</option>
                             {CATEGORIES.filter(c => c !== 'all').map(cat => (
@@ -290,7 +304,7 @@ export default function ProjectCarousel3D({
                         <select
                             value={activeDomain}
                             onChange={e => setActiveDomain(e.target.value)}
-                            className="bg-transparent text-white text-sm outline-none px-2 py-1 appearance-none cursor-pointer hover:text-blue-400 transition-colors"
+                            className="bg-transparent text-white text-sm outline-none px-2 py-2 min-h-[44px] appearance-none cursor-pointer hover:text-blue-400 transition-colors"
                         >
                             <option value="all" className="bg-zinc-900">{isEs ? 'Todos los Dominios' : 'All Domains'}</option>
                             {['household', 'industrial', 'medical', 'commercial', 'hybrid', 'culture'].map(dom => (
@@ -309,14 +323,18 @@ export default function ProjectCarousel3D({
                             placeholder={isEs ? "Buscar hyperobjetos..." : "Search hyperobjects..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="block w-full pl-10 pr-3 py-2 border border-white/10 rounded-xl leading-5 bg-black/40 backdrop-blur-md text-zinc-300 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-lg"
+                            className="block w-full pl-10 pr-3 py-2 min-h-[44px] border border-white/10 rounded-xl leading-5 bg-black/40 backdrop-blur-md text-zinc-300 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-lg"
                         />
                     </div>
 
                 </div>
             </div>
 
-            <Canvas camera={{ position: [0, 0, 6], fov: 45 }} className="w-full h-full flex-grow">
+            <Canvas
+                camera={{ position: [0, 0, 6], fov }}
+                className="w-full h-full flex-grow"
+                dpr={isMobile ? [1, 1.5] : [1, 2]}
+            >
                 <color attach="background" args={['#0a0a0a']} />
                 <ambientLight intensity={0.5} />
                 <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
@@ -337,7 +355,9 @@ export default function ProjectCarousel3D({
                     <ambientLight intensity={0.5} />
                     <directionalLight position={[-5, 5, 5]} intensity={0.5} />
                     <pointLight position={[0, 5, -5]} intensity={0.5} />
-                    <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2} far={4.5} />
+                    {!isMobile && (
+                        <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2} far={4.5} />
+                    )}
                 </Suspense>
             </Canvas>
 
@@ -356,12 +376,36 @@ export default function ProjectCarousel3D({
                     total={carouselProjects.length}
                 />
             )}
-            {/* Scroll Indicator */}
+
+            {/* Mobile: prev/next nav arrows */}
             {carouselProjects.length > 1 && (
-                <div className="absolute bottom-6 right-6 z-20 pointer-events-none hidden sm:flex items-center gap-2 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg text-white/80 animate-pulse">
+                <>
+                    <button
+                        onClick={() => setActiveIndex(i => (i - 1 + carouselProjects.length) % carouselProjects.length)}
+                        className="sm:hidden absolute left-2 top-1/2 -translate-y-1/2 z-20 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white/80 active:bg-white/20"
+                        aria-label="Previous project"
+                    >
+                        <ChevronLeftIcon className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => setActiveIndex(i => (i + 1) % carouselProjects.length)}
+                        className="sm:hidden absolute right-2 top-1/2 -translate-y-1/2 z-20 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white/80 active:bg-white/20"
+                        aria-label="Next project"
+                    >
+                        <ChevronRightIcon className="w-5 h-5" />
+                    </button>
+                </>
+            )}
+
+            {/* Scroll/Swipe Indicator */}
+            {carouselProjects.length > 1 && (
+                <div className="absolute bottom-6 right-6 z-20 pointer-events-none flex items-center gap-2 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg text-white/80 animate-pulse">
                     <MoveHorizontalIcon className="w-5 h-5" />
                     <span className="text-sm font-medium tracking-wide">
-                        {isEs ? 'Desliza para explorar' : 'Drag to explore'}
+                        {isEs
+                            ? (isMobile ? 'Desliza para explorar' : 'Desliza para explorar')
+                            : (isMobile ? 'Swipe to explore' : 'Drag to explore')
+                        }
                     </span>
                 </div>
             )}
@@ -371,7 +415,7 @@ export default function ProjectCarousel3D({
                     scrollbar-width: none !important;
                     -ms-overflow-style: none !important;
                 }
-                .hide-scrollcontrols-scrollbar div::-webkit-scrollbar { 
+                .hide-scrollcontrols-scrollbar div::-webkit-scrollbar {
                     display: none !important;
                     width: 0 !important;
                     height: 0 !important;

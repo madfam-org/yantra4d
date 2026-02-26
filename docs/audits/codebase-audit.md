@@ -360,7 +360,7 @@ Spanish is listed as a language code (`es` in `languages.js`) but handled by the
 | 09 | Keyboard | Undo/Redo, parameter navigation, modals |
 | 10 | Rendering | Render trigger, mode selection, parameter re-render |
 | 11 | Shareable URLs | Base64url encoding, link restoration |
-| 12 | Responsive | Touch controls, responsive grid, sidebar collapse |
+| 12 | Responsive | Touch controls, responsive grid, sidebar collapse, mobile overflow menu, landscape layout, AI dismiss backdrop |
 | 13 | Accessibility | WCAG compliance, ARIA labels, semantic HTML |
 | 14 | i18n | Language switching, translation, locale persistence |
 | 15 | Theme | Dark/light toggle, localStorage, system preference |

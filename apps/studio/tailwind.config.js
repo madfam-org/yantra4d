@@ -6,6 +6,10 @@ export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
         extend: {
+            screens: {
+                'xs': '360px',
+                'landscape': { raw: '(orientation: landscape) and (max-width: 1023px)' },
+            },
             borderRadius: {
                 lg: 'var(--radius)',
                 md: 'calc(var(--radius) - 2px)',

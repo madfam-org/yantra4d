@@ -38,7 +38,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                 {editing ? (
                     <input
                         type="number"
-                        className="w-16 text-sm text-right bg-input border border-border rounded px-1 py-0.5"
+                        className="w-16 text-sm text-right bg-input border border-border rounded px-1 py-2 min-h-[44px]"
                         value={editValue}
                         min={param.min} max={param.max} step={param.step}
                         autoFocus
@@ -48,7 +48,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                     />
                 ) : (
                     <span
-                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded-sm"
+                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded-sm min-h-[44px] inline-flex items-center"
                         onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
                         role="button"
                         tabIndex={0}

@@ -30,6 +30,14 @@
 - **Fork-to-Edit**: Pro+ users can fork built-in projects to create editable copies with their own slug.
 - **AI Configurator**: Natural language chat that maps to parameter changes. Available at basic+ tier on all projects. Streams responses via SSE with live slider updates.
 - **AI Code Editor**: Natural language chat that generates SCAD code edits (search/replace). Available at pro+ tier in the code editor. Supports apply/reject workflow with Monaco inline diffs.
+- **Responsive Mobile/Tablet Layout**: Adaptive UI across phone, tablet, and desktop viewports with landscape orientation support.
+    - **Shared `useMediaQuery` hook** (`hooks/system/useMediaQuery.js`): SSR-safe matchMedia wrapper with named exports (`useIsMobile`, `useIsTablet`, `useIsDesktop`, `useIsLandscape`).
+    - **Studio mobile**: Header actions collapse into overflow `DropdownMenu` (<768px). Editor panel renders as a bottom `Sheet` instead of side panel. AI panel has dismiss backdrop. Camera view buttons become a compact `<select>` dropdown. Toaster repositions to top-center.
+    - **Studio landscape**: Header height reduced (`landscape:h-10`), console max-height capped (`landscape:max-h-[30vh]`), sidebar padding compressed.
+    - **Landing mobile**: Carousel height scales (`h-[50vh] sm:h-[60vh] lg:h-[70vh]`), FOV widens to 60° on mobile, ContactShadows skipped for GPU performance, Canvas dpr capped at 1.5. Prev/next chevron buttons for explicit navigation. Filter controls stack vertically.
+    - **Touch targets**: All interactive elements meet WCAG 44px minimum (slider inputs, gallery tabs, carousel selects, info card links).
+    - **Safe areas**: `viewport-fit=cover` + `env(safe-area-inset-*)` CSS utilities for notched devices.
+    - **Tailwind breakpoints**: Custom `xs: 360px` and `landscape` screen variants in both studio and landing configs.
 
 ---
 

@@ -39,14 +39,14 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 justify-center mb-8" role="tablist" aria-label="Project categories">
+      <div className="flex overflow-x-auto snap-x gap-2 justify-start sm:justify-center sm:flex-wrap mb-8 pb-1" role="tablist" aria-label="Project categories">
         {CATEGORIES.map(cat => (
           <button
             key={cat}
             role="tab"
             aria-selected={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2.5 min-h-[44px] text-sm rounded-full border transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activeCategory === cat
+            className={`snap-start shrink-0 px-4 py-2.5 min-h-[44px] text-sm rounded-full border transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activeCategory === cat
               ? 'bg-primary text-primary-foreground border-primary'
               : 'bg-background text-muted-foreground border-border hover:text-foreground'
               }`}
@@ -78,7 +78,7 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
                 height="360"
               />
               {project.isHyperobject && (
-                <span className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm">
+                <span className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm">
                   🔷 Hyperobject
                 </span>
               )}
@@ -88,7 +88,7 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
                 <h3 className="font-semibold text-sm truncate">{project.name}</h3>
                 <div className="flex gap-1 shrink-0">
                   {project.isHyperobject && project.domain && (
-                    <span className="text-[10px] text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 rounded-full px-1.5 py-0.5 font-medium">
+                    <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 rounded-full px-1.5 py-0.5 font-medium">
                       {isEs
                         ? DOMAIN_LABELS[project.domain]?.es ?? project.domain
                         : DOMAIN_LABELS[project.domain]?.en ?? project.domain}

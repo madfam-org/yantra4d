@@ -12,7 +12,7 @@ const studioUrl = STUDIO_URL;
 const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label: 'Español', href: '/' };
 ---
 
-<header class="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm">
+<header class="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm pt-safe">
   <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
     <a href={lang === 'en' ? '/en/' : '/'} class="text-xl font-bold tracking-tight">Yantra4D</a>
     <nav class="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
@@ -46,7 +46,7 @@ const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label:
 
 <div
   id="mobile-menu"
-  class="fixed inset-0 z-[60] flex flex-col bg-background/95 backdrop-blur-sm p-6 hidden"
+  class="fixed inset-0 z-[60] flex flex-col bg-background/95 backdrop-blur-sm p-6 pt-safe pb-safe hidden"
   aria-hidden="true"
 >
   <div class="flex justify-end">
@@ -95,4 +95,7 @@ const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label:
   menuBtn?.addEventListener('click', openMenu);
   closeBtn?.addEventListener('click', closeMenu);
   menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu?.classList.contains('hidden')) closeMenu();
+  });
 </script>

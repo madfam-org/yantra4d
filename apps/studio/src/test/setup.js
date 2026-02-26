@@ -20,11 +20,24 @@ if (typeof sessionStorage === 'undefined' || typeof sessionStorage.clear !== 'fu
   Object.defineProperty(globalThis, 'sessionStorage', { value: createStoragePolyfill(), writable: true })
 }
 
-// Mock window.matchMedia (not available in jsdom)
+// Configurable matchMedia mock — allows tests to simulate mobile/tablet viewports.
+// Usage in tests:
+//   globalThis.__setMediaQuery('(max-width: 767px)', true)  // simulate mobile
+//   globalThis.__resetMediaQueries()                         // reset to defaults
+const mediaQueryOverrides = new Map()
+
+globalThis.__setMediaQuery = (query, matches) => {
+  mediaQueryOverrides.set(query, matches)
+}
+
+globalThis.__resetMediaQueries = () => {
+  mediaQueryOverrides.clear()
+}
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query) => ({
-    matches: false,
+    matches: mediaQueryOverrides.has(query) ? mediaQueryOverrides.get(query) : false,
     media: query,
     onchange: null,
     addListener: () => {},

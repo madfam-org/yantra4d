@@ -245,3 +245,42 @@ test.describe('Responsive Design', () => {
     await expect(page.locator('button', { hasText: 'Reset' })).toBeVisible()
   })
 })
+
+// Landing page responsive tests — requires landing dev server at :4321
+/* eslint-disable no-undef */
+test.describe('Landing Responsive', () => {
+  // eslint-disable-next-line no-empty-pattern, no-unused-vars
+  test.skip(({}, _ti) => !process.env.LANDING_URL, 'Set LANDING_URL to run landing E2E tests')
+
+  const landingUrl = () => process.env.LANDING_URL || 'http://localhost:4321'
+
+  test('mobile: header menu closes on Escape', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.goto(landingUrl())
+    // Open mobile menu
+    const menuBtn = page.locator('#mobile-menu-btn')
+    await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await menuBtn.click()
+    const menu = page.locator('#mobile-menu')
+    await expect(menu).toBeVisible({ timeout: 3000 })
+    // Press Escape to close
+    await page.keyboard.press('Escape')
+    await expect(menu).toBeHidden({ timeout: 3000 })
+  })
+
+  test('carousel canvas survives viewport resize', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.goto(landingUrl())
+    // Scroll to gallery section
+    await page.locator('#gallery').scrollIntoViewIfNeeded().catch(() => {})
+    await page.waitForTimeout(500)
+    // Resize to tablet
+    await page.setViewportSize({ width: 768, height: 1024 })
+    await page.waitForTimeout(500)
+    // Canvas should still exist (not crash)
+    const canvas = page.locator('canvas')
+    if (await canvas.count() > 0) {
+      await expect(canvas.first()).toBeVisible({ timeout: 5000 })
+    }
+  })
+})

@@ -48,8 +48,8 @@ export default function ProjectList() {
             </div>
 
             {/* Table */}
-            <div className="rounded-lg border border-border overflow-hidden">
-                <table className="w-full text-sm">
+            <div className="rounded-lg border border-border overflow-x-auto">
+                <table className="w-full text-sm min-w-[500px]">
                     <thead>
                         <tr className="border-b border-border bg-muted/50">
                             <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Project</th>

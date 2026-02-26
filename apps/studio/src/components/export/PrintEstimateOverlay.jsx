@@ -142,7 +142,7 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
 
   // Legacy absolute overlay (kept for backward compat)
   return (
-    <div role="status" aria-label="Print estimate" className="absolute bottom-2 right-2 bg-card border border-border rounded-lg p-3 text-xs space-y-2 min-w-[180px] z-10">
+    <div role="status" aria-label="Print estimate" className="absolute bottom-2 right-2 pb-safe bg-card border border-border rounded-lg p-3 text-xs space-y-2 min-w-[180px] z-10">
       <div className="font-semibold text-sm">{t('print.title')}</div>
 
       <div className="flex items-center gap-2">

@@ -31,13 +31,15 @@
 - **AI Configurator**: Natural language chat that maps to parameter changes. Available at basic+ tier on all projects. Streams responses via SSE with live slider updates.
 - **AI Code Editor**: Natural language chat that generates SCAD code edits (search/replace). Available at pro+ tier in the code editor. Supports apply/reject workflow with Monaco inline diffs.
 - **Responsive Mobile/Tablet Layout**: Adaptive UI across phone, tablet, and desktop viewports with landscape orientation support.
-    - **Shared `useMediaQuery` hook** (`hooks/system/useMediaQuery.js`): SSR-safe matchMedia wrapper with named exports (`useIsMobile`, `useIsTablet`, `useIsDesktop`, `useIsLandscape`).
-    - **Studio mobile**: Header actions collapse into overflow `DropdownMenu` (<768px). Editor panel renders as a bottom `Sheet` instead of side panel. AI panel has dismiss backdrop. Camera view buttons become a compact `<select>` dropdown. Toaster repositions to top-center.
-    - **Studio landscape**: Header height reduced (`landscape:h-10`), console max-height capped (`landscape:max-h-[30vh]`), sidebar padding compressed.
-    - **Landing mobile**: Carousel height scales (`h-[50vh] sm:h-[60vh] lg:h-[70vh]`), FOV widens to 60° on mobile, ContactShadows skipped for GPU performance, Canvas dpr capped at 1.5. Prev/next chevron buttons for explicit navigation. Filter controls stack vertically.
-    - **Touch targets**: All interactive elements meet WCAG 44px minimum (slider inputs, gallery tabs, carousel selects, info card links).
-    - **Safe areas**: `viewport-fit=cover` + `env(safe-area-inset-*)` CSS utilities for notched devices.
+    - **Shared `useMediaQuery` hook** (`hooks/system/useMediaQuery.js`): SSR-safe matchMedia wrapper with named exports (`useIsMobile`, `useIsTablet`, `useIsDesktop`, `useIsLandscape`). In unit tests, `setup.js` provides a configurable mock: call `globalThis.__setMediaQuery(query, true)` to simulate viewports, `__resetMediaQueries()` to reset.
+    - **Studio mobile**: Header actions collapse into overflow `DropdownMenu` (<768px). Editor panel renders as a bottom `Sheet` instead of side panel (`landscape:max-h-[60vh]` caps sheet height in landscape). AI panel has dismiss backdrop; reset button meets 44px touch target. Camera view buttons become a compact `<select>` dropdown. Toaster repositions to top-center. Project name truncation uses `xs:max-w-[10rem]` breakpoint.
+    - **Studio landscape**: Header height reduced (`landscape:h-10`), console max-height capped (`landscape:max-h-[30vh]`), sidebar padding compressed, bottom sheet capped at 60vh.
+    - **Landing mobile**: Carousel height scales (`h-[50vh] sm:h-[60vh] lg:h-[70vh]`), FOV reactive via `matchMedia` listener (widens to 60° on mobile, updates on rotation). ContactShadows skipped for GPU performance, Canvas dpr capped at 1.5. Prev/next chevron buttons for explicit navigation. Filter controls stack vertically. Header mobile menu closes on Escape key. Hero animations use `motion-safe:` prefix for vestibular disorder accessibility. Adventure section uses `md:min-h-screen` (not forced on mobile). Gallery category buttons use horizontal `snap-x` scroll on mobile, `flex-wrap` on desktop. Badge text uses `text-xs` (not `text-[10px]`). CDG SVG constrained to `max-w-[280px]` on small screens.
+    - **Touch targets**: All interactive elements meet WCAG 44px minimum (slider inputs, gallery tabs, carousel selects, info card links, export format buttons, AI chat reset button).
+    - **Safe areas**: `viewport-fit=cover` + `env(safe-area-inset-*)` CSS utilities (`pb-safe`, `pt-safe`, `px-safe`) for notched devices. Applied to: PrintEstimateOverlay, landing header, mobile menu, footer.
+    - **Scroll affordances**: BomPanel and Controls presets show thin scrollbar on mobile via `.scrollbar-thin` utility (4px height, themed thumb). UploadStep drop zone uses `p-4 sm:p-8` responsive padding.
     - **Tailwind breakpoints**: Custom `xs: 360px` and `landscape` screen variants in both studio and landing configs.
+    - **Admin responsive**: AdminShell has collapsible sidebar — fixed overlay on mobile (<md) with backdrop, relative layout on desktop. Hamburger toggle in mobile header. Responsive padding (`px-4 sm:px-6`, `p-4 sm:p-6`). ProjectList table uses `overflow-x-auto` with `min-w-[500px]` for readable columns on narrow viewports.
 
 ---
 

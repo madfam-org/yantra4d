@@ -171,7 +171,7 @@ export default function StudioSidebar() {
               <span className="sr-only">Open controls</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto p-4 flex flex-col gap-4">
+          <SheetContent side="bottom" className="max-h-[85vh] landscape:max-h-[60vh] overflow-y-auto p-4 flex flex-col gap-4">
             <SheetTitle className="sr-only">Controls</SheetTitle>
             <SidebarContent />
           </SheetContent>

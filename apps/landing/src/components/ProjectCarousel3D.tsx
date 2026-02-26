@@ -269,8 +269,15 @@ export default function ProjectCarousel3D({
 
     const carouselProjects = projects;
 
-    // Responsive FOV and performance settings
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    // Responsive FOV and performance settings — reactive to viewport changes
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+    useEffect(() => {
+        const mql = window.matchMedia('(max-width: 767px)');
+        const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile(e.matches);
+        handler(mql);
+        mql.addEventListener('change', handler as (e: MediaQueryListEvent) => void);
+        return () => mql.removeEventListener('change', handler as (e: MediaQueryListEvent) => void);
+    }, []);
     const fov = isMobile ? 60 : 45;
 
     useEffect(() => {

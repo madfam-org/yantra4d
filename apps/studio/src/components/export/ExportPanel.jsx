@@ -49,7 +49,7 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
                   key={f.id}
                   type="button"
                   title={isLocked ? t("tier.pro_required") : undefined}
-                  className={`px-2 py-0.5 rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 
+                  className={`px-2 py-2 min-h-[44px] rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 
                   ${isLocked ? 'hover:bg-muted text-muted-foreground border-border' :
                       (exportFormat || 'stl') === f.id
                         ? 'bg-primary text-primary-foreground border-primary'

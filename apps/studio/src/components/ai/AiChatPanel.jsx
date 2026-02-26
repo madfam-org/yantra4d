@@ -51,7 +51,7 @@ export default function AiChatPanel({ mode, projectSlug, manifest, params, setPa
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           {mode === 'configurator' ? 'AI Configurator' : 'AI Code Editor'}
         </span>
-        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={resetSession} title="New conversation">
+        <Button variant="ghost" size="icon" className="h-8 w-8 min-h-[44px] min-w-[44px]" onClick={resetSession} title="New conversation">
           <RotateCcw className="h-3.5 w-3.5" />
           <span className="sr-only">New conversation</span>
         </Button>

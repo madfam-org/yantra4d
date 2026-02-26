@@ -256,7 +256,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
             {/* Size Presets */}
             {visiblePresets.length > 0 && (
-                <div className="flex overflow-x-auto gap-2 pb-3 no-scrollbar">
+                <div className="flex overflow-x-auto gap-2 pb-3 scrollbar-thin sm:no-scrollbar">
                     {visiblePresets.map(p => (
                         <button
                             key={p.id}

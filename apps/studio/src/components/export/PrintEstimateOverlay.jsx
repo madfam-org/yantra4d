@@ -78,7 +78,7 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
           <label htmlFor="pe-material-inline" className="text-muted-foreground shrink-0">{t('print.material')}:</label>
           <select
             id="pe-material-inline"
-            className="bg-background border border-border rounded px-1 py-0.5 text-xs flex-1 min-w-0"
+            className="bg-background border border-border rounded px-2 py-2 sm:py-0.5 text-base sm:text-xs min-h-[44px] sm:min-h-0 flex-1 min-w-0"
             value={material}
             onChange={e => setMaterial(e.target.value)}
           >
@@ -92,7 +92,7 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
           <label htmlFor="pe-infill-inline" className="text-muted-foreground shrink-0">{t('print.infill')}:</label>
           <select
             id="pe-infill-inline"
-            className="bg-background border border-border rounded px-1 py-0.5 text-xs flex-1 min-w-0"
+            className="bg-background border border-border rounded px-2 py-2 sm:py-0.5 text-base sm:text-xs min-h-[44px] sm:min-h-0 flex-1 min-w-0"
             value={infill}
             onChange={e => setInfill(parseFloat(e.target.value))}
           >
@@ -149,7 +149,7 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
         <label htmlFor="pe-material" className="text-muted-foreground">{t('print.material')}:</label>
         <select
           id="pe-material"
-          className="bg-background border border-border rounded px-1 py-0.5 text-xs"
+          className="bg-background border border-border rounded px-2 py-2 sm:py-0.5 text-base sm:text-xs min-h-[44px] sm:min-h-0"
           value={material}
           onChange={e => setMaterial(e.target.value)}
         >
@@ -163,7 +163,7 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
         <label htmlFor="pe-infill" className="text-muted-foreground">{t('print.infill')}:</label>
         <select
           id="pe-infill"
-          className="bg-background border border-border rounded px-1 py-0.5 text-xs"
+          className="bg-background border border-border rounded px-2 py-2 sm:py-0.5 text-base sm:text-xs min-h-[44px] sm:min-h-0"
           value={infill}
           onChange={e => setInfill(parseFloat(e.target.value))}
         >

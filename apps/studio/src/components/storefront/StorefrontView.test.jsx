@@ -199,9 +199,9 @@ describe('StorefrontView', () => {
       }
       render(<StorefrontView />)
       expect(screen.getByTestId('storefront-title')).toHaveTextContent('No Desc Product')
-      // No <p> with description class should exist
-      const desc = screen.getByTestId('storefront-view').querySelector('.storefront-view__description')
-      expect(desc).toBeNull()
+      // No description <p> should exist next to the title
+      const titleParent = screen.getByTestId('storefront-title').parentElement
+      expect(titleParent.querySelector('p')).toBeNull()
     })
 
     it('does not render description paragraph when description is null/undefined', () => {
@@ -218,8 +218,8 @@ describe('StorefrontView', () => {
       }
       render(<StorefrontView />)
       expect(screen.getByTestId('storefront-title')).toHaveTextContent('Null Desc Product')
-      const desc = screen.getByTestId('storefront-view').querySelector('.storefront-view__description')
-      expect(desc).toBeNull()
+      const titleParent = screen.getByTestId('storefront-title').parentElement
+      expect(titleParent.querySelector('p')).toBeNull()
     })
   })
 
@@ -239,8 +239,8 @@ describe('StorefrontView', () => {
       }
       render(<StorefrontView />)
       expect(screen.getByText('Has description but no tags')).toBeInTheDocument()
-      const tagsDiv = screen.getByTestId('storefront-view').querySelector('.storefront-view__tags')
-      expect(tagsDiv).toBeNull()
+      // No tag spans (prefixed with #) should exist
+      expect(screen.queryByText(/^#/)).not.toBeInTheDocument()
     })
 
     it('does not render tags section when tags is undefined', () => {
@@ -256,8 +256,7 @@ describe('StorefrontView', () => {
         },
       }
       render(<StorefrontView />)
-      const tagsDiv = screen.getByTestId('storefront-view').querySelector('.storefront-view__tags')
-      expect(tagsDiv).toBeNull()
+      expect(screen.queryByText(/^#/)).not.toBeInTheDocument()
     })
   })
 

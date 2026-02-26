@@ -44,8 +44,8 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                 setJsonError(`Invalid JSON: ${err.message}`)
               }
             }}
-            rows={20}
-            className={`w-full mt-1 px-3 py-2 rounded-md border bg-background font-mono text-xs ${jsonError ? 'border-destructive' : 'border-border'}`}
+            rows={12}
+            className={`w-full mt-1 px-3 py-2 rounded-md border bg-background font-mono text-base sm:text-xs ${jsonError ? 'border-destructive' : 'border-border'}`}
             aria-invalid={!!jsonError}
           />
           {jsonError && (
@@ -61,7 +61,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
               type="text"
               value={manifest.project.name}
               onChange={(e) => updateManifestField("project.name", e.target.value)}
-              className="w-full mt-1 px-3 py-2 rounded-md border border-border bg-background text-sm"
+              className="w-full mt-1 px-3 py-2 rounded-md border border-border bg-background text-base sm:text-sm"
             />
           </div>
 
@@ -71,7 +71,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
             <div className="grid gap-2 mt-1">
               {(manifest.modes || []).map((mode, idx) => (
                 <div key={idx} className="border border-border rounded-md p-3 space-y-2">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={mode.id}
@@ -80,7 +80,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                         modes[idx] = { ...modes[idx], id: e.target.value }
                         setManifest(prev => ({ ...prev, modes }))
                       }}
-                      className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background min-h-[44px]"
+                      className="flex-1 px-2 py-1 text-base sm:text-sm rounded border border-border bg-background min-h-[44px]"
                       placeholder="Mode ID"
                     />
                     <input
@@ -91,7 +91,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                         modes[idx] = { ...modes[idx], label: e.target.value }
                         setManifest(prev => ({ ...prev, modes }))
                       }}
-                      className="flex-1 px-2 py-1 text-sm rounded border border-border bg-background min-h-[44px]"
+                      className="flex-1 px-2 py-1 text-base sm:text-sm rounded border border-border bg-background min-h-[44px]"
                       placeholder="Label"
                     />
                   </div>
@@ -130,7 +130,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                             parameters[idx] = { ...parameters[idx], default: val }
                             setManifest(prev => ({ ...prev, parameters }))
                           }}
-                          className="w-16 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-xs"
+                          className="w-16 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-base sm:text-xs"
                         />
                       </td>
                       <td className="py-1 pr-2">
@@ -143,7 +143,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                               parameters[idx] = { ...parameters[idx], min: parseFloat(e.target.value) || 0 }
                               setManifest(prev => ({ ...prev, parameters }))
                             }}
-                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-xs"
+                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-base sm:text-xs"
                           />
                         )}
                       </td>
@@ -157,7 +157,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                               parameters[idx] = { ...parameters[idx], max: parseFloat(e.target.value) || 0 }
                               setManifest(prev => ({ ...prev, parameters }))
                             }}
-                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-xs"
+                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-base sm:text-xs"
                           />
                         )}
                       </td>

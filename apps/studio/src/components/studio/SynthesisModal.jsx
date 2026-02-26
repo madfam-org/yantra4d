@@ -98,7 +98,7 @@ export default function SynthesisModal({ open, onOpenChange, onSynthesisComplete
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
       <div className="bg-background border border-border shadow-lg rounded-lg w-full max-w-[95vw] sm:max-w-lg flex flex-col max-h-[90dvh]">
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-500" />
@@ -117,13 +117,13 @@ export default function SynthesisModal({ open, onOpenChange, onSynthesisComplete
           </button>
         </div>
 
-        <div className="flex flex-col gap-4 p-6 flex-1 overflow-hidden">
+        <div className="flex flex-col gap-4 p-4 sm:p-6 flex-1 overflow-hidden">
           {!isGenerating && logs.length === 0 ? (
             <textarea
               placeholder="e.g. Generate a stackable slide-holder box measuring 100x50x20mm..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base sm:text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+              className="flex min-h-[100px] sm:min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base sm:text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none"
             />
           ) : (
             <div className="flex-1 bg-black text-green-400 p-4 rounded-md font-mono text-xs whitespace-pre-wrap min-h-[200px] overflow-y-auto">
@@ -142,7 +142,7 @@ export default function SynthesisModal({ open, onOpenChange, onSynthesisComplete
           )}
         </div>
 
-        <div className="flex justify-end gap-3 p-6 pt-2">
+        <div className="flex justify-end gap-3 p-4 sm:p-6 pt-2">
           <Button
             variant="ghost"
             onClick={() => onOpenChange(false)}

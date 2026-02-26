@@ -46,7 +46,7 @@ export default function ForkDialog({ slug, projectName, onClose, onForked }) {
       onClick={onClose}
     >
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-      <div role="dialog" aria-modal="true" aria-label="Fork project" className="bg-card rounded-lg border border-border shadow-lg p-6 max-w-[95vw] sm:max-w-md w-full mx-4" onClick={e => e.stopPropagation()} onKeyDown={e => { if (e.key === 'Escape') onClose() }}>
+      <div role="dialog" aria-modal="true" aria-label="Fork project" className="bg-card rounded-lg border border-border shadow-lg p-6 max-w-[95vw] sm:max-w-md w-full mx-4 max-h-[90dvh] overflow-y-auto" onClick={e => e.stopPropagation()} onKeyDown={e => { if (e.key === 'Escape') onClose() }}>
         <div className="flex items-center gap-2 mb-4">
           <GitFork className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">Fork Project</h2>

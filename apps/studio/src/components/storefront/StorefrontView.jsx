@@ -55,21 +55,21 @@ export default function StorefrontView({ onExitStorefront }) {
     }, [activePreset, projectSlug])
 
     return (
-        <div className="storefront-view" data-testid="storefront-view">
+        <div className="flex flex-col min-h-dvh bg-background" data-testid="storefront-view">
             {/* Header */}
-            <header className="storefront-view__header">
-                <div className="storefront-view__header-inner">
+            <header className="border-b border-border bg-card px-4 py-4 sm:px-6 sm:py-6">
+                <div className="flex items-start justify-between gap-4 max-w-4xl mx-auto">
                     <div>
-                        <h1 className="storefront-view__title" data-testid="storefront-title">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight" data-testid="storefront-title">
                             {name}
                         </h1>
                         {description && (
-                            <p className="storefront-view__description">{description}</p>
+                            <p className="text-sm sm:text-base text-muted-foreground mt-1">{description}</p>
                         )}
                         {project.tags?.length > 0 && (
-                            <div className="storefront-view__tags">
+                            <div className="flex flex-wrap gap-1.5 mt-2">
                                 {project.tags.map(tag => (
-                                    <span key={tag} className="storefront-view__tag">#{tag}</span>
+                                    <span key={tag} className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">#{tag}</span>
                                 ))}
                             </div>
                         )}
@@ -78,7 +78,7 @@ export default function StorefrontView({ onExitStorefront }) {
                     {/* Exit storefront (dev shortcut) */}
                     {onExitStorefront && (
                         <button
-                            className="storefront-view__exit-btn"
+                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] justify-center"
                             onClick={onExitStorefront}
                             data-testid="exit-storefront"
                             title="Exit storefront preview"
@@ -90,10 +90,10 @@ export default function StorefrontView({ onExitStorefront }) {
                 </div>
             </header>
 
-            <main className="storefront-view__main">
+            <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8 max-w-4xl mx-auto w-full space-y-8">
                 {/* Preset Gallery */}
                 {presets.length > 0 && (
-                    <section className="storefront-view__section">
+                    <section>
                         <PresetGallery
                             presets={presets}
                             currentMode={firstMode}
@@ -105,24 +105,24 @@ export default function StorefrontView({ onExitStorefront }) {
 
                 {/* BOM */}
                 {bom.length > 0 && (
-                    <section className="storefront-view__section" data-testid="storefront-bom">
-                        <h2 className="storefront-view__section-title">
+                    <section data-testid="storefront-bom">
+                        <h2 className="text-lg font-semibold mb-3">
                             {t('storefront.bom', 'Bill of Materials')}
                         </h2>
-                        <table className="storefront-view__bom-table">
+                        <table className="w-full text-sm border-collapse">
                             <thead>
                                 <tr>
-                                    <th>{t('bom.part', 'Part')}</th>
-                                    <th>{t('bom.qty', 'Qty')}</th>
-                                    <th>{t('bom.supplier', 'Supplier')}</th>
+                                    <th className="text-left text-xs text-muted-foreground py-2 pr-4 border-b border-border">{t('bom.part', 'Part')}</th>
+                                    <th className="text-left text-xs text-muted-foreground py-2 pr-4 border-b border-border">{t('bom.qty', 'Qty')}</th>
+                                    <th className="text-left text-xs text-muted-foreground py-2 pr-4 border-b border-border">{t('bom.supplier', 'Supplier')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {bom.map((item, i) => (
                                     <tr key={i}>
-                                        <td>{getLabel(item.label) || item.id}</td>
-                                        <td>{item.qty ?? 1}</td>
-                                        <td>
+                                        <td className="py-2 pr-4 border-b border-border/50">{getLabel(item.label) || item.id}</td>
+                                        <td className="py-2 pr-4 border-b border-border/50">{item.qty ?? 1}</td>
+                                        <td className="py-2 pr-4 border-b border-border/50">
                                             {item.url
                                                 ? <a href={item.url} target="_blank" rel="noopener noreferrer">
                                                     {item.supplier || t('bom.buy', 'Buy')}
@@ -137,10 +137,10 @@ export default function StorefrontView({ onExitStorefront }) {
                 )}
 
                 {/* CTAs */}
-                <section className="storefront-view__ctas">
+                <section className="flex flex-col sm:flex-row gap-3">
                     <Button
                         onClick={handleGenerate}
-                        className="storefront-view__cta-primary"
+                        className="gap-2 min-h-[44px]"
                         data-testid="storefront-generate"
                     >
                         <Download size={16} />
@@ -151,7 +151,7 @@ export default function StorefrontView({ onExitStorefront }) {
                         <Button
                             variant="outline"
                             onClick={handleShare}
-                            className="storefront-view__cta-share"
+                            className="gap-2 min-h-[44px]"
                             data-testid="storefront-share"
                         >
                             <Share2 size={16} />

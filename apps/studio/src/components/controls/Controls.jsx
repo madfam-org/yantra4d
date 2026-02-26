@@ -147,7 +147,7 @@ function ComponentPickerWidget({ param, setParams, getLabel, language }) {
                             key={comp.id}
                             type="button"
                             data-testid={`component-option-${comp.id}`}
-                            className={`text-left px-2 py-1.5 text-xs rounded border transition-colors ${selected === comp.id
+                            className={`text-left px-2 py-2 sm:py-1.5 text-xs rounded border transition-colors min-h-[44px] sm:min-h-0 ${selected === comp.id
                                 ? 'bg-primary text-primary-foreground border-primary'
                                 : 'bg-background border-border hover:border-primary/50 hover:bg-accent'
                                 }`}
@@ -294,7 +294,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             <button
                                 key={id}
                                 type="button"
-                                className={`flex-1 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${activeGp === id
+                                className={`flex-1 px-3 py-2 sm:py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[44px] sm:min-h-0 ${activeGp === id
                                     ? 'bg-primary text-primary-foreground border-primary'
                                     : 'bg-background text-muted-foreground border-border hover:text-foreground'
                                     }`}

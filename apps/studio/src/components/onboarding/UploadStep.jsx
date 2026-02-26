@@ -12,7 +12,7 @@ export default function UploadStep({ slug, setSlug, files, handleFileDrop, handl
           type="text"
           value={slug}
           onChange={(e) => setSlug(e.target.value.replace(/[^a-z0-9-_]/gi, ""))}
-          className="w-full mt-1 px-3 py-2 rounded-md border border-border bg-background text-sm"
+          className="w-full mt-1 px-3 py-2 rounded-md border border-border bg-background text-base sm:text-sm"
           placeholder={t("onboard.slug_placeholder")}
         />
       </div>

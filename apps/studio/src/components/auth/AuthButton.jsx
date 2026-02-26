@@ -69,7 +69,7 @@ export default function AuthButton() {
           {OAUTH_PROVIDERS.map((provider) => (
             <button
               key={provider.id}
-              className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+              className="w-full rounded-sm px-3 py-3 sm:py-1.5 text-left text-base sm:text-sm hover:bg-accent hover:text-accent-foreground min-h-[44px] sm:min-h-0"
               onClick={() => {
                 setOpen(false)
                 signInWithOAuth(provider.id)

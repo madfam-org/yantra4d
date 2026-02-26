@@ -18,7 +18,7 @@ export default function TpmsTopologyControl({ param, value, onChange, getLabel, 
                         key={opt.value}
                         type="button"
                         onClick={() => onChange(param.id, [opt.value])}
-                        className={`flex flex-col items-center justify-center p-2 rounded-md border text-xs transition-colors ${value === opt.value
+                        className={`flex flex-col items-center justify-center p-2 rounded-md border text-xs transition-colors min-h-[44px] ${value === opt.value
                                 ? 'bg-primary text-primary-foreground border-primary'
                                 : 'bg-background text-muted-foreground border-border hover:border-primary/50'
                             }`}

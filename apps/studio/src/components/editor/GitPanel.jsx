@@ -258,7 +258,7 @@ export default function GitPanel({ slug }) {
       {allChanged.length > 0 && (
         <div className="max-h-48 overflow-y-auto">
           {allChanged.map(file => (
-            <label key={file} className="flex items-center gap-2 px-3 py-0.5 text-xs hover:bg-muted cursor-pointer">
+            <label key={file} className="flex items-center gap-2 px-3 py-2 sm:py-0.5 text-xs hover:bg-muted cursor-pointer min-h-[44px] sm:min-h-0">
               <input
                 type="checkbox"
                 checked={selectedFiles.includes(file)}
@@ -277,7 +277,7 @@ export default function GitPanel({ slug }) {
       {/* Diff preview */}
       {diff && (
         <details className="border-t border-border">
-          <summary className="flex items-center justify-between px-3 py-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+          <summary className="flex items-center justify-between px-3 py-2 sm:py-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground min-h-[44px] sm:min-h-0">
             <span>Diff preview</span>
             <Button
               variant={headDiffMode ? "secondary" : "outline"}

@@ -201,7 +201,7 @@ function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t
                 <div className="bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl rounded-xl overflow-hidden transition-all duration-300 flex flex-col">
                     <div className="p-4 sm:p-6 pb-2 sm:pb-3">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-lg sm:text-2xl font-bold tracking-tight text-card-foreground">
+                            <h3 className="text-lg sm:text-2xl font-bold tracking-tight text-card-foreground truncate">
                                 {project.name}
                             </h3>
                         </div>
@@ -290,7 +290,7 @@ export default function ProjectCarousel3D({
     const activeProject = carouselProjects[activeIndex];
 
     return (
-        <div className="relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl flex flex-col hide-scrollcontrols-scrollbar">
+        <div className="relative w-full h-[50vh] landscape:h-[70vh] sm:h-[60vh] lg:h-[70vh] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl flex flex-col hide-scrollcontrols-scrollbar">
             {/* Top glassmorphic filter bar overlay */}
             <div className="absolute top-4 left-4 right-4 z-20 pointer-events-none flex flex-col gap-3">
                 <div className="flex flex-col gap-3 items-stretch sm:flex-row sm:items-center sm:justify-between">
@@ -300,7 +300,7 @@ export default function ProjectCarousel3D({
                         <select
                             value={activeCategory}
                             onChange={e => setActiveCategory(e.target.value)}
-                            className="bg-transparent text-white text-sm outline-none px-2 py-2 min-h-[44px] appearance-none cursor-pointer hover:text-blue-400 transition-colors"
+                            className="bg-transparent text-white text-base md:text-sm outline-none px-2 py-2 min-h-[44px] appearance-none cursor-pointer hover:text-blue-400 transition-colors"
                         >
                             <option value="all" className="bg-zinc-900">{isEs ? 'Todas las Categorías' : 'All Categories'}</option>
                             {CATEGORIES.filter(c => c !== 'all').map(cat => (
@@ -311,7 +311,7 @@ export default function ProjectCarousel3D({
                         <select
                             value={activeDomain}
                             onChange={e => setActiveDomain(e.target.value)}
-                            className="bg-transparent text-white text-sm outline-none px-2 py-2 min-h-[44px] appearance-none cursor-pointer hover:text-blue-400 transition-colors"
+                            className="bg-transparent text-white text-base md:text-sm outline-none px-2 py-2 min-h-[44px] appearance-none cursor-pointer hover:text-blue-400 transition-colors"
                         >
                             <option value="all" className="bg-zinc-900">{isEs ? 'Todos los Dominios' : 'All Domains'}</option>
                             {['household', 'industrial', 'medical', 'commercial', 'hybrid', 'culture'].map(dom => (

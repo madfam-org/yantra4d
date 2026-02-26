@@ -49,7 +49,7 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
                   key={f.id}
                   type="button"
                   title={isLocked ? t("tier.pro_required") : undefined}
-                  className={`px-2 py-2 min-h-[44px] rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 
+                  className={`px-2 py-2 min-h-[44px] min-w-[44px] rounded text-xs border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 
                   ${isLocked ? 'hover:bg-muted text-muted-foreground border-border' :
                       (exportFormat || 'stl') === f.id
                         ? 'bg-primary text-primary-foreground border-primary'
@@ -84,7 +84,7 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
           variant="outline"
           onClick={onDownloadStl}
           disabled={disabled}
-          className="w-full gap-2"
+          className="w-full gap-2 min-h-[44px]"
           title={disabled ? "Render model first" : t("tooltip.download")}
         >
           <Download className="h-4 w-4" />
@@ -105,7 +105,7 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
           variant="outline"
           onClick={onDownloadScad}
           disabled={disabled}
-          className="w-full gap-2"
+          className="w-full gap-2 min-h-[44px]"
           title={disabled ? "Render model first" : undefined}
         >
           <FileCode className="h-4 w-4" />

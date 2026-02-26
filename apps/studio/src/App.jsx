@@ -109,10 +109,10 @@ function App() {
           </div>
           <div className="flex items-center gap-2">
             <AuthButton />
-            <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={toggleLanguage} title={language === 'es' ? t('lang.switch_to_en') : t('lang.switch_to_es')}>
               <Globe className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={cycleTheme} title={t(`theme.${theme}`)}>
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={cycleTheme} title={t(`theme.${theme}`)}>
               <ThemeIcon className="h-5 w-5" />
             </Button>
           </div>
@@ -203,7 +203,7 @@ function App() {
               aria-hidden="true"
             />
           )}
-          <div className="fixed right-0 top-12 bottom-0 w-full sm:w-80 z-40 border-l border-border shadow-lg bg-background max-h-[calc(100dvh-3rem)] pb-safe pr-safe">
+          <div className="fixed right-0 top-12 landscape:top-10 bottom-0 w-full sm:w-80 z-40 border-l border-border shadow-lg bg-background max-h-[calc(100dvh-3rem)] landscape:max-h-[calc(100dvh-2.5rem)] pb-safe pr-safe">
             <ErrorBoundary t={t}>
               <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
                 <AiChatPanel

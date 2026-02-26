@@ -85,7 +85,7 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
             </div>
             <div className="p-4">
               <div className="flex items-center justify-between mb-1 gap-1">
-                <h3 className="font-semibold text-sm truncate">{project.name}</h3>
+                <h3 className="font-semibold text-sm truncate min-w-0">{project.name}</h3>
                 <div className="flex gap-1 shrink-0">
                   {project.isHyperobject && project.domain && (
                     <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 rounded-full px-1.5 py-0.5 font-medium">

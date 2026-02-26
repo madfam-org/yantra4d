@@ -37,7 +37,7 @@ export default function EnergySliderControl({ value, onChange, thermodynamics, l
                     step={1}
                     value={value || 0}
                     onChange={(e) => onChange('simulated_energy', parseFloat(e.target.value))}
-                    className="flex-1 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:w-7 [&::-moz-range-thumb]:h-7 [&::-moz-range-thumb]:w-7"
+                    className="flex-1 h-2 min-h-[44px] bg-secondary rounded-lg appearance-none cursor-pointer accent-primary [&::-webkit-slider-thumb]:h-11 [&::-webkit-slider-thumb]:w-11 [&::-moz-range-thumb]:h-11 [&::-moz-range-thumb]:w-11"
                 />
                 <span className="text-xs text-muted-foreground">{maxTemp}°C</span>
             </div>

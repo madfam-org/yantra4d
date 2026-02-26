@@ -8,9 +8,9 @@ interface Props {
 const { t } = Astro.props;
 ---
 
-<section class="py-24 px-6 bg-secondary/30">
+<section class="py-16 sm:py-24 px-6 bg-secondary/30">
   <div class="mx-auto max-w-5xl">
-    <h2 class="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t ? t.howItWorks.heading : 'Cómo Funciona'}</h2>
+    <h2 class="mb-8 sm:mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t ? t.howItWorks.heading : 'Cómo Funciona'}</h2>
 
     <div class="grid gap-12 md:grid-cols-2">
       <!-- Maker Track -->

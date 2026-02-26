@@ -19,7 +19,7 @@ export default function ProjectSelector() {
           }
           switchProject(e.target.value)
         }}
-        className="h-8 px-2 text-sm rounded-md border border-border bg-background text-foreground"
+        className="h-11 min-h-[44px] px-2 text-base md:text-sm rounded-md border border-border bg-background text-foreground"
         aria-label="Select project"
       >
         {projects.map((p) => (

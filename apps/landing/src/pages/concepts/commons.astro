@@ -16,7 +16,7 @@ const t = getTranslations(lang);
 >
   <Header lang={lang} t={t} />
   
-  <main class="pt-20">
+  <main class="pt-24 sm:pt-20">
     <section class="relative min-h-[60vh] flex items-center justify-center px-6 overflow-hidden">
       <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-green-900/10"></div>
       
@@ -35,7 +35,7 @@ const t = getTranslations(lang);
       </div>
     </section>
 
-    <section class="max-w-5xl mx-auto px-6 py-24 space-y-24">
+    <section class="max-w-5xl mx-auto px-6 py-12 sm:py-24 space-y-12 sm:space-y-24">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="space-y-6">
           <h2 class="text-3xl font-bold">{t.concepts.commons.section1Title}</h2>

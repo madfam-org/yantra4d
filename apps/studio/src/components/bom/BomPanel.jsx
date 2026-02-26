@@ -44,17 +44,17 @@ export default function BomPanel({ params }) {
           <tbody>
             {rows.map(row => (
               <tr key={row.id} className="border-b border-border/50">
-                <td className="py-1.5 pr-2">
+                <td className="py-2.5 md:py-1.5 pr-2">
                   {row.supplier_url ? (
-                    <a href={row.supplier_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    <a href={row.supplier_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center min-h-[44px] md:min-h-0">
                       {getLabel(row, 'label', language)}
                     </a>
                   ) : (
                     getLabel(row, 'label', language)
                   )}
                 </td>
-                <td className="py-1.5 pr-2 text-right font-mono">{row.quantity}</td>
-                <td className="py-1.5 text-muted-foreground">{row.unit || 'pcs'}</td>
+                <td className="py-2.5 md:py-1.5 pr-2 text-right font-mono">{row.quantity}</td>
+                <td className="py-2.5 md:py-1.5 text-muted-foreground">{row.unit || 'pcs'}</td>
               </tr>
             ))}
           </tbody>

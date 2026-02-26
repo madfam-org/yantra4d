@@ -48,7 +48,7 @@ function MaterialPickerWidget({ params, setParams, materials, setMaterials }) {
                 </Label>
                 <select
                     id="material-target"
-                    className="w-full px-3 py-2 text-base sm:text-sm min-h-[44px] rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="w-full px-3 py-2 text-base md:text-sm min-h-[44px] rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     value={selected || ""}
                     onChange={handleSelect}
                 >
@@ -147,7 +147,7 @@ function ComponentPickerWidget({ param, setParams, getLabel, language }) {
                             key={comp.id}
                             type="button"
                             data-testid={`component-option-${comp.id}`}
-                            className={`text-left px-2 py-2 sm:py-1.5 text-xs rounded border transition-colors min-h-[44px] sm:min-h-0 ${selected === comp.id
+                            className={`text-left px-2 py-2 md:py-1.5 text-xs rounded border transition-colors min-h-[44px] md:min-h-0 ${selected === comp.id
                                 ? 'bg-primary text-primary-foreground border-primary'
                                 : 'bg-background border-border hover:border-primary/50 hover:bg-accent'
                                 }`}
@@ -289,12 +289,12 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                     return v && Object.entries(v).every(([k, val]) => params[k] === val)
                 }) || null
                 return (
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {presetKeys.map(id => (
                             <button
                                 key={id}
                                 type="button"
-                                className={`flex-1 px-3 py-2 sm:py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[44px] sm:min-h-0 ${activeGp === id
+                                className={`flex-1 px-3 py-2 md:py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[44px] md:min-h-0 ${activeGp === id
                                     ? 'bg-primary text-primary-foreground border-primary'
                                     : 'bg-background text-muted-foreground border-border hover:text-foreground'
                                     }`}
@@ -319,7 +319,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                                 id={`text-${param.id}`}
                                 type="text"
                                 maxLength={param.maxlength || DEFAULT_TEXT_MAX_LENGTH}
-                                className="w-full px-3 py-2 text-base sm:text-sm min-h-[44px] rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                className="w-full px-3 py-2 text-base md:text-sm min-h-[44px] rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 value={params[param.id] ?? ''}
                                 onChange={(e) => setParams(prev => ({ ...prev, [param.id]: e.target.value }))}
                                 aria-invalid={param.maxlength && (params[param.id]?.length || 0) > param.maxlength ? 'true' : undefined}
@@ -495,7 +495,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                                 <input
                                     id={`color-${part.id}`}
                                     type="color"
-                                    className="w-full h-8 cursor-pointer"
+                                    className="w-full h-11 min-h-[44px] cursor-pointer"
                                     value={colors[part.id] || part.default_color}
                                     onChange={(e) => handleColorChange(part.id, e.target.value)}
                                 />

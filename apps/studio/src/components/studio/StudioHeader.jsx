@@ -63,7 +63,7 @@ export default function StudioHeader({
   }, [])
 
   return (
-    <header className="h-12 landscape:h-10 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
+    <header className="h-12 landscape:h-11 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
       <div className="flex items-center gap-3 min-w-0">
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-2 min-w-0">
@@ -81,9 +81,9 @@ export default function StudioHeader({
             {t('platform.powered_by')} {!platformLoading ? platformName : ''}
           </span>
         </div>
-        {isMobile && <Link to="/projects" className="text-xs text-muted-foreground hover:text-foreground">{t('nav.projects')}</Link>}
+        {isMobile && <Link to="/projects" className="inline-flex items-center min-h-[44px] px-1 text-xs text-muted-foreground hover:text-foreground">{t('nav.projects')}</Link>}
         {!isMobile && <ProjectSelector />}
-        {!isMobile && <Link to="/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</Link>}
+        {!isMobile && <Link to="/projects" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</Link>}
       </div>
       <div className="flex items-center gap-1">
         <AuthButton />

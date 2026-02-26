@@ -46,7 +46,7 @@ const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label:
 
 <div
   id="mobile-menu"
-  class="fixed inset-0 z-[60] flex flex-col bg-background/95 backdrop-blur-sm p-6 pt-safe pb-safe hidden"
+  class="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-background/95 backdrop-blur-sm p-6 pt-safe pb-safe hidden"
   aria-hidden="true"
 >
   <div class="flex justify-end">
@@ -60,7 +60,7 @@ const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label:
       </svg>
     </button>
   </div>
-  <nav class="flex flex-col items-center gap-6 mt-16 text-lg text-muted-foreground">
+  <nav class="flex flex-col items-center gap-6 mt-12 landscape:mt-8 text-lg text-muted-foreground">
       <a href="/concepts/hyperobjects/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.concepts?.hyperobjects?.title ?? 'Hyperobjects'}</a>
       <a href="/concepts/common-denominator/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.cdg ?? 'CDG'}</a>
       <a href="/concepts/commons/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.commons ?? 'Commons'}</a>

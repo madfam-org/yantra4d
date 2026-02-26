@@ -194,12 +194,12 @@ export default function GitPanel({ slug }) {
           )}
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-6 sm:w-6 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0" onClick={refresh} disabled={loading} title="Refresh status">
+          <Button variant="ghost" size="icon" className="h-8 w-8 md:h-6 md:w-6 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0" onClick={refresh} disabled={loading} title="Refresh status">
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span className="sr-only">Refresh</span>
           </Button>
           <Button
-            variant="ghost" size="icon" className="h-8 w-8 sm:h-6 sm:w-6 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+            variant="ghost" size="icon" className="h-8 w-8 md:h-6 md:w-6 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
             onClick={handlePull}
             disabled={!!actionLoading || !hasRemote}
             title={hasRemote ? 'Pull' : 'Connect to GitHub first'}
@@ -208,7 +208,7 @@ export default function GitPanel({ slug }) {
             <span className="sr-only">Pull</span>
           </Button>
           <Button
-            variant="ghost" size="icon" className="h-8 w-8 sm:h-6 sm:w-6 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+            variant="ghost" size="icon" className="h-8 w-8 md:h-6 md:w-6 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
             onClick={handlePush}
             disabled={!!actionLoading || !hasRemote}
             title={hasRemote ? 'Push' : 'Connect to GitHub first'}
@@ -239,12 +239,12 @@ export default function GitPanel({ slug }) {
               value={remoteUrl}
               onChange={e => setRemoteUrl(e.target.value)}
               placeholder="https://github.com/user/repo.git"
-              className="flex-1 px-2 py-2 text-base sm:text-xs min-h-[44px] rounded border border-border bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="flex-1 px-2 py-2 text-base md:text-xs min-h-[44px] rounded border border-border bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               onKeyDown={e => { if (e.key === 'Enter') handleConnectRemote() }}
             />
             <Button
               size="sm"
-              className="h-9 sm:h-7 text-xs min-h-[44px] sm:min-h-0"
+              className="h-9 md:h-7 text-xs min-h-[44px] md:min-h-0"
               onClick={handleConnectRemote}
               disabled={!remoteUrl.trim() || !!actionLoading}
             >
@@ -258,7 +258,7 @@ export default function GitPanel({ slug }) {
       {allChanged.length > 0 && (
         <div className="max-h-48 overflow-y-auto">
           {allChanged.map(file => (
-            <label key={file} className="flex items-center gap-2 px-3 py-2 sm:py-0.5 text-xs hover:bg-muted cursor-pointer min-h-[44px] sm:min-h-0">
+            <label key={file} className="flex items-center gap-2 px-3 py-2 md:py-0.5 text-xs hover:bg-muted cursor-pointer min-h-[44px] md:min-h-0">
               <input
                 type="checkbox"
                 checked={selectedFiles.includes(file)}
@@ -277,12 +277,12 @@ export default function GitPanel({ slug }) {
       {/* Diff preview */}
       {diff && (
         <details className="border-t border-border">
-          <summary className="flex items-center justify-between px-3 py-2 sm:py-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground min-h-[44px] sm:min-h-0">
+          <summary className="flex items-center justify-between px-3 py-2 md:py-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground min-h-[44px] md:min-h-0">
             <span>Diff preview</span>
             <Button
               variant={headDiffMode ? "secondary" : "outline"}
               size="sm"
-              className="h-5 px-2 text-[10px]"
+              className="h-5 px-2 text-[10px] min-h-[44px] md:min-h-0"
               disabled={loadingHeadDiff}
               onClick={(e) => {
                 e.preventDefault()
@@ -305,12 +305,12 @@ export default function GitPanel({ slug }) {
             value={commitMsg}
             onChange={e => setCommitMsg(e.target.value)}
             placeholder="Commit message..."
-            className="flex-1 px-2 py-2 text-base sm:text-xs min-h-[44px] rounded border border-border bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="flex-1 px-2 py-2 text-base md:text-xs min-h-[44px] rounded border border-border bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             onKeyDown={e => { if (e.key === 'Enter') handleCommit() }}
           />
           <Button
             size="sm"
-            className="h-9 sm:h-7 text-xs min-h-[44px] sm:min-h-0"
+            className="h-9 md:h-7 text-xs min-h-[44px] md:min-h-0"
             onClick={handleCommit}
             disabled={!commitMsg.trim() || selectedFiles.length === 0 || !!actionLoading}
           >

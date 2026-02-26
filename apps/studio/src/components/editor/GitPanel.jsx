@@ -282,7 +282,7 @@ export default function GitPanel({ slug }) {
             <Button
               variant={headDiffMode ? "secondary" : "outline"}
               size="sm"
-              className="h-5 px-2 text-[10px] min-h-[44px] md:min-h-0"
+              className="min-h-[44px] md:h-5 md:min-h-0 px-2 text-xs md:text-[10px]"
               disabled={loadingHeadDiff}
               onClick={(e) => {
                 e.preventDefault()

@@ -1,17 +1,33 @@
-import React, { useState, useRef, useId } from 'react'
+import React, { useState, useRef, useId, useCallback } from 'react'
 
 export function Tooltip({ content, children }) {
   const [open, setOpen] = useState(false)
   const timeout = useRef(null)
+  const dismissTimeout = useRef(null)
   const tooltipId = useId()
 
   const show = () => {
+    clearTimeout(dismissTimeout.current)
     timeout.current = setTimeout(() => setOpen(true), 200)
   }
   const hide = () => {
     clearTimeout(timeout.current)
+    clearTimeout(dismissTimeout.current)
     setOpen(false)
   }
+
+  const handlePointerDown = useCallback((e) => {
+    if (e.pointerType === 'touch') {
+      clearTimeout(timeout.current)
+      clearTimeout(dismissTimeout.current)
+      setOpen(prev => {
+        if (!prev) {
+          dismissTimeout.current = setTimeout(() => setOpen(false), 2000)
+        }
+        return !prev
+      })
+    }
+  }, [])
 
   if (!content) return children
 
@@ -22,6 +38,7 @@ export function Tooltip({ content, children }) {
       onMouseLeave={hide}
       onFocus={show}
       onBlur={hide}
+      onPointerDown={handlePointerDown}
       aria-describedby={open ? tooltipId : undefined}
     >
       {children}

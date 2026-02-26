@@ -77,7 +77,7 @@ export default function StudioHeader({
               </span>
             )}
           </div>
-          <span className="text-[11px] sm:text-xs text-muted-foreground leading-tight">
+          <span className="text-xs text-muted-foreground leading-tight">
             {t('platform.powered_by')} {!platformLoading ? platformName : ''}
           </span>
         </div>
@@ -141,7 +141,7 @@ export default function StudioHeader({
                 <span className="sr-only">{t('act.share')}</span>
               </Button>
               {shareToast && (
-                <div className="absolute top-full right-0 mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded whitespace-nowrap z-50">
+                <div className="absolute top-full right-0 mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded whitespace-nowrap max-w-[calc(100vw-2rem)] truncate z-50">
                   {t('act.share_copied')}
                 </div>
               )}
@@ -152,7 +152,7 @@ export default function StudioHeader({
                 <span className="sr-only">{t('sr.toggle_lang')}</span>
               </Button>
               {langOpen && (
-                <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-md shadow-lg py-1 z-50 min-w-[120px]" role="listbox" aria-expanded={langOpen}>
+                <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-md shadow-lg py-1 z-50 min-w-[120px] max-w-[calc(100vw-2rem)]" role="listbox" aria-expanded={langOpen}>
                   {SUPPORTED_LANGUAGES.map(lang => (
                     <button
                       key={lang.id}

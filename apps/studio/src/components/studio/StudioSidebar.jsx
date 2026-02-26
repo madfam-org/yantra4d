@@ -86,7 +86,7 @@ function SidebarContent() {
 
       <div className="hidden lg:block flex-1"></div>
 
-      <div className="grid grid-cols-1 landscape:grid-cols-2 gap-2 border-t border-border pt-4">
+      <div className="grid grid-cols-2 sm:grid-cols-1 landscape:grid-cols-2 gap-2 border-t border-border pt-4">
         <Button
           type="button"
           onClick={() => handleGenerate()}
@@ -171,7 +171,7 @@ export default function StudioSidebar() {
               <span className="sr-only">Open controls</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[85vh] landscape:max-h-[60vh] overflow-y-auto p-4 pb-safe flex flex-col gap-4">
+          <SheetContent side="bottom" className="max-h-[85vh] landscape:max-h-[75vh] overflow-y-auto p-4 pb-safe flex flex-col gap-4">
             <div className="mx-auto mt-2 mb-1 h-1 w-10 rounded-full bg-muted-foreground/30" aria-hidden="true" />
             <SheetTitle className="sr-only">Controls</SheetTitle>
             <SidebarContent />

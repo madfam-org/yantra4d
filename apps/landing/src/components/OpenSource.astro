@@ -15,14 +15,14 @@ const { t } = Astro.props;
       {t?.openSourceSection.description ?? 'Auto-aloja, contribuye, construye encima — tus configuradores son tuyos.'}
     </p>
 
-    <div class="flex flex-wrap items-center justify-center gap-6 mb-8">
-      <div class="rounded-lg border border-border bg-card px-6 py-3">
+    <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-8">
+      <div class="rounded-lg border border-border bg-card px-4 sm:px-6 py-2 sm:py-3">
         <div class="text-2xl font-bold">{t?.openSourceSection.statProjects ?? '21 Proyectos'}</div>
       </div>
-      <div class="rounded-lg border border-border bg-card px-6 py-3">
+      <div class="rounded-lg border border-border bg-card px-4 sm:px-6 py-2 sm:py-3">
         <div class="text-2xl font-bold">{t?.openSourceSection.statLicense ?? 'AGPLv3'}</div>
       </div>
-      <div class="rounded-lg border border-border bg-card px-6 py-3">
+      <div class="rounded-lg border border-border bg-card px-4 sm:px-6 py-2 sm:py-3">
         <div class="text-2xl font-bold">GitHub</div>
       </div>
     </div>

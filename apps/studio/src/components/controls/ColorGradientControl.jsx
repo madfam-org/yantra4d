@@ -19,7 +19,7 @@ export default function ColorGradientControl({ param, value, onChange, getLabel,
                     <input
                         id={`gradient-start-${param.id}`}
                         type="color"
-                        className="w-full h-10 md:h-8 min-h-[44px] md:min-h-0 cursor-pointer"
+                        className="w-full h-11 md:h-8 min-h-[44px] md:min-h-0 cursor-pointer"
                         value={current.start}
                         onChange={(e) => handleChange('start', e.target.value)}
                     />
@@ -36,7 +36,7 @@ export default function ColorGradientControl({ param, value, onChange, getLabel,
                     <input
                         id={`gradient-end-${param.id}`}
                         type="color"
-                        className="w-full h-10 md:h-8 min-h-[44px] md:min-h-0 cursor-pointer"
+                        className="w-full h-11 md:h-8 min-h-[44px] md:min-h-0 cursor-pointer"
                         value={current.end}
                         onChange={(e) => handleChange('end', e.target.value)}
                     />

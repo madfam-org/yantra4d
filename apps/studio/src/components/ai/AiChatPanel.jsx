@@ -51,7 +51,7 @@ export default function AiChatPanel({ mode, projectSlug, manifest, params, setPa
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           {mode === 'configurator' ? 'AI Configurator' : 'AI Code Editor'}
         </span>
-        <Button variant="ghost" size="icon" className="h-8 w-8 min-h-[44px] min-w-[44px]" onClick={resetSession} title="New conversation">
+        <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px] md:h-8 md:w-8 md:min-h-0 md:min-w-0" onClick={resetSession} title="New conversation">
           <RotateCcw className="h-3.5 w-3.5" />
           <span className="sr-only">New conversation</span>
         </Button>
@@ -109,10 +109,10 @@ export default function AiChatPanel({ mode, projectSlug, manifest, params, setPa
             {pendingEdits.length} edit{pendingEdits.length > 1 ? 's' : ''} pending
           </span>
           <div className="flex items-center gap-1">
-            <Button size="sm" className="h-6 text-[10px] min-h-[44px]" onClick={handleApplyAll}>
+            <Button size="sm" className="min-h-[44px] md:h-6 md:min-h-0 text-xs md:text-[10px]" onClick={handleApplyAll}>
               <Check className="h-3 w-3 mr-0.5" /> Apply All
             </Button>
-            <Button variant="ghost" size="sm" className="h-6 text-[10px] min-h-[44px]" onClick={handleRejectAll}>
+            <Button variant="ghost" size="sm" className="min-h-[44px] md:h-6 md:min-h-0 text-xs md:text-[10px]" onClick={handleRejectAll}>
               <X className="h-3 w-3 mr-0.5" /> Reject
             </Button>
           </div>
@@ -130,7 +130,7 @@ export default function AiChatPanel({ mode, projectSlug, manifest, params, setPa
           className="flex-1 px-2 py-2 text-base sm:text-xs min-h-[44px] rounded border border-border bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           disabled={isStreaming}
         />
-        <Button size="icon" className="h-7 w-7 min-h-[44px] min-w-[44px]" onClick={handleSend} disabled={!input.trim() || isStreaming}>
+        <Button size="icon" className="min-h-[44px] min-w-[44px] md:h-7 md:w-7 md:min-h-0 md:min-w-0" onClick={handleSend} disabled={!input.trim() || isStreaming}>
           <Send className="h-3.5 w-3.5" />
           <span className="sr-only">Send</span>
         </Button>

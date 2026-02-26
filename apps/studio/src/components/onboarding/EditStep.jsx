@@ -130,7 +130,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                             parameters[idx] = { ...parameters[idx], default: val }
                             setManifest(prev => ({ ...prev, parameters }))
                           }}
-                          className="w-16 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-base sm:text-xs"
+                          className="w-20 md:w-16 px-2 md:px-1 py-2 sm:py-0.5 min-h-[44px] md:min-h-0 rounded border border-border bg-background text-base sm:text-xs"
                         />
                       </td>
                       <td className="py-1 pr-2">
@@ -143,7 +143,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                               parameters[idx] = { ...parameters[idx], min: parseFloat(e.target.value) || 0 }
                               setManifest(prev => ({ ...prev, parameters }))
                             }}
-                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-base sm:text-xs"
+                            className="w-18 md:w-14 px-2 md:px-1 py-2 sm:py-0.5 min-h-[44px] md:min-h-0 rounded border border-border bg-background text-base sm:text-xs"
                           />
                         )}
                       </td>
@@ -157,7 +157,7 @@ export default function EditStep({ manifest, setManifest, onBack, onNext, t }) {
                               parameters[idx] = { ...parameters[idx], max: parseFloat(e.target.value) || 0 }
                               setManifest(prev => ({ ...prev, parameters }))
                             }}
-                            className="w-14 px-1 py-2 sm:py-0.5 rounded border border-border bg-background text-base sm:text-xs"
+                            className="w-18 md:w-14 px-2 md:px-1 py-2 sm:py-0.5 min-h-[44px] md:min-h-0 rounded border border-border bg-background text-base sm:text-xs"
                           />
                         )}
                       </td>

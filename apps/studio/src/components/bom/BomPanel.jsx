@@ -46,7 +46,7 @@ export default function BomPanel({ params }) {
               <tr key={row.id} className="border-b border-border/50">
                 <td className="py-2.5 md:py-1.5 pr-2">
                   {row.supplier_url ? (
-                    <a href={row.supplier_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center min-h-[44px] md:min-h-0">
+                    <a href={row.supplier_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex md:inline-flex items-center min-h-[44px] md:min-h-0">
                       {getLabel(row, 'label', language)}
                     </a>
                   ) : (

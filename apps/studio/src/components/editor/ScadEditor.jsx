@@ -189,7 +189,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
       <div className="flex-none border-b border-border">
         <div className="flex items-center justify-between px-3 py-1.5">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Files</span>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setNewFileName(''); setShowNewFileDialog(true) }} title="New file">
+          <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-0 md:min-w-0" onClick={() => { setNewFileName(''); setShowNewFileDialog(true) }} title="New file">
             <Plus className="h-3.5 w-3.5" />
             <span className="sr-only">New file</span>
           </Button>
@@ -206,14 +206,14 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
                   role="button"
                   tabIndex={0}
                   onKeyDown={e => e.key === 'Enter' && openFile(f.path)}
-                  className={`w-full text-left px-3 py-1 hover:bg-muted focus-visible:bg-muted focus-visible:outline-none flex items-center gap-1.5 group cursor-pointer ${activeTab === f.path ? 'bg-muted font-medium' : ''}`}
+                  className={`w-full text-left px-3 py-1 min-h-[44px] md:min-h-0 hover:bg-muted focus-visible:bg-muted focus-visible:outline-none flex items-center gap-1.5 group cursor-pointer ${activeTab === f.path ? 'bg-muted font-medium' : ''}`}
                   onClick={() => openFile(f.path)}
                 >
                   <FileCode className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                   <span className="truncate flex-1">{f.path}</span>
                   <button
                     type="button"
-                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive focus-visible:opacity-100"
+                    className="opacity-100 md:opacity-0 md:group-hover:opacity-100 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center text-muted-foreground hover:text-destructive focus-visible:opacity-100"
                     onClick={(e) => handleDeleteFile(f.path, e)}
                     title="Delete file"
                   >
@@ -244,7 +244,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
               {t.path.split('/').pop()}
               <button
                 type="button"
-                className="ml-1 text-muted-foreground hover:text-foreground"
+                className="ml-1 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center text-muted-foreground hover:text-foreground"
                 onClick={(e) => closeTab(t.path, e)}
               >
                 <X className="h-3 w-3" />
@@ -262,7 +262,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
           <Button
             variant={aiOpen ? 'secondary' : 'ghost'}
             size="sm"
-            className="h-6 text-[10px] gap-1"
+            className="min-h-[44px] md:h-6 md:min-h-0 text-xs md:text-[10px] gap-1"
             onClick={() => setAiOpen(prev => !prev)}
           >
             <Sparkles className="h-3 w-3" />

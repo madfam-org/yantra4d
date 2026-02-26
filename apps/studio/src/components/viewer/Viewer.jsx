@@ -104,8 +104,8 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     if (!loading) return null
     return (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
-            <div className="text-xl font-bold">{t("loader.loading")}</div>
-            <div className="mt-2 h-2 w-48 overflow-hidden rounded-full bg-secondary">
+            <div className="text-base sm:text-xl font-bold">{t("loader.loading")}</div>
+            <div className="mt-2 h-2 w-32 sm:w-48 overflow-hidden rounded-full bg-secondary">
                 <div
                     className="h-full bg-primary transition-all duration-300 ease-out"
                     style={{ width: `${progress}%` }}
@@ -113,7 +113,7 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
             </div>
             <div className="mt-1 text-sm text-muted-foreground">{progress}%</div>
             {progressPhase && (
-                <div className="text-sm text-muted-foreground mt-1">{progressPhase}</div>
+                <div className="text-sm text-muted-foreground mt-1 text-center max-w-[60vw]">{progressPhase}</div>
             )}
         </div>
     )
@@ -370,6 +370,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
     const bgColor = isDark ? '#09090b' : '#f4f4f5'
+    const isMobile = useIsMobile()
     const fov = useResponsiveFov()
 
     return (
@@ -462,7 +463,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                         fadeStrength={1.5}
                         rotation={[Math.PI / 2, 0, 0]}
                     />
-                    <GizmoHelper alignment="bottom-left" margin={[60, 60]}>
+                    <GizmoHelper alignment="bottom-left" margin={isMobile ? [40, 40] : [60, 60]}>
                         <GizmoViewport axisColors={axisColors} labelColor="white" />
                     </GizmoHelper>
 

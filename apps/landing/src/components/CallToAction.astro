@@ -10,9 +10,9 @@ const { t } = Astro.props;
 const studioUrl = STUDIO_URL;
 ---
 
-<section class="py-24 px-6">
+<section class="py-16 sm:py-24 px-4 sm:px-6">
   <div class="mx-auto max-w-2xl text-center">
-    <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">{t?.cta.heading ?? 'Tu próxima impresión empieza aquí'}</h2>
+    <h2 class="mb-4 text-2xl xs:text-3xl font-bold tracking-tight sm:text-4xl">{t?.cta.heading ?? 'Tu próxima impresión empieza aquí'}</h2>
     <p class="mb-8 text-muted-foreground">
       {t?.cta.subtitle ?? 'Sin cuenta. Sin instalar nada. Solo abre.'}
     </p>

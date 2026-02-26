@@ -99,7 +99,7 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
                   </span>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mb-2">
+              <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
                 {isEs ? project.descriptionEs : project.description}
               </p>
               <span className="text-xs text-primary group-hover:underline">{openLabel}</span>

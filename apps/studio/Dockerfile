@@ -9,13 +9,17 @@ ARG VITE_API_BASE
 ARG VITE_JANUA_BASE_URL
 ARG VITE_JANUA_CLIENT_ID
 ARG VITE_JANUA_REDIRECT_URI
+ARG NPM_MADFAM_TOKEN
 ENV VITE_API_BASE=${VITE_API_BASE}
 ENV VITE_JANUA_BASE_URL=${VITE_JANUA_BASE_URL}
 ENV VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID}
 ENV VITE_JANUA_REDIRECT_URI=${VITE_JANUA_REDIRECT_URI}
+ENV NPM_MADFAM_TOKEN=${NPM_MADFAM_TOKEN}
 COPY apps/studio/package.json apps/studio/package-lock.json apps/studio/.npmrc ./
 # --legacy-peer-deps: @janua/react-sdk requires react@^18, project uses React 19
 RUN npm ci --legacy-peer-deps
+# Clear token from environment after install
+ENV NPM_MADFAM_TOKEN=""
 COPY packages/ /app/packages/
 COPY apps/studio/ ./
 RUN npm run build

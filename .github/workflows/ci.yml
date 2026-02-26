@@ -21,6 +21,8 @@ jobs:
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci --legacy-peer-deps
+        env:
+          NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
       - run: npm audit || true
       - run: npm run lint
       - run: npm run test:coverage
@@ -81,6 +83,8 @@ jobs:
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci --legacy-peer-deps
+        env:
+          NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
       - name: Build studio
         run: npm run build
       - name: Cache Playwright browsers

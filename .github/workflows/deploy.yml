@@ -173,6 +173,7 @@ jobs:
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
             VITE_JANUA_CLIENT_ID=${{ secrets.JANUA_CLIENT_ID }}
             VITE_JANUA_REDIRECT_URI=https://4d-app.madfam.io
+            NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
   build-landing:
     name: Build Landing
@@ -276,6 +277,7 @@ jobs:
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
             VITE_JANUA_CLIENT_ID=yantra4d-admin
             VITE_JANUA_REDIRECT_URI=https://4d-admin.madfam.io
+            NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
   commit-digests:
     name: Commit Image Digests

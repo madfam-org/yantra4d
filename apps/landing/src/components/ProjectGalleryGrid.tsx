@@ -56,7 +56,7 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
         ))}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 landscape:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map(project => (
           <a
             key={project.slug}

@@ -272,7 +272,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
       )}
 
       {/* Editor */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-[200px]">
         {activeTab ? (
           <Editor
             language={SCAD_LANGUAGE_ID}
@@ -282,7 +282,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }) {
             theme={theme === 'dark' ? 'vs-dark' : 'light'}
             options={{
               minimap: { enabled: false },
-              fontSize: 13,
+              fontSize: 14,
               lineNumbers: 'on',
               scrollBeyondLastLine: false,
               wordWrap: 'on',

@@ -48,7 +48,7 @@ function MaterialPickerWidget({ params, setParams, materials, setMaterials }) {
                 </Label>
                 <select
                     id="material-target"
-                    className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="w-full px-3 py-2 text-base sm:text-sm min-h-[44px] rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     value={selected || ""}
                     onChange={handleSelect}
                 >
@@ -319,7 +319,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                                 id={`text-${param.id}`}
                                 type="text"
                                 maxLength={param.maxlength || DEFAULT_TEXT_MAX_LENGTH}
-                                className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                className="w-full px-3 py-2 text-base sm:text-sm min-h-[44px] rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 value={params[param.id] ?? ''}
                                 onChange={(e) => setParams(prev => ({ ...prev, [param.id]: e.target.value }))}
                                 aria-invalid={param.maxlength && (params[param.id]?.length || 0) > param.maxlength ? 'true' : undefined}
@@ -423,7 +423,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                         const isChild = param.visibility_level === 'advanced' && param.parent
                         const disabled = isParentUnchecked(param)
                         return (
-                            <div key={param.id} className={`flex items-center space-x-2 ${isChild ? 'ml-4' : ''}`}>
+                            <div key={param.id} className={`flex items-center space-x-2 min-h-[44px] ${isChild ? 'ml-4' : ''}`}>
                                 <Checkbox
                                     id={param.id}
                                     checked={!!params[param.id]}
@@ -447,7 +447,7 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
 
             {/* Other checkboxes */}
             {otherCheckboxes.map(param => (
-                <div key={param.id} className="flex items-center space-x-2">
+                <div key={param.id} className="flex items-center space-x-2 min-h-[44px]">
                     <Checkbox
                         id={param.id}
                         checked={!!params[param.id]}

@@ -38,7 +38,8 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                 {editing ? (
                     <input
                         type="number"
-                        className="w-16 text-sm text-right bg-input border border-border rounded px-1 py-2 min-h-[44px]"
+                        inputMode="decimal"
+                        className="w-16 text-base sm:text-sm text-right bg-input border border-border rounded px-1 py-2 min-h-[44px]"
                         value={editValue}
                         min={param.min} max={param.max} step={param.step}
                         autoFocus

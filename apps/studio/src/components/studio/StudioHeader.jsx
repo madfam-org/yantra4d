@@ -51,8 +51,15 @@ export default function StudioHeader({
     const handler = (e) => {
       if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false)
     }
+    const keyHandler = (e) => {
+      if (e.key === 'Escape') setLangOpen(false)
+    }
     document.addEventListener('pointerdown', handler)
-    return () => document.removeEventListener('pointerdown', handler)
+    document.addEventListener('keydown', keyHandler)
+    return () => {
+      document.removeEventListener('pointerdown', handler)
+      document.removeEventListener('keydown', keyHandler)
+    }
   }, [])
 
   return (
@@ -70,10 +77,11 @@ export default function StudioHeader({
               </span>
             )}
           </div>
-          <span className="text-[10px] text-muted-foreground leading-tight">
+          <span className="text-[11px] sm:text-xs text-muted-foreground leading-tight">
             {t('platform.powered_by')} {!platformLoading ? platformName : ''}
           </span>
         </div>
+        {isMobile && <Link to="/projects" className="text-xs text-muted-foreground hover:text-foreground">{t('nav.projects')}</Link>}
         {!isMobile && <ProjectSelector />}
         {!isMobile && <Link to="/projects" className="text-sm text-muted-foreground hover:text-foreground">{t('nav.projects')}</Link>}
       </div>
@@ -83,6 +91,7 @@ export default function StudioHeader({
           <Button
             variant={aiPanelOpen ? 'secondary' : 'ghost'}
             size="icon"
+            className="min-h-[44px] min-w-[44px]"
             onClick={toggleAiPanel}
             title={aiPanelOpen ? 'Close AI configurator' : 'Open AI configurator'}
           >
@@ -98,6 +107,7 @@ export default function StudioHeader({
               <Button
                 variant="ghost"
                 size="icon"
+                className="min-h-[44px] min-w-[44px]"
                 onClick={() => setSynthesisModalOpen(true)}
                 title="Synthesize Project"
               >
@@ -109,6 +119,7 @@ export default function StudioHeader({
               <Button
                 variant={editorOpen ? 'secondary' : 'ghost'}
                 size="icon"
+                className="min-h-[44px] min-w-[44px]"
                 onClick={isBuiltIn ? onForkRequest : toggleEditor}
                 title={isBuiltIn ? 'Fork & edit code' : editorOpen ? 'Close code editor' : 'Open code editor'}
               >
@@ -116,16 +127,16 @@ export default function StudioHeader({
                 <span className="sr-only">{editorOpen ? 'Close code editor' : 'Open code editor'}</span>
               </Button>
             </AuthGate>
-            <Button variant="ghost" size="icon" onClick={undoParams} disabled={!canUndo} title={t('act.undo')}>
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={undoParams} disabled={!canUndo} title={t('act.undo')}>
               <Undo2 className="h-4 w-4" />
               <span className="sr-only">{t('act.undo')}</span>
             </Button>
-            <Button variant="ghost" size="icon" onClick={redoParams} disabled={!canRedo} title={t('act.redo')}>
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={redoParams} disabled={!canRedo} title={t('act.redo')}>
               <Redo2 className="h-4 w-4" />
               <span className="sr-only">{t('act.redo')}</span>
             </Button>
             <div className="relative">
-              <Button variant="ghost" size="icon" onClick={handleShare} title={t('act.share')}>
+              <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={handleShare} title={t('act.share')}>
                 <Share2 className="h-4 w-4" />
                 <span className="sr-only">{t('act.share')}</span>
               </Button>
@@ -136,17 +147,19 @@ export default function StudioHeader({
               )}
             </div>
             <div className="relative" ref={langRef}>
-              <Button variant="ghost" size="icon" onClick={() => setLangOpen(prev => !prev)} title={t('sr.toggle_lang')}>
+              <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={() => setLangOpen(prev => !prev)} title={t('sr.toggle_lang')}>
                 <Globe className="h-5 w-5" />
                 <span className="sr-only">{t('sr.toggle_lang')}</span>
               </Button>
               {langOpen && (
-                <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-md shadow-lg py-1 z-50 min-w-[120px]">
+                <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-md shadow-lg py-1 z-50 min-w-[120px]" role="listbox" aria-expanded={langOpen}>
                   {SUPPORTED_LANGUAGES.map(lang => (
                     <button
                       key={lang.id}
                       type="button"
-                      className={`w-full text-left px-3 py-1.5 text-sm hover:bg-muted transition-colors ${language === lang.id ? 'font-semibold text-primary' : 'text-foreground'}`}
+                      role="option"
+                      aria-selected={language === lang.id}
+                      className={`w-full text-left px-3 py-2.5 min-h-[44px] text-sm hover:bg-muted transition-colors ${language === lang.id ? 'font-semibold text-primary' : 'text-foreground'}`}
                       onClick={() => { setLanguage(lang.id); setLangOpen(false) }}
                     >
                       {lang.label}
@@ -155,7 +168,7 @@ export default function StudioHeader({
                 </div>
               )}
             </div>
-            <Button variant="ghost" size="icon" onClick={cycleTheme} title={t(`theme.${theme}`)}>
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={cycleTheme} title={t(`theme.${theme}`)}>
               <ThemeIcon className="h-5 w-5" />
               <span className="sr-only">{t('sr.toggle_theme')}</span>
             </Button>
@@ -166,33 +179,33 @@ export default function StudioHeader({
         {isMobile && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" title="More actions">
+              <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" title="More actions">
                 <MoreHorizontal className="h-5 w-5" />
                 <span className="sr-only">More actions</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-[180px]">
-              <DropdownMenuItem onClick={isBuiltIn ? onForkRequest : toggleEditor}>
+              <DropdownMenuItem className="min-h-[44px]" onClick={isBuiltIn ? onForkRequest : toggleEditor}>
                 <Code2 className="h-4 w-4 mr-2" />
                 {isBuiltIn ? 'Fork & edit code' : editorOpen ? 'Close editor' : 'Open editor'}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSynthesisModalOpen(true)}>
+              <DropdownMenuItem className="min-h-[44px]" onClick={() => setSynthesisModalOpen(true)}>
                 <Sparkles className="h-4 w-4 mr-2 text-purple-500" />
                 Synthesize
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={undoParams} disabled={!canUndo}>
+              <DropdownMenuItem className="min-h-[44px]" onClick={undoParams} disabled={!canUndo}>
                 <Undo2 className="h-4 w-4 mr-2" />
                 {t('act.undo')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={redoParams} disabled={!canRedo}>
+              <DropdownMenuItem className="min-h-[44px]" onClick={redoParams} disabled={!canRedo}>
                 <Redo2 className="h-4 w-4 mr-2" />
                 {t('act.redo')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleShare}>
+              <DropdownMenuItem className="min-h-[44px]" onClick={handleShare}>
                 <Share2 className="h-4 w-4 mr-2" />
                 {t('act.share')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={cycleTheme}>
+              <DropdownMenuItem className="min-h-[44px]" onClick={cycleTheme}>
                 <ThemeIcon className="h-4 w-4 mr-2" />
                 {t(`theme.${theme}`)}
               </DropdownMenuItem>
@@ -200,7 +213,7 @@ export default function StudioHeader({
                 <DropdownMenuItem
                   key={lang.id}
                   onClick={() => setLanguage(lang.id)}
-                  className={language === lang.id ? 'font-semibold' : ''}
+                  className={`min-h-[44px] ${language === lang.id ? 'font-semibold' : ''}`}
                 >
                   <Globe className="h-4 w-4 mr-2" />
                   {lang.label}

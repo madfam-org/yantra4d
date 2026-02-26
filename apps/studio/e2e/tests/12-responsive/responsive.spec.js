@@ -244,6 +244,86 @@ test.describe('Responsive Design', () => {
     await expect(page.locator('button', { hasText: 'Generate' })).toBeVisible()
     await expect(page.locator('button', { hasText: 'Reset' })).toBeVisible()
   })
+
+  // Phase 7: Round 3 — Mobile interaction tests
+  test('mobile: overflow menu items have adequate touch targets', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudioMobile(page)
+    const overflowBtn = page.locator('button[title="More actions"]')
+    await expect(overflowBtn).toBeVisible({ timeout: 5000 })
+    await overflowBtn.click()
+    const menu = page.locator('[role="menu"]')
+    await expect(menu).toBeVisible({ timeout: 3000 })
+    const items = menu.locator('[role="menuitem"]')
+    const count = await items.count()
+    expect(count).toBeGreaterThanOrEqual(3)
+    for (let i = 0; i < Math.min(count, 5); i++) {
+      const box = await items.nth(i).boundingBox()
+      if (box) {
+        expect(box.height).toBeGreaterThanOrEqual(40)
+      }
+    }
+  })
+
+  test('mobile: bottom sheet opens with controls', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudioMobile(page)
+    const menuBtn = page.locator('button:has(.lucide-menu)').first()
+    await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await menuBtn.click()
+    const sheet = page.locator('[role="dialog"]')
+    await expect(sheet).toBeVisible({ timeout: 5000 })
+    // Sheet should contain the drag handle indicator
+    const dragHandle = sheet.locator('.bg-muted-foreground\\/30').first()
+    await expect(dragHandle).toBeVisible({ timeout: 3000 })
+    // Sheet should contain Generate button
+    const generateBtn = sheet.locator('button', { hasText: /Generate|Generar/ })
+    await expect(generateBtn.first()).toBeVisible({ timeout: 3000 })
+  })
+
+  test('mobile: console expand/collapse works', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudioMobile(page)
+    // Console bar should be visible
+    const consoleToggle = page.locator('button[aria-label="Toggle console panel"]')
+    await expect(consoleToggle).toBeVisible({ timeout: 5000 })
+    // Initially collapsed — no log area visible
+    const logArea = page.locator('[role="log"]').first()
+    await expect(logArea).toBeHidden()
+    // Click to expand
+    await consoleToggle.click()
+    // Log area should now be visible
+    await expect(logArea).toBeVisible({ timeout: 3000 })
+    // Click again to collapse
+    await consoleToggle.click()
+    await expect(logArea).toBeHidden({ timeout: 3000 })
+  })
+
+  test('landscape: action buttons dont overflow viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 812, height: 375 })
+    await goToStudioMobile(page)
+    const menuBtn = page.locator('button:has(.lucide-menu)').first()
+    await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await menuBtn.click()
+    const sheet = page.locator('[role="dialog"]')
+    await expect(sheet).toBeVisible({ timeout: 5000 })
+    // Verify Generate button is visible within the sheet
+    const generateBtn = sheet.locator('button', { hasText: /Generate|Generar/ })
+    await expect(generateBtn.first()).toBeVisible({ timeout: 3000 })
+    const box = await generateBtn.first().boundingBox()
+    if (box) {
+      // Button should be within viewport width
+      expect(box.x + box.width).toBeLessThanOrEqual(812 + 2)
+    }
+  })
+
+  test('mobile: projects link visible in header', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await goToStudioMobile(page)
+    // Mobile should show a projects link in the header area
+    const projectsLink = page.locator('header a', { hasText: /Projects|Proyectos/ })
+    await expect(projectsLink.first()).toBeVisible({ timeout: 5000 })
+  })
 })
 
 // Landing page responsive tests — requires landing dev server at :4321

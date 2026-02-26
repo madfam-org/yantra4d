@@ -19,13 +19,13 @@ export default function ColorGradientControl({ param, value, onChange, getLabel,
                     <input
                         id={`gradient-start-${param.id}`}
                         type="color"
-                        className="w-full h-8 cursor-pointer"
+                        className="w-full h-10 sm:h-8 min-h-[44px] sm:min-h-0 cursor-pointer"
                         value={current.start}
                         onChange={(e) => handleChange('start', e.target.value)}
                     />
                 </div>
                 <div
-                    className="flex-1 h-8 rounded border border-border"
+                    className="flex-1 h-10 sm:h-8 rounded border border-border"
                     style={{ background: `linear-gradient(to right, ${current.start}, ${current.end})` }}
                     aria-label={`Gradient preview: ${current.start} to ${current.end}`}
                 />
@@ -36,7 +36,7 @@ export default function ColorGradientControl({ param, value, onChange, getLabel,
                     <input
                         id={`gradient-end-${param.id}`}
                         type="color"
-                        className="w-full h-8 cursor-pointer"
+                        className="w-full h-10 sm:h-8 min-h-[44px] sm:min-h-0 cursor-pointer"
                         value={current.end}
                         onChange={(e) => handleChange('end', e.target.value)}
                     />

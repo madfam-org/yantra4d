@@ -279,4 +279,39 @@ describe('StudioHeader', () => {
     fireEvent.click(screen.getByTitle('Synthesize Project'))
     expect(setSynthesisModalOpen).toHaveBeenCalledWith(true)
   })
+
+  it('shows mobile projects link and hides ProjectSelector on mobile', () => {
+    globalThis.__setMediaQuery('(max-width: 767px)', true)
+    render(<StudioHeader {...defaultProps} />)
+    // Mobile: ProjectSelector should not render
+    expect(screen.queryByTestId('project-selector')).not.toBeInTheDocument()
+    // Mobile: projects link should be visible
+    const links = screen.getAllByText('nav.projects')
+    expect(links.length).toBeGreaterThanOrEqual(1)
+    // The mobile link should be an anchor tag
+    const mobileLink = links.find(el => el.tagName === 'A')
+    expect(mobileLink).toBeDefined()
+    expect(mobileLink.getAttribute('href')).toBe('/projects')
+    globalThis.__resetMediaQueries()
+  })
+
+  it('shows overflow menu on mobile instead of inline buttons', () => {
+    globalThis.__setMediaQuery('(max-width: 767px)', true)
+    render(<StudioHeader {...defaultProps} />)
+    // Mobile: overflow menu trigger should be present
+    expect(screen.getByTitle('More actions')).toBeInTheDocument()
+    // Desktop buttons like undo/redo should not be directly visible (they're in the dropdown)
+    expect(screen.queryByTitle('act.undo')).not.toBeInTheDocument()
+    globalThis.__resetMediaQueries()
+  })
+
+  it('language dropdown closes on Escape key', () => {
+    render(<StudioHeader {...defaultProps} />)
+    // Open
+    fireEvent.click(screen.getByTitle('sr.toggle_lang'))
+    expect(screen.getByText('English')).toBeInTheDocument()
+    // Press Escape
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.queryByText('English')).not.toBeInTheDocument()
+  })
 })

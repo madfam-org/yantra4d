@@ -47,8 +47,32 @@ export default function ProjectList() {
                 </Button>
             </div>
 
-            {/* Table */}
-            <div className="rounded-lg border border-border overflow-x-auto">
+            {/* Mobile card view */}
+            <div className="sm:hidden space-y-3">
+                {projects.map((project) => (
+                    <div key={`card-${project.slug}`} className="rounded-lg border border-border bg-card p-4 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                            <span className="font-medium text-sm truncate">{project.name || project.slug}</span>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                {project.is_demo && (
+                                    <Badge variant="outline" className="text-amber-500 border-amber-500/40 bg-amber-500/10 text-xs">demo</Badge>
+                                )}
+                                {project.is_hyperobject && (
+                                    <Badge variant="outline" className="text-violet-500 border-violet-500/40 bg-violet-500/10 text-xs">hyper</Badge>
+                                )}
+                            </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground font-mono">{project.slug}</div>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span>{project.modes_count ?? '\u2013'} modes</span>
+                            <span>{project.params_count ?? '\u2013'} params</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Desktop table */}
+            <div className="rounded-lg border border-border overflow-x-auto hidden sm:block">
                 <table className="w-full text-sm min-w-[500px]">
                     <thead>
                         <tr className="border-b border-border bg-muted/50">

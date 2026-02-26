@@ -36,7 +36,7 @@ const h = t?.hyperCommons;
       <div class="grid gap-8 lg:grid-cols-2 items-center">
         <!-- Animated visual: parametric morph -->
         <div class="relative flex items-center justify-center">
-          <div class="hc-morph-container relative w-full max-w-md aspect-square mx-auto">
+          <div class="hc-morph-container relative w-full max-w-[280px] sm:max-w-md aspect-square mx-auto">
             <!-- Animated parametric shape -->
             <svg viewBox="0 0 400 400" class="w-full h-full" aria-hidden="true">
               <!-- Grid lines -->
@@ -126,13 +126,13 @@ const h = t?.hyperCommons;
       </div>
       <!-- Shift stats -->
       <div class="flex flex-wrap justify-center gap-4 mt-8">
-        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-xs sm:text-sm font-medium backdrop-blur-sm">
           {h?.shiftStat1 ?? '1 archivo → ∞ objetos'}
         </span>
-        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-xs sm:text-sm font-medium backdrop-blur-sm">
           {h?.shiftStat2 ?? 'Interfaces comunitarias'}
         </span>
-        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+        <span class="rounded-full border border-border bg-card/80 px-4 py-2 text-xs sm:text-sm font-medium backdrop-blur-sm">
           {h?.shiftStat3 ?? 'Código material-consciente'}
         </span>
       </div>
@@ -149,9 +149,9 @@ const h = t?.hyperCommons;
         </p>
       </div>
 
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Household -->
-        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)]">
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-4 sm:p-6 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)]">
           <div class="flex items-center gap-3 mb-3">
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-xl transition-transform duration-300 group-hover:scale-110">🏠</div>
             <h4 class="font-bold">{h?.household?.title ?? 'Hogar'}</h4>
@@ -162,7 +162,7 @@ const h = t?.hyperCommons;
         </article>
 
         <!-- Industrial -->
-        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)]">
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-4 sm:p-6 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)]">
           <div class="flex items-center gap-3 mb-3">
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-xl transition-transform duration-300 group-hover:scale-110">🏭</div>
             <h4 class="font-bold">{h?.industrial?.title ?? 'Industrial'}</h4>
@@ -173,7 +173,7 @@ const h = t?.hyperCommons;
         </article>
 
         <!-- Medical -->
-        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-rose-500/40 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)]">
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-4 sm:p-6 backdrop-blur-sm transition-all duration-300 hover:border-rose-500/40 hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)]">
           <div class="flex items-center gap-3 mb-3">
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-xl transition-transform duration-300 group-hover:scale-110">🏥</div>
             <h4 class="font-bold">{h?.medical?.title ?? 'Médico'}</h4>
@@ -184,7 +184,7 @@ const h = t?.hyperCommons;
         </article>
 
         <!-- Commercial -->
-        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-violet-500/40 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)]">
+        <article class="hc-domain-card group rounded-2xl border border-border bg-card/50 p-4 sm:p-6 backdrop-blur-sm transition-all duration-300 hover:border-violet-500/40 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.15)]">
           <div class="flex items-center gap-3 mb-3">
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-xl transition-transform duration-300 group-hover:scale-110">⚙️</div>
             <h4 class="font-bold">{h?.commercial?.title ?? 'Comercial'}</h4>
@@ -203,19 +203,19 @@ const h = t?.hyperCommons;
       </h3>
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 max-w-4xl mx-auto">
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-2xl font-bold text-primary mb-1">{h?.impact1value ?? '99% más barato'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact1value ?? '99% más barato'}</div>
           <div class="text-xs text-muted-foreground">{h?.impact1label ?? 'Otoscopio Glia'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-2xl font-bold text-primary mb-1">{h?.impact2value ?? '3-17× más baratos'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact2value ?? '3-17× más baratos'}</div>
           <div class="text-xs text-muted-foreground">{h?.impact2label ?? 'Conectores Tubería'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-2xl font-bold text-primary mb-1">{h?.impact3value ?? 'Estándar global'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact3value ?? 'Estándar global'}</div>
           <div class="text-xs text-muted-foreground">{h?.impact3label ?? 'Gridfinity'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-2xl font-bold text-primary mb-1">{h?.impact4value ?? 'CERN OHL'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact4value ?? 'CERN OHL'}</div>
           <div class="text-xs text-muted-foreground">{h?.impact4label ?? 'Licencia'}</div>
         </div>
       </div>

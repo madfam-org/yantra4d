@@ -96,10 +96,10 @@ export default function StudioMainView() {
           <span className="truncate flex-1 text-left">{lastLogLine}</span>
         </button>
         {consoleExpanded && (
-          <div className="flex flex-col max-h-[50vh] landscape:max-h-[30vh]">
+          <div className="flex flex-col max-h-[40vh] landscape:max-h-[25vh]">
             <div
               ref={consoleRef}
-              className="bg-muted px-3 py-2 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap max-h-[35vh] landscape:max-h-[25vh]"
+              className="bg-muted px-3 py-2 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap max-h-[30vh] landscape:max-h-[20vh]"
               role="log"
               aria-live="polite"
               aria-label="Render console"
@@ -140,7 +140,7 @@ export default function StudioMainView() {
           <div className="flex items-stretch">
             <button
               onClick={() => setEstimateOpen(o => !o)}
-              className="w-6 bg-muted hover:bg-accent border-l border-border flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-foreground transition-colors py-2"
+              className="w-8 min-w-[44px] bg-muted hover:bg-accent border-l border-border flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-foreground transition-colors py-2"
               title={estimateOpen ? 'Collapse estimate' : 'Expand estimate'}
               aria-expanded={estimateOpen}
               aria-label="Toggle print estimate panel"

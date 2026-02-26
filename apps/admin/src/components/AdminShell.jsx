@@ -26,7 +26,7 @@ export default function AdminShell({ auth }) {
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 z-40 flex w-56 flex-shrink-0 flex-col border-r border-border bg-card transition-transform duration-200 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed inset-y-0 left-0 z-40 flex w-48 lg:w-56 flex-shrink-0 flex-col border-r border-border bg-card transition-transform duration-200 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 {/* Brand */}
                 <div className="flex items-center gap-2.5 border-b border-border px-4 py-4">
                     <div className="flex h-7 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground text-xs font-black tracking-tight">

@@ -373,7 +373,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const fov = useResponsiveFov()
 
     return (
-        <div className="relative h-full w-full">
+        <div className="relative h-full w-full" style={{ touchAction: 'none' }}>
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
             {animating && mode === 'grid' && !animReady && (

@@ -31,8 +31,8 @@ services:
     image: eclipse-mosquitto:2
     restart: unless-stopped
     ports:
-      - "1883:1883"   # Standard MQTT/TCP
-      - "9001:9001"   # MQTT over WebSockets (for browser debugging tools)
+      - "1883:1883" # Standard MQTT/TCP
+      - "9001:9001" # MQTT over WebSockets (for browser debugging tools)
     volumes:
       - ./scripts/dev/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     healthcheck:
@@ -112,6 +112,8 @@ services:
       # Isolate container node_modules (avoids macOS/Linux platform conflicts)
       - studio_node_modules:/app/apps/studio/node_modules
     environment:
+      # Use the Vite proxy for all /api requests
+      VITE_API_BASE: ""
       # Proxy target points to the Docker-internal backend — not localhost
       VITE_API_PROXY_TARGET: "http://backend:5000"
       VITE_JANUA_REDIRECT_URI: "http://localhost:5173"

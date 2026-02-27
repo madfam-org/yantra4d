@@ -1,0 +1,50 @@
+{
+    "material": {
+        "slug": "bambu-abs-gf",
+        "name": "Bambu Lab ABS-GF",
+        "category": "thermoplastic-filament",
+        "am_technology": "FDM",
+        "vendor": "Bambu Lab",
+        "color": "#b0bec5"
+    },
+    "nanoscale": {
+        "refractive_index": 1.52,
+        "autofluorescence": "none",
+        "glass_transition_temp": 108.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.008,
+            "y": 1.008,
+            "z": 1.015
+        },
+        "clearances": {
+            "press_fit": 0.15,
+            "sliding_fit": 0.25,
+            "loose_fit": 0.4
+        },
+        "minimum_features": {
+            "wall_thickness": 1.0,
+            "hole_diameter": 1.2
+        }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Material Extrusion",
+        "emmo_class": "http://emmo.info/emmo#Thermoplastic",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/fdm-thermoplastics"
+    },
+    "tda": {
+        "euler_characteristic": -18,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 19,
+            "betti_2": 0
+        },
+        "filtration_metric": "Vietoris-Rips"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 108.0,
+        "melting_temp": 230.0,
+        "yield_strength": 57.0
+    }
+}

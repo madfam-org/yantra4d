@@ -1164,5 +1164,30 @@
     "storage",
     "hyperobject",
     "commons"
+  ],
+  "animations": [
+    {
+      "id": "expand",
+      "label": {
+        "en": "Grid Expansion",
+        "es": "Expansión de cuadrícula"
+      },
+      "description": {
+        "en": "Smoothly expand the gridfinity base from 1×1 to 3×3 units.",
+        "es": "Expande la base de 1×1 a 3×3 unidades."
+      },
+      "from_state": {
+        "width_units": 1,
+        "depth_units": 1
+      },
+      "to_state": {
+        "width_units": 3,
+        "depth_units": 3
+      },
+      "frames": 5,
+      "duration_ms": 2500,
+      "easing": "ease-in-out",
+      "mode": "cup"
+    }
   ]
 }

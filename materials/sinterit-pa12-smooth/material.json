@@ -1,0 +1,50 @@
+{
+    "material": {
+        "slug": "sinterit-pa12-smooth",
+        "name": "Sinterit PA12 Smooth",
+        "category": "metal-powder",
+        "am_technology": "SLS",
+        "vendor": "Sinterit",
+        "color": "#e0e0e0"
+    },
+    "nanoscale": {
+        "refractive_index": 1.53,
+        "autofluorescence": "none",
+        "glass_transition_temp": 50.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.032,
+            "y": 1.032,
+            "z": 1.028
+        },
+        "clearances": {
+            "press_fit": 0.1,
+            "sliding_fit": 0.25,
+            "loose_fit": 0.4
+        },
+        "minimum_features": {
+            "wall_thickness": 0.7,
+            "hole_diameter": 1.0
+        }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Powder Bed Fusion",
+        "emmo_class": "http://emmo.info/emmo#Polymer",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/sls-polymers"
+    },
+    "tda": {
+        "euler_characteristic": -42,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 43,
+            "betti_2": 0
+        },
+        "filtration_metric": "superlevel-set"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 50.0,
+        "melting_temp": 178.0,
+        "yield_strength": 50.0
+    }
+}

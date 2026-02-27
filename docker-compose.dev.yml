@@ -23,6 +23,24 @@
 
 services:
 
+  # ── MQTT Broker (4D Telemetry Bridge) ─────────────────────────────────────
+  # Provides a local Mosquitto broker so the MQTT telemetry service has a real
+  # broker to connect to in dev. To publish mock sensor data, run:
+  #   python3 scripts/dev/mock_telemetry_publisher.py --project gridfinity
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "1883:1883"   # Standard MQTT/TCP
+      - "9001:9001"   # MQTT over WebSockets (for browser debugging tools)
+    volumes:
+      - ./scripts/dev/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    healthcheck:
+      test: [ "CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3" ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
   # ── Redis (rate-limit / session storage) ──────────────────────────────────
   redis:
     image: redis:7-alpine
@@ -64,8 +82,14 @@ services:
       RATE_LIMIT_ENABLED: "false"
       RATE_LIMIT_STORAGE: "redis://redis:6379"
       CORS_ORIGINS: "http://localhost:5173,http://localhost:4321,http://localhost:3001"
+      # 4D Telemetry Bridge — points to the local Mosquitto dev broker
+      MQTT_BROKER: "mqtt-broker"
+      MQTT_PORT: "1883"
+      MQTT_ENABLED: "true"
     depends_on:
       redis:
+        condition: service_healthy
+      mqtt-broker:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')" ]

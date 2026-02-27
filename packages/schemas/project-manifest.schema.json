@@ -80,9 +80,11 @@
           "type": "string",
           "enum": [
             "openscad",
-            "cadquery"
+            "cadquery",
+            "implicit"
           ],
-          "default": "openscad"
+          "default": "openscad",
+          "description": "CAD kernel to use for rendering. 'implicit' enables the native SDF engine for TPMS/Gyroid/lattice geometries and requires a hyperobject.implicit_field config block."
         },
         "attribution": {
           "type": "object",
@@ -816,6 +818,90 @@
           ]
         }
       ]
+    },
+    "animations": {
+      "type": "array",
+      "description": "Parametric animation sequences rendered as a flipbook of server-side GLB frames. Each animation interpolates between two parameter states.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "from_state",
+          "to_state",
+          "frames"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-_]*$"
+          },
+          "label": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "description": {
+            "$ref": "#/$defs/i18nString"
+          },
+          "from_state": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "to_state": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "frames": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 30,
+            "default": 5
+          },
+          "duration_ms": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 30000,
+            "default": 2000
+          },
+          "easing": {
+            "type": "string",
+            "enum": [
+              "linear",
+              "ease-in",
+              "ease-out",
+              "ease-in-out"
+            ],
+            "default": "ease-in-out"
+          },
+          "mode": {
+            "type": "string",
+            "description": "Restrict render to parts in this mode. Defaults to first mode."
+          }
+        }
+      }
     }
   },
   "materials": {

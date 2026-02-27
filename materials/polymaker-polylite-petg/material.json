@@ -1,0 +1,50 @@
+{
+    "material": {
+        "slug": "polymaker-polylite-petg",
+        "name": "Polymaker PolyLite PETG",
+        "category": "thermoplastic-filament",
+        "am_technology": "FDM",
+        "vendor": "Polymaker",
+        "color": "#80cbc4"
+    },
+    "nanoscale": {
+        "refractive_index": 1.567,
+        "autofluorescence": "none",
+        "glass_transition_temp": 80.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.004,
+            "y": 1.004,
+            "z": 1.007
+        },
+        "clearances": {
+            "press_fit": 0.1,
+            "sliding_fit": 0.2,
+            "loose_fit": 0.35
+        },
+        "minimum_features": {
+            "wall_thickness": 0.8,
+            "hole_diameter": 1.0
+        }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Material Extrusion",
+        "emmo_class": "http://emmo.info/emmo#Thermoplastic",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/fdm-thermoplastics"
+    },
+    "tda": {
+        "euler_characteristic": -12,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 13,
+            "betti_2": 0
+        },
+        "filtration_metric": "Vietoris-Rips"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 80.0,
+        "melting_temp": 230.0,
+        "yield_strength": 53.0
+    }
+}

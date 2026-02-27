@@ -1,0 +1,162 @@
+/* AnimationPanel.css — Studio Animation Panel styles */
+
+.animation-panel {
+  padding: 1rem;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.animation-panel__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #8b9ab0);
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.animation-panel__icon {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+/* Animation selection cards */
+.animation-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.animation-panel__card {
+  background: var(--color-surface-2, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.animation-panel__card:hover:not(:disabled) {
+  background: var(--color-surface-3, rgba(255, 255, 255, 0.08));
+  border-color: var(--color-accent, #6366f1);
+}
+
+.animation-panel__card--active {
+  background: var(--color-surface-3, rgba(99, 102, 241, 0.12));
+  border-color: var(--color-accent, #6366f1);
+}
+
+.animation-panel__card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.animation-panel__card-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--color-text, #e2e8f0);
+}
+
+.animation-panel__card-desc {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #8b9ab0);
+  line-height: 1.4;
+}
+
+.animation-panel__card-meta {
+  font-size: 0.65rem;
+  color: var(--color-text-muted, #8b9ab0);
+  font-family: var(--font-mono, monospace);
+  margin-top: 0.1rem;
+}
+
+/* Control area */
+.animation-panel__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.animation-panel__btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 150ms, background 150ms;
+}
+
+.animation-panel__btn--primary {
+  background: var(--color-accent, #6366f1);
+  color: #fff;
+}
+
+.animation-panel__btn--primary:hover {
+  opacity: 0.85;
+}
+
+.animation-panel__btn--secondary {
+  background: var(--color-surface-3, rgba(255, 255, 255, 0.1));
+  color: var(--color-text, #e2e8f0);
+}
+
+.animation-panel__btn--cancel {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Progress bar */
+.animation-panel__progress-bar {
+  height: 4px;
+  background: var(--color-surface-3, rgba(255,255,255,0.1));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.animation-panel__progress-fill {
+  height: 100%;
+  background: var(--color-accent, #6366f1);
+  border-radius: 2px;
+  transition: width 300ms ease;
+}
+
+.animation-panel__progress-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #8b9ab0);
+  text-align: right;
+}
+
+/* Playback */
+.animation-panel__playback {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.animation-panel__frame-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #8b9ab0);
+  font-family: var(--font-mono, monospace);
+}
+
+.animation-panel__scrub input[type='range'] {
+  width: 100%;
+  accent-color: var(--color-accent, #6366f1);
+}
+
+/* Error state */
+.animation-panel__error {
+  font-size: 0.7rem;
+  color: #f87171;
+  margin: 0;
+  word-break: break-word;
+}

@@ -12,7 +12,9 @@
     "github_private": false,
     "ai_configurator": false,
     "ai_code_editor": false,
-    "ai_requests_per_hour": 0
+    "ai_requests_per_hour": 0,
+    "premium_export": false,
+    "print_dispatch": false
   },
   "basic": {
     "renders_per_hour": 50,
@@ -27,7 +29,9 @@
     "github_private": false,
     "ai_configurator": true,
     "ai_code_editor": false,
-    "ai_requests_per_hour": 30
+    "ai_requests_per_hour": 30,
+    "premium_export": false,
+    "print_dispatch": false
   },
   "pro": {
     "renders_per_hour": 200,
@@ -45,7 +49,9 @@
     "github_private": true,
     "ai_configurator": true,
     "ai_code_editor": true,
-    "ai_requests_per_hour": 100
+    "ai_requests_per_hour": 100,
+    "premium_export": true,
+    "print_dispatch": true
   },
   "madfam": {
     "renders_per_hour": 500,
@@ -63,6 +69,8 @@
     "github_private": true,
     "ai_configurator": true,
     "ai_code_editor": true,
-    "ai_requests_per_hour": 300
+    "ai_requests_per_hour": 300,
+    "premium_export": true,
+    "print_dispatch": true
   }
 }

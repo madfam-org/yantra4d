@@ -1,0 +1,50 @@
+{
+    "material": {
+        "slug": "elegoo-abs-like-resin",
+        "name": "Elegoo ABS-Like Resin",
+        "category": "photopolymer-resin",
+        "am_technology": "MSLA",
+        "vendor": "Elegoo",
+        "color": "#f5f5f5"
+    },
+    "nanoscale": {
+        "refractive_index": 1.51,
+        "autofluorescence": "medium",
+        "glass_transition_temp": 58.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.003,
+            "y": 1.003,
+            "z": 1.006
+        },
+        "clearances": {
+            "press_fit": 0.05,
+            "sliding_fit": 0.15,
+            "loose_fit": 0.3
+        },
+        "minimum_features": {
+            "wall_thickness": 0.15,
+            "hole_diameter": 0.3
+        }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Vat Photopolymerization",
+        "emmo_class": "http://emmo.info/emmo#Polymer",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/photopolymers"
+    },
+    "tda": {
+        "euler_characteristic": -320,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 321,
+            "betti_2": 0
+        },
+        "filtration_metric": "superlevel-set"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 58.0,
+        "melting_temp": 180.0,
+        "yield_strength": 38.0
+    }
+}

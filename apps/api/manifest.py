@@ -36,14 +36,29 @@ class ProjectManifest:
 
     @property
     def engine(self) -> str:
-        hyperobject = self.project.get("hyperobject", {})
-        if "implicit_field" in hyperobject:
+        """Resolve the rendering engine for this project.
+
+        Engine resolution order (highest priority first):
+        1. Explicit ``"engine": "implicit"`` in project.json — the canonical form.
+        2. Legacy auto-detection: presence of ``hyperobject.implicit_field`` implies implicit.
+        3. Explicit ``"engine": "openscad"`` or ``"engine": "cadquery"`` — taken at face value.
+        4. Default to ``"openscad"`` if the key is absent or unknown.
+        """
+        explicit = self.project.get("engine", "openscad")
+
+        # Explicit implicit declaration takes top priority
+        if explicit == "implicit":
             return "implicit"
-        engine = self.project.get("engine", "openscad")
-        if engine not in self.KNOWN_ENGINES:
-            logger.warning(f"Unknown engine '{engine}' in {self.slug}, falling back to openscad")
+
+        # Legacy: auto-detect from hyperobject.implicit_field presence
+        if "implicit_field" in self.project.get("hyperobject", {}):
+            return "implicit"
+
+        if explicit not in self.KNOWN_ENGINES:
+            logger.warning(f"Unknown engine '{explicit}' in {self.slug}, falling back to openscad")
             return "openscad"
-        return engine
+
+        return explicit
 
     @property
     def modes(self) -> list:

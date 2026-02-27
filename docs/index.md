@@ -15,6 +15,8 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [WASM Mode](./guides/wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
 -   [Multi-Project Platform](./guides/multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [AI Features](./guides/ai-features.md): AI Configurator and Code Editor — setup, API reference, tier access.
+-   [Implicit SDF Engine](./guides/implicit-engine.md): TPMS lattice rendering, `engine: "implicit"` manifest usage, Digital Twin phase simulation.
+-   [White-Labeling](./guides/white-labeling.md): Deploying branded instances — env vars, Docker Compose override, Kubernetes pattern, license key enforcement.
 -   [Troubleshooting](./guides/troubleshooting.md): Common issues — render timeouts, CORS, Docker.
 
 ### Strategy & Planning

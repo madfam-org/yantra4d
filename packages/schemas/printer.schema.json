@@ -1,0 +1,107 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://4d.madfam.io/schemas/printer.schema.json",
+    "title": "Yantra4D Printer Configuration",
+    "description": "Schema for printer.json files that describe connected 3D printers in a Yantra4D deployment. Supports OctoPrint and Moonraker (Klipper) connections.",
+    "type": "object",
+    "required": [
+        "hardware",
+        "connection"
+    ],
+    "properties": {
+        "hardware": {
+            "type": "object",
+            "required": [
+                "name",
+                "brand",
+                "model",
+                "bed_x_mm",
+                "bed_y_mm",
+                "bed_z_mm"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "User-defined display name for this printer"
+                },
+                "brand": {
+                    "type": "string",
+                    "description": "Manufacturer brand (e.g., 'Bambu Lab', 'Prusa', 'Voron')"
+                },
+                "model": {
+                    "type": "string",
+                    "description": "Printer model name (e.g., 'X1 Carbon', 'MK4', 'Trident')"
+                },
+                "bed_x_mm": {
+                    "type": "number",
+                    "minimum": 1,
+                    "description": "Build volume X dimension in mm"
+                },
+                "bed_y_mm": {
+                    "type": "number",
+                    "minimum": 1,
+                    "description": "Build volume Y dimension in mm"
+                },
+                "bed_z_mm": {
+                    "type": "number",
+                    "minimum": 1,
+                    "description": "Build volume Z dimension in mm"
+                },
+                "nozzle_diameter_mm": {
+                    "type": "number",
+                    "enum": [
+                        0.2,
+                        0.25,
+                        0.4,
+                        0.6,
+                        0.8,
+                        1.0
+                    ],
+                    "default": 0.4,
+                    "description": "Active nozzle diameter in mm"
+                }
+            }
+        },
+        "connection": {
+            "type": "object",
+            "required": [
+                "type",
+                "base_url"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "octoprint",
+                        "moonraker"
+                    ],
+                    "description": "API interface type. 'octoprint' for OctoPrint, 'moonraker' for Klipper/Mainsail/Fluidd."
+                },
+                "base_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Base URL of the printer's HTTP API (e.g., 'http://192.168.1.100:80' for OctoPrint)"
+                },
+                "api_key": {
+                    "type": "string",
+                    "description": "API key for authentication. Required for OctoPrint; optional for Moonraker on trusted networks."
+                }
+            }
+        },
+        "capabilities": {
+            "type": "object",
+            "properties": {
+                "multi_material": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether the printer supports multi-material printing (e.g., AMS, MMU)"
+                },
+                "auto_level": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether the printer has automatic bed leveling"
+                }
+            }
+        }
+    }
+}

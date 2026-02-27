@@ -1,0 +1,50 @@
+{
+    "material": {
+        "slug": "polymaker-polyterra-pla",
+        "name": "Polymaker PolyTerra PLA",
+        "category": "thermoplastic-filament",
+        "am_technology": "FDM",
+        "vendor": "Polymaker",
+        "color": "#a5d6a7"
+    },
+    "nanoscale": {
+        "refractive_index": 1.46,
+        "autofluorescence": "low",
+        "glass_transition_temp": 55.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.003,
+            "y": 1.003,
+            "z": 1.005
+        },
+        "clearances": {
+            "press_fit": 0.1,
+            "sliding_fit": 0.2,
+            "loose_fit": 0.35
+        },
+        "minimum_features": {
+            "wall_thickness": 0.6,
+            "hole_diameter": 0.8
+        }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Material Extrusion",
+        "emmo_class": "http://emmo.info/emmo#Thermoplastic",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/fdm-thermoplastics"
+    },
+    "tda": {
+        "euler_characteristic": -8,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 9,
+            "betti_2": 0
+        },
+        "filtration_metric": "Vietoris-Rips"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 55.0,
+        "melting_temp": 175.0,
+        "yield_strength": 48.0
+    }
+}

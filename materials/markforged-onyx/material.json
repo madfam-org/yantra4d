@@ -1,0 +1,50 @@
+{
+    "material": {
+        "slug": "markforged-onyx",
+        "name": "Markforged Onyx",
+        "category": "thermoplastic-filament",
+        "am_technology": "FDM",
+        "vendor": "Markforged",
+        "color": "#212121"
+    },
+    "nanoscale": {
+        "refractive_index": 1.55,
+        "autofluorescence": "none",
+        "glass_transition_temp": 145.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.005,
+            "y": 1.005,
+            "z": 1.009
+        },
+        "clearances": {
+            "press_fit": 0.1,
+            "sliding_fit": 0.2,
+            "loose_fit": 0.3
+        },
+        "minimum_features": {
+            "wall_thickness": 0.8,
+            "hole_diameter": 1.0
+        }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Material Extrusion",
+        "emmo_class": "http://emmo.info/emmo#Composite",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/fiber-reinforced"
+    },
+    "tda": {
+        "euler_characteristic": -28,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 29,
+            "betti_2": 0
+        },
+        "filtration_metric": "Vietoris-Rips"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": 145.0,
+        "melting_temp": 280.0,
+        "yield_strength": 71.0
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "material": {
+        "slug": "bambu-tpu-95a",
+        "name": "Bambu Lab TPU 95A",
+        "category": "thermoplastic-filament",
+        "am_technology": "FDM",
+        "vendor": "Bambu Lab",
+        "color": "#fff9c4"
+    },
+    "nanoscale": {
+        "refractive_index": 1.50,
+        "autofluorescence": "none",
+        "glass_transition_temp": -40.0
+    },
+    "am_compensations": {
+        "shrinkage": {
+            "x": 1.012,
+            "y": 1.012,
+            "z": 1.018
+        },
+        "clearances": {
+            "press_fit": 0.0,
+            "sliding_fit": 0.1,
+            "loose_fit": 0.2
+        },
+        "minimum_features": {
+            "wall_thickness": 0.8,
+            "hole_diameter": 1.0
+        }
+    },
+    "semantic_ontology": {
+        "iso_52900_category": "Material Extrusion",
+        "emmo_class": "http://emmo.info/emmo#Elastomer",
+        "knowledge_graph_uri": "https://data.madfam.io/ontologies/fdm-elastomers"
+    },
+    "tda": {
+        "euler_characteristic": -5,
+        "persistent_homology": {
+            "betti_0": 1,
+            "betti_1": 6,
+            "betti_2": 0
+        },
+        "filtration_metric": "Vietoris-Rips"
+    },
+    "thermodynamics": {
+        "glass_transition_temp": -40.0,
+        "melting_temp": 210.0,
+        "yield_strength": 9.0
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "$schema": "https://4d.madfam.io/schemas/printer.schema.json",
+    "hardware": {
+        "name": "My Printer",
+        "brand": "Bambu Lab",
+        "model": "X1 Carbon",
+        "bed_x_mm": 256,
+        "bed_y_mm": 256,
+        "bed_z_mm": 256,
+        "nozzle_diameter_mm": 0.4
+    },
+    "connection": {
+        "type": "moonraker",
+        "base_url": "http://192.168.1.100:7125",
+        "api_key": ""
+    },
+    "capabilities": {
+        "multi_material": false,
+        "auto_level": true
+    }
+}

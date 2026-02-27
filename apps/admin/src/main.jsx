@@ -11,10 +11,14 @@ async function bootstrap() {
 
     if (AUTH_ENABLED) {
         const { JanuaProvider } = await import('@janua/react-sdk')
-        const baseURL = import.meta.env.VITE_JANUA_BASE_URL || 'https://auth.madfam.io'
+        const config = {
+            baseURL: import.meta.env.VITE_JANUA_BASE_URL || 'https://auth.madfam.io',
+            clientId: import.meta.env.VITE_JANUA_CLIENT_ID || 'jnc_-v2RiP_TMO-XSExftpCh41K46xeszlKh',
+            redirectUri: import.meta.env.VITE_JANUA_REDIRECT_URI || `${window.location.origin}/auth/callback`,
+        }
 
         Root = () => (
-            <JanuaProvider baseURL={baseURL}>
+            <JanuaProvider config={config}>
                 <App />
             </JanuaProvider>
         )

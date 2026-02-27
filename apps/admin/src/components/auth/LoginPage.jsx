@@ -21,7 +21,7 @@ export default function LoginPage({ auth }) {
                 <SignIn
                     afterSignIn={handleAfterSignIn}
                     onError={(err) => console.error('Login error:', err)}
-                    apiUrl={import.meta.env.VITE_JANUA_API_URL || 'https://api.janua.dev'}
+                    apiUrl={import.meta.env.VITE_JANUA_BASE_URL || 'https://auth.madfam.io'}
                     socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                     showRememberMe={false}
                 />

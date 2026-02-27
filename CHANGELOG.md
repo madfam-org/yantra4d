@@ -44,6 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `"implicit"` alongside `"openscad"` and `"cadquery"`.
 - **CHANGELOG** — Retroactively versioned from `v0.1.0` through `v0.10.0`.
 
+### Fixed
+- **Backend Render Cache Collisions** — `render.py` now secures `stl_prefix` file names by hashing the target SCAD parameters (`param_hash`). This perfectly resolves a severe race condition where rendering a sub-component inside a complex assembly mode overwrote the `.glb` cache file of the standalone single-component mode.
+- **Frontend Mode Transitions** — `useProjectParams.js` now strictly strips out any URL state attributes that are explicitly restricted by a component's `visible_in_modes` manifest definition when transitioning between 3D UI states, comprehensively eliminating parameter ghosting.
+
 ---
 
 ## [0.10.0] — 2025-Q4 — Quality Lock-In: 80% Coverage Foundation

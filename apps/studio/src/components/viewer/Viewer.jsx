@@ -39,6 +39,26 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
         }
     }, [geom, partType, onGeometry, onGeometryRemove])
 
+    // Apply the React-driven UI colors to native GLTF/GLB scenes.
+    // The backend `stl_to_glb` optimizer generates default grey materials, 
+    // so we must traverse and inject the correct dynamic part color here.
+    useEffect(() => {
+        if (gltfScene && color) {
+            gltfScene.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    // Update material color natively to reflect the UI color picker
+                    child.material.color.set(color)
+                    // If Emissive is active, copy the emissive props too
+                    const isHighlight = highlightMode === 'highlight'
+                    child.material.emissive.set(isHighlight ? color : '#000000')
+                    child.material.emissiveIntensity = isHighlight ? 0.15 : 0
+
+                    child.material.needsUpdate = true
+                }
+            })
+        }
+    }, [gltfScene, color, highlightMode])
+
     // highlightMode: 'normal' | 'highlight' | 'ghost' | 'hidden'
     if (highlightMode === 'hidden') return null
     if (!geom) return null

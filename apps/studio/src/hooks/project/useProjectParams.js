@@ -81,13 +81,36 @@ export function useProjectParams({ viewerRef }) {
   // the preset stays the same as the one already applied during initialisation,
   // so we skip the redundant (and destructive, for ?p= shared params) setParams.
   const handleHashChange = (parsed) => {
-    if (parsed.mode) setModeState(parsed.mode.id)
-    if (parsed.preset) {
-      const presetChanged = parsed.preset.id !== activePresetId
-      setActivePresetId(parsed.preset.id)
-      if (presetChanged) {
-        setParams(prev => ({ ...prev, ...parsed.preset.values }))
-      }
+    const newMode = parsed.mode ? parsed.mode.id : mode
+    const modeChanged = parsed.mode && parsed.mode.id !== mode
+
+    if (modeChanged) setModeState(newMode)
+
+    const newPresetId = parsed.preset ? parsed.preset.id : activePresetId
+    const presetChanged = parsed.preset && parsed.preset.id !== activePresetId
+
+    if (presetChanged) setActivePresetId(newPresetId)
+
+    if (modeChanged || presetChanged) {
+      setParams(prev => {
+        const next = { ...prev }
+
+        // 1. Clean up parameters that shouldn't leak into the new mode
+        if (manifest?.parameters) {
+          manifest.parameters.forEach(p => {
+            if (p.visible_in_modes && !p.visible_in_modes.includes(newMode)) {
+              next[p.id] = p.default !== undefined ? p.default : 0
+            }
+          })
+        }
+
+        // 2. Apply new preset values
+        if (presetChanged && parsed.preset) {
+          Object.assign(next, parsed.preset.values)
+        }
+
+        return next
+      })
     }
   }
 

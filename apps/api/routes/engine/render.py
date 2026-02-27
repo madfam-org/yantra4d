@@ -112,13 +112,20 @@ def _extract_render_payload(data):
         return None
 
     project_slug = data.get('project', '')
-    stl_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
     export_format = data.get('export_format', 'stl')
     if export_format not in ALLOWED_EXPORT_FORMATS:
         export_format = 'stl'
 
     # Filter raw parameters strictly defined by the project manifest
     params = validate_params(data.get('parameters', data), project_slug or None)
+    
+    # Securely hash the parameters state to prevent 3D render file overwrites
+    import hashlib
+    raw_hash = json.dumps({"s": scad_filename, "p": params}, sort_keys=True)
+    param_hash = hashlib.sha256(raw_hash.encode()).hexdigest()[:10]
+    
+    base_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
+    stl_prefix = f"{base_prefix}{param_hash}_"
     
     # Inject Material Hyperobject Compensations
     target_mat = data.get('parameters', {}).get('target_material')

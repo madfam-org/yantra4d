@@ -28,7 +28,7 @@
 - **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save and auto-render. Available for user-owned projects (GitHub-imported, forked, onboarded) at pro+ tier.
 - **Git Integration**: Status, diff, commit, push/pull for GitHub-connected projects. Local git auto-initialized on first editor interaction. "Connect to GitHub" for local-only projects.
 - **Fork-to-Edit**: Pro+ users can fork built-in projects to create editable copies with their own slug.
-- **AI Configurator**: Natural language chat that maps to parameter changes. Available at basic+ tier on all projects. Streams responses via SSE with live slider updates.
+- **AI Configurator**: Natural language chat that maps to parameter changes. Available at essentials+ tier on all projects. Streams responses via SSE with live slider updates.
 - **AI Code Editor**: Natural language chat that generates SCAD code edits (search/replace). Available at pro+ tier in the code editor. Supports apply/reject workflow with Monaco inline diffs.
 - **Responsive Mobile/Tablet Layout**: Adaptive UI across phone, tablet, and desktop viewports with landscape orientation support.
     - **Shared `useMediaQuery` hook** (`hooks/system/useMediaQuery.js`): SSR-safe matchMedia wrapper with named exports (`useIsMobile`, `useIsTablet`, `useIsDesktop`, `useIsLandscape`). In unit tests, `setup.js` provides a configurable mock: call `globalThis.__setMediaQuery(query, true)` to simulate viewports, `__resetMediaQueries()` to reset.
@@ -115,8 +115,8 @@ backend/
 | `/api/projects/<slug>/git/push` | POST | 20/hr | Push to origin (pro+, GitHub token required) |
 | `/api/projects/<slug>/git/pull` | POST | 20/hr | Pull from origin (pro+, GitHub token required) |
 | `/api/projects/<slug>/git/connect-remote` | POST | 10/hr | Add/set GitHub remote URL (pro+) |
-| `/api/ai/session` | POST | 30/hr | Create AI chat session (basic+) |
-| `/api/ai/chat-stream` | POST | dynamic | SSE streaming AI chat (basic+ configurator, pro+ code-editor) |
+| `/api/ai/session` | POST | 30/hr | Create AI chat session (essentials+) |
+| `/api/ai/chat-stream` | POST | dynamic | SSE streaming AI chat (essentials+ configurator, pro+ code-editor) |
 
 #### Payload Examples
 

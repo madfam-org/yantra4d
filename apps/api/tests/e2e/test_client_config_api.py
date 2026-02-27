@@ -79,9 +79,9 @@ class TestClientConfigEndpoint:
     ):
         from config import Config
 
-        monkeypatch.setattr(Config, "YANTRA4D_LICENSE_KEY", "basic-key")
-        mock_decode.return_value = {"tier": "basic"}
-        mock_resolve.return_value = "basic"
+        monkeypatch.setattr(Config, "YANTRA4D_LICENSE_KEY", "essentials-key")
+        mock_decode.return_value = {"tier": "essentials"}
+        mock_resolve.return_value = "essentials"
         mock_has.return_value = False
 
         res = client.get("/api/config/client")

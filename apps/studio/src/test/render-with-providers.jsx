@@ -8,7 +8,7 @@ import { ProjectProvider } from '../contexts/project/ProjectProvider'
 import { TierContext } from '../contexts/auth/TierProvider'
 import { MemoryRouter } from 'react-router-dom'
 
-const TIER_HIERARCHY = { guest: 0, basic: 1, pro: 2, madfam: 3 }
+const TIER_HIERARCHY = { guest: 0, essentials: 1, pro: 2, madfam: 3 }
 
 /**
  * Render a component wrapped in all application providers.

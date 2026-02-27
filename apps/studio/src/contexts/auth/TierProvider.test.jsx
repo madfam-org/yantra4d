@@ -35,7 +35,7 @@ describe('TierProvider tests', () => {
       ok: true,
       json: () => Promise.resolve({
         guest: { renders_per_hour: 30 },
-        basic: { renders_per_hour: 50 },
+        essentials: { renders_per_hour: 50 },
         pro: { renders_per_hour: 200 },
         madfam: { renders_per_hour: 500 },
       }),
@@ -83,15 +83,15 @@ describe('TierProvider tests', () => {
       const { apiFetch } = await import('../../services/core/apiClient')
       apiFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ tier: 'basic', limits: { renders_per_hour: 50 } }),
+        json: () => Promise.resolve({ tier: 'essentials', limits: { renders_per_hour: 50 } }),
       })
 
       const { result } = renderHook(() => useTier(), { wrapper })
       await waitFor(() => expect(result.current.loading).toBe(false))
 
-      // basic tier: can access guest + basic, NOT pro/madfam
+      // essentials tier: can access guest + essentials, NOT pro/madfam
       expect(result.current.canAccess('guest')).toBe(true)
-      expect(result.current.canAccess('basic')).toBe(true)
+      expect(result.current.canAccess('essentials')).toBe(true)
       expect(result.current.canAccess('pro')).toBe(false)
       expect(result.current.canAccess('madfam')).toBe(false)
     })

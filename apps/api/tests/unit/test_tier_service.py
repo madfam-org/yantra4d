@@ -23,7 +23,7 @@ class TestResolveTier:
         assert resolve_tier({"yantra4d_tier": "madfam"}) == "madfam"
 
     def test_unknown_tier_fallback(self):
-        assert resolve_tier({"yantra4d_tier": "enterprise"}) == "basic"
+        assert resolve_tier({"yantra4d_tier": "enterprise"}) == "essentials"
 
 
 class TestHasTier:
@@ -74,6 +74,6 @@ class TestLoadTiers:
     def test_loads_all_tiers(self):
         tiers = load_tiers()
         assert "guest" in tiers
-        assert "basic" in tiers
+        assert "essentials" in tiers
         assert "pro" in tiers
         assert "madfam" in tiers

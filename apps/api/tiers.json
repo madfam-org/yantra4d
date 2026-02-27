@@ -16,7 +16,7 @@
     "premium_export": false,
     "print_dispatch": false
   },
-  "basic": {
+  "essentials": {
     "renders_per_hour": 50,
     "max_projects": 3,
     "export_formats": [

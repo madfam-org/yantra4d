@@ -33,7 +33,7 @@ def _get_ai_rate_limit() -> str:
 
 
 @ai_bp.route("/api/ai/session", methods=["POST"])
-@require_tier("basic")
+@require_tier("essentials")
 @limiter.limit(rate_limits.AI_SESSION)
 @require_json_body
 def create_ai_session():
@@ -60,7 +60,7 @@ def create_ai_session():
 
 
 @ai_bp.route("/api/ai/chat-stream", methods=["POST"])
-@require_tier("basic")
+@require_tier("essentials")
 @limiter.limit(_get_ai_rate_limit)
 @require_json_body
 def chat_stream():

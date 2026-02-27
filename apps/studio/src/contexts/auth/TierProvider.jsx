@@ -6,7 +6,7 @@ import { apiFetch } from '../../services/core/apiClient'
 // eslint-disable-next-line react-refresh/only-export-components
 export const TierContext = createContext(null)
 
-const TIER_HIERARCHY = { guest: 0, basic: 1, pro: 2, madfam: 3 }
+const TIER_HIERARCHY = { guest: 0, essentials: 1, basic: 1, pro: 2, madfam: 3 }
 
 const FALLBACK = {
   tier: isAuthEnabled ? 'guest' : 'madfam',

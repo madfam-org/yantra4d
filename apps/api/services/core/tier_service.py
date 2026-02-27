@@ -1,6 +1,12 @@
 """
 Tier service: loads tier definitions, resolves user tier from JWT claims,
 and provides feature-gating helpers.
+
+Tier hierarchy:
+  guest (0)      — unauthenticated visitors, most restricted
+  essentials (1) — authenticated users / open-source self-hosters (was "basic")
+  pro (2)        — paid premium features
+  madfam (3)     — ecosystem bundle
 """
 import json
 import logging
@@ -10,7 +16,10 @@ logger = logging.getLogger(__name__)
 
 _tiers: dict | None = None
 
-TIER_HIERARCHY = {"guest": 0, "basic": 1, "pro": 2, "madfam": 3}
+TIER_HIERARCHY = {"guest": 0, "essentials": 1, "pro": 2, "madfam": 3}
+
+# Legacy tier name mapping
+LEGACY_TIER_MAP = {"basic": "essentials"}
 
 TIERS_FILE = Path(__file__).parent.parent.parent / "tiers.json"
 
@@ -25,30 +34,39 @@ def load_tiers() -> dict:
     return _tiers
 
 
+def _normalize_tier(tier: str) -> str:
+    """Normalize legacy tier names to current names."""
+    return LEGACY_TIER_MAP.get(tier, tier)
+
+
 def resolve_tier(auth_claims: dict | None) -> str:
     """Resolve tier string from JWT claims.
 
     - No claims (anonymous) -> "guest"
-    - Claims without yantra4d_tier -> "basic"
+    - Claims without yantra4d_tier -> "essentials" (authenticated but no subscription)
     - Claims with yantra4d_tier -> that value (validated against known tiers)
     """
     if not auth_claims:
         return "guest"
-    tier = auth_claims.get("yantra4d_tier", "basic")
+    tier = auth_claims.get("yantra4d_tier", "essentials")
+    tier = _normalize_tier(tier)
     if tier not in TIER_HIERARCHY:
-        logger.warning("Unknown tier '%s' in JWT, falling back to basic", tier)
-        return "basic"
+        logger.warning("Unknown tier '%s' in JWT, falling back to essentials", tier)
+        return "essentials"
     return tier
 
 
 def has_tier(user_tier: str, required_tier: str) -> bool:
     """Check if user_tier meets or exceeds required_tier in hierarchy."""
+    user_tier = _normalize_tier(user_tier)
+    required_tier = _normalize_tier(required_tier)
     return TIER_HIERARCHY.get(user_tier, 0) >= TIER_HIERARCHY.get(required_tier, 0)
 
 
 def get_tier_limits(tier: str) -> dict:
     """Return the limits dict for a given tier."""
     tiers = load_tiers()
+    tier = _normalize_tier(tier)
     return tiers.get(tier, tiers["guest"])
 
 

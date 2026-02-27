@@ -6,7 +6,7 @@ Yantra4D includes two AI-powered features that use LLMs to assist with parametri
 
 | Feature | Description | Tier Required |
 |---------|-------------|---------------|
-| **AI Configurator** | Chat-based parameter adjustment — describe what you want and the AI adjusts params | basic+ |
+| **AI Configurator** | Chat-based parameter adjustment — describe what you want and the AI adjusts params | essentials+ |
 | **AI Code Editor** | Natural language SCAD editing — describe changes and the AI generates search/replace edits | pro+ |
 
 Both features use streaming SSE responses for real-time feedback.
@@ -126,7 +126,7 @@ Response: SSE stream with events:
 | Tier | Configurator | Code Editor | Requests/Hour |
 |------|:---:|:---:|:---:|
 | guest | — | — | 0 |
-| basic | Yes | — | 30 |
+| essentials | Yes | — | 30 |
 | pro | Yes | Yes | 100 |
 | madfam | Yes | Yes | 300 |
 

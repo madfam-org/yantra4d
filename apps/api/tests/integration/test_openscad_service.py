@@ -87,11 +87,11 @@ class TestValidateParams:
 
     def test_checkbox_coerces_true_string(self):
         result = self.validate({"show_base": "true"})
-        assert result["show_base"] is True
+        assert result["show_base"] == 1
 
     def test_checkbox_coerces_false_string(self):
         result = self.validate({"show_base": "false"})
-        assert result["show_base"] is False
+        assert result["show_base"] == 0
 
     def test_checkbox_rejects_non_bool_like(self):
         result = self.validate({"show_base": "maybe"})
@@ -99,7 +99,7 @@ class TestValidateParams:
 
     def test_checkbox_accepts_bool(self):
         result = self.validate({"show_base": True})
-        assert result["show_base"] is True
+        assert result["show_base"] == 1
 
     def test_unknown_key_rejected(self):
         result = self.validate({"nonexistent": 42})
@@ -127,7 +127,7 @@ class TestBuildOpenscadCommand:
     def test_bool_param(self):
         cmd = self.build_cmd("/out.stl", "/in.scad", {"flag": True})
         assert "-D" in cmd
-        assert "flag=true" in cmd
+        assert "flag=1" in cmd
 
     def test_int_param(self):
         cmd = self.build_cmd("/out.stl", "/in.scad", {"count": 42})

@@ -19,7 +19,7 @@ resources:
 - network-policies.yaml
 
 images:
-- digest: sha256:a88b030fb7c6d5929b0bb64dfd70d2995ca523292d6ce9c0e2cdfe7d678f37a5
+- digest: sha256:5ac8ea55803391bbc238fb7cbdd937274515f616a4d777aacc801110a8eb3403
   name: ghcr.io/madfam-org/yantra4d/admin
   newName: ghcr.io/madfam-org/yantra4d/admin
 - digest: sha256:d9d3e210963f113f742f07518441e98c2155d9e47d9e898558d2f0aa81a2ab0c

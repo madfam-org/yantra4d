@@ -33,10 +33,10 @@ jobs:
     name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
-      studio: ${{ steps.filter.outputs.studio }}
-      landing: ${{ steps.filter.outputs.landing }}
-      admin: ${{ steps.filter.outputs.admin }}
+      backend: ${{ steps.decide.outputs.backend }}
+      studio: ${{ steps.decide.outputs.studio }}
+      landing: ${{ steps.decide.outputs.landing }}
+      admin: ${{ steps.decide.outputs.admin }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -61,13 +61,20 @@ jobs:
               - 'apps/admin/**'
               - 'packages/**'
 
-      - name: Force all on workflow_dispatch
-        if: github.event.inputs.force_deploy == 'true'
+      - name: Decide what to build
+        id: decide
         run: |
-          echo "backend=true" >> $GITHUB_OUTPUT
-          echo "studio=true" >> $GITHUB_OUTPUT
-          echo "landing=true" >> $GITHUB_OUTPUT
-          echo "admin=true" >> $GITHUB_OUTPUT
+          if [ "${{ github.event.inputs.force_deploy }}" = "true" ]; then
+            echo "backend=true" >> $GITHUB_OUTPUT
+            echo "studio=true" >> $GITHUB_OUTPUT
+            echo "landing=true" >> $GITHUB_OUTPUT
+            echo "admin=true" >> $GITHUB_OUTPUT
+          else
+            echo "backend=${{ steps.filter.outputs.backend }}" >> $GITHUB_OUTPUT
+            echo "studio=${{ steps.filter.outputs.studio }}" >> $GITHUB_OUTPUT
+            echo "landing=${{ steps.filter.outputs.landing }}" >> $GITHUB_OUTPUT
+            echo "admin=${{ steps.filter.outputs.admin }}" >> $GITHUB_OUTPUT
+          fi
 
   build-backend:
     name: Build Backend
@@ -223,6 +230,8 @@ jobs:
           cache-to: type=gha,scope=landing,mode=max,ignore-error=true
           provenance: false
           sbom: false
+          build-args: |
+            PUBLIC_STUDIO_URL=https://4d-app.madfam.io
 
   build-admin:
     name: Build Admin
@@ -342,6 +351,23 @@ jobs:
             sleep $((ATTEMPT * 2))
           done
           echo "Failed after 3 attempts"
+          exit 1
+
+  verify-deploy:
+    name: Post-Deploy Health Check
+    runs-on: ubuntu-latest
+    needs: [commit-digests]
+    if: needs.commit-digests.result == 'success'
+    steps:
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://4d-api.madfam.io/api/health)
+            [ "$STATUS" = "200" ] && echo "Backend healthy" && exit 0
+            echo "Attempt $i: status=$STATUS, retrying in 30s..."
+            sleep 30
+          done
+          echo "Backend health check failed after 6 minutes"
           exit 1
 
   lifecycle-events:

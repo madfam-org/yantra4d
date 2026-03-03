@@ -47,6 +47,20 @@ tags:
     description: New project creation wizard
   - name: admin
     description: Administrative project management
+  - name: printer
+    description: 3D printer integration (OctoPrint/Moonraker)
+  - name: animations
+    description: Parametric animation rendering
+  - name: materials
+    description: Material hyperobject catalog
+  - name: storefront
+    description: Public storefront views and presets
+  - name: catalog
+    description: Hardware component catalogs (NopSCADlib)
+  - name: config
+    description: Client platform configuration
+  - name: assembly
+    description: Assembly step generation and management
 
 components:
   securitySchemes:
@@ -1453,3 +1467,420 @@ paths:
                     type: string
                   parts_checked:
                     type: integer
+
+  # ── Printers ───────────────────────────────────────────
+  /api/printers:
+    get:
+      tags: [printer]
+      summary: List configured printers
+      operationId: listPrinters
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Array of printer configs (excludes example-* files)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  printers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          type: string
+                          enum: [octoprint, moonraker]
+                        url:
+                          type: string
+        "403":
+          description: Tier insufficient (requires pro+)
+
+  /api/printers/{printer_id}/status:
+    get:
+      tags: [printer]
+      summary: Get printer status
+      operationId: getPrinterStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: printer_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-z0-9][a-z0-9_-]{1,48}[a-z0-9]$"
+      responses:
+        "200":
+          description: Printer status from OctoPrint/Moonraker API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  printer_id:
+                    type: string
+                  status:
+                    type: object
+        "400":
+          description: Invalid printer_id format
+        "404":
+          description: Printer not found
+
+  /api/printers/{printer_id}/print:
+    post:
+      tags: [printer]
+      summary: Dispatch a print job
+      operationId: dispatchPrint
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: printer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_path:
+                  type: string
+                  description: Path to STL file (must be within static dir)
+              required: [file_path]
+      responses:
+        "200":
+          description: Print job dispatched
+        "400":
+          description: Invalid file path or printer_id
+        "404":
+          description: Printer not found
+    delete:
+      tags: [printer]
+      summary: Cancel active print job
+      operationId: cancelPrint
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: printer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Print job cancelled
+        "404":
+          description: Printer not found
+
+  # ── Animations ─────────────────────────────────────────
+  /api/projects/{slug}/animations:
+    get:
+      tags: [animations]
+      summary: List animations for a project
+      operationId: listAnimations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Animation list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  animations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        label:
+                          type: string
+                        frames:
+                          type: integer
+                        fps:
+                          type: integer
+                  count:
+                    type: integer
+        "403":
+          description: Animation features require Pro tier or above
+
+  /api/projects/{slug}/animations/{animation_id}/render:
+    post:
+      tags: [animations]
+      summary: Render animation frames (SSE stream)
+      operationId: renderAnimation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: animation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                export_format:
+                  type: string
+      responses:
+        "200":
+          description: SSE stream with frame_done and complete events
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        "404":
+          description: Animation not found
+
+  # ── Materials ──────────────────────────────────────────
+  /api/materials:
+    get:
+      tags: [materials]
+      summary: List material hyperobjects
+      operationId: listMaterials
+      responses:
+        "200":
+          description: Array of material manifests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  materials:
+                    type: array
+                    items:
+                      type: object
+
+  /api/materials/{slug}:
+    get:
+      tags: [materials]
+      summary: Get material manifest by slug
+      operationId: getMaterial
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Material manifest
+        "404":
+          description: Material not found
+
+  # ── Storefront & Presets ───────────────────────────────
+  /api/projects/{slug}/storefront:
+    get:
+      tags: [storefront]
+      summary: Get storefront-safe manifest (stripped)
+      operationId: getStorefront
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Storefront manifest without internal fields
+        "404":
+          description: Project not found
+
+  /api/projects/{slug}/share/{preset_id}:
+    get:
+      tags: [storefront]
+      summary: Get shareable preset configuration
+      operationId: getSharePreset
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: preset_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Preset configuration for sharing
+        "404":
+          description: Project or preset not found
+
+  # ── Client Config ──────────────────────────────────────
+  /api/config/client:
+    get:
+      tags: [config]
+      summary: Client platform branding configuration
+      operationId: getClientConfig
+      responses:
+        "200":
+          description: Platform branding and feature flags
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  platform_name:
+                    type: string
+                  features:
+                    type: object
+
+  # ── Admin Flags ────────────────────────────────────────
+  /api/admin/projects/{slug}/flags:
+    patch:
+      tags: [admin]
+      summary: Toggle project flags (demo, hyperobject)
+      operationId: patchProjectFlags
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_demo:
+                  type: boolean
+                is_hyperobject:
+                  type: boolean
+      responses:
+        "200":
+          description: Flags updated
+        "404":
+          description: Project not found
+
+  # ── Assembly Steps ─────────────────────────────────────
+  /api/projects/{slug}/assembly-steps:
+    get:
+      tags: [assembly]
+      summary: Auto-generate assembly steps from BOSL2 attachments
+      operationId: getAssemblySteps
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Generated assembly steps
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  steps:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        order:
+                          type: integer
+                        label:
+                          type: string
+                        parts:
+                          type: array
+                          items:
+                            type: string
+        "404":
+          description: Project not found
+
+  /api/projects/{slug}/assembly-steps/write:
+    post:
+      tags: [assembly]
+      summary: Write generated assembly steps to project manifest
+      operationId: writeAssemblySteps
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merge:
+                  type: boolean
+                  description: Merge with existing steps instead of replacing
+      responses:
+        "200":
+          description: Assembly steps written to manifest
+        "404":
+          description: Project not found
+
+  # ── Catalog ────────────────────────────────────────────
+  /api/catalog/nopscadlib:
+    get:
+      tags: [catalog]
+      summary: List NopSCADlib catalog categories
+      operationId: listCatalogCategories
+      responses:
+        "200":
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: string
+
+  /api/catalog/nopscadlib/{category}:
+    get:
+      tags: [catalog]
+      summary: List components in a catalog category
+      operationId: getCatalogCategory
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Components in category
+        "404":
+          description: Category not found

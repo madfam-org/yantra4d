@@ -1,0 +1,194 @@
+/* PrintPanel.css — Studio Print Panel styles */
+
+.print-panel {
+  padding: 1rem;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.print-panel__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #8b9ab0);
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.print-panel__icon {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.print-panel__select {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: var(--color-surface-2, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  color: var(--color-text, #e2e8f0);
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.print-panel__status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.print-panel__state {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.print-panel__state--operational {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.print-panel__state--printing {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+}
+
+.print-panel__state--error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.print-panel__state--offline {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+/* Temperature gauges */
+.print-panel__gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.print-panel__gauge-bar {
+  height: 4px;
+  background: var(--color-surface-3, rgba(255, 255, 255, 0.1));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.print-panel__gauge-fill {
+  height: 100%;
+  background: var(--color-accent, #6366f1);
+  border-radius: 2px;
+  transition: width 500ms ease;
+}
+
+.print-panel__gauge-fill--hot {
+  background: #f97316;
+}
+
+.print-panel__gauge-label {
+  font-size: 0.65rem;
+  color: var(--color-text-muted, #8b9ab0);
+  font-family: var(--font-mono, monospace);
+}
+
+/* Progress */
+.print-panel__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.print-panel__progress-filename {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #8b9ab0);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.print-panel__progress-bar {
+  height: 4px;
+  background: var(--color-surface-3, rgba(255, 255, 255, 0.1));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.print-panel__progress-fill {
+  height: 100%;
+  background: var(--color-accent, #6366f1);
+  border-radius: 2px;
+  transition: width 300ms ease;
+}
+
+.print-panel__progress-pct {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #8b9ab0);
+  text-align: right;
+}
+
+/* Action buttons */
+.print-panel__btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  transition: opacity 150ms, background 150ms;
+}
+
+.print-panel__btn--primary {
+  background: var(--color-accent, #6366f1);
+  color: #fff;
+}
+
+.print-panel__btn--primary:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.print-panel__btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.print-panel__btn--cancel {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Tier lock message */
+.print-panel__lock {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #8b9ab0);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* Error/Success messages */
+.print-panel__message {
+  font-size: 0.7rem;
+  word-break: break-word;
+  margin: 0.4rem 0;
+}
+
+.print-panel__message--error {
+  color: #f87171;
+}
+
+.print-panel__message--success {
+  color: #4ade80;
+}

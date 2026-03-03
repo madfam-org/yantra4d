@@ -76,4 +76,4 @@ WORKDIR /app/backend
 RUN useradd -r -u 1001 -s /bin/false yantra4d && chown -R yantra4d:yantra4d /app
 USER yantra4d
 
-CMD gunicorn -w 2 -b "0.0.0.0:${PORT}" --timeout 300 app:app
+CMD gunicorn -w ${WEB_CONCURRENCY:-4} -b "0.0.0.0:${PORT}" --timeout 300 app:app

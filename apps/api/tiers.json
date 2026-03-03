@@ -14,7 +14,8 @@
     "ai_code_editor": false,
     "ai_requests_per_hour": 0,
     "premium_export": false,
-    "print_dispatch": false
+    "print_dispatch": false,
+    "animation": false
   },
   "essentials": {
     "renders_per_hour": 50,
@@ -31,7 +32,8 @@
     "ai_code_editor": false,
     "ai_requests_per_hour": 30,
     "premium_export": false,
-    "print_dispatch": false
+    "print_dispatch": false,
+    "animation": false
   },
   "pro": {
     "renders_per_hour": 200,
@@ -51,7 +53,8 @@
     "ai_code_editor": true,
     "ai_requests_per_hour": 100,
     "premium_export": true,
-    "print_dispatch": true
+    "print_dispatch": true,
+    "animation": true
   },
   "madfam": {
     "renders_per_hour": 500,
@@ -71,6 +74,7 @@
     "ai_code_editor": true,
     "ai_requests_per_hour": 300,
     "premium_export": true,
-    "print_dispatch": true
+    "print_dispatch": true,
+    "animation": true
   }
 }

@@ -104,7 +104,7 @@ def render_animation(slug: str, animation_id: str):
     Requires 'pro' tier or above.
     """
     tier = resolve_tier(getattr(request, "auth_claims", None))
-    if not check_feature(tier, "cadquery_engine"):  # proxy: pro+ can use animation
+    if not check_feature(tier, "animation"):
         return error_response("Animation rendering requires Pro tier or above.", 403)
 
     try:
@@ -210,6 +210,10 @@ def render_animation(slug: str, animation_id: str):
 @optional_auth
 def list_animations(slug: str):
     """Return the animations[] array from the project manifest."""
+    tier = resolve_tier(getattr(request, "auth_claims", None))
+    if not check_feature(tier, "animation"):
+        return error_response("Animation features require Pro tier or above.", 403)
+
     try:
         manifest = get_manifest(slug)
     except RuntimeError as e:

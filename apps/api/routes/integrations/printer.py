@@ -13,24 +13,34 @@ Endpoints:
 import json
 import logging
 import os
+import re
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
-from middleware.auth import optional_auth
-from services.core.tier_service import resolve_tier, check_feature
-from utils.route_helpers import error_response
+from middleware.auth import require_tier
+from utils.route_helpers import error_response, safe_join_path
 
 logger = logging.getLogger(__name__)
 printer_bp = Blueprint("printer", __name__)
 
 PRINTERS_DIR = Path(os.getenv("PRINTERS_DIR", str(Path(__file__).parents[4] / "printers")))
 
+# Printer ID: lowercase alphanumeric, hyphens, underscores. 3-50 chars.
+_PRINTER_ID_RE = re.compile(r'^[a-z0-9][a-z0-9_-]{1,48}[a-z0-9]$')
+
+
+def _validate_printer_id(printer_id: str) -> str | None:
+    """Validate a printer ID. Returns error message or None if valid."""
+    if not printer_id or not _PRINTER_ID_RE.match(printer_id):
+        return "Invalid printer_id: must be 3-50 lowercase alphanumeric characters, hyphens, or underscores"
+    return None
+
 
 def _load_printer(printer_id: str) -> dict | None:
     """Load a printer.json by ID (filename without .json)."""
-    path = PRINTERS_DIR / f"{printer_id}.json"
-    if not path.is_file():
+    path = safe_join_path(str(PRINTERS_DIR), f"{printer_id}.json")
+    if path is None or not path.is_file():
         return None
     try:
         with open(path) as f:
@@ -53,7 +63,7 @@ def _get_client(printer: dict):
 
 
 @printer_bp.route("/api/printers", methods=["GET"])
-@optional_auth
+@require_tier("pro")
 def list_printers():
     """Return all configured printers (name, model, connection type, id)."""
     if not PRINTERS_DIR.is_dir():
@@ -87,9 +97,12 @@ def list_printers():
 
 
 @printer_bp.route("/api/printers/<printer_id>/status", methods=["GET"])
-@optional_auth
+@require_tier("pro")
 def get_printer_status(printer_id: str):
     """Proxy real-time status from the printer's API."""
+    err = _validate_printer_id(printer_id)
+    if err:
+        return error_response(err, 400)
     printer = _load_printer(printer_id)
     if printer is None:
         return error_response(f"Printer '{printer_id}' not found.", 404)
@@ -106,17 +119,17 @@ def get_printer_status(printer_id: str):
 
 
 @printer_bp.route("/api/printers/<printer_id>/print", methods=["POST"])
-@optional_auth
+@require_tier("pro")
 def dispatch_print(printer_id: str):
     """
     Upload a rendered file to the printer and start the print job.
 
     Tier-gated: requires 'pro' or above.
-    Request body: { "file_path": "/absolute/path/to/output.stl" }
+    Request body: { "file_path": "output.stl" }
     """
-    tier = resolve_tier(getattr(request, "auth_claims", None))
-    if not check_feature(tier, "print_dispatch"):
-        return error_response("Print dispatch requires Pro tier or above.", 403)
+    err = _validate_printer_id(printer_id)
+    if err:
+        return error_response(err, 400)
 
     printer = _load_printer(printer_id)
     if printer is None:
@@ -126,6 +139,13 @@ def dispatch_print(printer_id: str):
     file_path = data.get("file_path", "")
     if not file_path:
         return error_response("Missing 'file_path' in request body.", 400)
+
+    # Sanitize file_path: must resolve inside STATIC_DIR
+    from config import Config
+    safe_path = safe_join_path(str(Config.STATIC_DIR), Path(file_path).name)
+    if safe_path is None or not safe_path.is_file():
+        return error_response("Invalid or inaccessible file path.", 400)
+    file_path = str(safe_path)
 
     conn = printer["connection"]
     client = _get_client(printer)
@@ -143,12 +163,12 @@ def dispatch_print(printer_id: str):
 
 
 @printer_bp.route("/api/printers/<printer_id>/print", methods=["DELETE"])
-@optional_auth
+@require_tier("pro")
 def cancel_print_job(printer_id: str):
     """Cancel the active print job on the specified printer."""
-    tier = resolve_tier(getattr(request, "auth_claims", None))
-    if not check_feature(tier, "print_dispatch"):
-        return error_response("Print dispatch requires Pro tier or above.", 403)
+    err = _validate_printer_id(printer_id)
+    if err:
+        return error_response(err, 400)
 
     printer = _load_printer(printer_id)
     if printer is None:

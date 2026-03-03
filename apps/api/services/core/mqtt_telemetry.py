@@ -26,7 +26,7 @@ class MqttTelemetryService:
         
         self.broker = os.getenv("MQTT_BROKER", "localhost")
         self.port = int(os.getenv("MQTT_PORT", MQTT_DEFAULT_PORT))
-        self.enabled = os.getenv("MQTT_ENABLED", "true").lower() == "true"
+        self.enabled = os.getenv("MQTT_ENABLED", "false").lower() == "true"
         
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.client.on_connect = self._on_connect

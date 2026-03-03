@@ -39,14 +39,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/api/printers` REST blueprint; `octoprint.py` and `moonraker.py` service
   clients; `PrintPanel.jsx` Studio UI; tier-gated at `pro+`.
 
+### Security
+- **Printer path traversal fix** — `_load_printer()` and `dispatch_print()` now
+  use `safe_join_path()` to prevent directory traversal via crafted `printer_id`
+  or `file_path` values.
+- **Printer auth hardening** — All printer endpoints upgraded from `optional_auth`
+  to `@require_tier("pro")`; added regex-based `printer_id` validation.
+- **NPM token leak** — Removed `ENV NPM_MADFAM_TOKEN` from studio and admin
+  Dockerfiles; token stays as build-time `ARG` only, not persisted in image layers.
+
 ### Changed
 - **Project Manifest Schema** — `project.engine` enum extended to include
   `"implicit"` alongside `"openscad"` and `"cadquery"`.
 - **CHANGELOG** — Retroactively versioned from `v0.1.0` through `v0.10.0`.
+- **Billing tier rename** — `basic` tier renamed to `essentials` across tiers
+  and UI; wired tier system to Dhanam billing platform.
+- **Gunicorn workers** — Worker count now configurable via `WEB_CONCURRENCY`
+  env var (default 4, was hardcoded 2).
+- **CI audit enforcement** — Replaced `|| true` with `--audit-level=high` (npm)
+  and `--severity high` (pip-audit) to fail CI on high-severity vulnerabilities.
 
 ### Fixed
 - **Backend Render Cache Collisions** — `render.py` now secures `stl_prefix` file names by hashing the target SCAD parameters (`param_hash`). This perfectly resolves a severe race condition where rendering a sub-component inside a complex assembly mode overwrote the `.glb` cache file of the standalone single-component mode.
 - **Frontend Mode Transitions** — `useProjectParams.js` now strictly strips out any URL state attributes that are explicitly restricted by a component's `visible_in_modes` manifest definition when transitioning between 3D UI states, comprehensively eliminating parameter ghosting.
+- **JSON error handlers** — Added 405, 413, 429 error handlers to return JSON
+  responses instead of Flask's default HTML error pages.
+- **Animation tier gating** — Replaced proxy `cadquery_engine` feature check
+  with dedicated `animation` flag in `tiers.json` (pro+ only).
+- **MQTT default** — Changed `MQTT_ENABLED` default from `"true"` to `"false"`
+  so the broker is opt-in rather than silently required.
+- **force_deploy** — Consolidated path-filter and force logic into a single
+  `decide` step in `deploy.yml` so the `force_deploy` input actually works.
+- **Landing build-arg** — Added missing `PUBLIC_STUDIO_URL` to the build-landing
+  CI job so the "Launch Studio" link resolves correctly in production.
+- **Admin Dockerfile** — Added missing `VITE_JANUA_REDIRECT_URI` env var.
+
+### Infrastructure
+- **K8s analytics PVC** — Added 1Gi `ReadWriteOnce` persistent volume for the
+  analytics SQLite database; backend deployment mounts at `/app/backend/data`.
+- **K8s secrets** — Added `AI_API_KEY` secret ref, explicit `MQTT_ENABLED=false`
+  and `RATE_LIMIT_ENABLED=true` env vars to the backend deployment.
+- **Docker healthchecks** — Added wget-based healthchecks to studio and admin
+  services in `docker-compose.yml`.
+- **Post-deploy verification** — `verify-deploy` job in `deploy.yml` checks
+  production health endpoint after ArgoCD rollout.
+- **Admin CI job** — Added lint, build, audit, and test pipeline for the admin
+  app to `ci.yml`.
+- **Janua auth gate** — Enabled Janua authentication in admin app production
+  builds.
+
+### Documentation
+- **OpenAPI spec** — Added 15 previously undocumented endpoints: printer (4),
+  animations (2), materials (2), storefront (2), catalog (2), assembly-steps (2),
+  client config (1), admin flags PATCH (1).
+- **CHANGELOG** — Retroactive entries for billing rename, admin app, responsive
+  rounds, all Sprint 13–15 features.
+
+### Testing
+- **Printer route tests** — 13 test cases covering list, status, dispatch, cancel,
+  path traversal prevention, and auth gating.
+- **Animation route tests** — List, render SSE stream, error events, tier gating.
+- **Animation utility tests** — Pure function tests for `_ease()` and
+  `_interpolate_params()`.
+- **Catalog route tests** — NopSCADlib category listing and component lookup.
+- **Studio component tests** — AnimationPanel (8), PrintPanel (8),
+  ReviewStep (7), SaveStep (9), UpgradeDialog (6), PresetGallery (7),
+  CarouselUIOverlay (9), CarouselItem (4), ProjectCarousel3D (4).
+- **Admin test bootstrap** — Vitest framework with 50% coverage thresholds;
+  App and AuthGuard smoke tests.
+
+### Known Tech Debt
+- `--legacy-peer-deps` required in studio Dockerfile because `@janua/react-sdk`
+  declares React 18 peer dependency. Will resolve when Janua publishes React 19
+  peer support.
+- Admin app: ESLint 8→9 and Vite 5→7 upgrades planned. React 18→19 deferred
+  until `@janua/react-sdk` compatibility.
 
 ---
 

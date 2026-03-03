@@ -13,6 +13,7 @@ resources:
 - yantra4d-landing-service.yaml
 - yantra4d-admin-deployment.yaml
 - yantra4d-admin-service.yaml
+- yantra4d-analytics-pvc.yaml
 - yantra4d-redis-pvc.yaml
 - yantra4d-redis-deployment.yaml
 - yantra4d-redis-service.yaml

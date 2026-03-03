@@ -14,12 +14,10 @@ ARG NPM_MADFAM_TOKEN
 ENV VITE_API_BASE=${VITE_API_BASE}
 ENV VITE_JANUA_BASE_URL=${VITE_JANUA_BASE_URL}
 ENV VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID}
+ENV VITE_JANUA_REDIRECT_URI=${VITE_JANUA_REDIRECT_URI}
 ENV VITE_AUTH_ENABLED=${VITE_AUTH_ENABLED}
-ENV NPM_MADFAM_TOKEN=${NPM_MADFAM_TOKEN}
 COPY apps/admin/package.json apps/admin/package-lock.json apps/admin/.npmrc ./
 RUN npm ci --legacy-peer-deps
-# Clear token from environment after install
-ENV NPM_MADFAM_TOKEN=""
 COPY packages/ /app/packages/
 COPY apps/admin/ ./
 COPY apps/studio/ /app/apps/studio/

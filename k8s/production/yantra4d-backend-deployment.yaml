@@ -60,6 +60,17 @@ spec:
                 secretKeyRef:
                   name: yantra4d-secrets
                   key: JANUA_AUDIENCE
+            - name: AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: AI_API_KEY
+            - name: MQTT_ENABLED
+              value: "false"
+            - name: RATE_LIMIT_ENABLED
+              value: "true"
+            - name: ANALYTICS_DB_PATH
+              value: "/app/backend/data/.analytics.db"
           livenessProbe:
             httpGet:
               path: /api/health
@@ -81,6 +92,8 @@ spec:
               mountPath: /tmp
             - name: render-output
               mountPath: /app/backend/static
+            - name: analytics-data
+              mountPath: /app/backend/data
           resources:
             requests:
               cpu: 50m
@@ -95,3 +108,6 @@ spec:
         - name: render-output
           emptyDir:
             sizeLimit: 512Mi
+        - name: analytics-data
+          persistentVolumeClaim:
+            claimName: yantra4d-analytics

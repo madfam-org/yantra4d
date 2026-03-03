@@ -106,6 +106,18 @@ def create_app():
     def not_found(e):
         return jsonify({"status": "error", "error": "Not found"}), 404
 
+    @app.errorhandler(405)
+    def method_not_allowed(e):
+        return jsonify({"status": "error", "error": "Method not allowed"}), 405
+
+    @app.errorhandler(413)
+    def request_too_large(e):
+        return jsonify({"status": "error", "error": "Request body too large"}), 413
+
+    @app.errorhandler(429)
+    def rate_limit_exceeded(e):
+        return jsonify({"status": "error", "error": "Rate limit exceeded"}), 429
+
     @app.errorhandler(500)
     def internal_error(e):
         return jsonify({"status": "error", "error": "Internal server error"}), 500

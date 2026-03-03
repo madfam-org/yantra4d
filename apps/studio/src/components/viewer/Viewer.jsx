@@ -17,6 +17,7 @@ import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../../lib
 import ClippingPlane from './ClippingPlane'
 import MeasureTool from './MeasureTool'
 import ThicknessOverlay from './ThicknessOverlay'
+import OverhangOverlay from './OverhangOverlay'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
@@ -142,7 +143,7 @@ const LoadingOverlay = memo(function LoadingOverlay({ loading, progress, progres
     )
 })
 
-const BoundingBoxHelper = ({ boundingBox, box, children }) => {
+const BoundingBoxHelper = ({ boundingBox, box, formatDimension, children }) => {
     // Only compute center and size if box exists
     const center = box ? box.getCenter(new Vector3()) : new Vector3()
     const size = box ? box.getSize(new Vector3()) : new Vector3()
@@ -164,7 +165,7 @@ const BoundingBoxHelper = ({ boundingBox, box, children }) => {
                         className="pointer-events-none select-none"
                     >
                         <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
-                            {(box.max.x - box.min.x).toFixed(1)}mm
+                            {formatDimension ? formatDimension(box.max.x - box.min.x) : `${(box.max.x - box.min.x).toFixed(1)}mm`}
                         </div>
                     </Html>
                     {/* Depth label (Y axis) - bottom right edge */}
@@ -174,7 +175,7 @@ const BoundingBoxHelper = ({ boundingBox, box, children }) => {
                         className="pointer-events-none select-none"
                     >
                         <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
-                            {(box.max.y - box.min.y).toFixed(1)}mm
+                            {formatDimension ? formatDimension(box.max.y - box.min.y) : `${(box.max.y - box.min.y).toFixed(1)}mm`}
                         </div>
                     </Html>
                     {/* Height label (Z axis) - back left edge */}
@@ -184,7 +185,7 @@ const BoundingBoxHelper = ({ boundingBox, box, children }) => {
                         className="pointer-events-none select-none"
                     >
                         <div className="bg-background/80 text-cyan-500 text-xs px-1 py-0.5 rounded shadow-sm border border-cyan-500/30 backdrop-blur-sm whitespace-nowrap">
-                            {(box.max.z - box.min.z).toFixed(1)}mm
+                            {formatDimension ? formatDimension(box.max.z - box.min.z) : `${(box.max.z - box.min.z).toFixed(1)}mm`}
                         </div>
                     </Html>
                 </group>
@@ -199,7 +200,7 @@ function useResponsiveFov() {
     return isMobile ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
 }
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null }, ref) => {
     const geometriesRef = React.useRef({})
     const prevCenterRef = React.useRef(null)
     const prevMaxDimRef = React.useRef(null)
@@ -210,6 +211,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const recalculateSceneStats = useCallback(() => {
         // Aggregate stats across all parts, and collect per-part stats for individual estimates
         let totalVolume = 0
+        let totalTriangles = 0
         let weightedCenterSum = { x: 0, y: 0, z: 0 }
         let mergedBox = null
         let absoluteBox = null
@@ -218,6 +220,12 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         for (const [partType, geom] of Object.entries(geometriesRef.current)) {
             const vol = computeVolumeMm3(geom)
             totalVolume += vol
+
+            // Count triangles from geometry
+            const triCount = geom.index
+                ? geom.index.count / 3
+                : (geom.attributes?.position?.count || 0) / 3
+            totalTriangles += triCount
             const centroid = computeCentroid(geom)
 
             weightedCenterSum.x += centroid.x * vol
@@ -294,7 +302,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         }
 
         onGeometryStats?.({
-            total: { volumeMm3: totalVolume, boundingBox: mergedBox },
+            total: { volumeMm3: totalVolume, boundingBox: mergedBox, triangleCount: Math.round(totalTriangles) },
             parts: perPartStats,
         })
     }, [onGeometryStats])
@@ -405,7 +413,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     <div className="flex flex-col items-center gap-2 rounded-lg bg-background backdrop-blur-sm px-6 py-4 opacity-90">
                         <div className="text-sm font-medium">{t("anim.preparing")}</div>
                         <div className="h-1.5 w-32 overflow-hidden rounded-full bg-secondary">
-                            <div className="h-full w-full bg-primary animate-pulse rounded-full" />
+                            <div className="h-full w-full bg-primary motion-safe:animate-pulse rounded-full" />
                         </div>
                     </div>
                 </div>
@@ -511,17 +519,21 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     )}
 
                     {measureMode && (
-                        <MeasureTool active={measureMode} onMeasure={onMeasure} measurements={measurements} />
+                        <MeasureTool active={measureMode} onMeasure={onMeasure} measurements={measurements} formatDimension={formatDimension} />
                     )}
 
                     {thicknessData && thicknessData.points?.length > 0 && (
                         <ThicknessOverlay points={thicknessData.points} thicknesses={thicknessData.thicknesses} />
                     )}
 
+                    {overhangData && overhangData.points?.length > 0 && (
+                        <OverhangOverlay points={overhangData.points} angles={overhangData.angles} threshold={overhangData.threshold_deg} />
+                    )}
+
                     <Suspense fallback={null}>
                         {parts.length > 0 ? (
                             <>
-                                <BoundingBoxHelper boundingBox={boundingBox} box={sceneBox}>
+                                <BoundingBoxHelper boundingBox={boundingBox} box={sceneBox} formatDimension={formatDimension}>
                                     {/* 3D Git Diff Mode */}
                                     {headDiffMode ? (
                                         <group>

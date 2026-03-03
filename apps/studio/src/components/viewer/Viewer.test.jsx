@@ -129,6 +129,10 @@ vi.mock('./ThicknessOverlay', () => ({
   default: (props) => props.points?.length ? <div data-testid="thickness-overlay" /> : null,
 }))
 
+vi.mock('./OverhangOverlay', () => ({
+  default: (props) => props.points?.length ? <div data-testid="overhang-overlay" /> : null,
+}))
+
 import Viewer from './Viewer'
 
 // ── Helper: create a fake BufferGeometry-like object ──

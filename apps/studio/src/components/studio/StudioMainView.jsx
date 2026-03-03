@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import Viewer from '../viewer/Viewer'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
+import ShortcutHelpDialog from './ShortcutHelpDialog'
+import ModelInfoPanel from './ModelInfoPanel'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useUnitSystem } from '../../hooks/system/useUnitSystem'
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
 
 function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
@@ -11,7 +14,7 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
     const phase = progressPhase || ''
     return (
       <div className="absolute top-2 left-2 z-10 px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium flex items-center gap-2 pointer-events-none">
-        <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
+        <span className="h-2 w-2 rounded-full bg-yellow-500 motion-safe:animate-pulse" />
         {t('status.rendering')}{elapsed ? ` (${elapsed})` : ''}{phase ? ` — ${phase}` : ''}
       </div>
     )
@@ -44,9 +47,12 @@ export default function StudioMainView() {
     explodeFactor,
     lightIntensity, environmentPreset,
     thicknessData,
+    overhangData,
+    shortcutHelpOpen, setShortcutHelpOpen,
   } = useProject()
 
   const { t } = useLanguage()
+  const { format: formatDim } = useUnitSystem()
   const [estimateOpen, setEstimateOpen] = useState(true)
   const [consoleExpanded, setConsoleExpanded] = useState(false)
 
@@ -93,8 +99,13 @@ export default function StudioMainView() {
           lightIntensity={lightIntensity}
           environmentPreset={environmentPreset}
           thicknessData={thicknessData}
+          overhangData={overhangData}
+          formatDimension={formatDim}
         />
         <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
+        {!loading && parts.length > 0 && (
+          <ModelInfoPanel printEstimate={printEstimate} partCount={parts.length} />
+        )}
         {/* Accessible live region for render status and model summary */}
         <div aria-live="polite" className="sr-only" role="status">
           {loading ? 'Rendering in progress' : parts.length > 0 ? (
@@ -105,9 +116,9 @@ export default function StudioMainView() {
                 const vol = printEstimate.total?.volumeMm3 ?? printEstimate.volumeMm3 ?? 0
                 return bbox ? ` ${t('a11y.model_summary', {
                   parts: parts.length,
-                  width: bbox.width?.toFixed(1) ?? '0',
-                  height: bbox.height?.toFixed(1) ?? '0',
-                  depth: bbox.depth?.toFixed(1) ?? '0',
+                  width: formatDim(bbox.width ?? 0),
+                  height: formatDim(bbox.height ?? 0),
+                  depth: formatDim(bbox.depth ?? 0),
                   volume: vol.toFixed(0),
                 })}` : ''
               })()}
@@ -208,6 +219,8 @@ export default function StudioMainView() {
           </div>
         )}
       </div>
+
+      <ShortcutHelpDialog open={shortcutHelpOpen} onClose={() => setShortcutHelpOpen(false)} />
     </div>
   )
 }

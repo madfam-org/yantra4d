@@ -24,8 +24,9 @@
 - **Bill of Materials (BOM)**: Manifest-driven BOM panel (`bom.hardware[]`) with quantity formulas evaluated against current parameter values via `expr-eval`. Displays item labels, computed quantities, units, and optional supplier links. Renders in the sidebar when the manifest declares a `bom` section.
 - **Cross-Parameter Validation**: Manifest-driven constraints (`constraints[]`) with `rule`, `message`, `severity`, and `applies_to` fields. The `useConstraints` hook evaluates rules against current params and returns violations indexed by parameter ID. Supports `warning` and `error` severities.
 - **Grid Presets**: Optional `grid_presets` manifest section provides rendering/manufacturing quality presets that override parameter values (e.g., quick preview vs. large grid).
-- **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel. `O` toggle orthographic camera, `C` toggle clipping plane, `M` toggle measure tool.
-- **AM Viewer Tools**: Orthographic camera toggle, cross-section clipping plane (axis selector + position slider), point-to-point measurement (raycaster-based, distance labels in mm), wall thickness heatmap (backend trimesh analysis, color ramp red→yellow→green), exploded view for multi-part assemblies (displacement slider), adjustable lighting (brightness + environment preset), version history browser (git commit log).
+- **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel. `O` toggle orthographic camera, `C` toggle clipping plane, `M` toggle measure tool. `?` opens keyboard shortcut help dialog.
+- **AM Viewer Tools**: Orthographic camera toggle, cross-section clipping plane (axis selector + position slider), point-to-point measurement (raycaster-based, distance labels with unit toggle), wall thickness heatmap (backend trimesh analysis, color ramp red→yellow→green), overhang angle visualization (backend face normal analysis, color ramp green→yellow→red, configurable threshold 20-80°, pro+), exploded view for multi-part assemblies (displacement slider), adjustable lighting (brightness + environment preset), model info panel (dimensions, volume, triangle count, part count), unit system toggle (mm↔inches, display-only conversion persisted to localStorage), version history browser (git commit log).
+- **Accessibility**: Respects `prefers-reduced-motion` OS preference — CSS animations (`animate-pulse`, `animate-spin`, `animate-bounce`) are suppressed, Three.js camera animations jump instantly to target. All animation classes use `motion-safe:` Tailwind prefix.
 - **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save and auto-render. Available for user-owned projects (GitHub-imported, forked, onboarded) at pro+ tier.
 - **Git Integration**: Status, diff, commit, push/pull for GitHub-connected projects. Local git auto-initialized on first editor interaction. "Connect to GitHub" for local-only projects.
 - **Fork-to-Edit**: Pro+ users can fork built-in projects to create editable copies with their own slug.
@@ -70,7 +71,7 @@ backend/
 │   ├── ai.py             # AI chat SSE endpoints (session, chat-stream)
 │   ├── config_route.py   # /api/config (legacy, delegates to manifest)
 │   └── engine/
-│       └── analysis.py   # Geometry analysis (wall thickness, pro+)
+│       └── analysis.py   # Geometry analysis (wall thickness, overhang angles, pro+)
 ├── services/
 │   ├── openscad.py       # OpenSCAD subprocess wrapper (injects OPENSCADPATH env)
 │   ├── scad_analyzer.py  # SCAD file regex analysis engine
@@ -81,7 +82,8 @@ backend/
 │   ├── ai_configurator.py # NL → parameter change mapping
 │   ├── ai_code_editor.py # NL → SCAD code edit mapping
 │   └── geometry/
-│       └── thickness_analyzer.py  # trimesh-based wall thickness analysis
+│       ├── thickness_analyzer.py  # trimesh-based wall thickness analysis
+│       └── overhang_analyzer.py   # trimesh-based overhang angle analysis
 └── static/               # Generated STL files (runtime, namespaced by project)
 ```
 
@@ -124,6 +126,7 @@ backend/
 | `/api/ai/session` | POST | 30/hr | Create AI chat session (essentials+) |
 | `/api/ai/chat-stream` | POST | dynamic | SSE streaming AI chat (essentials+ configurator, pro+ code-editor) |
 | `/api/projects/<slug>/analyze/thickness` | POST | 20/hr | Wall thickness analysis on latest render (pro+) |
+| `/api/projects/<slug>/analyze/overhang` | POST | 20/hr | Overhang angle analysis on latest render (pro+) |
 
 #### Payload Examples
 
@@ -238,6 +241,7 @@ All endpoints enforce per-IP rate limits via Flask-Limiter (`extensions.py`). De
 - **Project Creation**: 10/hr
 - **Git Log**: 60/hr
 - **Thickness Analysis**: 20/hr
+- **Overhang Analysis**: 20/hr
 
 Rate-limited responses return HTTP 429 with a `Retry-After` header.
 
@@ -275,7 +279,8 @@ src/
 │   │   ├── NumberedAxes.jsx       # Labeled XYZ axis lines with tick marks
 │   │   ├── ClippingPlane.jsx      # Cross-section clipping plane with visual indicator
 │   │   ├── MeasureTool.jsx        # Point-to-point raycaster measurement tool
-│   │   └── ThicknessOverlay.jsx   # Wall thickness heatmap (colored point cloud)
+│   │   ├── ThicknessOverlay.jsx   # Wall thickness heatmap (colored point cloud)
+│   │   └── OverhangOverlay.jsx   # Overhang angle visualization (colored point cloud)
 │   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
 │   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
 │   ├── BomPanel.jsx               # Manifest-driven bill of materials panel
@@ -340,7 +345,7 @@ src/
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.
-- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery. Supports orthographic camera toggle, cross-section clipping plane, point-to-point measurement, wall thickness overlay, exploded view for multi-part assemblies, and adjustable lighting (brightness + environment preset).
+- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery. Supports orthographic camera toggle, cross-section clipping plane, point-to-point measurement, wall thickness overlay, overhang angle overlay, exploded view for multi-part assemblies, adjustable lighting (brightness + environment preset), and unit-aware dimension labels (mm/in).
 - **`ProjectCarousel3D.jsx`**: Implements a large-scale horizontal scrolling scene using `@react-three/drei`'s `ScrollControls`. It manages the spatial distribution of 36+ projects in a unified 3D space.
 - **`CarouselItem.jsx`** (Studio): Uses `useFrame` to calculate distance from world center. When centered, activates a `LiveModel` component that renders via `renderParts()` from the render service. The landing page equivalent (`ProjectCarousel3D.tsx`) loads pre-built static GLB files instead.
 
@@ -376,6 +381,8 @@ Run `npm run analyze` to generate an interactive bundle visualization at `dist/s
 - **ESLint**: `eslint-plugin-jsx-a11y` enforces WCAG accessibility rules at lint time
 - **Runtime audits**: `jest-axe` runs axe-core accessibility checks in component tests
 - **ARIA**: Sliders carry `aria-label`/`aria-labelledby`; checkboxes have explicit `aria-label`; color inputs linked via `htmlFor`/`id`; form inputs labeled
+- **Reduced motion**: `prefers-reduced-motion` respected via CSS (`@media` rule suppresses `animate-*` classes) and JS (`matchMedia` check skips Three.js camera interpolation). All animation utility classes use `motion-safe:` Tailwind prefix
+- **Screen reader**: Model summary announced via `aria-live="polite"` region with dimensions, volume, and part count
 
 ---
 

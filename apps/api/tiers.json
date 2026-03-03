@@ -16,7 +16,8 @@
     "premium_export": false,
     "print_dispatch": false,
     "animation": false,
-    "thickness_analysis": false
+    "thickness_analysis": false,
+    "overhang_analysis": false
   },
   "essentials": {
     "renders_per_hour": 50,
@@ -35,7 +36,8 @@
     "premium_export": false,
     "print_dispatch": false,
     "animation": false,
-    "thickness_analysis": false
+    "thickness_analysis": false,
+    "overhang_analysis": false
   },
   "pro": {
     "renders_per_hour": 200,
@@ -57,7 +59,8 @@
     "premium_export": true,
     "print_dispatch": true,
     "animation": true,
-    "thickness_analysis": true
+    "thickness_analysis": true,
+    "overhang_analysis": true
   },
   "madfam": {
     "renders_per_hour": 500,
@@ -79,6 +82,7 @@
     "premium_export": true,
     "print_dispatch": true,
     "animation": true,
-    "thickness_analysis": true
+    "thickness_analysis": true,
+    "overhang_analysis": true
   }
 }

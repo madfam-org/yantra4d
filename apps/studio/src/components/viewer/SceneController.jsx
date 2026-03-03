@@ -5,6 +5,9 @@ import * as THREE from 'three'
 const SceneController = forwardRef(({ cameraViews = [] }, ref) => {
   const { gl, camera, scene } = useThree()
   const animationRef = useRef(null)
+  const prefersReducedMotion = useRef(
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
 
   // Grab OrbitControls from the default controls
   const { controls } = useThree()
@@ -14,7 +17,10 @@ const SceneController = forwardRef(({ cameraViews = [] }, ref) => {
     if (!anim) return
 
     anim.elapsed += delta
-    const t = Math.min(anim.elapsed / anim.duration, 1)
+    // Skip interpolation when user prefers reduced motion
+    const t = prefersReducedMotion.current
+      ? 1
+      : Math.min(anim.elapsed / anim.duration, 1)
     // Smooth ease-in-out
     const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
 

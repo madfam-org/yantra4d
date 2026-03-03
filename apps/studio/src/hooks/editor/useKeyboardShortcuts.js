@@ -22,6 +22,7 @@ import { useEffect } from 'react'
  * @param {function} options.onToggleOrtho - callback for orthographic toggle
  * @param {function} options.onToggleClipping - callback for clipping plane toggle
  * @param {function} options.onToggleMeasure - callback for measure mode toggle
+ * @param {function} options.onToggleShortcutHelp - callback for shortcut help dialog
  * @param {boolean} options.loading - whether a render is in progress
  * @param {Array} options.modes - available modes from manifest
  */
@@ -34,6 +35,7 @@ export function useKeyboardShortcuts({
   onToggleOrtho,
   onToggleClipping,
   onToggleMeasure,
+  onToggleShortcutHelp,
   loading,
   modes,
 }) {
@@ -73,6 +75,8 @@ export function useKeyboardShortcuts({
         onToggleClipping?.()
       } else if (!mod && key === 'm') {
         onToggleMeasure?.()
+      } else if (e.key === '?' && !mod) {
+        onToggleShortcutHelp?.()
       } else if (mod && modes?.length > 0) {
         const num = parseInt(e.key, 10)
         if (num >= 1 && num <= modes.length) {
@@ -86,5 +90,5 @@ export function useKeyboardShortcuts({
     // Use capture phase to handle events before Radix UI/other libs stop propagation
     window.addEventListener('keydown', handler, { capture: true })
     return () => window.removeEventListener('keydown', handler, { capture: true })
-  }, [onUndo, onRedo, onRender, onCancelRender, onSwitchMode, onToggleOrtho, onToggleClipping, onToggleMeasure, loading, modes])
+  }, [onUndo, onRedo, onRender, onCancelRender, onSwitchMode, onToggleOrtho, onToggleClipping, onToggleMeasure, onToggleShortcutHelp, loading, modes])
 }

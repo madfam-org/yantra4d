@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sun, Moon, Monitor, Globe, Undo2, Redo2, Share2, Code2, Sparkles, MoreHorizontal } from 'lucide-react'
+import { Sun, Moon, Monitor, Globe, Undo2, Redo2, Share2, Code2, Sparkles, MoreHorizontal, Ruler } from 'lucide-react'
 import AuthButton from '../auth/AuthButton'
 import AuthGate from '../auth/AuthGate'
 import ProjectSelector from '../project/ProjectSelector'
@@ -17,6 +17,7 @@ import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTheme } from '../../contexts/system/ThemeProvider'
 import { usePlatform } from '../../contexts/system/PlatformProvider'
 import { useIsMobile } from '../../hooks/system/useMediaQuery'
+import { useUnitSystem } from '../../hooks/system/useUnitSystem'
 import { Link } from 'react-router-dom'
 
 export default function StudioHeader({
@@ -34,6 +35,7 @@ export default function StudioHeader({
   const { theme, setTheme } = useTheme()
   const { platformName, platformLogo, loading: platformLoading } = usePlatform()
   const isMobile = useIsMobile()
+  const { unit, toggle: toggleUnit } = useUnitSystem()
 
   const cycleTheme = () => {
     const themes = ['light', 'dark', 'system']
@@ -146,6 +148,16 @@ export default function StudioHeader({
                 </div>
               )}
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="min-h-[44px] min-w-[44px] text-xs font-mono"
+              onClick={toggleUnit}
+              title={t('unit.toggle')}
+            >
+              {unit === 'mm' ? 'mm' : 'in'}
+              <span className="sr-only">{t('unit.toggle')}</span>
+            </Button>
             <div className="relative" ref={langRef}>
               <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={() => setLangOpen(prev => !prev)} title={t('sr.toggle_lang')}>
                 <Globe className="h-5 w-5" />
@@ -204,6 +216,10 @@ export default function StudioHeader({
               <DropdownMenuItem className="min-h-[44px]" onClick={handleShare}>
                 <Share2 className="h-4 w-4 mr-2" />
                 {t('act.share')}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="min-h-[44px]" onClick={toggleUnit}>
+                <Ruler className="h-4 w-4 mr-2" />
+                {unit === 'mm' ? 'mm → in' : 'in → mm'}
               </DropdownMenuItem>
               <DropdownMenuItem className="min-h-[44px]" onClick={cycleTheme}>
                 <ThemeIcon className="h-4 w-4 mr-2" />

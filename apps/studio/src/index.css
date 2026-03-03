@@ -50,6 +50,14 @@
     .scrollbar-thin { scrollbar-width: thin; }
 }
 
+/* Reduced motion: disable looping CSS animations for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .animate-pulse, .animate-spin, .animate-bounce {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
 /* Scrollbar styling */
 * {
     scrollbar-width: thin;

@@ -83,9 +83,14 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
     [cubeCount]
   )
 
-  // Animation loop
+  // Cache reduced motion preference (avoids per-frame matchMedia calls)
+  const prefersReducedMotion = useRef(
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+
+  // Animation loop — skipped entirely when user prefers reduced motion
   useFrame((_, delta) => {
-    if (!animState.current || !geometries) return
+    if (!animState.current || !geometries || prefersReducedMotion.current) return
 
     const state = animState.current
     const animatingIdx = state.findIndex(s => Math.abs(s.currentAngle - s.targetAngle) > 0.001)

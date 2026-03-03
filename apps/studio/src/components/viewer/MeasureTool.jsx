@@ -12,7 +12,7 @@ import { Vector2, Vector3 } from 'three'
  * @param {function} onMeasure - callback({a, b, distance}) when measurement completes
  * @param {Array} measurements - array of existing measurements to display
  */
-export default function MeasureTool({ active, onMeasure, measurements = [] }) {
+export default function MeasureTool({ active, onMeasure, measurements = [], formatDimension }) {
   const { raycaster, camera, scene, gl } = useThree()
   const [pointA, setPointA] = useState(null)
 
@@ -86,7 +86,7 @@ export default function MeasureTool({ active, onMeasure, measurements = [] }) {
             </line>
             <Html position={mid} center className="pointer-events-none select-none">
               <div className="bg-background/90 text-amber-500 text-xs px-1.5 py-0.5 rounded shadow-sm border border-amber-500/30 backdrop-blur-sm whitespace-nowrap font-mono">
-                {m.distance.toFixed(2)}mm
+                {formatDimension ? formatDimension(m.distance, 2) : `${m.distance.toFixed(2)}mm`}
               </div>
             </Html>
           </group>

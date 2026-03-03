@@ -33,6 +33,8 @@ function SidebarContent() {
     explodeFactor, setExplodeFactor,
     lightIntensity, setLightIntensity,
     environmentPreset, setEnvironmentPreset,
+    overhangEnabled, setOverhangEnabled,
+    overhangThreshold, setOverhangThreshold,
   } = useProject()
 
   const { language, t } = useLanguage()
@@ -107,6 +109,10 @@ function SidebarContent() {
         environmentPreset={environmentPreset}
         setEnvironmentPreset={setEnvironmentPreset}
         partsCount={parts.length}
+        overhangEnabled={overhangEnabled}
+        setOverhangEnabled={setOverhangEnabled}
+        overhangThreshold={overhangThreshold}
+        setOverhangThreshold={setOverhangThreshold}
       />
 
       <div className="hidden lg:block flex-1"></div>

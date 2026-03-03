@@ -12,6 +12,7 @@ from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
 from services.geometry.thickness_analyzer import compute_wall_thickness
+from services.geometry.overhang_analyzer import compute_overhang_angles
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 import rate_limits
@@ -82,6 +83,56 @@ def analyze_thickness(slug: str):
         return error_response("Render file disappeared during analysis", 404)
     except Exception as e:
         logger.exception("Thickness analysis failed for %s: %s", slug, e)
+        return error_response(f"Analysis failed: {str(e)}", 500)
+
+    return jsonify({
+        "status": "success",
+        "project": slug,
+        "mesh_file": os.path.basename(mesh_path),
+        "analysis": result,
+    })
+
+
+@analysis_bp.route('/api/projects/<slug>/analyze/overhang', methods=['POST'])
+@require_valid_slug
+@require_tier("pro")
+@limiter.limit(rate_limits.ANALYSIS_OVERHANG)
+def analyze_overhang(slug: str):
+    """Run overhang angle analysis on the latest render output for a project.
+
+    Accepts optional JSON body:
+        sample_count (int): number of surface samples (default 5000, max 50000)
+        threshold_deg (float): overhang angle threshold in degrees (default 45, range 20-80)
+
+    Returns JSON with overhang statistics, sample points, and overhang count.
+    """
+    data = request.get_json(silent=True) or {}
+
+    sample_count = data.get("sample_count", 5000)
+    if not isinstance(sample_count, int) or sample_count < 100:
+        sample_count = 5000
+    sample_count = min(sample_count, 50_000)
+
+    threshold_deg = data.get("threshold_deg", 45)
+    if not isinstance(threshold_deg, (int, float)):
+        threshold_deg = 45
+    threshold_deg = max(20, min(80, float(threshold_deg)))
+
+    mesh_path = _find_latest_render(slug)
+    if mesh_path is None:
+        return error_response(
+            f"No rendered mesh found for project '{slug}'. Render first.",
+            409,
+        )
+
+    try:
+        result = compute_overhang_angles(
+            mesh_path, sample_count=sample_count, threshold_deg=threshold_deg
+        )
+    except FileNotFoundError:
+        return error_response("Render file disappeared during analysis", 404)
+    except Exception as e:
+        logger.exception("Overhang analysis failed for %s: %s", slug, e)
         return error_response(f"Analysis failed: {str(e)}", 500)
 
     return jsonify({

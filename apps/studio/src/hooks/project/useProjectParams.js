@@ -70,8 +70,12 @@ export function useProjectParams({ viewerRef }) {
   const [lightIntensity, setLightIntensity] = useState(1.0)
   const [environmentPreset, setEnvironmentPreset] = useState('city')
   const [thicknessData, setThicknessData] = useState(null)
+  const [overhangData, setOverhangData] = useState(null)
+  const [overhangEnabled, setOverhangEnabled] = useState(false)
+  const [overhangThreshold, setOverhangThreshold] = useState(45)
   const [printEstimate, setPrintEstimate] = useState(null)
   const [exportFormat, setExportFormat] = useState('stl')
+  const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false)
 
   // 3D Git Diff Mode state
   const [headDiffMode, setHeadDiffMode] = useState(false)
@@ -268,6 +272,35 @@ export function useProjectParams({ viewerRef }) {
     return () => clearTimeout(timer)
   }, [params, mode, getCacheKey, manifest]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Wrapper that clears data when disabling overhang
+  const handleSetOverhangEnabled = useCallback((val) => {
+    setOverhangEnabled(val)
+    if (!val) setOverhangData(null)
+  }, [])
+
+  // Overhang analysis — fetch when enabled
+  useEffect(() => {
+    if (!overhangEnabled || !projectSlug || parts.length === 0) return
+    let cancelled = false
+    const apiBase = import.meta.env.VITE_API_BASE || ''
+    fetch(`${apiBase}/api/projects/${projectSlug}/analyze/overhang`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ threshold_deg: overhangThreshold }),
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('Overhang analysis failed')))
+      .then(data => {
+        if (!cancelled) setOverhangData(data.analysis)
+      })
+      .catch(err => {
+        if (!cancelled) {
+          console.warn('[Overhang]', err.message)
+          setOverhangData(null)
+        }
+      })
+    return () => { cancelled = true }
+  }, [overhangEnabled, overhangThreshold, projectSlug, parts.length])
+
   // Keyboard shortcuts
   useKeyboardShortcuts({
     onUndo: undoParams,
@@ -278,6 +311,7 @@ export function useProjectParams({ viewerRef }) {
     onToggleOrtho: () => setOrthoCamera(v => !v),
     onToggleClipping: () => setClippingEnabled(v => !v),
     onToggleMeasure: () => setMeasureMode(v => !v),
+    onToggleShortcutHelp: () => setShortcutHelpOpen(v => !v),
     loading,
     modes,
   })
@@ -304,6 +338,9 @@ export function useProjectParams({ viewerRef }) {
     lightIntensity, setLightIntensity,
     environmentPreset, setEnvironmentPreset,
     thicknessData, setThicknessData,
+    overhangData, setOverhangData,
+    overhangEnabled, setOverhangEnabled: handleSetOverhangEnabled,
+    overhangThreshold, setOverhangThreshold,
     // Undo/redo
     undoParams, redoParams, canUndo, canRedo,
     // Render
@@ -325,6 +362,8 @@ export function useProjectParams({ viewerRef }) {
     loadingHeadDiff, setLoadingHeadDiff,
     // Share
     copyShareUrl,
+    // Shortcut help
+    shortcutHelpOpen, setShortcutHelpOpen,
     // Refs
     consoleRef,
   }

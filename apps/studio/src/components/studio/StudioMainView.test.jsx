@@ -14,12 +14,27 @@ vi.mock('../export/PrintEstimateOverlay', () => ({
   },
 }))
 
+vi.mock('./ShortcutHelpDialog', () => ({
+  default: function MockShortcutHelp({ open }) {
+    return open ? <div data-testid="shortcut-help" /> : null
+  },
+}))
+
+vi.mock('./ModelInfoPanel', () => ({
+  default: function MockModelInfo() {
+    return <div data-testid="model-info" />
+  },
+}))
+
 // Mock Contexts
 vi.mock('../../contexts/project/ProjectProvider', () => ({
   useProject: vi.fn(),
 }))
 vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: vi.fn(),
+}))
+vi.mock('../../hooks/system/useUnitSystem', () => ({
+  useUnitSystem: () => ({ unit: 'mm', format: (v) => `${v}mm`, label: 'mm', toggle: vi.fn() }),
 }))
 
 import StudioMainView from './StudioMainView'
@@ -49,7 +64,25 @@ const baseContext = {
   assemblyActive: false,
   highlightedParts: [],
   visibleParts: [],
+  headDiffMode: false,
+  headParts: [],
   logs: '',
+  orthoCamera: false,
+  setOrthoCamera: vi.fn(),
+  clippingEnabled: false,
+  clippingAxis: 'y',
+  clippingPosition: 0.5,
+  measureMode: false,
+  measurements: [],
+  setMeasurements: vi.fn(),
+  explodeFactor: 0,
+  lightIntensity: 1,
+  environmentPreset: 'studio',
+  thicknessData: null,
+  overhangData: null,
+  shortcutHelpOpen: false,
+  setShortcutHelpOpen: vi.fn(),
+  boundingBox: false,
 }
 
 beforeEach(() => {

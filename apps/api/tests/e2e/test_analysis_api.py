@@ -123,3 +123,95 @@ class TestThicknessAnalysis:
 
         res = client.post("/api/projects/my-project/analyze/thickness")
         assert res.status_code == 500
+
+
+class TestOverhangAnalysis:
+    def test_no_render_returns_409(self, client):
+        """When no rendered mesh exists, the endpoint returns 409."""
+        res = client.post("/api/projects/my-project/analyze/overhang")
+        assert res.status_code == 409
+
+    @patch("routes.engine.analysis.compute_overhang_angles")
+    def test_analysis_success(self, mock_compute, client, tmp_path):
+        """Successful overhang analysis returns 200 with analysis data."""
+        static_dir = tmp_path / "static"
+        mesh_file = static_dir / "my-project_preview_abc123_main.stl"
+        mesh_file.write_bytes(b"fake stl")
+
+        mock_compute.return_value = {
+            "angles": [30.0, 50.0, 70.0],
+            "points": [[0, 0, 0], [1, 1, 1], [2, 2, 2]],
+            "threshold_deg": 45.0,
+            "overhang_count": 2,
+            "sample_count": 3,
+            "min_angle": 30.0,
+            "max_angle": 70.0,
+            "mean_angle": 50.0,
+        }
+
+        res = client.post("/api/projects/my-project/analyze/overhang")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["status"] == "success"
+        assert data["project"] == "my-project"
+        assert "analysis" in data
+        assert data["analysis"]["overhang_count"] == 2
+
+    @patch("routes.engine.analysis.compute_overhang_angles")
+    def test_custom_threshold_deg(self, mock_compute, client, tmp_path):
+        """A custom threshold_deg is forwarded to the analyzer."""
+        static_dir = tmp_path / "static"
+        mesh_file = static_dir / "my-project_preview_abc123_main.stl"
+        mesh_file.write_bytes(b"fake stl")
+
+        mock_compute.return_value = {
+            "angles": [], "points": [], "threshold_deg": 60.0,
+            "overhang_count": 0, "sample_count": 0,
+            "min_angle": 0, "max_angle": 0, "mean_angle": 0,
+        }
+
+        res = client.post(
+            "/api/projects/my-project/analyze/overhang",
+            json={"threshold_deg": 60},
+        )
+        assert res.status_code == 200
+        call_kwargs = mock_compute.call_args
+        assert call_kwargs[1]["threshold_deg"] == 60
+
+    @patch("routes.engine.analysis.compute_overhang_angles")
+    def test_custom_sample_count(self, mock_compute, client, tmp_path):
+        """A custom sample_count is forwarded to the analyzer."""
+        static_dir = tmp_path / "static"
+        mesh_file = static_dir / "my-project_preview_abc123_main.stl"
+        mesh_file.write_bytes(b"fake stl")
+
+        mock_compute.return_value = {
+            "angles": [], "points": [], "threshold_deg": 45.0,
+            "overhang_count": 0, "sample_count": 200,
+            "min_angle": 0, "max_angle": 0, "mean_angle": 0,
+        }
+
+        res = client.post(
+            "/api/projects/my-project/analyze/overhang",
+            json={"sample_count": 200},
+        )
+        assert res.status_code == 200
+        call_kwargs = mock_compute.call_args
+        assert call_kwargs[1]["sample_count"] == 200
+
+    def test_nonexistent_project(self, client):
+        """A project with no rendered mesh returns 409."""
+        res = client.post("/api/projects/nonexistent/analyze/overhang")
+        assert res.status_code == 409
+
+    @patch("routes.engine.analysis.compute_overhang_angles")
+    def test_analysis_error(self, mock_compute, client, tmp_path):
+        """A RuntimeError from compute_overhang_angles yields 500."""
+        static_dir = tmp_path / "static"
+        mesh_file = static_dir / "my-project_preview_abc123_main.stl"
+        mesh_file.write_bytes(b"fake stl")
+
+        mock_compute.side_effect = RuntimeError("mesh parsing failed")
+
+        res = client.post("/api/projects/my-project/analyze/overhang")
+        assert res.status_code == 500

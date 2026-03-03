@@ -43,3 +43,4 @@ ONBOARD_CREATE = "10/hour"
 
 # Geometry analysis
 ANALYSIS_THICKNESS = "20/hour"
+ANALYSIS_OVERHANG = "20/hour"

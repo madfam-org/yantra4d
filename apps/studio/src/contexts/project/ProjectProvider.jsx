@@ -92,6 +92,12 @@ function ProjectProviderContent({ children }) {
     setEnvironmentPreset: projectParams.setEnvironmentPreset,
     thicknessData: projectParams.thicknessData,
     setThicknessData: projectParams.setThicknessData,
+    overhangData: projectParams.overhangData,
+    setOverhangData: projectParams.setOverhangData,
+    overhangEnabled: projectParams.overhangEnabled,
+    setOverhangEnabled: projectParams.setOverhangEnabled,
+    overhangThreshold: projectParams.overhangThreshold,
+    setOverhangThreshold: projectParams.setOverhangThreshold,
 
     // Undo/Redo
     undoParams: projectParams.undoParams,
@@ -124,6 +130,10 @@ function ProjectProviderContent({ children }) {
     // Export
     exportFormat: projectParams.exportFormat,
     setExportFormat: projectParams.setExportFormat,
+
+    // Shortcut help
+    shortcutHelpOpen: projectParams.shortcutHelpOpen,
+    setShortcutHelpOpen: projectParams.setShortcutHelpOpen,
 
     // Assembly
     assemblyActive: assembly.assemblyActive,
@@ -173,7 +183,7 @@ export function ProjectProvider({ children }) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <div className="h-8 w-8 motion-safe:animate-spin rounded-full border-4 border-primary border-t-transparent" />
           <span className="text-sm text-muted-foreground">Loading project…</span>
         </div>
       </div>

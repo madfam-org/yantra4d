@@ -170,7 +170,7 @@ function ComponentPickerWidget({ param, setParams, getLabel, language }) {
 
 const DEFAULT_TEXT_MAX_LENGTH = 255
 
-export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, boundingBox, setBoundingBox, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {}, clippingEnabled, setClippingEnabled, clippingAxis, setClippingAxis, clippingPosition, setClippingPosition, measureMode, setMeasureMode, measurements, setMeasurements, explodeFactor, setExplodeFactor, lightIntensity, setLightIntensity, environmentPreset, setEnvironmentPreset, partsCount = 0 }) {
+export default function Controls({ params, setParams, mode, colors, setColors, wireframe, setWireframe, boundingBox, setBoundingBox, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {}, clippingEnabled, setClippingEnabled, clippingAxis, setClippingAxis, clippingPosition, setClippingPosition, measureMode, setMeasureMode, measurements, setMeasurements, explodeFactor, setExplodeFactor, lightIntensity, setLightIntensity, environmentPreset, setEnvironmentPreset, partsCount = 0, overhangEnabled, setOverhangEnabled, overhangThreshold, setOverhangThreshold }) {
     const { language, t } = useLanguage()
     const { manifest, getParametersForMode, getPartColors, getLabel, getGroupLabel } = useManifest()
 
@@ -554,6 +554,35 @@ export default function Controls({ params, setParams, mode, colors, setColors, w
                             />
                         </div>
                     </div>
+
+                    {/* Overhang Analysis */}
+                    {setOverhangEnabled && (
+                        <div className="space-y-2 pt-2 border-t border-border/50">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="overhang-toggle" className="text-sm">
+                                    {t('ctrl.overhang')}
+                                </Label>
+                                <Switch
+                                    id="overhang-toggle"
+                                    checked={overhangEnabled}
+                                    onCheckedChange={setOverhangEnabled}
+                                    aria-label={t('ctrl.overhang')}
+                                />
+                            </div>
+                            {overhangEnabled && setOverhangThreshold && (
+                                <div className="pl-2">
+                                    <SliderControl
+                                        param={{ id: 'overhang_threshold', type: 'slider', min: 20, max: 80, step: 1, label: { en: t('ctrl.overhang_threshold') } }}
+                                        value={overhangThreshold}
+                                        onSliderChange={(_, val) => setOverhangThreshold(val[0])}
+                                        getLabel={getLabel}
+                                        language={language}
+                                        t={t}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Exploded View (only for multi-part) */}
                     {partsCount > 1 && (

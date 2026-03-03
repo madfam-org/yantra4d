@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { GitBranch, GitCommit, ArrowUp, ArrowDown, RefreshCw, Loader2, Check, Link } from 'lucide-react'
+import { GitBranch, GitCommit, ArrowUp, ArrowDown, RefreshCw, Loader2, Check, Link, History } from 'lucide-react'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { getStatus, getDiff, commit, push, pull, connectRemote, renderHead } from '../../services/domain/gitService'
+import VersionHistory from './VersionHistory'
 
 const SUCCESS_TOAST_DURATION_MS = 2000
 
@@ -19,6 +20,7 @@ export default function GitPanel({ slug }) {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [remoteUrl, setRemoteUrl] = useState('')
+  const [showHistory, setShowHistory] = useState(false)
 
   const {
     mode, params, parts, exportFormat,
@@ -165,6 +167,14 @@ export default function GitPanel({ slug }) {
     ? [...(status.modified || []), ...(status.added || []), ...(status.deleted || []), ...(status.untracked || [])]
     : []
 
+  if (showHistory) {
+    return (
+      <div className="border-t border-border bg-card text-sm">
+        <VersionHistory projectSlug={slug} onClose={() => setShowHistory(false)} />
+      </div>
+    )
+  }
+
   return (
     <div className="border-t border-border bg-card text-sm">
       {/* Header */}
@@ -194,6 +204,10 @@ export default function GitPanel({ slug }) {
           )}
         </div>
         <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8 md:h-6 md:w-6 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0" onClick={() => setShowHistory(v => !v)} title="Version History" aria-pressed={showHistory}>
+            <History className="h-3.5 w-3.5" />
+            <span className="sr-only">History</span>
+          </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8 md:h-6 md:w-6 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0" onClick={refresh} disabled={loading} title="Refresh status">
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span className="sr-only">Refresh</span>

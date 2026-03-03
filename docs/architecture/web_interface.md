@@ -24,7 +24,8 @@
 - **Bill of Materials (BOM)**: Manifest-driven BOM panel (`bom.hardware[]`) with quantity formulas evaluated against current parameter values via `expr-eval`. Displays item labels, computed quantities, units, and optional supplier links. Renders in the sidebar when the manifest declares a `bom` section.
 - **Cross-Parameter Validation**: Manifest-driven constraints (`constraints[]`) with `rule`, `message`, `severity`, and `applies_to` fields. The `useConstraints` hook evaluates rules against current params and returns violations indexed by parameter ID. Supports `warning` and `error` severities.
 - **Grid Presets**: Optional `grid_presets` manifest section provides rendering/manufacturing quality presets that override parameter values (e.g., quick preview vs. large grid).
-- **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel.
+- **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel. `O` toggle orthographic camera, `C` toggle clipping plane, `M` toggle measure tool.
+- **AM Viewer Tools**: Orthographic camera toggle, cross-section clipping plane (axis selector + position slider), point-to-point measurement (raycaster-based, distance labels in mm), wall thickness heatmap (backend trimesh analysis, color ramp red→yellow→green), exploded view for multi-part assemblies (displacement slider), adjustable lighting (brightness + environment preset), version history browser (git commit log).
 - **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save and auto-render. Available for user-owned projects (GitHub-imported, forked, onboarded) at pro+ tier.
 - **Git Integration**: Status, diff, commit, push/pull for GitHub-connected projects. Local git auto-initialized on first editor interaction. "Connect to GitHub" for local-only projects.
 - **Fork-to-Edit**: Pro+ users can fork built-in projects to create editable copies with their own slug.
@@ -67,7 +68,9 @@ backend/
 │   ├── editor.py         # SCAD file CRUD (list/read/write/create/delete) with auto git-init
 │   ├── git_ops.py        # Git operations (status/diff/commit/push/pull/connect-remote)
 │   ├── ai.py             # AI chat SSE endpoints (session, chat-stream)
-│   └── config_route.py   # /api/config (legacy, delegates to manifest)
+│   ├── config_route.py   # /api/config (legacy, delegates to manifest)
+│   └── engine/
+│       └── analysis.py   # Geometry analysis (wall thickness, pro+)
 ├── services/
 │   ├── openscad.py       # OpenSCAD subprocess wrapper (injects OPENSCADPATH env)
 │   ├── scad_analyzer.py  # SCAD file regex analysis engine
@@ -76,7 +79,9 @@ backend/
 │   ├── ai_provider.py    # Dual LLM provider abstraction (Anthropic + OpenAI)
 │   ├── ai_session.py     # In-memory conversation session store
 │   ├── ai_configurator.py # NL → parameter change mapping
-│   └── ai_code_editor.py # NL → SCAD code edit mapping
+│   ├── ai_code_editor.py # NL → SCAD code edit mapping
+│   └── geometry/
+│       └── thickness_analyzer.py  # trimesh-based wall thickness analysis
 └── static/               # Generated STL files (runtime, namespaced by project)
 ```
 
@@ -111,12 +116,14 @@ backend/
 | `/api/projects/<slug>/files/<path>` | GET/PUT/DELETE | 120/hr | Read/write/delete SCAD files (pro+) |
 | `/api/projects/<slug>/git/status` | GET | 60/hr | Git working tree status (pro+) |
 | `/api/projects/<slug>/git/diff` | GET | 60/hr | Unified diff (pro+) |
+| `/api/projects/<slug>/git/log` | GET | 60/hr | Recent commit history (pro+) |
 | `/api/projects/<slug>/git/commit` | POST | 30/hr | Stage files and commit (pro+) |
 | `/api/projects/<slug>/git/push` | POST | 20/hr | Push to origin (pro+, GitHub token required) |
 | `/api/projects/<slug>/git/pull` | POST | 20/hr | Pull from origin (pro+, GitHub token required) |
 | `/api/projects/<slug>/git/connect-remote` | POST | 10/hr | Add/set GitHub remote URL (pro+) |
 | `/api/ai/session` | POST | 30/hr | Create AI chat session (essentials+) |
 | `/api/ai/chat-stream` | POST | dynamic | SSE streaming AI chat (essentials+ configurator, pro+ code-editor) |
+| `/api/projects/<slug>/analyze/thickness` | POST | 20/hr | Wall thickness analysis on latest render (pro+) |
 
 #### Payload Examples
 
@@ -229,6 +236,8 @@ All endpoints enforce per-IP rate limits via Flask-Limiter (`extensions.py`). De
 - **Verify**: 50/hr
 - **Project Analysis**: 20/hr
 - **Project Creation**: 10/hr
+- **Git Log**: 60/hr
+- **Thickness Analysis**: 20/hr
 
 Rate-limited responses return HTTP 429 with a `Retry-After` header.
 
@@ -263,7 +272,10 @@ src/
 │   ├── viewer/
 │   │   ├── AnimatedGrid.jsx       # Animated grid preview (Z-rotation per cube)
 │   │   ├── SceneController.jsx    # Camera view switching (data-driven from manifest)
-│   │   └── NumberedAxes.jsx       # Labeled XYZ axis lines with tick marks
+│   │   ├── NumberedAxes.jsx       # Labeled XYZ axis lines with tick marks
+│   │   ├── ClippingPlane.jsx      # Cross-section clipping plane with visual indicator
+│   │   ├── MeasureTool.jsx        # Point-to-point raycaster measurement tool
+│   │   └── ThicknessOverlay.jsx   # Wall thickness heatmap (colored point cloud)
 │   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
 │   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
 │   ├── BomPanel.jsx               # Manifest-driven bill of materials panel
@@ -274,6 +286,8 @@ src/
 │   ├── GitPanel.jsx               # Git status, diff, commit, push/pull, connect-remote
 │   ├── AiChatPanel.jsx            # AI chat UI (configurator + code-editor modes)
 │   ├── ForkDialog.jsx             # Fork-to-edit modal for built-in projects
+│   ├── editor/
+│   │   └── VersionHistory.jsx     # Git commit history browser
 │   └── ui/                        # Shadcn UI primitives
 ├── contexts/
 │   ├── ManifestProvider.jsx       # Fetches /api/manifest, bundled fallback
@@ -326,7 +340,7 @@ src/
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.
-- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery.
+- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery. Supports orthographic camera toggle, cross-section clipping plane, point-to-point measurement, wall thickness overlay, exploded view for multi-part assemblies, and adjustable lighting (brightness + environment preset).
 - **`ProjectCarousel3D.jsx`**: Implements a large-scale horizontal scrolling scene using `@react-three/drei`'s `ScrollControls`. It manages the spatial distribution of 36+ projects in a unified 3D space.
 - **`CarouselItem.jsx`** (Studio): Uses `useFrame` to calculate distance from world center. When centered, activates a `LiveModel` component that renders via `renderParts()` from the render service. The landing page equivalent (`ProjectCarousel3D.tsx`) loads pre-built static GLB files instead.
 

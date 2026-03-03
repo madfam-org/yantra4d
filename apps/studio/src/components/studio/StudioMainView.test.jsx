@@ -108,7 +108,7 @@ describe('StudioMainView', () => {
     // Update to complete
     useProject.mockReturnValue({ ...baseContext, loading: false, parts: [{ id: 'body' }] })
     rerender(<StudioMainView />)
-    expect(liveRegion.textContent).toBe('Render complete')
+    expect(liveRegion.textContent).toContain('Render complete')
   })
 
   it('displays console logs', () => {

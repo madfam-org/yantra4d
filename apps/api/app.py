@@ -43,6 +43,7 @@ from routes.projects.catalog import catalog_bp
 from routes.core.client_config import client_config_bp
 from routes.projects.animations import animations_bp
 from routes.integrations.printer import printer_bp
+from routes.engine.analysis import analysis_bp
 from services.core.mqtt_telemetry import telemetry_service
 
 # Configure logging
@@ -89,6 +90,7 @@ def create_app():
     app.register_blueprint(client_config_bp)
     app.register_blueprint(animations_bp)
     app.register_blueprint(printer_bp)
+    app.register_blueprint(analysis_bp)
 
     # Static file serving
     @app.route('/static/<path:filename>')

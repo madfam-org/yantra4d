@@ -25,6 +25,14 @@ function SidebarContent() {
     handleAssemblyStepChange,
     assemblyEditorOpen, setAssemblyEditorOpen,
     viewerRef, projectSlug,
+    clippingEnabled, setClippingEnabled,
+    clippingAxis, setClippingAxis,
+    clippingPosition, setClippingPosition,
+    measureMode, setMeasureMode,
+    measurements, setMeasurements,
+    explodeFactor, setExplodeFactor,
+    lightIntensity, setLightIntensity,
+    environmentPreset, setEnvironmentPreset,
   } = useProject()
 
   const { language, t } = useLanguage()
@@ -82,6 +90,23 @@ function SidebarContent() {
         onApplyPreset={handleApplyPreset}
         onToggleGridPreset={handleGridPresetToggle}
         constraintsByParam={constraintsByParam}
+        clippingEnabled={clippingEnabled}
+        setClippingEnabled={setClippingEnabled}
+        clippingAxis={clippingAxis}
+        setClippingAxis={setClippingAxis}
+        clippingPosition={clippingPosition}
+        setClippingPosition={setClippingPosition}
+        measureMode={measureMode}
+        setMeasureMode={setMeasureMode}
+        measurements={measurements}
+        setMeasurements={setMeasurements}
+        explodeFactor={explodeFactor}
+        setExplodeFactor={setExplodeFactor}
+        lightIntensity={lightIntensity}
+        setLightIntensity={setLightIntensity}
+        environmentPreset={environmentPreset}
+        setEnvironmentPreset={setEnvironmentPreset}
+        partsCount={parts.length}
       />
 
       <div className="hidden lg:block flex-1"></div>

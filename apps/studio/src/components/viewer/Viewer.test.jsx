@@ -51,6 +51,7 @@ vi.mock('@react-three/fiber', () => ({
 // ── Mock react-three/drei ──
 vi.mock('@react-three/drei', () => ({
   OrbitControls: () => null,
+  OrthographicCamera: () => null,
   Grid: () => null,
   Environment: () => null,
   Edges: () => null,
@@ -114,6 +115,18 @@ vi.mock('./AnimatedGrid', () => ({
     capturedAnimatedGridOnReady = props.onReady
     return <div data-testid="animated-grid" />
   },
+}))
+
+vi.mock('./ClippingPlane', () => ({
+  default: (props) => <div data-testid="clipping-plane" data-axis={props.axis} />,
+}))
+
+vi.mock('./MeasureTool', () => ({
+  default: (props) => <div data-testid="measure-tool" data-active={String(props.active)} />,
+}))
+
+vi.mock('./ThicknessOverlay', () => ({
+  default: (props) => props.points?.length ? <div data-testid="thickness-overlay" /> : null,
 }))
 
 import Viewer from './Viewer'
@@ -884,5 +897,63 @@ describe('Viewer', () => {
 
   it('has displayName set to Viewer', () => {
     expect(Viewer.displayName).toBe('Viewer')
+  })
+
+  // ────────────────────────────────────────
+  // Orthographic camera toggle (Sprint 1.1)
+  // ────────────────────────────────────────
+
+  it('renders ortho toggle button', () => {
+    render(<Viewer {...defaultProps} />)
+    expect(screen.getByTestId('ortho-toggle')).toBeInTheDocument()
+  })
+
+  it('ortho toggle button reflects orthoCamera state', () => {
+    render(<Viewer {...defaultProps} orthoCamera={false} />)
+    const btn = screen.getByTestId('ortho-toggle')
+    expect(btn.getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('ortho toggle button shows pressed state when ortho is active', () => {
+    render(<Viewer {...defaultProps} orthoCamera={true} />)
+    const btn = screen.getByTestId('ortho-toggle')
+    expect(btn.getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('calls setOrthoCamera when ortho toggle is clicked', () => {
+    const setOrthoCamera = vi.fn()
+    render(<Viewer {...defaultProps} setOrthoCamera={setOrthoCamera} />)
+    fireEvent.click(screen.getByTestId('ortho-toggle'))
+    expect(setOrthoCamera).toHaveBeenCalledOnce()
+  })
+
+  // ────────────────────────────────────────
+  // Clipping plane (Sprint 2.1)
+  // ────────────────────────────────────────
+
+  it('does not render clipping plane when disabled', () => {
+    render(<Viewer {...defaultProps} clippingEnabled={false} />)
+    expect(screen.queryByTestId('clipping-plane')).not.toBeInTheDocument()
+  })
+
+  it('renders clipping plane when enabled', () => {
+    render(<Viewer {...defaultProps} clippingEnabled={true} clippingAxis="z" />)
+    const plane = screen.getByTestId('clipping-plane')
+    expect(plane).toBeInTheDocument()
+    expect(plane.getAttribute('data-axis')).toBe('z')
+  })
+
+  // ────────────────────────────────────────
+  // Measure tool (Sprint 2.2)
+  // ────────────────────────────────────────
+
+  it('does not render measure tool when not active', () => {
+    render(<Viewer {...defaultProps} measureMode={false} />)
+    expect(screen.queryByTestId('measure-tool')).not.toBeInTheDocument()
+  })
+
+  it('renders measure tool when active', () => {
+    render(<Viewer {...defaultProps} measureMode={true} />)
+    expect(screen.getByTestId('measure-tool')).toBeInTheDocument()
   })
 })

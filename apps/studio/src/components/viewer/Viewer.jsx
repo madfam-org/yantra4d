@@ -1,10 +1,10 @@
 import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
+import { OrbitControls, OrthographicCamera, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { useWorkerLoader } from '../../hooks/render/useWorkerLoader'
-import { Box3, Box3Helper, Vector3, Color } from 'three'
+import { Box3, Box3Helper, Vector3, Color, Plane as ThreePlane } from 'three'
 import { useIsMobile } from '../../hooks/system/useMediaQuery'
 import { useLanguage } from "../../contexts/system/LanguageProvider"
 import { useTheme } from "../../contexts/system/ThemeProvider"
@@ -14,6 +14,9 @@ import SceneController from './SceneController'
 import NumberedAxes from './NumberedAxes'
 import AnimatedGrid from './AnimatedGrid'
 import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../../lib/printEstimator'
+import ClippingPlane from './ClippingPlane'
+import MeasureTool from './MeasureTool'
+import ThicknessOverlay from './ThicknessOverlay'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
@@ -196,7 +199,7 @@ function useResponsiveFov() {
     return isMobile ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
 }
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [] }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null }, ref) => {
     const geometriesRef = React.useRef({})
     const prevCenterRef = React.useRef(null)
     const prevMaxDimRef = React.useRef(null)
@@ -361,7 +364,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
     // Reset animReady when animation is toggled off or mode changes
     useEffect(() => {
-        if (!animating) setAnimReady(false) // eslint-disable-line react-hooks/set-state-in-effect
+        if (!animating) setAnimReady(false)
     }, [animating, mode])
 
 
@@ -417,6 +420,16 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                 {showAxes ? "⊞" : "⊟"}
             </button>
 
+            <button
+                onClick={() => setOrthoCamera?.(v => !v)}
+                className="absolute top-2 left-14 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-xs font-bold hover:bg-background/90 backdrop-blur-sm"
+                title={orthoCamera ? t("viewer.ortho_on") : t("viewer.ortho_off")}
+                aria-pressed={orthoCamera}
+                data-testid="ortho-toggle"
+            >
+                {orthoCamera ? "⬜" : "▣"}
+            </button>
+
             {mode === 'grid' && (
                 <button
                     data-testid="animation-toggle"
@@ -462,13 +475,17 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
             </div>
 
             <ErrorBoundary t={t}>
-                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true }}>
+                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true, localClippingEnabled: clippingEnabled }}>
                     <color attach="background" args={[bgColor]} />
                     <SceneController ref={sceneRef} cameraViews={cameraViews} />
 
-                    <Environment preset="city" />
-                    <ambientLight intensity={0.3} />
-                    <pointLight position={[10, 10, 10]} intensity={0.5} />
+                    {orthoCamera && (
+                        <OrthographicCamera makeDefault position={initialCameraPos} zoom={50} up={SCENE_UP_VECTOR} />
+                    )}
+
+                    <Environment preset={environmentPreset} />
+                    <ambientLight intensity={0.3 * lightIntensity} />
+                    <pointLight position={[10, 10, 10]} intensity={0.5 * lightIntensity} />
 
                     <OrbitControls makeDefault up={SCENE_UP_VECTOR} minDistance={ORBIT_MIN_DISTANCE_MM} maxDistance={ORBIT_MAX_DISTANCE_MM} target={centerOfMass} />
                     <Grid
@@ -488,6 +505,18 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     </GizmoHelper>
 
                     {showAxes && <NumberedAxes axisColors={axisColors} />}
+
+                    {clippingEnabled && (
+                        <ClippingPlane axis={clippingAxis} position={clippingPosition} bbox={sceneBox} />
+                    )}
+
+                    {measureMode && (
+                        <MeasureTool active={measureMode} onMeasure={onMeasure} measurements={measurements} />
+                    )}
+
+                    {thicknessData && thicknessData.points?.length > 0 && (
+                        <ThicknessOverlay points={thicknessData.points} thicknesses={thicknessData.thicknesses} />
+                    )}
 
                     <Suspense fallback={null}>
                         {parts.length > 0 ? (
@@ -531,43 +560,55 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                         <>
                                             {/* Structural parts (grid-only, e.g. rods/stoppers) — always visible */}
                                             <group>
+                                                {/* eslint-disable-next-line react-hooks/refs -- R3F geometry ref for explode displacement */}
                                                 {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => {
                                                     const partDef = manifest?.parts?.find(p => p.id === part.type)
+                                                    const geom = geometriesRef.current[part.type]
+                                                    const displacement = explodeFactor > 0 && geom
+                                                        ? computeCentroid(geom).clone().sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray()
+                                                        : [0, 0, 0]
                                                     return (
-                                                        <Model
-                                                            key={part.type}
-                                                            url={part.url}
-                                                            isGlb={part.isGlb}
-                                                            partType={part.type}
-                                                            color={colors[part.type] || defaultColor}
-                                                            wireframe={wireframe}
-                                                            glass={partDef?.glass === true}
-                                                            onGeometry={handleGeometry}
-                                                            onGeometryRemove={handleGeometryRemove}
-                                                            highlightMode={getHighlightMode(part.type)}
-                                                            isDark={isDark}
-                                                        />
+                                                        <group key={part.type} position={displacement}>
+                                                            <Model
+                                                                url={part.url}
+                                                                isGlb={part.isGlb}
+                                                                partType={part.type}
+                                                                color={colors[part.type] || defaultColor}
+                                                                wireframe={wireframe}
+                                                                glass={partDef?.glass === true}
+                                                                onGeometry={handleGeometry}
+                                                                onGeometryRemove={handleGeometryRemove}
+                                                                highlightMode={getHighlightMode(part.type)}
+                                                                isDark={isDark}
+                                                            />
+                                                        </group>
                                                     )
                                                 })}
                                             </group>
                                             {/* Assembly parts — hidden when animated grid is active */}
                                             <group visible={!(animating && mode === 'grid' && animReady)}>
+                                                {/* eslint-disable-next-line react-hooks/refs -- R3F geometry ref for explode displacement */}
                                                 {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => {
                                                     const partDef = manifest?.parts?.find(p => p.id === part.type)
+                                                    const geom = geometriesRef.current[part.type]
+                                                    const displacement = explodeFactor > 0 && geom
+                                                        ? computeCentroid(geom).clone().sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray()
+                                                        : [0, 0, 0]
                                                     return (
-                                                        <Model
-                                                            key={part.type}
-                                                            url={part.url}
-                                                            isGlb={part.isGlb}
-                                                            partType={part.type}
-                                                            color={colors[part.type] || defaultColor}
-                                                            wireframe={wireframe}
-                                                            glass={partDef?.glass === true}
-                                                            onGeometry={handleGeometry}
-                                                            onGeometryRemove={handleGeometryRemove}
-                                                            highlightMode={getHighlightMode(part.type)}
-                                                            isDark={isDark}
-                                                        />
+                                                        <group key={part.type} position={displacement}>
+                                                            <Model
+                                                                url={part.url}
+                                                                isGlb={part.isGlb}
+                                                                partType={part.type}
+                                                                color={colors[part.type] || defaultColor}
+                                                                wireframe={wireframe}
+                                                                glass={partDef?.glass === true}
+                                                                onGeometry={handleGeometry}
+                                                                onGeometryRemove={handleGeometryRemove}
+                                                                highlightMode={getHighlightMode(part.type)}
+                                                                isDark={isDark}
+                                                            />
+                                                        </group>
                                                     )
                                                 })}
                                             </group>

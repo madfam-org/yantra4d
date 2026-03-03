@@ -174,6 +174,46 @@ def git_archive_head(project_dir: Path, target_dir: Path) -> dict:
         return {"success": False, "error": str(e)}
 
 
+def git_log(project_dir: Path, limit: int = 20) -> dict:
+    """Get recent commit log entries.
+
+    Args:
+        project_dir: Path to the git repository.
+        limit: Maximum number of commits to return (capped at 50).
+
+    Returns:
+        dict with success flag and commits list.
+    """
+    limit = max(1, min(limit, 50))
+    # Use %x1f (unit separator) as field delimiter and %x1e (record separator) as record delimiter
+    # to avoid ambiguity with commit messages containing newlines or special characters.
+    fmt = "%H%x1f%h%x1f%an%x1f%aI%x1f%s"
+    result = _run_git(project_dir, ["log", f"--format={fmt}", f"-{limit}"], timeout=15)
+    if result.returncode != 0:
+        stderr = result.stderr.strip()
+        # Empty repo with no commits returns 128
+        if "does not have any commits" in stderr or "bad default revision" in stderr:
+            return {"success": True, "commits": []}
+        return {"success": False, "error": stderr}
+
+    commits = []
+    for line in result.stdout.strip().splitlines():
+        if not line:
+            continue
+        parts = line.split("\x1f")
+        if len(parts) < 5:
+            continue
+        commits.append({
+            "hash": parts[0],
+            "short_hash": parts[1],
+            "author": parts[2],
+            "date": parts[3],
+            "message": parts[4],
+        })
+
+    return {"success": True, "commits": commits}
+
+
 def git_commit(
     project_dir: Path,
     message: str,

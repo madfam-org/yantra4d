@@ -25,6 +25,7 @@ GIT_COMMIT = "30/hour"
 GIT_PUSH = "20/hour"
 GIT_PULL = "20/hour"
 GIT_CONNECT = "10/hour"
+GIT_LOG = "60/hour"
 
 # GitHub import
 GITHUB_VALIDATE = "30/hour"
@@ -39,3 +40,6 @@ PROJECT_FORK = "10/hour"  # uses PROJECT_CREATE limit
 # Onboarding
 ONBOARD_ANALYZE = "20/hour"
 ONBOARD_CREATE = "10/hour"
+
+# Geometry analysis
+ANALYSIS_THICKNESS = "20/hour"

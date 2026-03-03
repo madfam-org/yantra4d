@@ -38,6 +38,12 @@ export default function StudioMainView() {
     assemblyActive, highlightedParts, visibleParts,
     headDiffMode, headParts,
     logs,
+    orthoCamera, setOrthoCamera,
+    clippingEnabled, clippingAxis, clippingPosition,
+    measureMode, measurements, setMeasurements,
+    explodeFactor,
+    lightIntensity, environmentPreset,
+    thicknessData,
   } = useProject()
 
   const { t } = useLanguage()
@@ -75,11 +81,38 @@ export default function StudioMainView() {
           visibleParts={visibleParts}
           headDiffMode={headDiffMode}
           headParts={headParts}
+          orthoCamera={orthoCamera}
+          setOrthoCamera={setOrthoCamera}
+          clippingEnabled={clippingEnabled}
+          clippingAxis={clippingAxis}
+          clippingPosition={clippingPosition}
+          measureMode={measureMode}
+          onMeasure={(m) => setMeasurements(prev => [...prev, m])}
+          measurements={measurements}
+          explodeFactor={explodeFactor}
+          lightIntensity={lightIntensity}
+          environmentPreset={environmentPreset}
+          thicknessData={thicknessData}
         />
         <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
-        {/* Accessible live region for render status */}
-        <div aria-live="polite" className="sr-only">
-          {loading ? 'Rendering in progress' : parts.length > 0 ? 'Render complete' : ''}
+        {/* Accessible live region for render status and model summary */}
+        <div aria-live="polite" className="sr-only" role="status">
+          {loading ? 'Rendering in progress' : parts.length > 0 ? (
+            <>
+              Render complete.
+              {printEstimate && (() => {
+                const bbox = printEstimate.total?.boundingBox ?? printEstimate.boundingBox
+                const vol = printEstimate.total?.volumeMm3 ?? printEstimate.volumeMm3 ?? 0
+                return bbox ? ` ${t('a11y.model_summary', {
+                  parts: parts.length,
+                  width: bbox.width?.toFixed(1) ?? '0',
+                  height: bbox.height?.toFixed(1) ?? '0',
+                  depth: bbox.depth?.toFixed(1) ?? '0',
+                  volume: vol.toFixed(0),
+                })}` : ''
+              })()}
+            </>
+          ) : ''}
         </div>
       </div>
 

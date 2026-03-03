@@ -89,6 +89,48 @@ class TestGitDiff:
         assert res.status_code == 400
 
 
+class TestGitLog:
+    def test_log_success(self, client, tmp_path):
+        project_dir = tmp_path / "my-project"
+        _init_git(project_dir)
+        # Make a commit so there's history
+        (project_dir / "main.scad").write_text("cube(20);")
+        from services.editor.git_operations import git_commit
+        git_commit(project_dir, "Initial commit", ["main.scad"])
+
+        res = client.get("/api/projects/my-project/git/log")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert "commits" in data
+        assert len(data["commits"]) >= 1
+
+    def test_log_with_limit(self, client, tmp_path):
+        project_dir = tmp_path / "my-project"
+        _init_git(project_dir)
+        (project_dir / "main.scad").write_text("cube(20);")
+        from services.editor.git_operations import git_commit
+        git_commit(project_dir, "Commit 1", ["main.scad"])
+
+        res = client.get("/api/projects/my-project/git/log?limit=1")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert len(data["commits"]) <= 1
+
+    def test_log_invalid_limit(self, client, tmp_path):
+        _init_git(tmp_path / "my-project")
+        res = client.get("/api/projects/my-project/git/log?limit=0")
+        assert res.status_code == 400
+
+    def test_log_no_git(self, client):
+        res = client.get("/api/projects/my-project/git/log")
+        assert res.status_code == 400
+
+    def test_log_nonexistent_project(self, client):
+        res = client.get("/api/projects/nonexistent/git/log")
+        assert res.status_code == 404
+
+
 class TestGitCommit:
     def test_commit_success(self, client, tmp_path):
         project_dir = tmp_path / "my-project"
@@ -228,7 +270,7 @@ class TestGitRenderHead:
     @patch("routes.editor.git_ops.run_openscad_render")
     def test_render_head_success(self, mock_render, mock_archive, client, tmp_path):
         _init_git(tmp_path / "my-project")
-        
+
         # Mock successful archive
         def fake_archive(src, dst):
             with open(dst / "main.scad", "w") as f:
@@ -236,7 +278,7 @@ class TestGitRenderHead:
             return {"success": True}
         mock_archive.side_effect = fake_archive
         mock_render.return_value = (True, "output")
-        
+
         payload = {"project": "my-project", "parts": ["main"], "stl_prefix": "pref_", "export_format": "stl", "params": {}, "mode_map": {}, "scad_filename": "main.scad", "scad_file": "main.scad"}
         res = client.post("/api/projects/my-project/git/render-head", json=payload)
         assert res.status_code == 200
@@ -271,4 +313,3 @@ class TestGitOpsErrors:
         mock_status.return_value = {"success": False, "error": "err"}
         res = client.get("/api/projects/my-project/git/status")
         assert res.status_code == 500
-

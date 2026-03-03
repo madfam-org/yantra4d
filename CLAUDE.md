@@ -79,7 +79,9 @@ packages/
 | `apps/api/middleware/auth.py` | JWT auth + tier gating middleware | RARELY |
 | `apps/api/routes/ai.py` | AI chat SSE endpoints (session, chat-stream) | RARELY |
 | `apps/api/routes/github.py` | GitHub validate, import, sync endpoints | RARELY |
-| `apps/api/routes/git_ops.py` | Git status, diff, commit, push, pull, connect-remote | RARELY |
+| `apps/api/routes/git_ops.py` | Git status, diff, log, commit, push, pull, connect-remote | RARELY |
+| `apps/api/routes/engine/analysis.py` | Geometry analysis endpoints (wall thickness) | RARELY |
+| `apps/api/services/geometry/thickness_analyzer.py` | trimesh-based wall thickness computation | RARELY |
 | `apps/api/routes/editor.py` | SCAD file CRUD (list/read/write/create/delete) | RARELY |
 | `apps/api/routes/admin.py` | Admin project listing and detail endpoints | RARELY |
 | `apps/api/routes/download.py` | STL and SCAD file download endpoints | RARELY |
@@ -94,7 +96,11 @@ packages/
 | `apps/studio/src/contexts/auth/AuthProvider.jsx` | JWT auth context + login/logout | RARELY |
 | `apps/studio/src/contexts/auth/TierProvider.jsx` | User tier context + feature flags | RARELY |
 | `apps/studio/src/components/AiChatPanel.jsx` | AI chat UI (configurator + code-editor modes) | RARELY |
-| `apps/studio/src/components/GitPanel.jsx` | Git status, diff, commit, push/pull UI | RARELY |
+| `apps/studio/src/components/GitPanel.jsx` | Git status, diff, commit, push/pull, version history UI | RARELY |
+| `apps/studio/src/components/viewer/ClippingPlane.jsx` | Cross-section clipping plane overlay | RARELY |
+| `apps/studio/src/components/viewer/MeasureTool.jsx` | Point-to-point raycaster measurement | RARELY |
+| `apps/studio/src/components/viewer/ThicknessOverlay.jsx` | Wall thickness heatmap point cloud | RARELY |
+| `apps/studio/src/components/editor/VersionHistory.jsx` | Git commit history browser | RARELY |
 | `apps/studio/src/components/ScadEditor.jsx` | Monaco-based SCAD code editor | RARELY |
 | `apps/studio/src/components/ForkDialog.jsx` | Fork-to-edit modal for built-in projects | RARELY |
 | `docs/audits/*.md` | Internal audits (codebase, usability, deployment) | YES |
@@ -197,6 +203,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | DELETE | `/api/projects/<slug>/files/<path>` | — | Delete SCAD file (pro+) |
 | GET | `/api/projects/<slug>/git/status` | — | Git working tree status (pro+) |
 | GET | `/api/projects/<slug>/git/diff` | — | Unified diff (pro+) |
+| GET | `/api/projects/<slug>/git/log` | `?limit=20` | Recent commit history (pro+) |
 | POST | `/api/projects/<slug>/git/commit` | `{message, files?}` | Stage and commit (pro+) |
 | POST | `/api/projects/<slug>/git/push` | — | Push to origin (pro+) |
 | POST | `/api/projects/<slug>/git/pull` | — | Pull from origin (pro+) |
@@ -228,6 +235,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | GET | `/api/catalog/nopscadlib/<category>` | — | Components for catalog category |
 | POST | `/api/projects/<slug>/git/render-head` | `{file}` | Render HEAD version of SCAD file (pro+) |
 | POST | `/api/ai/synthesize` | `{prompt, ...}` | SSE streaming AI project synthesis (pro+) |
+| POST | `/api/projects/<slug>/analyze/thickness` | `{sample_count?}` | Wall thickness analysis on latest render (pro+) |
 | GET | `/api/admin/projects` | — | Admin: all projects with metadata (admin) |
 | GET | `/api/admin/projects/<slug>` | — | Admin: detailed project info (admin) |
 | PATCH | `/api/admin/projects/<slug>/flags` | `{is_demo?, is_hyperobject?}` | Toggle project flags (admin) |
@@ -315,6 +323,8 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
 | Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links use path-based format `/project/slug/share/mode?p=...`. Legacy hash-based shared links auto-redirect via `main.jsx` |
 | Undo/Redo | Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z for parameter undo/redo; 50-entry history stack. Any `setParams()` call with `history: true` (default) truncates the redo stack |
+| Viewer shortcuts | `O` toggle orthographic camera, `C` toggle clipping plane, `M` toggle measure tool. Non-modifier keys, ignored when focus is on text inputs |
+| AM viewer tools | Cross-section clipping (axis selector + position slider), point-to-point measurement (two-click raycaster), wall thickness heatmap (backend trimesh analysis, pro+), exploded view (displacement slider, multi-part only), adjustable lighting (brightness + environment preset), version history browser (git log) |
 | E2E test patterns | Use Playwright's `toHaveText`/`toBeEnabled` assertions instead of `waitForTimeout` + `textContent()`. Auto-render caches results — change a param to bust cache before testing slow/error mocks. `editSliderValue` commits via Enter key. Native `<input type="color">` cannot be programmatically set in Playwright. Landing E2E tests in `12-responsive/` require `LANDING_URL` env var (skipped otherwise) |
 | Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf/obj/vrml/amf). All STL renders auto-convert to GLB for web delivery. Format selector only visible when manifest declares `export_formats`. Format buttons use `flex-wrap` to prevent overflow on narrow screens with 5+ formats |
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |

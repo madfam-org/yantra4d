@@ -60,6 +60,16 @@ export function useProjectParams({ viewerRef }) {
   const [wireframe, setWireframe] = useState(false)
   const [boundingBox, setBoundingBox] = useState(false)
   const [animating, setAnimating] = useState(false)
+  const [orthoCamera, setOrthoCamera] = useState(false)
+  const [clippingEnabled, setClippingEnabled] = useState(false)
+  const [clippingAxis, setClippingAxis] = useState('z')
+  const [clippingPosition, setClippingPosition] = useState(0.5)
+  const [measureMode, setMeasureMode] = useState(false)
+  const [measurements, setMeasurements] = useState([])
+  const [explodeFactor, setExplodeFactor] = useState(0)
+  const [lightIntensity, setLightIntensity] = useState(1.0)
+  const [environmentPreset, setEnvironmentPreset] = useState('city')
+  const [thicknessData, setThicknessData] = useState(null)
   const [printEstimate, setPrintEstimate] = useState(null)
   const [exportFormat, setExportFormat] = useState('stl')
 
@@ -265,6 +275,9 @@ export function useProjectParams({ viewerRef }) {
     onRender: handleGenerate,
     onCancelRender: handleCancelGenerate,
     onSwitchMode: setMode,
+    onToggleOrtho: () => setOrthoCamera(v => !v),
+    onToggleClipping: () => setClippingEnabled(v => !v),
+    onToggleMeasure: () => setMeasureMode(v => !v),
     loading,
     modes,
   })
@@ -281,6 +294,16 @@ export function useProjectParams({ viewerRef }) {
     wireframe, setWireframe,
     boundingBox, setBoundingBox,
     animating, setAnimating,
+    orthoCamera, setOrthoCamera,
+    clippingEnabled, setClippingEnabled,
+    clippingAxis, setClippingAxis,
+    clippingPosition, setClippingPosition,
+    measureMode, setMeasureMode,
+    measurements, setMeasurements,
+    explodeFactor, setExplodeFactor,
+    lightIntensity, setLightIntensity,
+    environmentPreset, setEnvironmentPreset,
+    thicknessData, setThicknessData,
     // Undo/redo
     undoParams, redoParams, canUndo, canRedo,
     // Render

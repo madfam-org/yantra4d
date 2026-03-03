@@ -13,7 +13,7 @@ import rate_limits
 from middleware.auth import require_tier
 from utils.route_helpers import error_response, require_json_body, cleanup_old_stl_files
 from utils.validators import require_valid_slug
-from services.editor.git_operations import git_status, git_diff, git_commit, git_push, git_pull, git_archive_head
+from services.editor.git_operations import git_status, git_diff, git_log, git_commit, git_push, git_pull, git_archive_head
 from services.editor.github_token import get_github_token
 import tempfile
 import os
@@ -154,6 +154,26 @@ def get_diff(slug):
 
     filepath = request.args.get("file")
     result = git_diff(project_dir, filepath)
+    if not result["success"]:
+        return error_response(result["error"], 500)
+    return jsonify(result)
+
+
+@git_ops_bp.route("/api/projects/<slug>/git/log", methods=["GET"])
+@require_valid_slug
+@require_tier("pro")
+@limiter.limit(rate_limits.GIT_LOG)
+def get_log(slug):
+    """Get recent commit log for the project."""
+    project_dir, err = _get_git_project(slug)
+    if err:
+        return error_response(err, 404 if "not found" in err.lower() else 400)
+
+    limit = request.args.get("limit", 20, type=int)
+    if limit < 1 or limit > 50:
+        return error_response("limit must be between 1 and 50", 400)
+
+    result = git_log(project_dir, limit)
     if not result["success"]:
         return error_response(result["error"], 500)
     return jsonify(result)

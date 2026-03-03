@@ -84,6 +84,45 @@
 - Supports `warning` and `error` severities; `error` blocks render
 - Live in portacosas and gridfinity projects
 
+### Phase 2.5: AM Viewport Standards (Implemented)
+
+**2.5.1 Orthographic Camera Toggle** ✅ Implemented
+- Toggle between perspective and orthographic projection for accurate dimensional review
+- Keyboard shortcut: `O` key
+- OrthographicCamera from drei with auto-positioned zoom
+
+**2.5.2 Screen Reader Model Summary** ✅ Implemented
+- WCAG 2.1 Level AA aria-live region with computed model dimensions and volume
+- Populates sr-only region after parts load with bounding box and volume data
+
+**2.5.3 Cross-Section Clipping Plane** ✅ Implemented
+- THREE.Plane-based clipping with axis selector (X/Y/Z) and position slider
+- Semi-transparent visual indicator plane
+- Keyboard shortcut: `C` key
+
+**2.5.4 Point-to-Point Measurement** ✅ Implemented
+- Raycaster-based two-click measurement tool with distance labels in mm
+- Persistent measurement lines with drei Html labels
+- Keyboard shortcut: `M` key
+
+**2.5.5 Wall Thickness Heatmap** ✅ Implemented
+- Backend trimesh ray-casting analysis (compute per-vertex minimum wall thickness)
+- Frontend colored point cloud: red (<0.8mm) → yellow (0.8-1.2mm) → green (>1.2mm)
+- Tier-gated: pro+ only. API: `POST /api/projects/<slug>/analyze/thickness`
+
+**2.5.6 Exploded View** ✅ Implemented
+- Centroid-based displacement for multi-part assemblies
+- Explode factor slider (0-2) in Controls, only visible when parts > 1
+
+**2.5.7 User-Adjustable Lighting** ✅ Implemented
+- Brightness slider (0.1-2.0) scales ambient and point light intensity
+- Environment preset selector (city, warehouse, studio, sunset, dawn)
+
+**2.5.8 Version History Browser** ✅ Implemented
+- Read-only git commit log browser in GitPanel
+- Fetches recent commits via `GET /api/projects/<slug>/git/log`
+- Click to highlight commits (future: visual diff)
+
 ### Phase 3: Long-Term
 
 **3.1 Visual Parameter Explorer (Comparison Mode)**
@@ -115,6 +154,14 @@
 | Comparison Mode | 8 | 8 | 9 | **15** |
 | Datasheet Generation | 6 | 5 | 8 | **15** |
 | Plugin System | 6 | 8 | 7 | **11** |
+| Orthographic Camera | 8 | 2 | 9 | **15** |
+| Cross-Section Clipping | 9 | 4 | 10 | **15** |
+| Point-to-Point Measure | 8 | 3 | 9 | **14** |
+| Wall Thickness Heatmap | 9 | 5 | 10 | **14** |
+| Exploded View | 7 | 3 | 8 | **12** |
+| Adjustable Lighting | 6 | 2 | 6 | **10** |
+| Version History | 6 | 3 | 7 | **10** |
+| Screen Reader Summary | 7 | 1 | 8 | **14** |
 
 *(Score = Value + Strategic Fit - Effort)*
 
@@ -124,6 +171,7 @@
 
 **Phase 1**: `export_formats[]`, `print_estimation{}`
 **Phase 2**: `bom{}` ✅, `assembly_steps[]` ✅, `constraints[]` ✅, `parameter_groups[]` ✅, `grid_presets{}` ✅, `viewer{}` ✅, `project.thumbnail`, `project.tags[]`
+**Phase 2.5**: `thickness_analysis` tier feature, `git/log` endpoint
 **Phase 3**: parameter `widget` field for custom controls
 
 All additions are optional — existing projects continue to work unchanged.

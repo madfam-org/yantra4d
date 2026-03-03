@@ -9,6 +9,9 @@ import { useEffect } from 'react'
  * - Cmd/Ctrl+Enter: trigger render
  * - Escape (while loading): cancel render
  * - Cmd/Ctrl+1..N: switch to mode N
+ * - O: toggle orthographic camera
+ * - C: toggle clipping plane
+ * - M: toggle measure mode
  *
  * @param {object} options
  * @param {function} options.onUndo - callback for undo
@@ -16,6 +19,9 @@ import { useEffect } from 'react'
  * @param {function} options.onRender - callback to trigger render
  * @param {function} options.onCancelRender - callback to cancel render
  * @param {function} options.onSwitchMode - callback receiving mode id string
+ * @param {function} options.onToggleOrtho - callback for orthographic toggle
+ * @param {function} options.onToggleClipping - callback for clipping plane toggle
+ * @param {function} options.onToggleMeasure - callback for measure mode toggle
  * @param {boolean} options.loading - whether a render is in progress
  * @param {Array} options.modes - available modes from manifest
  */
@@ -25,6 +31,9 @@ export function useKeyboardShortcuts({
   onRender,
   onCancelRender,
   onSwitchMode,
+  onToggleOrtho,
+  onToggleClipping,
+  onToggleMeasure,
   loading,
   modes,
 }) {
@@ -58,6 +67,12 @@ export function useKeyboardShortcuts({
       } else if (e.key === 'Escape' && loading) {
         // Escape usually doesn't need stopPropagation but good for consistency if we want to own it
         onCancelRender?.()
+      } else if (!mod && key === 'o') {
+        onToggleOrtho?.()
+      } else if (!mod && key === 'c') {
+        onToggleClipping?.()
+      } else if (!mod && key === 'm') {
+        onToggleMeasure?.()
       } else if (mod && modes?.length > 0) {
         const num = parseInt(e.key, 10)
         if (num >= 1 && num <= modes.length) {
@@ -71,5 +86,5 @@ export function useKeyboardShortcuts({
     // Use capture phase to handle events before Radix UI/other libs stop propagation
     window.addEventListener('keydown', handler, { capture: true })
     return () => window.removeEventListener('keydown', handler, { capture: true })
-  }, [onUndo, onRedo, onRender, onCancelRender, onSwitchMode, loading, modes])
+  }, [onUndo, onRedo, onRender, onCancelRender, onSwitchMode, onToggleOrtho, onToggleClipping, onToggleMeasure, loading, modes])
 }

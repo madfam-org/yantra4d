@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { LayoutDashboard, ExternalLink, LogOut, Package, Menu, X } from 'lucide-react'
+import { LayoutDashboard, ExternalLink, Menu, X } from 'lucide-react'
+import { UserButton } from '@janua/react-sdk'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import ProjectList from './projects/ProjectList'
@@ -64,17 +65,8 @@ export default function AdminShell({ auth }) {
 
                 {/* Footer */}
                 <div className="flex items-center gap-2 border-t border-border p-3">
-                    <Package className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    <UserButton showManageAccount={false} />
                     <span className="flex-1 truncate text-xs text-muted-foreground">{auth.user?.email}</span>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 shrink-0"
-                        onClick={() => auth.signOut()}
-                        title="Sign out"
-                    >
-                        <LogOut className="h-3.5 w-3.5" />
-                    </Button>
                 </div>
             </aside>
 

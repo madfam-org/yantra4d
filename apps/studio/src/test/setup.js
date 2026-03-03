@@ -1,4 +1,19 @@
 import '@testing-library/jest-dom'
+import { vi } from 'vitest'
+import React from 'react'
+
+// Global mock for @janua/react-sdk — prevents import errors in components
+// that use Janua SDK components (UserButton, SignedIn, SignedOut).
+// Individual tests can override with vi.mock() for specific behavior.
+vi.mock('@janua/react-sdk', () => ({
+  JanuaProvider: (props) => React.createElement(React.Fragment, null, props.children),
+  UserButton: () => React.createElement('div', { 'data-testid': 'janua-user-button' }, 'UserButton'),
+  SignedIn: (props) => React.createElement(React.Fragment, null, props.children),
+  SignedOut: () => null,
+  useJanua: () => ({ user: null, signOut: vi.fn(), client: null }),
+  useAuth: () => ({ isAuthenticated: false, user: null, isLoading: false }),
+  useUser: () => ({ user: null }),
+}))
 
 // Polyfill localStorage/sessionStorage — vitest 4.x jsdom environment wraps
 // Storage in a Proxy that lacks standard methods (clear, getItem, etc.).

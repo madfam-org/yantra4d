@@ -22,6 +22,15 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
   }),
 }))
 
+// Mock @janua/react-sdk components
+vi.mock('@janua/react-sdk', () => ({
+  UserButton: () => <div data-testid="janua-user-button">UserButton</div>,
+  SignedIn: ({ children }) => mockAuth.isAuthenticated ? <>{children}</> : null,
+  SignedOut: ({ children }) => !mockAuth.isAuthenticated ? <>{children}</> : null,
+}))
+
+import AuthButton from './AuthButton'
+
 beforeEach(() => {
   mockAuth.user = null
   mockAuth.isAuthenticated = false
@@ -35,58 +44,30 @@ describe('AuthButton', () => {
     expect(screen.getByText('auth.sign_in')).toBeInTheDocument()
   })
 
-  it('opens provider dropdown on sign in click', () => {
+  it('calls signInWithOAuth on sign in click', () => {
     render(<AuthButton />)
     fireEvent.click(screen.getByTitle('auth.sign_in'))
-    // Dropdown should show all 4 providers
-    expect(screen.getByText(/Google/)).toBeInTheDocument()
-    expect(screen.getByText(/GitHub/)).toBeInTheDocument()
-    expect(screen.getByText(/Microsoft/)).toBeInTheDocument()
-    expect(screen.getByText(/Apple/)).toBeInTheDocument()
+    expect(mockAuth.signInWithOAuth).toHaveBeenCalledWith('google')
   })
 
-  it('calls signInWithOAuth when provider is selected', () => {
-    render(<AuthButton />)
-    fireEvent.click(screen.getByTitle('auth.sign_in'))
-    fireEvent.click(screen.getByText(/GitHub/))
-    expect(mockAuth.signInWithOAuth).toHaveBeenCalledWith('github')
-  })
-
-  it('shows loading state', () => {
-    mockAuth.isLoading = true
-    render(<AuthButton />)
-    expect(screen.getByText('...')).toBeInTheDocument()
-  })
-
-  it('renders sign out when authenticated', () => {
+  it('renders UserButton when authenticated', () => {
     mockAuth.isAuthenticated = true
     mockAuth.user = { display_name: 'Test User', email: 'test@test.com' }
     render(<AuthButton />)
-    expect(screen.getByTitle('auth.sign_out')).toBeInTheDocument()
-    expect(screen.getByText('Test User')).toBeInTheDocument()
+    expect(screen.getByTestId('janua-user-button')).toBeInTheDocument()
   })
 
-  it('calls signOut on sign out click', () => {
+  it('hides sign in when authenticated', () => {
     mockAuth.isAuthenticated = true
     mockAuth.user = { display_name: 'Alice' }
     render(<AuthButton />)
-    fireEvent.click(screen.getByTitle('auth.sign_out'))
-    expect(mockAuth.signOut).toHaveBeenCalled()
-  })
-
-  it('shows email when no display_name', () => {
-    mockAuth.isAuthenticated = true
-    mockAuth.user = { email: 'a@b.com' }
-    render(<AuthButton />)
-    expect(screen.getByText('a@b.com')).toBeInTheDocument()
+    expect(screen.queryByText('auth.sign_in')).not.toBeInTheDocument()
   })
 })
 
-import AuthButton from './AuthButton'
-
 describe('AuthButton (auth disabled)', () => {
   it('renders nothing when auth disabled', async () => {
-    vi.doMock('../contexts/AuthProvider', () => ({
+    vi.doMock('../../contexts/auth/AuthProvider', () => ({
       useAuth: () => mockAuth,
       isAuthEnabled: false,
     }))

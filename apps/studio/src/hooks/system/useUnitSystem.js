@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 
 const MM_PER_INCH = 25.4
+const MM3_PER_IN3 = MM_PER_INCH ** 3 // 16387.064
 
 /**
  * Hook for display-only unit conversion (mm ↔ inches).
@@ -40,6 +41,18 @@ export function useUnitSystem() {
     return `${val.toFixed(precision)}${unit === 'in' ? '"' : 'mm'}`
   }, [convert, unit])
 
+  /** Convert mm³ value to current unit (in³ or mm³) */
+  const convertVolume = useCallback((mm3Value) => {
+    if (unit === 'in') return mm3Value / MM3_PER_IN3
+    return mm3Value
+  }, [unit])
+
+  /** Format mm³ value with unit³ suffix */
+  const formatVolume = useCallback((mm3Value, precision = 0) => {
+    const val = convertVolume(mm3Value)
+    return `${val.toFixed(precision)} ${unit === 'in' ? 'in³' : 'mm³'}`
+  }, [convertVolume, unit])
+
   /** Unit label for display */
   const label = unit === 'in' ? 'in' : 'mm'
 
@@ -48,7 +61,9 @@ export function useUnitSystem() {
     setUnit: setUnitPersist,
     convert,
     format,
+    convertVolume,
+    formatVolume,
     label,
     toggle,
-  }), [unit, setUnitPersist, convert, format, label, toggle])
+  }), [unit, setUnitPersist, convert, format, convertVolume, formatVolume, label, toggle])
 }

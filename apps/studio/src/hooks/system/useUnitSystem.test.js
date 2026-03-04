@@ -74,4 +74,46 @@ describe('useUnitSystem', () => {
     expect(result.current.unit).toBe('in')
     expect(localStorage.getItem('yantra4d-unit')).toBe('in')
   })
+
+  describe('convertVolume', () => {
+    it('returns identity in mm mode', () => {
+      const { result } = renderHook(() => useUnitSystem())
+      expect(result.current.convertVolume(16387.064)).toBe(16387.064)
+    })
+
+    it('converts mm³ to in³ (16387.064 mm³ = 1 in³)', () => {
+      const { result } = renderHook(() => useUnitSystem())
+      act(() => result.current.toggle())
+      expect(result.current.convertVolume(16387.064)).toBeCloseTo(1.0)
+    })
+
+    it('converts zero correctly', () => {
+      const { result } = renderHook(() => useUnitSystem())
+      act(() => result.current.toggle())
+      expect(result.current.convertVolume(0)).toBe(0)
+    })
+  })
+
+  describe('formatVolume', () => {
+    it('formats with mm³ suffix in mm mode', () => {
+      const { result } = renderHook(() => useUnitSystem())
+      expect(result.current.formatVolume(1234)).toBe('1234 mm³')
+    })
+
+    it('formats with in³ suffix in inches mode', () => {
+      const { result } = renderHook(() => useUnitSystem())
+      act(() => result.current.toggle())
+      expect(result.current.formatVolume(16387.064)).toBe('1 in³')
+    })
+
+    it('respects custom precision', () => {
+      const { result } = renderHook(() => useUnitSystem())
+      expect(result.current.formatVolume(1234.567, 2)).toBe('1234.57 mm³')
+    })
+
+    it('uses precision 0 by default', () => {
+      const { result } = renderHook(() => useUnitSystem())
+      expect(result.current.formatVolume(1234.567)).toBe('1235 mm³')
+    })
+  })
 })

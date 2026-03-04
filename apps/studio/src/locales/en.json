@@ -109,7 +109,7 @@
   "ctrl.lighting": "Lighting",
   "ctrl.brightness": "Brightness",
   "ctrl.environment": "Environment",
-  "a11y.model_summary": "3D model loaded. {parts} parts. Bounding box: {width} by {height} by {depth} mm. Volume: {volume} cubic mm.",
+  "a11y.model_summary": "3D model loaded. {parts} parts. Bounding box: {width} by {height} by {depth}. Volume: {volume}.",
   "nav.projects": "Projects",
   "sr.toggle_lang": "Toggle Language",
   "sr.toggle_theme": "Toggle Theme",

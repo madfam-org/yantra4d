@@ -104,7 +104,7 @@
   "ctrl.lighting": "照明",
   "ctrl.brightness": "亮度",
   "ctrl.environment": "环境",
-  "a11y.model_summary": "已加载3D模型。{parts}个零件。边界框：{width} × {height} × {depth} 毫米。体积：{volume} 立方毫米。",
+  "a11y.model_summary": "已加载3D模型。{parts}个零件。边界框：{width} × {height} × {depth}。体积：{volume}。",
   "nav.projects": "项目",
   "sr.toggle_lang": "切换语言",
   "sr.toggle_theme": "切换主题",

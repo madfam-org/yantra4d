@@ -104,7 +104,7 @@
   "ctrl.lighting": "Iluminação",
   "ctrl.brightness": "Brilho",
   "ctrl.environment": "Ambiente",
-  "a11y.model_summary": "Modelo 3D carregado. {parts} peças. Caixa delimitadora: {width} × {height} × {depth} mm. Volume: {volume} mm cúbicos.",
+  "a11y.model_summary": "Modelo 3D carregado. {parts} peças. Caixa delimitadora: {width} × {height} × {depth}. Volume: {volume}.",
   "nav.projects": "Projetos",
   "sr.toggle_lang": "Alternar Idioma",
   "sr.toggle_theme": "Alternar Tema",

@@ -104,7 +104,7 @@
   "ctrl.lighting": "Beleuchtung",
   "ctrl.brightness": "Helligkeit",
   "ctrl.environment": "Umgebung",
-  "a11y.model_summary": "3D-Modell geladen. {parts} Teile. Begrenzungsrahmen: {width} × {height} × {depth} mm. Volumen: {volume} Kubikmillimeter.",
+  "a11y.model_summary": "3D-Modell geladen. {parts} Teile. Begrenzungsrahmen: {width} × {height} × {depth}. Volumen: {volume}.",
   "nav.projects": "Projekte",
   "sr.toggle_lang": "Sprache wechseln",
   "sr.toggle_theme": "Thema wechseln",

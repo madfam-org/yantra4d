@@ -8,6 +8,7 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
 vi.mock('../../hooks/system/useUnitSystem', () => ({
   useUnitSystem: () => ({
     format: (v) => `${v.toFixed(1)}mm`,
+    formatVolume: (v, p = 0) => `${v.toFixed(p)} mm³`,
     label: 'mm',
   }),
 }))

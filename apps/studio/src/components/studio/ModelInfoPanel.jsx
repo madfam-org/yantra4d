@@ -9,7 +9,7 @@ import { useUnitSystem } from '../../hooks/system/useUnitSystem'
  */
 export default function ModelInfoPanel({ printEstimate, partCount, triangleCount }) {
   const { t } = useLanguage()
-  const { format: formatDim, label: unitLabel } = useUnitSystem()
+  const { format: formatDim, formatVolume } = useUnitSystem()
   const [open, setOpen] = useState(true)
 
   const bbox = printEstimate?.total?.boundingBox ?? printEstimate?.boundingBox
@@ -42,7 +42,7 @@ export default function ModelInfoPanel({ printEstimate, partCount, triangleCount
           {vol > 0 && (
             <div className="flex justify-between gap-2">
               <span className="text-muted-foreground">{t('info.volume')}</span>
-              <span className="font-mono">{vol.toFixed(0)} {unitLabel}³</span>
+              <span className="font-mono">{formatVolume(vol)}</span>
             </div>
           )}
           {triCount > 0 && (

@@ -34,7 +34,7 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: vi.fn(),
 }))
 vi.mock('../../hooks/system/useUnitSystem', () => ({
-  useUnitSystem: () => ({ unit: 'mm', format: (v) => `${v}mm`, label: 'mm', toggle: vi.fn() }),
+  useUnitSystem: () => ({ unit: 'mm', format: (v) => `${v}mm`, formatVolume: (v, p = 0) => `${v.toFixed(p)} mm³`, label: 'mm', toggle: vi.fn() }),
 }))
 
 import StudioMainView from './StudioMainView'

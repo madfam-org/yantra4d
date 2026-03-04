@@ -104,7 +104,7 @@
   "ctrl.lighting": "Éclairage",
   "ctrl.brightness": "Luminosité",
   "ctrl.environment": "Environnement",
-  "a11y.model_summary": "Modèle 3D chargé. {parts} pièces. Boîte englobante : {width} × {height} × {depth} mm. Volume : {volume} mm cubes.",
+  "a11y.model_summary": "Modèle 3D chargé. {parts} pièces. Boîte englobante : {width} × {height} × {depth}. Volume : {volume}.",
   "nav.projects": "Projets",
   "sr.toggle_lang": "Changer de langue",
   "sr.toggle_theme": "Changer de thème",

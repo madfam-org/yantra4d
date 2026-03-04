@@ -52,7 +52,7 @@ export default function StudioMainView() {
   } = useProject()
 
   const { t } = useLanguage()
-  const { format: formatDim } = useUnitSystem()
+  const { format: formatDim, formatVolume } = useUnitSystem()
   const [estimateOpen, setEstimateOpen] = useState(true)
   const [consoleExpanded, setConsoleExpanded] = useState(false)
 
@@ -119,7 +119,7 @@ export default function StudioMainView() {
                   width: formatDim(bbox.width ?? 0),
                   height: formatDim(bbox.height ?? 0),
                   depth: formatDim(bbox.depth ?? 0),
-                  volume: vol.toFixed(0),
+                  volume: formatVolume(vol),
                 })}` : ''
               })()}
             </>

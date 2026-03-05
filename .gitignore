@@ -70,6 +70,10 @@ apps/api/static/*.3mf
 apps/api/static/*.off
 apps/api/static/*.step
 apps/api/static/*.gltf
+apps/api/static/*.glb
+
+# Font cache UUID files
+**/fonts/.uuid
 
 # Debug dump files (never commit these)
 **/mock-dom-dump.html

@@ -1,5 +1,6 @@
 {
   "btn.gen": "生成",
+  "btn.force_gen": "强制重新生成",
   "btn.proc": "处理中...",
   "btn.cancel": "取消",
   "btn.verify": "运行验证",
@@ -26,6 +27,7 @@
   "loader.loading": "渲染中...",
   "anim.preparing": "正在准备动画...",
   "tooltip.gen": "使用当前参数渲染 3D 模型",
+  "tooltip.force_gen": "绕过缓存以强制进行新的生成",
   "tooltip.verify": "对模型进行几何验证",
   "tooltip.download": "下载生成的 STL 文件",
   "phase.compiling": "编译中...",

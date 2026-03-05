@@ -128,6 +128,16 @@ function SidebarContent() {
           {loading ? t("btn.proc") : t("btn.gen")}
         </Button>
 
+        <Button
+          variant="outline"
+          onClick={() => handleGenerate(true)}
+          disabled={loading || constraintErrors}
+          className="w-full min-h-[44px]"
+          title={t("tooltip.force_gen")}
+        >
+          {t("btn.force_gen")}
+        </Button>
+
         {loading && (
           <Button variant="destructive" onClick={handleCancelGenerate} className="w-full gap-2 min-h-[44px]">
             <Square className="h-4 w-4" />

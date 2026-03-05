@@ -215,3 +215,24 @@ class TestRenderPayloadValidation:
         """Render without JSON content type returns 415."""
         res = client.post("/api/render", data="not json", content_type="text/plain")
         assert res.status_code in (400, 415)
+
+    def test_render_payload_extracts_ignore_cache(self, monkeypatch):
+        """_extract_render_payload correctly extracts ignore_cache flag."""
+        from routes.engine.render import _extract_render_payload
+        
+        class MockManifest:
+            def __init__(self):
+                self.slug = "test-project"
+                self.modes = [{"id": "single", "parts": ["m"], "scad_file": "m.scad"}]
+                self.parts = [{"id": "m", "render_mode": 0}]
+                self.parameters = []
+            def get_parts_map(self): return {"m.scad": ["m"]}
+            def get_allowed_files(self): return {"m.scad": "mock_path"}
+            def get_mode_map(self): return {"m": 0}
+            def get_static_stl_map(self): return {}
+                
+        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("routes.engine.render.validate_params", lambda *args: {})
+        
+        payload = _extract_render_payload({"project": "test-project", "ignore_cache": True})
+        assert payload["ignore_cache"] is True

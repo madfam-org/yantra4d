@@ -1,5 +1,6 @@
 {
   "btn.gen": "Gerar",
+  "btn.force_gen": "Forçar Regeneração",
   "btn.proc": "Processando...",
   "btn.cancel": "Cancelar",
   "btn.verify": "Executar Verificação",
@@ -26,6 +27,7 @@
   "loader.loading": "Renderizando...",
   "anim.preparing": "Preparando animação...",
   "tooltip.gen": "Renderizar o modelo 3D com os parâmetros atuais",
+  "tooltip.force_gen": "Ignorar o cache e forçar uma nova geração",
   "tooltip.verify": "Executar verificação geométrica do modelo",
   "tooltip.download": "Baixar os arquivos STL gerados",
   "phase.compiling": "Compilando...",

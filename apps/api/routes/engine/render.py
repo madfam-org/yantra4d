@@ -165,6 +165,7 @@ def _extract_render_payload(data):
         'params': params,
         'static_stl_map': static_stl_map,
         'project_slug': project_slug,
+        'ignore_cache': data.get('ignore_cache', False),
     }
 
 
@@ -285,17 +286,18 @@ def render_stl():
             cache_total += 1
 
             # Check render cache
-            cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
-            if cached:
-                cache_hits += 1
-                combined_log += f"[{part}] cache HIT\n"
-                cached_filename = os.path.basename(cached["path"])
-                generated_parts.append({
-                    "type": part,
-                    "url": f"/static/{cached_filename}",
-                    "size_bytes": cached["size_bytes"]
-                })
-                continue
+            if not payload.get('ignore_cache', False):
+                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
+                if cached:
+                    cache_hits += 1
+                    combined_log += f"[{part}] cache HIT\n"
+                    cached_filename = os.path.basename(cached["path"])
+                    generated_parts.append({
+                        "type": part,
+                        "url": f"/static/{cached_filename}",
+                        "size_bytes": cached["size_bytes"]
+                    })
+                    continue
 
             # Cache miss — now safe to clean up this part's old file before re-rendering
             cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
@@ -426,17 +428,18 @@ def render_stl_stream():
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
             # Check render cache before starting engine
-            cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
-            if cached:
-                cached_filename = os.path.basename(cached["path"])
-                generated_parts.append({
-                    "type": part,
-                    "url": f"/static/{cached_filename}",
-                    "size_bytes": cached["size_bytes"]
-                })
-                progress = ((i + 1) / num_parts) * 100
-                yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts, 'cached': True})}\n\n"
-                continue
+            if not payload.get('ignore_cache', False):
+                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
+                if cached:
+                    cached_filename = os.path.basename(cached["path"])
+                    generated_parts.append({
+                        "type": part,
+                        "url": f"/static/{cached_filename}",
+                        "size_bytes": cached["size_bytes"]
+                    })
+                    progress = ((i + 1) / num_parts) * 100
+                    yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts, 'cached': True})}\n\n"
+                    continue
 
             # Cache miss — now safe to clean up this part's old file
             cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)

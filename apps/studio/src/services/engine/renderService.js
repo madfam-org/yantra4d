@@ -217,9 +217,10 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
  * Render parts via backend SSE stream.
  * Returns array of { type, url } for each part.
  */
-async function renderBackend(mode, params, manifest, onProgress, abortSignal, project) {
+async function renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache) {
   const payload = { ...params, mode }
   if (project) payload.project = project
+  if (ignoreCache) payload.ignore_cache = true
 
   if (manifest && manifest.engine === 'cadquery') {
     payload.export_format = 'glb'
@@ -292,10 +293,10 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
 /**
  * Main entry point: render parts for the given mode and parameters.
  */
-export async function renderParts(mode, params, manifest, { onProgress, abortSignal, project } = {}) {
+export async function renderParts(mode, params, manifest, { onProgress, abortSignal, project, ignoreCache } = {}) {
   const currentMode = await detectMode(manifest, mode, params)
   if (currentMode === 'backend') {
-    return renderBackend(mode, params, manifest, onProgress, abortSignal, project)
+    return renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache)
   } else {
     return renderWasm(mode, params, manifest, onProgress, abortSignal)
   }

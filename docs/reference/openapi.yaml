@@ -245,6 +245,10 @@ components:
           type: string
           enum: [stl, 3mf, off]
           default: stl
+        ignore_cache:
+          type: boolean
+          description: Bypass L1 and L2 caches to force a fresh render
+          default: false
       required: [mode]
 
     RenderResponse:

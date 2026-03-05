@@ -183,6 +183,24 @@ describe('renderParts (backend mode)', () => {
     const body = JSON.parse(renderCall[1].body)
     expect(body.project).toBeUndefined()
   })
+
+  it('includes ignore_cache flag when ignoreCache is true', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', {}, manifest, { ignoreCache: true })
+
+    const renderCall = fetchMock.mock.calls[1]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.ignore_cache).toBe(true)
+  })
 })
 
 describe('renderParts (SSE event types)', () => {

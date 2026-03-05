@@ -16,7 +16,7 @@ ENV VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID}
 ENV VITE_JANUA_REDIRECT_URI=${VITE_JANUA_REDIRECT_URI}
 COPY apps/studio/package.json apps/studio/package-lock.json apps/studio/.npmrc ./
 # --legacy-peer-deps: @janua/react-sdk requires react@^18, project uses React 19
-RUN npm ci --legacy-peer-deps
+RUN npm install --legacy-peer-deps
 COPY packages/ /app/packages/
 COPY apps/studio/ ./
 RUN npm run build

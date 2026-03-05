@@ -1,5 +1,6 @@
 {
   "btn.gen": "Generieren",
+  "btn.force_gen": "Neu generieren erzwingen",
   "btn.proc": "Verarbeitung...",
   "btn.cancel": "Abbrechen",
   "btn.verify": "Prüfung starten",
@@ -26,6 +27,7 @@
   "loader.loading": "Rendern...",
   "anim.preparing": "Animation wird vorbereitet...",
   "tooltip.gen": "3D-Modell mit aktuellen Parametern rendern",
+  "tooltip.force_gen": "Cache umgehen und eine neue Generierung erzwingen",
   "tooltip.verify": "Geometrische Überprüfung des Modells durchführen",
   "tooltip.download": "Die generierten STL-Dateien herunterladen",
   "phase.compiling": "Kompilieren...",

@@ -1,5 +1,6 @@
 {
   "btn.gen": "Générer",
+  "btn.force_gen": "Forcer la régénération",
   "btn.proc": "Traitement...",
   "btn.cancel": "Annuler",
   "btn.verify": "Lancer la vérification",
@@ -26,6 +27,7 @@
   "loader.loading": "Rendu en cours...",
   "anim.preparing": "Préparation de l'animation...",
   "tooltip.gen": "Rendre le modèle 3D avec les paramètres actuels",
+  "tooltip.force_gen": "Ignorer le cache et forcer une nouvelle génération",
   "tooltip.verify": "Lancer la vérification géométrique du modèle",
   "tooltip.download": "Télécharger les fichiers STL générés",
   "phase.compiling": "Compilation...",

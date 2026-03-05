@@ -17,7 +17,7 @@ ENV VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID}
 ENV VITE_JANUA_REDIRECT_URI=${VITE_JANUA_REDIRECT_URI}
 ENV VITE_AUTH_ENABLED=${VITE_AUTH_ENABLED}
 COPY apps/admin/package.json apps/admin/package-lock.json apps/admin/.npmrc ./
-RUN npm ci --legacy-peer-deps
+RUN npm install --legacy-peer-deps
 COPY packages/ /app/packages/
 COPY apps/admin/ ./
 COPY apps/studio/ /app/apps/studio/

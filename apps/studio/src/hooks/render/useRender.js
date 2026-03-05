@@ -88,7 +88,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
           if (log) setLogs(prev => prev + `\n${log}`)
         },
         abortSignal: controller.signal,
-        project
+        project,
+        ignoreCache: forceRender
       })
 
       setParts(result)

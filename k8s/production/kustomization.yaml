@@ -23,12 +23,12 @@ images:
 - digest: sha256:5ac8ea55803391bbc238fb7cbdd937274515f616a4d777aacc801110a8eb3403
   name: ghcr.io/madfam-org/yantra4d/admin
   newName: ghcr.io/madfam-org/yantra4d/admin
-- digest: sha256:84ef2750e9cc0672635b52a89f8230ca493bf88987cb91ae7e18671b35c53326
+- digest: sha256:df9511a0d1b902f1b167728926e836d2def6428088ce239166637fce7904b3c5
   name: ghcr.io/madfam-org/yantra4d/backend
   newName: ghcr.io/madfam-org/yantra4d/backend
 - digest: sha256:07eee02042dd4d6155145de6f349e40932970964679cc8b941b815477575c9b7
   name: ghcr.io/madfam-org/yantra4d/landing
   newName: ghcr.io/madfam-org/yantra4d/landing
-- digest: sha256:f1cdab9715df38d53aebc77fd178bc126923f9b1eec05a7a5da4a76d5c94f893
+- digest: sha256:4090b2ba05b9ed98dcff24c494d142cd072f941df296448693cc90f76f937bed
   name: ghcr.io/madfam-org/yantra4d/studio
   newName: ghcr.io/madfam-org/yantra4d/studio

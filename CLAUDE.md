@@ -108,6 +108,7 @@ packages/
 | `apps/studio/src/components/editor/VersionHistory.jsx` | Git commit history browser | RARELY |
 | `apps/studio/src/components/ScadEditor.jsx` | Monaco-based SCAD code editor | RARELY |
 | `apps/studio/src/components/ForkDialog.jsx` | Fork-to-edit modal for built-in projects | RARELY |
+| `audit/*.png` | Browser audit screenshots (mobile, tablet, landscape, desktop) | **NEVER** |
 | `docs/audits/*.md` | Internal audits (codebase, usability, deployment) | YES |
 | `llms.txt` | LLM-optimized project overview (llmstxt.org spec) | RARELY |
 | `llms-full.txt` | Comprehensive LLM context (all docs inlined) | RARELY |
@@ -371,5 +372,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/guides/troubleshooting.md`](docs/guides/troubleshooting.md) — Common issues and solutions
 - [`docs/audits/codebase-audit.md`](docs/audits/codebase-audit.md) — Full platform assessment
 - [`docs/audits/usability-audit.md`](docs/audits/usability-audit.md) — Browser-based UX testing
+- [`docs/audits/browser-audit-2026-03.md`](docs/audits/browser-audit-2026-03.md) — Responsive/mobile browser audit with screenshots
+- [`docs/audits/full-stack-audit.md`](docs/audits/full-stack-audit.md) — Full-stack architecture audit
 - [`docs/audits/enclii-verification-prompt.md`](docs/audits/enclii-verification-prompt.md) — Deployment verification steps
 Per-project docs live in `projects/{slug}/docs/`.

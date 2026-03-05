@@ -7,7 +7,7 @@
  * In production (VITE_AUTH_ENABLED=true), delegates to the real
  * useAuth and useUser hooks from @janua/react-sdk.
  */
-import { useAuth, useUser } from '@janua/react-sdk'
+import { useAuth } from '@janua/react-sdk'
 
 const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED === 'true'
 
@@ -24,7 +24,6 @@ const DEV_USER = {
 export function useJanuaAuth() {
     // In production, use the real Janua SDK hooks
     const janua = AUTH_ENABLED ? useAuth() : null  // eslint-disable-line react-hooks/rules-of-hooks
-    const januaUser = AUTH_ENABLED ? useUser() : null  // eslint-disable-line react-hooks/rules-of-hooks
 
     if (!AUTH_ENABLED) {
         return {
@@ -37,10 +36,10 @@ export function useJanuaAuth() {
     }
 
     return {
-        user: januaUser?.user ?? janua.user ?? null,
-        isAuthenticated: !!janua.user,
-        isLoading: janua.isLoading ?? false,
-        signIn: janua.signIn,
-        signOut: janua.signOut,
+        user: janua?.user ?? null,
+        isAuthenticated: !!janua?.user,
+        isLoading: janua?.isLoading ?? false,
+        signIn: janua?.signIn,
+        signOut: janua?.signOut,
     }
 }

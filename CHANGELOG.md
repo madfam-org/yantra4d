@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Per-Project CI Template** — `.github/workflows/project-ci.yml` template created and distributed via `propagate_ci.sh` to give all 33 federated project repositories their own independent CI pipelines.
 - **Per-Project CI Propagation** — `scripts/ci/propagate_project_ci.sh`: GitHub
   CLI script that installs the reusable Yantra4D CI workflow into all 33
   federated `madfam-org/*` repos, sets `DISPATCH_TOKEN` secrets, and skips
@@ -49,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Dockerfiles; token stays as build-time `ARG` only, not persisted in image layers.
 
 ### Changed
+- **Gitmodules Configuration** — Appended `update = none` instruction to the `projects/tablaco` submodule to automatically exclude it from causing checkout failures during anonymous or unauthed public clones of the overarching application.
 - **Project Manifest Schema** — `project.engine` enum extended to include
   `"implicit"` alongside `"openscad"` and `"cadquery"`.
 - **CHANGELOG** — Retroactively versioned from `v0.1.0` through `v0.10.0`.

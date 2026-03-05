@@ -1,0 +1,13 @@
+name: Project CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    uses: madfam-org/yantra4d/.github/workflows/project-ci-reusable.yml@main
+    secrets:
+      DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}

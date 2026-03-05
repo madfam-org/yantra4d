@@ -79,7 +79,7 @@ export default function StudioHeader({
               </span>
             )}
           </div>
-          <span className="text-xs text-muted-foreground leading-tight">
+          <span className="hidden lg:block text-xs text-muted-foreground leading-tight">
             {t('platform.powered_by')} {!platformLoading ? platformName : ''}
           </span>
         </div>
@@ -95,10 +95,10 @@ export default function StudioHeader({
             size="icon"
             className="min-h-[44px] min-w-[44px]"
             onClick={toggleAiPanel}
-            title={aiPanelOpen ? 'Close AI configurator' : 'Open AI configurator'}
+            title={aiPanelOpen ? t('btn.ai_close') : t('btn.ai_open')}
           >
             <Sparkles className="h-4 w-4" />
-            <span className="sr-only">{aiPanelOpen ? 'Close AI configurator' : 'Open AI configurator'}</span>
+            <span className="sr-only">{aiPanelOpen ? t('btn.ai_close') : t('btn.ai_open')}</span>
           </Button>
         </AuthGate>
 
@@ -111,10 +111,10 @@ export default function StudioHeader({
                 size="icon"
                 className="min-h-[44px] min-w-[44px]"
                 onClick={() => setSynthesisModalOpen(true)}
-                title="Synthesize Project"
+                title={t('btn.synthesize')}
               >
                 <Sparkles className="h-4 w-4 text-purple-500" />
-                <span className="sr-only">Synthesize Project</span>
+                <span className="sr-only">{t('btn.synthesize')}</span>
               </Button>
             </AuthGate>
             <AuthGate tier="pro">
@@ -123,10 +123,10 @@ export default function StudioHeader({
                 size="icon"
                 className="min-h-[44px] min-w-[44px]"
                 onClick={isBuiltIn ? onForkRequest : toggleEditor}
-                title={isBuiltIn ? 'Fork & edit code' : editorOpen ? 'Close code editor' : 'Open code editor'}
+                title={isBuiltIn ? t('btn.fork_edit') : editorOpen ? t('btn.editor_close') : t('btn.editor_open')}
               >
                 <Code2 className="h-4 w-4" />
-                <span className="sr-only">{editorOpen ? 'Close code editor' : 'Open code editor'}</span>
+                <span className="sr-only">{editorOpen ? t('btn.editor_close') : t('btn.editor_open')}</span>
               </Button>
             </AuthGate>
             <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={undoParams} disabled={!canUndo} title={t('act.undo')}>
@@ -199,11 +199,11 @@ export default function StudioHeader({
             <DropdownMenuContent align="end" className="min-w-[180px]">
               <DropdownMenuItem className="min-h-[44px]" onClick={isBuiltIn ? onForkRequest : toggleEditor}>
                 <Code2 className="h-4 w-4 mr-2" />
-                {isBuiltIn ? 'Fork & edit code' : editorOpen ? 'Close editor' : 'Open editor'}
+                {isBuiltIn ? t('btn.fork_edit') : editorOpen ? t('btn.editor_close') : t('btn.editor_open')}
               </DropdownMenuItem>
               <DropdownMenuItem className="min-h-[44px]" onClick={() => setSynthesisModalOpen(true)}>
                 <Sparkles className="h-4 w-4 mr-2 text-purple-500" />
-                Synthesize
+                {t('btn.synthesize')}
               </DropdownMenuItem>
               <DropdownMenuItem className="min-h-[44px]" onClick={undoParams} disabled={!canUndo}>
                 <Undo2 className="h-4 w-4 mr-2" />

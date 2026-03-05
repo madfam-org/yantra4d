@@ -144,6 +144,7 @@ export function useProjectParams({ viewerRef }) {
   const setMode = (newMode) => {
     setModeState(newMode)
     setAnimating(false)
+    setPrintEstimate(null)
     if (isGridMode(newMode)) {
       const defaultGridPreset = manifest.grid_presets?.default || 'rendering'
       const presetValues = manifest.grid_presets?.[defaultGridPreset]?.values

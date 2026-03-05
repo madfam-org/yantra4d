@@ -201,5 +201,14 @@
   "ctrl.overhang_threshold": "Overhang Threshold (°)",
   "unit.mm": "Millimeters",
   "unit.in": "Inches",
-  "unit.toggle": "Toggle mm/in"
+  "unit.toggle": "Toggle mm/in",
+  "btn.ai_open": "Open AI configurator",
+  "btn.ai_close": "Close AI configurator",
+  "btn.synthesize": "Synthesize Project",
+  "btn.fork_edit": "Fork & edit code",
+  "btn.editor_open": "Open code editor",
+  "btn.editor_close": "Close code editor",
+  "btn.open_controls": "Open controls",
+  "btn.edit_assembly": "Edit Assembly Guide",
+  "a11y.controls_description": "Adjust parameters, view settings, and export options"
 }

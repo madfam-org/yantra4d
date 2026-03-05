@@ -176,5 +176,14 @@
   "ctrl.overhang_threshold": "Überhangschwelle (°)",
   "unit.mm": "Millimeter",
   "unit.in": "Zoll",
-  "unit.toggle": "mm/Zoll umschalten"
+  "unit.toggle": "mm/Zoll umschalten",
+  "btn.ai_open": "KI-Konfigurator öffnen",
+  "btn.ai_close": "KI-Konfigurator schließen",
+  "btn.synthesize": "Projekt synthetisieren",
+  "btn.fork_edit": "Forken und Code bearbeiten",
+  "btn.editor_open": "Code-Editor öffnen",
+  "btn.editor_close": "Code-Editor schließen",
+  "btn.open_controls": "Steuerung öffnen",
+  "btn.edit_assembly": "Montageanleitung bearbeiten",
+  "a11y.controls_description": "Parameter, Ansichtseinstellungen und Exportoptionen anpassen"
 }

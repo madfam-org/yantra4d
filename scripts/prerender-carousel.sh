@@ -21,7 +21,7 @@ OUTPUT_DIR="$REPO_ROOT/apps/landing/public/models"
 mkdir -p "$OUTPUT_DIR"
 
 # Extract slugs from the TypeScript projects array
-SLUGS=$(grep -oP "slug:\s*'\\K[^']+" "$PROJECTS_TS")
+SLUGS=$(grep "slug:" "$PROJECTS_TS" | sed -E "s/.*slug: '([^']+)'.*/\1/")
 
 total=$(echo "$SLUGS" | wc -l | tr -d ' ')
 count=0

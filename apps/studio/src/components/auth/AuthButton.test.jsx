@@ -10,6 +10,8 @@ const mockAuth = {
   signInWithOAuth: vi.fn(),
 }
 
+let mockSession = null
+
 vi.mock('../../contexts/auth/AuthProvider', () => ({
   useAuth: () => mockAuth,
   isAuthEnabled: true,
@@ -22,11 +24,10 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
   }),
 }))
 
-// Mock @janua/react-sdk components
+// Mock @janua/react-sdk hooks and components
 vi.mock('@janua/react-sdk', () => ({
-  UserButton: () => <div data-testid="janua-user-button">UserButton</div>,
-  SignedIn: ({ children }) => mockAuth.isAuthenticated ? <>{children}</> : null,
-  SignedOut: ({ children }) => !mockAuth.isAuthenticated ? <>{children}</> : null,
+  UserProfile: () => <div data-testid="janua-user-profile">UserProfile</div>,
+  useSession: () => ({ session: mockSession }),
 }))
 
 import AuthButton from './AuthButton'
@@ -35,11 +36,12 @@ beforeEach(() => {
   mockAuth.user = null
   mockAuth.isAuthenticated = false
   mockAuth.isLoading = false
+  mockSession = null
   vi.clearAllMocks()
 })
 
 describe('AuthButton', () => {
-  it('renders sign in when unauthenticated', () => {
+  it('renders sign in when no session', () => {
     render(<AuthButton />)
     expect(screen.getByText('auth.sign_in')).toBeInTheDocument()
   })
@@ -50,16 +52,14 @@ describe('AuthButton', () => {
     expect(mockAuth.signInWithOAuth).toHaveBeenCalledWith('google')
   })
 
-  it('renders UserButton when authenticated', () => {
-    mockAuth.isAuthenticated = true
-    mockAuth.user = { display_name: 'Test User', email: 'test@test.com' }
+  it('renders UserProfile when session exists', () => {
+    mockSession = { user: { display_name: 'Test User', email: 'test@test.com' } }
     render(<AuthButton />)
-    expect(screen.getByTestId('janua-user-button')).toBeInTheDocument()
+    expect(screen.getByTestId('janua-user-profile')).toBeInTheDocument()
   })
 
-  it('hides sign in when authenticated', () => {
-    mockAuth.isAuthenticated = true
-    mockAuth.user = { display_name: 'Alice' }
+  it('hides sign in when session exists', () => {
+    mockSession = { user: { display_name: 'Alice' } }
     render(<AuthButton />)
     expect(screen.queryByText('auth.sign_in')).not.toBeInTheDocument()
   })

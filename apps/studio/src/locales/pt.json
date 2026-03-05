@@ -176,5 +176,14 @@
   "ctrl.overhang_threshold": "Limite de Saliência (°)",
   "unit.mm": "Milímetros",
   "unit.in": "Polegadas",
-  "unit.toggle": "Alternar mm/pol"
+  "unit.toggle": "Alternar mm/pol",
+  "btn.ai_open": "Abrir configurador IA",
+  "btn.ai_close": "Fechar configurador IA",
+  "btn.synthesize": "Sintetizar Projeto",
+  "btn.fork_edit": "Bifurcar e editar código",
+  "btn.editor_open": "Abrir editor de código",
+  "btn.editor_close": "Fechar editor de código",
+  "btn.open_controls": "Abrir controles",
+  "btn.edit_assembly": "Editar Guia de Montagem",
+  "a11y.controls_description": "Ajustar parâmetros, configurações de visualização e opções de exportação"
 }

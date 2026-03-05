@@ -205,4 +205,48 @@ describe('LanguageProvider', () => {
     expect(screen.getByTestId('print-weight').textContent).toBe('Peso')
     expect(screen.getByTestId('print-cost').textContent).toBe('Costo')
   })
+
+  it('interpolates parameters in translation strings', () => {
+    function TestInterpolation() {
+      const { t } = useLanguage()
+      return (
+        <div>
+          <span data-testid="summary">{t('a11y.model_summary', { parts: 3, width: '100.0', height: '50.0', depth: '25.0', volume: '125000' })}</span>
+          <span data-testid="save-summary">{t('onboard.save_summary', { name: 'Test', slug: 'test', files: 2, modes: 1, params: 5 })}</span>
+        </div>
+      )
+    }
+    render(
+      <LanguageProvider defaultLanguage="en">
+        <TestInterpolation />
+      </LanguageProvider>
+    )
+    const summary = screen.getByTestId('summary').textContent
+    expect(summary).toContain('3')
+    expect(summary).toContain('100.0')
+    expect(summary).toContain('50.0')
+    expect(summary).toContain('25.0')
+    expect(summary).toContain('125000')
+    expect(summary).not.toContain('{parts}')
+    expect(summary).not.toContain('{width}')
+
+    const saveSummary = screen.getByTestId('save-summary').textContent
+    expect(saveSummary).toContain('Test')
+    expect(saveSummary).toContain('test')
+    expect(saveSummary).toContain('2')
+    expect(saveSummary).not.toContain('{name}')
+  })
+
+  it('returns unmodified string when no params provided', () => {
+    function TestNoParams() {
+      const { t } = useLanguage()
+      return <span data-testid="no-params">{t('btn.gen')}</span>
+    }
+    render(
+      <LanguageProvider defaultLanguage="en">
+        <TestNoParams />
+      </LanguageProvider>
+    )
+    expect(screen.getByTestId('no-params').textContent).toBe('Generate')
+  })
 })

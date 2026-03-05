@@ -265,6 +265,20 @@ describe('useProjectParams', () => {
     expect(result.current.animating).toBe(false)
   })
 
+  it('setMode clears printEstimate', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    act(() => {
+      result.current.setPrintEstimate({ time: 120, filament: 50 })
+    })
+    expect(result.current.printEstimate).toEqual({ time: 120, filament: 50 })
+
+    act(() => {
+      result.current.setMode('default')
+    })
+    expect(result.current.printEstimate).toBeNull()
+  })
+
   it('setHeadDiffMode toggles diff mode', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
 

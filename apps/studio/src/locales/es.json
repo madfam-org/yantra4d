@@ -201,5 +201,14 @@
   "ctrl.overhang_threshold": "Umbral de Voladizo (°)",
   "unit.mm": "Milímetros",
   "unit.in": "Pulgadas",
-  "unit.toggle": "Alternar mm/in"
+  "unit.toggle": "Alternar mm/in",
+  "btn.ai_open": "Abrir configurador IA",
+  "btn.ai_close": "Cerrar configurador IA",
+  "btn.synthesize": "Sintetizar Proyecto",
+  "btn.fork_edit": "Bifurcar y editar código",
+  "btn.editor_open": "Abrir editor de código",
+  "btn.editor_close": "Cerrar editor de código",
+  "btn.open_controls": "Abrir controles",
+  "btn.edit_assembly": "Editar Guía de Ensamblaje",
+  "a11y.controls_description": "Ajustar parámetros, configuración de vista y opciones de exportación"
 }

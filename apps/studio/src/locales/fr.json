@@ -176,5 +176,14 @@
   "ctrl.overhang_threshold": "Seuil de Surplomb (°)",
   "unit.mm": "Millimètres",
   "unit.in": "Pouces",
-  "unit.toggle": "Basculer mm/in"
+  "unit.toggle": "Basculer mm/in",
+  "btn.ai_open": "Ouvrir le configurateur IA",
+  "btn.ai_close": "Fermer le configurateur IA",
+  "btn.synthesize": "Synthétiser le projet",
+  "btn.fork_edit": "Dupliquer et modifier le code",
+  "btn.editor_open": "Ouvrir l'éditeur de code",
+  "btn.editor_close": "Fermer l'éditeur de code",
+  "btn.open_controls": "Ouvrir les contrôles",
+  "btn.edit_assembly": "Modifier le guide de montage",
+  "a11y.controls_description": "Régler les paramètres, les options d'affichage et d'exportation"
 }

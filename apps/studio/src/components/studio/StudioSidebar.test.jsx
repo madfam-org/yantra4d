@@ -210,16 +210,16 @@ describe('StudioSidebar', () => {
       manifest: { ...baseContext.manifest, assembly_steps: [{ id: 's1' }] },
     })
     render(<StudioSidebar />)
-    expect(screen.getAllByText('Edit Assembly Guide').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('btn.edit_assembly').length).toBeGreaterThan(0)
   })
 
   it('hides assembly editor toggle when no assembly steps', () => {
     render(<StudioSidebar />)
-    expect(screen.queryByText('Edit Assembly Guide')).not.toBeInTheDocument()
+    expect(screen.queryByText('btn.edit_assembly')).not.toBeInTheDocument()
   })
 
   it('renders mobile menu button with screen reader text', () => {
     render(<StudioSidebar />)
-    expect(screen.getByText('Open controls')).toBeInTheDocument()
+    expect(screen.getByText('btn.open_controls')).toBeInTheDocument()
   })
 })

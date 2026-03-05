@@ -187,13 +187,13 @@ describe('StudioHeader', () => {
 
   it('calls toggleAiPanel when AI button clicked', () => {
     render(<StudioHeader {...defaultProps} />)
-    fireEvent.click(screen.getByTitle('Open AI configurator'))
+    fireEvent.click(screen.getByTitle('btn.ai_open'))
     expect(defaultProps.toggleAiPanel).toHaveBeenCalledOnce()
   })
 
   it('calls toggleEditor when code button clicked for non-built-in project', () => {
     render(<StudioHeader {...defaultProps} />)
-    fireEvent.click(screen.getByTitle('Open code editor'))
+    fireEvent.click(screen.getByTitle('btn.editor_open'))
     expect(defaultProps.toggleEditor).toHaveBeenCalledOnce()
   })
 
@@ -265,18 +265,18 @@ describe('StudioHeader', () => {
     // Since the mock returns { source: { type: 'github' } }, isBuiltIn = false
     // Let's just verify the title reflects editorOpen state
     render(<StudioHeader {...defaultProps} editorOpen={true} />)
-    expect(screen.getByTitle('Close code editor')).toBeInTheDocument()
+    expect(screen.getByTitle('btn.editor_close')).toBeInTheDocument()
   })
 
   it('shows AI configurator title when panel is open', () => {
     render(<StudioHeader {...defaultProps} aiPanelOpen={true} />)
-    expect(screen.getByTitle('Close AI configurator')).toBeInTheDocument()
+    expect(screen.getByTitle('btn.ai_close')).toBeInTheDocument()
   })
 
   it('calls setSynthesisModalOpen when synthesis button clicked', () => {
     const setSynthesisModalOpen = vi.fn()
     render(<StudioHeader {...defaultProps} setSynthesisModalOpen={setSynthesisModalOpen} />)
-    fireEvent.click(screen.getByTitle('Synthesize Project'))
+    fireEvent.click(screen.getByTitle('btn.synthesize'))
     expect(setSynthesisModalOpen).toHaveBeenCalledWith(true)
   })
 

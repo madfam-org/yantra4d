@@ -6,7 +6,7 @@ import AssemblyView from '../bom/AssemblyView'
 import AssemblyEditorPanel from '../assembly-editor/AssemblyEditorPanel'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Square, RotateCcw, Menu, Wrench } from 'lucide-react'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
@@ -174,7 +174,7 @@ function SidebarContent() {
           onClick={() => setAssemblyEditorOpen(true)}
         >
           <Wrench className="h-3 w-3" />
-          Edit Assembly Guide
+          {t('btn.edit_assembly')}
         </Button>
       )}
     </>
@@ -184,7 +184,7 @@ function SidebarContent() {
 export default function StudioSidebar() {
   const [open, setOpen] = useState(false)
   const { manifest, mode, setMode, getLabel } = useProject()
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
 
   return (
     <>
@@ -199,12 +199,15 @@ export default function StudioSidebar() {
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="min-h-[44px] min-w-[44px]">
               <Menu className="h-5 w-5" />
-              <span className="sr-only">Open controls</span>
+              <span className="sr-only">{t('btn.open_controls')}</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[85vh] landscape:max-h-[75vh] overflow-y-auto p-4 pb-safe flex flex-col gap-4">
             <div className="mx-auto mt-2 mb-1 h-1 w-10 rounded-full bg-muted-foreground/30" aria-hidden="true" />
             <SheetTitle className="sr-only">Controls</SheetTitle>
+            <SheetDescription className="sr-only">
+              {t('a11y.controls_description')}
+            </SheetDescription>
             <SidebarContent />
           </SheetContent>
         </Sheet>
@@ -212,7 +215,7 @@ export default function StudioSidebar() {
         <Tabs value={mode} onValueChange={setMode} className="flex-1">
           <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
             {manifest.modes.map(m => (
-              <TabsTrigger key={m.id} value={m.id} className="min-h-[44px] text-xs">
+              <TabsTrigger key={m.id} value={m.id} className="min-h-[44px] text-xs" title={getLabel(m, 'label', language)}>
                 {getLabel(m, 'label', language)}
               </TabsTrigger>
             ))}

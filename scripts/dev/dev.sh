@@ -16,7 +16,7 @@ elif [ -x "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" ]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 export OPENSCADPATH="$PROJECT_ROOT/libs:$PROJECT_ROOT/libs/dotSCAD/src"
 
 # Local dev: debug mode on, auth + rate limiting off

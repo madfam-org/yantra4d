@@ -24,8 +24,14 @@ export function LanguageProvider({
         try { return localStorage.getItem(storageKey) || defaultLanguage } catch { return defaultLanguage }
     })
 
-    const t = useCallback((key) => {
-        return resolveTranslation(language, key)
+    const t = useCallback((key, params) => {
+        let str = resolveTranslation(language, key)
+        if (params) {
+            for (const [k, v] of Object.entries(params)) {
+                str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v))
+            }
+        }
+        return str
     }, [language])
 
     // Sync <html lang> attribute with current language (WCAG 3.1.1)

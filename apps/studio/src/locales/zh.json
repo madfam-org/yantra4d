@@ -176,5 +176,14 @@
   "ctrl.overhang_threshold": "悬垂阈值 (°)",
   "unit.mm": "毫米",
   "unit.in": "英寸",
-  "unit.toggle": "切换 mm/in"
+  "unit.toggle": "切换 mm/in",
+  "btn.ai_open": "打开 AI 配置器",
+  "btn.ai_close": "关闭 AI 配置器",
+  "btn.synthesize": "合成项目",
+  "btn.fork_edit": "分叉并编辑代码",
+  "btn.editor_open": "打开代码编辑器",
+  "btn.editor_close": "关闭代码编辑器",
+  "btn.open_controls": "打开控制面板",
+  "btn.edit_assembly": "编辑组装指南",
+  "a11y.controls_description": "调整参数、视图设置和导出选项"
 }

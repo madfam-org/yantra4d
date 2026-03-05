@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 PID_DIR="$PROJECT_ROOT/.dev-pids"
 
 for pidfile in "$PID_DIR"/*.pid; do

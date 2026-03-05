@@ -20,15 +20,15 @@ resources:
 - network-policies.yaml
 
 images:
-- digest: sha256:5ac8ea55803391bbc238fb7cbdd937274515f616a4d777aacc801110a8eb3403
+- digest: sha256:59b1a5665c0f34d5c53502e44794d6345f8485322df5fb700e3722129d8af0d1
   name: ghcr.io/madfam-org/yantra4d/admin
   newName: ghcr.io/madfam-org/yantra4d/admin
-- digest: sha256:e201a31cf680a20b0535ec0254c1cbc9db2122c4dac6f30b3db158dcda7a8d13
+- digest: sha256:44bf7db3e64fbca4f3523ee8df00d6d96587f0e9c5f6df126f5032bf78410c10
   name: ghcr.io/madfam-org/yantra4d/backend
   newName: ghcr.io/madfam-org/yantra4d/backend
 - digest: sha256:07eee02042dd4d6155145de6f349e40932970964679cc8b941b815477575c9b7
   name: ghcr.io/madfam-org/yantra4d/landing
   newName: ghcr.io/madfam-org/yantra4d/landing
-- digest: sha256:1256139f9c6991754407e66650da01df680959c2e87cdf60c6e3911645df2654
+- digest: sha256:eeffb4df1788b414815d75710d6555555248645b905fd22d0f77acb1e720f3ff
   name: ghcr.io/madfam-org/yantra4d/studio
   newName: ghcr.io/madfam-org/yantra4d/studio

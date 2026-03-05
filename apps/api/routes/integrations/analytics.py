@@ -46,7 +46,10 @@ def _init_db():
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_type ON events(event_type)")
 
 
-_init_db()
+try:
+    _init_db()
+except Exception as e:
+    logger.warning("Analytics DB init failed (non-fatal): %s", e)
 
 
 @analytics_bp.route("/api/analytics/track", methods=["POST"])

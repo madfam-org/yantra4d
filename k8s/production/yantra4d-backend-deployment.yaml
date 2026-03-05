@@ -21,6 +21,7 @@ spec:
         - name: ghcr-credentials
       securityContext:
         runAsNonRoot: true
+        fsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -65,6 +66,7 @@ spec:
                 secretKeyRef:
                   name: yantra4d-secrets
                   key: AI_API_KEY
+                  optional: true
             - name: MQTT_ENABLED
               value: "false"
             - name: RATE_LIMIT_ENABLED

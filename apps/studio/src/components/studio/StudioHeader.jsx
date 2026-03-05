@@ -79,7 +79,7 @@ export default function StudioHeader({
               </span>
             )}
           </div>
-          <span className="hidden lg:block text-xs text-muted-foreground leading-tight">
+          <span className="hidden xl:block text-xs text-muted-foreground leading-tight">
             {t('platform.powered_by')} {!platformLoading ? platformName : ''}
           </span>
         </div>

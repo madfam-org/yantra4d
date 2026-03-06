@@ -32,13 +32,14 @@ from services.core.implicit_engine import (
     stream_render as stream_implicit_render
 )
 from services.engine.render_cache import render_cache
-from services.engine.format_converter import stl_to_glb
+from services.engine.format_converter import stl_to_glb, convert_mesh
 from utils.route_helpers import cleanup_old_stl_files, error_response, handle_exceptions, require_json_body
 from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
 import rate_limits
 import queue
 
-ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf', 'glb'}
+ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf', 'glb', 'obj'}
+TRIMESH_CONVERTIBLE = {'obj', 'ply', 'glb', 'gltf', '3mf', 'off'}
 PROGRESS_TOTAL = 100  # SSE progress is in the range 0–100
 
 logger = logging.getLogger(__name__)
@@ -238,7 +239,7 @@ def render_stl():
         bad_name = _resolve_render_context(data)[4]
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
-    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf'} and not check_feature(tier, "premium_export"):
+    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf', 'obj', 'off'} and not check_feature(tier, "premium_export"):
         return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
 
     parts_to_render = payload['parts']
@@ -254,8 +255,8 @@ def render_stl():
     manifest = get_manifest(project_slug)
     engine = manifest.engine
 
-    # Dual-engine fallback: use CadQuery for formats OpenSCAD can't produce
-    if engine == "openscad" and export_format in ('step', 'glb', 'gltf'):
+    # Dual-engine fallback: use CadQuery for formats the primary engine can't produce
+    if engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
         mode_id = data.get('mode')
         if mode_id:
             mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
@@ -268,9 +269,20 @@ def render_stl():
             return error_response("CadQuery engine is not available for your tier.", 403)
         if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
             return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
+    elif engine == "implicit":
+        if export_format not in Config.IMPLICIT_ALLOWED_EXPORT_FORMATS:
+            return error_response(f"Export format '{export_format}' is not supported by implicit engine.", 400)
     elif engine == "openscad":
-        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS:
+        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS and export_format not in TRIMESH_CONVERTIBLE:
             return error_response(f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
+
+    # Determine actual render format (render in engine's native format, convert later)
+    if engine == "cadquery":
+        actual_format = export_format
+    elif engine == "implicit":
+        actual_format = 'stl'
+    else:
+        actual_format = export_format if export_format in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS else 'stl'
 
     generated_parts = []
     combined_log = ""
@@ -284,22 +296,29 @@ def render_stl():
                 static_path = static_stl_map[part]
                 if static_path.is_file():
                     combined_log += f"[{part}] static STL: {static_path.name}\n"
+                    serve_url = f"/api/projects/{project_slug}/parts/{static_path.name}"
+                    # Convert static part if requested format differs
+                    if export_format != 'stl' and export_format in TRIMESH_CONVERTIBLE:
+                        conv_filename = f"{stl_prefix}{part}_static.{export_format}"
+                        conv_path = os.path.join(STATIC_FOLDER, conv_filename)
+                        if convert_mesh(str(static_path), conv_path):
+                            serve_url = f"/static/{conv_filename}"
                     try:
                         size_bytes = os.path.getsize(static_path)
                     except OSError:
                         size_bytes = None
                     generated_parts.append({
                         "type": part,
-                        "url": f"/api/projects/{project_slug}/parts/{static_path.name}",
+                        "url": serve_url,
                         "size_bytes": size_bytes
                     })
                     continue
 
-            output_filename = f"{stl_prefix}{part}.{export_format}"
+            output_filename = f"{stl_prefix}{part}.{actual_format}"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
             cache_total += 1
 
-            # Check render cache
+            # Check render cache (keyed by requested format, not intermediate)
             if not payload.get('ignore_cache', False):
                 cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format, scad_content_hash=payload.get('scad_content_hash'))
                 if cached:
@@ -336,6 +355,15 @@ def render_stl():
                 return error_response(stderr)
 
             combined_log += f"[{part}] {stderr}\n"
+
+            # Post-render: convert to requested format via trimesh if needed
+            if actual_format != export_format:
+                final_filename = f"{stl_prefix}{part}.{export_format}"
+                final_path = os.path.join(STATIC_FOLDER, final_filename)
+                if not convert_mesh(output_path, final_path):
+                    return error_response(f"Format conversion to {export_format} failed", 500)
+                output_path = final_path
+                output_filename = final_filename
 
             # Post-render: convert STL to GLB for smaller web delivery (all engines)
             if export_format == "stl":
@@ -386,7 +414,7 @@ def render_stl_stream():
         return error_response(f"Invalid SCAD file: {bad_name}", 400)
 
     tier = resolve_tier(getattr(request, "auth_claims", None))
-    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf'} and not check_feature(tier, "premium_export"):
+    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf', 'obj', 'off'} and not check_feature(tier, "premium_export"):
         return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
 
     parts_to_render = payload['parts']
@@ -402,8 +430,8 @@ def render_stl_stream():
     manifest = get_manifest(project_slug)
     engine = manifest.engine
 
-    # Dual-engine fallback: use CadQuery for formats OpenSCAD can't produce
-    if engine == "openscad" and export_format in ('step', 'glb', 'gltf'):
+    # Dual-engine fallback: use CadQuery for formats the primary engine can't produce
+    if engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
         mode_id = data.get('mode')
         if mode_id:
             mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
@@ -416,9 +444,20 @@ def render_stl_stream():
             return error_response("CadQuery engine is not available for your tier.", 403)
         if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
             return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
+    elif engine == "implicit":
+        if export_format not in Config.IMPLICIT_ALLOWED_EXPORT_FORMATS:
+            return error_response(f"Export format '{export_format}' is not supported by implicit engine.", 400)
     elif engine == "openscad":
-        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS:
+        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS and export_format not in TRIMESH_CONVERTIBLE:
             return error_response(f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
+
+    # Determine actual render format (render in engine's native format, convert later)
+    if engine == "cadquery":
+        actual_format = export_format
+    elif engine == "implicit":
+        actual_format = 'stl'
+    else:
+        actual_format = export_format if export_format in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS else 'stl'
 
     num_parts = len(parts_to_render)
 
@@ -435,6 +474,12 @@ def render_stl_stream():
                     except OSError:
                         size_bytes = None
                     part_url = f"/api/projects/{project_slug}/parts/{static_path.name}"
+                    # Convert static part if requested format differs
+                    if export_format != 'stl' and export_format in TRIMESH_CONVERTIBLE:
+                        conv_filename = f"{stl_prefix}{part}_static.{export_format}"
+                        conv_path = os.path.join(STATIC_FOLDER, conv_filename)
+                        if convert_mesh(str(static_path), conv_path):
+                            part_url = f"/static/{conv_filename}"
                     generated_parts.append({
                         "type": part,
                         "url": part_url,
@@ -444,10 +489,10 @@ def render_stl_stream():
                     yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts})}\n\n"
                     continue
 
-            output_filename = f"{stl_prefix}{part}.{export_format}"
+            output_filename = f"{stl_prefix}{part}.{actual_format}"
             output_path = os.path.join(STATIC_FOLDER, output_filename)
 
-            # Check render cache before starting engine
+            # Check render cache before starting engine (keyed by requested format)
             if not payload.get('ignore_cache', False):
                 cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format, scad_content_hash=payload.get('scad_content_hash'))
                 if cached:
@@ -489,9 +534,20 @@ def render_stl_stream():
                     logger.warning(f"Malformed SSE event data: {event_data!r}")
                     continue
                 if event.get('event') == 'part_done':
-                    # Post-render: convert STL to GLB for smaller web delivery (all engines)
                     serve_filename = output_filename
                     serve_path = output_path
+
+                    # Post-render: convert to requested format via trimesh if needed
+                    if actual_format != export_format:
+                        final_filename = f"{stl_prefix}{part}.{export_format}"
+                        final_path = os.path.join(STATIC_FOLDER, final_filename)
+                        if convert_mesh(serve_path, final_path):
+                            serve_filename = final_filename
+                            serve_path = final_path
+                        else:
+                            logger.warning("Stream format conversion to %s failed for part %s", export_format, part)
+
+                    # Post-render: convert STL to GLB for smaller web delivery (all engines)
                     if export_format == "stl":
                         glb_filename = f"{stl_prefix}{part}.glb"
                         glb_path = os.path.join(STATIC_FOLDER, glb_filename)

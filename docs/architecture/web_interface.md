@@ -18,7 +18,7 @@
 - **Shareable Configuration Links**: Encode full parameter state in URL (`?p=` base64url-encoded diff against defaults). Share exact configurations via link — recipients see the same parameter values applied on load.
 - **Parameter Undo/Redo**: History stack (up to 50 entries) with `Cmd+Z` / `Cmd+Shift+Z`. Undo/redo buttons also available in the header toolbar.
 - **Export Capabilities**:
-    - **Download STL/3MF/OFF**: Save the current model in the selected format (or ZIP for multi-part modes). Format selector appears when the manifest declares `export_formats`.
+    - **Download STL/3MF/OFF/STEP/GLB/OBJ**: Save the current model in the selected format (or ZIP for multi-part modes). Format selector appears when the manifest declares `export_formats`. Available formats depend on engine: OpenSCAD projects support OBJ/GLB/GLTF via trimesh conversion; STEP requires CadQuery fallback.
     - **Export Images**: Capture screenshots from manifest-defined camera angles (default: Isometric, Top, Front, Right).
 - **Print Estimation**: Overlay on the viewer showing estimated print time, filament weight, filament length, and cost. Material selector (PLA, PETG, ABS, TPU) and infill percentage. Computed from STL geometry volume using slicer heuristics.
 - **Bill of Materials (BOM)**: Manifest-driven BOM panel (`bom.hardware[]`) with quantity formulas evaluated against current parameter values via `expr-eval`. Displays item labels, computed quantities, units, and optional supplier links. Renders in the sidebar when the manifest declares a `bom` section.
@@ -139,7 +139,7 @@ backend/
 ```json
 { "mode": "unit", "export_format": "3mf", "project": "my-project" }
 ```
-Supported formats: `stl` (default), `3mf`, `off`. Invalid formats fall back to `stl`.
+Supported formats: `stl` (default), `3mf`, `off`, `step`, `glb`, `gltf`, `obj`. Invalid formats fall back to `stl`. Non-STL formats require Pro tier or above.
 
 **Estimate / Render (multi-project)**:
 ```json

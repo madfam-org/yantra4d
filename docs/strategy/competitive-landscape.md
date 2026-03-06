@@ -50,10 +50,10 @@
 - Pure frontend, no manifest changes needed
 - Implementation: `useUndoRedo.js` hook, wired into `App.jsx`
 
-**1.3 Multi-Format Export (3MF, OBJ)**
-- Backend: OpenSCAD CLI `--export-format` support; format param on render route
-- Frontend: format selector in ExportPanel
-- New `export_formats` array in manifest schema
+**1.3 Multi-Format Export (STL, 3MF, OFF, STEP, GLB, GLTF, OBJ)**
+- Backend: OpenSCAD CLI native formats + trimesh post-render conversion for OBJ/GLB/GLTF; CadQuery fallback for STEP; implicit engine format validation
+- Frontend: 7-format selector in ExportPanel (STL, 3MF, OFF, STEP, GLB, GLTF, OBJ)
+- `export_formats` array in manifest schema; per-engine format validation
 
 **1.4 Print-Time & Filament Estimation**
 - Computes STL volume from Three.js geometry using signed tetrahedra method

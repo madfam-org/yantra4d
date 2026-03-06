@@ -206,7 +206,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default": "rendering"
   },
 
-  "export_formats": ["stl", "3mf", "step"],  // "step" requires cq_file in modes
+  "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],  // formats depend on engine; "step" requires cq_file
   "print_estimation": { "default_material": "pla", "default_infill": 0.2 },
   "difficulty": "beginner",
   "viewer": { "default_color": "#e5e7eb" },
@@ -292,7 +292,7 @@ Provides via `useManifest()` hook: `manifest`, `loading`, `projectSlug`, `projec
 | POST | `/api/projects/analyze` | multipart `.scad` | Analyze SCAD files, return draft manifest |
 | POST | `/api/projects/create` | multipart manifest + files | Create new project |
 | POST | `/api/estimate` | `{mode, parameters, project?}` | Estimate render time |
-| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf) |
+| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (OpenSCAD: stl/3mf/off native + obj/glb/gltf via trimesh; CadQuery: stl/step/glb/gltf/3mf/obj; Implicit: stl native + mesh formats via trimesh) |
 | POST | `/api/render-stream` | `{mode, parameters, parts, export_format?, project?}` | SSE streaming render |
 | POST | `/api/render-cancel` | — | Cancel active render |
 | POST | `/api/verify` | `{mode, project?}` | Run STL quality checks |
@@ -646,7 +646,7 @@ docker compose down         # stop
 | Bundle splitting | Vite splits vendor chunks; `ProjectsView` and `OnboardingWizard` lazy-loaded |
 | Shareable URLs | `?p=` encodes non-default params as base64url JSON diff |
 | Undo/Redo | Cmd+Z / Cmd+Shift+Z; 50-entry history stack |
-| Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf). Modes with `cq_file` auto-route to CadQuery for STEP |
+| Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off native + obj/glb/gltf via trimesh; CadQuery: stl/step/glb/gltf/3mf/obj; Implicit: stl native + obj/glb/gltf/3mf/off via trimesh). Modes with `cq_file` auto-route to CadQuery for STEP/GLB/GLTF. Static STL parts also converted on-demand |
 | Print estimation | Volume-based heuristic; not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` |
 | Embed mode | `?embed=true` hides header; `frame-ancestors` needed for iframes |

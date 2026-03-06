@@ -53,7 +53,7 @@ describe('ExportPanel', () => {
 
   it('shows format selector when manifest has export_formats', () => {
     renderPanel()
-    // Gridfinity fallback manifest includes export_formats: ["stl", "3mf"]
+    // Gridfinity fallback manifest includes 7 export_formats
     expect(screen.queryByText('Format:')).toBeInTheDocument()
   })
 
@@ -125,6 +125,45 @@ describe('ExportPanel', () => {
   it('SCAD download button renders', () => {
     renderPanel()
     expect(screen.getByText(/Download SCAD/i)).toBeInTheDocument()
+  })
+
+  it('renders GLB format button when manifest includes glb', () => {
+    renderPanel({
+      manifest: {
+        project: { slug: 'test' },
+        modes: [{ id: 'unit', scad_file: 'test.scad', parts: ['main'] }],
+        export_formats: ['stl', '3mf', 'glb', 'obj'],
+      },
+    })
+    // Button text includes lock icon when tier doesn't allow it
+    expect(screen.getByRole('button', { name: /GLB/ })).toBeInTheDocument()
+  })
+
+  it('renders OBJ format button when manifest includes obj', () => {
+    renderPanel({
+      manifest: {
+        project: { slug: 'test' },
+        modes: [{ id: 'unit', scad_file: 'test.scad', parts: ['main'] }],
+        export_formats: ['stl', '3mf', 'glb', 'obj'],
+      },
+    })
+    expect(screen.getByRole('button', { name: /OBJ/ })).toBeInTheDocument()
+  })
+
+  it('does not render GLB button when manifest excludes it', () => {
+    renderPanel({
+      manifest: {
+        project: { slug: 'test' },
+        modes: [{ id: 'unit', scad_file: 'test.scad', parts: ['main'] }],
+        export_formats: ['stl', '3mf'],
+      },
+    })
+    expect(screen.queryByRole('button', { name: /GLB/ })).not.toBeInTheDocument()
+  })
+
+  it('download button shows OBJ label when selected', () => {
+    renderPanel({ exportFormat: 'obj', parts: [{ type: 'main', url: 'blob:x' }] })
+    expect(screen.getByText(/Download OBJ/i)).toBeInTheDocument()
   })
 
   it('assembly step count shown when assembly_steps exist', () => {

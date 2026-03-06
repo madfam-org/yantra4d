@@ -7,14 +7,24 @@ Yantra4D implements a **Dual-Engine Model Strategy** to bridge the gap between h
 ### OpenSCAD (CSG)
 - **Role**: Client-side visualization, rapid prototyping, and web-ready parametric previews.
 - **Technology**: Constructive Solid Geometry (CSG) rendered via WASM in the browser or via CLI on the backend.
-- **Output**: STL, 3MF, OFF (native). STL renders are auto-converted to GLB for optimized web delivery.
-- **Supported export formats**: `stl`, `3mf`, `off`
+- **Output**: STL, 3MF, OFF (native). OBJ, GLB, GLTF via automatic trimesh post-render conversion. STEP via CadQuery fallback (requires `cq_file`). STL renders are auto-converted to GLB for optimized web delivery.
+- **Native export formats**: `stl`, `3mf`, `off`
+- **Via trimesh conversion**: `obj`, `glb`, `gltf`, `ply`
+- **Via CQ fallback**: `step` (requires `cq_file` in mode)
 
 ### CadQuery (B-Rep)
 - **Role**: Industrial manufacturing, professional engineering, and simulation.
 - **Technology**: Boundary Representation (B-Rep) powered by OpenCASCADE.
 - **Output**: STEP, STL, GLB, GLTF, 3MF, OBJ, VRML, AMF. STL renders are auto-converted to GLB for web delivery.
 - **Supported export formats**: `stl`, `step`, `glb`, `gltf`, `3mf`, `obj`, `vrml`, `amf`
+
+### Implicit (SDF)
+- **Role**: Field-driven geometry (TPMS lattices, implicit surfaces) that cannot be expressed as CSG or B-Rep.
+- **Technology**: Signed Distance Fields evaluated on a voxel grid, marching cubes extraction.
+- **Output**: STL (native). Other mesh formats via trimesh conversion. STEP via CadQuery fallback (requires `cq_file`).
+- **Native export format**: `stl`
+- **Via trimesh conversion**: `obj`, `glb`, `gltf`, `3mf`, `off`
+- **Via CQ fallback**: `step` (requires `cq_file` in mode)
 
 ## Why Both?
 

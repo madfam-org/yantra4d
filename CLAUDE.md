@@ -258,8 +258,8 @@ Access is gated by user tier. Tier definitions live in `apps/api/tiers.json`; en
 |------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | guest | 30 | 0 | STL | — | — | — | 0 |
 | basic | 50 | 3 | STL | — | Yes | — | 30 |
-| pro | 200 | unlimited | STL/3MF/OFF | import, editor, private | Yes | Yes | 100 |
-| madfam | 500 | unlimited | STL/3MF/OFF | import, sync, editor, private | Yes | Yes | 300 |
+| pro | 200 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, editor, private | Yes | Yes | 100 |
+| madfam | 500 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, sync, editor, private | Yes | Yes | 300 |
 
 Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/services/tier_service.py`, `apps/studio/src/contexts/AuthProvider.jsx`, `apps/studio/src/contexts/TierProvider.jsx`.
 
@@ -338,7 +338,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Viewer shortcuts | `O` toggle orthographic camera, `C` toggle clipping plane, `M` toggle measure tool, `?` toggle keyboard shortcut help dialog. Non-modifier keys, ignored when focus is on text inputs |
 | AM viewer tools | Cross-section clipping (axis selector + position slider), point-to-point measurement (two-click raycaster), wall thickness heatmap (backend trimesh analysis, pro+), overhang angle visualization (backend face normal analysis, color ramp green→yellow→red, configurable threshold, pro+), exploded view (displacement slider, multi-part only), adjustable lighting (brightness + environment preset), model info panel (dimensions, volume, triangle count, part count), unit system toggle (mm↔inches, display-only conversion), version history browser (git log), keyboard shortcut help overlay (`?` key) |
 | E2E test patterns | Use Playwright's `toHaveText`/`toBeEnabled` assertions instead of `waitForTimeout` + `textContent()`. Auto-render caches results — change a param to bust cache before testing slow/error mocks. `editSliderValue` commits via Enter key. Native `<input type="color">` cannot be programmatically set in Playwright. Landing E2E tests in `12-responsive/` require `LANDING_URL` env var (skipped otherwise) |
-| Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf/obj/vrml/amf). All STL renders auto-convert to GLB for web delivery. Format selector only visible when manifest declares `export_formats`. Format buttons use `flex-wrap` to prevent overflow on narrow screens with 5+ formats |
+| Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off native + obj/glb/gltf via trimesh conversion; CadQuery: stl/step/glb/gltf/3mf/obj/vrml/amf; Implicit: stl native + obj/glb/gltf/3mf/off via trimesh). Dual-engine fallback routes OpenSCAD/Implicit to CadQuery for STEP/GLB/GLTF when `cq_file` present. Static STL parts converted on-demand. All STL renders auto-convert to GLB for web delivery. Format selector only visible when manifest declares `export_formats`. Format buttons use `flex-wrap` to prevent overflow on narrow screens with 7 formats |
 | Print estimation | Overlay computes volume from Three.js geometry; estimates are heuristic approximations, not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` — edit tokens there, not in individual app CSS |
 | Embed mode | `?embed=true` hides studio header/banners for iframe embedding. Production nginx must allow `frame-ancestors` for embedding domains |

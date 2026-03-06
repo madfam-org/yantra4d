@@ -806,7 +806,11 @@
   "export_formats": [
     "stl",
     "3mf",
-    "step"
+    "off",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
   ],
   "camera_views": [
     {

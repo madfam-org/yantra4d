@@ -243,7 +243,7 @@ components:
           additionalProperties: true
         export_format:
           type: string
-          enum: [stl, 3mf, off]
+          enum: [stl, 3mf, off, step, glb, gltf, obj]
           default: stl
         ignore_cache:
           type: boolean

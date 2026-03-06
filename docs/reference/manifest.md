@@ -133,7 +133,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default": "rendering"                   // Which preset to apply by default
   },
 
-  "export_formats": ["stl", "3mf", "step"],  // Optional: supported export formats (default: ["stl"])
+  "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],  // Optional: supported export formats (default: ["stl"])
 
   "print_estimation": {                     // Optional: print estimation defaults
     "default_material": "pla",              // "pla", "petg", "abs", or "tpu"
@@ -223,18 +223,19 @@ Projects can optionally declare `hyperobject` metadata to be classified as **Bou
 
 Each mode entry can declare both a `scad_file` (OpenSCAD `.scad` script) and an optional `cq_file` (CadQuery `.py` script). When both are present, the backend uses automatic engine routing based on the requested export format:
 
-- **OpenSCAD engine** is the default and handles `stl`, `3mf`, and `off` formats.
-- **CadQuery engine** is used when the requested format requires B-Rep capabilities that OpenSCAD cannot provide, such as `step`, `glb`, `gltf`, or other CadQuery-supported formats.
+- **OpenSCAD engine** is the default and handles `stl`, `3mf`, and `off` natively. Additional formats (`obj`, `glb`, `gltf`, `3mf`, `off`, `ply`) are available via automatic trimesh post-render conversion from STL.
+- **CadQuery engine** is used when the requested format requires B-Rep capabilities that OpenSCAD cannot provide, such as `step`. Dual-engine fallback also activates for `glb` and `gltf` when a `cq_file` is present.
+- **Implicit engine** natively produces STL. Other mesh formats (`obj`, `glb`, `gltf`, `3mf`, `off`) are available via trimesh conversion. STEP export requires a `cq_file` fallback.
 
-If a user requests a STEP export and the mode has a `cq_file`, the backend automatically falls back to the CadQuery engine to produce the STEP file. If no `cq_file` is declared for the mode, the backend returns a 400 error for formats that the OpenSCAD engine does not support.
+If a user requests a STEP export and the mode has a `cq_file`, the backend automatically falls back to the CadQuery engine to produce the STEP file. If no `cq_file` is declared, the backend returns a 400 error for STEP. For mesh formats like OBJ, GLB, and GLTF, the backend renders as STL first and converts via trimesh — no `cq_file` required.
 
 ### Mode entry with dual-engine support
 
 ```jsonc
 {
   "id": "unit",
-  "scad_file": "unit.scad",     // Primary: OpenSCAD rendering (STL, 3MF, OFF)
-  "cq_file": "unit.py",         // Fallback: CadQuery rendering (STEP, GLB, GLTF, 3MF)
+  "scad_file": "unit.scad",     // Primary: OpenSCAD rendering (STL, 3MF, OFF native; OBJ, GLB, GLTF via trimesh)
+  "cq_file": "unit.py",         // Fallback: CadQuery rendering (STEP, GLB, GLTF native)
   "label": { "en": "Unit" },
   "parts": ["main"],
   "estimate": { "base_units": 1, "formula": "constant" }
@@ -243,16 +244,17 @@ If a user requests a STEP export and the mode has a `cq_file`, the backend autom
 
 ### Export format capabilities by engine
 
-| Engine | Supported Formats |
-|--------|-------------------|
-| OpenSCAD | `stl`, `3mf`, `off` |
-| CadQuery | `stl`, `step`, `glb`, `gltf`, `3mf`, `obj`, `vrml`, `amf` |
+| Engine | Native Formats | Via Trimesh Conversion | Via CQ Fallback |
+|--------|---------------|----------------------|-----------------|
+| OpenSCAD | `stl`, `3mf`, `off` | `obj`, `glb`, `gltf`, `ply` | `step` (requires `cq_file`) |
+| CadQuery | `stl`, `step`, `glb`, `gltf`, `3mf`, `obj`, `vrml`, `amf` | — | — |
+| Implicit | `stl` | `obj`, `glb`, `gltf`, `3mf`, `off` | `step` (requires `cq_file`) |
 
-To advertise STEP support in the UI, add `"step"` to the manifest's `export_formats` array and provide a `cq_file` for each mode that should support it.
+To advertise STEP support in the UI, add `"step"` to the manifest's `export_formats` array and provide a `cq_file` for each mode that should support it. For OBJ and GLB, no `cq_file` is needed — trimesh conversion handles these automatically.
 
 ### Reference projects
 
-- `projects/gridfinity/project.json` — all three modes declare `cq_file` alongside `scad_file`, with `"export_formats": ["stl", "3mf", "step"]`.
+- `projects/gridfinity/project.json` — all three modes declare `cq_file` alongside `scad_file`, with `"export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"]`.
 - `projects/scara-robotics/project.json` — benchmark dual-engine parity implementation.
 - `projects/cq-hyperobject-test/project.json` — CadQuery-only test project.
 
@@ -272,7 +274,7 @@ The `ProjectManifest` class provides:
 | `calculate_estimate_units(mode_id, params)` | `int` | Unit count for time estimation |
 | `as_json()` | `dict` | Raw data for API serialization |
 
-The render route also accepts an optional `export_format` field in render payloads. Accepted values depend on the project's engine: OpenSCAD supports `"stl"`, `"3mf"`, `"off"`; CadQuery supports `"stl"`, `"step"`, `"glb"`, `"gltf"`, `"3mf"`, and others. Requesting an unsupported format for the engine returns a 400 error. When `export_format` is `"stl"`, the backend automatically converts the result to GLB for optimized web delivery (all engines).
+The render route also accepts an optional `export_format` field in render payloads. Accepted values: `stl`, `3mf`, `off`, `step`, `glb`, `gltf`, `obj`. OpenSCAD natively supports `stl`, `3mf`, `off`; additional mesh formats (`obj`, `glb`, `gltf`) are produced via automatic trimesh conversion from STL. CadQuery natively supports `stl`, `step`, `glb`, `gltf`, `3mf`, `obj`, and others. Implicit engine natively produces `stl`; other mesh formats are converted via trimesh. STEP requires CadQuery (direct or via `cq_file` fallback). Requesting an unsupported format returns a 400 error. When `export_format` is `"stl"`, the backend automatically converts the result to GLB for optimized web delivery (all engines).
 
 Module-level functions:
 - `discover_projects()` — Scan `PROJECTS_DIR` for subdirectories with `project.json`

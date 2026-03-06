@@ -46,7 +46,10 @@
       "stl",
       "3mf",
       "off",
-      "step"
+      "step",
+      "glb",
+      "gltf",
+      "obj"
     ],
     "cadquery_engine": true,
     "github_import": true,
@@ -69,7 +72,10 @@
       "stl",
       "3mf",
       "off",
-      "step"
+      "step",
+      "glb",
+      "gltf",
+      "obj"
     ],
     "cadquery_engine": true,
     "github_import": true,

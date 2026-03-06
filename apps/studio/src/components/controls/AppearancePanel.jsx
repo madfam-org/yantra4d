@@ -7,7 +7,7 @@ import SliderControl from './SliderControl'
 
 export default function AppearancePanel({ mode, colors, setColors, wireframe, setWireframe, boundingBox, setBoundingBox, clippingEnabled, setClippingEnabled, clippingAxis, setClippingAxis, clippingPosition, setClippingPosition, measureMode, setMeasureMode, measurements, setMeasurements, explodeFactor, setExplodeFactor, lightIntensity, setLightIntensity, environmentPreset, setEnvironmentPreset, partsCount = 0, overhangEnabled, setOverhangEnabled, overhangThreshold, setOverhangThreshold }) {
     const { language, t } = useLanguage()
-    const { getPartColors, getLabel, getGroupLabel } = useManifest()
+    const { getPartColors, getLabel } = useManifest()
 
     const partColors = getPartColors(mode)
 
@@ -20,7 +20,7 @@ export default function AppearancePanel({ mode, colors, setColors, wireframe, se
 
             {/* Display Modes */}
             <div className="space-y-4">
-                <Label className="text-base font-semibold">{t('ctrl.display') || "Display Modes"}</Label>
+                <Label className="text-base font-semibold">{t('ctrl.display')}</Label>
 
                 <div className="flex items-center justify-between">
                     <Label htmlFor="wireframe-toggle" className="text-sm">
@@ -64,7 +64,7 @@ export default function AppearancePanel({ mode, colors, setColors, wireframe, se
 
             {/* Analysis Tools */}
             <div className="space-y-4 border-t border-border pt-4">
-                <Label className="text-base font-semibold">{t('ctrl.analysis_tools') || "Analysis Tools"}</Label>
+                <Label className="text-base font-semibold">{t('ctrl.analysis_tools')}</Label>
 
                 {/* Cross-Section Clipping */}
                 <div className="space-y-2">
@@ -194,7 +194,7 @@ export default function AppearancePanel({ mode, colors, setColors, wireframe, se
             {/* Color Controls */}
             {partColors.length > 0 && (
                 <div className="space-y-4 border-t border-border pt-4">
-                    <Label className="text-base font-semibold">{getGroupLabel('colors', language)}</Label>
+                    <Label className="text-base font-semibold">{t('ctrl.colors')}</Label>
                     <div className={`grid gap-2 ${partColors.length > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                         {partColors.map((part) => (
                             <div key={part.id} className="flex flex-col gap-1">

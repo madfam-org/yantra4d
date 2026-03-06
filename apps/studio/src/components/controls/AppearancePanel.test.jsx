@@ -37,7 +37,7 @@ describe('AppearancePanel', () => {
 
     it('renders colors group label for part color controls', () => {
         renderAppearancePanel()
-        expect(screen.getByText('colors')).toBeInTheDocument()
+        expect(screen.getByText('Colors')).toBeInTheDocument()
     })
 
     it('renders wireframe toggle when setWireframe is provided', () => {

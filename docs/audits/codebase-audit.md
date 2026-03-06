@@ -139,7 +139,7 @@ The platform currently ships **20 built-in parametric projects** across three we
 | `ScadEditor.jsx` | Monaco editor for OpenSCAD: syntax highlighting, file tabs, diff view |
 | `GitPanel.jsx` | Git version control: status, commit history, diffs |
 | `AiChatPanel.jsx` | AI configurator chat: parameter suggestions via Claude API |
-| `ExportPanel.jsx` | Export controls: STL/3MF/OBJ format selection, download triggers |
+| `ExportPanel.jsx` | Accordion-based export hub: geometry downloads, image exports, documents (datasheet/BOM CSV), print estimate, share link & project archive |
 | `PrintEstimateOverlay.jsx` | Print time, filament weight, cost estimates from geometry |
 | `BomPanel.jsx` | Bill of Materials display with quantities |
 | `AssemblyView.jsx` | Step-by-step assembly visualization |

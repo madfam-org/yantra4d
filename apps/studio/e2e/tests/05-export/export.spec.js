@@ -8,7 +8,8 @@ test.describe('Export Panel', () => {
   })
 
   test('export panel is visible', async ({ page }) => {
-    await expect(page.locator('text=Export Images')).toBeVisible()
+    // Geometry accordion section is open by default
+    await expect(page.locator('text=Geometry')).toBeVisible()
   })
 
   // Format selector
@@ -45,15 +46,18 @@ test.describe('Export Panel', () => {
     await expect(page.locator('button', { hasText: 'Download SCAD' })).toBeVisible()
   })
 
-  // Image export buttons
-  test('image export view buttons are visible', async ({ page }) => {
+  // Image export buttons (inside collapsed "Images" accordion section)
+  test('image export view buttons are visible after opening Images section', async ({ page }) => {
+    // Open the Images accordion section
+    await page.getByRole('button', { name: 'Images' }).click()
     await expect(page.locator('button', { hasText: 'Isometric' }).last()).toBeVisible()
     await expect(page.locator('button', { hasText: 'Top' }).last()).toBeVisible()
     await expect(page.locator('button', { hasText: 'Front' }).last()).toBeVisible()
     await expect(page.locator('button', { hasText: 'Right' }).last()).toBeVisible()
   })
 
-  test('export all views button is visible', async ({ page }) => {
+  test('export all views button is visible after opening Images section', async ({ page }) => {
+    await page.getByRole('button', { name: 'Images' }).click()
     await expect(page.locator('button', { hasText: 'Export All Views' })).toBeVisible()
   })
 
@@ -70,7 +74,8 @@ test.describe('Export Panel', () => {
     const generateBtn = page.locator('button', { hasText: /Generate|Generar/i }).first()
     await expect(generateBtn).toBeEnabled({ timeout: 15000 })
 
-    // Export buttons should now be enabled (parts populated by SSE mock)
+    // Open Images section and check Export All Views is enabled
+    await page.getByRole('button', { name: 'Images' }).click()
     const btn = page.locator('button', { hasText: 'Export All Views' })
     await expect(btn).toBeVisible()
     await expect(btn).toBeEnabled({ timeout: 15000 })

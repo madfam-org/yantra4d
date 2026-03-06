@@ -187,5 +187,21 @@
   "btn.editor_close": "Code-Editor schließen",
   "btn.open_controls": "Steuerung öffnen",
   "btn.edit_assembly": "Montageanleitung bearbeiten",
-  "a11y.controls_description": "Parameter, Ansichtseinstellungen und Exportoptionen anpassen"
+  "a11y.controls_description": "Parameter, Ansichtseinstellungen und Exportoptionen anpassen",
+  "export.geometry": "Geometrie",
+  "export.images": "Bilder",
+  "export.documents": "Dokumente",
+  "export.print_estimate": "Druckschätzung",
+  "export.share": "Teilen und Archivieren",
+  "export.bom_csv": "Stückliste herunterladen (CSV)",
+  "export.copy_estimate": "Schätzung kopieren",
+  "export.copied": "Kopiert!",
+  "export.share_link": "Freigabelink kopieren",
+  "export.archive": "Projektarchiv herunterladen",
+  "export.archive_desc": "ZIP mit Modellen, Quellcode und Stückliste",
+  "export.assembly_count": "{count} Montageschritte im Datenblatt enthalten",
+  "export.no_parts": "Rendern Sie zuerst ein Modell",
+  "export.est_time": "Zeit",
+  "export.est_weight": "Gewicht",
+  "export.est_cost": "Kosten"
 }

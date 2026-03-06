@@ -132,7 +132,7 @@
 - Projects gallery loads 33 projects in 4-column grid with search, filters, and sort
 - custom-msh: holder and rack modes render correctly, model appears with green status chip
 - ModelInfoPanel shows dimensions, volume, triangle count, part count
-- Export panel with STL/3MF format selector functional
+- Export panel with accordion sections (Geometry, Images, Documents, Print Estimate, Share & Archive) and STL/3MF format selector functional
 - Theme cycling (light/dark/system) works
 - Unit toggle (mm/in) converts ModelInfoPanel values correctly
 

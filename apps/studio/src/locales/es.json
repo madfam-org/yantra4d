@@ -215,5 +215,21 @@
   "btn.editor_close": "Cerrar editor de código",
   "btn.open_controls": "Abrir controles",
   "btn.edit_assembly": "Editar Guía de Ensamblaje",
-  "a11y.controls_description": "Ajustar parámetros, configuración de vista y opciones de exportación"
+  "a11y.controls_description": "Ajustar parámetros, configuración de vista y opciones de exportación",
+  "export.geometry": "Geometría",
+  "export.images": "Imágenes",
+  "export.documents": "Documentos",
+  "export.print_estimate": "Estimación de Impresión",
+  "export.share": "Compartir y Archivar",
+  "export.bom_csv": "Descargar BOM (CSV)",
+  "export.copy_estimate": "Copiar Estimación",
+  "export.copied": "¡Copiado!",
+  "export.share_link": "Copiar Enlace para Compartir",
+  "export.archive": "Descargar Archivo del Proyecto",
+  "export.archive_desc": "ZIP con modelos, código fuente y BOM",
+  "export.assembly_count": "{count} pasos de ensamblaje incluidos en la ficha técnica",
+  "export.no_parts": "Renderiza un modelo primero",
+  "export.est_time": "Tiempo",
+  "export.est_weight": "Peso",
+  "export.est_cost": "Costo"
 }

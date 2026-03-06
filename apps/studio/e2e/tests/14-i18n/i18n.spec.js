@@ -62,11 +62,11 @@ test.describe('Internationalization (i18n)', () => {
   test('export panel text updates on language toggle', async ({ page }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
-    await expect(page.locator('text=Export Images')).toBeVisible()
+    await expect(page.locator('text=Geometry')).toBeVisible()
     await expect(page.locator('text=Download STL')).toBeVisible()
 
     await selectLanguageFromDropdown(page, 'Español')
-    await expect(page.locator('text=Exportar Imágenes')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('text=Geometría')).toBeVisible({ timeout: 5000 })
     await expect(page.locator('text=Descargar STL')).toBeVisible({ timeout: 5000 })
   })
 

@@ -215,5 +215,21 @@
   "btn.editor_close": "Close code editor",
   "btn.open_controls": "Open controls",
   "btn.edit_assembly": "Edit Assembly Guide",
-  "a11y.controls_description": "Adjust parameters, view settings, and export options"
+  "a11y.controls_description": "Adjust parameters, view settings, and export options",
+  "export.geometry": "Geometry",
+  "export.images": "Images",
+  "export.documents": "Documents",
+  "export.print_estimate": "Print Estimate",
+  "export.share": "Share & Archive",
+  "export.bom_csv": "Download BOM (CSV)",
+  "export.copy_estimate": "Copy Estimate",
+  "export.copied": "Copied!",
+  "export.share_link": "Copy Share Link",
+  "export.archive": "Download Project Archive",
+  "export.archive_desc": "ZIP with models, source, and BOM",
+  "export.assembly_count": "{count} assembly steps included in datasheet",
+  "export.no_parts": "Render a model first",
+  "export.est_time": "Time",
+  "export.est_weight": "Weight",
+  "export.est_cost": "Cost"
 }

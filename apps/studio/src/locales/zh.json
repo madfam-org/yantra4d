@@ -187,5 +187,21 @@
   "btn.editor_close": "关闭代码编辑器",
   "btn.open_controls": "打开控制面板",
   "btn.edit_assembly": "编辑组装指南",
-  "a11y.controls_description": "调整参数、视图设置和导出选项"
+  "a11y.controls_description": "调整参数、视图设置和导出选项",
+  "export.geometry": "几何模型",
+  "export.images": "图片",
+  "export.documents": "文档",
+  "export.print_estimate": "打印估算",
+  "export.share": "分享与归档",
+  "export.bom_csv": "下载 BOM (CSV)",
+  "export.copy_estimate": "复制估算",
+  "export.copied": "已复制！",
+  "export.share_link": "复制分享链接",
+  "export.archive": "下载项目归档",
+  "export.archive_desc": "包含模型、源代码和 BOM 的 ZIP 文件",
+  "export.assembly_count": "数据表中包含 {count} 个组装步骤",
+  "export.no_parts": "请先渲染模型",
+  "export.est_time": "时间",
+  "export.est_weight": "重量",
+  "export.est_cost": "成本"
 }

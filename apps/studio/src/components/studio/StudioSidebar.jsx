@@ -279,7 +279,6 @@ function SidebarContent() {
 
         <TabsContent value="export" className="m-0 animate-in fade-in-50 duration-300">
           <ExportPanel
-            manifest={manifest}
             parts={parts}
             mode={mode}
             onDownloadStl={handleDownloadStl}

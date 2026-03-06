@@ -187,5 +187,21 @@
   "btn.editor_close": "Fechar editor de código",
   "btn.open_controls": "Abrir controles",
   "btn.edit_assembly": "Editar Guia de Montagem",
-  "a11y.controls_description": "Ajustar parâmetros, configurações de visualização e opções de exportação"
+  "a11y.controls_description": "Ajustar parâmetros, configurações de visualização e opções de exportação",
+  "export.geometry": "Geometria",
+  "export.images": "Imagens",
+  "export.documents": "Documentos",
+  "export.print_estimate": "Estimativa de Impressão",
+  "export.share": "Compartilhar e Arquivar",
+  "export.bom_csv": "Baixar BOM (CSV)",
+  "export.copy_estimate": "Copiar Estimativa",
+  "export.copied": "Copiado!",
+  "export.share_link": "Copiar Link de Compartilhamento",
+  "export.archive": "Baixar Arquivo do Projeto",
+  "export.archive_desc": "ZIP com modelos, código fonte e BOM",
+  "export.assembly_count": "{count} passos de montagem incluídos na ficha técnica",
+  "export.no_parts": "Renderize um modelo primeiro",
+  "export.est_time": "Tempo",
+  "export.est_weight": "Peso",
+  "export.est_cost": "Custo"
 }

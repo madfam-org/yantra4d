@@ -233,7 +233,7 @@ test.describe('Responsive Design', () => {
     // so we must scope to the dialog to avoid picking up the hidden copy)
     const sheet = page.locator('[role="dialog"]')
     await expect(sheet).toBeVisible({ timeout: 5000 })
-    const exportText = sheet.getByText('Export Images').or(sheet.getByText('Exportar Imágenes'))
+    const exportText = sheet.getByText('Geometry').or(sheet.getByText('Geometría'))
     await exportText.first().scrollIntoViewIfNeeded()
     await expect(exportText.first()).toBeVisible({ timeout: 5000 })
   })

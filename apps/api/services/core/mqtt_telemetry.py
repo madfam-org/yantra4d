@@ -1,8 +1,9 @@
 """
 MQTT Telemetry Service for 4D Hyperobjects
-Injects continuous temporal data into CadQuery/OpenSCAD 
+Injects continuous temporal data into CadQuery/OpenSCAD
 parametric generation and Real-Time 3D Digital Twins.
 """
+import atexit
 import os
 import json
 import logging
@@ -44,8 +45,19 @@ class MqttTelemetryService:
             self.client.connect(self.broker, self.port, 60)
             self._thread = threading.Thread(target=self.client.loop_forever, daemon=True)
             self._thread.start()
+            atexit.register(self.stop)
         except Exception as e:
             logger.error(f"Failed to start MQTT thread: {e}")
+
+    def stop(self):
+        """Disconnect the MQTT client and join the background thread."""
+        try:
+            self.client.disconnect()
+        except Exception:
+            pass
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=5)
+        self.connected = False
 
     def _on_connect(self, client, userdata, flags, reason_code, properties):
         if reason_code == 0:

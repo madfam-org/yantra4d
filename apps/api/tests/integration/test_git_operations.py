@@ -6,7 +6,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.editor.git_operations import git_init, git_status, git_diff, git_commit, git_push, git_pull, _run_git, _inject_token_url, _get_remote_url
+from services.editor.git_operations import git_init, git_status, git_diff, git_commit, git_push, git_pull, git_log, git_show_head, _run_git, _inject_token_url, _get_remote_url
 
 
 @pytest.fixture
@@ -216,6 +216,130 @@ class TestGitStatusEdgeCases:
         d.mkdir()
         result = git_status(d)
         assert result["success"] is False
+
+
+class TestGitLog:
+    def test_log_returns_commits(self, project_dir):
+        git_init(project_dir)
+        result = git_log(project_dir)
+        assert result["success"] is True
+        assert len(result["commits"]) >= 1
+        commit = result["commits"][0]
+        assert "hash" in commit
+        assert "short_hash" in commit
+        assert "author" in commit
+        assert "date" in commit
+        assert "message" in commit
+
+    def test_log_empty_repo(self, tmp_path):
+        """Empty repo (no commits) returns empty list."""
+        d = tmp_path / "empty-repo"
+        d.mkdir()
+        _run_git(d, ["init"])
+        result = git_log(d)
+        assert result["success"] is True
+        assert result["commits"] == []
+
+    def test_log_limit_capped_at_50(self, project_dir):
+        git_init(project_dir)
+        result = git_log(project_dir, limit=100)
+        assert result["success"] is True
+        # Just verify it doesn't crash — limit is capped internally
+
+    def test_log_limit_min_1(self, project_dir):
+        git_init(project_dir)
+        result = git_log(project_dir, limit=0)
+        assert result["success"] is True
+        # limit=0 is capped to 1 internally
+
+
+class TestGitShowHead:
+    def test_show_existing_file(self, project_dir):
+        git_init(project_dir)
+        result = git_show_head(project_dir, "main.scad")
+        assert result["success"] is True
+        assert "cube(10)" in result["content"]
+
+    def test_show_nonexistent_file(self, project_dir):
+        git_init(project_dir)
+        result = git_show_head(project_dir, "no-such-file.scad")
+        assert result["success"] is False
+
+
+class TestGitPushPullWithRemote:
+    @pytest.fixture
+    def repo_with_bare_remote(self, tmp_path):
+        """Create a project repo with a local bare remote for push/pull testing."""
+        # Create bare remote
+        bare = tmp_path / "remote.git"
+        bare.mkdir()
+        _run_git(bare, ["init", "--bare"])
+
+        # Create project
+        proj = tmp_path / "my-project"
+        proj.mkdir()
+        (proj / "main.scad").write_text("cube(10);")
+        (proj / "project.json").write_text('{"project": {"name": "Test"}}')
+        git_init(proj)
+        _run_git(proj, ["remote", "add", "origin", str(bare)])
+        _run_git(proj, ["push", "-u", "origin", "HEAD"])
+        return proj, bare
+
+    def test_push_to_bare_remote(self, repo_with_bare_remote):
+        proj, bare = repo_with_bare_remote
+        (proj / "main.scad").write_text("cube(20);")
+        git_commit(proj, "Update cube", ["main.scad"])
+        # Push with empty token (local bare remote doesn't need auth)
+        # Since _inject_token_url adds "x-access-token:" prefix to https URLs only,
+        # and our remote is a file path, the token is irrelevant.
+        result = git_push(proj, "fake-token")
+        # The push should succeed because remote is a local path, not https
+        # but _inject_token_url won't modify non-https URLs, so set-url
+        # will use the injected URL which is the same as original for file paths
+        assert result["success"] is True
+
+    def test_pull_from_bare_remote(self, repo_with_bare_remote):
+        proj, bare = repo_with_bare_remote
+        # Create a second clone, push a change, then pull from the original
+        import tempfile
+        with tempfile.TemporaryDirectory() as clone_dir:
+            clone = Path(clone_dir) / "clone"
+            _run_git(Path(clone_dir), ["clone", str(bare), str(clone)])
+            (clone / "main.scad").write_text("cube(30);")
+            _run_git(clone, ["add", "main.scad"])
+            _run_git(clone, ["config", "user.name", "Test"])
+            _run_git(clone, ["config", "user.email", "t@t.com"])
+            _run_git(clone, ["commit", "-m", "Change from clone"])
+            _run_git(clone, ["push", "origin", "HEAD"])
+
+        result = git_pull(proj, "fake-token")
+        assert result["success"] is True
+        assert "cube(30)" in (proj / "main.scad").read_text()
+
+    def test_push_restores_url_on_failure(self, project_dir):
+        """URL is always restored even when push fails."""
+        git_init(project_dir)
+        original_url = "https://github.com/user/repo.git"
+        _run_git(project_dir, ["remote", "add", "origin", original_url])
+
+        # Push will fail (remote doesn't exist), but URL should be restored
+        result = git_push(project_dir, "ghp_test123")
+        assert result["success"] is False
+
+        restored = _get_remote_url(project_dir)
+        assert restored == original_url
+
+    def test_pull_restores_url_on_failure(self, project_dir):
+        """URL is always restored even when pull fails."""
+        git_init(project_dir)
+        original_url = "https://github.com/user/repo.git"
+        _run_git(project_dir, ["remote", "add", "origin", original_url])
+
+        result = git_pull(project_dir, "ghp_test123")
+        assert result["success"] is False
+
+        restored = _get_remote_url(project_dir)
+        assert restored == original_url
 
 
 class TestGitDiffEdgeCases:

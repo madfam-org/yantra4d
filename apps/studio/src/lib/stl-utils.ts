@@ -1,10 +1,21 @@
 const MAX_STL_FACES = 10_000_000
 
+export interface ParsedSTL {
+  vertices: Float32Array
+  faces: Uint32Array
+  faceCount: number
+}
+
+export interface BoundingBox {
+  min: [number, number, number]
+  max: [number, number, number]
+  size: [number, number, number]
+}
+
 /**
  * Parse binary STL to get vertex/face data.
- * Returns { vertices: Float32Array, faces: Uint32Array, faceCount }
  */
-export function parseSTL(buffer) {
+export function parseSTL(buffer: ArrayBuffer): ParsedSTL {
   if (buffer.byteLength < 84) {
     throw new Error('Invalid STL: buffer too small')
   }
@@ -44,7 +55,7 @@ export function parseSTL(buffer) {
 /**
  * Compute bounding box from vertices.
  */
-export function getBoundingBox(vertices) {
+export function getBoundingBox(vertices: Float32Array): BoundingBox {
   let minX = Infinity, minY = Infinity, minZ = Infinity
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity
 

@@ -129,6 +129,8 @@ JSON.parse(atob(new URLSearchParams(location.search).get('p').replace(/-/g,'+').
 | `/api/verify` | 50/hour |
 | `/api/ai/*` | Tier-dependent (30–300/hour) |
 
+**Response headers**: The backend includes `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers on all rate-limited responses. The studio `apiClient.ts` reads these headers and exposes them via the `useRateLimit()` hook.
+
 **Fix for development**: Rate limits use in-memory storage by default (`memory://`). Restart the backend to reset.
 
 **Production with Redis**: Docker Compose automatically uses Redis for shared rate limiting across workers. To configure manually:

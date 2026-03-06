@@ -53,7 +53,15 @@ Extract default values from all parameters in the manifest.
 
 #### `evaluateConstraints(cartridge, params): Record<string, string[]>`
 
-Validate parameters against min/max constraints. Returns a map of parameter ID to violation messages.
+Validate parameters against manifest constraints. Supports:
+
+- **Min/max bounds**: Checks `min`/`max` fields on each parameter definition
+- **Rule-based constraints**: Arbitrary boolean expressions in `constraints[].rule` (e.g. `grid_x * grid_y <= 100`)
+- **Math functions**: Rules can use `sin`, `cos`, `tan`, `abs`, `sqrt`, `pow`, `min`, `max`, `floor`, `ceil`, `round`, `PI`, `E`
+
+All expressions are evaluated in a sandboxed `Function` constructor with an identifier allowlist — only math function names and boolean literals are permitted. Unknown identifiers (e.g. `require`, `console`) are rejected.
+
+Returns a map of parameter ID to violation messages (empty object if all constraints pass).
 
 #### `render(cartridge, options): Promise<RenderResult>`
 

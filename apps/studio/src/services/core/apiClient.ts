@@ -4,32 +4,38 @@
  */
 import { useState } from 'react'
 
-let _getToken = null
+type TokenGetter = () => Promise<string | null>
+
+interface RateLimitState {
+  remaining: number | null
+  limit: number | null
+  tier: string | null
+}
+
+type RateLimitListener = (state: RateLimitState) => void
+
+let _getToken: TokenGetter | null = null
 
 // Rate limit state (module-level singleton)
-let _rateLimitState = { remaining: null, limit: null, tier: null }
-let _rateLimitListeners = new Set()
+const _rateLimitState: RateLimitState = { remaining: null, limit: null, tier: null }
+const _rateLimitListeners: Set<RateLimitListener> = new Set()
 
-function _notifyRateLimitListeners() {
+function _notifyRateLimitListeners(): void {
   _rateLimitListeners.forEach(fn => fn({ ..._rateLimitState }))
 }
 
 /**
  * Set the token getter function. Called once from App.jsx with auth context.
- * @param {() => Promise<string|null>} getter
  */
-export function setTokenGetter(getter) {
+export function setTokenGetter(getter: TokenGetter): void {
   _getToken = getter
 }
 
 /**
  * Fetch wrapper that auto-injects Bearer token and extracts rate limit headers.
- * @param {string} url
- * @param {RequestInit} [options]
- * @returns {Promise<Response>}
  */
-export async function apiFetch(url, options = {}) {
-  const headers = { ...options.headers }
+export async function apiFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const headers: Record<string, string> = { ...(options.headers as Record<string, string>) }
 
   if (_getToken) {
     try {
@@ -63,13 +69,13 @@ export async function apiFetch(url, options = {}) {
 /**
  * React hook to subscribe to rate limit state changes.
  */
-export function useRateLimit() {
-  const [state, setState] = useState({ ..._rateLimitState })
+export function useRateLimit(): RateLimitState {
+  const [state, setState] = useState<RateLimitState>({ ..._rateLimitState })
 
   // Subscribe on first call via module-level set
   // Using useState initializer to register only once
   useState(() => {
-    const listener = (newState) => setState(newState)
+    const listener: RateLimitListener = (newState) => setState(newState)
     _rateLimitListeners.add(listener)
     // Return cleanup (not used by useState, but we store ref)
     return () => _rateLimitListeners.delete(listener)

@@ -308,7 +308,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 ## Testing Standards
 
 - **Studio unit**: Vitest + RTL, coverage thresholds (80% statements/lines, 80% branches, 80% functions), jest-axe accessibility audits
-- **Studio E2E**: Playwright — 18 test suites in `apps/studio/e2e/tests/`, page object pattern, mock API via `api-mocker.js`
+- **Studio E2E**: Playwright — 22 test suites in `apps/studio/e2e/tests/`, page object pattern, mock API via `api-mocker.js`
 - **Landing**: `npm run build` (Astro static build)
 - **Backend**: pytest + pytest-cov, coverage threshold 80%, tests in `apps/api/tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` → ESLint fix + Vitest on changed files

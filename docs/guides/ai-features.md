@@ -132,10 +132,12 @@ Response: SSE stream with events:
 
 ## Sessions
 
-- Sessions are stored **in-memory** (not persisted across server restarts)
+- Sessions are stored **in-memory** by default (not persisted across server restarts)
 - Sessions expire after **1 hour**
 - Conversation history is maintained within a session for multi-turn refinement
 - Expired sessions return `404 Session not found or expired`
+
+**Production note**: When `REDIS_URL` is not set and `FLASK_DEBUG` is not `true`, the backend logs a warning: *"REDIS_URL not set: AI sessions will be lost on pod restart."* For multi-worker or auto-scaling deployments, configure Redis to persist sessions across restarts.
 
 ## Frontend Components
 

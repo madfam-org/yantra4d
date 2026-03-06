@@ -485,8 +485,8 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 
 | Service | Purpose |
 |---------|---------|
-| `renderService.js` | Dual-mode render (backend SSE / WASM worker) |
-| `backendDetection.js` | Backend availability check + API base URL |
+| `renderService.ts` | Dual-mode render (backend SSE / WASM worker) |
+| `backendDetection.ts` | Backend availability check + API base URL |
 | `openscad-worker.js` | Web Worker for OpenSCAD WASM rendering |
 | `verifyService.js` | STL verification client |
 | `editorService.js` | SCAD file CRUD API client |

@@ -10,46 +10,95 @@ import { isBackendAvailable, getApiBase } from '../core/backendDetection'
 import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
 import { apiFetch } from '../core/apiClient'
 
+interface Manifest {
+  modes: ModeConfig[]
+  parts: PartDef[]
+  engine?: string
+  project?: { force_backend?: boolean }
+  force_backend?: boolean
+  estimate_constants?: EstimateConstants
+  grid_presets?: Record<string, unknown>
+  [key: string]: unknown
+}
+
+interface ModeConfig {
+  id: string
+  scad_file: string
+  parts: string[]
+  estimate?: {
+    formula?: string
+    formula_vars?: string[]
+    base_units?: number
+  }
+}
+
+interface PartDef {
+  id: string
+  render_mode: number
+  [key: string]: unknown
+}
+
+interface EstimateConstants {
+  base_time: number
+  per_unit: number
+  per_part: number
+  wasm_multiplier?: number
+}
+
+interface ProgressEvent {
+  percent?: number
+  phase?: string
+  part?: string
+  log?: string
+}
+
+type OnProgress = (event: ProgressEvent) => void
+
+interface RenderPart {
+  type: string
+  url?: string
+  blob?: Blob
+}
+
+interface RenderOptions {
+  onProgress?: OnProgress
+  abortSignal?: AbortSignal
+  project?: string
+  ignoreCache?: boolean
+}
+
 const API_BASE = getApiBase()
 
-let _hardwareMode = null // Cached hardware capability check
-let _worker = null
-let _initPromise = null
+let _hardwareMode: 'backend' | 'wasm' | null = null
+let _worker: Worker | null = null
+let _initPromise: Promise<void> | null = null
 
 /**
  * Detect hardware capabilities
  */
-function hasWasmCapabilities() {
+function hasWasmCapabilities(): boolean {
   const cores = navigator.hardwareConcurrency || 2
-  const mem = navigator.deviceMemory || 4 // in GB, 4 is usually a safe desktop assumption if missing
-  // Require at least 4 cores and 4GB RAM to prefer WASM
+  const mem = (navigator as { deviceMemory?: number }).deviceMemory || 4
   return cores >= 4 && mem >= 4
 }
 
 /**
  * Detect whether to use 'backend' or 'wasm' rendering mode.
  */
-async function detectMode(manifest, mode, params) {
-  // Always use backend for CadQuery engine
+async function detectMode(manifest: Manifest | null, mode: string, params: Record<string, unknown>): Promise<'backend' | 'wasm'> {
   if (manifest && manifest.engine === 'cadquery') {
     return 'backend'
   }
 
-  // Always use backend if project explicitly requires it (e.g. complex BOSL2 SCAD dependencies)
   if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
     return 'backend'
   }
 
-  // Production: SCAD files aren't bundled in the Vite build, so WASM mode
-  // would 404 on every .scad fetch. Use backend (native OpenSCAD, faster too).
   if (API_BASE) {
     return 'backend'
   }
 
-  // CIRCUIT BREAKER: Evaluate topological complexity
-  // If the basic mesh estimate exceeds 15.0 workload seconds, WASM will freeze the UI thread.
   if (manifest && mode && params) {
-    // We intentionally ignore the hardware WASM multiplier and use the raw base complexity
     const tempMode = _hardwareMode
     _hardwareMode = 'backend'
     const est = estimateRenderTime(mode, params, manifest)
@@ -63,23 +112,20 @@ async function detectMode(manifest, mode, params) {
 
   if (_hardwareMode) return _hardwareMode
 
-  // If backend is NOT available, we MUST use WASM (offline mode fallback)
   const available = await isBackendAvailable()
   if (!available) {
     _hardwareMode = 'wasm'
     return _hardwareMode
   }
 
-  // Backend is available, route based on device capabilities
   _hardwareMode = hasWasmCapabilities() ? 'wasm' : 'backend'
   return _hardwareMode
 }
 
 /**
  * Initialize the WASM worker (lazy, called on first WASM render).
- * @param {object} [manifest] - Project manifest to extract SCAD file list from
  */
-function initWorker(manifest) {
+function initWorker(manifest: Manifest | null): Promise<void> {
   if (_initPromise) return _initPromise
 
   _initPromise = new Promise((resolve, reject) => {
@@ -88,12 +134,12 @@ function initWorker(manifest) {
       { type: 'module' }
     )
 
-    const handler = (e) => {
+    const handler = (e: MessageEvent) => {
       if (e.data.type === 'init-done') {
-        _worker.removeEventListener('message', handler)
+        _worker!.removeEventListener('message', handler)
         resolve()
       } else if (e.data.type === 'init-error') {
-        _worker.removeEventListener('message', handler)
+        _worker!.removeEventListener('message', handler)
         reject(new Error(e.data.error))
       }
     }
@@ -108,12 +154,23 @@ function initWorker(manifest) {
   return _initPromise
 }
 
+interface SSEData {
+  progress?: number
+  event?: string
+  part?: string
+  index?: number
+  total?: number
+  line?: string
+  message?: string
+  parts?: RenderPart[]
+}
+
 /**
  * Parse a raw SSE chunk string into individual JSON data objects.
  */
-function parseSSEChunk(chunk) {
+function parseSSEChunk(chunk: string): SSEData[] {
   const lines = chunk.split('\n').filter(line => line.startsWith('data: '))
-  const results = []
+  const results: SSEData[] = []
   for (const rawLine of lines) {
     try {
       results.push(JSON.parse(rawLine.slice(6)))
@@ -126,15 +183,20 @@ function parseSSEChunk(chunk) {
 
 /**
  * Render parts via WASM worker.
- * Returns array of { type, blob, url } for each part.
  */
-async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
+async function renderWasm(
+  mode: string,
+  params: Record<string, unknown>,
+  manifest: Manifest,
+  onProgress?: OnProgress,
+  abortSignal?: AbortSignal
+): Promise<RenderPart[]> {
   await initWorker(manifest)
 
   const modeConfig = manifest.modes.find(m => m.id === mode)
   if (!modeConfig) throw new Error(`Unknown mode: ${mode}`)
 
-  const parts = []
+  const parts: RenderPart[] = []
   const totalParts = modeConfig.parts.length
 
   for (let i = 0; i < totalParts; i++) {
@@ -154,14 +216,14 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
       log: `[${partId}] Starting... (${i + 1}/${totalParts})`
     })
 
-    const stlData = await new Promise((resolve, reject) => {
-      const handler = (e) => {
+    const stlData = await new Promise<ArrayBuffer>((resolve, reject) => {
+      const handler = (e: MessageEvent) => {
         const msg = e.data
         if (msg.type === 'result') {
-          _worker.removeEventListener('message', handler)
+          _worker!.removeEventListener('message', handler)
           resolve(msg.stl)
         } else if (msg.type === 'error') {
-          _worker.removeEventListener('message', handler)
+          _worker!.removeEventListener('message', handler)
           reject(new Error(msg.message))
         } else if (msg.type === 'progress') {
           const partPercent = basePercent + Math.round((1 / totalParts) * (msg.percent || 50))
@@ -175,16 +237,16 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
       }
       if (abortSignal) {
         const onAbort = () => {
-          _worker.removeEventListener('message', handler)
-          _worker.terminate()
+          _worker!.removeEventListener('message', handler)
+          _worker!.terminate()
           _worker = null
           _initPromise = null
           reject(new DOMException('Aborted', 'AbortError'))
         }
         abortSignal.addEventListener('abort', onAbort, { once: true })
       }
-      _worker.addEventListener('message', handler)
-      _worker.postMessage({
+      _worker!.addEventListener('message', handler)
+      _worker!.postMessage({
         type: 'render',
         scadFile: modeConfig.scad_file,
         params: { ...params, mode },
@@ -215,10 +277,17 @@ async function renderWasm(mode, params, manifest, onProgress, abortSignal) {
 
 /**
  * Render parts via backend SSE stream.
- * Returns array of { type, url } for each part.
  */
-async function renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache) {
-  const payload = { ...params, mode }
+async function renderBackend(
+  mode: string,
+  params: Record<string, unknown>,
+  manifest: Manifest | null,
+  onProgress?: OnProgress,
+  abortSignal?: AbortSignal,
+  project?: string,
+  ignoreCache?: boolean
+): Promise<RenderPart[]> {
+  const payload: Record<string, unknown> = { ...params, mode }
   if (project) payload.project = project
   if (ignoreCache) payload.ignore_cache = true
 
@@ -238,9 +307,9 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
     throw new Error(`Render request failed (HTTP ${response.status}): ${text}`)
   }
 
-  const reader = response.body.getReader()
+  const reader = response.body!.getReader()
   const decoder = new TextDecoder()
-  let finalParts = []
+  let finalParts: RenderPart[] = []
 
   while (true) {
     const { done, value } = await reader.read()
@@ -257,10 +326,10 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
       if (data.event === 'part_start') {
         onProgress?.({
           part: data.part,
-          log: `[${data.part}] Starting... (${data.index + 1}/${data.total})`
+          log: `[${data.part}] Starting... (${data.index! + 1}/${data.total})`
         })
       } else if (data.event === 'output') {
-        const line = data.line
+        const line = data.line!
         const phase = detectPhase(line)
         if (phase) onProgress?.({ phase })
         if (isLogWorthy(line)) {
@@ -272,7 +341,7 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
           log: `[${data.part}] Done (${data.progress}%)`
         })
       } else if (data.event === 'complete') {
-        finalParts = data.parts
+        finalParts = data.parts || []
       } else if (data.event === 'error') {
         onProgress?.({ log: `[ERROR] ${data.part}: ${data.message}` })
       }
@@ -293,7 +362,12 @@ async function renderBackend(mode, params, manifest, onProgress, abortSignal, pr
 /**
  * Main entry point: render parts for the given mode and parameters.
  */
-export async function renderParts(mode, params, manifest, { onProgress, abortSignal, project, ignoreCache } = {}) {
+export async function renderParts(
+  mode: string,
+  params: Record<string, unknown>,
+  manifest: Manifest,
+  { onProgress, abortSignal, project, ignoreCache }: RenderOptions = {}
+): Promise<RenderPart[]> {
   const currentMode = await detectMode(manifest, mode, params)
   if (currentMode === 'backend') {
     return renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache)
@@ -305,7 +379,7 @@ export async function renderParts(mode, params, manifest, { onProgress, abortSig
 /**
  * Cancel the current render.
  */
-export async function cancelRender() {
+export async function cancelRender(): Promise<void> {
   try {
     await apiFetch(`${API_BASE}/api/render-cancel`, { method: 'POST' })
   } catch { /* best-effort cancel */ }
@@ -320,7 +394,7 @@ export async function cancelRender() {
 /**
  * Estimate render time (pure JS, from manifest constants).
  */
-export function estimateRenderTime(mode, params, manifest) {
+export function estimateRenderTime(mode: string, params: Record<string, unknown>, manifest: Manifest): number {
   const constants = manifest.estimate_constants
   if (!constants) return 0
 
@@ -329,7 +403,7 @@ export function estimateRenderTime(mode, params, manifest) {
 
   let units = 1
   if (modeConfig.estimate?.formula_vars) {
-    units = modeConfig.estimate.formula_vars.reduce((acc, v) => acc * (params[v] || 1), 1)
+    units = modeConfig.estimate.formula_vars.reduce((acc, v) => acc * (Number(params[v]) || 1), 1)
   } else {
     const base = modeConfig.estimate?.base_units
     units = (typeof base === 'number') ? base : 1
@@ -349,6 +423,6 @@ export function estimateRenderTime(mode, params, manifest) {
 /**
  * Get current render mode for diagnostics.
  */
-export function getRenderMode() {
+export function getRenderMode(): string {
   return _hardwareMode || 'detecting'
 }

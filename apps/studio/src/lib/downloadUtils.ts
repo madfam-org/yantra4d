@@ -1,7 +1,7 @@
 /**
  * Trigger a file download via a temporary anchor element.
  */
-export function downloadFile(url, filename) {
+export function downloadFile(url: string, filename: string): void {
   const link = document.createElement('a')
   link.href = url
   link.download = filename
@@ -13,15 +13,20 @@ export function downloadFile(url, filename) {
 /**
  * Download a data URL as a file.
  */
-export function downloadDataUrl(dataUrl, filename) {
+export function downloadDataUrl(dataUrl: string, filename: string): void {
   downloadFile(dataUrl, filename)
+}
+
+interface ZipUrlItem {
+  url: string
+  filename: string
 }
 
 /**
  * Create a ZIP from an array of { url, filename } items, then trigger download.
  * For blob URLs, fetches each one. Returns the generated blob.
  */
-export async function downloadZip(items, zipFilename) {
+export async function downloadZip(items: ZipUrlItem[], zipFilename: string): Promise<Blob> {
   const { default: JSZip } = await import('jszip')
   const zip = new JSZip()
   for (const item of items) {
@@ -39,10 +44,15 @@ export async function downloadZip(items, zipFilename) {
   return content
 }
 
+interface ZipDataItem {
+  filename: string
+  data: Uint8Array
+}
+
 /**
  * Create a ZIP from an array of { filename, data: Uint8Array } items, then trigger download.
  */
-export async function downloadZipFromData(items, zipFilename) {
+export async function downloadZipFromData(items: ZipDataItem[], zipFilename: string): Promise<Blob> {
   const { default: JSZip } = await import('jszip')
   const zip = new JSZip()
   for (const item of items) {

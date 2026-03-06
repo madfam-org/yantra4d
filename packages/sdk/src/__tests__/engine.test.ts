@@ -130,6 +130,58 @@ describe('YantraEngine', () => {
         const violations = engine.evaluateConstraints(cartridge, { width: -1, height: 25 })
         expect(violations.width).toContain('width > 0')
       })
+
+      it('supports sin() math function in constraints', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'sin(width) > 0', message: { en: 'sin must be positive' }, affects: ['width'] }
+          ]
+        })
+        // sin(10 radians) ≈ -0.544, so this should fail
+        const violations = engine.evaluateConstraints(cartridge, { width: 10, height: 25 })
+        expect(violations.width).toContain('sin must be positive')
+
+        // sin(1 radian) ≈ 0.841, so this should pass
+        const passing = engine.evaluateConstraints(cartridge, { width: 1, height: 25 })
+        expect(passing.width).toBeUndefined()
+      })
+
+      it('supports PI constant in constraints', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'width > PI', message: { en: 'Width must exceed PI' }, affects: ['width'] }
+          ]
+        })
+        const violations = engine.evaluateConstraints(cartridge, { width: 3, height: 25 })
+        expect(violations.width).toContain('Width must exceed PI')
+
+        const passing = engine.evaluateConstraints(cartridge, { width: 4, height: 25 })
+        expect(passing.width).toBeUndefined()
+      })
+
+      it('supports min() function with multiple args', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'min(width, height) > 5', message: { en: 'Min dim too small' }, affects: ['width', 'height'] }
+          ]
+        })
+        const violations = engine.evaluateConstraints(cartridge, { width: 50, height: 3 })
+        expect(violations.height).toContain('Min dim too small')
+
+        const passing = engine.evaluateConstraints(cartridge, { width: 50, height: 10 })
+        expect(passing.width).toBeUndefined()
+      })
+
+      it('still rejects unsafe expressions like require()', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'require("fs")', affects: ['width'] }
+          ]
+        })
+        // Should be skipped (caught by try/catch), not evaluated
+        const violations = engine.evaluateConstraints(cartridge, { width: 50, height: 25 })
+        expect(violations.width).toBeUndefined()
+      })
     })
   })
 

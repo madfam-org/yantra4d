@@ -174,4 +174,15 @@ describe('SliderControl', () => {
     // Star should still render
     expect(screen.getByTestId('default-star-width')).toBeInTheDocument()
   })
+
+  it('falls back to param.default when value is undefined', () => {
+    renderSlider({ value: undefined })
+    // Should display param.default (5) instead of crashing or showing 100
+    expect(screen.getByText('5')).toBeInTheDocument()
+  })
+
+  it('falls back to param.default when value is null', () => {
+    renderSlider({ value: null })
+    expect(screen.getByText('5')).toBeInTheDocument()
+  })
 })

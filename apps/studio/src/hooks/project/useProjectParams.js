@@ -49,7 +49,13 @@ export function useProjectParams({ viewerRef }) {
 
   const [params, setParams, { undo: undoParams, redo: redoParams, canUndo, canRedo }] = useUndoRedo(() => {
     const stored = safeParse(`${projectSlug}-params`, defaultParams)
-    return { ...defaultParams, ...stored, ...initialPresetValues, ...sharedParams }
+    // Discard stale localStorage keys that don't exist in current manifest
+    const validKeys = new Set(manifest.parameters.map(p => p.id))
+    const filtered = {}
+    for (const key of Object.keys(stored)) {
+      if (validKeys.has(key)) filtered[key] = stored[key]
+    }
+    return { ...defaultParams, ...filtered, ...initialPresetValues, ...sharedParams }
   })
   const [colors, setColors] = useState(() => ({
     ...defaultColors,

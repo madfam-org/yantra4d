@@ -9,15 +9,31 @@
  * Max:   500 entries (LRU eviction by timestamp)
  */
 
+interface CacheEntry {
+  parts: SerializedPart[]
+  timestamp: number
+}
+
+interface SerializedPart {
+  type: string
+  arrayBuffer: ArrayBuffer
+  isGlb: boolean
+}
+
+interface CachedPart {
+  type: string
+  blob: Blob
+}
+
 const DB_NAME = 'yantra4d-render-cache'
 const DB_VERSION = 1
 const STORE_NAME = 'renders'
 const TTL_MS = 24 * 60 * 60 * 1000
 const MAX_ENTRIES = 500
 
-let dbPromise = null
+let dbPromise: Promise<IDBDatabase> | null = null
 
-function openDB() {
+function openDB(): Promise<IDBDatabase> {
   if (dbPromise) return dbPromise
   dbPromise = new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION)
@@ -33,7 +49,7 @@ function openDB() {
   return dbPromise
 }
 
-async function hashKey(obj) {
+async function hashKey(obj: Record<string, unknown>): Promise<string> {
   const raw = JSON.stringify(obj, Object.keys(obj).sort())
   const buf = new TextEncoder().encode(raw)
   const hash = await crypto.subtle.digest('SHA-256', buf)
@@ -42,28 +58,26 @@ async function hashKey(obj) {
 
 /**
  * Build a cache key object from render parameters.
- * @param {string} project - Project slug
- * @param {string} mode - Render mode
- * @param {object} params - Render parameters (already filtered by manifest)
- * @param {string} format - Export format (stl, 3mf, etc.)
- * @returns {Promise<string>} SHA-256 hex key
  */
-export async function makeCacheKey(project, mode, params, format = 'stl') {
+export async function makeCacheKey(
+  project: string,
+  mode: string,
+  params: Record<string, unknown>,
+  format: string = 'stl'
+): Promise<string> {
   return hashKey({ project, mode, ...params, format })
 }
 
 /**
  * Retrieve cached render parts from IndexedDB.
  * Returns null on miss, expired, or any error.
- * @param {string} key - SHA-256 cache key
- * @returns {Promise<Array|null>} Array of { type, blob } or null
  */
-export async function get(key) {
+export async function get(key: string): Promise<CachedPart[] | null> {
   try {
     const db = await openDB()
     const tx = db.transaction(STORE_NAME, 'readonly')
     const store = tx.objectStore(STORE_NAME)
-    const entry = await new Promise((resolve, reject) => {
+    const entry = await new Promise<CacheEntry | undefined>((resolve, reject) => {
       const req = store.get(key)
       req.onsuccess = () => resolve(req.result)
       req.onerror = () => reject(req.error)
@@ -86,17 +100,21 @@ export async function get(key) {
   }
 }
 
+interface PutPart {
+  type: string
+  url?: string
+  blob?: Blob
+}
+
 /**
  * Store render parts in IndexedDB.
  * Accepts either blob URLs (fetched) or Blobs directly (WASM path).
- * @param {string} key - SHA-256 cache key
- * @param {Array<{type: string, url?: string, blob?: Blob}>} parts
  */
-export async function put(key, parts) {
+export async function put(key: string, parts: PutPart[]): Promise<void> {
   try {
     const serialized = await Promise.all(
       parts.map(async (p) => {
-        let arrayBuffer
+        let arrayBuffer: ArrayBuffer
         if (p.blob) {
           arrayBuffer = await p.blob.arrayBuffer()
         } else if (p.url) {
@@ -110,15 +128,15 @@ export async function put(key, parts) {
       })
     )
 
-    const validParts = serialized.filter(Boolean)
+    const validParts = serialized.filter((p): p is SerializedPart => p !== null)
     if (validParts.length === 0) return
 
     const db = await openDB()
     const tx = db.transaction(STORE_NAME, 'readwrite')
     const store = tx.objectStore(STORE_NAME)
     store.put({ parts: validParts, timestamp: Date.now() }, key)
-    await new Promise((resolve, reject) => {
-      tx.oncomplete = resolve
+    await new Promise<void>((resolve, reject) => {
+      tx.oncomplete = () => resolve()
       tx.onerror = () => reject(tx.error)
     })
 
@@ -129,12 +147,12 @@ export async function put(key, parts) {
   }
 }
 
-async function del(key) {
+async function del(key: string): Promise<void> {
   const db = await openDB()
   const tx = db.transaction(STORE_NAME, 'readwrite')
   tx.objectStore(STORE_NAME).delete(key)
   return new Promise((resolve, reject) => {
-    tx.oncomplete = resolve
+    tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error)
   })
 }
@@ -142,19 +160,19 @@ async function del(key) {
 /**
  * Remove expired entries and LRU-evict if over MAX_ENTRIES.
  */
-async function evict() {
+async function evict(): Promise<void> {
   const db = await openDB()
   const tx = db.transaction(STORE_NAME, 'readwrite')
   const store = tx.objectStore(STORE_NAME)
-  const allKeys = await new Promise((resolve, reject) => {
+  const allKeys = await new Promise<IDBValidKey[]>((resolve, reject) => {
     const req = store.getAllKeys()
     req.onsuccess = () => resolve(req.result)
     req.onerror = () => reject(req.error)
   })
 
-  const entries = []
+  const entries: { key: IDBValidKey; timestamp: number }[] = []
   for (const key of allKeys) {
-    const entry = await new Promise((resolve, reject) => {
+    const entry = await new Promise<CacheEntry | undefined>((resolve, reject) => {
       const req = store.get(key)
       req.onsuccess = () => resolve(req.result)
       req.onerror = () => reject(req.error)
@@ -177,7 +195,7 @@ async function evict() {
   }
 
   return new Promise((resolve, reject) => {
-    tx.oncomplete = resolve
+    tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error)
   })
 }
@@ -185,13 +203,13 @@ async function evict() {
 /**
  * Clear the entire cache.
  */
-export async function clear() {
+export async function clear(): Promise<void> {
   try {
     const db = await openDB()
     const tx = db.transaction(STORE_NAME, 'readwrite')
     tx.objectStore(STORE_NAME).clear()
     return new Promise((resolve, reject) => {
-      tx.oncomplete = resolve
+      tx.oncomplete = () => resolve()
       tx.onerror = () => reject(tx.error)
     })
   } catch {

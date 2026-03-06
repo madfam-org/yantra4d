@@ -24,6 +24,13 @@ if REDIS_URL:
         logger.info("Connected to Redis for AI sessions at %s", REDIS_URL)
     except Exception as e:
         logger.warning("Failed to connect to Redis: %s", e)
+else:
+    _debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    if not _debug:
+        logger.warning(
+            "REDIS_URL not set: AI sessions will be lost on pod restart. "
+            "Set REDIS_URL for production."
+        )
 
 # In-memory fallback
 _sessions: dict[str, dict] = {}

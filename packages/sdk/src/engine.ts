@@ -54,11 +54,19 @@ export class YantraEngine {
         return violations;
     }
 
+    private static readonly MATH_FUNC_NAMES = [
+        'sin', 'cos', 'tan', 'abs', 'sqrt', 'pow', 'min', 'max',
+        'floor', 'ceil', 'round', 'PI', 'E',
+    ];
+
     private _evaluateRule(rule: string, params: Record<string, any>): boolean {
         // Replace param names with values (longest-first to avoid partial matches)
+        // Skip names that collide with math function names
         let expr = rule;
+        const mathNames = new Set(YantraEngine.MATH_FUNC_NAMES);
         const sortedKeys = Object.keys(params).sort((a, b) => b.length - a.length);
         for (const key of sortedKeys) {
+            if (mathNames.has(key)) continue;
             const val = params[key];
             const replacement = typeof val === 'string' ? `"${val}"` : String(val);
             expr = expr.replaceAll(key, replacement);
@@ -69,12 +77,29 @@ export class YantraEngine {
 
     private _safeEval(expr: string): boolean {
         const cleaned = expr.trim();
-        // Only allow digits, whitespace, decimal points, arithmetic, comparisons, boolean logic, quotes, and parens
-        if (!/^[\d\s.+\-*/<>=!&|"'()]+$/.test(cleaned)) {
+        // Allow digits, whitespace, decimal points, arithmetic, comparisons,
+        // boolean logic, quotes, parens, word chars (for math functions), and commas
+        if (!/^[\w\s.+\-*/<>=!&|"'(),]+$/.test(cleaned)) {
             throw new Error('Unsafe expression');
         }
-        const fn = new Function(`"use strict"; return (${cleaned});`);
-        return Boolean(fn());
+        // Reject any identifiers that aren't known math functions or boolean literals
+        const allowedWords = new Set([...YantraEngine.MATH_FUNC_NAMES, 'true', 'false']);
+        const words = cleaned.match(/[a-zA-Z_]\w*/g) || [];
+        for (const word of words) {
+            if (!allowedWords.has(word)) {
+                throw new Error('Unsafe expression');
+            }
+        }
+        const fn = new Function(
+            'sin', 'cos', 'tan', 'abs', 'sqrt', 'pow', 'min', 'max',
+            'floor', 'ceil', 'round', 'PI', 'E',
+            `"use strict"; return (${cleaned});`
+        );
+        return Boolean(fn(
+            Math.sin, Math.cos, Math.tan, Math.abs, Math.sqrt, Math.pow,
+            Math.min, Math.max, Math.floor, Math.ceil, Math.round,
+            Math.PI, Math.E
+        ));
     }
 
     private _extractParamIds(rule: string, parameters: YantraParameter[]): string[] {

@@ -10,7 +10,8 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
     const [editing, setEditing] = useState(false)
     const [editValue, setEditValue] = useState('')
     const decimals = param.step % 1 === 0 ? 0 : (param.step.toString().split('.')[1]?.length || 0)
-    const displayValue = typeof value === 'number' ? parseFloat(value.toFixed(decimals)) : value
+    const safeValue = value ?? param.default
+    const displayValue = typeof safeValue === 'number' ? parseFloat(safeValue.toFixed(decimals)) : safeValue
 
     const commitEdit = () => {
         const num = parseFloat(editValue)
@@ -62,7 +63,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                 </div>
             </div>
             <Slider
-                value={[value]}
+                value={[safeValue]}
                 min={param.min} max={param.max} step={param.step}
                 onValueChange={(vals) => onSliderChange(param.id, vals, false)}
                 onValueCommit={(vals) => onSliderChange(param.id, vals, true)}

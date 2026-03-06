@@ -29,4 +29,5 @@ limiter = Limiter(
     default_limits=["500 per hour"],
     storage_uri=_storage_uri,
     enabled=_enabled,
+    headers_enabled=True,
 )

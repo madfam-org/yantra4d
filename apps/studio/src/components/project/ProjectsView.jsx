@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
+import { apiFetch } from '../../services/core/apiClient'
 import { getApiBase } from '../../services/core/backendDetection'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
@@ -45,7 +46,7 @@ export default function ProjectsView() {
   const [activeTag, setActiveTag] = useState(null)
 
   useEffect(() => {
-    fetch(`${getApiBase()}/api/admin/projects?stats=1`)
+    apiFetch(`${getApiBase()}/api/admin/projects?stats=1`)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
@@ -142,7 +143,7 @@ export default function ProjectsView() {
               onImported={() => {
                 setShowImport(false)
                 // Refresh project list
-                fetch(`${getApiBase()}/api/admin/projects`)
+                apiFetch(`${getApiBase()}/api/admin/projects`)
                   .then(res => res.ok ? res.json() : [])
                   .then(setProjects)
                   .catch(() => { })
@@ -298,7 +299,7 @@ export default function ProjectsView() {
             onImported={() => {
               setShowImport(false)
               // Refresh project list
-              fetch(`${getApiBase()}/api/admin/projects`)
+              apiFetch(`${getApiBase()}/api/admin/projects`)
                 .then(res => res.ok ? res.json() : [])
                 .then(setProjects)
                 .catch(() => { })

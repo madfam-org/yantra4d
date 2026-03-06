@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from flask import Blueprint, request, jsonify, Response
 
 from config import Config
+from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
 analytics_bp = Blueprint("analytics", __name__)
@@ -61,17 +62,17 @@ def track_event() -> tuple[Response, int]:
     event_data = data.get("data")
 
     if not event_type:
-        return jsonify({"status": "error", "error": "Missing event type"}), 400
+        return error_response("Missing event type", 400, error_code="missing_event_type")
 
     allowed_events = {"render", "export", "preset_apply", "mode_switch", "share", "verify"}
     if event_type not in allowed_events:
-        return jsonify({"status": "error", "error": f"Unknown event type: {event_type}"}), 400
+        return error_response(f"Unknown event type: {event_type}", 400, error_code="unknown_event_type")
 
     # Sanitize event_data: whitelist known keys, limit size
     ALLOWED_DATA_KEYS = {"mode", "preset", "format", "parts", "project", "duration_ms", "params"}
     if event_data:
         if not isinstance(event_data, dict):
-            return jsonify({"status": "error", "error": "event data must be an object"}), 400
+            return error_response("event data must be an object", 400, error_code="invalid_event_data")
         event_data = {k: v for k, v in event_data.items() if k in ALLOWED_DATA_KEYS}
         # Ensure string values are bounded
         for k, v in event_data.items():

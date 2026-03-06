@@ -15,6 +15,7 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
+from middleware.auth import require_tier
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 from utils.project_resolver import require_project
@@ -70,6 +71,7 @@ def get_assembly_steps(slug: str, project_dir):
 
 @assembly_bp.route("/api/projects/<slug>/assembly-steps/write", methods=["POST"])
 @require_valid_slug
+@require_tier("pro")
 @require_project()
 def write_assembly_steps(slug: str, project_dir):
     """

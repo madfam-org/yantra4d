@@ -1,140 +1,98 @@
 """
-apps/api/services/integrations/octoprint.py
-
 OctoPrint REST API client.
-Provides a minimal interface for file upload, print dispatch, status polling,
-and job cancellation. All functions are stateless — the caller provides the
-base_url and api_key from the printer.json configuration.
 
+Implements the PrinterClient interface for OctoPrint printers.
 OctoPrint API docs: https://docs.octoprint.org/en/master/api/
 """
+from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 import requests
 
+from services.integrations.base import PrinterClient, UPLOAD_TIMEOUT
+
 logger = logging.getLogger(__name__)
 
-DEFAULT_TIMEOUT = 10  # seconds
+
+class OctoPrintClient(PrinterClient):
+    """OctoPrint printer client."""
+
+    def get_status(self) -> dict:
+        try:
+            raw = self._get("/api/printer")
+
+            temps = {}
+            for key, val in raw.get("temperature", {}).items():
+                temps[key] = {"actual": val.get("actual"), "target": val.get("target")}
+
+            state = raw.get("state", {}).get("text", "Unknown")
+
+            job = None
+            try:
+                job_raw = self._get("/api/job")
+                progress = job_raw.get("progress", {})
+                job = {
+                    "file": job_raw.get("job", {}).get("file", {}).get("name", ""),
+                    "progress_pct": progress.get("completion") or 0.0,
+                    "time_elapsed_s": progress.get("printTime") or 0,
+                    "time_remaining_s": progress.get("printTimeLeft"),
+                }
+            except Exception:
+                pass
+
+            return {"state": state, "temperatures": temps, "job": job}
+
+        except requests.RequestException as e:
+            logger.warning("OctoPrint get_status failed: %s", e)
+            return {"state": "Offline", "temperatures": {}, "job": None, "error": str(e)}
+
+    def upload_file(self, file_path: str) -> str:
+        path = self._validate_file(file_path)
+        with open(path, "rb") as f:
+            try:
+                r = self._post(
+                    "/api/files/local",
+                    files={"file": (path.name, f)},
+                    data={"print": "false"},
+                    timeout=UPLOAD_TIMEOUT,
+                )
+                remote = r.get("files", {}).get("local", {}).get("name", path.name)
+                logger.info("Uploaded %s to OctoPrint as %s", path.name, remote)
+                return remote
+            except requests.RequestException as e:
+                raise RuntimeError(f"OctoPrint upload failed: {e}") from e
+
+    def start_print(self, remote_filename: str) -> None:
+        try:
+            self._post(
+                f"/api/files/local/{remote_filename}",
+                json={"command": "select", "print": True},
+            )
+            logger.info("OctoPrint print started: %s", remote_filename)
+        except requests.RequestException as e:
+            raise RuntimeError(f"OctoPrint start_print failed: {e}") from e
+
+    def cancel_print(self) -> None:
+        try:
+            self._delete("/api/job")
+            logger.info("OctoPrint print cancelled.")
+        except requests.RequestException as e:
+            raise RuntimeError(f"OctoPrint cancel_print failed: {e}") from e
 
 
+# Backwards-compatible module-level functions
 def _headers(api_key: str) -> dict:
-    h = {"X-Api-Key": api_key} if api_key else {}
-    return h
-
+    return {"X-Api-Key": api_key} if api_key else {}
 
 def get_status(base_url: str, api_key: str) -> dict:
-    """
-    Fetch current printer state, temperatures, and job progress.
-
-    Returns a normalized dict:
-        {
-          "state": "Operational" | "Printing" | "Offline" | ...,
-          "temperatures": {
-            "tool0": {"actual": float, "target": float},
-            "bed":   {"actual": float, "target": float},
-          },
-          "job": {
-            "file": str,
-            "progress_pct": float (0–100),
-            "time_elapsed_s": int,
-            "time_remaining_s": int | None,
-          } | None
-        }
-    """
-    try:
-        r = requests.get(
-            f"{base_url}/api/printer",
-            headers=_headers(api_key),
-            timeout=DEFAULT_TIMEOUT,
-        )
-        r.raise_for_status()
-        raw = r.json()
-
-        temps = {}
-        for key, val in raw.get("temperature", {}).items():
-            temps[key] = {"actual": val.get("actual"), "target": val.get("target")}
-
-        state = raw.get("state", {}).get("text", "Unknown")
-
-        job = None
-        try:
-            jr = requests.get(
-                f"{base_url}/api/job",
-                headers=_headers(api_key),
-                timeout=DEFAULT_TIMEOUT,
-            )
-            jr.raise_for_status()
-            job_raw = jr.json()
-            progress = job_raw.get("progress", {})
-            job = {
-                "file": job_raw.get("job", {}).get("file", {}).get("name", ""),
-                "progress_pct": progress.get("completion") or 0.0,
-                "time_elapsed_s": progress.get("printTime") or 0,
-                "time_remaining_s": progress.get("printTimeLeft"),
-            }
-        except Exception:
-            pass
-
-        return {"state": state, "temperatures": temps, "job": job}
-
-    except requests.RequestException as e:
-        logger.warning("OctoPrint get_status failed: %s", e)
-        return {"state": "Offline", "temperatures": {}, "job": None, "error": str(e)}
-
+    return OctoPrintClient(base_url, api_key).get_status()
 
 def upload_file(base_url: str, api_key: str, file_path: str) -> str:
-    """
-    Upload a local STL/3MF file to OctoPrint's local storage.
-
-    Returns the remote filename on success, raises RuntimeError on failure.
-    """
-    path = Path(file_path)
-    if not path.is_file():
-        raise RuntimeError(f"File not found: {file_path}")
-
-    with open(path, "rb") as f:
-        try:
-            r = requests.post(
-                f"{base_url}/api/files/local",
-                headers=_headers(api_key),
-                files={"file": (path.name, f)},
-                data={"print": "false"},
-                timeout=60,
-            )
-            r.raise_for_status()
-            remote = r.json().get("files", {}).get("local", {}).get("name", path.name)
-            logger.info("Uploaded %s to OctoPrint as %s", path.name, remote)
-            return remote
-        except requests.RequestException as e:
-            raise RuntimeError(f"OctoPrint upload failed: {e}") from e
-
+    return OctoPrintClient(base_url, api_key).upload_file(file_path)
 
 def start_print(base_url: str, api_key: str, remote_filename: str) -> None:
-    """Start printing a previously uploaded file."""
-    try:
-        r = requests.post(
-            f"{base_url}/api/files/local/{remote_filename}",
-            headers={**_headers(api_key), "Content-Type": "application/json"},
-            json={"command": "select", "print": True},
-            timeout=DEFAULT_TIMEOUT,
-        )
-        r.raise_for_status()
-        logger.info("OctoPrint print started: %s", remote_filename)
-    except requests.RequestException as e:
-        raise RuntimeError(f"OctoPrint start_print failed: {e}") from e
-
+    OctoPrintClient(base_url, api_key).start_print(remote_filename)
 
 def cancel_print(base_url: str, api_key: str) -> None:
-    """Cancel the active print job."""
-    try:
-        r = requests.delete(
-            f"{base_url}/api/job",
-            headers=_headers(api_key),
-            timeout=DEFAULT_TIMEOUT,
-        )
-        r.raise_for_status()
-        logger.info("OctoPrint print cancelled.")
-    except requests.RequestException as e:
-        raise RuntimeError(f"OctoPrint cancel_print failed: {e}") from e
+    OctoPrintClient(base_url, api_key).cancel_print()

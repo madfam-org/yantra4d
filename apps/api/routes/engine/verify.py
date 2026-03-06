@@ -13,7 +13,7 @@ from config import Config
 from extensions import limiter
 import rate_limits
 from manifest import get_manifest, resolve_part_config
-from middleware.auth import require_auth
+from middleware.auth import require_tier
 from utils.route_helpers import safe_join_path, handle_exceptions
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ VERIFY_SCRIPT = str(Config.VERIFY_SCRIPT)
 
 
 @verify_bp.route('/api/verify', methods=['POST'])
-@require_auth
+@require_tier("pro")
 @limiter.limit(rate_limits.VERIFY)
 @handle_exceptions
 def verify_design():

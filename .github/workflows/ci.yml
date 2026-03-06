@@ -25,6 +25,7 @@ jobs:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
       - run: npm audit --audit-level=high
       - run: npm run lint
+      - run: npx tsc --noEmit
       - run: npm run test:coverage
 
   landing:

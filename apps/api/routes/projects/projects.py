@@ -18,7 +18,7 @@ from config import Config
 from extensions import limiter
 import rate_limits
 from manifest import discover_projects, get_manifest, invalidate_cache
-from middleware.auth import optional_auth, require_tier
+from middleware.auth import require_tier
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
@@ -84,7 +84,7 @@ def get_project_manifest(slug):
     try:
         manifest = get_manifest(slug)
     except RuntimeError as e:
-        return jsonify({"status": "error", "error": str(e)}), 404
+        return error_response(str(e), 404, error_code="project_not_found")
 
     try:
         body = json.dumps(manifest.as_json(), sort_keys=True)
@@ -100,7 +100,7 @@ def get_project_manifest(slug):
         resp.headers["ETag"] = etag
         return resp
     except RuntimeError as e:
-        return jsonify({"status": "error", "error": str(e)}), 404
+        return error_response(str(e), 404, error_code="manifest_serialization_error")
 
 
 @projects_bp.route('/api/projects/<slug>/meta', methods=['GET'])
@@ -193,20 +193,20 @@ def fork_project(slug):
 
 @projects_bp.route('/api/projects/<slug>/manifest/assembly-steps', methods=['PUT'])
 @require_valid_slug
-@optional_auth
+@require_tier("pro")
 @handle_exceptions
 def update_assembly_steps(slug):
     """Update assembly_steps in a project's project.json."""
     try:
         manifest = get_manifest(slug)
     except RuntimeError:
-        return jsonify({"status": "error", "error": f"Project '{slug}' not found"}), 404
+        return error_response(f"Project '{slug}' not found", 404, error_code="project_not_found")
 
     manifest_path = manifest.project_dir / "project.json"
 
     data = request.get_json(silent=True)
     if not data or "assembly_steps" not in data:
-        return jsonify({"status": "error", "error": "Missing assembly_steps"}), 400
+        return error_response("Missing assembly_steps", 400, error_code="missing_assembly_steps")
 
     with open(manifest_path, "r") as f:
         manifest_data = json.load(f)

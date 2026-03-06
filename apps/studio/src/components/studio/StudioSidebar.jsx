@@ -76,9 +76,48 @@ function ActionDock() {
   )
 }
 
+function ModeTabs({ className }) {
+  const { manifest, mode, setMode, getLabel } = useProject()
+  const { language } = useLanguage()
+
+  if (!manifest.modes || manifest.modes.length <= 1) return null
+
+  return (
+    <div className={`w-full mt-2 ${className || ''}`} role="tablist" aria-label="Mode selection">
+      <div
+        className="grid w-full h-auto min-h-10 bg-transparent gap-1 rounded-md p-1"
+        style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}
+      >
+        {manifest.modes.map(m => (
+          <button
+            key={m.id}
+            role="tab"
+            aria-selected={mode === m.id}
+            onClick={() => setMode(m.id)}
+            className={`min-h-[40px] whitespace-normal break-words leading-tight flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-md transition-all border ${
+              mode === m.id
+                ? 'bg-primary/10 text-primary border-primary/20'
+                : 'border-transparent text-muted-foreground hover:bg-muted/50'
+            }`}
+          >
+            {m.svg ? (
+              <>
+                <span className="flex items-center justify-center opacity-70" dangerouslySetInnerHTML={{ __html: m.svg }} />
+                <span className="hidden md:inline-block font-medium">{getLabel(m, 'label', language)}</span>
+              </>
+            ) : (
+              <span className="font-medium">{getLabel(m, 'label', language)}</span>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function SidebarContent() {
   const {
-    manifest, mode, setMode, getLabel,
+    manifest, mode,
     params, setParams, colors, setColors,
     wireframe, setWireframe, boundingBox, setBoundingBox,
     presets, handleApplyPreset, handleGridPresetToggle,
@@ -101,7 +140,7 @@ function SidebarContent() {
     overhangThreshold, setOverhangThreshold,
   } = useProject()
 
-  const { language, t } = useLanguage()
+  const { t } = useLanguage()
 
   // Show editor panel instead of normal sidebar
   if (assemblyEditorOpen) {
@@ -123,7 +162,7 @@ function SidebarContent() {
 
   return (
     <Tabs defaultValue="config" className="w-full flex-1 flex flex-col h-full overflow-hidden relative">
-      <div className="px-4 pt-4 pb-2 bg-background z-10">
+      <div className="px-4 pt-4 pb-2 bg-background/95 backdrop-blur z-20">
         <TabsList className="grid w-full grid-cols-4 h-11 bg-muted/60">
           <TabsTrigger value="config" className="flex items-center gap-2 text-xs">
             <Settings2 className="w-3.5 h-3.5" />
@@ -142,32 +181,11 @@ function SidebarContent() {
             <span className="hidden sm:inline">Export</span>
           </TabsTrigger>
         </TabsList>
+        <ModeTabs className="hidden lg:block" />
       </div>
 
       <div className="flex-1 overflow-y-auto no-scrollbar px-4 pb-32">
         <TabsContent value="config" className="m-0 space-y-5 animate-in fade-in-50 duration-300">
-
-          <Tabs value={mode} onValueChange={setMode} className="w-full sticky top-0 z-20 bg-background/95 backdrop-blur py-2">
-            <TabsList className="grid w-full h-auto min-h-10 bg-transparent gap-1" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
-              {manifest.modes.map(m => (
-                <TabsTrigger
-                  key={m.id}
-                  value={m.id}
-                  className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none border border-transparent data-[state=active]:border-primary/20 min-h-[40px] whitespace-normal break-words leading-tight flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-md transition-all"
-                >
-                  {m.svg ? (
-                    <>
-                      <span className="flex items-center justify-center opacity-70" dangerouslySetInnerHTML={{ __html: m.svg }} />
-                      <span className="hidden md:inline-block font-medium">{getLabel(m, 'label', language)}</span>
-                    </>
-                  ) : (
-                    <span className="font-medium">{getLabel(m, 'label', language)}</span>
-                  )}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-
           <div className="pb-4">
             <Controls
               params={params}

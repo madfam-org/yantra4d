@@ -22,18 +22,25 @@ export class StudioSidebarPage extends BasePage {
     )
   }
 
-  /** Click a mode tab by index (0-based) or data-value. */
+  /** Click a mode tab by index (0-based) or data-value/aria-selected. */
   async selectMode(modeId) {
-    // 1. Try to find by data-value (Radix UI)
+    // 1. Try to find by data-value (Radix UI) or text content
     const tabByValue = this.sidebar.locator(`[role="tablist"] [role="tab"][data-value="${modeId}"]`)
     if (await tabByValue.count() > 0) {
       await tabByValue.click()
       return
     }
 
+    // 2. Try to find by text content (plain button mode tabs)
+    const tabByText = this.sidebar.locator(`[role="tablist"] [role="tab"]`).filter({ hasText: new RegExp(modeId, 'i') }).first()
+    if (await tabByText.count() > 0) {
+      await tabByText.click()
+      return
+    }
+
+    // 3. Fall back to index-based selection
     const tabs = this.sidebar.locator('[role="tablist"] [role="tab"]')
     const count = await tabs.count()
-    // Map mock mode IDs to indices based on MOCK_MANIFEST (cup, single, grid)
     const modeIndex = { cup: 0, single: 1, grid: 2, assembly: 2 }
     const idx = modeIndex[modeId] ?? 0
     if (idx < count) {
@@ -43,7 +50,8 @@ export class StudioSidebarPage extends BasePage {
 
   /** Get the active mode tab's data-value or text. */
   async getActiveMode() {
-    const active = this.sidebar.locator('[role="tablist"] [role="tab"][data-state="active"]')
+    // Mode tabs use aria-selected="true" (plain buttons) or data-state="active" (Radix)
+    const active = this.sidebar.locator('[role="tablist"] [role="tab"][aria-selected="true"], [role="tablist"] [role="tab"][data-state="active"]').first()
     // Try data-value first, fall back to text content
     const dataValue = await active.getAttribute('data-value').catch(() => null)
     if (dataValue) return dataValue

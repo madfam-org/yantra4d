@@ -235,4 +235,30 @@ describe('StudioSidebar', () => {
     render(<StudioSidebar />)
     expect(screen.getByText('btn.open_controls')).toBeInTheDocument()
   })
+
+  it('shows mode tabs regardless of active section tab', () => {
+    render(<StudioSidebar />)
+    // Mode tabs should be visible in the sidebar (desktop uses role="tab" buttons)
+    const modeTabs = screen.getAllByRole('tab', { name: /full|plate/i })
+    expect(modeTabs.length).toBeGreaterThan(0)
+
+    // Click "View" section tab — mode tabs should still be present
+    const viewTab = screen.getAllByText('View')[0]
+    fireEvent.click(viewTab)
+    const modeTabsAfter = screen.getAllByRole('tab', { name: /full|plate/i })
+    expect(modeTabsAfter.length).toBeGreaterThan(0)
+  })
+
+  it('hides mode tabs when only one mode exists', () => {
+    useProject.mockReturnValue({
+      ...baseContext,
+      manifest: {
+        ...baseContext.manifest,
+        modes: [{ id: 'full', label: 'Full' }],
+      },
+    })
+    render(<StudioSidebar />)
+    // The section tabs still exist, but no standalone mode selector
+    expect(screen.queryByRole('tablist', { name: /mode selection/i })).not.toBeInTheDocument()
+  })
 })

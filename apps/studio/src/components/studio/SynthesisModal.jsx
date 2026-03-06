@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { apiFetch } from '../../services/core/apiClient'
 import { Button } from "@/components/ui/button"
 import { Sparkles, Loader2, CheckCircle2, XCircle, X } from 'lucide-react'
 
@@ -19,14 +20,10 @@ export default function SynthesisModal({ open, onOpenChange, onSynthesisComplete
     try {
       // 1. Send the POST request to start the SSE stream
       const baseUrl = import.meta.env.VITE_API_BASE || ''
-      const token = localStorage.getItem('yantra4d_token')
-      
-      const response = await fetch(`${baseUrl}/api/ai/synthesize`, {
+
+      const response = await apiFetch(`${baseUrl}/api/ai/synthesize`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })
       })
 

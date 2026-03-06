@@ -8,6 +8,7 @@ import { useLocalStoragePersistence } from '../system/useLocalStoragePersistence
 import { useShareableUrl, getSharedParams } from './useShareableUrl'
 import { useConstraints } from '../editor/useConstraints'
 import { useHashNavigation, parseHash, buildHash } from '../system/useHashNavigation'
+import { apiFetch } from '../../services/core/apiClient'
 import { useImageExport } from '../render/useImageExport'
 import { useRender } from '../render/useRender'
 import { useKeyboardShortcuts } from '../editor/useKeyboardShortcuts'
@@ -300,7 +301,7 @@ export function useProjectParams({ viewerRef }) {
     if (!overhangEnabled || !projectSlug || parts.length === 0) return
     let cancelled = false
     const apiBase = import.meta.env.VITE_API_BASE || ''
-    fetch(`${apiBase}/api/projects/${projectSlug}/analyze/overhang`, {
+    apiFetch(`${apiBase}/api/projects/${projectSlug}/analyze/overhang`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ threshold_deg: overhangThreshold }),

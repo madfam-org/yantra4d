@@ -499,7 +499,7 @@ describe('SynthesisModal', () => {
     })
   })
 
-  it('includes auth token in request when present in localStorage', async () => {
+  it('sends request to synthesize endpoint via apiFetch', async () => {
     const mockReader = {
       read: vi.fn().mockResolvedValue({ done: true })
     }
@@ -507,9 +507,8 @@ describe('SynthesisModal', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       body: { getReader: () => mockReader },
+      headers: { get: () => null },
     })
-
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('test-jwt-token')
 
     render(
       <SynthesisModal
@@ -527,15 +526,14 @@ describe('SynthesisModal', () => {
       expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/ai/synthesize'),
         expect.objectContaining({
-          headers: expect.objectContaining({
-            'Authorization': 'Bearer test-jwt-token',
-          }),
+          method: 'POST',
+          body: JSON.stringify({ prompt: 'Make a cube' }),
         })
       )
     })
   })
 
-  it('sends request without auth header when no token', async () => {
+  it('sends Content-Type header in synthesis request', async () => {
     const mockReader = {
       read: vi.fn().mockResolvedValue({ done: true })
     }
@@ -543,9 +541,8 @@ describe('SynthesisModal', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       body: { getReader: () => mockReader },
+      headers: { get: () => null },
     })
-
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null)
 
     render(
       <SynthesisModal
@@ -562,7 +559,7 @@ describe('SynthesisModal', () => {
     await waitFor(() => {
       const fetchCall = globalThis.fetch.mock.calls[0]
       const headers = fetchCall[1].headers
-      expect(headers).not.toHaveProperty('Authorization')
+      expect(headers['Content-Type']).toBe('application/json')
     })
   })
 

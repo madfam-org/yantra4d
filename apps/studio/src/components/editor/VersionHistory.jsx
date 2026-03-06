@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiFetch } from '../../services/core/apiClient'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 
 /**
@@ -21,7 +22,7 @@ export default function VersionHistory({ projectSlug, onClose }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     setError(null)
-    fetch(`/api/projects/${projectSlug}/git/log?limit=20`)
+    apiFetch(`/api/projects/${projectSlug}/git/log?limit=20`)
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
         return r.json()

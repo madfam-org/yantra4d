@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react"
+import { apiFetch } from "../../services/core/apiClient"
 import { getApiBase } from "../../services/core/backendDetection"
 import { useLanguage } from "../../contexts/system/LanguageProvider"
 import UploadStep from "./UploadStep"
@@ -36,7 +37,7 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
     files.forEach((f) => formData.append("files", f))
 
     try {
-      const res = await fetch(`${getApiBase()}/api/projects/analyze`, {
+      const res = await apiFetch(`${getApiBase()}/api/projects/analyze`, {
         method: "POST",
         body: formData,
       })
@@ -68,7 +69,7 @@ export default function OnboardingWizard({ onComplete, onCancel }) {
     files.forEach((f) => formData.append("files", f))
 
     try {
-      const res = await fetch(`${getApiBase()}/api/projects/create`, {
+      const res = await apiFetch(`${getApiBase()}/api/projects/create`, {
         method: "POST",
         body: formData,
       })

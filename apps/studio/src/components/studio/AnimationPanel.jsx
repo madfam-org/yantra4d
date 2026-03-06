@@ -12,11 +12,12 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { apiFetch } from '../../services/core/apiClient'
 import './AnimationPanel.css'
 
 /** Retrieve available animations from the backend (mirrors manifest data). */
 async function fetchAnimations(slug) {
-    const res = await fetch(`/api/projects/${slug}/animations`)
+    const res = await apiFetch(`/api/projects/${slug}/animations`)
     if (!res.ok) return []
     const data = await res.json()
     return data.animations ?? []
@@ -81,7 +82,7 @@ export default function AnimationPanel({ projectSlug, onLoadFrame }) {
         abortRef.current = controller
 
         try {
-            const res = await fetch(
+            const res = await apiFetch(
                 `/api/projects/${projectSlug}/animations/${selectedId}/render`,
                 {
                     method: 'POST',

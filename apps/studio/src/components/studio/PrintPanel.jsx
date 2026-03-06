@@ -13,13 +13,14 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { apiFetch } from '../../services/core/apiClient'
 import './PrintPanel.css'
 
 const POLL_INTERVAL_MS = 5000
 
 async function fetchPrinters() {
     try {
-        const res = await fetch('/api/printers')
+        const res = await apiFetch('/api/printers')
         if (!res.ok) return []
         const data = await res.json()
         return data.printers ?? []
@@ -30,7 +31,7 @@ async function fetchPrinters() {
 
 async function fetchStatus(printerId) {
     try {
-        const res = await fetch(`/api/printers/${printerId}/status`)
+        const res = await apiFetch(`/api/printers/${printerId}/status`)
         if (!res.ok) return null
         return await res.json()
     } catch {
@@ -39,7 +40,7 @@ async function fetchStatus(printerId) {
 }
 
 async function dispatchPrint(printerId, fileUrl) {
-    const res = await fetch(`/api/printers/${printerId}/print`, {
+    const res = await apiFetch(`/api/printers/${printerId}/print`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ file_path: fileUrl }),
@@ -52,7 +53,7 @@ async function dispatchPrint(printerId, fileUrl) {
 }
 
 async function cancelPrint(printerId) {
-    const res = await fetch(`/api/printers/${printerId}/print`, { method: 'DELETE' })
+    const res = await apiFetch(`/api/printers/${printerId}/print`, { method: 'DELETE' })
     if (!res.ok) {
         const err = await res.json()
         throw new Error(err.error ?? `HTTP ${res.status}`)

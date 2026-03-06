@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify
 import logging
 
 from services.core.material_service import discover_materials, get_material
+from utils.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ def list_materials():
         return resp
     except Exception as e:
         logger.error(f"Failed to list materials: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+        return error_response(str(e), 500)
 
 
 @materials_bp.route('/api/materials/<slug>', methods=['GET'])
@@ -33,4 +34,4 @@ def get_material_by_slug(slug):
         resp.headers["Cache-Control"] = "public, max-age=300"
         return resp
     except RuntimeError as e:
-        return jsonify({"status": "error", "error": str(e)}), 404
+        return error_response(str(e), 404)

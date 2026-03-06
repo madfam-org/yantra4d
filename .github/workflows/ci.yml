@@ -25,7 +25,10 @@ jobs:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
       - run: npm audit --audit-level=high
       - run: npm run lint
+      - run: npx tsc --noEmit
       - run: npm run test:coverage
+      - name: Check bundle size
+        run: npm run build && du -sh dist/assets/*.js | sort -rh | head -10
 
   landing:
     runs-on: ubuntu-latest

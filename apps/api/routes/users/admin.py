@@ -142,12 +142,12 @@ def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
     manifest_path = project_dir / "project.json"
 
     if not project_dir.is_dir() or not manifest_path.exists():
-        return jsonify({"status": "error", "error": f"Project '{slug}' not found"}), 404
+        return error_response(f"Project '{slug}' not found", 404, error_code="project_not_found")
 
     projects = discover_projects()
     proj = next((p for p in projects if p["slug"] == slug), None)
     if not proj:
-        return jsonify({"status": "error", "error": f"Project '{slug}' not found"}), 404
+        return error_response(f"Project '{slug}' not found", 404, error_code="project_not_found")
 
     proj = _enrich_project(proj)
 

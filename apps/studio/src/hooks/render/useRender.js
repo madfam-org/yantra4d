@@ -9,7 +9,7 @@ const LOADING_RESET_DELAY_MS = 500
 /**
  * Hook encapsulating render orchestration: generate, cancel, confirm dialog, cache.
  */
-export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
+export function useRender({ mode, params, manifest, t, getCacheKey, project, exportFormat }) {
   const [parts, setParts] = useState([])
   const [logs, setLogs] = useState(t("log.ready"))
   const [loading, setLoading] = useState(false)
@@ -44,7 +44,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
     // L2: IndexedDB persistent cache (~5ms)
     if (!forceRender) {
       try {
-        const idbKey = await idbCache.makeCacheKey(project || '', mode, params, 'glb')
+        const idbKey = await idbCache.makeCacheKey(project || '', mode, params, exportFormat || 'glb')
         const cached = await idbCache.get(idbKey)
         if (cached) {
           const restoredParts = cached.map(p => ({
@@ -94,7 +94,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
         },
         abortSignal: controller.signal,
         project,
-        ignoreCache: forceRender
+        ignoreCache: forceRender,
+        exportFormat
       })
 
       setParts(result)
@@ -103,7 +104,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
       setLogs(prev => prev + `\n${t("log.gen_stl")}`)
 
       // Populate IndexedDB cache in the background
-      idbCache.makeCacheKey(project || '', mode, params, 'glb')
+      idbCache.makeCacheKey(project || '', mode, params, exportFormat || 'glb')
         .then(idbKey => idbCache.put(idbKey, result))
         .catch(() => {})
     } catch (e) {
@@ -128,7 +129,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
         setProgress(0)
       }, LOADING_RESET_DELAY_MS)
     }
-  }, [mode, params, manifest, t, getCacheKey, project, triggerUpgradePrompt])
+  }, [mode, params, manifest, t, getCacheKey, project, exportFormat, triggerUpgradePrompt])
 
   const handleCancelGenerate = useCallback(async () => {
     if (abortControllerRef.current) {

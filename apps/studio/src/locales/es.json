@@ -17,6 +17,7 @@
   "log.zip_done": "ZIP descargado.",
   "log.cache_hit": "Cargado desde caché.",
   "log.backend_warn": "Backend no disponible. Verifica que el servidor esté corriendo.",
+  "act.download": "Descargar",
   "act.download_stl": "Descargar STL",
   "act.export_img": "Exportar Imágenes",
   "act.export_all": "Exportar Todas las Vistas",

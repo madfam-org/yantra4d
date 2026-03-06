@@ -96,7 +96,8 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
       // Add part STLs
       parts.forEach((part, i) => {
         if (part.url) {
-          items.push({ url: part.url, filename: `${part.type || `part-${i}`}.stl` })
+          const ext = exportFormat || 'stl'
+          items.push({ url: part.url, filename: `${part.type || `part-${i}`}.${ext}` })
         }
       })
       // Add manifest JSON
@@ -175,7 +176,7 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
                 title={disabled ? t("export.no_parts") : t("tooltip.download")}
               >
                 <Download className="h-4 w-4" />
-                {t("act.download_stl")}{isZip ? ' (ZIP)' : ''}
+                {t("act.download")} {(exportFormat || 'stl').toUpperCase()}{isZip ? ' (ZIP)' : ''}
               </Button>
             </AuthGate>
 

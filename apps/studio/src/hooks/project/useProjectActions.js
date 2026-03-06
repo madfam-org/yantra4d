@@ -13,7 +13,7 @@ export function useProjectActions({
   parts, mode, projectSlug, t,
   setLogs, getDefaultParams, getDefaultColors,
   setParams, setColors, setWireframe,
-  copyShareUrl,
+  copyShareUrl, exportFormat,
   handleExportImage: exportImage,
   handleExportAllViews: exportAllViews,
 }) {
@@ -44,22 +44,23 @@ export function useProjectActions({
 
   const handleDownloadStl = useCallback(async () => {
     if (parts.length === 0) return
+    const ext = exportFormat || 'stl'
     if (parts.length === 1) {
-      downloadFile(parts[0].url, `${projectSlug}_${mode}_${parts[0].type}.stl`)
+      downloadFile(parts[0].url, `${projectSlug}_${mode}_${parts[0].type}.${ext}`)
       return
     }
     setLogs(prev => prev + `\n${t("log.zipping")}`)
     try {
       const items = parts.map(part => ({
         url: part.url,
-        filename: `${projectSlug}_${mode}_${part.type}.stl`
+        filename: `${projectSlug}_${mode}_${part.type}.${ext}`
       }))
       await downloadZip(items, `${projectSlug}_${mode}_all_parts.zip`)
       setLogs(prev => prev + `\n${t("log.zip_done")}`)
     } catch (e) {
       setLogs(prev => prev + `\n${t("log.error")}` + e.message)
     }
-  }, [parts, mode, projectSlug, t, setLogs])
+  }, [parts, mode, projectSlug, t, setLogs, exportFormat])
 
   const handleReset = useCallback(() => {
     setParams(getDefaultParams())

@@ -212,7 +212,7 @@ export function useProjectParams({ viewerRef }) {
     handleCancelGenerate,
     handleConfirmRender,
     handleCancelRender,
-  } = useRender({ mode, params, manifest, t, getCacheKey, project: projectSlug })
+  } = useRender({ mode, params, manifest, t, getCacheKey, project: projectSlug, exportFormat })
 
   // Auto-scroll console
   useEffect(() => {

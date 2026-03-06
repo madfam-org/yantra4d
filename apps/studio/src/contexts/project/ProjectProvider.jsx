@@ -41,6 +41,7 @@ function ProjectProviderContent({ children }) {
     setColors: projectParams.setColors,
     setWireframe: projectParams.setWireframe,
     copyShareUrl: projectParams.copyShareUrl,
+    exportFormat: projectParams.exportFormat,
     handleExportImage: projectParams.handleExportImage,
     handleExportAllViews: projectParams.handleExportAllViews,
   })

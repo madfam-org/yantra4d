@@ -65,6 +65,7 @@ interface RenderOptions {
   abortSignal?: AbortSignal
   project?: string
   ignoreCache?: boolean
+  exportFormat?: string
 }
 
 const API_BASE = getApiBase()
@@ -285,13 +286,16 @@ async function renderBackend(
   onProgress?: OnProgress,
   abortSignal?: AbortSignal,
   project?: string,
-  ignoreCache?: boolean
+  ignoreCache?: boolean,
+  exportFormat?: string
 ): Promise<RenderPart[]> {
   const payload: Record<string, unknown> = { ...params, mode }
   if (project) payload.project = project
   if (ignoreCache) payload.ignore_cache = true
 
-  if (manifest && manifest.engine === 'cadquery') {
+  if (exportFormat) {
+    payload.export_format = exportFormat
+  } else if (manifest && manifest.engine === 'cadquery') {
     payload.export_format = 'glb'
   }
 
@@ -366,11 +370,11 @@ export async function renderParts(
   mode: string,
   params: Record<string, unknown>,
   manifest: Manifest,
-  { onProgress, abortSignal, project, ignoreCache }: RenderOptions = {}
+  { onProgress, abortSignal, project, ignoreCache, exportFormat }: RenderOptions = {}
 ): Promise<RenderPart[]> {
   const currentMode = await detectMode(manifest, mode, params)
   if (currentMode === 'backend') {
-    return renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache)
+    return renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
   } else {
     return renderWasm(mode, params, manifest, onProgress, abortSignal)
   }

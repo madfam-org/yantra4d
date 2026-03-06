@@ -254,6 +254,15 @@ def render_stl():
     manifest = get_manifest(project_slug)
     engine = manifest.engine
 
+    # Dual-engine fallback: use CadQuery for formats OpenSCAD can't produce
+    if engine == "openscad" and export_format in ('step', 'glb', 'gltf'):
+        mode_id = data.get('mode')
+        if mode_id:
+            mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
+            if mode_config and mode_config.get('cq_file'):
+                engine = "cadquery"
+                scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
+
     if engine == "cadquery":
         if not check_feature(tier, "cadquery_engine"):
             return error_response("CadQuery engine is not available for your tier.", 403)
@@ -392,6 +401,15 @@ def render_stl_stream():
     # Engine-aware format validation (before streaming)
     manifest = get_manifest(project_slug)
     engine = manifest.engine
+
+    # Dual-engine fallback: use CadQuery for formats OpenSCAD can't produce
+    if engine == "openscad" and export_format in ('step', 'glb', 'gltf'):
+        mode_id = data.get('mode')
+        if mode_id:
+            mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
+            if mode_config and mode_config.get('cq_file'):
+                engine = "cadquery"
+                scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
 
     if engine == "cadquery":
         if not check_feature(tier, "cadquery_engine"):

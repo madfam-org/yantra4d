@@ -17,6 +17,7 @@
   "log.zip_done": "ZIP 已下载。",
   "log.cache_hit": "从缓存加载。",
   "log.backend_warn": "后端不可用。请检查服务器是否正在运行。",
+  "act.download": "下载",
   "act.download_stl": "下载 STL",
   "act.export_img": "导出图片",
   "act.export_all": "导出所有视图",

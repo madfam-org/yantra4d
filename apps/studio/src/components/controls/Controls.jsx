@@ -6,6 +6,8 @@ import { useLanguage } from "../../contexts/system/LanguageProvider"
 import { useManifest } from "../../contexts/project/ManifestProvider"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import { apiFetch } from '../../services/core/apiClient'
+import { getApiBase } from '../../services/core/backendDetection'
 
 import SliderControl from './SliderControl'
 import ColorGradientControl from './ColorGradientControl'
@@ -24,7 +26,7 @@ function MaterialPickerWidget({ params, setParams, materials, setMaterials }) {
 
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true)
-        fetch('/api/materials')
+        apiFetch(`${getApiBase()}/api/materials`)
             .then(r => r.json())
             .then(data => {
                 setMaterials(Array.isArray(data) ? data : [])
@@ -113,7 +115,7 @@ function ComponentPickerWidget({ param, setParams, getLabel, language }) {
         if (!category) return
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true)
-        fetch(`/api/catalog/nopscadlib/${category}`)
+        apiFetch(`${getApiBase()}/api/catalog/nopscadlib/${category}`)
             .then(r => r.json())
             .then(data => {
                 setComponents(data.components ?? [])

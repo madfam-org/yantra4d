@@ -252,6 +252,42 @@ describe('renderParts (SSE event types)', () => {
     expect(body.export_format).toBe('glb')
   })
 
+  it('passes explicit exportFormat to backend payload', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.step"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', {}, manifest, { exportFormat: 'step' })
+
+    const renderCall = fetchMock.mock.calls[1]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.export_format).toBe('step')
+  })
+
+  it('exportFormat overrides CadQuery default glb', async () => {
+    const cqManifest = { ...manifest, engine: 'cadquery' }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.step"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', {}, cqManifest, { exportFormat: 'step' })
+
+    const renderCall = fetchMock.mock.calls[0]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.export_format).toBe('step')
+  })
+
   it('uses backend when manifest.force_backend is true', async () => {
     const forcedManifest = { ...manifest, force_backend: true }
     const fetchMock = vi.spyOn(globalThis, 'fetch')

@@ -315,4 +315,21 @@ describe('useRender', () => {
     // Resolve to clean up
     resolveRender([])
   })
+
+  it('passes exportFormat to renderParts', async () => {
+    const { renderParts } = await import('../../services/engine/renderService')
+    const { result } = renderUseRender({ exportFormat: 'step' })
+
+    await act(async () => {
+      await result.current.handleGenerate(true)
+    })
+
+    expect(renderParts).toHaveBeenCalledWith(
+      'unit',
+      { size: 20 },
+      mockManifest,
+      expect.objectContaining({ exportFormat: 'step' })
+    )
+  })
 })
+

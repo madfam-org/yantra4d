@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useManifest } from '../../contexts/project/ManifestProvider'
 import { useProject } from '../../contexts/project/ProjectProvider'
+import { apiFetch } from '../../services/core/apiClient'
+import { getApiBase } from '../../services/core/backendDetection'
 import PresetGallery from './PresetGallery'
 
 /**
@@ -40,7 +42,7 @@ export default function StorefrontView({ onExitStorefront }) {
     const handleShare = useCallback(async () => {
         if (!activePreset || !projectSlug) return
         try {
-            const res = await fetch(`/api/projects/${projectSlug}/share/${activePreset}`)
+            const res = await apiFetch(`${getApiBase()}/api/projects/${projectSlug}/share/${activePreset}`)
             const data = await res.json()
             setShareUrl(data.share_url)
             await navigator.clipboard.writeText(data.share_url)

@@ -25,7 +25,7 @@ export function TierProvider({ children }) {
 
   // Fetch tier definitions once
   useEffect(() => {
-    fetch(`${getApiBase()}/api/tiers`)
+    apiFetch(`${getApiBase()}/api/tiers`)
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setAllTiers(data) })
       .catch(() => { })

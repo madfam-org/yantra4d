@@ -1,7 +1,10 @@
+import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
 import sys
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Module-level defaults (single source of truth for server address constants)
@@ -124,6 +127,9 @@ class AppConfig:
             o.strip()
             for o in os.getenv("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS).split(",")
         ]
+
+        if not self.AI_API_KEY:
+            logger.warning("AI_API_KEY not set — AI features unavailable")
 
     # --- Manifest-delegated accessors (backward compat) ---
     # These are kept as instance methods now, but clients calling Config.method() will still work

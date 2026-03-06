@@ -63,6 +63,11 @@ describe('ExportPanel', () => {
     expect(screen.getByText(/Download STL/i)).toBeInTheDocument()
   })
 
+  it('download button shows format-specific label', () => {
+    renderPanel({ exportFormat: 'step', parts: [{ type: 'main', url: 'blob:x' }] })
+    expect(screen.getByText(/Download STEP/i)).toBeInTheDocument()
+  })
+
   it('renders accordion section headers', () => {
     renderPanel()
     expect(screen.getByRole('button', { name: 'Geometry' })).toBeInTheDocument()

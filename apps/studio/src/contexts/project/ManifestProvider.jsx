@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo } 
 import { useLocation } from "react-router-dom"
 import fallbackManifest from "../../config/fallback-manifest"
 import { getApiBase } from "../../services/core/backendDetection"
+import { apiFetch } from "../../services/core/apiClient"
 
 const ManifestContext = createContext()
 
@@ -19,7 +20,7 @@ export function ManifestProvider({ children }) {
 
   // Fetch projects list on mount
   useEffect(() => {
-    fetch(`${getApiBase()}/api/projects`, { signal: AbortSignal.timeout(PROJECTS_FETCH_TIMEOUT_MS) })
+    apiFetch(`${getApiBase()}/api/projects`, { signal: AbortSignal.timeout(PROJECTS_FETCH_TIMEOUT_MS) })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
@@ -57,7 +58,7 @@ export function ManifestProvider({ children }) {
       ? `${getApiBase()}/api/projects/${projectSlug}/manifest`
       : `${getApiBase()}/api/manifest`
 
-    fetch(url, { signal: controller.signal })
+    apiFetch(url, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()

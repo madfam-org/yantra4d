@@ -49,7 +49,7 @@ def client(app):
 class TestEstimateAPI:
     def test_estimate_constant_mode(self, client):
         """Constant mode: slicer-grade estimate. 1 unit, 1 part.
-        Formula: (1 * 0.20 / 8.0) + (1 * 180.0) = 180.025 → rounds to 180.0"""
+        Formula: (1 * 0.20 / 8.0) + (1 * 180.0) = 180.025 -> rounds to 180.0"""
         res = client.post("/api/estimate", json={"mode": "single", "project": "test-project"})
         assert res.status_code == 200
         data = res.get_json()
@@ -73,7 +73,7 @@ class TestEstimateAPI:
 
 class TestEstimateExportFormat:
     def test_estimate_ignores_export_format(self, client):
-        """export_format is a render param — estimate should still work and return 180.0 for single mode."""
+        """export_format is a render param -- estimate should still work and return 180.0 for single mode."""
         res = client.post("/api/estimate", json={
             "mode": "single", "project": "test-project", "export_format": "3mf",
         })
@@ -137,7 +137,7 @@ class TestTierEnforcementRender:
         class MockManifest:
             def __init__(self): self.engine = "cadquery"
         monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
-        
+
         res = client.post("/api/render", json={"project": "cq"})
         assert res.status_code == 403
         assert "CadQuery engine is not available" in res.get_json()["error"]
@@ -149,7 +149,7 @@ class TestTierEnforcementRender:
         class MockManifest:
             def __init__(self): self.engine = "openscad"
         monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
-        
+
         res = client.post("/api/render", json={"project": "os"})
         assert res.status_code == 403
         assert "requires Pro tier" in res.get_json()["error"]
@@ -219,7 +219,7 @@ class TestRenderPayloadValidation:
     def test_render_payload_extracts_ignore_cache(self, monkeypatch):
         """_extract_render_payload correctly extracts ignore_cache flag."""
         from routes.engine.render import _extract_render_payload
-        
+
         class MockManifest:
             def __init__(self):
                 self.slug = "test-project"
@@ -230,9 +230,173 @@ class TestRenderPayloadValidation:
             def get_allowed_files(self): return {"m.scad": "mock_path"}
             def get_mode_map(self): return {"m": 0}
             def get_static_stl_map(self): return {}
-                
+
         monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
         monkeypatch.setattr("routes.engine.render.validate_params", lambda *args: {})
-        
+
         payload = _extract_render_payload({"project": "test-project", "ignore_cache": True})
         assert payload["ignore_cache"] is True
+
+
+class TestDualEngineRouting:
+    """Tests for the dual-engine fallback: OpenSCAD -> CadQuery when format requires it."""
+
+    def _setup_dual_engine_mocks(self, monkeypatch, export_format, has_cq_file=True):
+        """Wire up monkeypatches for dual-engine fallback tests.
+
+        Returns the list used to track which engine actually rendered (populated
+        during the request by the mocked render functions).
+        """
+        mode_config = {
+            "id": "unit", "scad_file": "main.scad",
+            "label": {"en": "Unit"}, "parts": ["main"],
+            "estimate": {"base_units": 1, "formula": "constant"},
+        }
+        if has_cq_file:
+            mode_config["cq_file"] = "main.py"
+
+        # _extract_render_payload is mocked so no real file I/O is needed
+        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+            "parts": ["main"],
+            "export_format": export_format,
+            "params": {},
+            "scad_path": "/mock/dir/main.scad",
+            "mode_map": {"main": 0},
+            "stl_prefix": "dual_pre_",
+            "project_slug": "dual-test",
+            "scad_filename": "main.scad",
+            "ignore_cache": True,
+            "scad_content_hash": "abc123",
+        })
+
+        class MockManifest:
+            def __init__(self):
+                self.engine = "openscad"
+                self.modes = [mode_config]
+        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
+
+        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+
+        # Track which engine was invoked
+        engine_calls = []
+        monkeypatch.setattr(
+            "routes.engine.render.build_cadquery_command",
+            lambda *args, **kwargs: (engine_calls.append("cadquery"), ["echo", "ok"])[1],
+        )
+        monkeypatch.setattr(
+            "routes.engine.render.run_cadquery_render",
+            lambda *args, **kwargs: (True, "cadquery render ok"),
+        )
+        monkeypatch.setattr(
+            "routes.engine.render.build_openscad_command",
+            lambda *args, **kwargs: (engine_calls.append("openscad"), ["echo", "ok"])[1],
+        )
+        monkeypatch.setattr(
+            "routes.engine.render.run_openscad_render",
+            lambda *args, **kwargs: (True, "openscad render ok"),
+        )
+        return engine_calls
+
+    # -- Fallback activates when cq_file is present --------------------------
+
+    def test_fallback_activates_for_step_with_cq_file(self, client, monkeypatch):
+        """When mode has cq_file and format is step, engine switches to cadquery."""
+        engine_calls = self._setup_dual_engine_mocks(monkeypatch, "step", has_cq_file=True)
+
+        res = client.post("/api/render", json={
+            "project": "dual-test", "mode": "unit", "export_format": "step",
+        })
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["status"] == "success"
+        assert len(data["parts"]) == 1
+        assert data["parts"][0]["type"] == "main"
+        # Verify cadquery was the engine that actually ran
+        assert engine_calls == ["cadquery"]
+
+    def test_fallback_activates_for_glb_with_cq_file(self, client, monkeypatch):
+        """When mode has cq_file and format is glb, engine switches to cadquery."""
+        engine_calls = self._setup_dual_engine_mocks(monkeypatch, "glb", has_cq_file=True)
+
+        res = client.post("/api/render", json={
+            "project": "dual-test", "mode": "unit", "export_format": "glb",
+        })
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "success"
+        assert engine_calls == ["cadquery"]
+
+    def test_fallback_activates_for_gltf_with_cq_file(self, client, monkeypatch):
+        """When mode has cq_file and format is gltf, engine switches to cadquery."""
+        engine_calls = self._setup_dual_engine_mocks(monkeypatch, "gltf", has_cq_file=True)
+
+        res = client.post("/api/render", json={
+            "project": "dual-test", "mode": "unit", "export_format": "gltf",
+        })
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "success"
+        assert engine_calls == ["cadquery"]
+
+    # -- No fallback when cq_file is absent -----------------------------------
+
+    def test_no_fallback_without_cq_file_returns_400(self, client, monkeypatch):
+        """Without cq_file, requesting step stays on OpenSCAD and is rejected."""
+        self._setup_dual_engine_mocks(monkeypatch, "step", has_cq_file=False)
+
+        res = client.post("/api/render", json={
+            "project": "dual-test", "mode": "unit", "export_format": "step",
+        })
+        assert res.status_code == 400
+        assert "not supported by OpenSCAD" in res.get_json()["error"]
+
+    # -- STL format never triggers fallback -----------------------------------
+
+    def test_stl_format_stays_on_openscad_even_with_cq_file(self, client, monkeypatch):
+        """STL format is natively supported by OpenSCAD -- no fallback occurs."""
+        engine_calls = self._setup_dual_engine_mocks(monkeypatch, "stl", has_cq_file=True)
+
+        res = client.post("/api/render", json={
+            "project": "dual-test", "mode": "unit", "export_format": "stl",
+        })
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "success"
+        # OpenSCAD should handle STL, not CadQuery
+        assert engine_calls == ["openscad"]
+
+    # -- No mode in request skips fallback ------------------------------------
+
+    def test_no_mode_in_request_skips_fallback(self, client, monkeypatch):
+        """Without mode in the request body, the fallback lookup is skipped."""
+        self._setup_dual_engine_mocks(monkeypatch, "step", has_cq_file=True)
+
+        # Send request without "mode" key -- fallback requires data.get('mode')
+        res = client.post("/api/render", json={
+            "project": "dual-test", "export_format": "step",
+        })
+        # Engine stays openscad, step is rejected
+        assert res.status_code == 400
+        assert "not supported by OpenSCAD" in res.get_json()["error"]
+
+    # -- Configuration correctness --------------------------------------------
+
+    def test_step_not_in_openscad_formats(self):
+        """STEP is not a valid OpenSCAD export format."""
+        from config import Config
+        assert "step" not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS
+
+    def test_step_in_cadquery_formats(self):
+        """STEP is a valid CadQuery export format."""
+        from config import Config
+        assert "step" in Config.CADQUERY_ALLOWED_EXPORT_FORMATS
+
+    def test_fallback_trigger_formats_in_cadquery_set(self):
+        """All three fallback trigger formats (step, glb, gltf) are in the CadQuery allowed set."""
+        from config import Config
+        for fmt in ("step", "glb", "gltf"):
+            assert fmt in Config.CADQUERY_ALLOWED_EXPORT_FORMATS, f"{fmt} missing from CadQuery formats"
+
+    def test_fallback_trigger_formats_not_in_openscad_set(self):
+        """All three fallback trigger formats are absent from the OpenSCAD allowed set."""
+        from config import Config
+        for fmt in ("step", "glb", "gltf"):
+            assert fmt not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS, f"{fmt} unexpectedly in OpenSCAD formats"

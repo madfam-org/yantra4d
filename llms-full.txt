@@ -125,6 +125,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     {
       "id": "unit",                           // Unique mode identifier
       "scad_file": "half_cube.scad",          // Which SCAD file to render
+      "cq_file": "half_cube.py",              // Optional: CadQuery script (enables STEP export)
       "label": { "en": "Unit", "es": "Unidad" },
       "parts": ["main"],                      // Part IDs rendered in this mode
       "estimate": {
@@ -205,7 +206,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default": "rendering"
   },
 
-  "export_formats": ["stl", "3mf", "off"],
+  "export_formats": ["stl", "3mf", "step"],  // "step" requires cq_file in modes
   "print_estimation": { "default_material": "pla", "default_infill": 0.2 },
   "difficulty": "beginner",
   "viewer": { "default_color": "#e5e7eb" },
@@ -291,7 +292,7 @@ Provides via `useManifest()` hook: `manifest`, `loading`, `projectSlug`, `projec
 | POST | `/api/projects/analyze` | multipart `.scad` | Analyze SCAD files, return draft manifest |
 | POST | `/api/projects/create` | multipart manifest + files | Create new project |
 | POST | `/api/estimate` | `{mode, parameters, project?}` | Estimate render time |
-| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (stl/3mf/off) |
+| POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf) |
 | POST | `/api/render-stream` | `{mode, parameters, parts, export_format?, project?}` | SSE streaming render |
 | POST | `/api/render-cancel` | — | Cancel active render |
 | POST | `/api/verify` | `{mode, project?}` | Run STL quality checks |
@@ -371,8 +372,8 @@ Tier definitions live in `apps/api/tiers.json`. Enforcement in `middleware/auth.
 |------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | guest | 30 | 0 | STL | — | — | — | 0 |
 | basic | 50 | 3 | STL | — | Yes | — | 30 |
-| pro | 200 | unlimited | STL/3MF/OFF | import, editor, private | Yes | Yes | 100 |
-| madfam | 500 | unlimited | STL/3MF/OFF | import, sync, editor, private | Yes | Yes | 300 |
+| pro | 200 | unlimited | STL/3MF/OFF/STEP | import, editor, private | Yes | Yes | 100 |
+| madfam | 500 | unlimited | STL/3MF/OFF/STEP | import, sync, editor, private | Yes | Yes | 300 |
 
 Set `AUTH_ENABLED=false` to bypass auth in development (all users get madfam tier).
 
@@ -645,7 +646,7 @@ docker compose down         # stop
 | Bundle splitting | Vite splits vendor chunks; `ProjectsView` and `OnboardingWizard` lazy-loaded |
 | Shareable URLs | `?p=` encodes non-default params as base64url JSON diff |
 | Undo/Redo | Cmd+Z / Cmd+Shift+Z; 50-entry history stack |
-| Export formats | `export_format` in render payloads (stl/3mf/off) |
+| Export formats | `export_format` validated per engine (OpenSCAD: stl/3mf/off; CadQuery: stl/step/glb/gltf/3mf). Modes with `cq_file` auto-route to CadQuery for STEP |
 | Print estimation | Volume-based heuristic; not slicer-accurate |
 | Shared tokens | Both apps import `packages/tokens/colors.css` |
 | Embed mode | `?embed=true` hides header; `frame-ancestors` needed for iframes |

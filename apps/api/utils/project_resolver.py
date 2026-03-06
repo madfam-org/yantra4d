@@ -7,9 +7,8 @@ import functools
 import logging
 from pathlib import Path
 
-from flask import jsonify
-
 from config import Config
+from utils.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +71,7 @@ def require_project(*, require_git: bool = False, auto_git: bool = False):
             )
             if err:
                 status = 404 if "not found" in err.lower() else 400
-                return jsonify({"status": "error", "error": err}), status
+                return error_response(err, status)
             return fn(*args, slug=slug, project_dir=project_dir, **kwargs)
         return wrapper
     return decorator

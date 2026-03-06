@@ -309,9 +309,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
     const handleGeometry = useCallback((partType, geometry) => {
         geometriesRef.current[partType] = geometry
-        // DEBUG: Check geometry bounds on load
         geometry.computeBoundingBox()
-        console.log(`[Viewer] Loaded ${partType}:`, geometry.boundingBox)
         recalculateSceneStats()
     }, [recalculateSceneStats])
 

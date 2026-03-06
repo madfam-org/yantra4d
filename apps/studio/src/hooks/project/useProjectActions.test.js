@@ -173,6 +173,33 @@ describe('useProjectActions', () => {
       const updater = lastCall[0]
       expect(updater('')).toContain('zip fail')
     })
+
+    it('uses exportFormat extension for single part download', async () => {
+      const parts = [{ url: 'http://file.step', type: 'body' }]
+      const { result } = renderActions({ parts, exportFormat: 'step' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(downloadFile).toHaveBeenCalledWith(
+        'http://file.step',
+        'test-project_basic_body.step'
+      )
+    })
+
+    it('uses exportFormat extension for zip entries', async () => {
+      const parts = [
+        { url: 'http://a.step', type: 'top' },
+        { url: 'http://b.step', type: 'bottom' },
+      ]
+      const setLogs = vi.fn()
+      const { result } = renderActions({ parts, setLogs, exportFormat: 'step' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      const zipCall = downloadZip.mock.calls[0]
+      expect(zipCall[0][0].filename).toBe('test-project_basic_top.step')
+      expect(zipCall[0][1].filename).toBe('test-project_basic_bottom.step')
+    })
   })
 
   // ---------- handleReset ----------

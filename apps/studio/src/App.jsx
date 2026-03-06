@@ -180,7 +180,7 @@ function App() {
 
         {/* φ split: Sidebar ≈ 38.2% | Main ≈ 61.8% */}
         {!editorOpen && (
-          <div className="hidden lg:flex flex-col min-h-0 border-r border-border overflow-y-auto" style={{ flex: 1, minWidth: '280px' }}>
+          <div className="hidden lg:flex flex-col flex-1 min-w-[280px] bg-card border-r border-border overflow-y-auto min-h-0">
             <StudioSidebar />
           </div>
         )}

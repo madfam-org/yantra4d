@@ -286,7 +286,7 @@ export default function StudioSidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <div data-testid="studio-sidebar" className="hidden lg:flex w-full h-full min-w-[22rem] max-w-[24rem] bg-card flex-col shrink-0 border-r border-border relative">
+      <div data-testid="studio-sidebar" className="hidden lg:flex w-full h-full min-w-[22rem] bg-card flex-col shrink-0 relative">
         <SidebarContent />
       </div>
 

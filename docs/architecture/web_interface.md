@@ -203,7 +203,7 @@ POST /api/render-cancel
 
 **Health**:
 ```json
-{ "status": "healthy", "openscad_available": true, "scad_dir_exists": true }
+{ "status": "healthy", "checks": { "openscad": { "ok": true, "detail": "available" } }, "debug_mode": false }
 ```
 
 #### Error Codes

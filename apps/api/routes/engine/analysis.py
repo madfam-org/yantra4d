@@ -6,14 +6,14 @@ import glob
 import logging
 import os
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, g, request, jsonify
 
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
 from services.geometry.thickness_analyzer import compute_wall_thickness
 from services.geometry.overhang_analyzer import compute_overhang_angles
-from utils.route_helpers import error_response
+from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 import rate_limits
 
@@ -55,6 +55,7 @@ def _find_latest_render(slug: str) -> str | None:
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.ANALYSIS_THICKNESS)
+@handle_exceptions
 def analyze_thickness(slug: str):
     """Run wall-thickness analysis on the latest render output for a project.
 
@@ -82,7 +83,10 @@ def analyze_thickness(slug: str):
     except FileNotFoundError:
         return error_response("Render file disappeared during analysis", 404)
     except Exception as e:
-        logger.exception("Thickness analysis failed for %s: %s", slug, e)
+        logger.exception(
+            "Thickness analysis failed for %s [request_id=%s]: %s",
+            slug, getattr(g, "request_id", None), e,
+        )
         return error_response(f"Analysis failed: {str(e)}", 500)
 
     return jsonify({
@@ -97,6 +101,7 @@ def analyze_thickness(slug: str):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.ANALYSIS_OVERHANG)
+@handle_exceptions
 def analyze_overhang(slug: str):
     """Run overhang angle analysis on the latest render output for a project.
 
@@ -132,7 +137,10 @@ def analyze_overhang(slug: str):
     except FileNotFoundError:
         return error_response("Render file disappeared during analysis", 404)
     except Exception as e:
-        logger.exception("Overhang analysis failed for %s: %s", slug, e)
+        logger.exception(
+            "Overhang analysis failed for %s [request_id=%s]: %s",
+            slug, getattr(g, "request_id", None), e,
+        )
         return error_response(f"Analysis failed: {str(e)}", 500)
 
     return jsonify({

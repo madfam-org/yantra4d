@@ -8,7 +8,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, g, request, jsonify
 
 from config import Config
 from extensions import limiter
@@ -16,7 +16,7 @@ import rate_limits
 from manifest import invalidate_cache
 from middleware.auth import require_role
 from services.core.manifest_generator import generate_manifest
-from utils.route_helpers import error_response
+from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,7 @@ def analyze_scad_files():
 @onboard_bp.route('/api/projects/create', methods=['POST'])
 @require_role("admin")
 @limiter.limit(rate_limits.ONBOARD_CREATE)
+@handle_exceptions
 def create_project():
     """Accept a manifest and .scad files, write them to PROJECTS_DIR."""
     content_type = request.content_type or ''
@@ -124,5 +125,6 @@ def create_project():
         # Cleanup on failure
         if project_dir.exists():
             shutil.rmtree(project_dir, ignore_errors=True)
-        logger.error(f"Failed to create project {slug}: {e}")
+        request_id = getattr(g, "request_id", None)
+        logger.error("Failed to create project %s [request_id=%s]: %s", slug, request_id, e)
         return error_response(f"Failed to create project: {e}")

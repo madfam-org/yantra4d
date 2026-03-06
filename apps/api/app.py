@@ -14,7 +14,7 @@ Structure:
 """
 import logging
 
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, g, jsonify, send_from_directory
 from flask_cors import CORS
 
 from config import Config
@@ -47,10 +47,8 @@ from routes.engine.analysis import analysis_bp
 from services.core.mqtt_telemetry import telemetry_service
 
 # Configure logging
-logging.basicConfig(
-    level=logging.DEBUG if Config.DEBUG else logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+from utils.logging_config import setup_logging
+setup_logging(Config.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -61,6 +59,9 @@ def create_app():
     CORS(app, origins=Config.CORS_ORIGINS)
 
     limiter.init_app(app)
+
+    from middleware.request_id import init_request_id
+    init_request_id(app)
 
     # Ensure static directory exists
     Config.STATIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -99,30 +100,30 @@ def create_app():
         resp.headers["Cache-Control"] = "public, max-age=3600"
         return resp
 
-    # Global error handlers
+    # Global error handlers — include request_id for traceability
     @app.errorhandler(400)
     def bad_request(e):
-        return jsonify({"status": "error", "error": "Bad request"}), 400
+        return jsonify({"status": "error", "error": "Bad request", "request_id": getattr(g, "request_id", None)}), 400
 
     @app.errorhandler(404)
     def not_found(e):
-        return jsonify({"status": "error", "error": "Not found"}), 404
+        return jsonify({"status": "error", "error": "Not found", "request_id": getattr(g, "request_id", None)}), 404
 
     @app.errorhandler(405)
     def method_not_allowed(e):
-        return jsonify({"status": "error", "error": "Method not allowed"}), 405
+        return jsonify({"status": "error", "error": "Method not allowed", "request_id": getattr(g, "request_id", None)}), 405
 
     @app.errorhandler(413)
     def request_too_large(e):
-        return jsonify({"status": "error", "error": "Request body too large"}), 413
+        return jsonify({"status": "error", "error": "Request body too large", "request_id": getattr(g, "request_id", None)}), 413
 
     @app.errorhandler(429)
     def rate_limit_exceeded(e):
-        return jsonify({"status": "error", "error": "Rate limit exceeded"}), 429
+        return jsonify({"status": "error", "error": "Rate limit exceeded", "request_id": getattr(g, "request_id", None)}), 429
 
     @app.errorhandler(500)
     def internal_error(e):
-        return jsonify({"status": "error", "error": "Internal server error"}), 500
+        return jsonify({"status": "error", "error": "Internal server error", "request_id": getattr(g, "request_id", None)}), 500
 
     logger.info(f"Yantra4D Backend initialized - Debug: {Config.DEBUG}")
     logger.info(f"SCAD Directory: {Config.SCAD_DIR}")

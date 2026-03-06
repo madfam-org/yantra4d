@@ -71,6 +71,66 @@ describe('YantraEngine', () => {
       const violations = engine.evaluateConstraints(cartridge, { width: 50, height: 25, quality: 'high' })
       expect(violations.quality).toBeUndefined()
     })
+
+    describe('constraint expressions', () => {
+      it('evaluates cross-param constraint', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'width > height', message: { en: 'Width must exceed height' }, affects: ['width', 'height'] }
+          ]
+        })
+        const violations = engine.evaluateConstraints(cartridge, { width: 5, height: 25 })
+        expect(violations.width).toContain('Width must exceed height')
+        expect(violations.height).toContain('Width must exceed height')
+      })
+
+      it('passes when constraint is satisfied', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'width > height', message: { en: 'Width must exceed height' }, affects: ['width'] }
+          ]
+        })
+        const violations = engine.evaluateConstraints(cartridge, { width: 50, height: 25 })
+        expect(violations.width).toBeUndefined()
+      })
+
+      it('skips invalid expressions gracefully', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'console.log("hacked")', affects: ['width'] }
+          ]
+        })
+        const violations = engine.evaluateConstraints(cartridge, { width: 50, height: 25 })
+        expect(violations.width).toBeUndefined()
+      })
+
+      it('handles empty constraints array', () => {
+        const cartridge = createTestCartridge({ constraints: [] })
+        const violations = engine.evaluateConstraints(cartridge, { width: 50, height: 25 })
+        expect(violations).toEqual({})
+      })
+
+      it('auto-detects affected params from rule when affects is missing', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'width >= height', message: { en: 'Width too small' } }
+          ]
+        })
+        const violations = engine.evaluateConstraints(cartridge, { width: 3, height: 25 })
+        expect(violations.width).toContain('Width too small')
+        expect(violations.height).toContain('Width too small')
+      })
+
+      it('uses rule as message when no message provided', () => {
+        const cartridge = createTestCartridge({
+          constraints: [
+            { rule: 'width > 0', affects: ['width'] }
+          ]
+        })
+        const violations = engine.evaluateConstraints(cartridge, { width: -1, height: 25 })
+        expect(violations.width).toContain('width > 0')
+      })
+    })
   })
 
   describe('render', () => {

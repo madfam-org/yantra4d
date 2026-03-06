@@ -8,7 +8,7 @@ import AssemblyEditorPanel from '../assembly-editor/AssemblyEditorPanel'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
-import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkles, CheckCircle2, Copy } from 'lucide-react'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 
@@ -115,7 +115,7 @@ function ModeTabs({ className }) {
   )
 }
 
-function SidebarContent() {
+function SidebarContent({ compareMode, onToggleCompare }) {
   const {
     manifest, mode,
     params, setParams, colors, setColors,
@@ -290,12 +290,25 @@ function SidebarContent() {
         </TabsContent>
       </div>
 
+      {onToggleCompare && (
+        <div className="absolute bottom-[140px] left-0 right-0 px-4 z-20">
+          <Button
+            variant={compareMode ? "default" : "outline"}
+            size="sm"
+            onClick={onToggleCompare}
+            className="w-full gap-1.5 h-9 text-xs"
+          >
+            <Copy className="h-3.5 w-3.5" />
+            {compareMode ? t('btn.exit_compare') : t('btn.compare')}
+          </Button>
+        </div>
+      )}
       <ActionDock />
     </Tabs>
   )
 }
 
-export default function StudioSidebar() {
+export default function StudioSidebar({ compareMode, onToggleCompare }) {
   const [open, setOpen] = useState(false)
   const { manifest, mode, setMode, getLabel } = useProject()
   const { language, t } = useLanguage()
@@ -304,7 +317,7 @@ export default function StudioSidebar() {
     <>
       {/* Desktop sidebar */}
       <div data-testid="studio-sidebar" className="hidden lg:flex w-full h-full min-w-[22rem] bg-card flex-col shrink-0 relative">
-        <SidebarContent />
+        <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
       </div>
 
       {/* Mobile bottom sheet */}

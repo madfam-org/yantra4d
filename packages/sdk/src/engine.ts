@@ -1,4 +1,4 @@
-import { YantraCartridge, RenderOptions, RenderResult } from './types';
+import { YantraCartridge, RenderOptions, RenderResult, YantraParameter } from './types';
 
 export interface YantraEngineOptions {
     apiBase: string; // The URL of the Yantra API backend (e.g. http://localhost:5000)
@@ -32,7 +32,55 @@ export class YantraEngine {
                 violations[p.id].push(`Value must be <= ${p.max}`);
             }
         }
+
+        if (manifest.constraints) {
+            for (const constraint of manifest.constraints) {
+                try {
+                    const result = this._evaluateRule(constraint.rule, params);
+                    if (result === false) {
+                        const affected = constraint.affects || this._extractParamIds(constraint.rule, manifest.parameters);
+                        const msg = constraint.message?.en || constraint.rule;
+                        for (const paramId of affected) {
+                            violations[paramId] = violations[paramId] || [];
+                            violations[paramId].push(msg);
+                        }
+                    }
+                } catch {
+                    // Skip malformed constraint expressions
+                }
+            }
+        }
+
         return violations;
+    }
+
+    private _evaluateRule(rule: string, params: Record<string, any>): boolean {
+        // Replace param names with values (longest-first to avoid partial matches)
+        let expr = rule;
+        const sortedKeys = Object.keys(params).sort((a, b) => b.length - a.length);
+        for (const key of sortedKeys) {
+            const val = params[key];
+            const replacement = typeof val === 'string' ? `"${val}"` : String(val);
+            expr = expr.replaceAll(key, replacement);
+        }
+
+        return this._safeEval(expr);
+    }
+
+    private _safeEval(expr: string): boolean {
+        const cleaned = expr.trim();
+        // Only allow digits, whitespace, decimal points, arithmetic, comparisons, boolean logic, quotes, and parens
+        if (!/^[\d\s.+\-*/<>=!&|"'()]+$/.test(cleaned)) {
+            throw new Error('Unsafe expression');
+        }
+        const fn = new Function(`"use strict"; return (${cleaned});`);
+        return Boolean(fn());
+    }
+
+    private _extractParamIds(rule: string, parameters: YantraParameter[]): string[] {
+        return parameters
+            .filter(p => rule.includes(p.id))
+            .map(p => p.id);
     }
 
     /**

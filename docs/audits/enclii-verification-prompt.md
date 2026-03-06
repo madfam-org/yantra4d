@@ -55,12 +55,18 @@ curl -sS https://4d-api.madfam.io/api/health | python3 -m json.tool
 ```json
 {
     "status": "healthy",
-    "openscad_available": true,
+    "checks": {
+        "openscad": { "ok": true, "detail": "available" },
+        "redis": { "ok": true, "detail": "connected" },
+        "analytics_db": { "ok": true, "detail": "writable" },
+        "disk": { "ok": true, "detail": "..." },
+        "memory": { "ok": true, "detail": "..." }
+    },
     "debug_mode": false
 }
 ```
 
-**Fail criteria**: Non-200 status, `openscad_available: false`, `debug_mode: true`, connection refused.
+**Fail criteria**: Non-200 status, `status: "unhealthy"`, `checks.openscad.ok: false`, `debug_mode: true`, connection refused.
 
 ---
 

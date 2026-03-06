@@ -15,9 +15,9 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
-from config import Config
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
+from utils.project_resolver import require_project
 from services.core.scad_analyzer import analyze_directory
 from services.core.assembly_generator import generate_assembly_steps, merge_assembly_steps
 
@@ -25,16 +25,8 @@ assembly_bp = Blueprint("assembly", __name__)
 logger = logging.getLogger(__name__)
 
 
-def _project_dir(slug: str) -> Path | None:
-    base = Path(Config.PROJECTS_DIR) / slug
-    return base if base.is_dir() else None
-
-
-def _load_manifest(slug: str) -> dict | None:
-    d = _project_dir(slug)
-    if not d:
-        return None
-    p = d / "project.json"
+def _load_manifest(project_dir: Path) -> dict | None:
+    p = project_dir / "project.json"
     if not p.is_file():
         return None
     return json.loads(p.read_text())
@@ -42,16 +34,13 @@ def _load_manifest(slug: str) -> dict | None:
 
 @assembly_bp.route("/api/projects/<slug>/assembly-steps", methods=["GET"])
 @require_valid_slug
-def get_assembly_steps(slug: str):
+@require_project()
+def get_assembly_steps(slug: str, project_dir):
     """
     Auto-generate assembly steps from BOSL2 attach() calls in the project's SCAD files.
     Returns the generated steps without modifying project.json.
     """
-    project_dir = _project_dir(slug)
-    if not project_dir:
-        return error_response(f"Project '{slug}' not found", 404)
-
-    manifest = _load_manifest(slug)
+    manifest = _load_manifest(project_dir)
     if not manifest:
         return error_response(f"No project.json found for '{slug}'", 404)
 
@@ -81,7 +70,8 @@ def get_assembly_steps(slug: str):
 
 @assembly_bp.route("/api/projects/<slug>/assembly-steps/write", methods=["POST"])
 @require_valid_slug
-def write_assembly_steps(slug: str):
+@require_project()
+def write_assembly_steps(slug: str, project_dir):
     """
     Write auto-generated assembly steps back into project.json.
     Merges with any existing manually-authored steps (manual steps take precedence).
@@ -90,11 +80,7 @@ def write_assembly_steps(slug: str):
       { "merge": true }   — merge with existing manual steps (default)
       { "merge": false }  — replace all steps with generated ones
     """
-    project_dir = _project_dir(slug)
-    if not project_dir:
-        return error_response(f"Project '{slug}' not found", 404)
-
-    manifest = _load_manifest(slug)
+    manifest = _load_manifest(project_dir)
     if not manifest:
         return error_response(f"No project.json found for '{slug}'", 404)
 

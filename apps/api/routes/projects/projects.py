@@ -19,7 +19,7 @@ from extensions import limiter
 import rate_limits
 from manifest import discover_projects, get_manifest, invalidate_cache
 from middleware.auth import optional_auth, require_tier
-from utils.route_helpers import error_response
+from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
 logger = logging.getLogger(__name__)
@@ -194,6 +194,7 @@ def fork_project(slug):
 @projects_bp.route('/api/projects/<slug>/manifest/assembly-steps', methods=['PUT'])
 @require_valid_slug
 @optional_auth
+@handle_exceptions
 def update_assembly_steps(slug):
     """Update assembly_steps in a project's project.json."""
     try:
@@ -207,20 +208,16 @@ def update_assembly_steps(slug):
     if not data or "assembly_steps" not in data:
         return jsonify({"status": "error", "error": "Missing assembly_steps"}), 400
 
-    try:
-        with open(manifest_path, "r") as f:
-            manifest_data = json.load(f)
+    with open(manifest_path, "r") as f:
+        manifest_data = json.load(f)
 
-        manifest_data["assembly_steps"] = data["assembly_steps"]
+    manifest_data["assembly_steps"] = data["assembly_steps"]
 
-        with open(manifest_path, "w") as f:
-            json.dump(manifest_data, f, indent=2, ensure_ascii=False)
-            f.write("\n")
+    with open(manifest_path, "w") as f:
+        json.dump(manifest_data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
 
-        # Invalidate manifest cache
-        invalidate_cache(slug)
+    # Invalidate manifest cache
+    invalidate_cache(slug)
 
-        return jsonify({"status": "success"})
-    except Exception as e:
-        logger.error(f"Failed to save assembly steps for {slug}: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+    return jsonify({"status": "success"})

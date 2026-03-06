@@ -82,6 +82,28 @@ class TestRenderCache:
         assert result is not None
         assert result["size_bytes"] == 20
 
+    def test_different_content_hash_different_key(self):
+        key1 = RenderCache._make_key("p", "f.scad", {}, "main", "stl", "abc123")
+        key2 = RenderCache._make_key("p", "f.scad", {}, "main", "stl", "def456")
+        assert key1 != key2
+
+    def test_none_hash_backward_compat(self):
+        key_no_hash = RenderCache._make_key("p", "f.scad", {}, "main", "stl", None)
+        key_old = RenderCache._make_key("p", "f.scad", {}, "main", "stl")
+        assert key_no_hash == key_old
+
+    def test_content_hash_in_get_put(self, tmp_path):
+        cache = RenderCache()
+        f = tmp_path / "test.stl"
+        f.write_bytes(b"\x00" * 10)
+        cache.put("proj", "main.scad", {"w": 10}, "main", "stl", str(f), 10, scad_content_hash="abc")
+        # Same hash -> hit
+        result = cache.get("proj", "main.scad", {"w": 10}, "main", "stl", scad_content_hash="abc")
+        assert result is not None
+        # Different hash -> miss
+        result = cache.get("proj", "main.scad", {"w": 10}, "main", "stl", scad_content_hash="def")
+        assert result is None
+
 
 class TestRenderCacheRedisL2:
     """Tests for Redis L2 cache layer (mocked — no live Redis required)."""

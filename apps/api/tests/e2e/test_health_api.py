@@ -25,6 +25,7 @@ class TestHealthAPI:
         res = client.get("/api/health")
         assert res.status_code == 200
         data = res.get_json()
-        assert data["status"] == "healthy"
-        assert isinstance(data["openscad_available"], bool)
+        assert data["status"] in ("healthy", "degraded")
+        assert "checks" in data
+        assert isinstance(data["checks"], dict)
         assert isinstance(data["debug_mode"], bool)

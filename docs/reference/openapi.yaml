@@ -299,12 +299,20 @@ components:
       properties:
         status:
           type: string
+          enum: [healthy, degraded, unhealthy]
           example: healthy
-        openscad_available:
-          type: boolean
+        checks:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              ok:
+                type: boolean
+              detail:
+                type: string
         debug_mode:
           type: boolean
-      required: [status, openscad_available]
+      required: [status, checks]
 
 paths:
   # ── Health ──────────────────────────────────────────────

@@ -25,6 +25,7 @@ class AppConfig:
     STATIC_DIR: Path = field(init=False)
     FONTS_DIR: Path = field(init=False)
     VERIFY_SCRIPT: Path = field(init=False)
+    DATA_DIR: Path = field(init=False)
     ANALYTICS_DB_PATH: Path = field(init=False)
 
     # Server
@@ -117,7 +118,8 @@ class AppConfig:
         self.JANUA_JWKS_URL = os.getenv("JANUA_JWKS_URL", f"{self.JANUA_ISSUER}/.well-known/jwks.json")
         self.TIERS_FILE = Path(os.getenv("TIERS_FILE", self.BASE_DIR / "tiers.json"))
         self.JANUA_API_URL = os.getenv("JANUA_API_URL", f"{self.JANUA_ISSUER}/api/v1")
-        self.ANALYTICS_DB_PATH = Path(os.getenv("ANALYTICS_DB_PATH", "/tmp/.analytics.db"))
+        self.DATA_DIR = Path(os.getenv("DATA_DIR", str(self.BASE_DIR / "data")))
+        self.ANALYTICS_DB_PATH = Path(os.getenv("ANALYTICS_DB_PATH", str(self.DATA_DIR / "analytics.db")))
         self.CORS_ORIGINS = [
             o.strip()
             for o in os.getenv("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS).split(",")

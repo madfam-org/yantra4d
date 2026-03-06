@@ -2,6 +2,19 @@ import { useState, useCallback, useRef } from 'react'
 
 const MAX_HISTORY = 50
 
+interface UndoRedoControls {
+  undo: () => void
+  redo: () => void
+  canUndo: boolean
+  canRedo: boolean
+}
+
+interface SetValueOptions {
+  history?: boolean
+}
+
+type SetValueUpdater<T> = T | ((prev: T) => T)
+
 /**
  * Hook providing undo/redo for a state value.
  * Returns [value, setValue, { undo, redo, canUndo, canRedo }].
@@ -10,24 +23,24 @@ const MAX_HISTORY = 50
  * canUndo/canRedo are stored as proper React state so they are safe to read
  * during render (no ref access in render path).
  */
-export function useUndoRedo(initialValue) {
-  const resolved = typeof initialValue === 'function' ? initialValue() : initialValue
-  const [value, setValueRaw] = useState(resolved)
+export function useUndoRedo<T>(initialValue: T | (() => T)): [T, (updater: SetValueUpdater<T>, options?: SetValueOptions) => void, UndoRedoControls] {
+  const resolved = typeof initialValue === 'function' ? (initialValue as () => T)() : initialValue
+  const [value, setValueRaw] = useState<T>(resolved)
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
 
-  const historyRef = useRef([resolved])
+  const historyRef = useRef<T[]>([resolved])
   const indexRef = useRef(0)
 
-  const latestValueRef = useRef(resolved)
+  const latestValueRef = useRef<T>(resolved)
 
   // setValue: pushes a new entry to history (normal user action)
   // options: { history: boolean } - if false, update state but skip history push
-  const setValue = useCallback((updater, options = {}) => {
+  const setValue = useCallback((updater: SetValueUpdater<T>, options: SetValueOptions = {}) => {
     const { history = true } = options
 
     setValueRaw(prevRaw => {
-      const next = typeof updater === 'function' ? updater(prevRaw) : updater
+      const next = typeof updater === 'function' ? (updater as (prev: T) => T)(prevRaw) : updater
 
       if (JSON.stringify(prevRaw) === JSON.stringify(next)) {
         return prevRaw

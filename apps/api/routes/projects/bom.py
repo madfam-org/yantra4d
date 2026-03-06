@@ -15,6 +15,7 @@ from flask import Blueprint, request, jsonify, Response
 from config import Config
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
+from utils.project_resolver import require_project
 
 bom_bp = Blueprint("bom", __name__)
 logger = logging.getLogger(__name__)
@@ -80,11 +81,14 @@ def _load_manifest(slug: str):
 
 @bom_bp.route("/api/projects/<slug>/bom", methods=["GET"])
 @require_valid_slug
-def get_bom(slug: str) -> Response | tuple[Response, int]:
+@require_project()
+def get_bom(slug: str, project_dir) -> Response | tuple[Response, int]:
     """Return BOM as JSON or CSV based on Accept header / format query param."""
-    manifest = _load_manifest(slug)
-    if not manifest:
-        return error_response("Project not found", 404)
+    manifest_path = project_dir / "project.json"
+    if not manifest_path.is_file():
+        return error_response("Project manifest not found", 404)
+    with open(manifest_path, "r") as f:
+        manifest = json.load(f)
 
     hardware = (manifest.get("bom") or {}).get("hardware")
     if not hardware:

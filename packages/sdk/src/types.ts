@@ -44,11 +44,19 @@ export interface YantraProjectMetadata {
     engine?: string;
 }
 
+export interface YantraConstraint {
+    rule: string;                          // Expression like "width > height"
+    message?: Record<string, string>;      // i18n messages, e.g. { en: "Width must exceed height" }
+    severity?: 'error' | 'warning';        // default 'error'
+    affects?: string[];                    // parameter IDs affected
+}
+
 export interface YantraManifest {
     project: YantraProjectMetadata;
     parameters: YantraParameter[];
     parts: YantraPart[];
     modes: YantraMode[];
+    constraints?: YantraConstraint[];
     estimate_constants?: Record<string, number>;
     camera_views?: any[];
     viewer?: any;

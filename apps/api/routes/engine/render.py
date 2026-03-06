@@ -15,6 +15,7 @@ from middleware.auth import optional_auth
 from services.core.tier_service import resolve_tier, get_tier_limits, check_feature
 from services.engine.openscad import (
     build_openscad_command,
+    compute_scad_hash,
     run_render as run_openscad_render,
     stream_render as stream_openscad_render,
     cancel_render as cancel_openscad_render,
@@ -32,7 +33,7 @@ from services.core.implicit_engine import (
 )
 from services.engine.render_cache import render_cache
 from services.engine.format_converter import stl_to_glb
-from utils.route_helpers import cleanup_old_stl_files, error_response, require_json_body
+from utils.route_helpers import cleanup_old_stl_files, error_response, handle_exceptions, require_json_body
 from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
 import rate_limits
 import queue
@@ -155,6 +156,8 @@ def _extract_render_payload(data):
         except Exception as e:
             logger.warning(f"Failed to inject material compensations for {target_mat}: {e}")
 
+    scad_content_hash = compute_scad_hash(scad_path)
+
     return {
         'scad_filename': scad_filename,
         'scad_path': scad_path,
@@ -166,6 +169,7 @@ def _extract_render_payload(data):
         'static_stl_map': static_stl_map,
         'project_slug': project_slug,
         'ignore_cache': data.get('ignore_cache', False),
+        'scad_content_hash': scad_content_hash,
     }
 
 
@@ -223,6 +227,7 @@ def estimate_render_time():
 @optional_auth
 @limiter.limit(_get_tiered_limit, key_func=_rate_limit_key)
 @require_json_body
+@handle_exceptions
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
@@ -287,7 +292,7 @@ def render_stl():
 
             # Check render cache
             if not payload.get('ignore_cache', False):
-                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
+                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format, scad_content_hash=payload.get('scad_content_hash'))
                 if cached:
                     cache_hits += 1
                     combined_log += f"[{part}] cache HIT\n"
@@ -336,7 +341,7 @@ def render_stl():
             except OSError:
                 size_bytes = None
 
-            render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, output_path, size_bytes)
+            render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, output_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'))
 
             generated_parts.append({
                 "type": part,
@@ -354,9 +359,6 @@ def render_stl():
         resp.headers["X-Cache"] = "HIT" if (cache_total > 0 and cache_hits == cache_total) else "MISS"
         return resp
     except OSError as e:
-        return error_response(str(e))
-    except Exception as e:
-        logger.warning(f"Unexpected error during render: {type(e).__name__}: {e}")
         return error_response(str(e))
 
 
@@ -429,7 +431,7 @@ def render_stl_stream():
 
             # Check render cache before starting engine
             if not payload.get('ignore_cache', False):
-                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format)
+                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format, scad_content_hash=payload.get('scad_content_hash'))
                 if cached:
                     cached_filename = os.path.basename(cached["path"])
                     generated_parts.append({
@@ -484,7 +486,7 @@ def render_stl_stream():
                     except OSError:
                         size_bytes = None
                     # Populate cache on successful render
-                    render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, serve_path, size_bytes)
+                    render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'))
                     generated_parts.append({
                         "type": part,
                         "url": f"/static/{serve_filename}",

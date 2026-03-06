@@ -125,9 +125,10 @@ class TestHealthContract:
     def test_has_required_fields(self, client):
         data = client.get("/api/health").get_json()
         assert "status" in data
-        assert "openscad_available" in data
+        assert "checks" in data
         assert isinstance(data["status"], str)
-        assert isinstance(data["openscad_available"], bool)
+        assert isinstance(data["checks"], dict)
+        assert "openscad" in data["checks"]
 
 
 # ---------------------------------------------------------------------------

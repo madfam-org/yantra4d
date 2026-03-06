@@ -6,12 +6,31 @@ Both engines share: RENDER_TIMEOUT_S, active-process tracking, and cancel logic.
 import logging
 import subprocess
 import threading
+from dataclasses import dataclass
 
 import os
 
 logger = logging.getLogger(__name__)
 
 RENDER_TIMEOUT_S = int(os.getenv("RENDER_TIMEOUT_S", 300))
+
+
+@dataclass
+class RenderResult:
+    """Structured result from a render subprocess.
+
+    Supports tuple unpacking for backward compatibility:
+        success, stderr = run_render(cmd)
+    """
+    success: bool
+    stderr: str
+    output_path: str | None = None
+    duration_ms: float | None = None
+
+    def __iter__(self):
+        """Allow ``success, stderr = result`` unpacking."""
+        yield self.success
+        yield self.stderr
 
 
 class ProcessManager:

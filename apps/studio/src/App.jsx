@@ -60,7 +60,26 @@ function App() {
     handleGenerate, handleConfirmRender, handleCancelRender,
     showConfirmDialog, pendingEstimate,
     params, setParams,
+    parts,
   } = useProject()
+
+  // Comparison mode state
+  const [compareMode, setCompareMode] = useState(false)
+  const [comparisonSlots, setComparisonSlots] = useState([])
+
+  const handleAddComparisonSlot = useCallback(() => {
+    if (comparisonSlots.length >= 4) return
+    setComparisonSlots(prev => [...prev, {
+      id: crypto.randomUUID(),
+      label: `Variation ${prev.length + 1}`,
+      parts: [...parts],
+      params: { ...params },
+    }])
+  }, [parts, params, comparisonSlots.length])
+
+  const handleRemoveComparisonSlot = useCallback((slotId) => {
+    setComparisonSlots(prev => prev.filter(s => s.id !== slotId))
+  }, [])
 
   // Initialize theme/lang/auth side effects
   const { t, language, toggleLanguage, theme, cycleTheme } = useThemeAndLanguage({
@@ -181,13 +200,21 @@ function App() {
         {/* φ split: Sidebar ≈ 38.2% | Main ≈ 61.8% */}
         {!editorOpen && (
           <div className="hidden lg:flex flex-col flex-1 min-w-[280px] bg-card border-r border-border overflow-y-auto min-h-0">
-            <StudioSidebar />
+            <StudioSidebar
+              compareMode={compareMode}
+              onToggleCompare={() => setCompareMode(prev => !prev)}
+            />
           </div>
         )}
 
         <ErrorBoundary t={t}>
           <div style={{ flex: 1.618, minWidth: 0 }} className="flex flex-col min-h-0">
-            <StudioMainView />
+            <StudioMainView
+              compareMode={compareMode}
+              comparisonSlots={comparisonSlots}
+              onAddComparisonSlot={handleAddComparisonSlot}
+              onRemoveComparisonSlot={handleRemoveComparisonSlot}
+            />
           </div>
         </ErrorBoundary>
       </div>

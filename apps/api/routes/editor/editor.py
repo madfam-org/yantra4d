@@ -6,13 +6,12 @@ from pathlib import Path
 
 from flask import Blueprint, request, jsonify
 
-from config import Config
 from extensions import limiter
 import rate_limits
 from middleware.auth import require_tier
 from utils.route_helpers import error_response, safe_join_path
 from utils.validators import require_valid_slug
-from services.editor.git_operations import git_init
+from utils.project_resolver import require_project
 
 logger = logging.getLogger(__name__)
 
@@ -20,18 +19,6 @@ editor_bp = Blueprint("editor", __name__)
 
 MAX_FILE_SIZE = 512 * 1024  # 512KB
 ALLOWED_EXTENSIONS = {".scad"}
-
-
-def _get_project_dir(slug: str, auto_git: bool = False) -> Path | None:
-    """Resolve and validate project directory. Optionally auto-init git."""
-    project_dir = (Config.PROJECTS_DIR / slug).resolve()
-    if not project_dir.is_relative_to(Config.PROJECTS_DIR.resolve()):
-        return None
-    if not project_dir.is_dir():
-        return None
-    if auto_git and not (project_dir / ".git").is_dir():
-        git_init(project_dir)
-    return project_dir
 
 
 def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
@@ -48,11 +35,8 @@ def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_READ)
-def list_files(slug):
-    """List .scad files in a project."""
-    project_dir = _get_project_dir(slug)
-    if not project_dir:
-        return error_response("Project not found", 404)
+@require_project()
+def list_files(slug, project_dir):
 
     files = []
     for p in project_dir.rglob("*.scad"):
@@ -73,11 +57,8 @@ def list_files(slug):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_READ)
-def read_file(slug, filepath):
-    """Read a .scad file's content."""
-    project_dir = _get_project_dir(slug)
-    if not project_dir:
-        return error_response("Project not found", 404)
+@require_project()
+def read_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
     if not resolved:
@@ -97,11 +78,8 @@ def read_file(slug, filepath):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_WRITE)
-def write_file(slug, filepath):
-    """Write content to a .scad file."""
-    project_dir = _get_project_dir(slug, auto_git=True)
-    if not project_dir:
-        return error_response("Project not found", 404)
+@require_project(auto_git=True)
+def write_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
     if not resolved:
@@ -129,11 +107,8 @@ def write_file(slug, filepath):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_CREATE)
-def create_file(slug):
-    """Create a new .scad file."""
-    project_dir = _get_project_dir(slug, auto_git=True)
-    if not project_dir:
-        return error_response("Project not found", 404)
+@require_project(auto_git=True)
+def create_file(slug, project_dir):
 
     data = request.json
     if not data or "path" not in data:
@@ -164,11 +139,8 @@ def create_file(slug):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_DELETE)
-def delete_file(slug, filepath):
-    """Delete a .scad file."""
-    project_dir = _get_project_dir(slug, auto_git=True)
-    if not project_dir:
-        return error_response("Project not found", 404)
+@require_project(auto_git=True)
+def delete_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
     if not resolved:

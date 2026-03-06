@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Viewer from '../viewer/Viewer'
+import ComparisonView from '../project/ComparisonView'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
 import ShortcutHelpDialog from './ShortcutHelpDialog'
 import ModelInfoPanel from './ModelInfoPanel'
@@ -32,7 +33,7 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
   return null
 }
 
-export default function StudioMainView() {
+export default function StudioMainView({ compareMode, comparisonSlots, onAddComparisonSlot, onRemoveComparisonSlot }) {
   const {
     viewerRef, consoleRef,
     parts, colors, wireframe, boundingBox, loading, progress, progressPhase,
@@ -67,65 +68,78 @@ export default function StudioMainView() {
   return (
     <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
       {/* 3D Viewport — φ dominant (≈61.8% of vertical space) */}
-      <div className="relative min-h-0" style={{ flex: 1.618 }} aria-busy={loading}>
-        <Viewer
-          ref={viewerRef}
-          parts={parts}
-          colors={colors}
-          wireframe={wireframe}
-          boundingBox={boundingBox}
-          loading={loading}
-          progress={progress}
-          progressPhase={progressPhase}
-          animating={animating}
-          setAnimating={setAnimating}
-          mode={mode}
-          params={params}
-          onGeometryStats={setPrintEstimate}
-          assemblyActive={assemblyActive}
-          highlightedParts={highlightedParts}
-          visibleParts={visibleParts}
-          headDiffMode={headDiffMode}
-          headParts={headParts}
-          orthoCamera={orthoCamera}
-          setOrthoCamera={setOrthoCamera}
-          clippingEnabled={clippingEnabled}
-          clippingAxis={clippingAxis}
-          clippingPosition={clippingPosition}
-          measureMode={measureMode}
-          onMeasure={(m) => setMeasurements(prev => [...prev, m])}
-          measurements={measurements}
-          explodeFactor={explodeFactor}
-          lightIntensity={lightIntensity}
-          environmentPreset={environmentPreset}
-          thicknessData={thicknessData}
-          overhangData={overhangData}
-          formatDimension={formatDim}
-        />
-        <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
-        {!loading && parts.length > 0 && (
-          <ModelInfoPanel printEstimate={printEstimate} partCount={parts.length} />
-        )}
-        {/* Accessible live region for render status and model summary */}
-        <div aria-live="polite" className="sr-only" role="status">
-          {loading ? 'Rendering in progress' : parts.length > 0 ? (
-            <>
-              Render complete.
-              {printEstimate && (() => {
-                const bbox = printEstimate.total?.boundingBox ?? printEstimate.boundingBox
-                const vol = printEstimate.total?.volumeMm3 ?? printEstimate.volumeMm3 ?? 0
-                return bbox ? ` ${t('a11y.model_summary', {
-                  parts: parts.length,
-                  width: formatDim(bbox.width ?? 0),
-                  height: formatDim(bbox.height ?? 0),
-                  depth: formatDim(bbox.depth ?? 0),
-                  volume: formatVolume(vol),
-                })}` : ''
-              })()}
-            </>
-          ) : ''}
+      {compareMode && comparisonSlots?.length > 0 ? (
+        <div className="relative min-h-0" style={{ flex: 1.618 }}>
+          <ComparisonView
+            slots={comparisonSlots}
+            onRemoveSlot={onRemoveComparisonSlot}
+            onAddCurrent={onAddComparisonSlot}
+            colors={colors}
+            wireframe={wireframe}
+            mode={mode}
+          />
         </div>
-      </div>
+      ) : (
+        <div className="relative min-h-0" style={{ flex: 1.618 }} aria-busy={loading}>
+          <Viewer
+            ref={viewerRef}
+            parts={parts}
+            colors={colors}
+            wireframe={wireframe}
+            boundingBox={boundingBox}
+            loading={loading}
+            progress={progress}
+            progressPhase={progressPhase}
+            animating={animating}
+            setAnimating={setAnimating}
+            mode={mode}
+            params={params}
+            onGeometryStats={setPrintEstimate}
+            assemblyActive={assemblyActive}
+            highlightedParts={highlightedParts}
+            visibleParts={visibleParts}
+            headDiffMode={headDiffMode}
+            headParts={headParts}
+            orthoCamera={orthoCamera}
+            setOrthoCamera={setOrthoCamera}
+            clippingEnabled={clippingEnabled}
+            clippingAxis={clippingAxis}
+            clippingPosition={clippingPosition}
+            measureMode={measureMode}
+            onMeasure={(m) => setMeasurements(prev => [...prev, m])}
+            measurements={measurements}
+            explodeFactor={explodeFactor}
+            lightIntensity={lightIntensity}
+            environmentPreset={environmentPreset}
+            thicknessData={thicknessData}
+            overhangData={overhangData}
+            formatDimension={formatDim}
+          />
+          <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
+          {!loading && parts.length > 0 && (
+            <ModelInfoPanel printEstimate={printEstimate} partCount={parts.length} />
+          )}
+          {/* Accessible live region for render status and model summary */}
+          <div aria-live="polite" className="sr-only" role="status">
+            {loading ? 'Rendering in progress' : parts.length > 0 ? (
+              <>
+                Render complete.
+                {printEstimate && (() => {
+                  const bbox = printEstimate.total?.boundingBox ?? printEstimate.boundingBox
+                  const vol = printEstimate.total?.volumeMm3 ?? printEstimate.volumeMm3 ?? 0
+                  return bbox ? ` ${t('a11y.model_summary', {
+                    parts: parts.length,
+                    width: formatDim(bbox.width ?? 0),
+                    height: formatDim(bbox.height ?? 0),
+                    depth: formatDim(bbox.depth ?? 0),
+                    volume: formatVolume(vol),
+                  })}` : ''
+                })()}
+              </>
+            ) : ''}
+          </div>
+        </div>
+      )}
 
       {/* Mobile: collapsed console bar (tap to expand) */}
       <div className="lg:hidden border-t border-border">

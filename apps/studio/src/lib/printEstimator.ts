@@ -5,7 +5,18 @@
  * Material profiles define density, print speed, and layer-dependent factors.
  */
 
-const MATERIAL_PROFILES = {
+interface MaterialProfile {
+  name: string
+  density: number       // g/cm3
+  speed: number         // mm/s typical
+  layerHeight: number   // mm default
+  costPerKg: number     // USD approximate
+  nozzleDiameter: number // mm
+}
+
+type MaterialProfileMap = Record<string, MaterialProfile>
+
+const MATERIAL_PROFILES: MaterialProfileMap = {
   pla: {
     name: 'PLA',
     density: 1.24,       // g/cm³
@@ -40,20 +51,79 @@ const MATERIAL_PROFILES = {
   },
 }
 
+interface Vertex {
+  x: number
+  y: number
+  z: number
+}
+
+interface BoundingBox {
+  width: number
+  depth: number
+  height: number
+}
+
+interface PrintEstimate {
+  time: { hours: number; minutes: number }
+  filament: { grams: number; meters: number; cost: number }
+  material: string
+}
+
+interface PrintOverrides {
+  layerHeight?: number
+  infill?: number
+  speed?: number
+}
+
+interface ManifestMaterial {
+  id: string
+  name: string
+  density: number
+  print_speed_factor?: number
+  cost_per_kg: number
+}
+
+interface MaterialOption {
+  id: string
+  name: string
+}
+
+/**
+ * Minimal geometry interface matching Three.js BufferGeometry shape.
+ * Only the properties actually accessed by this module.
+ */
+interface GeometryLike {
+  attributes: {
+    position: {
+      count: number
+      getX(index: number): number
+      getY(index: number): number
+      getZ(index: number): number
+    }
+  }
+  index: {
+    count: number
+    getX(index: number): number
+  } | null
+  computeBoundingBox(): void
+  boundingBox: {
+    min: Vertex
+    max: Vertex
+  } | null
+}
+
 /**
  * Compute volume of an STL geometry from Three.js BufferGeometry.
  * Uses the signed volume of tetrahedra method.
- * @param {BufferGeometry} geometry - Three.js geometry
- * @returns {number} Volume in mm³
  */
-export function computeVolumeMm3(geometry) {
+export function computeVolumeMm3(geometry: GeometryLike | null | undefined): number {
   if (!geometry?.attributes?.position) return 0
 
   const pos = geometry.attributes.position
   const index = geometry.index
   let volume = 0
 
-  const getVertex = (i) => ({
+  const getVertex = (i: number): Vertex => ({
     x: pos.getX(i),
     y: pos.getY(i),
     z: pos.getZ(i),
@@ -83,13 +153,11 @@ export function computeVolumeMm3(geometry) {
 
 /**
  * Compute bounding box dimensions from geometry.
- * @param {BufferGeometry} geometry
- * @returns {{ width: number, depth: number, height: number }} in mm
  */
-export function computeBoundingBox(geometry) {
+export function computeBoundingBox(geometry: GeometryLike | null | undefined): BoundingBox {
   if (!geometry) return { width: 0, depth: 0, height: 0 }
   geometry.computeBoundingBox()
-  const box = geometry.boundingBox
+  const box = geometry.boundingBox!
   return {
     width: box.max.x - box.min.x,
     height: box.max.z - box.min.z,  // Z-up convention
@@ -100,10 +168,8 @@ export function computeBoundingBox(geometry) {
 /**
  * Compute the volumetric centroid of a geometry.
  * Uses the signed volume of tetrahedra method.
- * @param {BufferGeometry} geometry
- * @returns {{ x: number, y: number, z: number }} Centroid coordinates
  */
-export function computeCentroid(geometry) {
+export function computeCentroid(geometry: GeometryLike | null | undefined): Vertex {
   if (!geometry?.attributes?.position) return { x: 0, y: 0, z: 0 }
 
   const pos = geometry.attributes.position
@@ -111,7 +177,7 @@ export function computeCentroid(geometry) {
   let volume = 0
   let cx = 0, cy = 0, cz = 0
 
-  const getVertex = (i) => ({
+  const getVertex = (i: number): Vertex => ({
     x: pos.getX(i),
     y: pos.getY(i),
     z: pos.getZ(i),
@@ -158,13 +224,14 @@ export function computeCentroid(geometry) {
 
 /**
  * Estimate print time and filament usage.
- * @param {number} volumeMm3 - Part volume in mm³
- * @param {{ width: number, depth: number, height: number }} bbox - Bounding box in mm
- * @param {string} materialId - Material profile key
- * @param {object} [overrides] - Optional overrides for layer height, infill, etc.
- * @returns {{ time: { hours: number, minutes: number }, filament: { grams: number, meters: number, cost: number }, material: string }}
  */
-export function estimatePrint(volumeMm3, bbox, materialId = 'pla', overrides = {}, materialLookup = null) {
+export function estimatePrint(
+  volumeMm3: number,
+  bbox: BoundingBox,
+  materialId: string = 'pla',
+  overrides: PrintOverrides = {},
+  materialLookup: MaterialProfileMap | null = null,
+): PrintEstimate {
   const profiles = materialLookup || MATERIAL_PROFILES
   const profile = profiles[materialId] || profiles.pla || MATERIAL_PROFILES.pla
   const layerHeight = overrides.layerHeight || profile.layerHeight
@@ -224,9 +291,8 @@ export function estimatePrint(volumeMm3, bbox, materialId = 'pla', overrides = {
 /**
  * Get available material profiles.
  * If manifestMaterials are provided, they are prepended to the built-in list.
- * @param {Array|null} manifestMaterials - Optional materials from project manifest
  */
-export function getMaterialProfiles(manifestMaterials) {
+export function getMaterialProfiles(manifestMaterials: ManifestMaterial[] | null | undefined): MaterialOption[] {
   const builtIn = Object.entries(MATERIAL_PROFILES).map(([id, profile]) => ({
     id,
     name: profile.name,
@@ -240,11 +306,9 @@ export function getMaterialProfiles(manifestMaterials) {
 
 /**
  * Build a merged profile lookup that includes manifest materials.
- * @param {Array|null} manifestMaterials
- * @returns {Object} materialId → profile
  */
-export function buildMaterialLookup(manifestMaterials) {
-  const lookup = { ...MATERIAL_PROFILES }
+export function buildMaterialLookup(manifestMaterials: ManifestMaterial[] | null | undefined): MaterialProfileMap {
+  const lookup: MaterialProfileMap = { ...MATERIAL_PROFILES }
   if (manifestMaterials) {
     for (const m of manifestMaterials) {
       lookup[m.id] = {

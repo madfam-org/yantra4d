@@ -16,7 +16,7 @@ Common issues and their solutions when working with the Yantra4D platform.
 
 ### "OpenSCAD not found"
 
-**Symptom**: Health check returns `"openscad_available": false`.
+**Symptom**: Health check returns `"status": "unhealthy"` with `"checks": { "openscad": { "ok": false } }`.
 
 **Fix**: Set `OPENSCAD_PATH` env var to your OpenSCAD binary:
 ```bash

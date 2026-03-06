@@ -51,6 +51,7 @@ Thumbs.db
 
 # Analytics runtime database
 *.analytics.db
+apps/api/data/
 
 
 # Dev server PIDs

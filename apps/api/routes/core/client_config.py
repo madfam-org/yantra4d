@@ -3,12 +3,14 @@ from flask import Blueprint, jsonify
 from config import Config
 from middleware.auth import decode_token
 from services.core.tier_service import resolve_tier, has_tier
+from utils.route_helpers import handle_exceptions
 
 logger = logging.getLogger(__name__)
 
 client_config_bp = Blueprint("client_config", __name__)
 
 @client_config_bp.route("/api/config/client", methods=["GET"])
+@handle_exceptions
 def get_client_config():
     """
     Return runtime configuration for the frontend React app.

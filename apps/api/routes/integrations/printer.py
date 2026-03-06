@@ -19,7 +19,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from middleware.auth import require_tier
-from utils.route_helpers import error_response, safe_join_path
+from utils.route_helpers import error_response, handle_exceptions, safe_join_path
 
 logger = logging.getLogger(__name__)
 printer_bp = Blueprint("printer", __name__)
@@ -64,6 +64,7 @@ def _get_client(printer: dict):
 
 @printer_bp.route("/api/printers", methods=["GET"])
 @require_tier("pro")
+@handle_exceptions
 def list_printers():
     """Return all configured printers (name, model, connection type, id)."""
     if not PRINTERS_DIR.is_dir():
@@ -98,6 +99,7 @@ def list_printers():
 
 @printer_bp.route("/api/printers/<printer_id>/status", methods=["GET"])
 @require_tier("pro")
+@handle_exceptions
 def get_printer_status(printer_id: str):
     """Proxy real-time status from the printer's API."""
     err = _validate_printer_id(printer_id)
@@ -120,6 +122,7 @@ def get_printer_status(printer_id: str):
 
 @printer_bp.route("/api/printers/<printer_id>/print", methods=["POST"])
 @require_tier("pro")
+@handle_exceptions
 def dispatch_print(printer_id: str):
     """
     Upload a rendered file to the printer and start the print job.
@@ -164,6 +167,7 @@ def dispatch_print(printer_id: str):
 
 @printer_bp.route("/api/printers/<printer_id>/print", methods=["DELETE"])
 @require_tier("pro")
+@handle_exceptions
 def cancel_print_job(printer_id: str):
     """Cancel the active print job on the specified printer."""
     err = _validate_printer_id(printer_id)

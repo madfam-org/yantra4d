@@ -7,13 +7,12 @@ import html
 import io
 import json
 import logging
-import os
 
 from flask import Blueprint, request, Response
 
-from config import Config
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
+from utils.project_resolver import require_project
 
 datasheet_bp = Blueprint("datasheet", __name__)
 logger = logging.getLogger(__name__)
@@ -30,10 +29,9 @@ except ImportError:
     HAS_REPORTLAB = False
 
 
-def _load_manifest(slug: str):
-    projects_dir = Config.PROJECTS_DIR
-    manifest_path = os.path.join(projects_dir, slug, "project.json")
-    if not os.path.isfile(manifest_path):
+def _load_manifest(project_dir):
+    manifest_path = project_dir / "project.json"
+    if not manifest_path.is_file():
         return None
     with open(manifest_path, "r") as f:
         return json.load(f)
@@ -151,9 +149,10 @@ def _generate_html(manifest: dict, params: dict, lang: str = "en") -> str:
 
 @datasheet_bp.route("/api/projects/<slug>/datasheet", methods=["GET"])
 @require_valid_slug
-def generate_datasheet(slug: str) -> Response | tuple[Response, int]:
+@require_project()
+def generate_datasheet(slug: str, project_dir) -> Response | tuple[Response, int]:
     """Generate a project datasheet as PDF (if reportlab available) or HTML."""
-    manifest = _load_manifest(slug)
+    manifest = _load_manifest(project_dir)
     if not manifest:
         return error_response("Project not found", 404)
 

@@ -44,13 +44,14 @@ class RenderCache:
         self._max_entries = max_entries
 
     @staticmethod
-    def _make_key(project: str, scad_file: str, params: dict, part: str, export_format: str) -> str:
+    def _make_key(project: str, scad_file: str, params: dict, part: str, export_format: str, scad_content_hash: str | None = None) -> str:
         raw = json.dumps({
             "project": project,
             "scad_file": scad_file,
             "params": params,
             "part": part,
             "format": export_format,
+            **({"scad_hash": scad_content_hash} if scad_content_hash else {}),
         }, sort_keys=True)
         return hashlib.sha256(raw.encode()).hexdigest()
 
@@ -79,9 +80,9 @@ class RenderCache:
         except Exception:
             pass
 
-    def get(self, project: str, scad_file: str, params: dict, part: str, export_format: str) -> dict | None:
+    def get(self, project: str, scad_file: str, params: dict, part: str, export_format: str, scad_content_hash: str | None = None) -> dict | None:
         """Return cached entry if valid, else None. Checks L1 then L2."""
-        key = self._make_key(project, scad_file, params, part, export_format)
+        key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash)
 
         # L1: in-memory
         with self._lock:
@@ -108,8 +109,8 @@ class RenderCache:
 
         return None
 
-    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, path: str, size_bytes: int | None):
-        key = self._make_key(project, scad_file, params, part, export_format)
+    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, path: str, size_bytes: int | None, scad_content_hash: str | None = None):
+        key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash)
         entry = {"path": path, "size_bytes": size_bytes, "ts": time.time()}
 
         # L1

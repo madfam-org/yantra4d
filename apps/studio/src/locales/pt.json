@@ -187,6 +187,8 @@
   "btn.editor_close": "Fechar editor de código",
   "btn.open_controls": "Abrir controles",
   "btn.edit_assembly": "Editar Guia de Montagem",
+  "btn.compare": "Comparar",
+  "btn.exit_compare": "Sair da comparação",
   "a11y.controls_description": "Ajustar parâmetros, configurações de visualização e opções de exportação",
   "export.geometry": "Geometria",
   "export.images": "Imagens",

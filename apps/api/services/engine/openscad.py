@@ -13,9 +13,19 @@ from pathlib import Path
 
 from config import Config
 from manifest import get_manifest
-from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager
+from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, RenderResult
 
 logger = logging.getLogger(__name__)
+
+
+def compute_scad_hash(scad_path: str) -> str | None:
+    """Compute MD5 hash of SCAD file content for cache invalidation."""
+    try:
+        import hashlib
+        return hashlib.md5(Path(scad_path).read_bytes()).hexdigest()
+    except OSError:
+        return None
+
 
 # Cache fontconfig temp files per project fonts dir so they're created once
 _fontconfig_cache: dict[str, str] = {}
@@ -225,18 +235,33 @@ def _sanitize_cmd_for_log(cmd: list) -> str:
     return " ".join(sanitized)
 
 
-def run_render(cmd: list, scad_path: str | None = None) -> tuple[bool, str]:
-    """Execute OpenSCAD render synchronously. Returns (success, stderr)."""
+def run_render(cmd: list, scad_path: str | None = None) -> RenderResult:
+    """Execute OpenSCAD render synchronously.
+
+    Returns a RenderResult dataclass. Supports tuple unpacking for backward
+    compatibility: ``success, stderr = run_render(cmd)``.
+    """
+    import time
     logger.info(f"Running OpenSCAD: {_sanitize_cmd_for_log(cmd)}")
+    t0 = time.monotonic()
     try:
         result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
-        return True, result.stderr
+        duration_ms = (time.monotonic() - t0) * 1000
+        # Extract output_path from cmd: the -o flag value
+        output_path = None
+        for i, arg in enumerate(cmd):
+            if arg == "-o" and i + 1 < len(cmd):
+                output_path = cmd[i + 1]
+                break
+        return RenderResult(success=True, stderr=result.stderr, output_path=output_path, duration_ms=duration_ms)
     except subprocess.TimeoutExpired:
+        duration_ms = (time.monotonic() - t0) * 1000
         logger.error("OpenSCAD render timed out after %ds", RENDER_TIMEOUT_S)
-        return False, f"Render timed out after {RENDER_TIMEOUT_S} seconds"
+        return RenderResult(success=False, stderr=f"Render timed out after {RENDER_TIMEOUT_S} seconds", duration_ms=duration_ms)
     except subprocess.CalledProcessError as e:
+        duration_ms = (time.monotonic() - t0) * 1000
         logger.error(f"OpenSCAD failed: {e.stderr}")
-        return False, e.stderr
+        return RenderResult(success=False, stderr=e.stderr, duration_ms=duration_ms)
 
 
 def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int, scad_path: str | None = None):

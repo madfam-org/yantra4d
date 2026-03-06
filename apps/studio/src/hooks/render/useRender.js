@@ -25,6 +25,11 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
 
   const abortControllerRef = useRef(null)
 
+  /** Evict a specific key from the L1 in-memory cache. Called externally when blobs are revoked. */
+  const evictCache = useCallback((key) => {
+    delete partsCacheRef.current[key]
+  }, [])
+
   const handleGenerate = useCallback(async (forceRender = false, overridePayload = null) => {
     const payload = overridePayload || { ...params, mode }
     const cacheKey = getCacheKey(mode, params)
@@ -153,6 +158,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project }) {
     progressPhase,
     /** Look up cached render result by cache key. Returns part array or undefined. */
     checkCache: (key) => partsCacheRef.current[key],
+    /** Evict a cache key from L1 when its blob URLs have been revoked. */
+    evictCache,
     showConfirmDialog,
     pendingEstimate,
     handleGenerate,

@@ -198,6 +198,7 @@ export function useProjectParams({ viewerRef }) {
     progress,
     progressPhase,
     checkCache,
+    evictCache,
     showConfirmDialog,
     pendingEstimate,
     handleGenerate,
@@ -213,12 +214,21 @@ export function useProjectParams({ viewerRef }) {
     }
   }, [logs])
 
-  // Revoke old blob URLs
+  // Revoke old blob URLs and evict those entries from the L1 render cache.
+  // This prevents Three.js from receiving dead blob URLs on the next cache hit.
   useEffect(() => {
     return () => {
-      parts.forEach(p => { if (p.url?.startsWith('blob:')) URL.revokeObjectURL(p.url) })
+      parts.forEach(p => {
+        if (p.url?.startsWith('blob:')) {
+          URL.revokeObjectURL(p.url)
+          // Evict the L1 cache entry that contained this blob so the next
+          // request goes to the backend instead of returning a dead URL.
+          const key = getCacheKey(mode, params)
+          evictCache(key)
+        }
+      })
     }
-  }, [parts])
+  }, [parts]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Image export
   const cameraViews = getCameraViews()

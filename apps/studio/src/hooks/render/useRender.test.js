@@ -224,6 +224,57 @@ describe('useRender', () => {
     expect(result.current.checkCache(key)).toHaveLength(1)
   })
 
+  it('evictCache removes an entry from the L1 in-memory cache', async () => {
+    const { result } = renderUseRender()
+
+    // Populate cache via a force render
+    await act(async () => {
+      await result.current.handleGenerate(true)
+    })
+
+    const key = JSON.stringify({ mode: 'unit', size: 20 })
+    expect(result.current.checkCache(key)).toHaveLength(1)
+
+    // Evict the entry
+    act(() => {
+      result.current.evictCache(key)
+    })
+
+    // Cache should now be empty for that key
+    expect(result.current.checkCache(key)).toBeUndefined()
+  })
+
+  it('evictCache after blob revocation causes next forced render to call backend', async () => {
+    const { renderParts } = await import('../../services/engine/renderService')
+    const { result } = renderUseRender()
+
+    // First render populates L1 cache
+    await act(async () => {
+      await result.current.handleGenerate(true)
+    })
+    expect(renderParts).toHaveBeenCalledTimes(1)
+    renderParts.mockClear()
+
+    const key = JSON.stringify({ mode: 'unit', size: 20 })
+
+    // Confirm cache is populated
+    expect(result.current.checkCache(key)).toHaveLength(1)
+
+    // Simulate blob revocation by evicting the cache key (as done in useProjectParams cleanup)
+    act(() => {
+      result.current.evictCache(key)
+    })
+
+    // L1 cache entry must now be gone
+    expect(result.current.checkCache(key)).toBeUndefined()
+
+    // A forced render (bypassing L2 as well) must call the backend
+    await act(async () => {
+      await result.current.handleGenerate(true)
+    })
+    expect(renderParts).toHaveBeenCalledTimes(1)
+  })
+
   it('onProgress updates progress and phase', async () => {
     const { renderParts } = await import('../../services/engine/renderService')
     renderParts.mockImplementationOnce((_mode, _params, _manifest, opts) => {

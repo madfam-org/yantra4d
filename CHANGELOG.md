@@ -75,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Landing build-arg** — Added missing `PUBLIC_STUDIO_URL` to the build-landing
   CI job so the "Launch Studio" link resolves correctly in production.
 - **Admin Dockerfile** — Added missing `VITE_JANUA_REDIRECT_URI` env var.
+- **Stale Blob URL L1 cache bug** — `useRender.js` now exports `evictCache(key)` to purge a specific entry from the L1 in-memory render cache. `useProjectParams.js` calls `evictCache` inside the blob-revocation cleanup whenever a part's `blob:` URL is revoked. This prevents Three.js from receiving dead blob URLs on L1 cache hits after repeated parameter toggles, fixing the parameter toggle (e.g. "Carry Handle") breaking after ~3 cycles with `ERR_FILE_NOT_FOUND`.
 
 ### Infrastructure
 - **K8s analytics PVC** — Added 1Gi `ReadWriteOnce` persistent volume for the

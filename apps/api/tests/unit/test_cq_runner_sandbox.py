@@ -6,6 +6,7 @@ from services.engine.cq_runner import (
     _SAFE_BUILTINS,
     _BLOCKED_MODULES,
     _restricted_import,
+    _safe_type,
     run_cadquery_script,
 )
 
@@ -171,6 +172,53 @@ class TestSandboxedExecution:
     def test_script_can_use_math(self, mock_cq_env, tmp_path):
         script = tmp_path / "safe.py"
         script.write_text("import math\nresult = cq.Workplane('XY').box(math.pi, 1, 1)")
+
+        run_cadquery_script(str(script), "out.stl", "{}", "STL")
+        assert mock_cq_env.exporters.export.called
+
+
+class TestMetaclassEscapeVectors:
+    """Tests that metaclass and class hierarchy escape vectors are blocked."""
+
+    def test_safe_type_returns_type_object(self):
+        assert _safe_type(42) is int
+        assert _safe_type("hello") is str
+        assert _safe_type([]) is list
+
+    def test_safe_type_blocks_three_arg_form(self):
+        with pytest.raises(TypeError, match="3 arguments is not allowed"):
+            _safe_type("MyClass", (object,), {})
+
+    def test_type_in_builtins_is_safe_type(self):
+        assert _SAFE_BUILTINS["type"] is _safe_type
+
+    def test_script_cannot_use_type_subclasses(self, mock_cq_env, tmp_path):
+        script = tmp_path / "escape.py"
+        script.write_text("classes = type.__subclasses__(type)")
+
+        with pytest.raises(SystemExit) as exc:
+            run_cadquery_script(str(script), "out.stl", "{}", "STL")
+        assert exc.value.code == 1
+
+    def test_script_cannot_traverse_class_bases(self, mock_cq_env, tmp_path):
+        script = tmp_path / "escape.py"
+        script.write_text("classes = ().__class__.__bases__[0].__subclasses__()")
+
+        with pytest.raises(SystemExit) as exc:
+            run_cadquery_script(str(script), "out.stl", "{}", "STL")
+        assert exc.value.code == 1
+
+    def test_script_cannot_create_class_via_type(self, mock_cq_env, tmp_path):
+        script = tmp_path / "escape.py"
+        script.write_text("Evil = type('Evil', (object,), {'run': lambda s: None})")
+
+        with pytest.raises(SystemExit) as exc:
+            run_cadquery_script(str(script), "out.stl", "{}", "STL")
+        assert exc.value.code == 1
+
+    def test_script_legitimate_type_check_works(self, mock_cq_env, tmp_path):
+        script = tmp_path / "safe.py"
+        script.write_text("t = type(42)\nresult = cq.Workplane('XY').box(1,1,1)")
 
         run_cadquery_script(str(script), "out.stl", "{}", "STL")
         assert mock_cq_env.exporters.export.called

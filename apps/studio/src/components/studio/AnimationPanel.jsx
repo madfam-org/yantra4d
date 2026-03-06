@@ -153,6 +153,65 @@ export default function AnimationPanel({ projectSlug, onLoadFrame }) {
         }
     }, [frames]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    // ── WebM Export ────────────────────────────────────────────────────────────
+    const [exporting, setExporting] = useState(false)
+    const exportRef = useRef({ recorder: null, chunks: [] })
+
+    const handleExportWebM = useCallback(() => {
+        if (frames.length === 0 || exporting) return
+
+        const canvas = document.querySelector('canvas')
+        if (!canvas) {
+            setError('No 3D canvas found for recording')
+            return
+        }
+
+        setExporting(true)
+        const stream = canvas.captureStream(30)
+        const recorder = new MediaRecorder(stream, {
+            mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+                ? 'video/webm;codecs=vp9'
+                : 'video/webm',
+        })
+
+        exportRef.current.chunks = []
+        exportRef.current.recorder = recorder
+
+        recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) exportRef.current.chunks.push(e.data)
+        }
+
+        recorder.onstop = () => {
+            const blob = new Blob(exportRef.current.chunks, { type: 'video/webm' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${projectSlug}-animation-${selectedId}.webm`
+            a.click()
+            URL.revokeObjectURL(url)
+            setExporting(false)
+        }
+
+        recorder.start()
+
+        // Play through all frames then stop
+        const duration = selectedAnim?.duration_ms ?? 2000
+        const interval = duration / frames.length
+        let frameIdx = 0
+
+        const exportTimer = setInterval(() => {
+            if (frameIdx >= frames.length) {
+                clearInterval(exportTimer)
+                recorder.stop()
+                return
+            }
+            const glbs = frames[frameIdx]?.parts?.map(p => p.url) ?? []
+            if (onLoadFrame && glbs.length) onLoadFrame(glbs)
+            setCurrentFrame(frameIdx)
+            frameIdx++
+        }, interval)
+    }, [frames, exporting, projectSlug, selectedId, selectedAnim, onLoadFrame])
+
     if (animations.length === 0) return null
 
     return (
@@ -235,17 +294,26 @@ export default function AnimationPanel({ projectSlug, onLoadFrame }) {
                                     aria-label="Animation frame scrubber"
                                 />
                             </div>
-                            <button
-                                className="animation-panel__btn animation-panel__btn--secondary"
-                                onClick={() => {
-                                    setStatus('idle')
-                                    setFrames([])
-                                    setCurrentFrame(0)
-                                    clearInterval(playTimerRef.current)
-                                }}
-                            >
-                                Reset
-                            </button>
+                            <div className="animation-panel__btn-group">
+                                <button
+                                    className="animation-panel__btn animation-panel__btn--primary"
+                                    onClick={handleExportWebM}
+                                    disabled={exporting}
+                                >
+                                    {exporting ? 'Recording…' : 'Export WebM'}
+                                </button>
+                                <button
+                                    className="animation-panel__btn animation-panel__btn--secondary"
+                                    onClick={() => {
+                                        setStatus('idle')
+                                        setFrames([])
+                                        setCurrentFrame(0)
+                                        clearInterval(playTimerRef.current)
+                                    }}
+                                >
+                                    Reset
+                                </button>
+                            </div>
                         </div>
                     )}
                     {error && (

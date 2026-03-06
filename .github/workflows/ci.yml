@@ -42,7 +42,7 @@ jobs:
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
       - run: npm audit --audit-level=high
-      - run: npm test
+      - run: npm run test:coverage
       - run: npm run build
 
   admin:
@@ -64,7 +64,7 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run build
-      - run: npm test
+      - run: npm run test:coverage
 
   backend:
     runs-on: ubuntu-latest

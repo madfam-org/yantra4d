@@ -72,6 +72,7 @@ packages/
 | `apps/studio/src/components/ui/*` | Shadcn primitives | **NEVER** |
 | `scripts/cli/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `scripts/prerender-carousel.sh` | Pre-render GLB models for landing carousel | RARELY |
+| `scripts/qa/i18n_audit.py` | i18n key parity checker + hardcoded string scanner | RARELY |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
@@ -94,6 +95,8 @@ packages/
 | `apps/api/services/ai_code_editor.py` | NL → SCAD code edit mapping | RARELY |
 | `apps/api/services/github_import.py` | GitHub repo clone and project creation | RARELY |
 | `apps/api/services/tier_service.py` | Tier lookup and feature gating | RARELY |
+| `apps/studio/src/lib/billing.ts` | Dhanam checkout URL generation for tier upgrades | RARELY |
+| `apps/studio/src/components/ui/UpgradeModal.tsx` | Tier upgrade modal (links to Dhanam checkout) | RARELY |
 | `apps/studio/src/contexts/auth/AuthProvider.jsx` | JWT auth context + login/logout | RARELY |
 | `apps/studio/src/contexts/auth/TierProvider.jsx` | User tier context + feature flags | RARELY |
 | `apps/studio/src/components/AiChatPanel.jsx` | AI chat UI (configurator + code-editor modes) | RARELY |
@@ -262,6 +265,8 @@ Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/servi
 
 **Note**: Set `AUTH_ENABLED=false` to bypass auth in development (all users get madfam tier).
 
+**Billing**: Tier upgrades via external Dhanam platform (`apps/studio/src/lib/billing.ts` generates checkout URLs, `UpgradeModal.tsx` presents upgrade flow). Tier assignment handled by Dhanam webhooks to Janua auth — JWT `yantra4d_tier` claim drives backend gating.
+
 ## AI Features
 
 Two AI-powered features use LLMs to assist with parametric design:
@@ -375,4 +380,6 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/audits/browser-audit-2026-03.md`](docs/audits/browser-audit-2026-03.md) — Responsive/mobile browser audit with screenshots
 - [`docs/audits/full-stack-audit.md`](docs/audits/full-stack-audit.md) — Full-stack architecture audit
 - [`docs/audits/enclii-verification-prompt.md`](docs/audits/enclii-verification-prompt.md) — Deployment verification steps
+- [`docs/architecture/typescript-migration.md`](docs/architecture/typescript-migration.md) — Gradual TypeScript adoption strategy
+- [`packages/sdk/README.md`](packages/sdk/README.md) — Headless SDK API documentation
 Per-project docs live in `projects/{slug}/docs/`.

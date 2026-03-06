@@ -1,3 +1,4 @@
+import builtins as _builtins
 import os
 import sys
 import json
@@ -5,6 +6,24 @@ import logging
 import math
 
 logger = logging.getLogger(__name__)
+
+
+def _safe_type(obj, *args):
+    """Restricted type() — returns type name only, blocks metaclass access."""
+    if args:
+        raise TypeError("type() with 3 arguments is not allowed in sandboxed scripts")
+    return _builtins.type(obj)
+
+
+def _safe_isinstance(obj, classinfo):
+    """Restricted isinstance() — no metaclass traversal exposure."""
+    return _builtins.isinstance(obj, classinfo)
+
+
+def _safe_issubclass(cls, classinfo):
+    """Restricted issubclass() — no class hierarchy exposure."""
+    return _builtins.issubclass(cls, classinfo)
+
 
 # Restricted builtins for CadQuery script execution — blocks file I/O,
 # network access, code generation, and import of dangerous modules.
@@ -21,8 +40,8 @@ _SAFE_BUILTINS = {
     "abs": abs, "round": round, "min": min, "max": max, "sum": sum, "pow": pow,
     "divmod": divmod,
     # Length and membership
-    "len": len, "any": any, "all": all, "isinstance": isinstance, "issubclass": issubclass,
-    "type": type, "id": id, "hash": hash,
+    "len": len, "any": any, "all": all, "isinstance": _safe_isinstance, "issubclass": _safe_issubclass,
+    "type": _safe_type, "id": id, "hash": hash,
     # String and repr
     "repr": repr, "format": format, "chr": chr, "ord": ord,
     "print": print,

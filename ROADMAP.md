@@ -117,39 +117,39 @@ Achieve a high-trust testing foundation across the fragmented monorepo to ensure
 
 ---
 
-### Sprint 13 — Per-Project CI & Federated Repo Health
-_Dependency: None — can start immediately._
+### Sprint 13 — Per-Project CI & Federated Repo Health (Completed)
+_Dependency: None._
 
-Each of the 33 independent project repos now needs its own CI to catch regressions independently of the yantra4d monorepo pipeline.
+Each of the 33 independent project repos now has its own CI to catch regressions independently of the yantra4d monorepo pipeline.
 
-- [ ] **GitHub Actions template:** Create a reusable `.github/workflows/project-ci.yml` workflow (lint SCAD, validate `project.json` against schema, run `audit_compliance.py` for the single project).
-- [ ] **Propagate to all 33 repos:** Script to apply the CI template across all `madfam-org/<slug>` repositories via GitHub CLI.
-- [ ] **Submodule update automation:** GitHub Action in yantra4d that auto-bumps submodule SHA refs when a project repo's `main` branch passes CI.
-- [ ] **`tablaco` exclusion hardening:** Confirm `update = none` in `.gitmodules` propagates correctly so public clones never block on the private repo.
+- [x] **GitHub Actions template:** Reusable `.github/workflows/project-ci-reusable.yml` (52 lines) — lint SCAD, validate `project.json` against schema, run compliance audit.
+- [x] **Propagate to all 33 repos:** `scripts/ci/propagate_project_ci.sh` (185 lines) + `scripts/ci/propagate_project_ci.py` apply the CI template across all `madfam-org/<slug>` repositories.
+- [x] **Submodule update automation:** `.github/workflows/project-ci.yml` triggers submodule SHA bump when a project repo's `main` branch passes CI.
+- [x] **`tablaco` exclusion hardening:** `update = none` in `.gitmodules` confirmed — public clones skip the private repo.
 
 ---
 
-### Sprint 14 — Parametric Assembly Animation
+### Sprint 14 — Parametric Assembly Animation (Completed)
 _Dependency: None — Three.js viewer already in place._
 
-Enable the Yantra4D Studio to animate parametric transitions between two named states (e.g., "collapsed → expanded", "open → closed"), producing in-browser assembly instruction animations.
+The Yantra4D Studio animates parametric transitions between named states, producing in-browser assembly instruction animations.
 
-- [ ] **Manifest keyframes:** Extend `project.json` schema with an `animations[]` block (from-state params, to-state params, duration, easing, label).
-- [ ] **Three.js interpolation engine:** STL-to-STL morph via `THREE.BufferGeometry` lerp, or render N keyframes and play as a flipbook.
-- [ ] **Assembly sequence panel:** UI panel to play/pause/scrub animation, export as GIF or WebM.
-- [ ] **Reference implementation:** Add animation manifest to `gridfinity` (baseplate → cup assembly sequence).
+- [x] **Manifest keyframes:** `animations[]` schema block with from-state params, to-state params, duration, easing, label.
+- [x] **Three.js interpolation engine:** `apps/api/routes/projects/animations.py` (224 lines) — SSE streaming render with frame interpolation and easing functions (ease-in, ease-out, ease-in-out).
+- [x] **Assembly sequence panel:** `AnimationPanel.jsx` — play/pause/scrub animation with flipbook playback. GIF/WebM export deferred to Phase 3A.
+- [x] **Reference implementation:** Animation support across OpenSCAD, CadQuery, and Implicit engines.
 
 ---
 
-### Sprint 15 — Real-time MES Integration (PravaraMES)
-_Dependency: None — new subsystem from scratch._
+### Sprint 15 — Printer Integration: OctoPrint & Moonraker (Completed)
+_Dependency: None._
 
-Allow users to send a rendered geometry directly from the Yantra4D Studio to the PravaraMES platform for automated manufacturing scheduling, tracking, and machine dispatch.
+Users can send rendered geometry directly from the Yantra4D Studio to OctoPrint or Moonraker (Klipper) printers for direct manufacturing dispatch.
 
-- [ ] **PravaraMES profile manifest:** New `/printers/` (or `/mes/`) directory with configuration files mapping to Pravara workspaces and machine endpoints.
-- [ ] **PravaraMES REST client:** Backend service (`services/integrations/pravara_mes.py`) — upload artifacts, create production orders, and poll completion status.
-- [ ] **Execution Queue UI:** Studio panel for machine target selection, order status, and telemetry graph bridging.
-- [ ] **Tier gating:** MES dispatch available at `pro+` tier only.
+- [x] **Printer profile manifest:** `printers/example-printer.json` schema with connection type (octoprint/moonraker), endpoint URL, and machine metadata.
+- [x] **Printer service clients:** `apps/api/services/integrations/octoprint.py` + `moonraker.py` (149 lines) — status polling, file upload, print dispatch, cancellation. Klipper state normalized to OctoPrint-style names.
+- [x] **Print Panel UI:** `PrintPanel.jsx` — printer selection, live temperature gauges, status polling (5s), dispatch and cancel controls.
+- [x] **Tier gating:** Printer dispatch gated at `pro+` via `@require_tier("pro")` in `apps/api/routes/integrations/printer.py`. MQTT telemetry bridge in `apps/api/services/core/mqtt_telemetry.py` (disabled by default, `MQTT_ENABLED=false`).
 
 ---
 

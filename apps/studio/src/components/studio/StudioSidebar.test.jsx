@@ -7,6 +7,11 @@ vi.mock('../controls/Controls', () => ({
     return <div data-testid="controls" />
   },
 }))
+vi.mock('../controls/AppearancePanel', () => ({
+  default: function MockAppearancePanel() {
+    return <div data-testid="appearance-panel" />
+  },
+}))
 vi.mock('../export/ExportPanel', () => ({
   default: function MockExportPanel() {
     return <div data-testid="export-panel" />
@@ -32,6 +37,13 @@ vi.mock('../assembly-editor/AssemblyEditorPanel', () => ({
 vi.mock('../../contexts/project/ProjectProvider', () => ({
   useProject: vi.fn(),
 }))
+vi.mock('@/components/ui/tabs', async (importOriginal) => {
+  const mod = await importOriginal()
+  return {
+    ...mod,
+    TabsContent: ({ children }) => <div data-testid="mock-tabs-content">{children}</div>
+  }
+})
 vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: vi.fn(),
 }))
@@ -157,15 +169,16 @@ describe('StudioSidebar', () => {
   })
 
   it('calls handleReset when clicking reset button', () => {
-    render(<StudioSidebar />)
-    const resetBtns = screen.getAllByText('btn.reset')
-    fireEvent.click(resetBtns[0].closest('button'))
+    const { container } = render(<StudioSidebar />)
+    const resetBtn = container.querySelector('button[title="btn.reset"]') || screen.getAllByRole('button').find(b => b.title === 'btn.reset' || !b.textContent.trim()) // Fallback lookup
+    fireEvent.click(resetBtn)
     expect(baseContext.handleReset).toHaveBeenCalled()
   })
 
-  it('renders child panels: controls, export, bom', () => {
+  it('renders child panels: controls, appearance, export, bom', () => {
     render(<StudioSidebar />)
     expect(screen.getAllByTestId('controls').length).toBeGreaterThan(0)
+    expect(screen.getAllByTestId('appearance-panel').length).toBeGreaterThan(0)
     expect(screen.getAllByTestId('export-panel').length).toBeGreaterThan(0)
     expect(screen.getAllByTestId('bom-panel').length).toBeGreaterThan(0)
   })

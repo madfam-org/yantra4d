@@ -39,20 +39,6 @@ describe('Controls', () => {
     expect(screen.getByText('Height (units)')).toBeInTheDocument()
   })
 
-  it('renders color picker for cup mode (cup part)', () => {
-    renderControls()
-    const colorInput = screen.getByDisplayValue('#4a90d9')
-    expect(colorInput).toBeInTheDocument()
-    expect(colorInput).toHaveAttribute('type', 'color')
-  })
-
-  it('color change calls setColors', () => {
-    const setColors = vi.fn()
-    renderControls({ setColors })
-    const colorInput = screen.getByDisplayValue('#4a90d9')
-    fireEvent.change(colorInput, { target: { value: '#ff0000' } })
-    expect(setColors).toHaveBeenCalled()
-  })
 
   it('renders baseplate parameters when mode is baseplate', () => {
     renderControls({
@@ -70,11 +56,6 @@ describe('Controls', () => {
     expect(screen.getByText('Corner Radius (mm)')).toBeInTheDocument()
   })
 
-  it('renders colors group label for part color controls', () => {
-    renderControls()
-    // Gridfinity has no "colors" parameter_group, so getGroupLabel returns raw id
-    expect(screen.getByText('colors')).toBeInTheDocument()
-  })
 
   it('sliders are labelled via aria-labelledby pointing to the parameter label', () => {
     renderControls()
@@ -141,17 +122,6 @@ describe('Controls', () => {
     expect(checkboxes.length).toBeGreaterThan(0)
   })
 
-  it('renders wireframe toggle when setWireframe is provided', () => {
-    const setWireframe = vi.fn()
-    renderControls({ wireframe: false, setWireframe })
-    expect(screen.getByText('Wireframe')).toBeInTheDocument()
-  })
-
-  it('renders bounding box toggle when setBoundingBox is provided', () => {
-    const setBoundingBox = vi.fn()
-    renderControls({ boundingBox: false, setBoundingBox })
-    expect(screen.getByText('Bounding Box')).toBeInTheDocument()
-  })
 
   it('renders no parameters message when mode has no params', () => {
     // Use a mode that has no params by providing an unknown mode

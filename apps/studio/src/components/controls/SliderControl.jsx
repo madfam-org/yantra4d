@@ -27,38 +27,39 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
     const isDisabled = !!param.disabled
 
     return (
-        <div className={`space-y-2 ${isDisabled ? 'opacity-50 pointer-events-none' : ''}`}>
-            <div className="flex justify-between items-center">
+        <div className={`space-y-1 ${isDisabled ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div className="flex justify-between items-center gap-2">
                 <Tooltip content={getLabel(param, 'tooltip', language)}>
-                    <Label id={labelId} className="flex items-center gap-2 cursor-help">
+                    <Label id={labelId} className="flex items-center gap-1 cursor-help flex-1 text-xs truncate" title={getLabel(param, 'label', language)}>
                         {getLabel(param, 'label', language)}
-
                     </Label>
                 </Tooltip>
-                {editing ? (
-                    <input
-                        type="number"
-                        inputMode="decimal"
-                        className="w-16 text-base sm:text-sm text-right bg-input border border-border rounded px-1 py-2 min-h-[44px]"
-                        value={editValue}
-                        min={param.min} max={param.max} step={param.step}
-                        autoFocus
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={commitEdit}
-                        onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') setEditing(false) }}
-                    />
-                ) : (
-                    <span
-                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded-sm min-h-[44px] inline-flex items-center"
-                        onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`${getLabel(param, 'label', language)}: ${displayValue}. ${t('ctrl.click_to_edit')}`}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); setEditValue(String(displayValue)) } }}
-                    >
-                        {displayValue}
-                    </span>
-                )}
+                <div className="flex-shrink-0 text-right w-16">
+                    {editing ? (
+                        <input
+                            type="number"
+                            inputMode="decimal"
+                            className="w-full text-xs text-right bg-input border border-border rounded px-1 py-1 h-7"
+                            value={editValue}
+                            min={param.min} max={param.max} step={param.step}
+                            autoFocus
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onBlur={commitEdit}
+                            onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') setEditing(false) }}
+                        />
+                    ) : (
+                        <span
+                            className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60 focus-visible:ring-1 focus-visible:ring-ring focus-visible:rounded-sm h-7 inline-flex items-center justify-end w-full"
+                            onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`${getLabel(param, 'label', language)}: ${displayValue}. ${t('ctrl.click_to_edit')}`}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); setEditValue(String(displayValue)) } }}
+                        >
+                            {displayValue}
+                        </span>
+                    )}
+                </div>
             </div>
             <Slider
                 value={[value]}

@@ -30,7 +30,9 @@ ThemeProvider → ManifestProvider → LanguageProvider → App
 | File | Role |
 |------|------|
 | `src/App.jsx` | Main shell — state, API calls, layout, keyboard shortcuts |
-| `src/components/Controls.jsx` | Data-driven sliders, checkboxes, color pickers from manifest |
+| `src/components/controls/Controls.jsx` | Data-driven sliders and checkboxes for physical/geometric parameters |
+| `src/components/controls/AppearancePanel.jsx` | Viewport visualization settings (lighting, wireframe, clipping, materials) |
+| `src/components/bom/BomPanel.jsx` | Smart Bill of Materials parsing physical parts and required hardware |
 | `src/components/Viewer.jsx` | Three.js STL viewer with camera controls and snapshot export |
 | `src/contexts/ManifestProvider.jsx` | Manifest fetch, fallback, typed accessors via `useManifest()` |
 | `src/config/fallback-manifest.json` | Bundled copy of `scad/project.json` |

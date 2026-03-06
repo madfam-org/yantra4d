@@ -27,6 +27,15 @@ vi.mock('./components/Viewer', () => ({
   default: React.forwardRef(function MockViewer(props, ref) { return <div data-testid="viewer-mock">Viewer Mock</div> }),
 }))
 
+// Mock Radix Tabs to aggressively render all content for visibility tests
+vi.mock('@/components/ui/tabs', async (importOriginal) => {
+  const mod = await importOriginal()
+  return {
+    ...mod,
+    TabsContent: ({ children }) => <div data-testid="mock-tabs-content">{children}</div>
+  }
+})
+
 // Mock fetch for ManifestProvider
 beforeEach(() => {
   vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
@@ -123,11 +132,12 @@ describe('App', { timeout: 30000 }, () => {
     // Auto-generate fires on mount (debounced), producing parts via the mock.
     // Wait for loading to finish and verify button to become enabled.
     await waitFor(() => {
-      const verifyBtn = screen.getByText('Run Verification Suite')
-      expect(verifyBtn).not.toBeDisabled()
+      const verifyBtns = screen.getAllByText('Run Verification Suite')
+      expect(verifyBtns[0].closest('button')).not.toBeDisabled()
     }, { timeout: 15000 })
 
-    fireEvent.click(screen.getByText('Run Verification Suite'))
+    const verifyBtns = screen.getAllByText('Run Verification Suite')
+    fireEvent.click(verifyBtns[0].closest('button'))
     await waitFor(() => {
       expect(verify).toHaveBeenCalled()
       // verify is now called with (parts, mode, projectSlug)
@@ -138,8 +148,8 @@ describe('App', { timeout: 30000 }, () => {
   })
 
   it('reset button restores default params', async () => {
-    await renderApp()
-    const resetBtn = screen.getByText('Reset to Defaults')
+    const { container } = await renderApp()
+    const resetBtn = container.querySelector('svg.lucide-rotate-ccw').closest('button')
     fireEvent.click(resetBtn)
     // After reset, slider values should show defaults — check width_units=2
     expect(screen.getByText('2')).toBeInTheDocument()
@@ -172,7 +182,7 @@ describe('App', { timeout: 30000 }, () => {
 
   it('download STL button is disabled when no parts', async () => {
     await renderApp()
-    const dlBtn = screen.getByText(/Download STL/i)
+    const dlBtn = await screen.findByText(/Download STL/i)
     expect(dlBtn).toBeDisabled()
   })
 

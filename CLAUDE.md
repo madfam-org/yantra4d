@@ -308,7 +308,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 ## Testing Standards
 
 - **Studio unit**: Vitest + RTL, coverage thresholds (80% statements/lines, 80% branches, 80% functions), jest-axe accessibility audits
-- **Studio E2E**: Playwright — 23 test suites in `apps/studio/e2e/tests/`, page object pattern, mock API via `api-mocker.js`. Suite `23-browser-audit/` (76 tests) runs against the real Docker backend with OpenSCAD — use `--project=audit`
+- **Studio E2E**: Playwright — 23 test suites in `apps/studio/e2e/tests/`, page object pattern, mock API via `api-mocker.js`. Suite `23-browser-audit/` (86 tests) runs against the real Docker backend with OpenSCAD — use `--project=audit`
 - **Landing**: `npm run build` (Astro static build)
 - **Backend**: pytest + pytest-cov, coverage threshold 80%, tests in `apps/api/tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` → ESLint fix + Vitest on changed files

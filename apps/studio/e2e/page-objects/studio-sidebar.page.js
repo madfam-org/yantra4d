@@ -22,24 +22,35 @@ export class StudioSidebarPage extends BasePage {
     )
   }
 
+  /** Locator for the mode tablist (distinguished from section tabs by aria-label). */
+  get modeTablist() {
+    // Desktop: custom ModeTabs with aria-label="Mode selection"
+    // Mobile: Radix TabsList inside the mobile bar
+    return this.sidebar.locator('[role="tablist"][aria-label="Mode selection"]').or(
+      this.page.locator('[data-testid="studio-sidebar"] [role="tablist"][aria-label="Mode selection"]')
+    ).first()
+  }
+
   /** Click a mode tab by index (0-based) or data-value/aria-selected. */
   async selectMode(modeId) {
+    const tablist = this.modeTablist
+
     // 1. Try to find by data-value (Radix UI) or text content
-    const tabByValue = this.sidebar.locator(`[role="tablist"] [role="tab"][data-value="${modeId}"]`)
+    const tabByValue = tablist.locator(`[role="tab"][data-value="${modeId}"]`)
     if (await tabByValue.count() > 0) {
       await tabByValue.click()
       return
     }
 
     // 2. Try to find by text content (plain button mode tabs)
-    const tabByText = this.sidebar.locator(`[role="tablist"] [role="tab"]`).filter({ hasText: new RegExp(modeId, 'i') }).first()
+    const tabByText = tablist.locator(`[role="tab"]`).filter({ hasText: new RegExp(modeId, 'i') }).first()
     if (await tabByText.count() > 0) {
       await tabByText.click()
       return
     }
 
     // 3. Fall back to index-based selection
-    const tabs = this.sidebar.locator('[role="tablist"] [role="tab"]')
+    const tabs = tablist.locator('[role="tab"]')
     const count = await tabs.count()
     const modeIndex = { cup: 0, single: 1, grid: 2, assembly: 2 }
     const idx = modeIndex[modeId] ?? 0
@@ -50,8 +61,9 @@ export class StudioSidebarPage extends BasePage {
 
   /** Get the active mode tab's data-value or text. */
   async getActiveMode() {
+    const tablist = this.modeTablist
     // Mode tabs use aria-selected="true" (plain buttons) or data-state="active" (Radix)
-    const active = this.sidebar.locator('[role="tablist"] [role="tab"][aria-selected="true"], [role="tablist"] [role="tab"][data-state="active"]').first()
+    const active = tablist.locator('[role="tab"][aria-selected="true"], [role="tab"][data-state="active"]').first()
     // Try data-value first, fall back to text content
     const dataValue = await active.getAttribute('data-value').catch(() => null)
     if (dataValue) return dataValue
@@ -76,21 +88,19 @@ export class StudioSidebarPage extends BasePage {
 
   /** Get the displayed value span for a slider (the clickable value next to the label). */
   sliderValue(paramId) {
-    // Find the SliderControl container that has the matching label, then get the value display.
-    // Uses the label id to scope to the correct control without fragile xpath traversal.
-    const container = this.sidebar.locator(`.space-y-2:has(#param-label-${paramId})`)
-    return container.locator('.flex.justify-between').first()
-      .locator('[role="button"], input[type="number"]').last()
+    // Scope to the flex row that contains this param's label — avoids matching sibling sliders
+    const row = this.sidebar.locator(`.flex.justify-between:has(#param-label-${paramId})`)
+    return row.locator('[role="button"], input[type="number"]').last()
   }
 
   /** Click the slider value to enter edit mode, type a value, and commit. */
   async editSliderValue(paramId, value) {
-    const container = this.sidebar.locator(`.space-y-2:has(#param-label-${paramId})`)
+    const row = this.sidebar.locator(`.flex.justify-between:has(#param-label-${paramId})`)
     const valSpan = this.sliderValue(paramId)
     await valSpan.waitFor({ state: 'visible', timeout: 5000 })
     await valSpan.click()
-    // Scope input to the parameter's container to avoid matching other inputs
-    const input = container.locator(`input[type="number"]`)
+    // Scope input to the parameter's row to avoid matching other inputs
+    const input = row.locator(`input[type="number"]`)
     await input.waitFor({ state: 'visible', timeout: 3000 })
     // Use fill() to atomically clear and set the value. Previous approaches
     // (selectText, triple-click, Ctrl+A) all raced with React's autoFocus

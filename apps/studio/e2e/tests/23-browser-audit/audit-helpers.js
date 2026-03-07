@@ -103,19 +103,77 @@ async function expect_poll(fn, { timeout = 120_000 } = {}) {
  */
 export async function waitForRenderDone(page, timeout = 120_000) {
   const generateBtn = page.locator('button', { hasText: /Generate|Generar/ }).first()
-  await generateBtn.waitFor({ state: 'visible', timeout: 10_000 })
 
-  // Wait briefly for render to start
+  // Wait for Generate button to appear — may take the full render duration
+  // if a render was already started (e.g. via "Render Anyway" dialog)
+  await generateBtn.waitFor({ state: 'visible', timeout }).catch(() => {})
+
+  // Wait briefly for render to start (in case button was visible but render hasn't begun)
   await page.waitForTimeout(2000)
 
-  // Poll until button is enabled (render complete)
+  // Poll until button is visible and enabled (render complete)
   const start = Date.now()
   while (Date.now() - start < timeout) {
-    const disabled = await generateBtn.isDisabled().catch(() => true)
-    if (!disabled) return
+    const visible = await generateBtn.isVisible().catch(() => false)
+    if (visible) {
+      const disabled = await generateBtn.isDisabled().catch(() => true)
+      if (!disabled) return
+    }
     await page.waitForTimeout(500)
   }
   throw new Error(`Render did not complete within ${timeout}ms`)
+}
+
+/**
+ * Dismiss the "Long Render Warning" dialog if present, then click Generate.
+ * Handles cases where switching modes auto-triggers the warning.
+ */
+export async function clickGenerateWithWarning(sidebar, page) {
+  const dialog = page.locator('[role="alertdialog"]')
+  const renderAnywayBtn = page.locator('[role="alertdialog"] button', { hasText: /Render Anyway/i })
+
+  // If dialog is already showing (from mode switch), click Render Anyway
+  if (await dialog.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await renderAnywayBtn.click()
+    await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+    return
+  }
+
+  // Try clicking Generate — if the dialog overlay appears mid-click, catch and handle
+  try {
+    await sidebar.generateButton.click({ timeout: 5000 })
+  } catch {
+    // Dialog likely appeared during click attempt — dismiss it
+    if (await dialog.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await renderAnywayBtn.click()
+      await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+      return
+    }
+  }
+
+  await page.waitForTimeout(500)
+
+  // Handle dialog if Generate triggered it
+  if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await renderAnywayBtn.click()
+    await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+  }
+}
+
+/**
+ * Dismiss the Long Render Warning dialog if it appears.
+ * Call after mode switches that may trigger a render estimate.
+ */
+export async function dismissRenderWarning(page, action = 'cancel') {
+  const dialog = page.locator('[role="alertdialog"]')
+  const appeared = await dialog.waitFor({ state: 'visible', timeout: 5000 })
+    .then(() => true).catch(() => false)
+  if (!appeared) return
+  const btnText = action === 'render'
+    ? /Render Anyway/i
+    : /Cancel|Cancelar/
+  await page.locator('[role="alertdialog"] button', { hasText: btnText }).click()
+  await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
 }
 
 /**

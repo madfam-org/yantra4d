@@ -249,6 +249,33 @@ describe('StudioSidebar', () => {
     expect(modeTabsAfter.length).toBeGreaterThan(0)
   })
 
+  it('renders compare button inside action dock when onToggleCompare provided', () => {
+    const onToggleCompare = vi.fn()
+    render(<StudioSidebar compareMode={false} onToggleCompare={onToggleCompare} />)
+    const compareBtns = screen.getAllByText('btn.compare')
+    expect(compareBtns.length).toBeGreaterThan(0)
+  })
+
+  it('does not render compare button when onToggleCompare not provided', () => {
+    render(<StudioSidebar />)
+    expect(screen.queryByText('btn.compare')).not.toBeInTheDocument()
+    expect(screen.queryByText('btn.exit_compare')).not.toBeInTheDocument()
+  })
+
+  it('shows exit compare text when compareMode is true', () => {
+    render(<StudioSidebar compareMode={true} onToggleCompare={vi.fn()} />)
+    const exitBtns = screen.getAllByText('btn.exit_compare')
+    expect(exitBtns.length).toBeGreaterThan(0)
+  })
+
+  it('calls onToggleCompare when compare button clicked', () => {
+    const onToggleCompare = vi.fn()
+    render(<StudioSidebar compareMode={false} onToggleCompare={onToggleCompare} />)
+    const compareBtn = screen.getAllByText('btn.compare')[0].closest('button')
+    fireEvent.click(compareBtn)
+    expect(onToggleCompare).toHaveBeenCalledOnce()
+  })
+
   it('hides mode tabs when only one mode exists', () => {
     useProject.mockReturnValue({
       ...baseContext,

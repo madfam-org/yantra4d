@@ -12,12 +12,23 @@ import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkl
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 
-function ActionDock() {
+function ActionDock({ compareMode, onToggleCompare }) {
   const { loading, constraintErrors, parts, handleGenerate, handleCancelGenerate, handleVerify, handleReset } = useProject()
   const { t } = useLanguage()
 
   return (
     <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/85 backdrop-blur-xl border-t border-border flex flex-col gap-2 z-20 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.2)]">
+      {onToggleCompare && (
+        <Button
+          variant={compareMode ? "default" : "outline"}
+          size="sm"
+          onClick={onToggleCompare}
+          className="w-full gap-1.5 h-9 text-xs"
+        >
+          <Copy className="h-3.5 w-3.5" />
+          {compareMode ? t('btn.exit_compare') : t('btn.compare')}
+        </Button>
+      )}
       <Button
         type="button"
         onClick={() => handleGenerate()}
@@ -184,7 +195,7 @@ function SidebarContent({ compareMode, onToggleCompare }) {
         <ModeTabs className="hidden lg:block" />
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar px-4 pb-32">
+      <div className="flex-1 overflow-y-auto no-scrollbar px-4 pb-40">
         <TabsContent value="config" className="m-0 space-y-5 animate-in fade-in-50 duration-300">
           <div className="pb-4">
             <Controls
@@ -290,20 +301,7 @@ function SidebarContent({ compareMode, onToggleCompare }) {
         </TabsContent>
       </div>
 
-      {onToggleCompare && (
-        <div className="absolute bottom-[140px] left-0 right-0 px-4 z-20">
-          <Button
-            variant={compareMode ? "default" : "outline"}
-            size="sm"
-            onClick={onToggleCompare}
-            className="w-full gap-1.5 h-9 text-xs"
-          >
-            <Copy className="h-3.5 w-3.5" />
-            {compareMode ? t('btn.exit_compare') : t('btn.compare')}
-          </Button>
-        </div>
-      )}
-      <ActionDock />
+      <ActionDock compareMode={compareMode} onToggleCompare={onToggleCompare} />
     </Tabs>
   )
 }

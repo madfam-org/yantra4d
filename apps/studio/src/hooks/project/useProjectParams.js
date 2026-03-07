@@ -152,6 +152,7 @@ export function useProjectParams({ viewerRef }) {
     setModeState(newMode)
     setAnimating(false)
     setPrintEstimate(null)
+    setParts([])
     if (isGridMode(newMode)) {
       const defaultGridPreset = manifest.grid_presets?.default || 'rendering'
       const presetValues = manifest.grid_presets?.[defaultGridPreset]?.values
@@ -255,8 +256,9 @@ export function useProjectParams({ viewerRef }) {
     }
   }
 
-  // Apply preset
+  // Apply preset (auto-switch mode if preset specifies one)
   const handleApplyPreset = (preset) => {
+    const targetMode = preset.mode || mode
     const defaultGridPreset = manifest.grid_presets?.default || 'rendering'
     setParams(prev => {
       const gridValues = manifest.grid_presets?.[defaultGridPreset]?.values || {}
@@ -264,7 +266,11 @@ export function useProjectParams({ viewerRef }) {
     })
     setActivePresetId(preset.id)
     setGridPresetId(defaultGridPreset)
-    navigate(buildHash(projectSlug, mode, preset.id))
+    if (targetMode !== mode) {
+      setModeState(targetMode)
+      setPrintEstimate(null)
+    }
+    navigate(buildHash(projectSlug, targetMode, preset.id))
   }
 
   // Debounced auto-generate with cache check

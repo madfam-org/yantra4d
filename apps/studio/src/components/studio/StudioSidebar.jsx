@@ -316,11 +316,13 @@ export default function StudioSidebar({ compareMode, onToggleCompare }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <div data-testid="studio-sidebar" className="hidden lg:flex w-full h-full min-w-[22rem] bg-card flex-col shrink-0 relative">
-        <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
+      <div className="hidden lg:flex flex-col flex-1 min-w-[280px] bg-card border-r border-border overflow-y-auto min-h-0">
+        <div data-testid="studio-sidebar" className="w-full h-full min-w-[22rem] flex flex-col shrink-0 relative">
+          <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
+        </div>
       </div>
 
-      {/* Mobile bottom sheet */}
+      {/* Mobile bottom bar with sheet trigger + mode tabs */}
       <div className="lg:hidden flex items-center gap-2 border-b border-border bg-card px-4 py-2 landscape:py-1 shrink-0">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>

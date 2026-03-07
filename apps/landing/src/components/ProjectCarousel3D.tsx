@@ -223,7 +223,7 @@ function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t
                         <div className="flex flex-wrap gap-2">
                             {project.isHyperobject && (
                                 <span className="px-2.5 py-1 rounded border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium tracking-wide uppercase">
-                                    Hyperobject
+                                    {isEs ? 'Hiperobjeto' : 'Hyperobject'}
                                 </span>
                             )}
                             <span className="px-2 py-1 rounded bg-muted text-muted-foreground text-xs font-medium">
@@ -239,7 +239,7 @@ function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t
                                 rel="noopener noreferrer"
                                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2 group min-h-[44px]"
                             >
-                                Open Studio
+                                {isEs ? 'Abrir Studio' : 'Open Studio'}
                                 <span className="transform group-hover:translate-x-1 transition-transform">→</span>
                             </a>
                         </div>

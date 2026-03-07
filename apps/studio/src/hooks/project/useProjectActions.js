@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { downloadFile, downloadZip } from '../../lib/downloadUtils'
 import { verify } from '../../services/engine/verifyService'
+import { renderParts } from '../../services/engine/renderService'
 
 const TOAST_DURATION_MS = 2000
 
@@ -16,6 +17,7 @@ export function useProjectActions({
   copyShareUrl, exportFormat,
   handleExportImage: exportImage,
   handleExportAllViews: exportAllViews,
+  params, manifest,
 }) {
   const [shareToast, setShareToast] = useState(false)
 
@@ -45,13 +47,30 @@ export function useProjectActions({
   const handleDownloadStl = useCallback(async () => {
     if (parts.length === 0) return
     const ext = exportFormat || 'stl'
-    if (parts.length === 1) {
-      downloadFile(parts[0].url, `${projectSlug}_${mode}_${parts[0].type}.${ext}`)
+
+    // Viewer always holds GLB. For any non-GLB download, trigger a dedicated
+    // render in the requested format so the user gets the real file content.
+    let downloadParts = parts
+    if (ext !== 'glb') {
+      setLogs(prev => prev + `\nRendering ${ext.toUpperCase()} for download...`)
+      try {
+        downloadParts = await renderParts(mode, params, manifest, {
+          project: projectSlug,
+          exportFormat: ext,
+        })
+      } catch (e) {
+        setLogs(prev => prev + `\n${t("log.error")}${e.message}`)
+        return
+      }
+    }
+
+    if (downloadParts.length === 1) {
+      downloadFile(downloadParts[0].url, `${projectSlug}_${mode}_${downloadParts[0].type}.${ext}`)
       return
     }
     setLogs(prev => prev + `\n${t("log.zipping")}`)
     try {
-      const items = parts.map(part => ({
+      const items = downloadParts.map(part => ({
         url: part.url,
         filename: `${projectSlug}_${mode}_${part.type}.${ext}`
       }))
@@ -60,7 +79,7 @@ export function useProjectActions({
     } catch (e) {
       setLogs(prev => prev + `\n${t("log.error")}` + e.message)
     }
-  }, [parts, mode, projectSlug, t, setLogs, exportFormat])
+  }, [parts, mode, projectSlug, t, setLogs, exportFormat, params, manifest])
 
   const handleReset = useCallback(() => {
     setParams(getDefaultParams())

@@ -44,6 +44,8 @@ function ProjectProviderContent({ children }) {
     exportFormat: projectParams.exportFormat,
     handleExportImage: projectParams.handleExportImage,
     handleExportAllViews: projectParams.handleExportAllViews,
+    params: projectParams.params,
+    manifest: projectParams.manifest,
   })
 
   const value = {

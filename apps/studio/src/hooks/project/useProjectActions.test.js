@@ -11,11 +11,15 @@ vi.mock('../../lib/downloadUtils', () => ({
 vi.mock('../../services/engine/verifyService', () => ({
   verify: vi.fn(),
 }))
+vi.mock('../../services/engine/renderService', () => ({
+  renderParts: vi.fn(),
+}))
 
 import { useProjectActions } from './useProjectActions'
 import { toast } from 'sonner'
 import { downloadFile, downloadZip } from '../../lib/downloadUtils'
 import { verify } from '../../services/engine/verifyService'
+import { renderParts } from '../../services/engine/renderService'
 
 const t = (key) => key
 
@@ -34,6 +38,8 @@ function renderActions(overrides = {}) {
     copyShareUrl: vi.fn().mockResolvedValue(true),
     handleExportImage: vi.fn(),
     handleExportAllViews: vi.fn(),
+    params: { x: 1 },
+    manifest: { modes: [{ id: 'basic', parts: ['body'] }], parameters: [] },
   }
   const opts = { ...defaults, ...overrides }
   return { ...renderHook(() => useProjectActions(opts)), opts }
@@ -130,23 +136,42 @@ describe('useProjectActions', () => {
       expect(downloadZip).not.toHaveBeenCalled()
     })
 
-    it('downloads single part directly', async () => {
-      const parts = [{ url: 'http://file.stl', type: 'body' }]
+    it('downloads single GLB part directly without re-render', async () => {
+      const parts = [{ url: 'http://file.glb', type: 'body' }]
+      const { result } = renderActions({ parts, exportFormat: 'glb' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'http://file.glb',
+        'test-project_basic_body.glb'
+      )
+    })
+
+    it('triggers render for non-GLB single part download', async () => {
+      const parts = [{ url: 'http://file.glb', type: 'body' }]
+      renderParts.mockResolvedValue([{ url: 'http://file.stl', type: 'body' }])
       const { result } = renderActions({ parts })
       await act(async () => {
         await result.current.handleDownloadStl()
       })
+      expect(renderParts).toHaveBeenCalled()
       expect(downloadFile).toHaveBeenCalledWith(
         'http://file.stl',
         'test-project_basic_body.stl'
       )
     })
 
-    it('downloads multiple parts as zip', async () => {
+    it('downloads multiple parts as zip via re-render', async () => {
       const parts = [
+        { url: 'http://a.glb', type: 'top' },
+        { url: 'http://b.glb', type: 'bottom' },
+      ]
+      renderParts.mockResolvedValue([
         { url: 'http://a.stl', type: 'top' },
         { url: 'http://b.stl', type: 'bottom' },
-      ]
+      ])
       const setLogs = vi.fn()
       const { result } = renderActions({ parts, setLogs })
       await act(async () => {
@@ -161,9 +186,13 @@ describe('useProjectActions', () => {
     it('handles zip download error', async () => {
       downloadZip.mockRejectedValue(new Error('zip fail'))
       const parts = [
+        { url: 'http://a.glb', type: 'top' },
+        { url: 'http://b.glb', type: 'bottom' },
+      ]
+      renderParts.mockResolvedValue([
         { url: 'http://a.stl', type: 'top' },
         { url: 'http://b.stl', type: 'bottom' },
-      ]
+      ])
       const setLogs = vi.fn()
       const { result } = renderActions({ parts, setLogs })
       await act(async () => {
@@ -174,31 +203,37 @@ describe('useProjectActions', () => {
       expect(updater('')).toContain('zip fail')
     })
 
-    it('uses exportFormat extension for single part download', async () => {
-      const parts = [{ url: 'http://file.step', type: 'body' }]
+    it('renders in STEP format for export', async () => {
+      const parts = [{ url: 'http://file.glb', type: 'body' }]
+      renderParts.mockResolvedValue([{ url: 'http://file.step', type: 'body' }])
       const { result } = renderActions({ parts, exportFormat: 'step' })
       await act(async () => {
         await result.current.handleDownloadStl()
       })
+      expect(renderParts).toHaveBeenCalledWith(
+        'basic',
+        { x: 1 },
+        expect.any(Object),
+        expect.objectContaining({ exportFormat: 'step' })
+      )
       expect(downloadFile).toHaveBeenCalledWith(
         'http://file.step',
         'test-project_basic_body.step'
       )
     })
 
-    it('uses exportFormat extension for zip entries', async () => {
-      const parts = [
-        { url: 'http://a.step', type: 'top' },
-        { url: 'http://b.step', type: 'bottom' },
-      ]
+    it('handles render error during export', async () => {
+      const parts = [{ url: 'http://file.glb', type: 'body' }]
+      renderParts.mockRejectedValue(new Error('render failed'))
       const setLogs = vi.fn()
       const { result } = renderActions({ parts, setLogs, exportFormat: 'step' })
       await act(async () => {
         await result.current.handleDownloadStl()
       })
-      const zipCall = downloadZip.mock.calls[0]
-      expect(zipCall[0][0].filename).toBe('test-project_basic_top.step')
-      expect(zipCall[0][1].filename).toBe('test-project_basic_bottom.step')
+      expect(downloadFile).not.toHaveBeenCalled()
+      const lastCall = setLogs.mock.calls[setLogs.mock.calls.length - 1]
+      const updater = lastCall[0]
+      expect(updater('')).toContain('render failed')
     })
   })
 

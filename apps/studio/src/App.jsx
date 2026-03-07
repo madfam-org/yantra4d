@@ -197,14 +197,12 @@ function App() {
           </Sheet>
         )}
 
-        {/* φ split: Sidebar ≈ 38.2% | Main ≈ 61.8% */}
+        {/* Sidebar: desktop panel + mobile bar */}
         {!editorOpen && (
-          <div className="hidden lg:flex flex-col flex-1 min-w-[280px] bg-card border-r border-border overflow-y-auto min-h-0">
-            <StudioSidebar
-              compareMode={compareMode}
-              onToggleCompare={() => setCompareMode(prev => !prev)}
-            />
-          </div>
+          <StudioSidebar
+            compareMode={compareMode}
+            onToggleCompare={() => setCompareMode(prev => !prev)}
+          />
         )}
 
         <ErrorBoundary t={t}>

@@ -14,7 +14,7 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
     const elapsed = progress > 0 ? `${Math.round(progress)}s` : ''
     const phase = progressPhase || ''
     return (
-      <div className="absolute top-2 left-2 z-10 px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium flex items-center gap-2 pointer-events-none">
+      <div className="absolute top-2 left-28 z-10 px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium flex items-center gap-2 pointer-events-none">
         <span className="h-2 w-2 rounded-full bg-yellow-500 motion-safe:animate-pulse" />
         {t('status.rendering')}{elapsed ? ` (${elapsed})` : ''}{phase ? ` — ${phase}` : ''}
       </div>
@@ -23,7 +23,7 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }) {
 
   if (parts.length > 0) {
     return (
-      <div className="absolute top-2 left-2 z-10 px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium flex items-center gap-2 pointer-events-none">
+      <div className="absolute top-2 left-28 z-10 px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium flex items-center gap-2 pointer-events-none">
         <span className="h-2 w-2 rounded-full bg-green-500" />
         {t('status.ready')}
       </div>

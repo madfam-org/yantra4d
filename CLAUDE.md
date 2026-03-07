@@ -145,8 +145,9 @@ Or use the web UI: upload `.scad` files → review analysis → edit manifest �
 
 ### Add a mode
 1. Add entry to `projects/{slug}/project.json` → `modes[]` (set slug, scad_file, parts, estimate)
-2. Create the `.scad` file in `projects/{slug}/`
-3. Update `fallback-manifest.json`
+2. Optionally add `part_quantities` map to the mode (maps part ID → quantity formula or constant; formulas can reference parameter IDs; parts not listed default to qty 1)
+3. Create the `.scad` file in `projects/{slug}/`
+4. Update `fallback-manifest.json`
 
 ### Classify a project as a Hyperobject
 1. Add `hyperobject` block to `projects/{slug}/project.json` with `domain`, `cdg_interfaces[]`, `material_awareness`, `societal_benefit`, `commons_license`

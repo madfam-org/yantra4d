@@ -40,17 +40,19 @@ export default function BomPanel({ params, mode }) {
   // Get active printed parts based on the selected mode
   const printedRows = useMemo(() => {
     if (!activeMode || !activeMode.parts) return []
+    const pqMap = activeMode.part_quantities || {}
     return activeMode.parts.map(partId => {
       const partDef = manifest.parts?.find(p => p.id === partId)
+      const formula = pqMap[partId]
       return {
         id: partId,
         label: partDef?.label || activeMode.label,
-        quantity: 1, // Currently default 1 per instantiation, scale as needed later
+        quantity: formula != null ? evaluateQuantity(formula, params) : 1,
         unit: 'pcs',
         isPrinted: true
       }
     })
-  }, [activeMode, manifest.parts])
+  }, [activeMode, manifest.parts, params])
 
   const hasHardware = hardwareRows.length > 0
   const hasPrintedParts = printedRows.length > 0

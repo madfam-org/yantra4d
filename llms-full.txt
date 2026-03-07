@@ -579,8 +579,9 @@ Or use the web UI: upload `.scad` files -> review analysis -> edit manifest -> s
 
 ### Add a mode
 1. Add entry to `projects/{slug}/project.json` -> `modes[]`
-2. Create the `.scad` file in `projects/{slug}/`
-3. Update `fallback-manifest.json`
+2. Optionally add `part_quantities` map to the mode (maps part ID to quantity formula or constant; formulas can reference parameter IDs; parts not listed default to qty 1)
+3. Create the `.scad` file in `projects/{slug}/`
+4. Update `fallback-manifest.json`
 
 ### Run tests
 ```bash

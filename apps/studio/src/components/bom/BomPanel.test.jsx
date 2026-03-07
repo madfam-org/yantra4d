@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import BomPanel from './BomPanel'
 
@@ -126,5 +126,78 @@ describe('BomPanel', () => {
 
     expect(screen.getByText('Item')).toBeInTheDocument()
     expect(screen.getByText('Qty')).toBeInTheDocument()
+  })
+
+  describe('printed part quantities', () => {
+    const savedModes = mockManifest.modes
+    const savedParts = mockManifest.parts
+
+    beforeEach(() => {
+      mockManifest.modes = [
+        {
+          id: 'grid',
+          label: { en: 'Grid' },
+          parts: ['bottom', 'top', 'rods', 'stoppers', 'tubing'],
+          part_quantities: {
+            bottom: 'rows * cols',
+            top: 'rows * cols',
+            rods: 'cols',
+            stoppers: '2',
+            tubing: 'cols * (rows + 1)',
+          },
+        },
+        {
+          id: 'unit',
+          label: { en: 'Unit' },
+          parts: ['bottom', 'top'],
+        },
+      ]
+      mockManifest.parts = [
+        { id: 'bottom', label: { en: 'Bottom' } },
+        { id: 'top', label: { en: 'Top' } },
+        { id: 'rods', label: { en: 'Rods' } },
+        { id: 'stoppers', label: { en: 'Stoppers' } },
+        { id: 'tubing', label: { en: 'Tubing' } },
+      ]
+    })
+
+    afterEach(() => {
+      mockManifest.modes = savedModes
+      mockManifest.parts = savedParts
+    })
+
+    it('shows evaluated quantities from part_quantities', () => {
+      const params = { rows: 2, cols: 2 }
+      render(<BomPanel params={params} mode="grid" />)
+
+      const rows = screen.getAllByRole('row')
+      // Header row + 5 printed part rows
+      const cells = rows.slice(1).map(r => r.querySelector('td:last-child').textContent)
+      expect(cells).toEqual(['4', '4', '2', '2', '6'])
+    })
+
+    it('defaults to qty 1 when no part_quantities', () => {
+      const params = { rows: 2, cols: 2 }
+      render(<BomPanel params={params} mode="unit" />)
+
+      const rows = screen.getAllByRole('row')
+      const cells = rows.slice(1).map(r => r.querySelector('td:last-child').textContent)
+      expect(cells).toEqual(['1', '1'])
+    })
+
+    it('quantities update when params change', () => {
+      const params = { rows: 2, cols: 2 }
+      const { rerender } = render(<BomPanel params={params} mode="grid" />)
+
+      let rows = screen.getAllByRole('row')
+      let cells = rows.slice(1).map(r => r.querySelector('td:last-child').textContent)
+      expect(cells).toEqual(['4', '4', '2', '2', '6'])
+
+      rerender(<BomPanel params={{ rows: 3, cols: 3 }} mode="grid" />)
+
+      rows = screen.getAllByRole('row')
+      cells = rows.slice(1).map(r => r.querySelector('td:last-child').textContent)
+      expect(cells).toEqual(['9', '9', '3', '2', '12'])
+    })
   })
 })

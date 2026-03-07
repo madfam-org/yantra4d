@@ -32,6 +32,11 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
       "cq_file": "half_cube.py",            // Optional: CadQuery Python script for this mode
       "label": { "en": "Unit", "es": "Unidad" },  // Tab label (bilingual)
       "parts": ["main"],                    // Part IDs rendered in this mode
+      "part_quantities": {                   // Optional: per-part quantity formulas
+        "bottom": "rows * cols",             // Formula referencing parameter IDs
+        "rods": "cols",                      // Evaluated client-side via expr-eval
+        "stoppers": "2"                      // Constant string or number also accepted
+      },
       "estimate": {
         "base_units": 1,                    // Fixed unit count, or "rows*cols"
         "formula": "constant",              // "constant" or "grid"

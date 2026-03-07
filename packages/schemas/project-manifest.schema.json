@@ -144,6 +144,13 @@
             },
             "minItems": 1
           },
+          "part_quantities": {
+            "type": "object",
+            "description": "Map of part ID to quantity formula (string) or constant (number). Formulas can reference parameter IDs. Parts not listed default to quantity 1.",
+            "additionalProperties": {
+              "type": ["string", "number"]
+            }
+          },
           "estimate": {
             "oneOf": [
               {

@@ -24,14 +24,17 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: /23-browser-audit/,
     },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      testIgnore: /23-browser-audit/,
     },
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      testIgnore: /23-browser-audit/,
     },
     // Mobile/tablet projects — used only by responsive suite
     {
@@ -48,6 +51,17 @@ export default defineConfig({
       name: 'ipad',
       use: { ...devices['iPad Pro 11'] },
       testMatch: /12-responsive/,
+    },
+    // Browser audit suite — runs against real Docker backend
+    {
+      name: 'audit',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://localhost:3000',
+      },
+      testMatch: /23-browser-audit/,
+      timeout: 180_000,
+      fullyParallel: false,
     },
   ],
   webServer: {

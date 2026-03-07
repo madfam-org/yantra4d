@@ -59,7 +59,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         baseURL: 'http://localhost:3000',
       },
-      testMatch: /23-browser-audit/,
+      testMatch: /23-browser-audit\/.*\.spec\./,
       timeout: 180_000,
       fullyParallel: false,
     },

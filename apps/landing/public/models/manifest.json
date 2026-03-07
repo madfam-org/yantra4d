@@ -1,0 +1,7 @@
+{ "generated": "2026-03-07T01:01:14Z", "models": [
+  { "slug": "framing-hyperobject", "size": 17360 },
+  { "slug": "gridfinity", "size": 14380 },
+  { "slug": "multiboard", "size": 415236 },
+  { "slug": "torus-knot", "size": 3412 },
+  { "slug": "voronoi", "size": 16324 }
+] }

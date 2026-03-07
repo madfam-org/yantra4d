@@ -151,7 +151,7 @@ This was **ISSUE-3 from the March audit** — partially improved but still obser
 | ISSUE-5: tablaco render failure | High | **RESOLVED** | Unit mode auto-render succeeds, all 3 modes work |
 | ISSUE-3: stale model info on mode switch | Medium | **IMPROVED** (ISSUE-R2-5) | Less noticeable with cache, but still present |
 | ISSUE-4: language not persistent across navigation | Medium | **RESOLVED** | Language persists across project switching |
-| ISSUE-8: 13 missing GLB models on landing carousel | Medium | **RESOLVED** | `AVAILABLE_GLBS` allowlist prevents 404s; only 2 GLBs requested, both 200 OK |
+| ISSUE-8: 13 missing GLB models on landing carousel | Medium | **RESOLVED** | Manifest-driven detection (`manifest.json`) prevents 404s; only GLBs listed in manifest are requested |
 | ISSUE-9: header cramped at 1024px tablet landscape | Medium | **RESOLVED** | "Powered by" uses `hidden xl:block`; header clean at 1024px |
 | ISSUE-6/7: untranslated strings | Low | **MOSTLY RESOLVED** (ISSUE-R2-6) | Minor carousel text remains in English |
 

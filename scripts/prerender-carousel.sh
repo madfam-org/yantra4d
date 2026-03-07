@@ -97,6 +97,21 @@ done
 echo ""
 echo "=== Done: $((count - failed))/$total succeeded, $failed failed ==="
 
+# Generate manifest.json listing all successfully rendered GLBs
+echo "Generating manifest.json ..."
+echo '{ "generated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "models": [' > "$OUTPUT_DIR/manifest.json"
+first=true
+for glb in "$OUTPUT_DIR"/*.glb; do
+  [ -f "$glb" ] || continue
+  slug=$(basename "$glb" .glb)
+  size=$(stat -f%z "$glb" 2>/dev/null || stat -c%s "$glb")
+  [ "$first" = true ] && first=false || echo ',' >> "$OUTPUT_DIR/manifest.json"
+  printf '  { "slug": "%s", "size": %s }' "$slug" "$size" >> "$OUTPUT_DIR/manifest.json"
+done
+echo '' >> "$OUTPUT_DIR/manifest.json"
+echo '] }' >> "$OUTPUT_DIR/manifest.json"
+echo "Manifest written to $OUTPUT_DIR/manifest.json"
+
 if [ "$failed" -gt 0 ]; then
   echo "WARNING: Some models failed to render. Re-run with a running backend."
   exit 1

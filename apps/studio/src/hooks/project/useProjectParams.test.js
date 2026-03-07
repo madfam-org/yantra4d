@@ -72,16 +72,19 @@ vi.mock('../render/useImageExport', () => ({
   useImageExport: () => ({ handleExportImage: vi.fn(), handleExportAllViews: vi.fn() }),
 }))
 
+const mockSetParts = vi.fn()
+
 vi.mock('../render/useRender', () => ({
   useRender: () => ({
     parts: [],
-    setParts: vi.fn(),
+    setParts: mockSetParts,
     logs: '',
     setLogs: vi.fn(),
     loading: false,
     progress: 0,
     progressPhase: '',
     checkCache: vi.fn(),
+    evictCache: vi.fn(),
     showConfirmDialog: false,
     pendingEstimate: null,
     handleGenerate: vi.fn(),
@@ -362,5 +365,47 @@ describe('useProjectParams', () => {
   it('returns cameraViews from manifest', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
     expect(result.current.cameraViews).toEqual([])
+  })
+
+  it('handleApplyPreset switches mode when preset has mode field', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    // Start on 'default' mode
+    expect(result.current.mode).toBe('default')
+
+    // Apply a preset that targets 'grid' mode
+    const crossModePreset = { id: 'grid_preset', values: { x: 5 }, mode: 'grid' }
+    act(() => {
+      result.current.handleApplyPreset(crossModePreset)
+    })
+
+    // Mode should switch to 'grid'
+    expect(result.current.mode).toBe('grid')
+  })
+
+  it('handleApplyPreset stays on current mode when preset has no mode field', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    expect(result.current.mode).toBe('default')
+
+    const sameModePreset = { id: 'same_preset', values: { a: 1 } }
+    act(() => {
+      result.current.handleApplyPreset(sameModePreset)
+    })
+
+    // Mode stays 'default'
+    expect(result.current.mode).toBe('default')
+  })
+
+  it('setMode clears parts array', () => {
+    mockSetParts.mockClear()
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    act(() => {
+      result.current.setMode('grid')
+    })
+
+    // setParts should have been called with empty array to clear stale geometry
+    expect(mockSetParts).toHaveBeenCalledWith([])
   })
 })

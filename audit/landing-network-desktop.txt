@@ -1,0 +1,7 @@
+[GET] http://localhost:4321/ => [200] OK
+[GET] http://localhost:4321/_astro/common-denominator.CI4fNSAm.css => [200] OK
+[GET] http://localhost:4321/_astro/ProjectGalleryContainer.B4zyb3Fj.js => [200] OK
+[GET] http://localhost:4321/_astro/client.CZIJBtKR.js => [200] OK
+[GET] http://localhost:4321/_astro/client.DPb_uUnW.js => [200] OK
+[GET] http://localhost:4321/models/gridfinity.glb => [200] OK
+[GET] http://localhost:4321/models/framing-hyperobject.glb => [200] OK

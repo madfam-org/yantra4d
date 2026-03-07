@@ -260,3 +260,60 @@ Mobile/tablet portrait testing of parameter controls, export panel interaction, 
 4. **ISSUE-R2-4** (Medium): Auto-switch mode when a preset targets a different mode
 5. **ISSUE-R2-5** (Medium): Clear Model Info on mode switch before new render completes
 6. **ISSUE-R2-6** (Low): Translate carousel "Open Studio" and "Hyperobject" badge to Spanish
+
+---
+
+## Remediation (2026-03-06)
+
+**Branch**: `audit/round-2-remediation`
+**Commit**: `fix(studio): round-2 audit remediation — 6 issues (3 high, 2 medium, 1 low)`
+
+All 6 issues resolved. 1340 studio tests pass, 838 backend tests pass, landing builds clean.
+
+### ISSUE-R2-1: RESOLVED — Mobile controls restored
+
+**Root cause**: `App.jsx:202` wrapped `<StudioSidebar>` in `<div className="hidden lg:flex ...">`, suppressing the component's internal mobile bar (`lg:hidden`).
+
+**Fix**: Removed the desktop wrapper from `App.jsx`. Moved it into `StudioSidebar.jsx` so the component returns a Fragment with two siblings: a desktop panel (`hidden lg:flex`) and a mobile bar (`lg:hidden`). Each controls its own visibility independently.
+
+**Files**: `apps/studio/src/App.jsx`, `apps/studio/src/components/studio/StudioSidebar.jsx`
+
+### ISSUE-R2-2: RESOLVED — box_base/box_lid render success
+
+**Root cause**: Non-manifold geometry in `box.scad`. The `intersection()` + `grid_copies` hex cutout pattern produced coplanar faces with the cuboid walls, creating invalid 2-manifold topology in CGAL. Local OpenSCAD 2021.01 tolerated this; Docker OpenSCAD 2026.02.01 rejected it with exit code 1.
+
+**Fix**: Replaced the intersection-based hex pattern with direct for-loop hex cylinders subtracted from the wall. Moved the label recess subtraction inside the `difference()` block (was incorrectly unioned). Verified all three renders produce valid 2-manifolds (`Simple: yes`).
+
+**Files**: `projects/custom-msh/box.scad`
+
+### ISSUE-R2-3: RESOLVED — Export format downloads correct file type
+
+**Root cause**: `handleDownloadStl()` always downloaded cached `parts[0].url` (GLB from auto-render) regardless of selected format. The `exportFormat` state only changed the filename extension.
+
+**Fix**: `handleDownloadStl` now calls `renderParts()` with the selected `exportFormat` for non-GLB downloads, triggering a backend render in the target format. GLB downloads use the cached render directly. The 3D viewer always displays GLB — format-specific renders are on-demand for download only.
+
+**Files**: `apps/studio/src/hooks/project/useProjectActions.js`, `apps/studio/src/contexts/project/ProjectProvider.jsx`
+
+### ISSUE-R2-4: RESOLVED — Presets auto-switch mode
+
+**Root cause**: `handleApplyPreset()` never read `preset.mode`. Cross-mode presets (e.g., "Standard Baseplate" for baseplate mode) applied parameter values but stayed on the current mode.
+
+**Fix**: Added `"mode"` field to gridfinity cross-mode presets (`baseplate_std` → `"mode": "baseplate"`, `lid_std` → `"mode": "lid"`). Updated `handleApplyPreset` to read `preset.mode` and switch mode when it differs from current.
+
+**Files**: `projects/gridfinity/project.json`, `apps/studio/src/hooks/project/useProjectParams.js`
+
+### ISSUE-R2-5: RESOLVED — Stale geometry cleared on mode switch
+
+**Root cause**: `setMode()` cleared `printEstimate` but not `parts[]`. ModelInfoPanel displayed stale dimensions from the previous render until new parts arrived.
+
+**Fix**: Added `setParts([])` to `setMode()` handler. ModelInfoPanel returns null when no parts/estimate, so stale data is immediately hidden.
+
+**Files**: `apps/studio/src/hooks/project/useProjectParams.js`
+
+### ISSUE-R2-6: RESOLVED — Carousel text translated
+
+**Root cause**: `ProjectCarousel3D.tsx` had hardcoded English strings "Open Studio" and "Hyperobject".
+
+**Fix**: Replaced with `{isEs ? 'Abrir Studio' : 'Open Studio'}` and `{isEs ? 'Hiperobjeto' : 'Hyperobject'}`.
+
+**Files**: `apps/landing/src/components/ProjectCarousel3D.tsx`

@@ -565,7 +565,8 @@
           "obj",
           "off",
           "step",
-          "gltf"
+          "gltf",
+          "glb"
         ]
       },
       "default": [

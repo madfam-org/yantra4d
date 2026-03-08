@@ -562,6 +562,7 @@
         "enum": [
           "stl",
           "3mf",
+          "obj",
           "off",
           "step",
           "gltf"

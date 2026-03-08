@@ -35,11 +35,19 @@ jobs:
           
       - name: Validate manifest against schema
         run: |
-          jsonschema -i project/project.json yantra4d/packages/schemas/project-manifest.schema.json
-          
+          if [ -f project/project.json ]; then
+            jsonschema -i project/project.json yantra4d/packages/schemas/project-manifest.schema.json
+          else
+            echo "⚠️ No project.json found — skipping schema validation (expected when running from yantra4d itself)"
+          fi
+
       - name: Run compliance audit
         run: |
-          python3 yantra4d/scripts/audit_compliance.py --project-dir project
+          if [ -f project/project.json ]; then
+            python3 yantra4d/scripts/audit_compliance.py --project-dir project
+          else
+            echo "⚠️ No project.json found — skipping compliance audit"
+          fi
           
       - name: Trigger Submodule Update
         if: github.ref == 'refs/heads/main' && success()

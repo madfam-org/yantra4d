@@ -10,4 +10,4 @@ jobs:
   validate:
     uses: madfam-org/yantra4d/.github/workflows/project-ci-reusable.yml@main
     secrets:
-      DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+      DISPATCH_TOKEN: ${{ secrets.MADFAM_BOT_PAT }}

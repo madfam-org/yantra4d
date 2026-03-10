@@ -75,16 +75,17 @@ test.describe('Custom MSH — Browser Audit', () => {
 
   // ── B. Parameter Controls ────────────────────────────────────────
 
-  test('holder mode shows substrate_size and holder_thickness', async ({ page, sidebar }) => {
+  test('holder mode shows substrate_length, substrate_width, and holder_thickness', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    await expect(sidebar.slider('substrate_size')).toBeVisible()
+    await expect(sidebar.slider('substrate_length')).toBeVisible()
+    await expect(sidebar.slider('substrate_width')).toBeVisible()
     await expect(sidebar.slider('holder_thickness')).toBeVisible()
   })
 
-  test('adjusting substrate_size to 26 updates value', async ({ page, sidebar }) => {
+  test('adjusting substrate_length to 26 updates value', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    await sidebar.editSliderValue('substrate_size', 26)
-    await expect(sidebar.sliderValue('substrate_size')).toHaveText('26', { timeout: 3000 })
+    await sidebar.editSliderValue('substrate_length', 26)
+    await expect(sidebar.sliderValue('substrate_length')).toHaveText('26', { timeout: 3000 })
   })
 
   test('toggling label_area checkbox works', async ({ page, sidebar }) => {
@@ -100,7 +101,7 @@ test.describe('Custom MSH — Browser Audit', () => {
   test('applies Default Holder preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.applyPreset('Default Holder')
-    await expect(sidebar.sliderValue('substrate_size')).toHaveText('25.4', { timeout: 3000 })
+    await expect(sidebar.sliderValue('substrate_length')).toHaveText('25.4', { timeout: 3000 })
     await expect(sidebar.sliderValue('holder_thickness')).toHaveText('2', { timeout: 3000 })
   })
 

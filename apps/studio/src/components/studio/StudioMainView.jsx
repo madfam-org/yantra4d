@@ -53,7 +53,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   } = useProject()
 
   const { t } = useLanguage()
-  const { format: formatDim, formatVolume } = useUnitSystem()
+  const { unit, format: formatDim, formatVolume } = useUnitSystem()
   const [estimateOpen, setEstimateOpen] = useState(true)
   const [consoleExpanded, setConsoleExpanded] = useState(false)
 
@@ -114,6 +114,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
             thicknessData={thicknessData}
             overhangData={overhangData}
             formatDimension={formatDim}
+            unit={unit}
           />
           <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
           {!loading && parts.length > 0 && (

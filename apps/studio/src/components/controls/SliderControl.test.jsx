@@ -185,4 +185,92 @@ describe('SliderControl', () => {
     renderSlider({ value: null })
     expect(screen.getByText('5')).toBeInTheDocument()
   })
+
+  // --- Unit conversion tests ---
+  describe('unit conversion (mm/in)', () => {
+    const mmParam = {
+      id: 'wall_thickness',
+      label: { en: 'Wall Thickness (mm)', es: 'Grosor de Pared (mm)' },
+      tooltip: { en: 'Thickness tooltip' },
+      min: 0.4,
+      max: 10,
+      step: 0.1,
+      default: 2,
+    }
+
+    const unitlessParam = {
+      id: 'quality',
+      label: { en: 'Quality ($fn)', es: 'Calidad ($fn)' },
+      tooltip: { en: 'Quality tooltip' },
+      min: 10,
+      max: 100,
+      step: 1,
+      default: 50,
+    }
+
+    const inchesUnitSystem = {
+      unit: 'in',
+      convert: (mm) => mm / 25.4,
+    }
+
+    const mmUnitSystem = {
+      unit: 'mm',
+      convert: (mm) => mm,
+    }
+
+    it('displays converted value for dimensional param in inches mode', () => {
+      // 25.4mm should display as 1.00in
+      renderSlider({ param: mmParam, value: 25.4, unitSystem: inchesUnitSystem })
+      expect(screen.getByText('1')).toBeInTheDocument()
+    })
+
+    it('displays label with (in) instead of (mm) in inches mode', () => {
+      renderSlider({ param: mmParam, value: 2, unitSystem: inchesUnitSystem })
+      expect(screen.getByText('Wall Thickness (in)')).toBeInTheDocument()
+      expect(screen.queryByText('Wall Thickness (mm)')).not.toBeInTheDocument()
+    })
+
+    it('does not convert non-dimensional param in inches mode', () => {
+      renderSlider({ param: unitlessParam, value: 50, unitSystem: inchesUnitSystem })
+      expect(screen.getByText('50')).toBeInTheDocument()
+      expect(screen.getByText('Quality ($fn)')).toBeInTheDocument()
+    })
+
+    it('does not convert dimensional param when unit is mm', () => {
+      renderSlider({ param: mmParam, value: 2, unitSystem: mmUnitSystem })
+      expect(screen.getByText('2')).toBeInTheDocument()
+      expect(screen.getByText('Wall Thickness (mm)')).toBeInTheDocument()
+    })
+
+    it('converts inches input back to mm on commit', () => {
+      const onSliderChange = vi.fn()
+      renderSlider({ param: mmParam, value: 25.4, unitSystem: inchesUnitSystem, onSliderChange })
+      // Enter edit mode
+      fireEvent.click(screen.getByText('1'))
+      const input = screen.getByRole('spinbutton')
+      // Type 0.5 inches
+      fireEvent.change(input, { target: { value: '0.5' } })
+      fireEvent.keyDown(input, { key: 'Enter' })
+      // 0.5in * 25.4 = 12.7mm, clamped to max=10, snapped to step=0.1 → 10
+      expect(onSliderChange).toHaveBeenCalledWith('wall_thickness', [10])
+    })
+
+    it('converts and snaps inches input correctly within range', () => {
+      const onSliderChange = vi.fn()
+      renderSlider({ param: mmParam, value: 2.54, unitSystem: inchesUnitSystem, onSliderChange })
+      // Enter edit mode — 2.54mm = 0.1in
+      fireEvent.click(screen.getByText('0.1'))
+      const input = screen.getByRole('spinbutton')
+      // Type 0.2 inches = 5.08mm, snapped to 0.1 step → 5.1
+      fireEvent.change(input, { target: { value: '0.2' } })
+      fireEvent.keyDown(input, { key: 'Enter' })
+      expect(onSliderChange).toHaveBeenCalledWith('wall_thickness', [5.1])
+    })
+
+    it('works without unitSystem prop (backward compat)', () => {
+      renderSlider({ param: mmParam, value: 2 })
+      expect(screen.getByText('2')).toBeInTheDocument()
+      expect(screen.getByText('Wall Thickness (mm)')).toBeInTheDocument()
+    })
+  })
 })

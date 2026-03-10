@@ -200,7 +200,7 @@ function useResponsiveFov() {
     return isMobile ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
 }
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm' }, ref) => {
     const geometriesRef = React.useRef({})
     const prevCenterRef = React.useRef(null)
     const prevMaxDimRef = React.useRef(null)
@@ -496,10 +496,10 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                     <OrbitControls makeDefault up={SCENE_UP_VECTOR} minDistance={ORBIT_MIN_DISTANCE_MM} maxDistance={ORBIT_MAX_DISTANCE_MM} target={centerOfMass} />
                     <Grid
                         infiniteGrid
-                        sectionSize={10}
+                        sectionSize={unit === 'in' ? 25.4 : 10}
                         sectionThickness={1.5}
                         sectionColor={isDark ? '#4b5563' : '#9ca3af'}
-                        cellSize={1}
+                        cellSize={unit === 'in' ? 2.54 : 1}
                         cellThickness={0.8}
                         cellColor={isDark ? '#4b5563' : '#cbd5e1'}
                         fadeDistance={500}

@@ -6,16 +6,35 @@ import { Star } from 'lucide-react'
 
 const MAX_TICK_MARK_STEPS = 30
 
-export default function SliderControl({ param, value, onSliderChange, getLabel, language, t }) {
+export default function SliderControl({ param, value, onSliderChange, getLabel, language, t, unitSystem }) {
     const [editing, setEditing] = useState(false)
     const [editValue, setEditValue] = useState('')
     const decimals = param.step % 1 === 0 ? 0 : (param.step.toString().split('.')[1]?.length || 0)
     const safeValue = value ?? param.default
-    const displayValue = typeof safeValue === 'number' ? parseFloat(safeValue.toFixed(decimals)) : safeValue
+
+    // Detect dimensional params by checking if the English label contains "(mm)"
+    const rawLabel = getLabel(param, 'label', 'en') || ''
+    const isDimensional = rawLabel.includes('(mm)')
+    const isInches = isDimensional && unitSystem?.unit === 'in'
+
+    // Convert display value for dimensional params when in inches mode
+    const rawDisplay = typeof safeValue === 'number' ? parseFloat(safeValue.toFixed(decimals)) : safeValue
+    const displayValue = isInches && typeof rawDisplay === 'number'
+        ? parseFloat(unitSystem.convert(rawDisplay).toFixed(decimals + 1))
+        : rawDisplay
+
+    // Replace (mm) with (in) in the displayed label when in inches mode
+    const paramLabel = isInches
+        ? getLabel(param, 'label', language).replace('(mm)', '(in)')
+        : getLabel(param, 'label', language)
 
     const commitEdit = () => {
-        const num = parseFloat(editValue)
+        let num = parseFloat(editValue)
         if (!isNaN(num)) {
+            // If user entered inches, convert back to mm for backend
+            if (isInches) {
+                num = num * 25.4
+            }
             const clamped = Math.min(param.max, Math.max(param.min, num))
             const stepped = Math.round(clamped / param.step) * param.step
             onSliderChange(param.id, [parseFloat(stepped.toFixed(4))])
@@ -31,8 +50,8 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
         <div className={`space-y-1 ${isDisabled ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="flex justify-between items-center gap-2">
                 <Tooltip content={getLabel(param, 'tooltip', language)}>
-                    <Label id={labelId} className="flex items-center gap-1 cursor-help flex-1 text-xs truncate" title={getLabel(param, 'label', language)}>
-                        {getLabel(param, 'label', language)}
+                    <Label id={labelId} className="flex items-center gap-1 cursor-help flex-1 text-xs truncate" title={paramLabel}>
+                        {paramLabel}
                     </Label>
                 </Tooltip>
                 <div className="flex-shrink-0 text-right w-16">
@@ -54,7 +73,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                             onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
                             role="button"
                             tabIndex={0}
-                            aria-label={`${getLabel(param, 'label', language)}: ${displayValue}. ${t('ctrl.click_to_edit')}`}
+                            aria-label={`${paramLabel}: ${displayValue}. ${t('ctrl.click_to_edit')}`}
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); setEditValue(String(displayValue)) } }}
                         >
                             {displayValue}

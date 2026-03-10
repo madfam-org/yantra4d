@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
 import { useLanguage } from "../../contexts/system/LanguageProvider"
 import { useManifest } from "../../contexts/project/ManifestProvider"
+import { useUnitSystem } from "../../hooks/system/useUnitSystem"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { apiFetch } from '../../services/core/apiClient'
@@ -176,6 +177,7 @@ const DEFAULT_TEXT_MAX_LENGTH = 255
 export default function Controls({ params, setParams, mode, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {} }) {
     const { language, t } = useLanguage()
     const { manifest, getParametersForMode, getLabel, getGroupLabel } = useManifest()
+    const unitSystem = useUnitSystem()
 
     const [materials, setMaterials] = useState([])
 
@@ -341,6 +343,7 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
                                 getLabel={getLabel}
                                 language={language}
                                 t={t}
+                                unitSystem={unitSystem}
                             />
                             {constraintsByParam[param.id]?.map((v, i) => (
                                 <p key={i} className={`text-xs mt-1 ${v.severity === 'error' ? 'text-destructive' : 'text-yellow-600 dark:text-yellow-400'}`} role="alert">

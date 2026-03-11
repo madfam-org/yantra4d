@@ -23,6 +23,11 @@ logger = logging.getLogger(__name__)
 
 onboard_bp = Blueprint('onboard', __name__)
 
+# Upload safety limits
+MAX_UPLOAD_FILES = 50
+MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024  # 2MB per file
+ALLOWED_UPLOAD_EXTENSIONS = {'.scad'}
+
 
 @onboard_bp.route('/api/projects/analyze', methods=['POST'])
 @require_role("admin")
@@ -36,14 +41,29 @@ def analyze_scad_files():
     if not files:
         return error_response("No .scad files provided.", 400)
 
+    if len(files) > MAX_UPLOAD_FILES:
+        return error_response(f"Too many files. Maximum {MAX_UPLOAD_FILES} files allowed.", 400)
+
     slug = request.form.get('slug', 'new-project')
 
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
         for f in files:
-            if not f.filename or not f.filename.endswith('.scad'):
+            if not f.filename:
                 continue
             safe_name = Path(f.filename).name  # strip path components
+            ext = Path(safe_name).suffix.lower()
+            if ext not in ALLOWED_UPLOAD_EXTENSIONS:
+                logger.warning("Rejected upload with disallowed extension: %s", safe_name)
+                continue
+            # Check file size before saving to disk
+            f.seek(0, 2)  # seek to end
+            size = f.tell()
+            f.seek(0)  # rewind
+            if size > MAX_FILE_SIZE_BYTES:
+                return error_response(
+                    f"File '{safe_name}' exceeds {MAX_FILE_SIZE_BYTES // (1024*1024)}MB limit.", 400
+                )
             f.save(tmp_path / safe_name)
 
         scad_files = list(tmp_path.glob("*.scad"))

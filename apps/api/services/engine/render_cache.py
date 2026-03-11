@@ -22,6 +22,12 @@ DEFAULT_MAX_ENTRIES = int(os.getenv("RENDER_CACHE_MAX_ENTRIES", "200"))
 REDIS_TTL = int(os.getenv("RENDER_CACHE_REDIS_TTL", "86400"))
 REDIS_URL = os.getenv("REDIS_URL")
 
+# Redis circuit breaker state
+_redis_failure_count = 0
+_redis_circuit_open_until = 0.0
+_CIRCUIT_THRESHOLD = 3
+_CIRCUIT_COOLDOWN = 60.0
+
 # Redis DB 2 (DB 0 = app default, DB 1 = rate limiter)
 _redis_client = None
 if REDIS_URL:
@@ -32,6 +38,33 @@ if REDIS_URL:
     except Exception as e:
         logger.warning("Render cache: Redis L2 unavailable, falling back to L1-only: %s", e)
         _redis_client = None
+
+
+def _redis_available() -> bool:
+    """Check if Redis L2 should be attempted."""
+    if not _redis_client:
+        return False
+    if time.time() < _redis_circuit_open_until:
+        return False
+    return True
+
+
+def _redis_ok():
+    """Reset circuit breaker on success."""
+    global _redis_failure_count, _redis_circuit_open_until
+    _redis_failure_count = 0
+    _redis_circuit_open_until = 0.0
+
+
+def _redis_fail(operation: str, error: Exception):
+    """Record Redis failure, open circuit after threshold."""
+    global _redis_failure_count, _redis_circuit_open_until
+    _redis_failure_count += 1
+    logger.warning("Render cache Redis %s failed (%d/%d): %s",
+                   operation, _redis_failure_count, _CIRCUIT_THRESHOLD, error)
+    if _redis_failure_count >= _CIRCUIT_THRESHOLD:
+        _redis_circuit_open_until = time.time() + _CIRCUIT_COOLDOWN
+        logger.error("Render cache Redis circuit breaker OPEN for %ds", int(_CIRCUIT_COOLDOWN))
 
 
 class RenderCache:
@@ -57,19 +90,21 @@ class RenderCache:
 
     def _redis_get(self, key: str) -> dict | None:
         """Try fetching from Redis L2. Returns entry dict or None."""
-        if not _redis_client:
+        if not _redis_available():
             return None
         try:
             data = _redis_client.get(f"render:{key}")
             if data:
+                _redis_ok()
                 return json.loads(data)
-        except Exception:
-            pass
+            _redis_ok()
+        except Exception as e:
+            _redis_fail("get", e)
         return None
 
     def _redis_put(self, key: str, entry: dict):
         """Write to Redis L2 (best-effort, non-blocking)."""
-        if not _redis_client:
+        if not _redis_available():
             return
         try:
             _redis_client.setex(
@@ -77,8 +112,9 @@ class RenderCache:
                 REDIS_TTL,
                 json.dumps({"path": entry["path"], "size_bytes": entry["size_bytes"], "ts": entry["ts"]})
             )
-        except Exception:
-            pass
+            _redis_ok()
+        except Exception as e:
+            _redis_fail("put", e)
 
     def get(self, project: str, scad_file: str, params: dict, part: str, export_format: str, scad_content_hash: str | None = None) -> dict | None:
         """Return cached entry if valid, else None. Checks L1 then L2."""

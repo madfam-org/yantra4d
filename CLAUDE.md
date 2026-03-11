@@ -12,7 +12,7 @@ projects/
        │
        ├──► apps/api/      (Flask API, renders via OpenSCAD CLI)
        │        ├── routes/  render, verify, health, manifest, config, projects, onboard, editor, git_ops, github, ai, admin, download, bom, datasheet, analytics, user
-       │        ├── services/  openscad, scad_analyzer, manifest_generator, ai_provider, ai_configurator, ai_code_editor, ai_session, git_operations, github_import, github_token, tier_service, render_cache, route_helpers
+       │        ├── services/  render_orchestrator, render_cache, render_gc, openscad, cadquery, implicit, scad_analyzer, manifest_generator, ai_provider, ai_configurator, ai_code_editor, ai_session, git_operations, github_import, github_token, tier_service, mqtt_telemetry, format_converter
        │        └── middleware/  auth (JWT + tier gating)
        │
        ├──► apps/studio/   (React 19 + Vite + Three.js + Shadcn UI)
@@ -48,7 +48,9 @@ packages/
 | `projects/{slug}/*.scad` | OpenSCAD geometry source files | YES |
 | `apps/api/app.py` | Flask entry point, CORS, static serving | RARELY |
 | `apps/api/extensions.py` | Flask extensions (rate limiter) | RARELY |
-| `apps/api/routes/render.py` | Render + estimate + cancel + SSE stream | RARELY |
+| `apps/api/routes/engine/render.py` | Render endpoints (thin route layer — delegates to orchestrator) | RARELY |
+| `apps/api/services/engine/render_orchestrator.py` | Render orchestration: engine selection, caching, format conversion | RARELY |
+| `apps/api/services/engine/render_gc.py` | Background render artifact garbage collection (24h TTL) | RARELY |
 | `apps/api/routes/verify.py` | STL verification endpoint | RARELY |
 | `apps/studio/src/App.jsx` | Main shell, state management | RARELY |
 | `apps/studio/src/components/Controls.jsx` | Data-driven param controls (reads manifest) | RARELY |

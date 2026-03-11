@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 MQTT_DEFAULT_PORT = 1883  # IANA-standard MQTT port
 
 # A global queue to pass MQTT events to the Flask API routes (SSE streams)
-telemetry_queue = Queue()
+TELEMETRY_QUEUE_MAX_SIZE = 1000
+telemetry_queue = Queue(maxsize=TELEMETRY_QUEUE_MAX_SIZE)
 
 class MqttTelemetryService:
     def __init__(self):
@@ -28,6 +29,9 @@ class MqttTelemetryService:
         self.broker = os.getenv("MQTT_BROKER", "localhost")
         self.port = int(os.getenv("MQTT_PORT", MQTT_DEFAULT_PORT))
         self.enabled = os.getenv("MQTT_ENABLED", "false").lower() == "true"
+        self._username = os.getenv("MQTT_USERNAME")
+        self._password = os.getenv("MQTT_PASSWORD")
+        self._use_tls = os.getenv("MQTT_TLS", "false").lower() == "true"
         
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.client.on_connect = self._on_connect
@@ -39,6 +43,21 @@ class MqttTelemetryService:
         if not self.enabled:
             logger.info("MQTT Telemetry is disabled via ENV.")
             return
+
+        # Configure authentication if credentials are provided
+        if self._username:
+            self.client.username_pw_set(self._username, self._password or "")
+            logger.info("MQTT authentication configured for user: %s", self._username)
+
+        # Configure TLS if enabled
+        if self._use_tls:
+            import ssl
+            ca_certs = os.getenv("MQTT_CA_CERTS")  # optional custom CA bundle
+            self.client.tls_set(
+                ca_certs=ca_certs,
+                tls_version=ssl.PROTOCOL_TLS_CLIENT,
+            )
+            logger.info("MQTT TLS enabled")
 
         logger.info(f"Connecting to MQTT broker at {self.broker}:{self.port}...")
         try:
@@ -113,7 +132,18 @@ class MqttTelemetryService:
                     logger.error(f"Error in telemetry callback for {topic}: {e}")
             
             # Push payload to the global queue for the SSE routes
-            telemetry_queue.put({"topic": topic, "payload": payload})
+            try:
+                telemetry_queue.put_nowait({"topic": topic, "payload": payload})
+            except Exception:
+                # Queue full — discard oldest event to make room
+                try:
+                    telemetry_queue.get_nowait()
+                except Exception:
+                    pass
+                try:
+                    telemetry_queue.put_nowait({"topic": topic, "payload": payload})
+                except Exception:
+                    pass
 
         except Exception as e:
             logger.error(f"Failed to process incoming MQTT payload: {e}")

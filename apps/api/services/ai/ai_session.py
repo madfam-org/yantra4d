@@ -1,6 +1,6 @@
 """
 In-memory or Redis-backed per-session conversation store.
-Auto-expires after 1 hour.
+Auto-expires after 1 hour. Includes circuit breaker for Redis resilience.
 """
 import time
 import uuid
@@ -16,8 +16,13 @@ logger = logging.getLogger(__name__)
 MAX_AGE = 3600  # 1 hour
 REDIS_URL = os.getenv("REDIS_URL")
 
-# Redis Client
+# Redis Client with circuit breaker
 redis_client = None
+_redis_failure_count = 0
+_redis_circuit_open_until = 0.0
+_REDIS_CIRCUIT_THRESHOLD = 3    # failures before opening circuit
+_REDIS_CIRCUIT_COOLDOWN = 60.0  # seconds to wait before retrying
+
 if REDIS_URL:
     try:
         redis_client = redis.from_url(REDIS_URL)
@@ -36,6 +41,35 @@ else:
 _sessions: dict[str, dict] = {}
 
 
+def _redis_available() -> bool:
+    """Check if Redis should be attempted (circuit breaker check)."""
+    global _redis_failure_count, _redis_circuit_open_until
+    if not redis_client:
+        return False
+    if time.time() < _redis_circuit_open_until:
+        return False
+    return True
+
+
+def _redis_success() -> None:
+    """Record a successful Redis operation — reset circuit breaker."""
+    global _redis_failure_count, _redis_circuit_open_until
+    _redis_failure_count = 0
+    _redis_circuit_open_until = 0.0
+
+
+def _redis_failure(operation: str, error: Exception) -> None:
+    """Record a Redis failure — open circuit after threshold."""
+    global _redis_failure_count, _redis_circuit_open_until
+    _redis_failure_count += 1
+    logger.warning("Redis %s failed (%d/%d): %s",
+                   operation, _redis_failure_count, _REDIS_CIRCUIT_THRESHOLD, error)
+    if _redis_failure_count >= _REDIS_CIRCUIT_THRESHOLD:
+        _redis_circuit_open_until = time.time() + _REDIS_CIRCUIT_COOLDOWN
+        logger.error("Redis circuit breaker OPEN — falling back to in-memory for %ds",
+                     int(_REDIS_CIRCUIT_COOLDOWN))
+
+
 def cleanup_expired(max_age: int = MAX_AGE) -> None:
     """Remove sessions older than max_age seconds (only for in-memory)."""
     if redis_client:
@@ -48,9 +82,15 @@ def cleanup_expired(max_age: int = MAX_AGE) -> None:
         logger.debug("Cleaned up %d expired AI sessions", len(expired))
 
 
-def create_session(project_slug: str, mode: str) -> str:
-    """Create a new chat session. Returns session_id (UUID)."""
-    session_id = str(uuid.uuid4())
+def create_session(project_slug: str, mode: str, session_id: str | None = None) -> str:
+    """Create a new chat session. Returns session_id (UUID).
+
+    Args:
+        project_slug: The project this session belongs to.
+        mode: Session mode (configurator, code-editor, synthesizer).
+        session_id: Optional pre-generated session ID. If None, a new UUID is generated.
+    """
+    session_id = session_id or str(uuid.uuid4())
     session_data = {
         "project_slug": project_slug,
         "mode": mode,
@@ -58,19 +98,17 @@ def create_session(project_slug: str, mode: str) -> str:
         "created_at": time.time(),
     }
 
-    if redis_client:
+    if _redis_available():
         try:
             redis_client.setex(
                 f"ai_session:{session_id}",
                 MAX_AGE,
                 json.dumps(session_data)
             )
+            _redis_success()
             return session_id
         except redis.RedisError as e:
-            logger.error("Redis error on create_session: %s", e)
-            # Fallback to memory? or explicit failure?
-            # Fallback is safer for reliability if Redis flaps
-            pass
+            _redis_failure("create_session", e)
 
     cleanup_expired()
     _sessions[session_id] = session_data
@@ -79,16 +117,16 @@ def create_session(project_slug: str, mode: str) -> str:
 
 def get_session_data(session_id: str) -> dict | None:
     """Retrieve session data from Redis or memory."""
-    if redis_client:
+    if _redis_available():
         try:
             data = redis_client.get(f"ai_session:{session_id}")
             if data:
+                _redis_success()
                 return json.loads(data)
+            _redis_success()
             return None
         except redis.RedisError as e:
-            logger.error("Redis error on get_session: %s", e)
-            # Fallback check memory?
-            pass
+            _redis_failure("get_session", e)
     
     # In-memory retrieval
     session = _sessions.get(session_id)
@@ -100,7 +138,7 @@ def get_session_data(session_id: str) -> dict | None:
 
 def update_session_data(session_id: str, data: dict) -> None:
     """Update session data in Redis or memory."""
-    if redis_client:
+    if _redis_available():
         try:
             # Reset expiry on update
             redis_client.setex(
@@ -108,10 +146,10 @@ def update_session_data(session_id: str, data: dict) -> None:
                 MAX_AGE,
                 json.dumps(data)
             )
+            _redis_success()
             return
         except redis.RedisError as e:
-            logger.error("Redis error on update_session: %s", e)
-            pass
+            _redis_failure("update_session", e)
 
     _sessions[session_id] = data
 

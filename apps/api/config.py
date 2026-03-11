@@ -40,7 +40,7 @@ class AppConfig:
     # OpenSCAD
     OPENSCAD_PATH: str = field(default_factory=lambda: os.getenv(
         "OPENSCAD_PATH",
-        "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" if sys.platform == "darwin" else "openscad"
+        __import__("shutil").which("openscad") or ("/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" if sys.platform == "darwin" else "openscad")
     ))
 
     STL_PREFIX: str = "preview_"

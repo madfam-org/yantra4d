@@ -1,52 +1,32 @@
 """
 Render Blueprint
 Handles /api/estimate, /api/render, /api/render-stream endpoints.
+
+Route-level concerns only: request parsing, auth, rate limiting, and response
+formatting. All render logic is delegated to the render orchestrator service.
 """
 import logging
-import os
-import json
 
 from flask import Blueprint, request, jsonify, Response
 
-from config import Config
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
 from services.core.tier_service import resolve_tier, get_tier_limits, check_feature
-from services.engine.openscad import (
-    build_openscad_command,
-    compute_scad_hash,
-    run_render as run_openscad_render,
-    stream_render as stream_openscad_render,
-    cancel_render as cancel_openscad_render,
-    validate_params
+from services.engine.render_orchestrator import (
+    extract_render_payload,
+    resolve_engine_config,
+    render_parts_sync,
+    render_parts_stream,
+    cancel_all_renders,
+    RenderPayloadError,
 )
-from services.engine.cadquery_engine import (
-    build_cadquery_command,
-    run_render as run_cadquery_render,
-    stream_render as stream_cadquery_render,
-    cancel_render as cancel_cadquery_render
-)
-from services.core.implicit_engine import (
-    run_render as run_implicit_render,
-    stream_render as stream_implicit_render
-)
-from services.engine.render_cache import render_cache
-from services.engine.format_converter import stl_to_glb, convert_mesh
-from utils.route_helpers import cleanup_old_stl_files, error_response, handle_exceptions, require_json_body
-from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
+from utils.route_helpers import error_response, handle_exceptions, require_json_body
 import rate_limits
-import queue
-
-ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf', 'glb', 'obj'}
-TRIMESH_CONVERTIBLE = {'obj', 'ply', 'glb', 'gltf', '3mf', 'off'}
-PROGRESS_TOTAL = 100  # SSE progress is in the range 0–100
 
 logger = logging.getLogger(__name__)
 
 render_bp = Blueprint('render', __name__)
-
-STATIC_FOLDER = str(Config.STATIC_DIR)
 
 
 def _make_rate_limit_headers(tier: str) -> dict:
@@ -74,106 +54,6 @@ def _rate_limit_key() -> str:
     return f"ip:{request.remote_addr}"
 
 
-def _resolve_render_context(data):
-    """Resolve scad_file, parts, and mode_map from payload.
-
-    Supports both new `mode` field and legacy `scad_file` field.
-    Accepts optional `project` slug for multi-project support.
-    """
-    project_slug = data.get('project')
-    manifest = get_manifest(project_slug)
-    mode_id = data.get('mode')
-    scad_filename = data.get('scad_file')
-
-    if mode_id:
-        scad_filename = manifest.get_scad_file_for_mode(mode_id)
-        parts = manifest.get_parts_for_mode(mode_id)
-    else:
-        if scad_filename:
-            logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
-        else:
-            scad_filename = manifest.modes[0]["scad_file"]
-        parts_map = manifest.get_parts_map()
-        parts = parts_map.get(scad_filename, manifest.modes[0]["parts"])
-
-    allowed = manifest.get_allowed_files()
-    if scad_filename not in allowed:
-        return None, None, None, None, scad_filename
-
-    scad_path = str(allowed[scad_filename])
-    mode_map = manifest.get_mode_map()
-    static_stl_map = manifest.get_static_stl_map()
-    return scad_filename, scad_path, parts, mode_map, static_stl_map
-
-
-def _extract_render_payload(data):
-    """Extract common render payload fields from request data."""
-    scad_filename, scad_path, parts_to_render, mode_map, static_stl_map = _resolve_render_context(data)
-
-    if scad_filename is None:
-        return None
-
-    project_slug = data.get('project', '')
-    export_format = data.get('export_format', 'stl')
-    if export_format not in ALLOWED_EXPORT_FORMATS:
-        export_format = 'stl'
-
-    # Filter raw parameters strictly defined by the project manifest
-    params = validate_params(data.get('parameters', data), project_slug or None)
-    
-    # Securely hash the parameters state to prevent 3D render file overwrites
-    import hashlib
-    raw_hash = json.dumps({"s": scad_filename, "p": params}, sort_keys=True)
-    param_hash = hashlib.sha256(raw_hash.encode()).hexdigest()[:10]
-    
-    base_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
-    stl_prefix = f"{base_prefix}{param_hash}_"
-    
-    # Inject Material Hyperobject Compensations
-    target_mat = data.get('parameters', {}).get('target_material')
-    if target_mat:
-        from services.core.material_service import get_material
-        try:
-            mat_manifest = get_material(target_mat)
-            comps = mat_manifest.get("am_compensations", {})
-            shrink = comps.get("shrinkage", {})
-            clear = comps.get("clearances", {})
-            
-            # Map into the SCAD-compatible uniform structure defined in architecture
-            params["mat_shrinkage_x"] = float(shrink.get("x", 1.0))
-            params["mat_shrinkage_y"] = float(shrink.get("y", 1.0))
-            params["mat_shrinkage_z"] = float(shrink.get("z", 1.0))
-            params["mat_clear_press"] = float(clear.get("press_fit", 0.0))
-            params["mat_clear_slide"] = float(clear.get("sliding_fit", 0.0))
-            params["mat_clear_loose"] = float(clear.get("loose_fit", 0.0))
-            
-            # Map Thermodynamic Limits
-            thermo = mat_manifest.get("thermodynamics", {})
-            params["thermo_glass_transition_temp"] = float(thermo.get("glass_transition_temp", 999.0))
-            params["thermo_melting_temp"] = float(thermo.get("melting_temp", 999.0))
-            params["thermo_yield_strength"] = float(thermo.get("yield_strength", 999.0))
-            
-            logger.info(f"Injected Material Hyperobject parameters for: {target_mat}")
-        except Exception as e:
-            logger.warning(f"Failed to inject material compensations for {target_mat}: {e}")
-
-    scad_content_hash = compute_scad_hash(scad_path)
-
-    return {
-        'scad_filename': scad_filename,
-        'scad_path': scad_path,
-        'parts': parts_to_render,
-        'mode_map': mode_map,
-        'stl_prefix': stl_prefix,
-        'export_format': export_format,
-        'params': params,
-        'static_stl_map': static_stl_map,
-        'project_slug': project_slug,
-        'ignore_cache': data.get('ignore_cache', False),
-        'scad_content_hash': scad_content_hash,
-    }
-
-
 @render_bp.route('/api/estimate', methods=['POST'])
 @optional_auth
 @limiter.limit(rate_limits.ESTIMATE)
@@ -195,24 +75,17 @@ def estimate_render_time():
     if not mode_id:
         mode_id = manifest.modes[0]["id"]
 
-    # Basic heuristic (bounding boxes from manifest config)
     num_units = manifest.calculate_estimate_units(mode_id, data)
     num_parts = len(manifest.get_parts_for_mode(mode_id))
     
-    # Simulate a true Slicer-Grade path estimation using theoretical volumetric flow
-    # instead of just arbitrary scalar constants.
-    volumetric_flow_rate = 8.0 # mm^3/s (typical for common FDM)
-    material_density = 1.24 # g/cm^3 (PLA average)
-    spool_cost = 25.00 # USD per kg
+    # Slicer-grade heuristic using theoretical volumetric flow
+    volumetric_flow_rate = 8.0  # mm^3/s (typical FDM)
+    material_density = 1.24     # g/cm^3 (PLA average)
+    spool_cost = 25.00          # USD per kg
     
-    # Convert 'units' (which are generally bounding box volumes in mm^3) to realistic print metrics
-    # If a parametric model isn't rendering yet, we use the bounding box minus an assumed 80% porosity for infill.
     theoretical_volume_mm3 = num_units * 0.20 
     theoretical_weight_g = (theoretical_volume_mm3 / 1000.0) * material_density
-    
-    # The actual print time (seconds): Volume / FlowRate + Traversal Penalties
-    path_time_seconds = (theoretical_volume_mm3 / volumetric_flow_rate) + (num_parts * 180.0) # 3 min per part overhead
-    
+    path_time_seconds = (theoretical_volume_mm3 / volumetric_flow_rate) + (num_parts * 180.0)
     est_cost = (theoretical_weight_g / 1000.0) * spool_cost
 
     return jsonify({
@@ -233,170 +106,39 @@ def render_stl():
     """Synchronous render endpoint."""
     data = request.json
     tier = resolve_tier(getattr(request, "auth_claims", None))
-    payload = _extract_render_payload(data)
+    payload = extract_render_payload(data)
 
-    if payload is None:
-        bad_name = _resolve_render_context(data)[4]
-        return error_response(f"Invalid SCAD file: {bad_name}", 400)
+    if isinstance(payload, RenderPayloadError):
+        return error_response(payload.message, 400)
 
     if payload['export_format'] in {'step', 'gltf', 'glb', '3mf', 'obj', 'off'} and not check_feature(tier, "premium_export"):
         return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
 
-    parts_to_render = payload['parts']
-    stl_prefix = payload['stl_prefix']
-    export_format = payload['export_format']
-    params = payload['params']
-    scad_path = payload['scad_path']
-    mode_map = payload['mode_map']
-    static_stl_map = payload.get('static_stl_map', {})
-    project_slug = payload['project_slug']
-
-    # Engine-aware format validation (before per-part loop)
-    manifest = get_manifest(project_slug)
-    engine = manifest.engine
-
-    # Dual-engine fallback: use CadQuery for formats the primary engine can't produce
-    if engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
-        mode_id = data.get('mode')
-        if mode_id:
-            mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
-            if mode_config and mode_config.get('cq_file'):
-                engine = "cadquery"
-                scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
-
-    if engine == "cadquery":
-        if not check_feature(tier, "cadquery_engine"):
-            return error_response("CadQuery engine is not available for your tier.", 403)
-        if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
-            return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
-    elif engine == "implicit":
-        if export_format not in Config.IMPLICIT_ALLOWED_EXPORT_FORMATS:
-            return error_response(f"Export format '{export_format}' is not supported by implicit engine.", 400)
-    elif engine == "openscad":
-        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS and export_format not in TRIMESH_CONVERTIBLE:
-            return error_response(f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
-
-    # Determine actual render format (render in engine's native format, convert later)
-    if engine == "cadquery":
-        actual_format = export_format
-    elif engine == "implicit":
-        actual_format = 'stl'
-    else:
-        actual_format = export_format if export_format in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS else 'stl'
-
-    generated_parts = []
-    combined_log = ""
-    cache_hits = 0
-    cache_total = 0
+    # Resolve engine configuration
+    engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)
+    if engine_error:
+        return error_response(engine_error[0], engine_error[1])
 
     try:
-        for part in parts_to_render:
-            # Skip OpenSCAD rendering for parts with pre-existing static STLs
-            if part in static_stl_map:
-                static_path = static_stl_map[part]
-                if static_path.is_file():
-                    combined_log += f"[{part}] static STL: {static_path.name}\n"
-                    serve_url = f"/api/projects/{project_slug}/parts/{static_path.name}"
-                    # Convert static part if requested format differs
-                    if export_format != 'stl' and export_format in TRIMESH_CONVERTIBLE:
-                        conv_filename = f"{stl_prefix}{part}_static.{export_format}"
-                        conv_path = os.path.join(STATIC_FOLDER, conv_filename)
-                        if convert_mesh(str(static_path), conv_path):
-                            serve_url = f"/static/{conv_filename}"
-                    try:
-                        size_bytes = os.path.getsize(static_path)
-                    except OSError:
-                        size_bytes = None
-                    generated_parts.append({
-                        "type": part,
-                        "url": serve_url,
-                        "size_bytes": size_bytes
-                    })
-                    continue
-
-            output_filename = f"{stl_prefix}{part}.{actual_format}"
-            output_path = os.path.join(STATIC_FOLDER, output_filename)
-            cache_total += 1
-
-            # Check render cache (keyed by requested format, not intermediate)
-            if not payload.get('ignore_cache', False):
-                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format, scad_content_hash=payload.get('scad_content_hash'))
-                if cached:
-                    cache_hits += 1
-                    combined_log += f"[{part}] cache HIT\n"
-                    cached_filename = os.path.basename(cached["path"])
-                    generated_parts.append({
-                        "type": part,
-                        "url": f"/static/{cached_filename}",
-                        "size_bytes": cached["size_bytes"]
-                    })
-                    continue
-
-            # Cache miss — now safe to clean up this part's old file before re-rendering
-            cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
-
-            # Inject continuous telemetry temporal state into static parameters
-            # using a conventional topic structure based on the project slug
-            project_topic = f"yantra4d/telemetry/projects/{project_slug}"
-            computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
-
-            if engine == "cadquery":
-                cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
-                success, stderr = run_cadquery_render(cmd, scad_path=scad_path)
-            elif engine == "implicit":
-                config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
-                success, stderr = run_implicit_render(output_path, config, computed_params)
-            else:
-                render_mode = mode_map.get(part, 0)
-                cmd = build_openscad_command(output_path, scad_path, params, render_mode)
-                success, stderr = run_openscad_render(cmd, scad_path=scad_path)
-
-            if not success:
-                return error_response(stderr)
-
-            combined_log += f"[{part}] {stderr}\n"
-
-            # Post-render: convert to requested format via trimesh if needed
-            if actual_format != export_format:
-                final_filename = f"{stl_prefix}{part}.{export_format}"
-                final_path = os.path.join(STATIC_FOLDER, final_filename)
-                if not convert_mesh(output_path, final_path):
-                    return error_response(f"Format conversion to {export_format} failed", 500)
-                output_path = final_path
-                output_filename = final_filename
-
-            # Post-render: convert STL to GLB for smaller web delivery (all engines)
-            if export_format == "stl":
-                glb_filename = f"{stl_prefix}{part}.glb"
-                glb_path = os.path.join(STATIC_FOLDER, glb_filename)
-                if stl_to_glb(output_path, glb_path):
-                    output_filename = glb_filename
-                    output_path = glb_path
-
-            try:
-                size_bytes = os.path.getsize(output_path)
-            except OSError:
-                size_bytes = None
-
-            render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, output_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'))
-
-            generated_parts.append({
-                "type": part,
-                "url": f"/static/{output_filename}",
-                "size_bytes": size_bytes
-            })
-
-        resp = jsonify({
-            "status": "success",
-            "parts": generated_parts,
-            "log": combined_log
-        })
-        for k, v in _make_rate_limit_headers(tier).items():
-            resp.headers[k] = v
-        resp.headers["X-Cache"] = "HIT" if (cache_total > 0 and cache_hits == cache_total) else "MISS"
-        return resp
+        generated_parts, log_or_error, cache_stats = render_parts_sync(
+            data, payload, engine, scad_path, actual_format, tier,
+        )
     except OSError as e:
         return error_response(str(e))
+
+    if generated_parts is None:
+        return error_response(log_or_error)
+
+    cache_hits, cache_total = cache_stats
+    resp = jsonify({
+        "status": "success",
+        "parts": generated_parts,
+        "log": log_or_error,
+    })
+    for k, v in _make_rate_limit_headers(tier).items():
+        resp.headers[k] = v
+    resp.headers["X-Cache"] = "HIT" if (cache_total > 0 and cache_hits == cache_total) else "MISS"
+    return resp
 
 
 @render_bp.route('/api/render-stream', methods=['POST'])
@@ -406,191 +148,32 @@ def render_stl():
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
-    payload = _extract_render_payload(data)
-    logger.debug(f"Render stream payload: mode={data.get('mode')}, parts={payload['parts'] if payload else 'None'}")
+    payload = extract_render_payload(data)
 
-    if payload is None:
-        bad_name = _resolve_render_context(data)[4]
-        return error_response(f"Invalid SCAD file: {bad_name}", 400)
+    if isinstance(payload, RenderPayloadError):
+        return error_response(payload.message, 400)
 
     tier = resolve_tier(getattr(request, "auth_claims", None))
     if payload['export_format'] in {'step', 'gltf', 'glb', '3mf', 'obj', 'off'} and not check_feature(tier, "premium_export"):
         return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
 
-    parts_to_render = payload['parts']
-    stl_prefix = payload['stl_prefix']
-    export_format = payload['export_format']
-    params = payload['params']
-    scad_path = payload['scad_path']
-    mode_map = payload['mode_map']
-    static_stl_map = payload.get('static_stl_map', {})
-    project_slug = payload['project_slug']
+    # Resolve engine configuration
+    engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)
+    if engine_error:
+        return error_response(engine_error[0], engine_error[1])
 
-    # Engine-aware format validation (before streaming)
-    manifest = get_manifest(project_slug)
-    engine = manifest.engine
-
-    # Dual-engine fallback: use CadQuery for formats the primary engine can't produce
-    if engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
-        mode_id = data.get('mode')
-        if mode_id:
-            mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
-            if mode_config and mode_config.get('cq_file'):
-                engine = "cadquery"
-                scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
-
-    if engine == "cadquery":
-        if not check_feature(tier, "cadquery_engine"):
-            return error_response("CadQuery engine is not available for your tier.", 403)
-        if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
-            return error_response(f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
-    elif engine == "implicit":
-        if export_format not in Config.IMPLICIT_ALLOWED_EXPORT_FORMATS:
-            return error_response(f"Export format '{export_format}' is not supported by implicit engine.", 400)
-    elif engine == "openscad":
-        if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS and export_format not in TRIMESH_CONVERTIBLE:
-            return error_response(f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
-
-    # Determine actual render format (render in engine's native format, convert later)
-    if engine == "cadquery":
-        actual_format = export_format
-    elif engine == "implicit":
-        actual_format = 'stl'
-    else:
-        actual_format = export_format if export_format in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS else 'stl'
-
-    num_parts = len(parts_to_render)
-
-    def generate():
-        generated_parts = []
-
-        for i, part in enumerate(parts_to_render):
-            # Handle static STL parts — emit part_done immediately
-            if part in static_stl_map:
-                static_path = static_stl_map[part]
-                if static_path.is_file():
-                    try:
-                        size_bytes = os.path.getsize(static_path)
-                    except OSError:
-                        size_bytes = None
-                    part_url = f"/api/projects/{project_slug}/parts/{static_path.name}"
-                    # Convert static part if requested format differs
-                    if export_format != 'stl' and export_format in TRIMESH_CONVERTIBLE:
-                        conv_filename = f"{stl_prefix}{part}_static.{export_format}"
-                        conv_path = os.path.join(STATIC_FOLDER, conv_filename)
-                        if convert_mesh(str(static_path), conv_path):
-                            part_url = f"/static/{conv_filename}"
-                    generated_parts.append({
-                        "type": part,
-                        "url": part_url,
-                        "size_bytes": size_bytes
-                    })
-                    progress = ((i + 1) / num_parts) * 100
-                    yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts})}\n\n"
-                    continue
-
-            output_filename = f"{stl_prefix}{part}.{actual_format}"
-            output_path = os.path.join(STATIC_FOLDER, output_filename)
-
-            # Check render cache before starting engine (keyed by requested format)
-            if not payload.get('ignore_cache', False):
-                cached = render_cache.get(project_slug, payload['scad_filename'], params, part, export_format, scad_content_hash=payload.get('scad_content_hash'))
-                if cached:
-                    cached_filename = os.path.basename(cached["path"])
-                    generated_parts.append({
-                        "type": part,
-                        "url": f"/static/{cached_filename}",
-                        "size_bytes": cached["size_bytes"]
-                    })
-                    progress = ((i + 1) / num_parts) * 100
-                    yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts, 'cached': True})}\n\n"
-                    continue
-
-            # Cache miss — now safe to clean up this part's old file
-            cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
-
-            part_base = (i / num_parts) * PROGRESS_TOTAL
-            part_weight = PROGRESS_TOTAL / num_parts
-
-            project_topic = f"yantra4d/telemetry/projects/{project_slug}"
-            computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
-
-            if engine == "cadquery":
-                cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
-                stream_gen = stream_cadquery_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
-            elif engine == "implicit":
-                config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
-                stream_gen = stream_implicit_render(output_path, config, computed_params, part, part_base, part_weight, i, num_parts)
-            else:
-                render_mode = mode_map.get(part, 0)
-                cmd = build_openscad_command(output_path, scad_path, params, render_mode)
-                stream_gen = stream_openscad_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
-
-            for event_data in stream_gen:
-                yield f"data: {event_data}\n\n"
-                try:
-                    event = json.loads(event_data)
-                except json.JSONDecodeError:
-                    logger.warning(f"Malformed SSE event data: {event_data!r}")
-                    continue
-                if event.get('event') == 'part_done':
-                    serve_filename = output_filename
-                    serve_path = output_path
-
-                    # Post-render: convert to requested format via trimesh if needed
-                    if actual_format != export_format:
-                        final_filename = f"{stl_prefix}{part}.{export_format}"
-                        final_path = os.path.join(STATIC_FOLDER, final_filename)
-                        if convert_mesh(serve_path, final_path):
-                            serve_filename = final_filename
-                            serve_path = final_path
-                        else:
-                            logger.warning("Stream format conversion to %s failed for part %s", export_format, part)
-
-                    # Post-render: convert STL to GLB for smaller web delivery (all engines)
-                    if export_format == "stl":
-                        glb_filename = f"{stl_prefix}{part}.glb"
-                        glb_path = os.path.join(STATIC_FOLDER, glb_filename)
-                        if stl_to_glb(output_path, glb_path):
-                            serve_filename = glb_filename
-                            serve_path = glb_path
-
-                    try:
-                        size_bytes = os.path.getsize(serve_path)
-                    except OSError:
-                        size_bytes = None
-                    # Populate cache on successful render
-                    render_cache.put(project_slug, payload['scad_filename'], params, part, export_format, serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'))
-                    generated_parts.append({
-                        "type": part,
-                        "url": f"/static/{serve_filename}",
-                        "size_bytes": size_bytes
-                    })
-
-            # Check if any live telemetry events occurred during this render tick to stream down
-            while not telemetry_queue.empty():
-                try:
-                    telemetry_event = telemetry_queue.get_nowait()
-                    if telemetry_event['topic'] == project_topic:
-                        yield f"data: {json.dumps({'event': 'telemetry_update', 'payload': telemetry_event['payload']})}\n\n"
-                except queue.Empty:
-                    break
-
-        yield f"data: {json.dumps({'event': 'complete', 'parts': generated_parts, 'progress': 100})}\n\n"
-
-    return Response(generate(), mimetype='text/event-stream')
+    return Response(
+        render_parts_stream(data, payload, engine, scad_path, actual_format),
+        mimetype='text/event-stream',
+    )
 
 
 @render_bp.route('/api/render-cancel', methods=['POST'])
 @optional_auth
 def cancel_render_endpoint():
     """Cancel the active render process."""
-    # Try cancelling both just in case
-    cancelled_scad = cancel_openscad_render()
-    cancelled_cq = cancel_cadquery_render()
-    cancelled = cancelled_scad or cancelled_cq
-
+    cancelled = cancel_all_renders()
     return jsonify({
         "status": "cancelled" if cancelled else "no_active_render",
-        "cancelled": cancelled
+        "cancelled": cancelled,
     })

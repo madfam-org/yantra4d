@@ -4,11 +4,13 @@ Handles all OpenSCAD subprocess interactions.
 """
 import logging
 import os
+import queue
 import re
 import subprocess
 import json
 import tempfile
 import threading
+import time
 from pathlib import Path
 
 from config import Config
@@ -241,7 +243,7 @@ def run_render(cmd: list, scad_path: str | None = None) -> RenderResult:
     Returns a RenderResult dataclass. Supports tuple unpacking for backward
     compatibility: ``success, stderr = run_render(cmd)``.
     """
-    import time
+
     logger.info(f"Running OpenSCAD: {_sanitize_cmd_for_log(cmd)}")
     t0 = time.monotonic()
     try:
@@ -300,7 +302,6 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         return
 
     try:
-        import queue
         q = queue.Queue()
         
         def reader(stream):
@@ -356,14 +357,12 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
             'part': part, 
             'progress': round(final_progress)
         })
-        return True
     else:
         yield json.dumps({
             'event': 'error',
             'part': part,
             'message': f'Render failed with code {process.returncode}'
         })
-        return False
 
 
 def cancel_render():

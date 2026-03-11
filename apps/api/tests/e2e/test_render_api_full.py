@@ -17,9 +17,9 @@ def app(tmp_path, monkeypatch):
     static_dir.mkdir()
     monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
 
-    # Patch module-level STATIC_FOLDER in routes.engine.render (captured at import)
-    import routes.engine.render as render_mod
-    monkeypatch.setattr(render_mod, "STATIC_FOLDER", str(static_dir))
+    # Patch module-level STATIC_FOLDER in the render orchestrator (captured at import)
+    import services.engine.render_orchestrator as orchestrator_mod
+    monkeypatch.setattr(orchestrator_mod, "STATIC_FOLDER", str(static_dir))
 
     project_dir = tmp_path / "test-project"
     project_dir.mkdir()
@@ -58,16 +58,16 @@ def client(app):
 @pytest.fixture(autouse=True)
 def _mock_validate_params(monkeypatch):
     """Bypass validate_params so unit tests don't need a real manifest."""
-    monkeypatch.setattr("routes.engine.render.validate_params", lambda data, project_slug=None: {
+    monkeypatch.setattr("services.engine.render_orchestrator.validate_params", lambda data, project_slug=None: {
         k: v for k, v in data.items()
         if k not in ("mode", "scad_file", "parameters", "project", "export_format")
     })
 
 
 class TestRenderEndpoint:
-    @patch("routes.engine.render.run_openscad_render")
-    @patch("routes.engine.render.build_openscad_command")
-    @patch("routes.engine.render.render_cache")
+    @patch("services.engine.render_orchestrator.run_openscad_render")
+    @patch("services.engine.render_orchestrator.build_openscad_command")
+    @patch("services.engine.render_orchestrator.render_cache")
     def test_render_success(self, mock_cache, mock_cmd, mock_run, client, tmp_path, monkeypatch):
         from config import Config
         static_dir = Config.STATIC_DIR
@@ -85,9 +85,9 @@ class TestRenderEndpoint:
         assert len(data["parts"]) == 1
         assert data["parts"][0]["type"] == "main"
 
-    @patch("routes.engine.render.run_openscad_render")
-    @patch("routes.engine.render.build_openscad_command")
-    @patch("routes.engine.render.render_cache")
+    @patch("services.engine.render_orchestrator.run_openscad_render")
+    @patch("services.engine.render_orchestrator.build_openscad_command")
+    @patch("services.engine.render_orchestrator.render_cache")
     def test_render_failure(self, mock_cache, mock_cmd, mock_run, client):
         mock_cache.get.return_value = None
         mock_cmd.return_value = ["openscad", "-o", "out.stl"]
@@ -106,7 +106,7 @@ class TestRenderEndpoint:
         res = client.post("/api/render", content_type="application/json")
         assert res.status_code == 400
 
-    @patch("routes.engine.render.render_cache")
+    @patch("services.engine.render_orchestrator.render_cache")
     def test_render_cache_hit(self, mock_cache, client, tmp_path, monkeypatch):
         from config import Config
         stl_path = Config.STATIC_DIR / "test-project_preview_main.stl"
@@ -119,10 +119,10 @@ class TestRenderEndpoint:
         assert res.headers.get("X-Cache") == "HIT"
 
     def test_render_export_format_3mf(self, client):
-        with patch("routes.engine.render.run_openscad_render", return_value=(True, "")), \
-             patch("routes.engine.render.build_openscad_command", return_value=["cmd"]), \
+        with patch("services.engine.render_orchestrator.run_openscad_render", return_value=(True, "")), \
+             patch("services.engine.render_orchestrator.build_openscad_command", return_value=["cmd"]), \
              patch("routes.engine.render.check_feature", return_value=True), \
-             patch("routes.engine.render.render_cache") as mc:
+             patch("services.engine.render_orchestrator.render_cache") as mc:
             mc.get.return_value = None
             res = client.post("/api/render", json={
                 "mode": "single", "project": "test-project", "export_format": "3mf",
@@ -130,9 +130,9 @@ class TestRenderEndpoint:
             assert res.status_code == 200
 
     def test_render_invalid_export_format_falls_back(self, client):
-        with patch("routes.engine.render.run_openscad_render", return_value=(True, "")), \
-             patch("routes.engine.render.build_openscad_command", return_value=["cmd"]), \
-             patch("routes.engine.render.render_cache") as mc:
+        with patch("services.engine.render_orchestrator.run_openscad_render", return_value=(True, "")), \
+             patch("services.engine.render_orchestrator.build_openscad_command", return_value=["cmd"]), \
+             patch("services.engine.render_orchestrator.render_cache") as mc:
             mc.get.return_value = None
             res = client.post("/api/render", json={
                 "mode": "single", "project": "test-project", "export_format": "exe",
@@ -140,17 +140,17 @@ class TestRenderEndpoint:
             assert res.status_code == 200
 
     def test_render_rate_limit_headers(self, client):
-        with patch("routes.engine.render.run_openscad_render", return_value=(True, "")), \
-             patch("routes.engine.render.build_openscad_command", return_value=["cmd"]), \
-             patch("routes.engine.render.render_cache") as mc:
+        with patch("services.engine.render_orchestrator.run_openscad_render", return_value=(True, "")), \
+             patch("services.engine.render_orchestrator.build_openscad_command", return_value=["cmd"]), \
+             patch("services.engine.render_orchestrator.render_cache") as mc:
             mc.get.return_value = None
             res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
             assert res.status_code == 200
             assert "X-RateLimit-Tier" in res.headers
 
-    @patch("routes.engine.render.run_openscad_render")
-    @patch("routes.engine.render.build_openscad_command")
-    @patch("routes.engine.render.render_cache")
+    @patch("services.engine.render_orchestrator.run_openscad_render")
+    @patch("services.engine.render_orchestrator.build_openscad_command")
+    @patch("services.engine.render_orchestrator.render_cache")
     def test_render_grid_multiple_parts(self, mock_cache, mock_cmd, mock_run, client):
         mock_cache.get.return_value = None
         mock_cmd.return_value = ["cmd"]
@@ -171,9 +171,9 @@ class TestRenderStreamEndpoint:
         res = client.post("/api/render-stream", content_type="application/json")
         assert res.status_code == 400
 
-    @patch("routes.engine.render.stream_openscad_render")
-    @patch("routes.engine.render.build_openscad_command")
-    @patch("routes.engine.render.render_cache")
+    @patch("services.engine.render_orchestrator.stream_openscad_render")
+    @patch("services.engine.render_orchestrator.build_openscad_command")
+    @patch("services.engine.render_orchestrator.render_cache")
     def test_stream_returns_sse(self, mock_cache, mock_cmd, mock_stream, client):
         mock_cache.get.return_value = None
         mock_cmd.return_value = ["cmd"]
@@ -188,8 +188,8 @@ class TestRenderStreamEndpoint:
 
 
 class TestCancelEndpoint:
-    @patch("routes.engine.render.cancel_openscad_render", return_value=True)
-    @patch("routes.engine.render.cancel_cadquery_render", return_value=True)
+    @patch("services.engine.render_orchestrator.cancel_openscad_render", return_value=True)
+    @patch("services.engine.render_orchestrator.cancel_cadquery_render", return_value=True)
     def test_cancel_active(self, mock_cancel_cq, mock_cancel_scad, client):
         res = client.post("/api/render-cancel")
         assert res.status_code == 200
@@ -197,8 +197,8 @@ class TestCancelEndpoint:
         assert data["cancelled"] is True
         assert data["status"] == "cancelled"
 
-    @patch("routes.engine.render.cancel_openscad_render", return_value=False)
-    @patch("routes.engine.render.cancel_cadquery_render", return_value=False)
+    @patch("services.engine.render_orchestrator.cancel_openscad_render", return_value=False)
+    @patch("services.engine.render_orchestrator.cancel_cadquery_render", return_value=False)
     def test_cancel_no_active(self, mock_cancel_cq, mock_cancel_scad, client):
         res = client.post("/api/render-cancel")
         assert res.status_code == 200

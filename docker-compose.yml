@@ -2,13 +2,14 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: redis-server --appendonly yes
-    ports:
-      - "6379:6379"
+    # ⚠️ Change REDIS_PASSWORD for production deployments.
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-yantra4d_dev}
+    expose:
+      - "6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-yantra4d_dev}", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -37,7 +38,8 @@ services:
       # Production uses K8s manifests with AUTH_ENABLED=true.
       - AUTH_ENABLED=false
       - RATE_LIMIT_ENABLED=false
-      - RATE_LIMIT_STORAGE=redis://redis:6379
+      - RATE_LIMIT_STORAGE=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379
     depends_on:
       redis:
         condition: service_healthy

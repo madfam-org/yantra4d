@@ -110,12 +110,12 @@ class TestRenderCacheRedisL2:
 
     def test_redis_get_returns_none_when_no_client(self):
         cache = RenderCache()
-        with patch("services.engine.render_cache._redis_client", None):
+        with patch("services.engine.render_cache._redis_available", return_value=False):
             assert cache._redis_get("any_key") is None
 
     def test_redis_put_noop_when_no_client(self):
         cache = RenderCache()
-        with patch("services.engine.render_cache._redis_client", None):
+        with patch("services.engine.render_cache._redis_available", return_value=False):
             # Should not raise
             cache._redis_put("any_key", {"path": "/f", "size_bytes": 1, "ts": 0})
 
@@ -124,7 +124,8 @@ class TestRenderCacheRedisL2:
         entry = {"path": "/tmp/test.stl", "size_bytes": 42, "ts": time.time()}
         mock_redis = MagicMock()
         mock_redis.get.return_value = json.dumps(entry).encode()
-        with patch("services.engine.render_cache._redis_client", mock_redis):
+        with patch("services.engine.render_cache._redis_available", return_value=True), \
+             patch("services.engine.render_cache._redis_client", mock_redis):
             result = cache._redis_get("test_key")
         assert result is not None
         assert result["size_bytes"] == 42
@@ -133,21 +134,24 @@ class TestRenderCacheRedisL2:
         cache = RenderCache()
         mock_redis = MagicMock()
         mock_redis.get.return_value = None
-        with patch("services.engine.render_cache._redis_client", mock_redis):
+        with patch("services.engine.render_cache._redis_available", return_value=True), \
+             patch("services.engine.render_cache._redis_client", mock_redis):
             assert cache._redis_get("missing_key") is None
 
     def test_redis_get_returns_none_on_exception(self):
         cache = RenderCache()
         mock_redis = MagicMock()
         mock_redis.get.side_effect = Exception("connection lost")
-        with patch("services.engine.render_cache._redis_client", mock_redis):
+        with patch("services.engine.render_cache._redis_available", return_value=True), \
+             patch("services.engine.render_cache._redis_client", mock_redis):
             assert cache._redis_get("any_key") is None
 
     def test_redis_put_calls_setex(self):
         cache = RenderCache()
         entry = {"path": "/tmp/test.stl", "size_bytes": 10, "ts": time.time()}
         mock_redis = MagicMock()
-        with patch("services.engine.render_cache._redis_client", mock_redis):
+        with patch("services.engine.render_cache._redis_available", return_value=True), \
+             patch("services.engine.render_cache._redis_client", mock_redis):
             cache._redis_put("test_key", entry)
         mock_redis.setex.assert_called_once()
         call_args = mock_redis.setex.call_args
@@ -161,12 +165,13 @@ class TestRenderCacheRedisL2:
         entry = {"path": str(f), "size_bytes": 10, "ts": time.time()}
         mock_redis = MagicMock()
         mock_redis.get.return_value = json.dumps(entry).encode()
-        with patch("services.engine.render_cache._redis_client", mock_redis):
+        with patch("services.engine.render_cache._redis_available", return_value=True), \
+             patch("services.engine.render_cache._redis_client", mock_redis):
             result = cache.get("proj", "main.scad", {"w": 10}, "main", "stl")
         assert result is not None
         assert result["size_bytes"] == 10
         # Verify it's now in L1 (no Redis needed for second get)
-        with patch("services.engine.render_cache._redis_client", None):
+        with patch("services.engine.render_cache._redis_available", return_value=False):
             result2 = cache.get("proj", "main.scad", {"w": 10}, "main", "stl")
         assert result2 is not None
 
@@ -176,6 +181,26 @@ class TestRenderCacheRedisL2:
         entry = {"path": "/tmp/nonexistent_file.stl", "size_bytes": 10, "ts": time.time()}
         mock_redis = MagicMock()
         mock_redis.get.return_value = json.dumps(entry).encode()
-        with patch("services.engine.render_cache._redis_client", mock_redis):
+        with patch("services.engine.render_cache._redis_available", return_value=True), \
+             patch("services.engine.render_cache._redis_client", mock_redis):
             result = cache.get("proj", "main.scad", {}, "main", "stl")
         assert result is None
+
+    def test_circuit_breaker_opens_after_failures(self):
+        """After repeated Redis failures, circuit breaker should prevent further attempts."""
+        import services.engine.render_cache as cache_mod
+        # Reset circuit breaker state
+        cache_mod._redis_failure_count = 0
+        cache_mod._redis_circuit_open_until = 0.0
+
+        # Simulate 3 failures
+        for i in range(3):
+            cache_mod._redis_fail("test_op", Exception(f"fail {i}"))
+
+        # Circuit should now be open
+        assert cache_mod._redis_circuit_open_until > time.time()
+        assert not cache_mod._redis_available()
+
+        # Reset for other tests
+        cache_mod._redis_failure_count = 0
+        cache_mod._redis_circuit_open_until = 0.0

@@ -1,16 +1,19 @@
 """
 Yantra4D Backend API
-Production-ready Flask application for OpenSCAD rendering.
+Production-ready Flask application for parametric 3D rendering.
 
-Structure:
-- manifest.py          - Project manifest loader (ManifestService singleton)
-- config.py            - Environment configuration (AppConfig dataclass)
-- routes/render.py     - Render endpoints (estimate, render, render-stream, cancel)
-- routes/verify.py     - Verification endpoint
-- routes/health.py     - Health check endpoint
-- routes/manifest_route.py - GET /api/manifest
-- routes/config_route.py   - GET /api/config (legacy, delegates to manifest)
-- services/openscad.py - OpenSCAD subprocess wrapper
+Multi-engine render service (OpenSCAD, CadQuery, Implicit) with 24 blueprints
+spanning: rendering, manifests, editor, AI, analytics, git ops, GitHub import,
+project management, geometry analysis, printer integration, catalog, storefront,
+health/readiness, and admin routes.
+
+Key modules:
+- config.py                   — AppConfig dataclass (env-driven)
+- manifest.py                 — ManifestService singleton (project.json loader)
+- services/engine/             — Render engines + orchestrator + cache
+- services/ai/                 — LLM provider abstraction (Anthropic/OpenAI)
+- services/editor/             — Editor CRUD + git ops + GitHub import
+- middleware/auth.py           — JWT auth (Janua JWKS) + tier gating
 """
 import logging
 
@@ -133,6 +136,10 @@ def create_app():
 
     # Start the continuous 4D Telemetry Bridge
     telemetry_service.start()
+
+    # Start background render artifact garbage collection
+    from services.engine.render_gc import start_gc
+    start_gc()
 
     return app
 

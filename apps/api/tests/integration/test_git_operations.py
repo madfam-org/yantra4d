@@ -6,7 +6,11 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.editor.git_operations import git_init, git_status, git_diff, git_commit, git_push, git_pull, git_log, git_show_head, _run_git, _inject_token_url, _get_remote_url
+from services.editor.git_operations import (
+    git_init, git_status, git_diff, git_commit, git_push, git_pull,
+    git_log, git_show_head, _run_git, _get_remote_url,
+    _make_askpass_env, _cleanup_askpass,
+)
 
 
 @pytest.fixture
@@ -121,16 +125,42 @@ class TestGitCommit:
         assert len(result["commit"]) >= 7
 
 
-class TestInjectTokenUrl:
-    def test_injects_token(self):
-        url = "https://github.com/user/repo.git"
-        result = _inject_token_url(url, "ghp_abc123")
-        assert result == "https://x-access-token:ghp_abc123@github.com/user/repo.git"
+class TestAskpassHelper:
+    """Tests for the GIT_ASKPASS credential injection mechanism."""
 
-    def test_non_https_unchanged(self):
-        url = "git@github.com:user/repo.git"
-        result = _inject_token_url(url, "token")
-        assert result == url
+    def test_creates_executable_script(self):
+        env = _make_askpass_env("ghp_abc123")
+        script_path = env["_ASKPASS_TMPFILE"]
+        import os
+        import stat
+        assert os.path.isfile(script_path)
+        mode = os.stat(script_path).st_mode
+        assert mode & stat.S_IXUSR  # owner-executable
+        # Verify content
+        with open(script_path) as f:
+            content = f.read()
+        assert "x-access-token:ghp_abc123" in content
+        _cleanup_askpass(env)
+        assert not os.path.exists(script_path)
+
+    def test_sets_git_askpass_env(self):
+        env = _make_askpass_env("test_token")
+        assert "GIT_ASKPASS" in env
+        assert env["GIT_TERMINAL_PROMPT"] == "0"
+        _cleanup_askpass(env)
+
+    def test_cleanup_removes_script(self):
+        env = _make_askpass_env("tok")
+        path = env["_ASKPASS_TMPFILE"]
+        import os
+        assert os.path.exists(path)
+        _cleanup_askpass(env)
+        assert not os.path.exists(path)
+
+    def test_cleanup_noop_if_no_env(self):
+        # Should not raise
+        _cleanup_askpass(None)
+        _cleanup_askpass({})
 
 
 class TestGetRemoteUrl:
@@ -316,21 +346,21 @@ class TestGitPushPullWithRemote:
         assert result["success"] is True
         assert "cube(30)" in (proj / "main.scad").read_text()
 
-    def test_push_restores_url_on_failure(self, project_dir):
-        """URL is always restored even when push fails."""
+    def test_push_never_modifies_remote_url(self, project_dir):
+        """GIT_ASKPASS approach should never modify the remote URL."""
         git_init(project_dir)
         original_url = "https://github.com/user/repo.git"
         _run_git(project_dir, ["remote", "add", "origin", original_url])
 
-        # Push will fail (remote doesn't exist), but URL should be restored
+        # Push will fail (remote doesn't exist), but URL should remain unchanged
         result = git_push(project_dir, "ghp_test123")
         assert result["success"] is False
 
-        restored = _get_remote_url(project_dir)
-        assert restored == original_url
+        current = _get_remote_url(project_dir)
+        assert current == original_url
 
-    def test_pull_restores_url_on_failure(self, project_dir):
-        """URL is always restored even when pull fails."""
+    def test_pull_never_modifies_remote_url(self, project_dir):
+        """GIT_ASKPASS approach should never modify the remote URL."""
         git_init(project_dir)
         original_url = "https://github.com/user/repo.git"
         _run_git(project_dir, ["remote", "add", "origin", original_url])
@@ -338,8 +368,8 @@ class TestGitPushPullWithRemote:
         result = git_pull(project_dir, "ghp_test123")
         assert result["success"] is False
 
-        restored = _get_remote_url(project_dir)
-        assert restored == original_url
+        current = _get_remote_url(project_dir)
+        assert current == original_url
 
 
 class TestGitDiffEdgeCases:

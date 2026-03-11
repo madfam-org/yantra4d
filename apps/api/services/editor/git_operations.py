@@ -2,10 +2,14 @@
 Git CLI wrappers for status, diff, commit, push, pull operations.
 
 All commands use subprocess.run with list args (no shell=True) and 60s timeout.
-Token injection for push/pull is transient — remote URL is restored after operation.
+Token injection uses GIT_ASKPASS — credentials never touch .git/config.
 """
 import logging
+import os
+import re
+import stat
 import subprocess
+import tempfile
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -15,11 +19,10 @@ GIT_TIMEOUT = 60
 
 def _sanitize_git_output(text: str) -> str:
     """Strip embedded credentials from git output before logging."""
-    import re
     return re.sub(r"https://[^@]+@", "https://***@", text)
 
 
-def _run_git(project_dir: Path, args: list[str], timeout: int = GIT_TIMEOUT) -> subprocess.CompletedProcess:
+def _run_git(project_dir: Path, args: list[str], timeout: int = GIT_TIMEOUT, env: dict | None = None) -> subprocess.CompletedProcess:
     """Run a git command in the project directory."""
     try:
         return subprocess.run(
@@ -28,10 +31,46 @@ def _run_git(project_dir: Path, args: list[str], timeout: int = GIT_TIMEOUT) -> 
             capture_output=True,
             text=True,
             timeout=timeout,
+            env=env,
         )
     except subprocess.TimeoutExpired:
         logger.warning("Git command timed out after %ds: %s", timeout, " ".join(args[:2]))
         raise
+
+
+def _make_askpass_env(github_token: str) -> dict:
+    """Create an env dict with a GIT_ASKPASS helper that echoes the token.
+
+    Uses a temporary script file that is automatically cleaned up by the OS.
+    The token never touches .git/config — it only lives in a short-lived
+    temp file that is read once by git and then deleted.
+    """
+    env = os.environ.copy()
+    # Create a tiny shell script that echoes the token
+    fd, script_path = tempfile.mkstemp(prefix="git_askpass_", suffix=".sh")
+    try:
+        os.write(fd, f"#!/bin/sh\necho 'x-access-token:{github_token}'\n".encode())
+        os.close(fd)
+        os.chmod(script_path, stat.S_IRWXU)  # 0o700 — owner-only executable
+    except Exception:
+        os.close(fd)
+        raise
+
+    env["GIT_ASKPASS"] = script_path
+    # Prevent git from trying interactive prompts
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    # Store path for cleanup
+    env["_ASKPASS_TMPFILE"] = script_path
+    return env
+
+
+def _cleanup_askpass(env: dict | None) -> None:
+    """Remove the temporary GIT_ASKPASS script if one was created."""
+    if env and "_ASKPASS_TMPFILE" in env:
+        try:
+            os.unlink(env["_ASKPASS_TMPFILE"])
+        except OSError:
+            pass
 
 
 def _get_remote_url(project_dir: Path) -> str | None:
@@ -40,13 +79,6 @@ def _get_remote_url(project_dir: Path) -> str | None:
     if result.returncode == 0:
         return result.stdout.strip()
     return None
-
-
-def _inject_token_url(url: str, token: str) -> str:
-    """Inject GitHub token into remote URL for authenticated operations."""
-    if url.startswith("https://"):
-        return url.replace("https://", f"https://x-access-token:{token}@", 1)
-    return url
 
 
 def git_init(project_dir: Path) -> dict:
@@ -249,38 +281,40 @@ def git_commit(
 
 
 def git_push(project_dir: Path, github_token: str) -> dict:
-    """Push to origin with transient token injection."""
+    """Push to origin using GIT_ASKPASS for credential injection.
+
+    Credentials never touch .git/config — they are passed via a temporary
+    script that git reads once and which is deleted immediately after.
+    """
     original_url = _get_remote_url(project_dir)
     if not original_url:
         return {"success": False, "error": "No origin remote configured"}
 
-    authed_url = _inject_token_url(original_url, github_token)
+    askpass_env = _make_askpass_env(github_token)
     try:
-        # Temporarily set authenticated URL
-        _run_git(project_dir, ["remote", "set-url", "origin", authed_url], timeout=10)
-
-        result = _run_git(project_dir, ["push", "origin", "HEAD"])
+        result = _run_git(project_dir, ["push", "origin", "HEAD"], env=askpass_env)
         if result.returncode != 0:
             return {"success": False, "error": f"git push failed: {_sanitize_git_output(result.stderr.strip())}"}
         return {"success": True}
     finally:
-        # Always restore clean URL
-        _run_git(project_dir, ["remote", "set-url", "origin", original_url], timeout=10)
+        _cleanup_askpass(askpass_env)
 
 
 def git_pull(project_dir: Path, github_token: str) -> dict:
-    """Pull from origin with transient token injection."""
+    """Pull from origin using GIT_ASKPASS for credential injection.
+
+    Credentials never touch .git/config — they are passed via a temporary
+    script that git reads once and which is deleted immediately after.
+    """
     original_url = _get_remote_url(project_dir)
     if not original_url:
         return {"success": False, "error": "No origin remote configured"}
 
-    authed_url = _inject_token_url(original_url, github_token)
+    askpass_env = _make_askpass_env(github_token)
     try:
-        _run_git(project_dir, ["remote", "set-url", "origin", authed_url], timeout=10)
-
-        result = _run_git(project_dir, ["pull", "--ff-only", "origin"])
+        result = _run_git(project_dir, ["pull", "--ff-only", "origin"], env=askpass_env)
         if result.returncode != 0:
             return {"success": False, "error": f"git pull failed: {_sanitize_git_output(result.stderr.strip())}"}
         return {"success": True}
     finally:
-        _run_git(project_dir, ["remote", "set-url", "origin", original_url], timeout=10)
+        _cleanup_askpass(askpass_env)

@@ -152,7 +152,6 @@
     },
     {
       "id": "baseplate_std",
-      "mode": "baseplate",
       "label": {
         "es": "Placa Base Estándar (2×2)",
         "en": "Standard Baseplate (2×2)"
@@ -165,7 +164,6 @@
     },
     {
       "id": "lid_std",
-      "mode": "lid",
       "label": {
         "es": "Tapa Estándar (2×1)",
         "en": "Standard Lid (2×1)"
@@ -807,12 +805,7 @@
   },
   "export_formats": [
     "stl",
-    "3mf",
-    "off",
-    "step",
-    "glb",
-    "gltf",
-    "obj"
+    "3mf"
   ],
   "camera_views": [
     {

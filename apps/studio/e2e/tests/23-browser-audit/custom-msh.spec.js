@@ -8,17 +8,20 @@ import {
   waitForDownload,
 } from './audit-helpers.js'
 
-test.use({ mockAPIs: false })
-test.describe.configure({ mode: 'serial' })
-
 const PROJECT_NAME = 'Custom MSH'
 
 test.describe('Custom MSH — Browser Audit', () => {
+  test.use({ mockAPIs: false })
+  test.describe.configure({ mode: 'serial' })
   test.beforeAll(async ({ request }, testInfo) => {
     await skipIfNoBackend(request, testInfo)
   })
 
   test.beforeEach(async ({ page }) => {
+    // Clear local storage to ensure fresh project defaults are loaded
+    await page.addInitScript(() => {
+      localStorage.clear()
+    })
     await setLanguage(page, 'en')
   })
 
@@ -27,9 +30,17 @@ test.describe('Custom MSH — Browser Audit', () => {
   test('loads custom-msh and shows project name', async ({ page }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await expect(page.locator('header h1')).toContainText(PROJECT_NAME)
-    // 6 mode tabs
-    const tabs = page.locator('[role="tablist"] [role="tab"]')
-    await expect(tabs).toHaveCount(6)
+    // 5 visible project mode tabs (Single Holder, Staining Rack, Box Base, Box Lid, Assembly)
+    const tabs = page.locator('[role="tablist"][aria-label="Mode selection"] [role="tab"]').filter({ visible: true })
+    await expect(tabs).toHaveCount(5)
+  })
+
+  test('stack_along_y is checked by default', async ({ page, sidebar }) => {
+    await goToRealProject(page, 'custom-msh', PROJECT_NAME)
+    await sidebar.selectMode('assembly')
+    await page.waitForTimeout(500)
+    const cb = sidebar.checkbox('stack_along_y')
+    await expect(cb).toBeChecked()
   })
 
   test('default mode is holder', async ({ page, sidebar }) => {
@@ -46,12 +57,20 @@ test.describe('Custom MSH — Browser Audit', () => {
     expect(active).toMatch(/rack/i)
   })
 
-  test('switches to box mode', async ({ page, sidebar }) => {
+  test('switches to base mode', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    await sidebar.selectMode('box')
+    await sidebar.selectMode('base')
     await page.waitForTimeout(500)
     const active = await sidebar.getActiveMode()
-    expect(active).toMatch(/box|caja/i)
+    expect(active).toMatch(/base/i)
+  })
+
+  test('switches to lid mode', async ({ page, sidebar }) => {
+    await goToRealProject(page, 'custom-msh', PROJECT_NAME)
+    await sidebar.selectMode('lid')
+    await page.waitForTimeout(500)
+    const active = await sidebar.getActiveMode()
+    expect(active).toMatch(/lid/i)
   })
 
   test('switches to assembly mode', async ({ page, sidebar }) => {
@@ -168,9 +187,18 @@ test.describe('Custom MSH — Browser Audit', () => {
     await expect(page.locator('canvas').first()).toBeVisible()
   })
 
-  test('renders box mode', async ({ page, sidebar }) => {
+  test('renders base mode', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    await sidebar.selectMode('box')
+    await sidebar.selectMode('base')
+    await page.waitForTimeout(500)
+    await sidebar.clickGenerate()
+    await waitForRenderDone(page, 120_000)
+    await expect(page.locator('canvas').first()).toBeVisible()
+  })
+
+  test('renders lid mode', async ({ page, sidebar }) => {
+    await goToRealProject(page, 'custom-msh', PROJECT_NAME)
+    await sidebar.selectMode('lid')
     await page.waitForTimeout(500)
     await sidebar.clickGenerate()
     await waitForRenderDone(page, 120_000)

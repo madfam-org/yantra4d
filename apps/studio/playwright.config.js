@@ -57,7 +57,7 @@ export default defineConfig({
       name: 'audit',
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: 'http://localhost:3000',
+        baseURL: 'http://localhost:5173',
       },
       testMatch: /23-browser-audit\/.*\.spec\./,
       timeout: 180_000,

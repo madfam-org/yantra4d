@@ -88,7 +88,6 @@ def get_project_manifest(slug):
 
     try:
         body = json.dumps(manifest.as_json(), sort_keys=True)
-        body = json.dumps(manifest.as_json(), sort_keys=True)
         etag = hashlib.md5(body.encode()).hexdigest()
 
         if request.if_none_match and etag in request.if_none_match:
@@ -110,11 +109,11 @@ def get_project_meta(slug):
     try:
         manifest = get_manifest(slug)
     except RuntimeError:
-        return jsonify(None)
+        return error_response("Project not found", 404)
     
     meta_path = manifest.project_dir / "project.meta.json"
     if not meta_path.is_file():
-        return jsonify(None)
+        return jsonify({})
     try:
         with open(meta_path) as f:
             return jsonify(json.load(f))

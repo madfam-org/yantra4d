@@ -10,16 +10,22 @@ Deprecation timeline:
   - Sunset: 2026-06-01
   - Successor: GET /api/manifest
 """
-from flask import Blueprint, jsonify, make_response
+from flask import Blueprint, jsonify, make_response, request
 from manifest import get_manifest
 
 config_bp = Blueprint('config', __name__)
 
-
 @config_bp.route('/api/config', methods=['GET'])
 def get_config():
     """Return dynamic configuration for the frontend (deprecated)."""
-    manifest = get_manifest()
+    slug = request.args.get("project")
+    if not slug:
+        return jsonify({"error": "project query param required"}), 400
+    try:
+        manifest = get_manifest(slug)
+    except RuntimeError as e:
+        return jsonify({"error": str(e)}), 404
+        
     resp = make_response(jsonify({
         "parts_map": manifest.get_parts_map(),
         "mode_map": manifest.get_mode_map(),

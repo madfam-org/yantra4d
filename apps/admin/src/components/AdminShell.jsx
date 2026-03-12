@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { LayoutDashboard, ExternalLink, Menu, X } from 'lucide-react'
-import { UserProfile } from '@janua/react-sdk'
+import { useState, lazy, Suspense } from 'react'
+import { LayoutDashboard, ExternalLink, Menu, X, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import ProjectList from './projects/ProjectList'
 import TablacoLinkPanel from './projects/TablacoLinkPanel'
+
+const UserProfile = lazy(() => import('@janua/react-sdk').then(m => ({ default: m.UserProfile })))
 
 const VIEWS = [
     { id: 'projects', label: 'Projects', icon: LayoutDashboard },
@@ -65,7 +66,15 @@ export default function AdminShell({ auth }) {
 
                 {/* Footer */}
                 <div className="flex items-center gap-2 border-t border-border p-3">
-                    <UserProfile showManageAccount={false} />
+                    {isProd ? (
+                        <Suspense fallback={<div className="h-8 w-8 rounded-full bg-muted animate-pulse mr-2" />}>
+                            <UserProfile showManageAccount={false} />
+                        </Suspense>
+                    ) : (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                            <User className="h-4 w-4" />
+                        </div>
+                    )}
                     <span className="flex-1 truncate text-xs text-muted-foreground">{auth.user?.email}</span>
                 </div>
             </aside>

@@ -14,7 +14,14 @@ manifest_bp = Blueprint('manifest', __name__)
 @manifest_bp.route('/api/manifest', methods=['GET'])
 def serve_manifest():
     """Return the full project manifest."""
-    body = json.dumps(get_manifest().as_json(), sort_keys=True)
+    slug = request.args.get("project")
+    if not slug:
+        return make_response(json.dumps({"error": "project query param required"}), 400)
+    try:
+        body = json.dumps(get_manifest(slug).as_json(), sort_keys=True)
+    except RuntimeError as e:
+        return make_response(json.dumps({"error": str(e)}), 404)
+        
     etag = hashlib.md5(body.encode()).hexdigest()
 
     if request.if_none_match and etag in request.if_none_match:

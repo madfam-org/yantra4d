@@ -172,7 +172,32 @@ export function useProjectParams({ viewerRef }) {
       if (fallbackPreset) {
         validPresetId = fallbackPreset.id
         setActivePresetId(validPresetId)
-        setParams(prev => ({ ...prev, ...fallbackPreset.values }))
+
+        // Build a set of system-group param ids — these are always applied from
+        // the preset because they control mode-specific rendering behavior
+        // (e.g. assembly_level) and have no meaningful user value in other modes.
+        const systemParamIds = new Set(
+          (manifest.parameters || [])
+            .filter(p => p.group === 'system')
+            .map(p => p.id)
+        )
+
+        setParams(prev => {
+          const next = { ...prev }
+          for (const [key, val] of Object.entries(fallbackPreset.values)) {
+            // Always apply system params (e.g. assembly_level).
+            // For all other params, only apply the preset default if the user
+            // has NOT explicitly changed that param from its manifest default —
+            // this preserves user-configured values (num_slots, handle, etc.)
+            // when they carry over into assembly mode.
+            const isSystem = systemParamIds.has(key)
+            const isUserModified = key in defaultParams && prev[key] !== defaultParams[key]
+            if (isSystem || !isUserModified) {
+              next[key] = val
+            }
+          }
+          return next
+        })
       }
     }
 

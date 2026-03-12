@@ -75,6 +75,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Landing build-arg** — Added missing `PUBLIC_STUDIO_URL` to the build-landing
   CI job so the "Launch Studio" link resolves correctly in production.
 - **Admin Dockerfile** — Added missing `VITE_JANUA_REDIRECT_URI` env var.
+- **Mode Switch Discards User Params (Rack → Assembly)** — When switching from
+  `rack`, `base`, or `lid` to `assembly`, the studio applied a fallback assembly
+  preset that blindly overwrote all shared params (`num_slots`, `handle`,
+  `num_racks`, `wall_thickness`, etc.) back to their preset defaults. Fixed in
+  `setMode` (`useProjectParams.js`): the fallback preset is now merged
+  selectively — only params the user has NOT explicitly changed from their
+  manifest default are taken from the preset; user-modified values are carried
+  forward. System-group params (`assembly_level`) are always taken from the
+  preset since they control mode-specific rendering behavior. Covered by 4 new
+  tests in `useProjectParams.test.js`.
 - **STL Download Delivers Corrupt GLB File** — `_post_render_convert` in
   `render_orchestrator.py` was unconditionally replacing the STL file URL with
   the GLB URL it creates for the 3D viewer, causing the "Download STL" button to

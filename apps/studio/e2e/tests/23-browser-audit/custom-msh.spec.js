@@ -98,6 +98,31 @@ test.describe('Custom MSH — Browser Audit', () => {
     expect(isAfter).toBe(!wasBefore)
   })
 
+  test('toggling frame_base_grid checkbox works in rack mode', async ({ page, sidebar }) => {
+    await goToRealProject(page, 'custom-msh', PROJECT_NAME)
+    await sidebar.selectMode('rack')
+    await page.waitForTimeout(500)
+    const cb = sidebar.checkbox('frame_base_grid')
+    await expect(cb).toBeVisible()
+    const wasBefore = await cb.isChecked()
+    await cb.click()
+    const isAfter = await cb.isChecked()
+    expect(isAfter).toBe(!wasBefore)
+  })
+
+  test('toggling side_guards checkbox works in rack mode', async ({ page, sidebar }) => {
+    await goToRealProject(page, 'custom-msh', PROJECT_NAME)
+    await sidebar.selectMode('rack')
+    await page.waitForTimeout(500)
+    const cb = sidebar.checkbox('side_guards')
+    await expect(cb).toBeVisible()
+    const wasBefore = await cb.isChecked()
+    await cb.click()
+    const isAfter = await cb.isChecked()
+    expect(isAfter).toBe(!wasBefore)
+  })
+
+
   test('applies Default Holder preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.applyPreset('Default Holder')

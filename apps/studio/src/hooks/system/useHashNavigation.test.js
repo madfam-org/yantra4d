@@ -256,6 +256,30 @@ describe('parseHash', () => {
       expect(result.preset.id).toBe('default')
     })
   })
+
+  describe('explicit fallback parameters', () => {
+    it('uses defaultPresetId when preset is missing from URL', () => {
+      const result = parseHash('/project/slug/unit', presets, modes, null, 'compact')
+      expect(result.preset.id).toBe('compact')
+    })
+
+    it('uses defaultModeId when mode is missing from URL', () => {
+      const result = parseHash('/project/slug', presets, modes, 'grid', null)
+      expect(result.mode.id).toBe('grid')
+    })
+
+    it('uses both defaults when path has neither', () => {
+      const result = parseHash('/project/slug', presets, modes, 'assembly', 'compact')
+      expect(result.mode.id).toBe('assembly')
+      expect(result.preset.id).toBe('compact')
+    })
+
+    it('ignores defaults if URL contains explicit mode and preset', () => {
+      const result = parseHash('/project/slug/unit/default', presets, modes, 'assembly', 'compact')
+      expect(result.mode.id).toBe('unit')
+      expect(result.preset.id).toBe('default')
+    })
+  })
 })
 
 // ========================================================================

@@ -41,7 +41,12 @@ export function useProjectParams({ viewerRef }) {
   const defaultColors = getDefaultColors()
   const modes = manifest.modes
 
-  const initialHash = parseHash(location.pathname, presets, modes)
+  const isHardReload = manifest.project?.hard_reload === true
+  
+  const storedModeId = !isHardReload ? safeParse(`${projectSlug}-mode`, null) : null
+  const storedPresetId = !isHardReload ? safeParse(`${projectSlug}-preset`, null) : null
+
+  const initialHash = parseHash(location.pathname, presets, modes, storedModeId, storedPresetId)
   const initialPresetValues = initialHash.preset?.values || {}
 
   const [mode, setModeState] = useState(() => initialHash.mode?.id || (modes.length > 0 ? modes[0].id : null))
@@ -49,18 +54,24 @@ export function useProjectParams({ viewerRef }) {
   const sharedParams = getSharedParams()
 
   const [params, setParams, { undo: undoParams, redo: redoParams, canUndo, canRedo }] = useUndoRedo(() => {
-    const stored = safeParse(`${projectSlug}-params`, defaultParams)
+    let stored = {}
+    if (!isHardReload && storedPresetId === initialHash.preset?.id) {
+       // Only apply localStorage parameter tweaks if we're loading the exact same preset 
+       // that was active when we saved them. Otherwise start fresh.
+       stored = safeParse(`${projectSlug}-params`, {})
+    }
+    
     // Discard stale localStorage keys that don't exist in current manifest
     const validKeys = new Set(manifest.parameters.map(p => p.id))
     const filtered = {}
     for (const key of Object.keys(stored)) {
       if (validKeys.has(key)) filtered[key] = stored[key]
     }
-    return { ...defaultParams, ...filtered, ...initialPresetValues, ...sharedParams }
+    return { ...defaultParams, ...initialPresetValues, ...filtered, ...sharedParams }
   })
   const [colors, setColors] = useState(() => ({
     ...defaultColors,
-    ...safeParse(`${projectSlug}-colors`, {})
+    ...(isHardReload ? {} : safeParse(`${projectSlug}-colors`, {}))
   }))
   const [activePresetId, setActivePresetId] = useState(() => initialHash.preset?.id || presets[0]?.id || null)
   const [gridPresetId, setGridPresetId] = useState(manifest.grid_presets?.default || Object.keys(manifest.grid_presets || {}).find(k => k !== 'default'))
@@ -140,6 +151,8 @@ export function useProjectParams({ viewerRef }) {
     modes,
     projectSlug,
     onHashChange: handleHashChange,
+    defaultModeId: storedModeId,
+    defaultPresetId: storedPresetId
   })
 
   const isGridMode = (modeId) => {
@@ -210,7 +223,8 @@ export function useProjectParams({ viewerRef }) {
   // Persistence
   useLocalStoragePersistence(`${projectSlug}-params`, params)
   useLocalStoragePersistence(`${projectSlug}-colors`, colors)
-  useLocalStoragePersistence(`${projectSlug}-mode`, mode, { debounce: 0, serialize: false })
+  useLocalStoragePersistence(`${projectSlug}-mode`, mode, { debounce: 0 })
+  useLocalStoragePersistence(`${projectSlug}-preset`, activePresetId, { debounce: 0 })
 
   // Render cache key
   const getCacheKey = useCallback((m, p) => {

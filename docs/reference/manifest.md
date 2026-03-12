@@ -22,7 +22,9 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "version": "1.0.0",
     "thumbnail": "/docs/images/gridfinity_thumb.png", // Path to gallery image
     "tags": ["storage", "modular", "organization"],
-    "difficulty": "beginner"
+    "difficulty": "beginner",
+    "force_backend": true,                        // Optional: disables local rendering
+    "hard_reload": true                           // Optional: prevents preset persistence across reloads
   },
 
   "modes": [

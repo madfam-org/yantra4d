@@ -139,6 +139,12 @@ components:
                 type: string
             difficulty:
               type: string
+            force_backend:
+              type: boolean
+              description: If true, forces rendering fallback to backend servers instead of local compilation.
+            hard_reload:
+              type: boolean
+              description: If true, studio clears configuration storage and ignores preset persistence on load.
         modes:
           type: array
           items:

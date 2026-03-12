@@ -39,9 +39,11 @@ export function isProjectsView(pathname) {
  * @param {string} pathname
  * @param {Array} presets - available presets from manifest
  * @param {Array} modes - available modes from manifest
+ * @param {string} defaultModeId - Optional fallback mode ID
+ * @param {string} defaultPresetId - Optional fallback preset ID
  * @returns {{ preset: object|null, mode: object }}
  */
-export function parseHash(pathname, presets, modes) {
+export function parseHash(pathname, presets, modes, defaultModeId = null, defaultPresetId = null) {
   const parts = parsePathParts(pathname)
   let modeId, presetId
 
@@ -57,7 +59,15 @@ export function parseHash(pathname, presets, modes) {
   }
 
   let mode = modes.find(m => m.id === modeId)
-  const preset = presets.find(p => p.id === presetId)
+  let preset = presets.find(p => p.id === presetId)
+
+  // Use defined fallbacks if not explicitly found in the URL parts
+  if (!preset && defaultPresetId) {
+    preset = presets.find(p => p.id === defaultPresetId)
+  }
+  if (!mode && defaultModeId) {
+    mode = modes.find(m => m.id === defaultModeId)
+  }
 
   // If no explicit mode matched but we found a valid preset, default to its first allowed mode
   if (!mode && preset && preset.visible_in_modes && preset.visible_in_modes.length > 0) {
@@ -98,9 +108,11 @@ export function buildHash(projectSlug, modeId, presetId) {
  * @param {Array} options.modes - available modes from manifest
  * @param {string} options.projectSlug - current project slug
  * @param {function} options.onHashChange - callback when route changes with parsed { mode, preset }
+ * @param {string} options.defaultModeId - Fallback mode id to use if path lacks one
+ * @param {string} options.defaultPresetId - Fallback preset id to use if path lacks one
  * @returns {{ currentView: string, isDemo: boolean }}
  */
-export function useHashNavigation({ presets, modes, projectSlug, onHashChange }) {
+export function useHashNavigation({ presets, modes, projectSlug, onHashChange, defaultModeId, defaultPresetId }) {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -114,7 +126,7 @@ export function useHashNavigation({ presets, modes, projectSlug, onHashChange })
   useEffect(() => {
     if (currentView === 'projects') return
     if (!modes || modes.length === 0) return
-    const parsed = parseHash(location.pathname, presets, modes)
+    const parsed = parseHash(location.pathname, presets, modes, defaultModeId, defaultPresetId)
     const presetId = parsed.preset?.id || presets[0]?.id
     const modeId = parsed.mode?.id || modes[0]?.id
 
@@ -140,9 +152,9 @@ export function useHashNavigation({ presets, modes, projectSlug, onHashChange })
     }
     setCurrentView('studio')
     if (!modes || modes.length === 0) return
-    const parsed = parseHash(location.pathname, presets, modes)
+    const parsed = parseHash(location.pathname, presets, modes, defaultModeId, defaultPresetId)
     onHashChange?.(parsed)
-  }, [location.pathname, presets, modes, onHashChange])
+  }, [location.pathname, presets, modes, onHashChange, defaultModeId, defaultPresetId])
 
   return { currentView, isDemo }
 }

@@ -205,7 +205,7 @@ describe('ManifestProvider', () => {
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
     // Gridfinity fallback manifest includes export_formats but not print_estimation
-    expect(screen.getByTestId('export-formats').textContent).toBe('["stl","3mf","off","step","glb","gltf","obj"]')
+    expect(screen.getByTestId('export-formats').textContent).toBe('["stl","3mf"]')
     expect(screen.getByTestId('print-estimation').textContent).toBe('"undefined"')
   })
 

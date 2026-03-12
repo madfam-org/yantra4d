@@ -357,10 +357,23 @@ async function renderBackend(
   }
 
   const timestamp = Date.now()
-  return finalParts.map(p => ({
-    ...p,
-    url: p.url + '?t=' + timestamp
-  }))
+  return finalParts.map(p => {
+    // The backend returns:
+    //   url        – the file in the requested export_format (e.g. .stl)
+    //   viewer_url – a GLB conversion of the above (only for stl renders)
+    //
+    // The 3D viewer infers GLB vs STL from the URL extension, so we use
+    // viewer_url as the primary `url` when available (faster viewer load).
+    // The original format URL is stored as `download_url` for the download handler.
+    const downloadUrl = p.url
+    const viewerUrl = (p as { viewer_url?: string }).viewer_url
+    const primaryUrl = viewerUrl ?? p.url
+    return {
+      ...p,
+      url: primaryUrl + '?t=' + timestamp,
+      download_url: viewerUrl ? (downloadUrl + '?t=' + timestamp) : undefined,
+    }
+  })
 }
 
 /**

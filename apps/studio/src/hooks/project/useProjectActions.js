@@ -65,13 +65,15 @@ export function useProjectActions({
     }
 
     if (downloadParts.length === 1) {
-      downloadFile(downloadParts[0].url, `${projectSlug}_${mode}_${downloadParts[0].type}.${ext}`)
+      const part = downloadParts[0]
+      const fileUrl = part.download_url || part.url
+      downloadFile(fileUrl, `${projectSlug}_${mode}_${part.type}.${ext}`)
       return
     }
     setLogs(prev => prev + `\n${t("log.zipping")}`)
     try {
       const items = downloadParts.map(part => ({
-        url: part.url,
+        url: part.download_url || part.url,
         filename: `${projectSlug}_${mode}_${part.type}.${ext}`
       }))
       await downloadZip(items, `${projectSlug}_${mode}_all_parts.zip`)

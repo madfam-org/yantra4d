@@ -235,6 +235,44 @@ describe('useProjectActions', () => {
       const updater = lastCall[0]
       expect(updater('')).toContain('render failed')
     })
+
+    it('prefers download_url over url when backend returns both (STL fix)', async () => {
+      // The backend now returns url=GLB (for viewer) and download_url=STL (for download).
+      // handleDownloadStl must use download_url so the user receives a real STL file.
+      const parts = [{ url: 'http://file.glb', type: 'body' }]
+      renderParts.mockResolvedValue([{
+        url: 'http://file.glb',         // viewer_url mapped to url by renderService
+        download_url: 'http://file.stl', // actual requested format
+        type: 'body',
+      }])
+      const { result } = renderActions({ parts })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(downloadFile).toHaveBeenCalledWith(
+        'http://file.stl',
+        'test-project_basic_body.stl'
+      )
+    })
+
+    it('uses download_url for each part in multi-part zip (STL fix)', async () => {
+      const parts = [
+        { url: 'http://a.glb', type: 'top' },
+        { url: 'http://b.glb', type: 'bottom' },
+      ]
+      renderParts.mockResolvedValue([
+        { url: 'http://a.glb', download_url: 'http://a.stl', type: 'top' },
+        { url: 'http://b.glb', download_url: 'http://b.stl', type: 'bottom' },
+      ])
+      const { result } = renderActions({ parts })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(downloadZip).toHaveBeenCalled()
+      const [items] = downloadZip.mock.calls[0]
+      expect(items[0].url).toBe('http://a.stl')
+      expect(items[1].url).toBe('http://b.stl')
+    })
   })
 
   // ---------- handleReset ----------

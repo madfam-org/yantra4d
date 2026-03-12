@@ -75,6 +75,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Landing build-arg** — Added missing `PUBLIC_STUDIO_URL` to the build-landing
   CI job so the "Launch Studio" link resolves correctly in production.
 - **Admin Dockerfile** — Added missing `VITE_JANUA_REDIRECT_URI` env var.
+- **STL Download Delivers Corrupt GLB File** — `_post_render_convert` in
+  `render_orchestrator.py` was unconditionally replacing the STL file URL with
+  the GLB URL it creates for the 3D viewer, causing the "Download STL" button to
+  deliver a misnamed GLB binary to the user (un-openable in any slicer). Fixed
+  by separating the concerns: the render response now carries `url` (the actual
+  requested format, e.g. `.stl`) and `viewer_url` (the GLB for the Three.js
+  viewport). `renderService.ts` maps `viewer_url` into `url` for the viewer and
+  stores the original format URL as `download_url`. `useProjectActions.js`
+  `handleDownloadStl` now resolves the download URL via
+  `part.download_url || part.url`. Covered by 2 new frontend tests and 6 new
+  Python unit tests (`test_render_orchestrator.py`).
 - **Stale Blob URL L1 cache bug** — `useRender.js` now exports `evictCache(key)` to purge a specific entry from the L1 in-memory render cache. `useProjectParams.js` calls `evictCache` inside the blob-revocation cleanup whenever a part's `blob:` URL is revoked. This prevents Three.js from receiving dead blob URLs on L1 cache hits after repeated parameter toggles, fixing the parameter toggle (e.g. "Carry Handle") breaking after ~3 cycles with `ERR_FILE_NOT_FOUND`.
 
 ### Infrastructure

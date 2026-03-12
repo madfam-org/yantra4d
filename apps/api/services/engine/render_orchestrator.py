@@ -258,9 +258,17 @@ def _post_render_convert(output_path, output_filename, part, stl_prefix,
                           actual_format, export_format):
     """Handle post-render format conversion and STL→GLB delivery conversion.
 
-    Returns (final_path, final_filename).
+    Returns (final_path, final_filename, viewer_filename).
+
+    - final_filename: the file in the requested export_format (used for download).
+    - viewer_filename: a GLB version for the 3D viewer (only populated when
+      export_format == 'stl' and conversion succeeds; None otherwise).
+
+    The two are kept separate so that a download request for 'stl' delivers a
+    real STL file while the viewer can still consume the GLB.
     """
     serve_path, serve_filename = output_path, output_filename
+    viewer_filename = None
 
     if actual_format != export_format:
         final_filename = f"{stl_prefix}{part}.{export_format}"
@@ -274,10 +282,10 @@ def _post_render_convert(output_path, output_filename, part, stl_prefix,
         glb_filename = f"{stl_prefix}{part}.glb"
         glb_path = os.path.join(STATIC_FOLDER, glb_filename)
         if stl_to_glb(output_path, glb_path):
-            serve_filename = glb_filename
-            serve_path = glb_path
+            # Keep serve_filename as the .stl for download; GLB is viewer-only.
+            viewer_filename = glb_filename
 
-    return serve_path, serve_filename
+    return serve_path, serve_filename, viewer_filename
 
 
 def _run_engine_render(engine, part, payload, scad_path, output_path, export_format, manifest):
@@ -357,7 +365,7 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str,
         combined_log += f"[{part}] {stderr}\n"
 
         # Post-render conversions
-        serve_path, serve_filename = _post_render_convert(
+        serve_path, serve_filename, viewer_filename = _post_render_convert(
             output_path, output_filename, part, stl_prefix, actual_format, export_format,
         )
 
@@ -371,11 +379,14 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str,
             serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
         )
 
-        generated_parts.append({
+        part_entry = {
             "type": part,
             "url": f"/static/{serve_filename}",
             "size_bytes": size_bytes,
-        })
+        }
+        if viewer_filename:
+            part_entry["viewer_url"] = f"/static/{viewer_filename}"
+        generated_parts.append(part_entry)
 
     return generated_parts, combined_log, (cache_hits, cache_total)
 
@@ -455,7 +466,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str,
                 logger.warning(f"Malformed SSE event data: {event_data!r}")
                 continue
             if event.get('event') == 'part_done':
-                serve_path, serve_filename = _post_render_convert(
+                serve_path, serve_filename, viewer_filename = _post_render_convert(
                     output_path, output_filename, part, stl_prefix, actual_format, export_format,
                 )
                 try:
@@ -466,11 +477,14 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str,
                     project_slug, payload['scad_filename'], params, part, export_format,
                     serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
                 )
-                generated_parts.append({
+                part_entry = {
                     "type": part,
                     "url": f"/static/{serve_filename}",
                     "size_bytes": size_bytes,
-                })
+                }
+                if viewer_filename:
+                    part_entry["viewer_url"] = f"/static/{viewer_filename}"
+                generated_parts.append(part_entry)
 
         # Drain telemetry events
         while not telemetry_queue.empty():

@@ -86,13 +86,13 @@ class TestEstimateExportFormat:
 class TestRenderExportFormat:
     def test_invalid_format_falls_back_to_stl(self):
         """Invalid export_format should fall back to stl."""
-        from routes.engine.render import ALLOWED_EXPORT_FORMATS
+        from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
         assert "exe" not in ALLOWED_EXPORT_FORMATS
         assert "stl" in ALLOWED_EXPORT_FORMATS
 
     def test_valid_formats_accepted(self):
         """Valid export formats are in the allow list."""
-        from routes.engine.render import ALLOWED_EXPORT_FORMATS
+        from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
         assert "stl" in ALLOWED_EXPORT_FORMATS
         assert "3mf" in ALLOWED_EXPORT_FORMATS
         assert "off" in ALLOWED_EXPORT_FORMATS
@@ -104,15 +104,15 @@ class TestRenderExportFormat:
 class TestEngineFormatValidation:
     def test_openscad_rejects_step_format(self, client, monkeypatch):
         """OpenSCAD engine should reject unsupported formats like step."""
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["m"], "export_format": "step", "params": {}, "scad_path": "mock",
             "mode_map": {"m": 0}, "stl_prefix": "pre_", "project_slug": "os", "scad_filename": "mock.scad"
         })
         class MockManifest:
             def __init__(self): self.engine = "openscad"
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
         # Pro user bypasses premium export check but still hits engine format validation
-        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("services.engine.render_orchestrator.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
 
         res = client.post("/api/render", json={"project": "os"})
@@ -132,24 +132,24 @@ class TestEngineFormatValidation:
 
 class TestTierEnforcementRender:
     def test_guest_blocked_from_cadquery(self, client, monkeypatch):
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["m"], "export_format": "stl", "params": {}, "scad_path": "mock", "mode_map": {"m": 0}, "stl_prefix": "pre_", "project_slug": "cq", "scad_filename": "mock.scad"
         })
         class MockManifest:
             def __init__(self): self.engine = "cadquery"
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
 
         res = client.post("/api/render", json={"project": "cq"})
         assert res.status_code == 403
         assert "CadQuery engine is not available" in res.get_json()["error"]
 
     def test_guest_blocked_from_premium_export(self, client, monkeypatch):
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["m"], "export_format": "step", "params": {}, "scad_path": "mock", "mode_map": {"m": 0}, "stl_prefix": "pre_", "project_slug": "os", "scad_filename": "mock.scad"
         })
         class MockManifest:
             def __init__(self): self.engine = "openscad"
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
 
         res = client.post("/api/render", json={"project": "os"})
         assert res.status_code == 403
@@ -219,7 +219,7 @@ class TestRenderPayloadValidation:
 
     def test_render_payload_extracts_ignore_cache(self, monkeypatch):
         """_extract_render_payload correctly extracts ignore_cache flag."""
-        from routes.engine.render import _extract_render_payload
+        from services.engine.render_orchestrator import extract_render_payload as _extract_render_payload
 
         class MockManifest:
             def __init__(self):
@@ -232,8 +232,8 @@ class TestRenderPayloadValidation:
             def get_mode_map(self): return {"m": 0}
             def get_static_stl_map(self): return {}
 
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
-        monkeypatch.setattr("routes.engine.render.validate_params", lambda *args: {})
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.validate_params", lambda *args: {})
 
         payload = _extract_render_payload({"project": "test-project", "ignore_cache": True})
         assert payload["ignore_cache"] is True
@@ -257,7 +257,7 @@ class TestDualEngineRouting:
             mode_config["cq_file"] = "main.py"
 
         # _extract_render_payload is mocked so no real file I/O is needed
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["main"],
             "export_format": export_format,
             "params": {},
@@ -274,27 +274,27 @@ class TestDualEngineRouting:
             def __init__(self):
                 self.engine = "openscad"
                 self.modes = [mode_config]
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
 
-        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("services.engine.render_orchestrator.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
 
         # Track which engine was invoked
         engine_calls = []
         monkeypatch.setattr(
-            "routes.engine.render.build_cadquery_command",
+            "services.engine.render_orchestrator.build_cadquery_command",
             lambda *args, **kwargs: (engine_calls.append("cadquery"), ["echo", "ok"])[1],
         )
         monkeypatch.setattr(
-            "routes.engine.render.run_cadquery_render",
+            "services.engine.render_orchestrator.run_cadquery_render",
             lambda *args, **kwargs: (True, "cadquery render ok"),
         )
         monkeypatch.setattr(
-            "routes.engine.render.build_openscad_command",
+            "services.engine.render_orchestrator.build_openscad_command",
             lambda *args, **kwargs: (engine_calls.append("openscad"), ["echo", "ok"])[1],
         )
         monkeypatch.setattr(
-            "routes.engine.render.run_openscad_render",
+            "services.engine.render_orchestrator.run_openscad_render",
             lambda *args, **kwargs: (True, "openscad render ok"),
         )
         return engine_calls
@@ -410,7 +410,7 @@ class TestDualEngineRouting:
             "estimate": {"base_units": 1, "formula": "constant"},
             "cq_file": "tpms.py",
         }
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["lattice"], "export_format": "step", "params": {},
             "scad_path": "/mock/dir/tpms.scad", "mode_map": {"lattice": 0},
             "stl_prefix": "impl_pre_", "project_slug": "impl-test",
@@ -420,13 +420,13 @@ class TestDualEngineRouting:
             def __init__(self):
                 self.engine = "implicit"
                 self.modes = [mode_config]
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
-        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
         engine_calls = []
-        monkeypatch.setattr("routes.engine.render.build_cadquery_command",
+        monkeypatch.setattr("services.engine.render_orchestrator.build_cadquery_command",
             lambda *args, **kwargs: (engine_calls.append("cadquery"), ["echo", "ok"])[1])
-        monkeypatch.setattr("routes.engine.render.run_cadquery_render",
+        monkeypatch.setattr("services.engine.render_orchestrator.run_cadquery_render",
             lambda *args, **kwargs: (True, "cadquery ok"))
         res = client.post("/api/render", json={"project": "impl-test", "mode": "unit", "export_format": "step"})
         assert res.status_code == 200
@@ -444,7 +444,7 @@ class TestImplicitEngineFormats:
 
     def test_implicit_rejects_step_without_cq_file(self, client, monkeypatch):
         """Implicit engine without cq_file rejects step format."""
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["lattice"], "export_format": "step", "params": {},
             "scad_path": "/mock/tpms.scad", "mode_map": {"lattice": 0},
             "stl_prefix": "pre_", "project_slug": "impl", "scad_filename": "tpms.scad",
@@ -453,8 +453,8 @@ class TestImplicitEngineFormats:
             def __init__(self):
                 self.engine = "implicit"
                 self.modes = [{"id": "unit", "scad_file": "tpms.scad", "parts": ["lattice"]}]
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
-        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
 
         res = client.post("/api/render", json={"project": "impl", "mode": "unit", "export_format": "step"})
@@ -472,13 +472,13 @@ class TestTrimeshConversion:
 
     def test_trimesh_convertible_set(self):
         """TRIMESH_CONVERTIBLE includes obj, glb, gltf, 3mf, off, ply."""
-        from routes.engine.render import TRIMESH_CONVERTIBLE
+        from services.engine.render_orchestrator import TRIMESH_CONVERTIBLE
         for fmt in ('obj', 'glb', 'gltf', '3mf', 'off', 'ply'):
             assert fmt in TRIMESH_CONVERTIBLE
 
     def test_openscad_accepts_obj_via_trimesh(self, client, monkeypatch):
         """OpenSCAD engine accepts OBJ format (via trimesh conversion from STL)."""
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["main"], "export_format": "obj", "params": {},
             "scad_path": "/mock/main.scad", "mode_map": {"main": 0},
             "stl_prefix": "tri_pre_", "project_slug": "tri-test",
@@ -488,16 +488,16 @@ class TestTrimeshConversion:
             def __init__(self):
                 self.engine = "openscad"
                 self.modes = [{"id": "unit", "scad_file": "main.scad", "parts": ["main"]}]
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
-        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
 
         engine_calls = []
-        monkeypatch.setattr("routes.engine.render.build_openscad_command",
+        monkeypatch.setattr("services.engine.render_orchestrator.build_openscad_command",
             lambda *args, **kwargs: (engine_calls.append("openscad"), ["echo", "ok"])[1])
-        monkeypatch.setattr("routes.engine.render.run_openscad_render",
+        monkeypatch.setattr("services.engine.render_orchestrator.run_openscad_render",
             lambda *args, **kwargs: (True, "ok"))
-        monkeypatch.setattr("routes.engine.render.convert_mesh",
+        monkeypatch.setattr("services.engine.render_orchestrator.convert_mesh",
             lambda *args, **kwargs: True)
 
         res = client.post("/api/render", json={"project": "tri-test", "mode": "unit", "export_format": "obj"})
@@ -509,7 +509,7 @@ class TestTrimeshConversion:
 
     def test_openscad_still_rejects_unsupported_formats(self):
         """OpenSCAD should still reject formats not in native or TRIMESH_CONVERTIBLE."""
-        from routes.engine.render import TRIMESH_CONVERTIBLE
+        from services.engine.render_orchestrator import TRIMESH_CONVERTIBLE
         from config import Config
         assert "exe" not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS
         assert "exe" not in TRIMESH_CONVERTIBLE
@@ -524,7 +524,7 @@ class TestStaticPartConversion:
         static_file = tmp_path / "plate.stl"
         static_file.write_bytes(b"fake stl content")
 
-        monkeypatch.setattr("routes.engine.render._extract_render_payload", lambda *args: {
+        monkeypatch.setattr("services.engine.render_orchestrator.extract_render_payload", lambda *args: {
             "parts": ["plate"], "export_format": "obj", "params": {},
             "scad_path": "/mock/main.scad", "mode_map": {"plate": 0},
             "stl_prefix": "stat_pre_", "project_slug": "stat-test",
@@ -535,10 +535,10 @@ class TestStaticPartConversion:
             def __init__(self):
                 self.engine = "openscad"
                 self.modes = [{"id": "unit", "scad_file": "main.scad", "parts": ["plate"]}]
-        monkeypatch.setattr("routes.engine.render.get_manifest", lambda *args: MockManifest())
-        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
+        monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
+        monkeypatch.setattr("services.engine.render_orchestrator.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
-        monkeypatch.setattr("routes.engine.render.convert_mesh", lambda *args, **kwargs: True)
+        monkeypatch.setattr("services.engine.render_orchestrator.convert_mesh", lambda *args, **kwargs: True)
 
         res = client.post("/api/render", json={"project": "stat-test", "mode": "unit", "export_format": "obj"})
         assert res.status_code == 200

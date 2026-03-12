@@ -18,7 +18,7 @@ from services.editor.github_token import get_github_token
 import tempfile
 import os
 
-from routes.engine.render import _extract_render_payload, STATIC_FOLDER
+from services.engine.render_orchestrator import extract_render_payload, RenderPayloadError, STATIC_FOLDER
 from services.engine.openscad import build_openscad_command, run_render as run_openscad_render
 from services.engine.cadquery_engine import build_cadquery_command, run_render as run_cadquery_render
 from manifest import get_manifest
@@ -266,10 +266,10 @@ def render_head(slug):
         return error_response(err, 404 if "not found" in err.lower() else 400)
 
     data = request.json
-    payload = _extract_render_payload(data)
+    payload = extract_render_payload(data)
     
-    if payload is None:
-        return error_response("Invalid SCAD file", 400)
+    if isinstance(payload, RenderPayloadError):
+        return error_response(payload.message, 400)
     
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix'] + "head_"

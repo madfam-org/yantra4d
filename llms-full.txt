@@ -2,7 +2,7 @@
 
 > Manifest-driven parametric 3D print design platform evolving into a
 > Hyperobjects Commons. Flask API + React/Vite studio + Astro landing page.
-> 33 built-in projects (each an independent GitHub submodule under madfam-org)
+> 35 built-in projects (each an independent GitHub submodule under madfam-org)
 > with dual rendering (server-side CLI + client-side WASM), tiered access
 > control, AI-assisted design, and GitHub integration. All hyperobject projects
 > carry CERN-OHL-W-2.0. Clone with --recurse-submodules.
@@ -656,7 +656,7 @@ docker compose down         # stop
 
 ## Projects Catalog
 
-33 built-in hyperobject projects in `projects/` — each is a standalone git submodule at `https://github.com/madfam-org/<slug>` licensed under CERN-OHL-W-2.0.
+35 built-in hyperobject projects in `projects/` — each is a standalone git submodule at `https://github.com/madfam-org/<slug>` licensed under CERN-OHL-W-2.0.
 
 | Slug | Name | GitHub | Notes |
 |------|------|--------|-------|
@@ -671,9 +671,11 @@ docker compose down         # stop
 | `gears` | Parametric Gears | [↗](https://github.com/madfam-org/gears) | Configurable gear generator |
 | `glia-diagnostic` | Glia Diagnostic | [↗](https://github.com/madfam-org/glia-diagnostic) | Open-source diagnostic tool |
 | `gridfinity` | Gridfinity Extended | [↗](https://github.com/madfam-org/gridfinity) | Modular storage bins (flagship) |
+| `hinge-hyperobject` | Parametric Hinge | [↗](https://github.com/madfam-org/hinge-hyperobject) | Living + pin hinge mechanisms |
 | `implicit-lattice-hyperobject` | Implicit Lattice | [↗](https://github.com/madfam-org/implicit-lattice-hyperobject) | TPMS lattices (Gyroid/Diamond) |
 | `julia-vase` | Julia Vase | [↗](https://github.com/madfam-org/julia-vase) | Fractal Julia set vases |
 | `keyv2` | KeyV2 Keycaps | [↗](https://github.com/madfam-org/keyv2) | Mechanical keyboard keycaps |
+| `locking-mechanism-hyperobject` | Parametric Locking Mechanism | [↗](https://github.com/madfam-org/locking-mechanism-hyperobject) | Snap latch + slide bolt |
 | `maze` | Maze Generator | [↗](https://github.com/madfam-org/maze) | Parametric puzzle mazes |
 | `microscope-slide-holder` 🔷 | Slide Holder | [↗](https://github.com/madfam-org/microscope-slide-holder) | First hyperobject |
 | `microscope-slide-hyperobject` 🔷 | Slide Hyperobject | [↗](https://github.com/madfam-org/microscope-slide-hyperobject) | Full slide hyperobject |

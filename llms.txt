@@ -1,7 +1,7 @@
 # Yantra4D
 
 > Manifest-driven parametric 3D print design platform — a Hyperobjects Commons.
-> Flask API + React/Vite studio + React admin dashboard + Astro landing page. 33 built-in projects
+> Flask API + React/Vite studio + React admin dashboard + Astro landing page. 35 built-in projects
 > (all individual GitHub submodules) with dual rendering (server-side CLI +
 > client-side WASM), tiered access control, 3D Carousel gallery,
 > AI-assisted design, and GitHub integration. Every project carries
@@ -31,7 +31,7 @@ The tech stack includes Python 3 (Flask + Blueprints, gunicorn), React 19 (Vite,
 - [Troubleshooting](./docs/troubleshooting.md): Render timeouts, CORS, git submodules, Docker env vars
 - [CERN-OHL-W-2.0 License](./docs/licenses/CERN-OHL-W-2.0.txt): License text for all hyperobject projects
 
-## Projects (33 — each an independent GitHub repo)
+## Projects (35 — each an independent GitHub repo)
 
 All projects live at `https://github.com/madfam-org/<slug>` under CERN-OHL-W-2.0.
 
@@ -46,9 +46,11 @@ All projects live at `https://github.com/madfam-org/<slug>` under CERN-OHL-W-2.0
 - [projects/gears](https://github.com/madfam-org/gears): Parametric gear generator
 - [projects/glia-diagnostic](https://github.com/madfam-org/glia-diagnostic): Open-source Glia diagnostic tool
 - [projects/gridfinity](https://github.com/madfam-org/gridfinity): Gridfinity modular storage system
+- [projects/hinge-hyperobject](https://github.com/madfam-org/hinge-hyperobject): Parametric hinge (living + pin)
 - [projects/implicit-lattice-hyperobject](https://github.com/madfam-org/implicit-lattice-hyperobject): TPMS lattices (Gyroid/Diamond)
 - [projects/julia-vase](https://github.com/madfam-org/julia-vase): Julia set fractal vases
 - [projects/keyv2](https://github.com/madfam-org/keyv2): Mechanical keyboard keycaps
+- [projects/locking-mechanism-hyperobject](https://github.com/madfam-org/locking-mechanism-hyperobject): Parametric locking mechanisms (snap latch + slide bolt)
 - [projects/maze](https://github.com/madfam-org/maze): Parametric maze/labyrinth
 - [projects/microscope-slide-holder](https://github.com/madfam-org/microscope-slide-holder): Slide retention — first hyperobject 🔷
 - [projects/microscope-slide-hyperobject](https://github.com/madfam-org/microscope-slide-hyperobject): Full microscope slide hyperobject

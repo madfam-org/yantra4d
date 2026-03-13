@@ -36,6 +36,7 @@ class MqttTelemetryService:
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.client.on_connect = self._on_connect
         self.client.on_message = self._on_internal_message
+        self.client.on_disconnect = self._on_disconnect
         self._thread = None
 
     def start(self):
@@ -59,6 +60,7 @@ class MqttTelemetryService:
             )
             logger.info("MQTT TLS enabled")
 
+        self.client.reconnect_delay_set(1, 120)
         logger.info(f"Connecting to MQTT broker at {self.broker}:{self.port}...")
         try:
             self.client.connect(self.broker, self.port, 60)
@@ -90,6 +92,13 @@ class MqttTelemetryService:
         else:
             logger.error(f"Failed to connect to MQTT broker, return code {reason_code}")
             self.connected = False
+
+    def _on_disconnect(self, client, userdata, flags, reason_code, properties):
+        self.connected = False
+        if reason_code != 0:
+            logger.warning(f"Unexpected MQTT disconnect (rc={reason_code}), auto-reconnect enabled")
+        else:
+            logger.info("MQTT disconnected cleanly")
 
     def subscribe(self, topic: str, callback):
         """Subscribe to a specific telemetry topic for a bounded 4D hyperobject."""

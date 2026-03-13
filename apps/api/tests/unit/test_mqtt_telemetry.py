@@ -124,6 +124,37 @@ class TestOnConnect:
         assert svc.connected is False
 
 
+class TestOnDisconnect:
+    """Tests for _on_disconnect callback — reconnection handling."""
+
+    @patch("services.core.mqtt_telemetry.mqtt.Client")
+    def test_unexpected_disconnect_sets_connected_false(self, MockClient):
+        from services.core.mqtt_telemetry import MqttTelemetryService
+
+        svc = MqttTelemetryService()
+        svc.connected = True
+        svc._on_disconnect(svc.client, None, None, 1, None)
+        assert svc.connected is False
+
+    @patch("services.core.mqtt_telemetry.mqtt.Client")
+    def test_clean_disconnect_sets_connected_false(self, MockClient):
+        from services.core.mqtt_telemetry import MqttTelemetryService
+
+        svc = MqttTelemetryService()
+        svc.connected = True
+        svc._on_disconnect(svc.client, None, None, 0, None)
+        assert svc.connected is False
+
+    @patch("services.core.mqtt_telemetry.mqtt.Client")
+    def test_start_sets_reconnect_delay(self, MockClient, monkeypatch):
+        monkeypatch.setenv("MQTT_ENABLED", "true")
+        from services.core.mqtt_telemetry import MqttTelemetryService
+
+        svc = MqttTelemetryService()
+        svc.start()
+        svc.client.reconnect_delay_set.assert_called_once_with(1, 120)
+
+
 class TestOnInternalMessage:
     """Tests for _on_internal_message callback — payload parsing and dispatch."""
 

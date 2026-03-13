@@ -28,7 +28,14 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run test:coverage
       - name: Check bundle size
-        run: npm run build && du -sh dist/assets/*.js | sort -rh | head -10
+        run: |
+          npm run build
+          TOTAL=$(du -cb dist/assets/*.js 2>/dev/null | tail -1 | cut -f1)
+          echo "Total JS bundle: $(( TOTAL / 1024 )) KB"
+          if [ "$TOTAL" -gt 2097152 ]; then
+            echo "::error::JS bundle size ${TOTAL} bytes exceeds 2MB limit"
+            exit 1
+          fi
 
   landing:
     runs-on: ubuntu-latest
@@ -183,9 +190,20 @@ jobs:
       - name: Run metadata consistency audit
         run: python3 scripts/qa/compliance_audit.py --strict
 
+  openapi-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openapi-spec-validator
+      - run: python -m openapi_spec_validator docs/reference/openapi.yaml
+
   ci-success:
     runs-on: ubuntu-latest
-    needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, metadata-consistency]
+    needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, metadata-consistency, openapi-validation]
     steps:
       - name: All checks passed
         run: echo "All CI checks passed successfully!"

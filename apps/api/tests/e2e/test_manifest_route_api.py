@@ -26,6 +26,7 @@ def app(tmp_path, monkeypatch):
 
     # /api/manifest with no slug falls back to SCAD_DIR
     monkeypatch.setattr(Config, "SCAD_DIR", project_dir)
+    monkeypatch.setattr(Config, "MULTI_PROJECT", False)
 
     from app import create_app
     flask_app = create_app()
@@ -47,3 +48,19 @@ class TestManifestRouteAPI:
         assert "modes" in data
         assert "parameters" in data
         assert data["project"]["slug"] == "test-project"
+
+    def test_multi_project_requires_slug(self, tmp_path, monkeypatch):
+        from config import Config
+
+        project_dir = tmp_path / "mp-project"
+        project_dir.mkdir()
+        (project_dir / "project.json").write_text('{"project":{"name":"X","slug":"x","version":"1.0.0","thumbnail":"t.png","tags":[],"difficulty":"beginner"},"modes":[],"parts":[],"parameters":[],"estimate_constants":{}}')
+        monkeypatch.setattr(Config, "SCAD_DIR", project_dir)
+        monkeypatch.setattr(Config, "MULTI_PROJECT", True)
+
+        from app import create_app
+        app = create_app()
+        app.config["TESTING"] = True
+        with app.test_client() as c:
+            res = c.get("/api/manifest")
+            assert res.status_code == 400

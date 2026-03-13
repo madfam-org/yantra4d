@@ -20,7 +20,9 @@ def get_config():
     """Return dynamic configuration for the frontend (deprecated)."""
     slug = request.args.get("project")
     if not slug:
-        return jsonify({"error": "project query param required"}), 400
+        from config import Config
+        if Config.MULTI_PROJECT:
+            return jsonify({"error": "project query param required"}), 400
     try:
         manifest = get_manifest(slug)
     except RuntimeError as e:

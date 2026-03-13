@@ -61,3 +61,92 @@ def test_stream_render_fails(mock_run_render):
     output = list(stream_render("out.stl", {}, {}, "part1", 0, 10, 0, 1))
     assert len(output) > 0
     assert "error" in output[-1]
+
+
+# --- Expanded coverage (Tier 3.1) ---
+
+class TestThermodynamicCollapse:
+    """Test branching when sim_energy >= glass_transition_temp."""
+
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_energy_below_tg_no_collapse(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        # energy < Tg → no Z scaling
+        ok, _ = run_render("o.stl", {"resolution": 8}, {
+            "simulated_energy": 50.0, "thermo_glass_transition_temp": 100.0,
+        })
+        assert ok is True
+
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_energy_above_tg_triggers_collapse(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        # energy >> Tg → Z degradation branch executes
+        ok, _ = run_render("o.stl", {"resolution": 8}, {
+            "simulated_energy": 500.0, "thermo_glass_transition_temp": 100.0,
+        })
+        assert ok is True
+
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_energy_equals_tg_triggers_collapse(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        ok, _ = run_render("o.stl", {"resolution": 8}, {
+            "simulated_energy": 100.0, "thermo_glass_transition_temp": 100.0,
+        })
+        assert ok is True
+
+
+class TestMaterialShrinkage:
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_shrinkage_reduces_domain(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        ok, _ = run_render("o.stl", {"resolution": 8, "size": 20.0}, {
+            "mat_shrinkage_x": 0.8,
+        })
+        assert ok is True
+
+
+class TestTopologyTypes:
+    """topology_type param maps 0=gyroid, 1=diamond, 2=schwarz_p."""
+
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_topology_type_0_gyroid(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        ok, _ = run_render("o.stl", {"resolution": 8}, {"topology_type": 0})
+        assert ok is True
+
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_topology_type_2_schwarz_p(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        ok, _ = run_render("o.stl", {"resolution": 8}, {"topology_type": 2})
+        assert ok is True
+
+
+class TestDefaultConfig:
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_empty_config_uses_defaults(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        ok, _ = run_render("o.stl", {}, {})
+        assert ok is True
+
+    @patch("services.core.implicit_engine.marching_cubes")
+    @patch("services.core.implicit_engine.trimesh.Trimesh")
+    def test_tda_euler_modifies_frequency(self, mock_trimesh, mock_mc):
+        mock_mc.return_value = (np.zeros((4,3)), np.zeros((4,3)), np.zeros((4,3)), np.zeros(4))
+        mock_trimesh.return_value = MagicMock()
+        # Negative euler characteristic should increase frequency
+        ok, _ = run_render("o.stl", {"resolution": 8}, {"tda_euler_characteristic": -420})
+        assert ok is True

@@ -124,7 +124,7 @@ class TestProjectsAPI:
 
     def test_get_project_meta_missing(self, client):
         res = client.get("/api/projects/test-project/meta")
-        assert res.get_json() is None
+        assert res.get_json() == {}
 
     def test_get_project_meta_found(self, client, tmp_path):
         import json
@@ -135,7 +135,7 @@ class TestProjectsAPI:
 
     def test_get_project_meta_unknown(self, client):
         res = client.get("/api/projects/unknown/meta")
-        assert res.get_json() is None
+        assert res.status_code == 404
 
     @patch("routes.projects.projects.os.path.exists")
     def test_stats_no_db(self, mock_exists, client):

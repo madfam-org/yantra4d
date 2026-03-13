@@ -96,6 +96,26 @@ class TestConfigEndpoint:
         assert isinstance(data["estimate_constants"], dict)
 
 
+class TestConfigMultiProjectGuard:
+    """Tests that multi-project mode requires ?project= param."""
+
+    def test_multi_project_requires_slug(self, project_dir, monkeypatch):
+        from config import Config
+
+        monkeypatch.setattr(Config, "SCAD_DIR", project_dir)
+        monkeypatch.setattr(Config, "MULTI_PROJECT", True)
+        monkeypatch.setattr(Config, "STATIC_DIR", project_dir / "static")
+        (project_dir / "static").mkdir(exist_ok=True)
+
+        from app import create_app
+        app = create_app()
+        app.config["TESTING"] = True
+        with app.test_client() as c:
+            resp = c.get("/api/config")
+            assert resp.status_code == 400
+            assert "project query param required" in resp.get_json()["error"]
+
+
 class TestConfigDeprecationHeaders:
     """Tests that the legacy /api/config endpoint returns proper deprecation headers."""
 

@@ -26,6 +26,7 @@ def app(tmp_path, monkeypatch):
 
     # /api/manifest with no slug falls back to SCAD_DIR
     monkeypatch.setattr(Config, "SCAD_DIR", project_dir)
+    monkeypatch.setattr(Config, "MULTI_PROJECT", False)
 
     from app import create_app
     flask_app = create_app()

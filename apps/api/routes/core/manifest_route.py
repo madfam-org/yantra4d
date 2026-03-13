@@ -16,7 +16,9 @@ def serve_manifest():
     """Return the full project manifest."""
     slug = request.args.get("project")
     if not slug:
-        return make_response(json.dumps({"error": "project query param required"}), 400)
+        from config import Config
+        if Config.MULTI_PROJECT:
+            return make_response(json.dumps({"error": "project query param required"}), 400)
     try:
         body = json.dumps(get_manifest(slug).as_json(), sort_keys=True)
     except RuntimeError as e:

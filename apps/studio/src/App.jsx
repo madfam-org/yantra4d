@@ -1,13 +1,15 @@
-import { lazy, Suspense, useState, useCallback } from 'react'
+import { lazy, Suspense, useState, useCallback, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
-import { Sun, Moon, Monitor, Globe } from 'lucide-react'
+import { Sun, Moon, Monitor, Globe, PanelLeft } from 'lucide-react'
 import { Toaster } from "@/components/ui/sonner"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 import { useProject } from './contexts/project/ProjectProvider'
 import { useThemeAndLanguage } from './hooks/system/useThemeAndLanguage'
 import { usePlatform } from './contexts/system/PlatformProvider'
 import { useIsMobile } from './hooks/system/useMediaQuery'
+import { usePanelLayout } from './hooks/system/usePanelLayout'
 import StudioHeader from './components/studio/StudioHeader'
 import StudioSidebar from './components/studio/StudioSidebar'
 import StudioMainView from './components/studio/StudioMainView'
@@ -53,6 +55,7 @@ function App() {
   }, [navigate])
 
   const isMobile = useIsMobile()
+  const { layout, setSidebarSize, toggleSidebar, setConsoleSize, toggleConsole } = usePanelLayout()
 
   // Get state from ProjectContext
   const {
@@ -80,6 +83,19 @@ function App() {
   const handleRemoveComparisonSlot = useCallback((slotId) => {
     setComparisonSlots(prev => prev.filter(s => s.id !== slotId))
   }, [])
+
+  // Panel toggle keyboard shortcuts ([ and ])
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = e.target.tagName
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag) || e.target.isContentEditable) return
+      if (e.metaKey || e.ctrlKey) return
+      if (e.key === '[') toggleSidebar()
+      else if (e.key === ']') toggleConsole()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [toggleSidebar, toggleConsole])
 
   // Initialize theme/lang/auth side effects
   const { t, language, toggleLanguage, theme, cycleTheme } = useThemeAndLanguage({
@@ -169,19 +185,82 @@ function App() {
       )}
 
       {!isEmbed && <RateLimitBanner />}
-      <div className={`flex flex-1 overflow-hidden flex-col lg:flex-row ${editorOpen && !isMobile ? 'editor-layout' : ''}`}>
-        {/* Desktop: editor side panel */}
-        {editorOpen && !isMobile && (
-          <div className="w-full lg:w-[40%] flex flex-col min-h-0 border-r border-border">
-            <ErrorBoundary t={t}>
-              <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
-                <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
-                <GitPanel slug={projectSlug} />
-              </Suspense>
-            </ErrorBoundary>
-          </div>
-        )}
 
+      {/* Desktop: resizable horizontal layout */}
+      <div className="hidden lg:flex flex-1 overflow-hidden relative">
+        <ResizablePanelGroup
+          direction="horizontal"
+          onLayout={(sizes) => {
+            // sizes[0] is sidebar or editor, sizes[1] is main view
+            if (!editorOpen && !layout.sidebarCollapsed && sizes[0] != null) {
+              setSidebarSize(sizes[0])
+            }
+          }}
+        >
+          {/* Sidebar panel (conditional) */}
+          {!editorOpen && !layout.sidebarCollapsed && (
+            <>
+              <ResizablePanel defaultSize={layout.sidebarSize} minSize={15} maxSize={40}>
+                <StudioSidebar
+                  variant="desktop"
+                  compareMode={compareMode}
+                  onToggleCompare={() => setCompareMode(prev => !prev)}
+                  onCollapse={toggleSidebar}
+                />
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+            </>
+          )}
+
+          {/* Editor panel (conditional, replaces sidebar) */}
+          {editorOpen && (
+            <>
+              <ResizablePanel defaultSize={40} minSize={25} maxSize={60}>
+                <div className="flex flex-col h-full min-h-0 border-r border-border">
+                  <ErrorBoundary t={t}>
+                    <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
+                      <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
+                      <GitPanel slug={projectSlug} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+            </>
+          )}
+
+          {/* Main view panel */}
+          <ResizablePanel defaultSize={editorOpen ? 60 : (layout.sidebarCollapsed ? 100 : (100 - layout.sidebarSize))} minSize={40}>
+            <ErrorBoundary t={t}>
+              <StudioMainView
+                compareMode={compareMode}
+                comparisonSlots={comparisonSlots}
+                onAddComparisonSlot={handleAddComparisonSlot}
+                onRemoveComparisonSlot={handleRemoveComparisonSlot}
+                consoleSize={layout.consoleSize}
+                consoleCollapsed={layout.consoleCollapsed}
+                onConsoleResize={setConsoleSize}
+                onToggleConsole={toggleConsole}
+              />
+            </ErrorBoundary>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+
+        {/* Sidebar collapsed: floating expand button */}
+        {layout.sidebarCollapsed && !editorOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 bg-card border border-border border-l-0 rounded-r-md shadow-sm hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            title="Show sidebar"
+            aria-label="Show sidebar"
+          >
+            <PanelLeft className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Mobile: original layout */}
+      <div className="flex flex-1 overflow-hidden flex-col lg:hidden">
         {/* Mobile: editor as bottom sheet */}
         {editorSheet && (
           <Sheet open={editorSheet} onOpenChange={(open) => { if (!open) toggleEditor() }}>
@@ -197,9 +276,10 @@ function App() {
           </Sheet>
         )}
 
-        {/* Sidebar: desktop panel + mobile bar */}
+        {/* Sidebar: mobile bar */}
         {!editorOpen && (
           <StudioSidebar
+            variant="mobile"
             compareMode={compareMode}
             onToggleCompare={() => setCompareMode(prev => !prev)}
           />

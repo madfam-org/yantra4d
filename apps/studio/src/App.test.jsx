@@ -27,6 +27,19 @@ vi.mock('./components/Viewer', () => ({
   default: React.forwardRef(function MockViewer(props, ref) { return <div data-testid="viewer-mock">Viewer Mock</div> }),
 }))
 
+// Mock resizable panels (not available in jsdom)
+vi.mock('@/components/ui/resizable', () => ({
+  ResizablePanelGroup: function MockPanelGroup({ children }) {
+    return <div data-testid="resizable-panel-group">{children}</div>
+  },
+  ResizablePanel: function MockPanel({ children }) {
+    return <div data-testid="resizable-panel">{children}</div>
+  },
+  ResizableHandle: function MockHandle() {
+    return <div data-testid="resizable-handle" />
+  },
+}))
+
 // Mock Radix Tabs to aggressively render all content for visibility tests
 vi.mock('@/components/ui/tabs', async (importOriginal) => {
   const mod = await importOriginal()

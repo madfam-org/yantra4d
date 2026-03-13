@@ -2,6 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
+vi.mock('@/components/ui/resizable', () => ({
+  ResizablePanelGroup: function MockPanelGroup({ children }) {
+    return <div data-testid="resizable-panel-group">{children}</div>
+  },
+  ResizablePanel: function MockPanel({ children }) {
+    return <div data-testid="resizable-panel">{children}</div>
+  },
+  ResizableHandle: function MockHandle() {
+    return <div data-testid="resizable-handle" />
+  },
+}))
+
 vi.mock('../viewer/Viewer', () => ({
   default: React.forwardRef(function MockViewer(props) {
     return <div data-testid="viewer" data-loading={props.loading} />
@@ -94,33 +106,34 @@ beforeEach(() => {
 describe('StudioMainView', () => {
   it('renders viewer and console log area', () => {
     render(<StudioMainView />)
-    expect(screen.getByTestId('viewer')).toBeInTheDocument()
-    // Mobile + desktop console panels both present in DOM
+    // Viewer content is shared across desktop + mobile layouts (both in DOM)
+    expect(screen.getAllByTestId('viewer').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByRole('log').length).toBeGreaterThanOrEqual(1)
   })
 
   it('sets aria-busy when loading', () => {
     useProject.mockReturnValue({ ...baseContext, loading: true })
     render(<StudioMainView />)
-    expect(screen.getByTestId('viewer').closest('[aria-busy]')).toHaveAttribute('aria-busy', 'true')
+    const viewer = screen.getAllByTestId('viewer')[0]
+    expect(viewer.closest('[aria-busy]')).toHaveAttribute('aria-busy', 'true')
   })
 
   it('does not set aria-busy when idle', () => {
     render(<StudioMainView />)
-    expect(screen.getByTestId('viewer').closest('[aria-busy]')).toHaveAttribute('aria-busy', 'false')
+    const viewer = screen.getAllByTestId('viewer')[0]
+    expect(viewer.closest('[aria-busy]')).toHaveAttribute('aria-busy', 'false')
   })
 
   it('shows rendering status chip when loading', () => {
     useProject.mockReturnValue({ ...baseContext, loading: true, progress: 5, progressPhase: 'meshing' })
     render(<StudioMainView />)
-    // The chip contains all info in a single element
-    expect(screen.getByText(/Rendering.*5s.*meshing/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Rendering.*5s.*meshing/).length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows ready status chip when parts available', () => {
     useProject.mockReturnValue({ ...baseContext, parts: [{ id: 'body' }] })
     render(<StudioMainView />)
-    expect(screen.getByText('Ready')).toBeInTheDocument()
+    expect(screen.getAllByText('Ready').length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows no status chip when idle with no parts', () => {
@@ -130,15 +143,13 @@ describe('StudioMainView', () => {
   })
 
   it('announces render status via live region', () => {
-    // Initial render loading
     useProject.mockReturnValue({ ...baseContext, loading: true })
     const { rerender, container } = render(<StudioMainView />)
-    // The sr-only live region is the one with class "sr-only"
-    const liveRegion = container.querySelector('.sr-only[aria-live="polite"]')
-    expect(liveRegion).toBeInTheDocument()
+    const liveRegions = container.querySelectorAll('.sr-only[aria-live="polite"]')
+    expect(liveRegions.length).toBeGreaterThanOrEqual(1)
+    const liveRegion = liveRegions[0]
     expect(liveRegion.textContent).toBe('Rendering in progress')
 
-    // Update to complete
     useProject.mockReturnValue({ ...baseContext, loading: false, parts: [{ id: 'body' }] })
     rerender(<StudioMainView />)
     expect(liveRegion.textContent).toContain('Render complete')
@@ -147,7 +158,6 @@ describe('StudioMainView', () => {
   it('displays console logs', () => {
     useProject.mockReturnValue({ ...baseContext, logs: 'ECHO: param=5' })
     render(<StudioMainView />)
-    // Logs appear in both mobile (collapsed preview) and desktop console panels
     expect(screen.getAllByText('ECHO: param=5').length).toBeGreaterThanOrEqual(1)
   })
 
@@ -159,7 +169,7 @@ describe('StudioMainView', () => {
   it('renders print estimate overlay when estimate exists', () => {
     useProject.mockReturnValue({ ...baseContext, printEstimate: { volumeMm3: 1200, boundingBox: {} } })
     render(<StudioMainView />)
-    expect(screen.getByTestId('print-overlay')).toBeInTheDocument()
+    expect(screen.getAllByTestId('print-overlay').length).toBeGreaterThanOrEqual(1)
   })
 
   it('does not render print estimate overlay when no estimate', () => {

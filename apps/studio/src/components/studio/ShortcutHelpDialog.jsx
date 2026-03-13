@@ -29,6 +29,13 @@ const SHORTCUT_GROUPS = [
     ],
   },
   {
+    key: 'shortcuts.panels',
+    shortcuts: [
+      { keys: '[', label: 'shortcuts.toggle_sidebar' },
+      { keys: ']', label: 'shortcuts.toggle_console' },
+    ],
+  },
+  {
     key: 'shortcuts.navigation',
     shortcuts: [
       { keys: `${mod}+1..N`, label: 'shortcuts.switch_mode' },

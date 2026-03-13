@@ -24,6 +24,7 @@ describe('ShortcutHelpDialog', () => {
     expect(screen.getByText('shortcuts.viewer')).toBeInTheDocument()
     expect(screen.getByText('shortcuts.editing')).toBeInTheDocument()
     expect(screen.getByText('shortcuts.rendering')).toBeInTheDocument()
+    expect(screen.getByText('shortcuts.panels')).toBeInTheDocument()
     expect(screen.getByText('shortcuts.navigation')).toBeInTheDocument()
   })
 
@@ -32,6 +33,8 @@ describe('ShortcutHelpDialog', () => {
     expect(screen.getByText('shortcuts.ortho')).toBeInTheDocument()
     expect(screen.getByText('shortcuts.undo')).toBeInTheDocument()
     expect(screen.getByText('shortcuts.render')).toBeInTheDocument()
+    expect(screen.getByText('shortcuts.toggle_sidebar')).toBeInTheDocument()
+    expect(screen.getByText('shortcuts.toggle_console')).toBeInTheDocument()
     expect(screen.getByText('shortcuts.help')).toBeInTheDocument()
   })
 

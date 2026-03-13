@@ -13,6 +13,9 @@ import { useEffect } from 'react'
  * - C: toggle clipping plane
  * - M: toggle measure mode
  *
+ * Note: [ (toggle sidebar) and ] (toggle console) are handled in App.jsx
+ * since usePanelLayout lives outside ProjectProvider context.
+ *
  * @param {object} options
  * @param {function} options.onUndo - callback for undo
  * @param {function} options.onRedo - callback for redo

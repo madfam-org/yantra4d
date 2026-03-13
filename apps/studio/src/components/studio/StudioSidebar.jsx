@@ -8,7 +8,7 @@ import AssemblyEditorPanel from '../assembly-editor/AssemblyEditorPanel'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
-import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkles, CheckCircle2, Copy } from 'lucide-react'
+import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkles, CheckCircle2, Copy, PanelLeftClose } from 'lucide-react'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 
@@ -195,7 +195,7 @@ function SidebarContent({ compareMode, onToggleCompare }) {
         <ModeTabs className="hidden lg:block" />
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar px-4 pb-40">
+      <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pb-32">
         <TabsContent value="config" className="m-0 space-y-5 animate-in fade-in-50 duration-300">
           <div className="pb-4">
             <Controls
@@ -301,56 +301,75 @@ function SidebarContent({ compareMode, onToggleCompare }) {
         </TabsContent>
       </div>
 
+      {/* Scroll affordance — gradient signals more content below */}
+      <div
+        className="absolute bottom-[128px] left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10"
+        aria-hidden="true"
+      />
+
       <ActionDock compareMode={compareMode} onToggleCompare={onToggleCompare} />
     </Tabs>
   )
 }
 
-export default function StudioSidebar({ compareMode, onToggleCompare }) {
+export default function StudioSidebar({ compareMode, onToggleCompare, variant, onCollapse }) {
   const [open, setOpen] = useState(false)
   const { manifest, mode, setMode, getLabel } = useProject()
   const { language, t } = useLanguage()
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex flex-col flex-1 min-w-[280px] bg-card border-r border-border overflow-y-auto min-h-0">
-        <div data-testid="studio-sidebar" className="w-full h-full min-w-[22rem] flex flex-col shrink-0 relative">
-          <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
+      {/* Desktop sidebar — render when variant is 'desktop' or undefined */}
+      {variant !== 'mobile' && (
+        <div className={`${variant === 'desktop' ? 'flex' : 'hidden lg:flex'} flex-col flex-1 min-w-[280px] bg-card border-r border-border overflow-y-auto min-h-0`}>
+          {onCollapse && (
+            <button
+              onClick={onCollapse}
+              className="absolute top-2 right-2 z-30 p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          )}
+          <div data-testid="studio-sidebar" className="w-full h-full min-w-[22rem] flex flex-col shrink-0 relative">
+            <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Mobile bottom bar with sheet trigger + mode tabs */}
-      <div className="lg:hidden flex items-center gap-2 border-b border-border bg-card px-4 py-2 landscape:py-1 shrink-0">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="min-h-[44px] min-w-[44px]">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">{t('btn.open_controls')}</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[85vh] landscape:max-h-[75vh] p-0 flex flex-col">
-            <div className="mx-auto mt-3 mb-2 h-1 w-10 rounded-full bg-muted-foreground/30 shrink-0" aria-hidden="true" />
-            <SheetTitle className="sr-only">Controls</SheetTitle>
-            <SheetDescription className="sr-only">
-              {t('a11y.controls_description')}
-            </SheetDescription>
-            <div className="flex-1 overflow-hidden relative h-full">
-              <SidebarContent />
-            </div>
-          </SheetContent>
-        </Sheet>
-        {/* Quick mode tabs visible on mobile bar */}
-        <Tabs value={mode} onValueChange={setMode} className="flex-1">
-          <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
-            {manifest.modes.map(m => (
-              <TabsTrigger key={m.id} value={m.id} className="min-h-[44px] text-xs" title={getLabel(m, 'label', language)}>
-                {getLabel(m, 'label', language)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      </div>
+      {/* Mobile bottom bar with sheet trigger + mode tabs — render when variant is 'mobile' or undefined */}
+      {variant !== 'desktop' && (
+        <div className={`${variant === 'mobile' ? 'flex' : 'lg:hidden flex'} items-center gap-2 border-b border-border bg-card px-4 py-2 landscape:py-1 shrink-0`}>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="min-h-[44px] min-w-[44px]">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">{t('btn.open_controls')}</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[85vh] landscape:max-h-[75vh] p-0 flex flex-col pb-safe">
+              <div className="mx-auto mt-3 mb-2 h-1 w-10 rounded-full bg-muted-foreground/30 shrink-0" aria-hidden="true" />
+              <SheetTitle className="sr-only">Controls</SheetTitle>
+              <SheetDescription className="sr-only">
+                {t('a11y.controls_description')}
+              </SheetDescription>
+              <div className="flex-1 min-h-0 relative h-full">
+                <SidebarContent />
+              </div>
+            </SheetContent>
+          </Sheet>
+          {/* Quick mode tabs visible on mobile bar */}
+          <Tabs value={mode} onValueChange={setMode} className="flex-1">
+            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
+              {manifest.modes.map(m => (
+                <TabsTrigger key={m.id} value={m.id} className="min-h-[44px] text-xs" title={getLabel(m, 'label', language)}>
+                  {getLabel(m, 'label', language)}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
     </>
   )
 }

@@ -237,5 +237,8 @@
   "export.no_parts": "Render a model first",
   "export.est_time": "Time",
   "export.est_weight": "Weight",
-  "export.est_cost": "Cost"
+  "export.est_cost": "Cost",
+  "preview.range_min": "Min",
+  "preview.range_max": "Max",
+  "preview.hover_hint": "Hover a parameter to preview its geometric effect"
 }

@@ -174,7 +174,7 @@ function ComponentPickerWidget({ param, setParams, getLabel, language }) {
 
 const DEFAULT_TEXT_MAX_LENGTH = 255
 
-export default function Controls({ params, setParams, mode, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {} }) {
+export default function Controls({ params, setParams, mode, presets = [], onApplyPreset, onToggleGridPreset, constraintsByParam = {}, onParamHover, onParamLeave }) {
     const { language, t } = useLanguage()
     const { manifest, getParametersForMode, getLabel, getGroupLabel } = useManifest()
     const unitSystem = useUnitSystem()
@@ -313,7 +313,12 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
             {textInputs.length > 0 && (
                 <div className="space-y-4">
                     {textInputs.map(param => (
-                        <div key={param.id} className="space-y-1">
+                        <div
+                            key={param.id}
+                            className="space-y-1"
+                            onPointerEnter={() => onParamHover?.(param.id)}
+                            onPointerLeave={() => onParamLeave?.()}
+                        >
                             <Tooltip content={getLabel(param, 'tooltip', language)}>
                                 <Label htmlFor={`text-${param.id}`} className="cursor-help">{getLabel(param, 'label', language)}</Label>
                             </Tooltip>
@@ -335,7 +340,11 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
             {sliders.length > 0 && (
                 <div className="space-y-4">
                     {sliders.map(param => (
-                        <div key={param.id}>
+                        <div
+                            key={param.id}
+                            onPointerEnter={() => onParamHover?.(param.id)}
+                            onPointerLeave={() => onParamLeave?.()}
+                        >
                             <SliderControl
                                 param={param}
                                 value={params[param.id]}
@@ -359,14 +368,19 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
             {gradientParams.length > 0 && (
                 <div className="space-y-4">
                     {gradientParams.map(param => (
-                        <ColorGradientControl
+                        <div
                             key={param.id}
-                            param={param}
-                            value={params[param.id]}
-                            onChange={handleGradientChange}
-                            getLabel={getLabel}
-                            language={language}
-                        />
+                            onPointerEnter={() => onParamHover?.(param.id)}
+                            onPointerLeave={() => onParamLeave?.()}
+                        >
+                            <ColorGradientControl
+                                param={param}
+                                value={params[param.id]}
+                                onChange={handleGradientChange}
+                                getLabel={getLabel}
+                                language={language}
+                            />
+                        </div>
                     ))}
                 </div>
             )}
@@ -375,14 +389,19 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
             {componentPickers.length > 0 && (
                 <div className="space-y-4 border-t border-border pt-4">
                     {componentPickers.map(param => (
-                        <ComponentPickerWidget
+                        <div
                             key={param.id}
-                            param={param}
-                            params={params}
-                            setParams={setParams}
-                            getLabel={getLabel}
-                            language={language}
-                        />
+                            onPointerEnter={() => onParamHover?.(param.id)}
+                            onPointerLeave={() => onParamLeave?.()}
+                        >
+                            <ComponentPickerWidget
+                                param={param}
+                                params={params}
+                                setParams={setParams}
+                                getLabel={getLabel}
+                                language={language}
+                            />
+                        </div>
                     ))}
                 </div>
             )}
@@ -391,14 +410,19 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
             {tpmsControls.length > 0 && (
                 <div className="space-y-4 border-t border-border pt-4">
                     {tpmsControls.map(param => (
-                        <TpmsTopologyControl
+                        <div
                             key={param.id}
-                            param={param}
-                            value={params[param.id]}
-                            onChange={handleSliderChange}
-                            getLabel={getLabel}
-                            language={language}
-                        />
+                            onPointerEnter={() => onParamHover?.(param.id)}
+                            onPointerLeave={() => onParamLeave?.()}
+                        >
+                            <TpmsTopologyControl
+                                param={param}
+                                value={params[param.id]}
+                                onChange={handleSliderChange}
+                                getLabel={getLabel}
+                                language={language}
+                            />
+                        </div>
                     ))}
                 </div>
             )}
@@ -426,7 +450,12 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
                         const isChild = param.visibility_level === 'advanced' && param.parent
                         const disabled = isParentUnchecked(param)
                         return (
-                            <div key={param.id} className={`flex items-center space-x-2 min-h-[44px] ${isChild ? 'ml-4' : ''}`}>
+                            <div
+                                key={param.id}
+                                className={`flex items-center space-x-2 min-h-[44px] ${isChild ? 'ml-4' : ''}`}
+                                onPointerEnter={() => onParamHover?.(param.id)}
+                                onPointerLeave={() => onParamLeave?.()}
+                            >
                                 <Checkbox
                                     id={param.id}
                                     checked={!!params[param.id]}
@@ -450,7 +479,12 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
 
             {/* Other checkboxes */}
             {otherCheckboxes.map(param => (
-                <div key={param.id} className="flex items-center space-x-2 min-h-[44px]">
+                <div
+                    key={param.id}
+                    className="flex items-center space-x-2 min-h-[44px]"
+                    onPointerEnter={() => onParamHover?.(param.id)}
+                    onPointerLeave={() => onParamLeave?.()}
+                >
                     <Checkbox
                         id={param.id}
                         checked={!!params[param.id]}

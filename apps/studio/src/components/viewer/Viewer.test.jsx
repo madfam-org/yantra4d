@@ -133,6 +133,10 @@ vi.mock('./OverhangOverlay', () => ({
   default: (props) => props.points?.length ? <div data-testid="overhang-overlay" /> : null,
 }))
 
+vi.mock('./ParameterPreviewOverlay', () => ({
+  default: (props) => props.hoveredParam ? <div data-testid="parameter-preview-overlay" /> : null,
+}))
+
 import Viewer from './Viewer'
 
 // ── Helper: create a fake BufferGeometry-like object ──
@@ -959,5 +963,123 @@ describe('Viewer', () => {
   it('renders measure tool when active', () => {
     render(<Viewer {...defaultProps} measureMode={true} />)
     expect(screen.getByTestId('measure-tool')).toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // Parameter preview overlay (hover-to-preview)
+  // ────────────────────────────────────────
+
+  it('does not render parameter preview overlay when hoveredParam is null', () => {
+    render(<Viewer {...defaultProps} hoveredParam={null} />)
+    expect(screen.queryByTestId('parameter-preview-overlay')).not.toBeInTheDocument()
+  })
+
+  it('renders parameter preview overlay when hoveredParam is provided with parts', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    const hoveredParam = {
+      paramId: 'width',
+      paramDef: { id: 'width', type: 'slider', min: 10, max: 100, label: { en: 'Width' } },
+      currentValue: 50,
+      hint: { type: 'axis_scale', axis: 'x', affected_parts: ['base'] },
+    }
+
+    render(
+      <Viewer
+        {...defaultProps}
+        hoveredParam={hoveredParam}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByTestId('parameter-preview-overlay')).toBeInTheDocument()
+  })
+
+  it('does not render parameter preview overlay during assembly mode', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    const hoveredParam = {
+      paramId: 'width',
+      paramDef: { id: 'width', type: 'slider', min: 10, max: 100 },
+      currentValue: 50,
+      hint: { type: 'axis_scale', axis: 'x', affected_parts: ['base'] },
+    }
+
+    render(
+      <Viewer
+        {...defaultProps}
+        assemblyActive={true}
+        visibleParts={['base']}
+        highlightedParts={['base']}
+        hoveredParam={hoveredParam}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.queryByTestId('parameter-preview-overlay')).not.toBeInTheDocument()
+  })
+
+  it('does not render parameter preview overlay during head diff mode', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    const hoveredParam = {
+      paramId: 'width',
+      paramDef: { id: 'width', type: 'slider', min: 10, max: 100 },
+      currentValue: 50,
+      hint: { type: 'axis_scale', axis: 'x', affected_parts: ['base'] },
+    }
+
+    render(
+      <Viewer
+        {...defaultProps}
+        headDiffMode={true}
+        headParts={[{ type: 'base', url: '/api/render/head-base.stl' }]}
+        hoveredParam={hoveredParam}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.queryByTestId('parameter-preview-overlay')).not.toBeInTheDocument()
+  })
+
+  it('does not render parameter preview overlay when loading', () => {
+    const hoveredParam = {
+      paramId: 'width',
+      paramDef: { id: 'width', type: 'slider', min: 10, max: 100 },
+      currentValue: 50,
+      hint: { type: 'axis_scale', axis: 'x', affected_parts: ['base'] },
+    }
+
+    render(
+      <Viewer
+        {...defaultProps}
+        loading={true}
+        hoveredParam={hoveredParam}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.queryByTestId('parameter-preview-overlay')).not.toBeInTheDocument()
+  })
+
+  it('does not render parameter preview overlay when no parts loaded', () => {
+    const hoveredParam = {
+      paramId: 'width',
+      paramDef: { id: 'width', type: 'slider', min: 10, max: 100 },
+      currentValue: 50,
+      hint: { type: 'axis_scale', axis: 'x', affected_parts: ['base'] },
+    }
+
+    render(
+      <Viewer
+        {...defaultProps}
+        hoveredParam={hoveredParam}
+        parts={[]}
+      />
+    )
+    expect(screen.queryByTestId('parameter-preview-overlay')).not.toBeInTheDocument()
   })
 })

@@ -209,5 +209,8 @@
   "export.no_parts": "请先渲染模型",
   "export.est_time": "时间",
   "export.est_weight": "重量",
-  "export.est_cost": "成本"
+  "export.est_cost": "成本",
+  "preview.range_min": "最小",
+  "preview.range_max": "最大",
+  "preview.hover_hint": "将鼠标悬停在参数上以预览其几何效果"
 }

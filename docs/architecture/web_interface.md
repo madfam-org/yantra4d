@@ -25,7 +25,7 @@
 - **Cross-Parameter Validation**: Manifest-driven constraints (`constraints[]`) with `rule`, `message`, `severity`, and `applies_to` fields. The `useConstraints` hook evaluates rules against current params and returns violations indexed by parameter ID. Supports `warning` and `error` severities.
 - **Grid Presets**: Optional `grid_presets` manifest section provides rendering/manufacturing quality presets that override parameter values (e.g., quick preview vs. large grid).
 - **Keyboard Shortcuts**: `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Cmd+1..N` to switch modes, `Cmd+Enter` to generate, `Escape` to cancel. `O` toggle orthographic camera, `C` toggle clipping plane, `M` toggle measure tool. `?` opens keyboard shortcut help dialog. `[` toggle sidebar show/hide, `]` toggle console show/hide (desktop only).
-- **AM Viewer Tools**: Orthographic camera toggle, cross-section clipping plane (axis selector + position slider), point-to-point measurement (raycaster-based, distance labels with unit toggle), wall thickness heatmap (backend trimesh analysis, color ramp red→yellow→green), overhang angle visualization (backend face normal analysis, color ramp green→yellow→red, configurable threshold 20-80°, pro+), exploded view for multi-part assemblies (displacement slider), adjustable lighting (brightness + environment preset), model info panel (dimensions, volume, triangle count, part count), unit system toggle (mm↔inches, display-only conversion persisted to localStorage), version history browser (git commit log), resizable sidebar and console panels (desktop, drag-to-resize with `react-resizable-panels`, sizes persisted to localStorage via `usePanelLayout` hook).
+- **AM Viewer Tools**: Orthographic camera toggle, cross-section clipping plane (axis selector + position slider), point-to-point measurement (raycaster-based, distance labels with unit toggle), wall thickness heatmap (backend trimesh analysis, color ramp red→yellow→green), overhang angle visualization (backend face normal analysis, color ramp green→yellow→red, configurable threshold 20-80°, pro+), parameter geometry preview (directional arrows + min/max range labels on parameter hover, axis inferred from parameter label), exploded view for multi-part assemblies (displacement slider), adjustable lighting (brightness + environment preset), model info panel (dimensions, volume, triangle count, part count), unit system toggle (mm↔inches, display-only conversion persisted to localStorage), version history browser (git commit log), resizable sidebar and console panels (desktop, drag-to-resize with `react-resizable-panels`, sizes persisted to localStorage via `usePanelLayout` hook).
 - **Accessibility**: Respects `prefers-reduced-motion` OS preference — CSS animations (`animate-pulse`, `animate-spin`, `animate-bounce`) are suppressed, Three.js camera animations jump instantly to target. All animation classes use `motion-safe:` Tailwind prefix.
 - **SCAD Code Editor**: Monaco-based editor with file tree, syntax highlighting, tabs, auto-save and auto-render. Available for user-owned projects (GitHub-imported, forked, onboarded) at pro+ tier.
 - **Git Integration**: Status, diff, commit, push/pull for GitHub-connected projects. Local git auto-initialized on first editor interaction. "Connect to GitHub" for local-only projects.
@@ -281,7 +281,9 @@ src/
 │   │   ├── ClippingPlane.jsx      # Cross-section clipping plane with visual indicator
 │   │   ├── MeasureTool.jsx        # Point-to-point raycaster measurement tool
 │   │   ├── ThicknessOverlay.jsx   # Wall thickness heatmap (colored point cloud)
-│   │   └── OverhangOverlay.jsx   # Overhang angle visualization (colored point cloud)
+│   │   ├── OverhangOverlay.jsx   # Overhang angle visualization (colored point cloud)
+│   │   ├── ParameterPreviewOverlay.jsx  # Directional arrows + range labels on param hover
+│   │   └── AxisScaleHint.jsx     # Double-headed arrows along affected axis with min/max labels
 │   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
 │   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
 │   ├── BomPanel.jsx               # Manifest-driven bill of materials panel
@@ -306,6 +308,7 @@ src/
 │   ├── useLocalStoragePersistence.js # Debounced localStorage sync
 │   ├── useShareableUrl.js         # Shareable URL generation (base64url param encoding)
 │   ├── useUndoRedo.js             # Parameter undo/redo with 50-entry history stack
+│   ├── useProjectParams.js        # Parameter state, includes hoveredParam for preview hints
 │   ├── useProjectMeta.js          # Fetch project.meta.json for source type detection
 │   ├── useEditorRender.js         # Debounced save + auto-render for editor changes
 │   └── useAiChat.js               # AI chat state management hook (both modes)
@@ -313,6 +316,7 @@ src/
 │   ├── openscad-phases.js         # Shared OpenSCAD phase detection (main + worker)
 │   ├── stl-utils.js               # Binary STL parser + bounding box
 │   ├── printEstimator.js          # Print time/filament/cost estimation from STL geometry
+│   ├── previewHintInference.js    # Infer preview hints (axis, range) from parameter definitions
 │   └── downloadUtils.js           # File/ZIP download helpers
 ├── services/
 │   ├── renderService.js           # Dual-mode render (backend SSE / WASM worker)
@@ -346,7 +350,8 @@ src/
 - **`App.jsx`**: Uses `projectSlug` for all localStorage keys and export filenames. Sends `{ ...params, mode }` in render payloads. Dynamic `Cmd+1..N` shortcuts for however many modes the manifest declares.
 - **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.
-- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery. Supports orthographic camera toggle, cross-section clipping plane, point-to-point measurement, wall thickness overlay, overhang angle overlay, exploded view for multi-part assemblies, adjustable lighting (brightness + environment preset), and unit-aware dimension labels (mm/in).
+- **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery. Supports orthographic camera toggle, cross-section clipping plane, point-to-point measurement, wall thickness overlay, overhang angle overlay, parameter geometry preview, exploded view for multi-part assemblies, adjustable lighting (brightness + environment preset), and unit-aware dimension labels (mm/in).
+- **`ParameterPreviewOverlay.jsx`**: R3F overlay that renders directional arrows and range labels in the 3D viewer when the user hovers a parameter in the sidebar. Uses `hoveredParam` state from `useProjectParams` to determine which parameter is active. Delegates axis-specific rendering to `AxisScaleHint.jsx`, which draws double-headed arrows along the affected axis (X, Y, or Z) with min/max range labels at the endpoints. Axis and range inference is handled by the pure utility `previewHintInference.js`, which maps parameter labels (e.g., "width" to X, "height" to Z, "depth" to Y) and reads `min`/`max` from the parameter definition.
 - **`ProjectCarousel3D.jsx`**: Implements a large-scale horizontal scrolling scene using `@react-three/drei`'s `ScrollControls`. It manages the spatial distribution of 36+ projects in a unified 3D space.
 - **`CarouselItem.jsx`** (Studio): Uses `useFrame` to calculate distance from world center. When centered, activates a `LiveModel` component that renders via `renderParts()` from the render service. The landing page equivalent (`ProjectCarousel3D.tsx`) loads pre-built static GLB files instead.
 

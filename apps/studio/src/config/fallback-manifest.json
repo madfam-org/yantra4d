@@ -226,7 +226,13 @@
         "baseplate",
         "lid"
       ],
-      "group": "dimensions"
+      "group": "dimensions",
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 42,
+        "affected_parts": ["cup", "baseplate", "lid"]
+      }
     },
     {
       "id": "depth_units",
@@ -268,7 +274,13 @@
       "visible_in_modes": [
         "cup"
       ],
-      "group": "dimensions"
+      "group": "dimensions",
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 7,
+        "affected_parts": ["cup"]
+      }
     },
     {
       "id": "cup_wall_thickness",
@@ -563,7 +575,11 @@
       "visible_in_modes": [
         "cup"
       ],
-      "group": "mounting"
+      "group": "mounting",
+      "preview_hint": {
+        "type": "toggle_geometry",
+        "affected_parts": ["cup"]
+      }
     },
     {
       "id": "enable_screws",

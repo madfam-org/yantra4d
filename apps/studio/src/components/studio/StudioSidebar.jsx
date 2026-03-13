@@ -149,6 +149,7 @@ function SidebarContent({ compareMode, onToggleCompare }) {
     environmentPreset, setEnvironmentPreset,
     overhangEnabled, setOverhangEnabled,
     overhangThreshold, setOverhangThreshold,
+    setHoveredParamId,
   } = useProject()
 
   const { t } = useLanguage()
@@ -233,6 +234,8 @@ function SidebarContent({ compareMode, onToggleCompare }) {
               setOverhangEnabled={setOverhangEnabled}
               overhangThreshold={overhangThreshold}
               setOverhangThreshold={setOverhangThreshold}
+              onParamHover={setHoveredParamId}
+              onParamLeave={() => setHoveredParamId(null)}
             />
           </div>
         </TabsContent>

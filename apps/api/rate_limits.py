@@ -4,7 +4,7 @@ Import these constants instead of using inline strings.
 """
 
 # Public / high-traffic
-HEALTH = "1000/hour"
+# Health endpoints are exempt from rate limiting (K8s probes)
 ESTIMATE = "200/hour"
 VERIFY = "50/hour"
 

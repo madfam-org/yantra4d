@@ -43,8 +43,8 @@ Configure K8s/load balancer probes:
 ### Readiness States
 
 - **healthy**: All checks pass
-- **degraded**: Optional dependencies (Redis, analytics) unavailable — still serving requests
-- **unhealthy** (503): Critical dependency (OpenSCAD) missing — should not receive traffic
+- **degraded**: Optional dependencies (OpenSCAD, Redis, analytics) unavailable — still serving requests (WASM fallback for rendering)
+- **unhealthy** (503): Critical failure — should not receive traffic
 
 ## Docker Compose
 

@@ -16,7 +16,7 @@ Common issues and their solutions when working with the Yantra4D platform.
 
 ### "OpenSCAD not found"
 
-**Symptom**: Health check returns `"status": "unhealthy"` with `"checks": { "openscad": { "ok": false } }`.
+**Symptom**: Health check returns `"status": "degraded"` with `"checks": { "openscad": { "ok": false } }`. The API still serves requests (200) but server-side rendering is unavailable — clients fall back to WASM.
 
 **Fix**: Set `OPENSCAD_PATH` env var to your OpenSCAD binary:
 ```bash

@@ -66,7 +66,7 @@ curl -sS https://4d-api.madfam.io/api/health | python3 -m json.tool
 }
 ```
 
-**Fail criteria**: Non-200 status, `status: "unhealthy"`, `checks.openscad.ok: false`, `debug_mode: true`, connection refused.
+**Fail criteria**: Non-200 status, `status: "unhealthy"`, `debug_mode: true`, connection refused. Note: `checks.openscad.ok: false` results in `"degraded"` (200), not a failure — the platform falls back to WASM rendering.
 
 ---
 

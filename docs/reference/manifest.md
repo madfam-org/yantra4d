@@ -257,6 +257,15 @@ If `preview_hint` is omitted, the system infers it from the parameter label:
 
 Explicit `preview_hint` overrides auto-inference. Use it when the label doesn't match the actual geometric effect or when you want to specify `scale_factor` or `affected_parts`.
 
+### Cached geometry ghost overlay
+
+After a render completes, the studio idle-pre-renders the top 3 dimensional parameters at their min and max values into IndexedDB. On hover, if cached variants exist, semi-transparent purple (`#a855f7`) ghost meshes appear alongside the directional arrows, showing the actual geometry at min/max bounds without requiring a new render.
+
+- **Breathing animation**: opacity cycles between 0.08 and 0.16 at 0.5 Hz
+- **Reduced motion**: when `prefers-reduced-motion: reduce` is active, ghost meshes use static 0.12 opacity (no animation)
+- **Background pre-renders** run only when the UI is idle (via `requestIdleCallback`) and never compete with user-initiated renders
+- **Cache key**: same IDB cache used by the render pipeline (`renderCache.ts`), keyed by `project + mode + params + format`
+
 ### Example
 
 ```json

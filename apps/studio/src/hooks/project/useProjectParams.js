@@ -13,6 +13,7 @@ import { useImageExport } from '../render/useImageExport'
 import { useRender } from '../render/useRender'
 import { useKeyboardShortcuts } from '../editor/useKeyboardShortcuts'
 import { inferPreviewHint } from '../../lib/previewHintInference'
+import { useParameterPreviewCache } from '../render/useParameterPreviewCache'
 
 const RENDER_DEBOUNCE_MS = 500
 
@@ -394,6 +395,11 @@ export function useProjectParams({ viewerRef }) {
     modes,
   })
 
+  // Cached geometry variants for parameter preview ghost overlay
+  const { cachedVariants, preRenderStatus } = useParameterPreviewCache({
+    manifest, mode, params, parts, loading, project: projectSlug,
+  })
+
   return {
     // Navigation
     currentView, isDemo,
@@ -440,6 +446,7 @@ export function useProjectParams({ viewerRef }) {
     loadingHeadDiff, setLoadingHeadDiff,
     // Parameter preview
     hoveredParam, setHoveredParamId,
+    cachedVariants, preRenderStatus,
     // Share
     copyShareUrl,
     // Shortcut help

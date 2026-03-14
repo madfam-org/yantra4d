@@ -240,5 +240,6 @@
   "export.est_cost": "Costo",
   "preview.range_min": "Mín",
   "preview.range_max": "Máx",
-  "preview.hover_hint": "Pasa el cursor sobre un parámetro para previsualizar su efecto geométrico"
+  "preview.hover_hint": "Pasa el cursor sobre un parámetro para previsualizar su efecto geométrico",
+  "preview.prerendering": "Pre-renderizando variantes…"
 }

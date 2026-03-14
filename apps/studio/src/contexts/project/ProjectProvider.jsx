@@ -141,6 +141,8 @@ function ProjectProviderContent({ children }) {
     // Parameter preview
     hoveredParam: projectParams.hoveredParam,
     setHoveredParamId: projectParams.setHoveredParamId,
+    cachedVariants: projectParams.cachedVariants,
+    preRenderStatus: projectParams.preRenderStatus,
 
     // Assembly
     assemblyActive: assembly.assemblyActive,

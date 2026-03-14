@@ -283,7 +283,8 @@ src/
 │   │   ├── ThicknessOverlay.jsx   # Wall thickness heatmap (colored point cloud)
 │   │   ├── OverhangOverlay.jsx   # Overhang angle visualization (colored point cloud)
 │   │   ├── ParameterPreviewOverlay.jsx  # Directional arrows + range labels on param hover
-│   │   └── AxisScaleHint.jsx     # Double-headed arrows along affected axis with min/max labels
+│   │   ├── AxisScaleHint.jsx     # Double-headed arrows along affected axis with min/max labels
+│   │   └── GhostGeometryOverlay.jsx  # Semi-transparent purple ghost meshes for cached min/max geometry
 │   ├── ProjectSelector.jsx        # Multi-project dropdown (visible when >1 project)
 │   ├── OnboardingWizard.jsx       # 4-step SCAD project onboarding wizard
 │   ├── BomPanel.jsx               # Manifest-driven bill of materials panel
@@ -303,6 +304,7 @@ src/
 │   └── ThemeProvider.jsx          # Light/Dark/System theme
 ├── hooks/
 │   ├── useRender.js               # Render orchestration (generate, cancel, cache, confirm)
+│   ├── useParameterPreviewCache.js # Idle pre-render of min/max param variants into IDB cache
 │   ├── useConstraints.js          # Manifest constraint evaluation (rule + severity + applies_to)
 │   ├── useImageExport.js          # PNG snapshot export for camera views
 │   ├── useLocalStoragePersistence.js # Debounced localStorage sync
@@ -351,7 +353,7 @@ src/
 - **`LanguageProvider.jsx`**: Contains all UI chrome translations (buttons, log messages, phases, view labels, theme labels, error boundary text, viewer controls, navigation, onboarding wizard, and accessibility strings). Every user-visible string in the frontend is bilingual (es/en) via the `t()` function. Parameter labels, tooltips, tab names, and color labels come from the manifest.
 - **`AnimatedGrid.jsx`**: Renders an animated grid of cubes for preview. Grid pitch formula matches the backend (`size × √2 + rotation_clearance`). Columns spread along the Y axis; rows stack along Z with tubing spacer gaps (`r × (size + tubing_H) + tubing_H`). Each cube plays a sequential 90° Z-rotation animation.
 - **`Viewer.jsx`**: Colors parts by looking up `colors[part.type]`; falls back to `manifest.viewer.default_color`. Camera views (iso/top/front/right) and their positions are read from `manifest.camera_views`, not hardcoded. Uses **Z-up** axis convention to match OpenSCAD (camera `up=[0,0,1]`, grid on XY plane). Includes a `GizmoHelper` orientation widget (bottom-left) and an internal `ViewerErrorBoundary` class for graceful 3D rendering error recovery. Supports orthographic camera toggle, cross-section clipping plane, point-to-point measurement, wall thickness overlay, overhang angle overlay, parameter geometry preview, exploded view for multi-part assemblies, adjustable lighting (brightness + environment preset), and unit-aware dimension labels (mm/in).
-- **`ParameterPreviewOverlay.jsx`**: R3F overlay that renders directional arrows and range labels in the 3D viewer when the user hovers a parameter in the sidebar. Uses `hoveredParam` state from `useProjectParams` to determine which parameter is active. Delegates axis-specific rendering to `AxisScaleHint.jsx`, which draws double-headed arrows along the affected axis (X, Y, or Z) with min/max range labels at the endpoints. Axis and range inference is handled by the pure utility `previewHintInference.js`, which maps parameter labels (e.g., "width" to X, "height" to Z, "depth" to Y) and reads `min`/`max` from the parameter definition.
+- **`ParameterPreviewOverlay.jsx`**: R3F overlay that renders directional arrows and range labels in the 3D viewer when the user hovers a parameter in the sidebar. Uses `hoveredParam` state from `useProjectParams` to determine which parameter is active. Delegates axis-specific rendering to `AxisScaleHint.jsx`, which draws double-headed arrows along the affected axis (X, Y, or Z) with min/max range labels at the endpoints. Axis and range inference is handled by the pure utility `previewHintInference.js`, which maps parameter labels (e.g., "width" to X, "height" to Z, "depth" to Y) and reads `min`/`max` from the parameter definition. When `cachedVariants` are available (from `useParameterPreviewCache`), renders `GhostGeometryOverlay` — semi-transparent purple (#a855f7) ghost meshes showing the parameter's min/max geometry with a breathing animation (0.08–0.16 opacity, respects `prefers-reduced-motion`).
 - **`ProjectCarousel3D.jsx`**: Implements a large-scale horizontal scrolling scene using `@react-three/drei`'s `ScrollControls`. It manages the spatial distribution of 36+ projects in a unified 3D space.
 - **`CarouselItem.jsx`** (Studio): Uses `useFrame` to calculate distance from world center. When centered, activates a `LiveModel` component that renders via `renderParts()` from the render service. The landing page equivalent (`ProjectCarousel3D.tsx`) loads pre-built static GLB files instead.
 

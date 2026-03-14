@@ -240,5 +240,6 @@
   "export.est_cost": "Cost",
   "preview.range_min": "Min",
   "preview.range_max": "Max",
-  "preview.hover_hint": "Hover a parameter to preview its geometric effect"
+  "preview.hover_hint": "Hover a parameter to preview its geometric effect",
+  "preview.prerendering": "Pre-rendering variants…"
 }

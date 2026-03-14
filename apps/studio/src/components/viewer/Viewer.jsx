@@ -203,7 +203,7 @@ function useResponsiveFov() {
     return isMobile ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
 }
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm' }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm' }, ref) => {
     const geometriesRef = React.useRef({})
     const prevCenterRef = React.useRef(null)
     const prevMaxDimRef = React.useRef(null)
@@ -546,6 +546,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                             hoveredParam={hoveredParam}
                             sceneBox={sceneBox}
                             centerOfMass={centerOfMass}
+                            cachedVariants={cachedVariants}
                         />
                     )}
 

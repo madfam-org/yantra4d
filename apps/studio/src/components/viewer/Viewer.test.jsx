@@ -134,7 +134,7 @@ vi.mock('./OverhangOverlay', () => ({
 }))
 
 vi.mock('./ParameterPreviewOverlay', () => ({
-  default: (props) => props.hoveredParam ? <div data-testid="parameter-preview-overlay" /> : null,
+  default: (props) => props.hoveredParam ? <div data-testid="parameter-preview-overlay" data-has-cached-variants={props.cachedVariants ? 'true' : 'false'} /> : null,
 }))
 
 import Viewer from './Viewer'
@@ -1081,5 +1081,34 @@ describe('Viewer', () => {
       />
     )
     expect(screen.queryByTestId('parameter-preview-overlay')).not.toBeInTheDocument()
+  })
+
+  it('forwards cachedVariants prop to ParameterPreviewOverlay', () => {
+    const fakeGeom = makeFakeGeometry()
+    mockUseWorkerLoader.mockReturnValue({ geometry: fakeGeom, scene: null })
+
+    const hoveredParam = {
+      paramId: 'width',
+      paramDef: { id: 'width', type: 'slider', min: 10, max: 100, label: { en: 'Width' } },
+      currentValue: 50,
+      hint: { type: 'axis_scale', axis: 'x', affected_parts: ['base'] },
+    }
+
+    const cachedVariants = new Map([
+      ['width', { min: [{ type: 'base', url: 'blob:min', isGlb: true }] }],
+    ])
+
+    render(
+      <Viewer
+        {...defaultProps}
+        hoveredParam={hoveredParam}
+        cachedVariants={cachedVariants}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    const overlay = screen.getByTestId('parameter-preview-overlay')
+    expect(overlay).toBeInTheDocument()
+    expect(overlay.getAttribute('data-has-cached-variants')).toBe('true')
   })
 })

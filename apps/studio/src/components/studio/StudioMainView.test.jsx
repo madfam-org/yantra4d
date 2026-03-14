@@ -16,7 +16,7 @@ vi.mock('@/components/ui/resizable', () => ({
 
 vi.mock('../viewer/Viewer', () => ({
   default: React.forwardRef(function MockViewer(props) {
-    return <div data-testid="viewer" data-loading={props.loading} />
+    return <div data-testid="viewer" data-loading={props.loading} data-has-cached-variants={props.cachedVariants ? 'true' : 'false'} />
   }),
 }))
 
@@ -95,6 +95,8 @@ const baseContext = {
   shortcutHelpOpen: false,
   setShortcutHelpOpen: vi.fn(),
   boundingBox: false,
+  hoveredParam: null,
+  cachedVariants: null,
 }
 
 beforeEach(() => {
@@ -175,5 +177,19 @@ describe('StudioMainView', () => {
   it('does not render print estimate overlay when no estimate', () => {
     render(<StudioMainView />)
     expect(screen.queryByTestId('print-overlay')).not.toBeInTheDocument()
+  })
+
+  it('forwards cachedVariants from context to Viewer', () => {
+    const cachedVariants = new Map([['width', { min: [] }]])
+    useProject.mockReturnValue({ ...baseContext, cachedVariants })
+    render(<StudioMainView />)
+    const viewer = screen.getAllByTestId('viewer')[0]
+    expect(viewer.getAttribute('data-has-cached-variants')).toBe('true')
+  })
+
+  it('forwards null cachedVariants to Viewer when none available', () => {
+    render(<StudioMainView />)
+    const viewer = screen.getAllByTestId('viewer')[0]
+    expect(viewer.getAttribute('data-has-cached-variants')).toBe('false')
   })
 })

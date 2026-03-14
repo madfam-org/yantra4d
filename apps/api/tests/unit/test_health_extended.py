@@ -37,12 +37,12 @@ class TestReadiness:
         assert data["status"] in ("healthy", "degraded")
         assert data["checks"]["openscad"]["ok"] is True
 
-    def test_unhealthy_when_openscad_missing(self, client, monkeypatch):
+    def test_degraded_when_openscad_missing(self, client, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "OPENSCAD_PATH", "/nonexistent/binary")
         resp = client.get("/api/health/ready")
-        assert resp.status_code == 503
-        assert resp.json["status"] == "unhealthy"
+        assert resp.status_code == 200
+        assert resp.json["status"] == "degraded"
         assert resp.json["checks"]["openscad"]["ok"] is False
 
     def test_degraded_when_redis_unreachable(self, client, monkeypatch):

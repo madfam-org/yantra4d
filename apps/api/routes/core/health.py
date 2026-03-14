@@ -92,11 +92,12 @@ def readiness():
     checks = {}
     overall = "healthy"
 
-    # Critical: OpenSCAD
+    # Optional: OpenSCAD (platform supports WASM fallback)
     ok, detail = _check_openscad()
     checks["openscad"] = {"ok": ok, "detail": detail}
     if not ok:
-        overall = "unhealthy"
+        if overall != "unhealthy":
+            overall = "degraded"
 
     # Optional: Redis
     ok, detail = _check_redis()

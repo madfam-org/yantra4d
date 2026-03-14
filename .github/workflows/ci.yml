@@ -161,7 +161,24 @@ jobs:
         with:
           submodules: recursive
       - name: Check manifest sync
-        run: diff <(python3 -c "import json; print(json.dumps(json.load(open('projects/gridfinity/project.json')), indent=2))") <(python3 -c "import json; print(json.dumps(json.load(open('apps/studio/src/config/fallback-manifest.json')), indent=2))")
+        run: |
+          # Fallback manifest = source minus force_backend (stripped for offline/WASM mode)
+          python3 -c "
+          import json, sys
+          src = json.load(open('projects/gridfinity/project.json'))
+          dst = json.load(open('apps/studio/src/config/fallback-manifest.json'))
+          # Strip force_backend from source for comparison (fallback intentionally omits it)
+          if 'project' in src and 'force_backend' in src['project']:
+              del src['project']['force_backend']
+          if src != dst:
+              print('ERROR: fallback-manifest.json is out of sync with projects/gridfinity/project.json')
+              print('Expected (source minus force_backend):')
+              print(json.dumps(src, indent=2)[:500])
+              print('Got (fallback):')
+              print(json.dumps(dst, indent=2)[:500])
+              sys.exit(1)
+          print('Manifest sync OK')
+          "
 
   manifest-validation:
     runs-on: ubuntu-latest

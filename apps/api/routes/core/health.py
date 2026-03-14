@@ -11,7 +11,6 @@ from flask import Blueprint, jsonify
 
 from config import Config
 from extensions import limiter
-import rate_limits
 
 logger = logging.getLogger(__name__)
 
@@ -80,14 +79,14 @@ def _check_memory() -> tuple[bool, str]:
 
 
 @health_bp.route('/api/health/live')
-@limiter.limit(rate_limits.HEALTH)
+@limiter.exempt
 def liveness():
     """Liveness probe — always 200 unless process is hung."""
     return jsonify({"status": "alive"}), 200
 
 
 @health_bp.route('/api/health/ready')
-@limiter.limit(rate_limits.HEALTH)
+@limiter.exempt
 def readiness():
     """Readiness probe — checks all subsystems."""
     checks = {}
@@ -138,7 +137,7 @@ def readiness():
 
 
 @health_bp.route('/api/health')
-@limiter.limit(rate_limits.HEALTH)
+@limiter.exempt
 def health_check():
     """Backward-compatible health check — delegates to readiness."""
     return readiness()

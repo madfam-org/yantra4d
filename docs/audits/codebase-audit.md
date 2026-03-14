@@ -195,7 +195,7 @@ The platform currently ships **20 built-in parametric projects** across three we
 | `gitService.js` | Git operations (commit, diff, history) |
 | `editorService.js` | Monaco editor utilities (diff, syntax highlighting) |
 | `openscad-worker.js` | Web Worker for WASM OpenSCAD (offline mode) |
-| `backendDetection.js` | Backend availability detection, API base URL |
+| `backendDetection.ts` | Backend availability detection, API base URL, TTL-cached health check |
 | `assemblyFetcher.js` | Assembly instructions and BOM from API |
 
 #### Contexts (6 files)

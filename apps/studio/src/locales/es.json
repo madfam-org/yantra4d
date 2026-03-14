@@ -240,6 +240,8 @@
   "export.est_cost": "Costo",
   "preview.range_min": "Mín",
   "preview.range_max": "Máx",
+  "projects.open_demo": "Abrir Proyecto Demo",
+  "log.wasm_fallback": "Backend no disponible, usando renderizado del navegador...",
   "preview.hover_hint": "Pasa el cursor sobre un parámetro para previsualizar su efecto geométrico",
   "preview.prerendering": "Pre-renderizando variantes…"
 }

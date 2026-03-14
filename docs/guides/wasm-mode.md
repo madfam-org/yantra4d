@@ -14,18 +14,34 @@ The system automatically detects backend availability and switches modes seamles
 The logic resides principally in `apps/studio/src/services/renderService.js` and `apps/studio/src/services/openscad-worker.js`.
 
 ### Detection Mechanism
-On application start (and before renders), `renderService.js` probes the backend health endpoint:
-```javascript
-// apps/studio/src/services/backendDetection.js
-export async function isBackendAvailable() {
-  try {
-    const res = await fetch(`${API_BASE}/api/health`, { method: 'HEAD', timeout: 2000 })
-    return res.ok
-  } catch {
-    return false
+On application start (and before renders), `renderService.ts` probes the backend health endpoint via `backendDetection.ts`:
+```typescript
+// apps/studio/src/services/core/backendDetection.ts
+export async function isBackendAvailable(): Promise<boolean> {
+  // TTL-cached: 30s for negative results (allows recovery), 5min for positive
+  const now = Date.now()
+  if (_backendAvailable !== null) {
+    const ttl = _backendAvailable ? POSITIVE_TTL_MS : NEGATIVE_TTL_MS
+    if (now - _lastCheckTime < ttl) return _backendAvailable
   }
+  try {
+    const res = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(2000) })
+    _backendAvailable = res.ok
+  } catch {
+    _backendAvailable = false
+  }
+  _lastCheckTime = now
+  return _backendAvailable
 }
 ```
+
+**Detection order** in `detectMode()`:
+1. CadQuery engine → always backend (no WASM path exists)
+2. Check `isBackendAvailable()` (TTL-cached)
+3. If available → respect `force_backend`, `API_BASE`, complexity circuit breaker
+4. If unavailable → fall back to WASM (if device is capable)
+
+This means `force_backend: true` is only honoured when the backend is actually reachable. If the backend goes down, the studio degrades to WASM rendering automatically, and re-checks availability every 30 seconds.
 
 ### The Web Worker
 The WASM worker (`openscad-worker.js`) manages the OpenSCAD instance to prevent the main thread from freezing during heavy computations.
@@ -37,7 +53,7 @@ The WASM worker (`openscad-worker.js`) manages the OpenSCAD instance to prevent 
 ## Enabling WASM Mode
 
 ### Automatic Fallback
-Simply stop the backend server. The Studio will visually indicate offline mode (often by hiding backend-specific features like GitHub sync) but rendering will continue to work.
+Simply stop the backend server. The Studio will automatically detect the outage within 30 seconds (negative TTL) and fall back to WASM rendering. If the backend was initially down when the page loaded, the ProjectsView shows a "Retry" button and an "Open Demo Project" button to load the bundled gridfinity fallback manifest. If a backend render fails mid-session with a network error, `renderParts()` catches the failure and transparently retries with WASM.
 
 ### Forcing WASM Mode
 You can force WASM mode for testing by blocking the API rendering or building a static version of the site without `VITE_API_BASE_URL`.

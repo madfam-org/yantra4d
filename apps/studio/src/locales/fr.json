@@ -212,6 +212,8 @@
   "export.est_cost": "Coût",
   "preview.range_min": "Min",
   "preview.range_max": "Max",
+  "projects.open_demo": "Ouvrir le projet démo",
+  "log.wasm_fallback": "Backend indisponible, utilisation du rendu navigateur...",
   "preview.hover_hint": "Survolez un paramètre pour prévisualiser son effet géométrique",
   "preview.prerendering": "Pré-rendu des variantes…"
 }

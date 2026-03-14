@@ -333,6 +333,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | CORS origins | Backend restricts CORS via `CORS_ORIGINS` env var; add your domain when deploying |
 | Global SCAD libs | `libs/` are git submodules — run `git submodule update --init --recursive` after clone |
 | Client-side WASM | `openscad-worker.js` runs in a Web Worker; cannot access DOM |
+| Backend outage resilience | `detectMode()` checks backend availability *before* `force_backend`/`API_BASE` preferences. If backend is down, WASM fallback activates automatically (except CadQuery projects). `isBackendAvailable()` uses TTL cache: 30s negative (retries), 5min positive. `renderParts()` catches network errors and retries with WASM. ProjectsView shows Retry + Open Demo buttons on error. The fallback manifest omits `force_backend` so WASM works offline |
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: 100/hr, Estimate: 200/hr, Verify: 50/hr |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |

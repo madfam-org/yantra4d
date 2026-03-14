@@ -18,8 +18,8 @@ import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
 
 /**
  * Override the health-check route so the backend appears unavailable.
- * The renderService caches the result, so this must be called BEFORE
- * any page.goto() that triggers the health check.
+ * The renderService caches the result with TTL (30s negative, 5min positive),
+ * so this must be called BEFORE any page.goto() that triggers the health check.
  */
 async function simulateBackendDown(page) {
     // Abort the health check — isBackendAvailable() catches the error and

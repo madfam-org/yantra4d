@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../services/core/apiClient'
 import { getApiBase } from '../../services/core/backendDetection'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
@@ -9,6 +9,7 @@ import { Github } from 'lucide-react'
 import AuthGate from '../auth/AuthGate'
 import { ProjectToolbar } from './ProjectToolbar'
 import { ProjectList } from './ProjectList'
+import fallbackManifest from '../../config/fallback-manifest.json'
 
 const GitHubImportWizard = lazy(() => import('../ai/GitHubImportWizard'))
 const ProjectCarousel3D = lazy(() => import('./ProjectCarousel3D'))
@@ -30,6 +31,7 @@ const getRenderSpeed = (constants) => {
 
 export default function ProjectsView() {
   const { t, language } = useLanguage()
+  const navigate = useNavigate()
   const loc = useCallback((val) => (typeof val === 'object' && val !== null) ? (val[language] || val.en || '') : (val || ''), [language])
 
   const [projects, setProjects] = useState([])
@@ -45,7 +47,7 @@ export default function ProjectsView() {
   const [showImport, setShowImport] = useState(false)
   const [activeTag, setActiveTag] = useState(null)
 
-  useEffect(() => {
+  const fetchProjects = useCallback(() => {
     apiFetch(`${getApiBase()}/api/admin/projects?stats=1`)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -54,12 +56,17 @@ export default function ProjectsView() {
       .then(data => {
         setProjects(data)
         setLoading(false)
+        setError(null)
       })
       .catch(err => {
         setError(err.message)
         setLoading(false)
       })
   }, [])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
 
   const allTags = useMemo(() => {
     const tags = new Set()
@@ -120,8 +127,24 @@ export default function ProjectsView() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
         <p className="text-destructive">{t('projects.error')}{error}</p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => { setError(null); setLoading(true); fetchProjects() }}
+          >
+            {t('status.retry')}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate(`/project/${fallbackManifest.project.slug}`)}
+          >
+            {t('projects.open_demo')}
+          </Button>
+        </div>
       </div>
     )
   }

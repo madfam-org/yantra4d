@@ -64,7 +64,7 @@ test.describe('Projects View', () => {
     await expect(page.getByText('Loading').or(page.getByText('Cargando'))).toBeVisible({ timeout: 2000 })
   })
 
-  test('error state shows error message', async ({ page }) => {
+  test('error state shows error message with retry and demo buttons', async ({ page }) => {
     await page.unroute('**/api/admin/projects**')
     await page.route('**/api/admin/projects**', (route) => {
       route.fulfill({ status: 500, json: { error: 'Server error' } })
@@ -72,5 +72,8 @@ test.describe('Projects View', () => {
     await goToProjects(page)
     // The fetch handler throws Error(`HTTP ${status}`) before reading JSON body
     await expect(page.locator('.text-destructive').or(page.getByText('HTTP 500')).or(page.getByText('Server error'))).toBeVisible({ timeout: 10000 })
+    // Retry and Open Demo buttons should be present
+    await expect(page.getByText(/Retry|Reintentar/i)).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText(/Open Demo|Abrir Proyecto Demo/i)).toBeVisible({ timeout: 5000 })
   })
 })

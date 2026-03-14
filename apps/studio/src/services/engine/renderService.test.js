@@ -291,6 +291,7 @@ describe('renderParts (SSE event types)', () => {
   it('uses backend when manifest.force_backend is true', async () => {
     const forcedManifest = { ...manifest, force_backend: true }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
     fetchMock.mockResolvedValueOnce({
       ok: true,
       body: createSSEStream([
@@ -305,6 +306,7 @@ describe('renderParts (SSE event types)', () => {
   it('uses backend when project.force_backend is set', async () => {
     const forcedManifest = { ...manifest, project: { force_backend: true } }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
     fetchMock.mockResolvedValueOnce({
       ok: true,
       body: createSSEStream([
@@ -329,6 +331,7 @@ describe('renderService circuit breaker', () => {
       estimate_constants: { base_time: 5, per_unit: 10, per_part: 20 },
     }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
     fetchMock.mockResolvedValueOnce({
       ok: true,
       body: createSSEStream([
@@ -340,8 +343,8 @@ describe('renderService circuit breaker', () => {
     // rows=10, cols=10 → 100 units × 10 per_unit + 4×20 = 1080s → well above 15s threshold
     const result = await renderService.renderParts('grid', { rows: 10, cols: 10 }, heavyManifest, {})
     expect(result).toHaveLength(1)
-    // No health check needed - circuit breaker short-circuits to backend directly  
-    expect(fetchMock).toHaveBeenCalledTimes(1)
+    // Health check + render = 2 calls
+    expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 })
 
@@ -405,9 +408,153 @@ describe('estimateRenderTime — WASM multiplier path', () => {
   })
 })
 
+describe('detectMode WASM fallback on backend unavailability', () => {
+  it('falls back to WASM when backend is down despite force_backend', async () => {
+    // High-end device (WASM-capable)
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    const forcedManifest = { ...manifest, force_backend: true }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Health check fails → backend unavailable
+    fetchMock.mockRejectedValueOnce(new Error('net::ERR_CONNECTION_REFUSED'))
+
+    // Should detect WASM mode and render
+    class MockWorker {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
+        } else if (msg.type === 'render') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'result', stl: new Uint8Array([1,2,3]).buffer } }), 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorker)
+    URL.createObjectURL = vi.fn(() => 'blob:abc')
+
+    const result = await renderService.renderParts('unit', {}, forcedManifest, {})
+    expect(result).toHaveLength(1)
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[Fallback]'))
+
+    warnSpy.mockRestore()
+  })
+
+  it('still uses backend for CadQuery even when backend is down', async () => {
+    const cqManifest = { ...manifest, engine: 'cadquery' }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // CadQuery skips health check, goes straight to render which fails
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      text: () => Promise.resolve('Bad Gateway')
+    })
+
+    await expect(
+      renderService.renderParts('unit', {}, cqManifest, {})
+    ).rejects.toThrow('Render request failed (HTTP 502)')
+  })
+})
+
+describe('renderParts network error WASM fallback', () => {
+  let originalCreateObjectURL
+  beforeEach(() => {
+    originalCreateObjectURL = URL.createObjectURL
+    URL.createObjectURL = vi.fn(() => 'blob:fallback')
+  })
+  afterEach(() => {
+    URL.createObjectURL = originalCreateObjectURL
+  })
+
+  it('catches "Failed to fetch" and retries with WASM', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    class MockWorker {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
+        } else if (msg.type === 'render') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'result', stl: new Uint8Array([1]).buffer } }), 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorker)
+
+    // Use force_backend to ensure detectMode picks backend (not WASM directly)
+    const forcedManifest = { ...manifest, force_backend: true }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Health check succeeds → backend mode (force_backend respected)
+    fetchMock.mockResolvedValueOnce({ ok: true })
+    // Render call fails with network error
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+
+    const progressEvents = []
+    const result = await renderService.renderParts('unit', {}, forcedManifest, {
+      onProgress: e => progressEvents.push(e)
+    })
+
+    expect(result).toHaveLength(1)
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[Fallback] Backend render failed'),
+      'Failed to fetch'
+    )
+    expect(progressEvents.some(e => e.log?.includes('[FALLBACK]'))).toBe(true)
+
+    warnSpy.mockRestore()
+  })
+
+  it('does NOT fallback on AbortError (user cancel)', async () => {
+    // Use weak device so detectMode chooses backend (not WASM)
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
+    fetchMock.mockRejectedValueOnce(new DOMException('Aborted', 'AbortError'))
+
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow('Aborted')
+  })
+
+  it('does NOT fallback on HTTP 500 (backend render error)', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve('Internal error')
+    })
+
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow('Render request failed (HTTP 500)')
+  })
+
+  it('does NOT fallback for CadQuery even on network error', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+    const cqManifest = { ...manifest, engine: 'cadquery' }
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // CadQuery skips health check
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+
+    await expect(
+      renderService.renderParts('unit', {}, cqManifest, {})
+    ).rejects.toThrow('Failed to fetch')
+  })
+})
+
 describe('renderParts (wasm mode)', () => {
   let originalCreateObjectURL
   beforeEach(() => {
+    // WASM mode requires a capable device
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
     originalCreateObjectURL = URL.createObjectURL
     URL.createObjectURL = vi.fn(() => 'blob:abc')
   })

@@ -493,7 +493,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Service | Purpose |
 |---------|---------|
 | `renderService.ts` | Dual-mode render (backend SSE / WASM worker) |
-| `backendDetection.ts` | Backend availability check + API base URL |
+| `backendDetection.ts` | Backend availability check + API base URL (TTL-cached: 30s negative, 5min positive) |
 | `openscad-worker.js` | Web Worker for OpenSCAD WASM rendering |
 | `verifyService.js` | STL verification client |
 | `editorService.js` | SCAD file CRUD API client |
@@ -510,7 +510,7 @@ Vite manual chunk splitting: `vendor-react` (~193KB gzip ~61KB), `vendor-three` 
 
 When the backend API is unreachable, the studio falls back to client-side rendering via OpenSCAD WASM.
 
-Detection: `isBackendAvailable()` sends `GET /api/health` with 2-second timeout. Pass → backend mode; fail → WASM mode. Result cached per session.
+Detection: `isBackendAvailable()` sends `GET /api/health` with 2-second timeout. Pass → backend mode; fail → WASM mode. Result cached with TTL: 30s for negative results (allows recovery detection), 5min for positive. `detectMode()` checks availability *before* respecting `force_backend`/`API_BASE` — so WASM fallback works even for `force_backend` projects when the backend is down. `renderParts()` also catches network errors from `renderBackend()` and transparently retries with WASM.
 
 Architecture: Main thread sends params to Web Worker → Worker creates fresh Emscripten instance per render → builds CLI args → `callMain(args)` → STL output sent back. Fresh instance needed because `callMain()` corrupts internal state.
 

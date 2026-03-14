@@ -212,6 +212,8 @@
   "export.est_cost": "成本",
   "preview.range_min": "最小",
   "preview.range_max": "最大",
+  "projects.open_demo": "打开演示项目",
+  "log.wasm_fallback": "后端不可用，使用浏览器渲染...",
   "preview.hover_hint": "将鼠标悬停在参数上以预览其几何效果",
   "preview.prerendering": "正在预渲染变体…"
 }

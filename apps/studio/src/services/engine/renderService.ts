@@ -6,7 +6,7 @@
  * Auto-detects which mode to use by checking if the backend is reachable.
  */
 
-import { isBackendAvailable, getApiBase } from '../core/backendDetection'
+import { isBackendAvailable, getApiBase, resetDetection } from '../core/backendDetection'
 import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
 import { apiFetch } from '../core/apiClient'
 
@@ -85,42 +85,62 @@ function hasWasmCapabilities(): boolean {
 
 /**
  * Detect whether to use 'backend' or 'wasm' rendering mode.
+ * Checks backend availability BEFORE respecting force_backend/API_BASE preferences,
+ * so the app can fall back to WASM when the backend is unreachable.
  */
 async function detectMode(manifest: Manifest | null, mode: string, params: Record<string, unknown>): Promise<'backend' | 'wasm'> {
+  // CadQuery engine has no WASM path — always backend
   if (manifest && manifest.engine === 'cadquery') {
     return 'backend'
   }
 
-  if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
-    return 'backend'
-  }
+  // Check backend availability first (uses TTL-cached result)
+  const available = await isBackendAvailable()
 
-  if (API_BASE) {
-    return 'backend'
-  }
-
-  if (manifest && mode && params) {
-    const tempMode = _hardwareMode
-    _hardwareMode = 'backend'
-    const est = estimateRenderTime(mode, params, manifest)
-    _hardwareMode = tempMode
-
-    if (est > 15.0) {
-      console.warn(`[Circuit Breaker] Mesh complexity too high (est. ${est.toFixed(1)}s). Bypassing WASM and falling back to Server Backend.`)
+  if (available) {
+    // Backend is up — respect preferences
+    if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
       return 'backend'
     }
-  }
+    if (API_BASE) {
+      return 'backend'
+    }
+    // Complexity circuit breaker
+    if (manifest && mode && params) {
+      const tempMode = _hardwareMode
+      _hardwareMode = 'backend'
+      const est = estimateRenderTime(mode, params, manifest)
+      _hardwareMode = tempMode
 
-  if (_hardwareMode) return _hardwareMode
-
-  const available = await isBackendAvailable()
-  if (!available) {
-    _hardwareMode = 'wasm'
+      if (est > 15.0) {
+        console.warn(`[Circuit Breaker] Mesh complexity too high (est. ${est.toFixed(1)}s). Bypassing WASM and falling back to Server Backend.`)
+        return 'backend'
+      }
+    }
+    if (_hardwareMode) return _hardwareMode
+    _hardwareMode = hasWasmCapabilities() ? 'wasm' : 'backend'
     return _hardwareMode
   }
 
-  _hardwareMode = hasWasmCapabilities() ? 'wasm' : 'backend'
-  return _hardwareMode
+  // Backend unavailable — fall back to WASM if capable
+  if (hasWasmCapabilities()) {
+    console.warn('[Fallback] Backend unavailable, falling back to WASM rendering.')
+    _hardwareMode = 'wasm'
+    return 'wasm'
+  }
+
+  // No WASM either — return backend (will fail, but renderBackend will throw with a clear error)
+  return 'backend'
+}
+
+/**
+ * Check if an error is a network-level failure (not a backend render error).
+ */
+function isNetworkError(err: unknown): boolean {
+  if (err instanceof TypeError && err.message === 'Failed to fetch') return true
+  if (err instanceof DOMException && err.name === 'AbortError') return false // user cancel
+  if (err instanceof Error && err.message.includes('net::ERR_')) return true
+  return false
 }
 
 /**
@@ -378,6 +398,7 @@ async function renderBackend(
 
 /**
  * Main entry point: render parts for the given mode and parameters.
+ * If backend rendering fails with a network error, falls back to WASM when possible.
  */
 export async function renderParts(
   mode: string,
@@ -387,7 +408,19 @@ export async function renderParts(
 ): Promise<RenderPart[]> {
   const currentMode = await detectMode(manifest, mode, params)
   if (currentMode === 'backend') {
-    return renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
+    try {
+      return await renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
+    } catch (err) {
+      // If backend fails with network error, try WASM fallback
+      if (manifest?.engine !== 'cadquery' && hasWasmCapabilities() && isNetworkError(err)) {
+        console.warn('[Fallback] Backend render failed, retrying with WASM:', (err as Error).message)
+        resetDetection() // clear cached availability so next render re-checks
+        _hardwareMode = 'wasm'
+        onProgress?.({ log: '[FALLBACK] Backend unavailable, using browser rendering...' })
+        return renderWasm(mode, params, manifest, onProgress, abortSignal)
+      }
+      throw err // re-throw non-network errors
+    }
   } else {
     return renderWasm(mode, params, manifest, onProgress, abortSignal)
   }

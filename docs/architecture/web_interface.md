@@ -322,7 +322,7 @@ src/
 │   └── downloadUtils.js           # File/ZIP download helpers
 ├── services/
 │   ├── renderService.js           # Dual-mode render (backend SSE / WASM worker)
-│   ├── backendDetection.js        # Backend availability check + API base URL
+│   ├── backendDetection.ts        # Backend availability check + API base URL (TTL-cached: 30s negative, 5min positive)
 │   ├── openscad-worker.js         # Web Worker for OpenSCAD WASM rendering
 │   ├── verifyService.js           # STL verification client
 │   ├── assemblyFetcher.js         # Assembly STL fetcher for animated preview

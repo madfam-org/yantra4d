@@ -23,7 +23,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "thumbnail": "/docs/images/gridfinity_thumb.png", // Path to gallery image
     "tags": ["storage", "modular", "organization"],
     "difficulty": "beginner",
-    "force_backend": true,                        // Optional: disables local rendering
+    "force_backend": true,                        // Optional: prefer backend rendering (overridden by WASM fallback when backend is unreachable)
     "hard_reload": true                           // Optional: prevents preset persistence across reloads
   },
 

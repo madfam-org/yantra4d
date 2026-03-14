@@ -133,12 +133,14 @@ describe('ProjectsView', () => {
     expect(screen.getAllByText('Portacosas')).toHaveLength(1)
   })
 
-  it('renders error message on fetch failure', async () => {
+  it('renders error message on fetch failure with retry and demo buttons', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'))
     renderWithProviders(<ProjectsView />)
     await waitFor(() => {
       expect(screen.getByText(/Network error/)).toBeInTheDocument()
     })
+    expect(screen.getByText('Retry')).toBeInTheDocument()
+    expect(screen.getByText('Open Demo Project')).toBeInTheDocument()
   })
 
   it('renders error on HTTP error status', async () => {
@@ -152,6 +154,43 @@ describe('ProjectsView', () => {
     await waitFor(() => {
       expect(screen.getByText(/HTTP 500/)).toBeInTheDocument()
     })
+  })
+
+  it('retry button re-fetches projects on click', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockRejectedValueOnce(new Error('Network error'))
+    renderWithProviders(<ProjectsView />)
+    await waitFor(() => {
+      expect(screen.getByText(/Network error/)).toBeInTheDocument()
+    })
+
+    // Mock a successful retry
+    fetchMock.mockImplementation((url) => {
+      if (url.toString().includes('/manifest')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(fallbackManifest) })
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(mockProjects) })
+    })
+
+    fireEvent.click(screen.getByText('Retry'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Gridfinity Extended')).toBeInTheDocument()
+    })
+  })
+
+  it('demo button renders and is clickable', async () => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'))
+    renderWithProviders(<ProjectsView />)
+    await waitFor(() => {
+      expect(screen.getByText(/Network error/)).toBeInTheDocument()
+    })
+
+    const demoBtn = screen.getByText('Open Demo Project')
+    expect(demoBtn).toBeInTheDocument()
+    expect(demoBtn.tagName).toBe('BUTTON')
+    // Click should not throw — it navigates to /project/{fallback slug}
+    expect(() => fireEvent.click(demoBtn)).not.toThrow()
   })
 
   it('renders empty state with CTA link', async () => {

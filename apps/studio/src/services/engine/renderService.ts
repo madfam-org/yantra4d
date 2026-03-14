@@ -416,6 +416,8 @@ export async function renderParts(
         console.warn('[Fallback] Backend render failed, retrying with WASM:', (err as Error).message)
         resetDetection() // clear cached availability so next render re-checks
         _hardwareMode = 'wasm'
+        // Console log — intentionally not i18n'd (service layer has no React context).
+        // The i18n key "log.wasm_fallback" exists in locale files for future UI-facing usage.
         onProgress?.({ log: '[FALLBACK] Backend unavailable, using browser rendering...' })
         return renderWasm(mode, params, manifest, onProgress, abortSignal)
       }

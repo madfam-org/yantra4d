@@ -9,6 +9,10 @@
  * 1. The studio loads and initialises without errors.
  * 2. The render pipeline falls back to WASM mode gracefully.
  * 3. The user sees appropriate feedback (no crash, no blank screen).
+ *
+ * NOTE: TTL-based re-check (backend recovery after 30s negative TTL expires)
+ * is covered by unit tests in backendDetection.test.js, not here — 30s
+ * real-time waits are impractical for E2E CI.
  */
 
 import { test, expect } from '../../fixtures/app.fixture.js'

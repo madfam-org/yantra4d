@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { goToProjects, setLanguage } from '../../helpers/test-utils.js'
+import { MOCK_PROJECTS } from '../../helpers/api-mocker.js'
 
 test.describe('Projects View', () => {
   test.beforeEach(async ({ page }) => {
@@ -75,5 +76,40 @@ test.describe('Projects View', () => {
     // Retry and Open Demo buttons should be present
     await expect(page.getByText(/Retry|Reintentar/i)).toBeVisible({ timeout: 5000 })
     await expect(page.getByText(/Open Demo|Abrir Proyecto Demo/i)).toBeVisible({ timeout: 5000 })
+  })
+
+  test('retry button re-fetches projects after error', async ({ page }) => {
+    // Force 500 → error state
+    await page.unroute('**/api/admin/projects**')
+    await page.route('**/api/admin/projects**', (route) => {
+      route.fulfill({ status: 500, json: { error: 'Server error' } })
+    })
+    await goToProjects(page)
+    await expect(page.getByText(/Retry|Reintentar/i)).toBeVisible({ timeout: 10000 })
+
+    // Restore healthy response
+    await page.unroute('**/api/admin/projects**')
+    await page.route('**/api/admin/projects**', (route) => {
+      route.fulfill({ json: MOCK_PROJECTS })
+    })
+
+    // Click retry → projects should load
+    await page.getByText(/Retry|Reintentar/i).click()
+    await expect(page.getByText('Test Project')).toBeVisible({ timeout: 10000 })
+  })
+
+  test('demo button navigates to fallback project', async ({ page }) => {
+    await page.unroute('**/api/admin/projects**')
+    await page.route('**/api/admin/projects**', (route) => {
+      route.fulfill({ status: 500, json: { error: 'Server error' } })
+    })
+    await goToProjects(page)
+    await expect(page.getByText(/Open Demo|Abrir Proyecto Demo/i)).toBeVisible({ timeout: 10000 })
+
+    // Click demo → navigates to gridfinity
+    await page.getByText(/Open Demo|Abrir Proyecto Demo/i).click()
+    await page.waitForURL('**/project/gridfinity**', { timeout: 10000 })
+    const pathname = await page.evaluate(() => window.location.pathname)
+    expect(pathname).toContain('/project/gridfinity')
   })
 })

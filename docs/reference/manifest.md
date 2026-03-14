@@ -75,6 +75,12 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
         "type": "color-gradient"             // "color-gradient" or "component-picker"
         // If type="component-picker", add: "catalog": "nopscadlib/ball_bearings"
       },
+      "preview_hint": {                      // Optional: hover-to-preview visual hint
+        "type": "axis_scale",                // "axis_scale" | "part_highlight" | "toggle_geometry" | "none"
+        "axis": "x",                         // "x" | "y" | "z" | "radial" (for axis_scale)
+        "scale_factor": 42,                  // mm of change per unit (optional, auto-inferred from bbox)
+        "affected_parts": ["cup", "baseplate"]  // Part IDs that change (optional, defaults to mode parts)
+      },
       "maxlength": 30                        // Optional: max characters for text params
     }
     // ... more parameters
@@ -223,6 +229,49 @@ Projects can optionally declare `hyperobject` metadata to be classified as **Bou
 **Reference implementations**:
 - See `projects/microscope-slide-holder/project.json` for the first hyperobject in the commons.
 - See `projects/scara-robotics/project.json` for the benchmark dual-engine parity implementation.
+
+---
+
+## Parameter Preview Hints
+
+The optional `preview_hint` field on parameters enables hover-to-preview in the 3D viewport. When a user hovers over a parameter control, the viewer shows directional arrows, range labels, or part highlights to indicate how that parameter affects model geometry — without requiring a full render.
+
+### Hint types
+
+| Type | Visual | Use for |
+|------|--------|---------|
+| `axis_scale` | Double-headed arrow along axis + min/max labels | Width, height, depth, diameter sliders |
+| `part_highlight` | Amber glow on affected parts | Non-dimensional sliders, selects |
+| `toggle_geometry` | Amber glow on affected parts | Checkboxes that add/remove geometry |
+| `none` | No visual hint | Parameters with no geometric effect |
+
+### Auto-inference
+
+If `preview_hint` is omitted, the system infers it from the parameter label:
+- Labels containing "width" or "x" → `axis_scale` on X
+- Labels containing "depth", "length", or "y" → `axis_scale` on Y
+- Labels containing "height" or "z" → `axis_scale` on Z
+- Labels containing "diameter" or "radius" → `axis_scale` radial
+- Other sliders → `part_highlight`
+- Checkboxes → `toggle_highlight`
+
+Explicit `preview_hint` overrides auto-inference. Use it when the label doesn't match the actual geometric effect or when you want to specify `scale_factor` or `affected_parts`.
+
+### Example
+
+```json
+{
+  "id": "width_units",
+  "type": "slider",
+  "label": { "en": "Width (units)" },
+  "preview_hint": {
+    "type": "axis_scale",
+    "axis": "x",
+    "scale_factor": 42,
+    "affected_parts": ["cup", "baseplate"]
+  }
+}
+```
 
 ---
 

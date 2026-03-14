@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useManifest } from '../../contexts/project/ManifestProvider'
@@ -12,6 +12,8 @@ import { apiFetch } from '../../services/core/apiClient'
 import { useImageExport } from '../render/useImageExport'
 import { useRender } from '../render/useRender'
 import { useKeyboardShortcuts } from '../editor/useKeyboardShortcuts'
+import { inferPreviewHint } from '../../lib/previewHintInference'
+import { useParameterPreviewCache } from '../render/useParameterPreviewCache'
 
 const RENDER_DEBOUNCE_MS = 500
 
@@ -99,6 +101,20 @@ export function useProjectParams({ viewerRef }) {
   const [headDiffMode, setHeadDiffMode] = useState(false)
   const [headParts, setHeadParts] = useState([])
   const [loadingHeadDiff, setLoadingHeadDiff] = useState(false)
+
+  // Parameter preview hover state
+  const [hoveredParamId, setHoveredParamId] = useState(null)
+  const hoveredParam = useMemo(() => {
+    if (!hoveredParamId) return null
+    const paramDef = manifest.parameters?.find(p => p.id === hoveredParamId)
+    if (!paramDef) return null
+    return {
+      paramId: hoveredParamId,
+      paramDef,
+      currentValue: params[hoveredParamId],
+      hint: inferPreviewHint(paramDef, manifest, mode),
+    }
+  }, [hoveredParamId, manifest, params, mode])
 
   const consoleRef = useRef(null)
 
@@ -379,6 +395,11 @@ export function useProjectParams({ viewerRef }) {
     modes,
   })
 
+  // Cached geometry variants for parameter preview ghost overlay
+  const { cachedVariants, preRenderStatus } = useParameterPreviewCache({
+    manifest, mode, params, parts, loading, project: projectSlug,
+  })
+
   return {
     // Navigation
     currentView, isDemo,
@@ -423,6 +444,9 @@ export function useProjectParams({ viewerRef }) {
     headDiffMode, setHeadDiffMode,
     headParts, setHeadParts,
     loadingHeadDiff, setLoadingHeadDiff,
+    // Parameter preview
+    hoveredParam, setHoveredParamId,
+    cachedVariants, preRenderStatus,
     // Share
     copyShareUrl,
     // Shortcut help

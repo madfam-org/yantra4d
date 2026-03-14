@@ -138,6 +138,12 @@ function ProjectProviderContent({ children }) {
     shortcutHelpOpen: projectParams.shortcutHelpOpen,
     setShortcutHelpOpen: projectParams.setShortcutHelpOpen,
 
+    // Parameter preview
+    hoveredParam: projectParams.hoveredParam,
+    setHoveredParamId: projectParams.setHoveredParamId,
+    cachedVariants: projectParams.cachedVariants,
+    preRenderStatus: projectParams.preRenderStatus,
+
     // Assembly
     assemblyActive: assembly.assemblyActive,
     highlightedParts: assembly.highlightedParts,

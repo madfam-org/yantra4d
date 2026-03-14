@@ -152,6 +152,7 @@
     },
     {
       "id": "baseplate_std",
+      "mode": "baseplate",
       "label": {
         "es": "Placa Base Estándar (2×2)",
         "en": "Standard Baseplate (2×2)"
@@ -164,6 +165,7 @@
     },
     {
       "id": "lid_std",
+      "mode": "lid",
       "label": {
         "es": "Tapa Estándar (2×1)",
         "en": "Standard Lid (2×1)"
@@ -226,7 +228,13 @@
         "baseplate",
         "lid"
       ],
-      "group": "dimensions"
+      "group": "dimensions",
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 42,
+        "affected_parts": ["cup", "baseplate", "lid"]
+      }
     },
     {
       "id": "depth_units",
@@ -268,7 +276,13 @@
       "visible_in_modes": [
         "cup"
       ],
-      "group": "dimensions"
+      "group": "dimensions",
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 7,
+        "affected_parts": ["cup"]
+      }
     },
     {
       "id": "cup_wall_thickness",
@@ -563,7 +577,11 @@
       "visible_in_modes": [
         "cup"
       ],
-      "group": "mounting"
+      "group": "mounting",
+      "preview_hint": {
+        "type": "toggle_geometry",
+        "affected_parts": ["cup"]
+      }
     },
     {
       "id": "enable_screws",
@@ -805,7 +823,12 @@
   },
   "export_formats": [
     "stl",
-    "3mf"
+    "3mf",
+    "off",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
   ],
   "camera_views": [
     {

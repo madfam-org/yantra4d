@@ -18,6 +18,7 @@ import ClippingPlane from './ClippingPlane'
 import MeasureTool from './MeasureTool'
 import ThicknessOverlay from './ThicknessOverlay'
 import OverhangOverlay from './OverhangOverlay'
+import ParameterPreviewOverlay from './ParameterPreviewOverlay'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
@@ -54,8 +55,9 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                     child.material.color.set(color)
                     // If Emissive is active, copy the emissive props too
                     const isHighlight = highlightMode === 'highlight'
-                    child.material.emissive.set(isHighlight ? color : '#000000')
-                    child.material.emissiveIntensity = isHighlight ? 0.15 : 0
+                    const isPreviewGltf = highlightMode === 'preview'
+                    child.material.emissive.set(isHighlight ? color : isPreviewGltf ? '#f59e0b' : '#000000')
+                    child.material.emissiveIntensity = isHighlight ? 0.15 : isPreviewGltf ? 0.25 : 0
 
                     child.material.needsUpdate = true
                 }
@@ -63,14 +65,15 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
         }
     }, [gltfScene, color, highlightMode])
 
-    // highlightMode: 'normal' | 'highlight' | 'ghost' | 'hidden'
+    // highlightMode: 'normal' | 'highlight' | 'ghost' | 'hidden' | 'preview'
     if (highlightMode === 'hidden') return null
     if (!geom) return null
 
     const isGhost = highlightMode === 'ghost'
     const isHighlight = highlightMode === 'highlight'
-    const emissive = isHighlight ? color : '#000000'
-    const emissiveIntensity = isHighlight ? 0.15 : 0
+    const isPreview = highlightMode === 'preview'
+    const emissive = isHighlight ? color : isPreview ? '#f59e0b' : '#000000'
+    const emissiveIntensity = isHighlight ? 0.15 : isPreview ? 0.25 : 0
 
     // Glass material: physically-based transparent rendering
     if (glass) {
@@ -200,7 +203,7 @@ function useResponsiveFov() {
     return isMobile ? CAMERA_FOV_MOBILE : CAMERA_FOV_DESKTOP
 }
 
-const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm' }, ref) => {
+const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm' }, ref) => {
     const geometriesRef = React.useRef({})
     const prevCenterRef = React.useRef(null)
     const prevMaxDimRef = React.useRef(null)
@@ -375,12 +378,22 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
 
     const getHighlightMode = useCallback((partType) => {
-        if (!assemblyActive) return 'normal'
-        const isVisible = visibleParts.includes(partType)
-        if (!isVisible) return 'hidden'
-        const isHighlighted = highlightedParts.includes(partType)
-        return isHighlighted ? 'highlight' : 'ghost'
-    }, [assemblyActive, highlightedParts, visibleParts])
+        // Assembly mode takes priority
+        if (assemblyActive) {
+            const isVisible = visibleParts.includes(partType)
+            if (!isVisible) return 'hidden'
+            const isHighlighted = highlightedParts.includes(partType)
+            return isHighlighted ? 'highlight' : 'ghost'
+        }
+
+        // Parameter preview: highlight affected parts, ghost others
+        if (hoveredParam?.hint?.affected_parts?.length > 0) {
+            const isAffected = hoveredParam.hint.affected_parts.includes(partType)
+            return isAffected ? 'preview' : 'ghost'
+        }
+
+        return 'normal'
+    }, [assemblyActive, highlightedParts, visibleParts, hoveredParam])
 
     useImperativeHandle(ref, () => ({
         captureSnapshot: () => sceneRef.current?.captureSnapshot(),
@@ -526,6 +539,15 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
 
                     {overhangData && overhangData.points?.length > 0 && (
                         <OverhangOverlay points={overhangData.points} angles={overhangData.angles} threshold={overhangData.threshold_deg} />
+                    )}
+
+                    {hoveredParam && !assemblyActive && !headDiffMode && !loading && parts.length > 0 && (
+                        <ParameterPreviewOverlay
+                            hoveredParam={hoveredParam}
+                            sceneBox={sceneBox}
+                            centerOfMass={centerOfMass}
+                            cachedVariants={cachedVariants}
+                        />
                     )}
 
                     <Suspense fallback={null}>

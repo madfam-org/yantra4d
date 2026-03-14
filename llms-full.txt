@@ -158,7 +158,13 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
       "parent": "show_walls",                 // Optional parent param ID
       "visible_in_modes": ["unit", "assembly"],
       "widget": { "type": "color-gradient" }, // Optional custom widget
-      "maxlength": 30                         // For text params
+      "maxlength": 30,                        // For text params
+      "preview_hint": {                        // Optional: hover-to-preview hint
+        "type": "axis_scale",                  // "axis_scale"|"part_highlight"|"toggle_geometry"|"none"
+        "axis": "x",                           // "x"|"y"|"z"|"radial" (for axis_scale)
+        "scale_factor": 42,                    // mm per unit (optional)
+        "affected_parts": ["cup","baseplate"]  // Part IDs affected by this param
+      }
     }
   ],
 

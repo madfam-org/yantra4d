@@ -209,5 +209,9 @@
   "export.no_parts": "Rendez un modèle d'abord",
   "export.est_time": "Temps",
   "export.est_weight": "Poids",
-  "export.est_cost": "Coût"
+  "export.est_cost": "Coût",
+  "preview.range_min": "Min",
+  "preview.range_max": "Max",
+  "preview.hover_hint": "Survolez un paramètre pour prévisualiser son effet géométrique",
+  "preview.prerendering": "Pré-rendu des variantes…"
 }

@@ -98,6 +98,13 @@ vi.mock('../editor/useKeyboardShortcuts', () => ({
   useKeyboardShortcuts: vi.fn(),
 }))
 
+vi.mock('../render/useParameterPreviewCache', () => ({
+  useParameterPreviewCache: vi.fn(() => ({
+    cachedVariants: new Map(),
+    preRenderStatus: 'idle',
+  })),
+}))
+
 describe('useProjectParams', () => {
   it('toggles grid preset', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
@@ -547,6 +554,20 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     expect(next.num_slots).toBe(10)    // same as default → preset wins (same value)
     expect(next.handle).toBe(1)        // same as default → preset wins
     expect(next.assembly_level).toBe(2) // system always wins
+  })
+
+  // ────────────────────────────────────────
+  // Cached geometry preview variants
+  // ────────────────────────────────────────
+
+  it('exposes cachedVariants from useParameterPreviewCache', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    expect(result.current.cachedVariants).toBeInstanceOf(Map)
+  })
+
+  it('exposes preRenderStatus from useParameterPreviewCache', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    expect(result.current.preRenderStatus).toBe('idle')
   })
 })
 

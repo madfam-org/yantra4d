@@ -42,6 +42,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     printEstimate, setPrintEstimate,
     assemblyActive, highlightedParts, visibleParts,
     headDiffMode, headParts,
+    hoveredParam,
+    cachedVariants,
     logs,
     orthoCamera, setOrthoCamera,
     clippingEnabled, clippingAxis, clippingPosition,
@@ -98,6 +100,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         visibleParts={visibleParts}
         headDiffMode={headDiffMode}
         headParts={headParts}
+        hoveredParam={hoveredParam}
+        cachedVariants={cachedVariants}
         orthoCamera={orthoCamera}
         setOrthoCamera={setOrthoCamera}
         clippingEnabled={clippingEnabled}

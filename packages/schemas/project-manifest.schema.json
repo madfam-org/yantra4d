@@ -311,6 +311,41 @@
             "required": [
               "type"
             ]
+          },
+          "preview_hint": {
+            "type": "object",
+            "description": "Visual hint for how this parameter affects geometry in the 3D viewport on hover.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "axis_scale",
+                  "part_highlight",
+                  "toggle_geometry",
+                  "none"
+                ]
+              },
+              "axis": {
+                "type": "string",
+                "enum": [
+                  "x",
+                  "y",
+                  "z",
+                  "radial"
+                ]
+              },
+              "scale_factor": {
+                "type": "number",
+                "description": "Approximate mm of geometric change per unit of this parameter."
+              },
+              "affected_parts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Part IDs that change when this parameter changes."
+              }
+            }
           }
         },
         "anyOf": [

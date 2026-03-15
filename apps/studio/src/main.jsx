@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import { initPostHog } from "./lib/analytics";
+initPostHog();
 import { ThemeProvider } from "./contexts/system/ThemeProvider.jsx"
 import { AuthProvider } from "./contexts/auth/AuthProvider.jsx"
 import { ManifestProvider } from "./contexts/project/ManifestProvider.jsx"

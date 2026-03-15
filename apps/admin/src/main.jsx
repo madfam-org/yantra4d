@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './styles/admin.css'
+import { initPostHog } from "./lib/analytics";
+initPostHog();
 
 // Only wrap with JanuaProvider in production (AUTH_ENABLED=true)
 const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED === 'true'

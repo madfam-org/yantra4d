@@ -15,6 +15,7 @@ Key modules:
 - services/editor/             — Editor CRUD + git ops + GitHub import
 - middleware/auth.py           — JWT auth (Janua JWKS) + tier gating
 """
+import atexit
 import logging
 
 from flask import Flask, g, jsonify, send_from_directory
@@ -57,6 +58,10 @@ logger = logging.getLogger(__name__)
 
 def create_app():
     """Application factory for Flask app."""
+    from posthog_analytics import init_posthog, shutdown as posthog_shutdown
+    init_posthog()
+    atexit.register(posthog_shutdown)
+
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB upload limit
     CORS(app, origins=Config.CORS_ORIGINS)

@@ -51,6 +51,7 @@
     "manifold-3d": "^3.3.2",
     "next-themes": "^0.4.6",
     "openscad-wasm": "^0.0.4",
+    "posthog-js": "^1.360.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-resizable-panels": "^4.7.2",

@@ -5,17 +5,13 @@
  * returns a synthetic admin user without contacting Janua.
  *
  * In production (VITE_AUTH_ENABLED=true), delegates to the real
- * useAuth and useUser hooks from @janua/react-sdk.
+ * useAuth hook from @janua/react-sdk which consumes JanuaProvider context.
+ * Authentication uses the OIDC/PKCE redirect flow — no direct fetch to
+ * auth.madfam.io from the browser (avoids CORS issues).
  */
-// Dynamic import at module level — set by init()
-let _useAuth = null
+import { useAuth } from '@janua/react-sdk'
 
-const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED === 'true'
-
-// Eagerly resolve the real hook if auth is enabled
-if (AUTH_ENABLED) {
-    import('@janua/react-sdk').then(mod => { _useAuth = mod.useAuth })
-}
+export const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED === 'true'
 
 const DEV_USER = {
     id: 'dev-local',
@@ -25,27 +21,38 @@ const DEV_USER = {
 }
 
 /**
- * @returns {{ user, isAuthenticated, isLoading, signIn, signOut }}
+ * @returns {{ user, isAuthenticated, isLoading, signIn, signOut, signInWithOAuth, handleOAuthCallback, error, clearError }}
  */
 export function useJanuaAuth() {
-    // In production, use the real Janua SDK hooks
-    const janua = AUTH_ENABLED && _useAuth ? _useAuth() : null  // eslint-disable-line react-hooks/rules-of-hooks
-
+    // Always call useAuth — when AUTH_ENABLED is false, JanuaProvider is not
+    // in the tree so we gate the call to avoid the "must be inside JanuaProvider" error.
+    // This is intentionally conditional on a build-time constant (not runtime state),
+    // so the hook call order is deterministic per build.
     if (!AUTH_ENABLED) {
         return {
             user: DEV_USER,
             isAuthenticated: true,
             isLoading: false,
+            error: null,
             signIn: async () => { },
             signOut: async () => { },
+            signInWithOAuth: async () => { },
+            handleOAuthCallback: async () => { },
+            clearError: () => { },
         }
     }
 
+    const auth = useAuth() // eslint-disable-line react-hooks/rules-of-hooks
+
     return {
-        user: janua?.user ?? null,
-        isAuthenticated: !!janua?.user,
-        isLoading: janua?.isLoading ?? false,
-        signIn: janua?.signIn,
-        signOut: janua?.signOut,
+        user: auth.user ?? null,
+        isAuthenticated: auth.isAuthenticated,
+        isLoading: auth.isLoading,
+        error: auth.error,
+        signIn: auth.signIn,
+        signOut: auth.signOut,
+        signInWithOAuth: auth.signInWithOAuth,
+        handleOAuthCallback: auth.handleOAuthCallback,
+        clearError: auth.clearError,
     }
 }

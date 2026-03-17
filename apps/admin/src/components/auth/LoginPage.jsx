@@ -1,12 +1,15 @@
 import { SignIn } from '@janua/ui'
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
+/**
+ * LoginPage — renders the Janua SignIn component with context-based auth.
+ *
+ * In production the SignIn component uses the JanuaProvider context (via
+ * the `januaClient` prop) so all auth calls go through the SDK's PKCE
+ * redirect flow instead of making direct CORS-blocked fetch requests.
+ *
+ * @param {{ auth: ReturnType<import('../../hooks/useJanuaAuth').useJanuaAuth> }} props
+ */
 export default function LoginPage({ auth }) {
-    const handleAfterSignIn = () => {
-        // Auth state is managed by the parent auth context
-        // Redirect will be handled by the auth guard
-    }
-
     return (
         <div className="flex min-h-screen items-center justify-center bg-background px-4">
             <div className="w-full max-w-sm space-y-0">
@@ -19,11 +22,17 @@ export default function LoginPage({ auth }) {
                 </div>
 
                 <SignIn
-                    afterSignIn={handleAfterSignIn}
+                    afterSignIn={() => {
+                        // Auth state is managed by JanuaProvider context.
+                        // AuthGuard re-renders automatically when isAuthenticated changes.
+                    }}
                     onError={(err) => console.error('Login error:', err)}
                     apiUrl={import.meta.env.VITE_JANUA_BASE_URL || 'https://auth.madfam.io'}
-                    socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
-                    showRememberMe={false}
+                    enableJanuaSSO={true}
+                    socialProviders={{ google: true, github: true, microsoft: false, apple: false }}
+                    showRememberMe={true}
+                    termsUrl="https://madfam.io/terms"
+                    privacyUrl="https://madfam.io/privacy"
                 />
 
                 <p className="text-xs text-muted-foreground text-center mt-4">

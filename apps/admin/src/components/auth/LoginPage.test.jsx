@@ -1,17 +1,12 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
+let capturedSignInProps = {}
 vi.mock('@janua/ui', () => ({
-    SignIn: ({ afterSignIn, onError, ...props }) => (
-        <div data-testid="janua-signin" {...props}>Janua SignIn</div>
-    ),
-}))
-vi.mock('@/components/ui/card', () => ({
-    Card: ({ children, ...props }) => <div {...props}>{children}</div>,
-    CardDescription: ({ children, ...props }) => <p {...props}>{children}</p>,
-    CardFooter: ({ children, ...props }) => <div {...props}>{children}</div>,
-    CardHeader: ({ children, ...props }) => <div {...props}>{children}</div>,
-    CardTitle: ({ children, ...props }) => <h2 {...props}>{children}</h2>,
+    SignIn: (props) => {
+        capturedSignInProps = props
+        return <div data-testid="janua-signin">Janua SignIn</div>
+    },
 }))
 
 import LoginPage from './LoginPage'
@@ -20,7 +15,17 @@ describe('LoginPage', () => {
     const defaultAuth = {
         isLoading: false,
         isAuthenticated: false,
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+        signInWithOAuth: vi.fn(),
+        handleOAuthCallback: vi.fn(),
+        error: null,
+        clearError: vi.fn(),
     }
+
+    beforeEach(() => {
+        capturedSignInProps = {}
+    })
 
     it('renders the login page', () => {
         render(<LoginPage auth={defaultAuth} />)
@@ -43,5 +48,19 @@ describe('LoginPage', () => {
         const link = screen.getByText('Janua')
         expect(link).toHaveAttribute('href', 'https://github.com/madfam-org/janua')
         expect(link).toHaveAttribute('target', '_blank')
+    })
+
+    it('passes SSO and social provider config to SignIn', () => {
+        render(<LoginPage auth={defaultAuth} />)
+        expect(capturedSignInProps.enableJanuaSSO).toBe(true)
+        expect(capturedSignInProps.socialProviders).toEqual({
+            google: true,
+            github: true,
+            microsoft: false,
+            apple: false,
+        })
+        expect(capturedSignInProps.showRememberMe).toBe(true)
+        expect(capturedSignInProps.termsUrl).toBe('https://madfam.io/terms')
+        expect(capturedSignInProps.privacyUrl).toBe('https://madfam.io/privacy')
     })
 })

@@ -19,7 +19,7 @@ resources:
 - yantra4d-redis-service.yaml
 
 images:
-- digest: sha256:3b391854e50c63121e3a347c38df2e7abc05fda0180212b5a9ecebb79b4e056c
+- digest: sha256:f8ac1ea62dba1867cb72b297c635883afef81fd9ffbbab3df4ef7aafa23c5109
   name: ghcr.io/madfam-org/yantra4d/admin
   newName: ghcr.io/madfam-org/yantra4d/admin
 - digest: sha256:3624d7ad22c43012f7bc5c7ba0caeb3b7ebd130804a35cead60b98ff6a98f83c

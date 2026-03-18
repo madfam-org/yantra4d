@@ -19,15 +19,15 @@ resources:
 - yantra4d-redis-service.yaml
 
 images:
-- digest: sha256:f8ac1ea62dba1867cb72b297c635883afef81fd9ffbbab3df4ef7aafa23c5109
+- digest: sha256:a0a745c4efe1e8a7c49d76e3b1d32223d25848c01eee5139d219b72e5fe7aa98
   name: ghcr.io/madfam-org/yantra4d/admin
   newName: ghcr.io/madfam-org/yantra4d/admin
 - digest: sha256:3624d7ad22c43012f7bc5c7ba0caeb3b7ebd130804a35cead60b98ff6a98f83c
   name: ghcr.io/madfam-org/yantra4d/backend
   newName: ghcr.io/madfam-org/yantra4d/backend
-- digest: sha256:283bf51649baf51d4b1734b684b01b65a7175609dba72990fa878655dbc6f431
+- digest: sha256:287c8f1d0b7cc7ba6ec5c8ca5efd0ed20bde2e687c3cc94a0c2f518329a80b64
   name: ghcr.io/madfam-org/yantra4d/landing
   newName: ghcr.io/madfam-org/yantra4d/landing
-- digest: sha256:9e3b0ccac6ae62d7edea86e533e227574d6560f0592993413cd1762f28081f04
+- digest: sha256:0138c4bcd048e934fd4010f159268d0f9d48f17d2fd274999af35043e8e05bbc
   name: ghcr.io/madfam-org/yantra4d/studio
   newName: ghcr.io/madfam-org/yantra4d/studio

@@ -18,11 +18,15 @@ interface SerializedPart {
   type: string
   arrayBuffer: ArrayBuffer
   isGlb: boolean
+  /** ArrayBuffer for the download-format file (e.g. STL) when it differs from the viewer blob. */
+  downloadArrayBuffer?: ArrayBuffer
 }
 
 interface CachedPart {
   type: string
   blob: Blob
+  /** Blob for the download-format file, if stored separately from the viewer blob. */
+  downloadBlob?: Blob
 }
 
 const DB_NAME = 'yantra4d-render-cache'
@@ -91,10 +95,16 @@ export async function get(key: string): Promise<CachedPart[] | null> {
     }
 
     // Convert stored ArrayBuffers back to Blobs
-    return entry.parts.map(p => ({
-      type: p.type,
-      blob: new Blob([p.arrayBuffer], { type: p.isGlb ? 'model/gltf-binary' : 'model/stl' })
-    }))
+    return entry.parts.map(p => {
+      const part: CachedPart = {
+        type: p.type,
+        blob: new Blob([p.arrayBuffer], { type: p.isGlb ? 'model/gltf-binary' : 'model/stl' }),
+      }
+      if (p.downloadArrayBuffer) {
+        part.downloadBlob = new Blob([p.downloadArrayBuffer], { type: 'model/stl' })
+      }
+      return part
+    })
   } catch {
     return null
   }
@@ -104,6 +114,7 @@ interface PutPart {
   type: string
   url?: string
   blob?: Blob
+  download_url?: string
 }
 
 /**
@@ -124,7 +135,20 @@ export async function put(key: string, parts: PutPart[]): Promise<void> {
           return null
         }
         const urlPath = (p.url || '').split('?')[0].toLowerCase()
-        return { type: p.type, arrayBuffer, isGlb: urlPath.endsWith('.glb') }
+        const result: SerializedPart = { type: p.type, arrayBuffer, isGlb: urlPath.endsWith('.glb') }
+
+        // Also store the download-format blob (e.g. STL) when it differs from
+        // the viewer URL. This ensures download_url survives L2 cache round-trips
+        // so handleDownloadStl can skip redundant re-renders.
+        if (p.download_url && p.download_url !== p.url) {
+          try {
+            const dlRes = await fetch(p.download_url)
+            result.downloadArrayBuffer = await dlRes.arrayBuffer()
+          } catch {
+            // Non-fatal — download will fall back to re-render
+          }
+        }
+        return result
       })
     )
 

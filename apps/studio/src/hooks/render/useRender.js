@@ -47,11 +47,17 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
         const idbKey = await idbCache.makeCacheKey(project || '', mode, params, exportFormat || 'glb')
         const cached = await idbCache.get(idbKey)
         if (cached) {
-          const restoredParts = cached.map(p => ({
-            type: p.type,
-            url: URL.createObjectURL(p.blob),
-            isGlb: p.blob.type === 'model/gltf-binary'
-          }))
+          const restoredParts = cached.map(p => {
+            const part = {
+              type: p.type,
+              url: URL.createObjectURL(p.blob),
+              isGlb: p.blob.type === 'model/gltf-binary',
+            }
+            if (p.downloadBlob) {
+              part.download_url = URL.createObjectURL(p.downloadBlob)
+            }
+            return part
+          })
           setParts(restoredParts)
           partsCacheRef.current[cacheKey] = restoredParts
           setLogs(prev => prev + `\n⚡ ${t("log.cache_hit")}`)

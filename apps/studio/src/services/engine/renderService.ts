@@ -391,7 +391,7 @@ async function renderBackend(
     return {
       ...p,
       url: primaryUrl + '?t=' + timestamp,
-      download_url: viewerUrl ? (downloadUrl + '?t=' + timestamp) : undefined,
+      download_url: downloadUrl + '?t=' + timestamp,
     }
   })
 }

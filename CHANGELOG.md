@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Fixed
+- **STL Export Downloads GLB Instead of STL (ISSUE-R2-3)** — Clicking "Download
+  STL" served a GLB file due to three interacting bugs: (1) `renderService.ts`
+  only set `download_url` when `viewer_url` was present — on cache hits it was
+  `undefined`, falling back to the GLB viewer URL; (2) `downloadFile()` used
+  `<a download>` which browsers ignore for cross-origin URLs, so the server's
+  GLB filename overrode the code-specified `.stl` name; (3) the archive download
+  used `part.url` (GLB) instead of `part.download_url` (requested format). Fixed
+  by always setting `download_url`, fetching as blob before downloading (cross-
+  origin safe), and preferring `download_url` in the archive handler. 4 files,
+  4 new tests, 1480/1480 passing.
 - **Sidebar Responsiveness (Horizontal Scrollbar)** — The left-hand configuration
   sidebar forced a 352px minimum width (`min-w-[22rem]` + `min-w-[280px]`),
   overriding the ResizablePanel's percentage-based sizing and producing a

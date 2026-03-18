@@ -1,13 +1,28 @@
 /**
- * Trigger a file download via a temporary anchor element.
+ * Trigger a file download. Fetches the file as a blob first so that the
+ * `download` attribute's filename is respected even for cross-origin URLs.
  */
-export function downloadFile(url: string, filename: string): void {
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+export async function downloadFile(url: string, filename: string): Promise<void> {
+  try {
+    const response = await fetch(url)
+    const blob = await response.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(blobUrl)
+  } catch {
+    // Fallback: direct navigation for blob URL failures
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 }
 
 /**
@@ -37,7 +52,7 @@ export async function downloadZip(items: ZipUrlItem[], zipFilename: string): Pro
   const content = await zip.generateAsync({ type: 'blob' })
   const url = URL.createObjectURL(content)
   try {
-    downloadFile(url, zipFilename)
+    await downloadFile(url, zipFilename)
   } finally {
     URL.revokeObjectURL(url)
   }
@@ -61,7 +76,7 @@ export async function downloadZipFromData(items: ZipDataItem[], zipFilename: str
   const blob = await zip.generateAsync({ type: 'blob' })
   const url = URL.createObjectURL(blob)
   try {
-    downloadFile(url, zipFilename)
+    await downloadFile(url, zipFilename)
   } finally {
     URL.revokeObjectURL(url)
   }

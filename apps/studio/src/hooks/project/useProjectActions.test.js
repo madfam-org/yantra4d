@@ -5,7 +5,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 vi.mock('../../lib/downloadUtils', () => ({
-  downloadFile: vi.fn(),
+  downloadFile: vi.fn().mockResolvedValue(),
   downloadZip: vi.fn().mockResolvedValue(),
 }))
 vi.mock('../../services/engine/verifyService', () => ({

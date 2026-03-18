@@ -89,7 +89,7 @@ This is the same as **ISSUE-1 from the March audit** (Round 1). The OpenSCAD pro
 
 ---
 
-### ISSUE-R2-3: Export format selection is UI-only — downloads always serve cached GLB (HIGH)
+### ISSUE-R2-3: Export format selection is UI-only — downloads always serve cached GLB (HIGH) — **RESOLVED**
 
 **Viewport**: 1280x900 (desktop)
 **Projects**: ALL (gridfinity, tablaco, custom-msh)
@@ -106,6 +106,12 @@ The download button fetches the pre-rendered GLB file regardless of format selec
 The format selector is purely cosmetic with no functional effect on the downloaded file.
 
 **Screenshot**: `audit/G2-gridfinity-export-7formats.png` — Shows all 7 format buttons visible
+
+**Resolution**: Fixed in 4 files. Three interacting root causes:
+1. `renderService.ts` — `download_url` was conditionally set only when `viewer_url` was present; on cache hits it was `undefined`, causing fallback to the GLB viewer URL. Now always set.
+2. `downloadUtils.ts` — `<a download>` attribute is ignored for cross-origin URLs (`4d-api.madfam.io` → `4d-app.madfam.io`). Now fetches as blob first, creating a same-origin `blob:` URL that respects the `download` filename.
+3. `ExportPanel.jsx` — Archive download used `part.url` (GLB viewer URL) instead of `part.download_url` (requested format). Fixed to prefer `download_url`.
+4. `useProjectActions.js` — Added `await` to match the now-async `downloadFile`.
 
 ---
 
@@ -160,7 +166,7 @@ This was **ISSUE-3 from the March audit** — partially improved but still obser
 | New Issue | Severity | Category |
 |-----------|----------|----------|
 | ISSUE-R2-1: Mobile controls inaccessible below 1024px | High | Responsive Layout |
-| ISSUE-R2-3: Export format selection non-functional | High | Export / Download |
+| ISSUE-R2-3: Export format selection non-functional | High | Export / Download | **RESOLVED** |
 | ISSUE-R2-4: Preset doesn't auto-switch mode | Medium | Navigation & Routing |
 
 ---

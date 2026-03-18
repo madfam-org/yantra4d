@@ -97,9 +97,10 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
       const items = []
       // Add part STLs
       parts.forEach((part, i) => {
-        if (part.url) {
+        const fileUrl = part.download_url || part.url
+        if (fileUrl) {
           const ext = exportFormat || 'stl'
-          items.push({ url: part.url, filename: `${part.type || `part-${i}`}.${ext}` })
+          items.push({ url: fileUrl, filename: `${part.type || `part-${i}`}.${ext}` })
         }
       })
       // Add manifest JSON

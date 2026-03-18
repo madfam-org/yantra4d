@@ -252,6 +252,45 @@ describe('renderParts (SSE event types)', () => {
     expect(body.export_format).toBe('glb')
   })
 
+  it('always sets download_url even when viewer_url is absent (STL fix)', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        // Backend returns url only (no viewer_url) — e.g. cache hit
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    const result = await renderService.renderParts('unit', {}, manifest, {})
+
+    expect(result).toHaveLength(1)
+    expect(result[0].download_url).toBeDefined()
+    expect(result[0].download_url).toContain('http://x/a.stl')
+  })
+
+  it('sets download_url to original url when viewer_url is present', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl","viewer_url":"http://x/a.glb"}],"progress":100}',
+        ''
+      ])
+    })
+
+    const result = await renderService.renderParts('unit', {}, manifest, {})
+
+    expect(result).toHaveLength(1)
+    // url should be the viewer_url (GLB) for fast viewer load
+    expect(result[0].url).toContain('http://x/a.glb')
+    // download_url should be the original url (STL) for download
+    expect(result[0].download_url).toContain('http://x/a.stl')
+  })
+
   it('passes explicit exportFormat to backend payload', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend

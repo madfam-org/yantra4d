@@ -67,7 +67,7 @@ export function useProjectActions({
     if (downloadParts.length === 1) {
       const part = downloadParts[0]
       const fileUrl = part.download_url || part.url
-      downloadFile(fileUrl, `${projectSlug}_${mode}_${part.type}.${ext}`)
+      await downloadFile(fileUrl, `${projectSlug}_${mode}_${part.type}.${ext}`)
       return
     }
     setLogs(prev => prev + `\n${t("log.zipping")}`)

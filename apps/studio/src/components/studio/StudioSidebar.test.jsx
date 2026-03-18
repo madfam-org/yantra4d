@@ -322,6 +322,21 @@ describe('StudioSidebar', () => {
     expect(onCollapse).toHaveBeenCalledOnce()
   })
 
+  it('desktop sidebar uses min-w-0 and overflow-x-hidden (no fixed min-width)', () => {
+    render(<StudioSidebar variant="desktop" />)
+    const sidebar = screen.getByTestId('studio-sidebar')
+    const outerContainer = sidebar.parentElement
+    // Outer container should use min-w-0 (not a fixed px/rem min-width) and overflow-x-hidden
+    expect(outerContainer.className).toContain('min-w-0')
+    expect(outerContainer.className).toContain('overflow-x-hidden')
+    expect(outerContainer.className).not.toContain('min-w-[280px]')
+    expect(outerContainer.className).not.toContain('min-w-[22rem]')
+    // Inner div should use min-w-0 and not shrink-0
+    expect(sidebar.className).toContain('min-w-0')
+    expect(sidebar.className).not.toContain('shrink-0')
+    expect(sidebar.className).not.toContain('min-w-[22rem]')
+  })
+
   it('hides mode tabs when only one mode exists', () => {
     useProject.mockReturnValue({
       ...baseContext,

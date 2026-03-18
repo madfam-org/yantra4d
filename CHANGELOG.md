@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Fixed
+- **Sidebar Responsiveness (Horizontal Scrollbar)** — The left-hand configuration
+  sidebar forced a 352px minimum width (`min-w-[22rem]` + `min-w-[280px]`),
+  overriding the ResizablePanel's percentage-based sizing and producing a
+  horizontal scrollbar at default 25% width (~320px). Replaced fixed min-widths
+  with `min-w-0`, removed `shrink-0`, added `overflow-x-hidden` as defense-in-depth.
+  Tightened slider value display (`w-16` → `w-14`), BOM Qty columns (`w-16` → `w-12`),
+  and preset container (`max-w-full`). 4 files, 1 new test.
 - **Resizable Panels v4 Migration (Crushed Sidebar + Broken Layout)** — After
   the v2→v4 component rename fix (Session 104), the studio layout was broken on
   desktop: sidebar crushed to ~40px, vertical viewer/console split rendered

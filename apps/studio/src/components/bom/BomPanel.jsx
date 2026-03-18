@@ -113,7 +113,7 @@ export default function BomPanel({ params, mode }) {
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="py-2 h-9">Item</TableHead>
-                    <TableHead className="py-2 h-9 text-right w-16">Qty</TableHead>
+                    <TableHead className="py-2 h-9 text-right w-12">Qty</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -146,7 +146,7 @@ export default function BomPanel({ params, mode }) {
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="py-2 h-9">Item</TableHead>
-                    <TableHead className="py-2 h-9 text-right w-16">Qty</TableHead>
+                    <TableHead className="py-2 h-9 text-right w-12">Qty</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

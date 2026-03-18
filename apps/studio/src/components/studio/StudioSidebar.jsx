@@ -318,7 +318,7 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
     <>
       {/* Desktop sidebar — render when variant is 'desktop' or undefined */}
       {variant !== 'mobile' && (
-        <div className={`${variant === 'desktop' ? 'flex' : 'hidden lg:flex'} flex-col flex-1 min-w-[280px] bg-card border-r border-border overflow-y-auto min-h-0`}>
+        <div className={`${variant === 'desktop' ? 'flex' : 'hidden lg:flex'} flex-col flex-1 min-w-0 bg-card border-r border-border overflow-y-auto overflow-x-hidden min-h-0`}>
           {onCollapse && (
             <button
               onClick={onCollapse}
@@ -329,7 +329,7 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
               <PanelLeftClose className="h-4 w-4" />
             </button>
           )}
-          <div data-testid="studio-sidebar" className="w-full h-full min-w-[22rem] flex flex-col shrink-0 relative">
+          <div data-testid="studio-sidebar" className="w-full h-full min-w-0 flex flex-col relative">
             <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
           </div>
         </div>

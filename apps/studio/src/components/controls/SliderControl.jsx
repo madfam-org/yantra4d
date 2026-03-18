@@ -54,7 +54,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                         {paramLabel}
                     </Label>
                 </Tooltip>
-                <div className="flex-shrink-0 text-right w-16">
+                <div className="flex-shrink-0 text-right w-14">
                     {editing ? (
                         <input
                             type="number"

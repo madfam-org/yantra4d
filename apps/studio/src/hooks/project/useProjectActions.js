@@ -56,7 +56,8 @@ export function useProjectActions({
     const viewerHasFormat = parts.length > 0 && parts.every(p => {
       const dlUrl = (p.download_url || '').split('?')[0]
       const viewUrl = (p.url || '').split('?')[0]
-      return dlUrl.endsWith(`.${ext}`) || viewUrl.endsWith(`.${ext}`)
+      return dlUrl.endsWith(`.${ext}`) || viewUrl.endsWith(`.${ext}`) ||
+        (ext === 'glb' && p.isGlb)
     })
 
     let downloadParts = parts
@@ -79,6 +80,7 @@ export function useProjectActions({
       const viewUrl = part.url || ''
       if (dlUrl.split('?')[0].endsWith(`.${ext}`)) return dlUrl
       if (viewUrl.split('?')[0].endsWith(`.${ext}`)) return viewUrl
+      if (ext === 'glb' && part.isGlb) return viewUrl
       return dlUrl || viewUrl
     }
 

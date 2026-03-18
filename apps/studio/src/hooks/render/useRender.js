@@ -54,7 +54,10 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
               isGlb: p.blob.type === 'model/gltf-binary',
             }
             if (p.downloadBlob) {
-              part.download_url = URL.createObjectURL(p.downloadBlob)
+              // Append #.stl so URL extension checks in handleDownloadStl work
+              // for blob URLs. Browsers strip fragments before fetch, so the
+              // blob URL still resolves correctly.
+              part.download_url = URL.createObjectURL(p.downloadBlob) + '#.stl'
             }
             return part
           })

@@ -354,6 +354,44 @@ describe('useProjectActions', () => {
         'test-project_basic_body.glb'
       )
     })
+
+    it('skips re-render for L2 cache blob URLs with #.stl fragment hint', async () => {
+      // L2 (IndexedDB) restore creates blob URLs tagged with #.stl
+      const parts = [{
+        url: 'blob:https://example.com/viewer-uuid',
+        download_url: 'blob:https://example.com/download-uuid#.stl',
+        type: 'body',
+        isGlb: true,
+      }]
+      const { result } = renderActions({ parts, exportFormat: 'stl' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'blob:https://example.com/download-uuid#.stl',
+        'test-project_basic_body.stl'
+      )
+    })
+
+    it('uses viewer blob URL for GLB download via isGlb fallback', async () => {
+      // L2 cache: blob URLs have no extension, but isGlb flag is set
+      const parts = [{
+        url: 'blob:https://example.com/viewer-uuid',
+        download_url: 'blob:https://example.com/download-uuid#.stl',
+        type: 'body',
+        isGlb: true,
+      }]
+      const { result } = renderActions({ parts, exportFormat: 'glb' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'blob:https://example.com/viewer-uuid',
+        'test-project_basic_body.glb'
+      )
+    })
   })
 
   // ---------- handleReset ----------

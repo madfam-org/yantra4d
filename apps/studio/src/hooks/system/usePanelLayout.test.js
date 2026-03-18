@@ -88,4 +88,44 @@ describe('usePanelLayout', () => {
     expect(result.current.layout.consoleSize).toBe(30) // default
     expect(result.current.layout.sidebarCollapsed).toBe(false) // default
   })
+
+  describe('bounds clamping (corrupted localStorage recovery)', () => {
+    it('clamps sidebar size below minSize (15) to default', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ sidebarSize: 3 }))
+      const { result } = renderHook(() => usePanelLayout())
+      expect(result.current.layout.sidebarSize).toBe(25) // DEFAULT_LAYOUT.sidebarSize
+    })
+
+    it('clamps sidebar size above maxSize (40) to default', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ sidebarSize: 85 }))
+      const { result } = renderHook(() => usePanelLayout())
+      expect(result.current.layout.sidebarSize).toBe(25)
+    })
+
+    it('clamps console size below minSize (10) to default', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ consoleSize: 2 }))
+      const { result } = renderHook(() => usePanelLayout())
+      expect(result.current.layout.consoleSize).toBe(30) // DEFAULT_LAYOUT.consoleSize
+    })
+
+    it('clamps console size above maxSize (50) to default', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ consoleSize: 90 }))
+      const { result } = renderHook(() => usePanelLayout())
+      expect(result.current.layout.consoleSize).toBe(30)
+    })
+
+    it('preserves valid sizes within bounds', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ sidebarSize: 20, consoleSize: 35 }))
+      const { result } = renderHook(() => usePanelLayout())
+      expect(result.current.layout.sidebarSize).toBe(20)
+      expect(result.current.layout.consoleSize).toBe(35)
+    })
+
+    it('preserves sizes at exact boundary values', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ sidebarSize: 15, consoleSize: 50 }))
+      const { result } = renderHook(() => usePanelLayout())
+      expect(result.current.layout.sidebarSize).toBe(15)
+      expect(result.current.layout.consoleSize).toBe(50)
+    })
+  })
 })

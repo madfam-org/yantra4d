@@ -15,7 +15,11 @@ function readStorage() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return DEFAULT_LAYOUT
     const parsed = JSON.parse(raw)
-    return { ...DEFAULT_LAYOUT, ...parsed }
+    const merged = { ...DEFAULT_LAYOUT, ...parsed }
+    // Clamp corrupted sizes from the broken layout period
+    if (merged.sidebarSize < 15 || merged.sidebarSize > 40) merged.sidebarSize = DEFAULT_LAYOUT.sidebarSize
+    if (merged.consoleSize < 10 || merged.consoleSize > 50) merged.consoleSize = DEFAULT_LAYOUT.consoleSize
+    return merged
   } catch {
     return DEFAULT_LAYOUT
   }

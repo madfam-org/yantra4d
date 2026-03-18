@@ -205,23 +205,23 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
       {/* Desktop: resizable vertical layout */}
       <div className="hidden lg:flex flex-col flex-1 min-h-0">
         <ResizablePanelGroup
-          direction="vertical"
-          onLayout={(sizes) => {
-            if (!consoleCollapsed && sizes[1] != null) {
-              onConsoleResize?.(sizes[1])
+          orientation="vertical"
+          onLayoutChanged={(panelLayout) => {
+            if (!consoleCollapsed && panelLayout["console"] != null) {
+              onConsoleResize?.(panelLayout["console"])
             }
           }}
         >
           {/* Viewer panel */}
-          <ResizablePanel defaultSize={consoleCollapsed ? 100 : (100 - (consoleSize || 30))} minSize={40}>
+          <ResizablePanel id="viewer" defaultSize={consoleCollapsed ? 100 : (100 - (consoleSize || 30))} minSize={40}>
             {viewerContent}
           </ResizablePanel>
 
           {/* Console panel */}
           {!consoleCollapsed && (
             <>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={consoleSize || 30} minSize={10} maxSize={50}>
+              <ResizableHandle withHandle orientation="vertical" />
+              <ResizablePanel id="console" defaultSize={consoleSize || 30} minSize={10} maxSize={50}>
                 {consoleContent}
               </ResizablePanel>
             </>

@@ -29,14 +29,14 @@ vi.mock('./components/Viewer', () => ({
 
 // Mock resizable panels (not available in jsdom)
 vi.mock('@/components/ui/resizable', () => ({
-  ResizablePanelGroup: function MockPanelGroup({ children }) {
-    return <div data-testid="resizable-panel-group">{children}</div>
+  ResizablePanelGroup: function MockPanelGroup({ children, orientation }) {
+    return <div data-testid="resizable-panel-group" data-orientation={orientation}>{children}</div>
   },
-  ResizablePanel: function MockPanel({ children }) {
-    return <div data-testid="resizable-panel">{children}</div>
+  ResizablePanel: function MockPanel({ children, id }) {
+    return <div data-testid="resizable-panel" data-panel-id={id}>{children}</div>
   },
-  ResizableHandle: function MockHandle() {
-    return <div data-testid="resizable-handle" />
+  ResizableHandle: function MockHandle({ orientation }) {
+    return <div data-testid="resizable-handle" data-orientation={orientation} />
   },
 }))
 
@@ -286,5 +286,20 @@ describe('App', { timeout: 30000 }, () => {
     await renderApp()
     // Editor is closed by default (sessionStorage is clear)
     expect(sessionStorage.getItem('yantra4d-editor-open')).toBeNull()
+  })
+
+  it('passes orientation="horizontal" to the desktop panel group', async () => {
+    await renderApp()
+    const groups = screen.getAllByTestId('resizable-panel-group')
+    const horizontalGroup = groups.find(g => g.getAttribute('data-orientation') === 'horizontal')
+    expect(horizontalGroup).toBeTruthy()
+  })
+
+  it('assigns panel ids to sidebar and main panels', async () => {
+    await renderApp()
+    const panels = screen.getAllByTestId('resizable-panel')
+    const panelIds = panels.map(p => p.getAttribute('data-panel-id')).filter(Boolean)
+    expect(panelIds).toContain('sidebar')
+    expect(panelIds).toContain('main')
   })
 })

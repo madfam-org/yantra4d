@@ -3,14 +3,14 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 vi.mock('@/components/ui/resizable', () => ({
-  ResizablePanelGroup: function MockPanelGroup({ children }) {
-    return <div data-testid="resizable-panel-group">{children}</div>
+  ResizablePanelGroup: function MockPanelGroup({ children, orientation }) {
+    return <div data-testid="resizable-panel-group" data-orientation={orientation}>{children}</div>
   },
-  ResizablePanel: function MockPanel({ children }) {
-    return <div data-testid="resizable-panel">{children}</div>
+  ResizablePanel: function MockPanel({ children, id }) {
+    return <div data-testid="resizable-panel" data-panel-id={id}>{children}</div>
   },
-  ResizableHandle: function MockHandle() {
-    return <div data-testid="resizable-handle" />
+  ResizableHandle: function MockHandle({ orientation }) {
+    return <div data-testid="resizable-handle" data-orientation={orientation} />
   },
 }))
 
@@ -191,5 +191,21 @@ describe('StudioMainView', () => {
     render(<StudioMainView />)
     const viewer = screen.getAllByTestId('viewer')[0]
     expect(viewer.getAttribute('data-has-cached-variants')).toBe('false')
+  })
+
+  it('passes orientation="vertical" to the desktop panel group', () => {
+    render(<StudioMainView />)
+    const groups = screen.getAllByTestId('resizable-panel-group')
+    // Desktop group should have vertical orientation
+    const verticalGroup = groups.find(g => g.getAttribute('data-orientation') === 'vertical')
+    expect(verticalGroup).toBeTruthy()
+  })
+
+  it('assigns panel ids to viewer and console panels', () => {
+    render(<StudioMainView consoleCollapsed={false} consoleSize={30} />)
+    const panels = screen.getAllByTestId('resizable-panel')
+    const panelIds = panels.map(p => p.getAttribute('data-panel-id')).filter(Boolean)
+    expect(panelIds).toContain('viewer')
+    expect(panelIds).toContain('console')
   })
 })

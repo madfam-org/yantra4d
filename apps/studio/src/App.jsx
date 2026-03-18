@@ -189,18 +189,17 @@ function App() {
       {/* Desktop: resizable horizontal layout */}
       <div className="hidden lg:flex flex-1 overflow-hidden relative">
         <ResizablePanelGroup
-          direction="horizontal"
-          onLayout={(sizes) => {
-            // sizes[0] is sidebar or editor, sizes[1] is main view
-            if (!editorOpen && !layout.sidebarCollapsed && sizes[0] != null) {
-              setSidebarSize(sizes[0])
+          orientation="horizontal"
+          onLayoutChanged={(panelLayout) => {
+            if (!editorOpen && !layout.sidebarCollapsed && panelLayout["sidebar"] != null) {
+              setSidebarSize(panelLayout["sidebar"])
             }
           }}
         >
           {/* Sidebar panel (conditional) */}
           {!editorOpen && !layout.sidebarCollapsed && (
             <>
-              <ResizablePanel defaultSize={layout.sidebarSize} minSize={15} maxSize={40}>
+              <ResizablePanel id="sidebar" defaultSize={layout.sidebarSize} minSize={15} maxSize={40}>
                 <StudioSidebar
                   variant="desktop"
                   compareMode={compareMode}
@@ -208,14 +207,14 @@ function App() {
                   onCollapse={toggleSidebar}
                 />
               </ResizablePanel>
-              <ResizableHandle withHandle />
+              <ResizableHandle withHandle orientation="horizontal" />
             </>
           )}
 
           {/* Editor panel (conditional, replaces sidebar) */}
           {editorOpen && (
             <>
-              <ResizablePanel defaultSize={40} minSize={25} maxSize={60}>
+              <ResizablePanel id="editor" defaultSize={40} minSize={25} maxSize={60}>
                 <div className="flex flex-col h-full min-h-0 border-r border-border">
                   <ErrorBoundary t={t}>
                     <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
@@ -225,12 +224,12 @@ function App() {
                   </ErrorBoundary>
                 </div>
               </ResizablePanel>
-              <ResizableHandle withHandle />
+              <ResizableHandle withHandle orientation="horizontal" />
             </>
           )}
 
           {/* Main view panel */}
-          <ResizablePanel defaultSize={editorOpen ? 60 : (layout.sidebarCollapsed ? 100 : (100 - layout.sidebarSize))} minSize={40}>
+          <ResizablePanel id="main" defaultSize={editorOpen ? 60 : (layout.sidebarCollapsed ? 100 : (100 - layout.sidebarSize))} minSize={40}>
             <ErrorBoundary t={t}>
               <StudioMainView
                 compareMode={compareMode}

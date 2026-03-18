@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Fixed
+- **Resizable Panels v4 Migration (Crushed Sidebar + Broken Layout)** — After
+  the v2→v4 component rename fix (Session 104), the studio layout was broken on
+  desktop: sidebar crushed to ~40px, vertical viewer/console split rendered
+  side-by-side instead of stacked. Root cause: `react-resizable-panels` v4.7.3
+  renamed `direction` → `orientation`, `onLayout` → `onLayoutChanged` (with
+  `{[panelId]: number}` signature instead of `number[]`), and removed
+  `data-panel-group-direction` data attributes used by CSS selectors. Fixed in 4
+  files: `resizable.jsx` (prop-based orientation logic replacing dead data-attr
+  selectors), `App.jsx` and `StudioMainView.jsx` (`direction` → `orientation`,
+  `onLayout` → `onLayoutChanged`, panel `id` props), `usePanelLayout.js` (bounds
+  clamping for corrupted localStorage from the broken layout period). 8 new tests.
+
 ### Added
 - **Per-Project CI Template** — `.github/workflows/project-ci.yml` template created and distributed via `propagate_ci.sh` to give all 33 federated project repositories their own independent CI pipelines.
 - **Per-Project CI Propagation** — `scripts/ci/propagate_project_ci.sh`: GitHub

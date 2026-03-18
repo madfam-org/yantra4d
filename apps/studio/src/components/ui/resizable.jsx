@@ -19,7 +19,19 @@ const ResizablePanelGroup = ({
   />
 )
 
-const ResizablePanel = Panel
+// v4 interprets numeric sizes as pixels; convert to percentage strings
+// to preserve v2/v3 behavior where numbers meant percentages (0..100)
+const toPercent = (v) => (typeof v === 'number' ? `${v}%` : v)
+
+const ResizablePanel = ({ defaultSize, minSize, maxSize, collapsedSize, ...props }) => (
+  <Panel
+    defaultSize={toPercent(defaultSize)}
+    minSize={toPercent(minSize)}
+    maxSize={toPercent(maxSize)}
+    collapsedSize={toPercent(collapsedSize)}
+    {...props}
+  />
+)
 
 const ResizableHandle = ({
   withHandle,

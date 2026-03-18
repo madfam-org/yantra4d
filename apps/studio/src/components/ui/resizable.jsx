@@ -23,12 +23,13 @@ const ResizablePanelGroup = ({
 // to preserve v2/v3 behavior where numbers meant percentages (0..100)
 const toPercent = (v) => (typeof v === 'number' ? `${v}%` : v)
 
-const ResizablePanel = ({ defaultSize, minSize, maxSize, collapsedSize, ...props }) => (
+const ResizablePanel = ({ defaultSize, minSize, maxSize, collapsedSize, style, ...props }) => (
   <Panel
     defaultSize={toPercent(defaultSize)}
     minSize={toPercent(minSize)}
     maxSize={toPercent(maxSize)}
     collapsedSize={toPercent(collapsedSize)}
+    style={{ height: '100%', ...style }}
     {...props}
   />
 )

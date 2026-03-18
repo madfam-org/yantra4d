@@ -292,10 +292,11 @@ describe('StudioSidebar', () => {
     expect(scrollDiv).toBeInTheDocument()
   })
 
-  it('renders scroll fade gradient inside sidebar content', () => {
+  it('renders ActionDock as normal flex child (no absolute positioning)', () => {
     render(<StudioSidebar />)
-    const gradients = document.querySelectorAll('[aria-hidden="true"][class*="bg-gradient"]')
-    expect(gradients.length).toBeGreaterThan(0)
+    const actionDock = document.querySelector('[class*="border-t"][class*="backdrop-blur"]')
+    expect(actionDock).toBeInTheDocument()
+    expect(actionDock.className).not.toContain('absolute')
   })
 
   it('renders desktop sidebar when variant is desktop', () => {

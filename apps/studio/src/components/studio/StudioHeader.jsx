@@ -72,7 +72,7 @@ export default function StudioHeader({
             {!platformLoading && platformLogo !== '/logo.png' && (
               <img src={platformLogo} alt="Logo" className="h-4 w-auto rounded-sm shrink-0" onError={(e) => e.target.style.display = 'none'} />
             )}
-            <h1 className="text-lg font-bold tracking-tight truncate max-w-[8rem] xs:max-w-[10rem] sm:max-w-none">{manifest.project.name}</h1>
+            <h1 className="text-lg font-bold tracking-tight truncate max-w-[8rem] xs:max-w-[10rem] sm:max-w-none" title={manifest.project.name}>{manifest.project.name}</h1>
             {manifest.project.hyperobject?.is_hyperobject && (
               <span className="hidden xs:inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-500 ring-1 ring-inset ring-blue-500/20 shrink-0" title={`Domain: ${manifest.project.hyperobject.domain}`}>
                 Commons

@@ -17,7 +17,7 @@ function ActionDock({ compareMode, onToggleCompare }) {
   const { t } = useLanguage()
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/85 backdrop-blur-xl border-t border-border flex flex-col gap-2 z-20 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.2)]">
+    <div className="p-4 bg-background/85 backdrop-blur-xl border-t border-border flex flex-col gap-2 z-20 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.2)] shrink-0">
       {onToggleCompare && (
         <Button
           variant={compareMode ? "default" : "outline"}
@@ -196,7 +196,7 @@ function SidebarContent({ compareMode, onToggleCompare }) {
         <ModeTabs className="hidden lg:block" />
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pb-32">
+      <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pb-4">
         <TabsContent value="config" className="m-0 space-y-5 animate-in fade-in-50 duration-300">
           <div className="pb-4">
             <Controls
@@ -304,12 +304,6 @@ function SidebarContent({ compareMode, onToggleCompare }) {
         </TabsContent>
       </div>
 
-      {/* Scroll affordance — gradient signals more content below */}
-      <div
-        className="absolute bottom-[128px] left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10"
-        aria-hidden="true"
-      />
-
       <ActionDock compareMode={compareMode} onToggleCompare={onToggleCompare} />
     </Tabs>
   )
@@ -330,6 +324,7 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
               onClick={onCollapse}
               className="absolute top-2 right-2 z-30 p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
               aria-label="Collapse sidebar"
+              aria-expanded={true}
             >
               <PanelLeftClose className="h-4 w-4" />
             </button>

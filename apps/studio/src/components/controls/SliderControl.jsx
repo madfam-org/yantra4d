@@ -50,7 +50,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
         <div className={`space-y-1 ${isDisabled ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="flex justify-between items-center gap-2">
                 <Tooltip content={getLabel(param, 'tooltip', language)}>
-                    <Label id={labelId} className="flex items-center gap-1 cursor-help flex-1 text-xs truncate" title={paramLabel}>
+                    <Label id={labelId} className="flex items-center gap-1 cursor-help flex-1 text-sm truncate" title={paramLabel}>
                         {paramLabel}
                     </Label>
                 </Tooltip>
@@ -59,7 +59,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                         <input
                             type="number"
                             inputMode="decimal"
-                            className="w-full text-xs text-right bg-input border border-border rounded px-1 py-1 h-7"
+                            className="w-full text-sm text-right bg-input border border-border rounded px-1 py-1 h-7"
                             value={editValue}
                             min={param.min} max={param.max} step={param.step}
                             autoFocus
@@ -69,7 +69,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                         />
                     ) : (
                         <span
-                            className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/40 hover:border-foreground/60 focus-visible:ring-1 focus-visible:ring-ring focus-visible:rounded-sm h-7 inline-flex items-center justify-end w-full"
+                            className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors border-b border-dashed border-muted-foreground/60 hover:border-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:rounded-sm h-7 inline-flex items-center justify-end w-full"
                             onClick={() => { setEditing(true); setEditValue(String(displayValue)) }}
                             role="button"
                             tabIndex={0}
@@ -106,7 +106,7 @@ export default function SliderControl({ param, value, onSliderChange, getLabel, 
                                 return (
                                     <div
                                         key={i}
-                                        className="absolute top-0 w-px h-2 bg-muted-foreground/30"
+                                        className="absolute top-0 w-px h-2 bg-muted-foreground/50"
                                         style={{ left: `${pct}%` }}
                                     />
                                 )

@@ -252,6 +252,7 @@ function App() {
             className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 bg-card border border-border border-l-0 rounded-r-md shadow-sm hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
             title="Show sidebar"
             aria-label="Show sidebar"
+            aria-expanded={false}
           >
             <PanelLeft className="h-4 w-4" />
           </button>

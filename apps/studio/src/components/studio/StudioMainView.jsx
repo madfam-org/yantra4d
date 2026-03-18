@@ -188,7 +188,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
 
       {/* Print Estimate inline panel — φ subordinate (≈38.2% of row width) with guard */}
       {hasEstimate && estimateOpen && (
-        <div className="shrink-0 bg-card border-l border-border overflow-y-auto" style={{ flex: 1, minWidth: '160px', maxWidth: '240px' }}>
+        <div className="shrink-0 bg-card border-l border-border overflow-y-auto" style={{ flex: 1, minWidth: '200px', maxWidth: '240px' }}>
           <PrintEstimateOverlay
             volumeMm3={printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3}
             boundingBox={printEstimate?.total?.boundingBox ?? printEstimate?.boundingBox}

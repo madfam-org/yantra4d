@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Fixed
+- **Download Must Match Viewport (ISSUE-R2-3 follow-up)** — `handleDownloadStl`
+  always triggered a fresh backend re-render for non-GLB formats, which could
+  produce geometry that didn't match the 3D viewport due to param drift (e.g.,
+  `assembly_level` leaking from mode defaults). The viewer's initial render
+  already produces both `download_url` (STL) and `url` (GLB), so the re-render
+  was redundant. Fixed by checking whether the viewer already has files in the
+  requested format before re-rendering. Only triggers a new render when the user
+  selects a *different* format (STEP, 3MF, etc.). Also added `pickUrl` helper
+  that selects the URL matching the requested extension. 2 files, 5 new tests,
+  1484/1484 passing.
 - **STL Export Downloads GLB Instead of STL (ISSUE-R2-3)** — Clicking "Download
   STL" served a GLB file due to three interacting bugs: (1) `renderService.ts`
   only set `download_url` when `viewer_url` was present — on cache hits it was

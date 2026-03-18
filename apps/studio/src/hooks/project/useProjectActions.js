@@ -48,10 +48,19 @@ export function useProjectActions({
     if (parts.length === 0) return
     const ext = exportFormat || 'stl'
 
-    // Viewer always holds GLB. For any non-GLB download, trigger a dedicated
-    // render in the requested format so the user gets the real file content.
+    // Check if the viewer already has files in the requested format.
+    // The backend returns both download_url (original format, e.g. .stl) and
+    // url (viewer format, e.g. .glb) in every render response. Reusing the
+    // viewer's existing URLs avoids a redundant re-render and guarantees the
+    // download matches the viewport geometry exactly (no param drift risk).
+    const viewerHasFormat = parts.length > 0 && parts.every(p => {
+      const dlUrl = (p.download_url || '').split('?')[0]
+      const viewUrl = (p.url || '').split('?')[0]
+      return dlUrl.endsWith(`.${ext}`) || viewUrl.endsWith(`.${ext}`)
+    })
+
     let downloadParts = parts
-    if (ext !== 'glb') {
+    if (!viewerHasFormat) {
       setLogs(prev => prev + `\nRendering ${ext.toUpperCase()} for download...`)
       try {
         downloadParts = await renderParts(mode, params, manifest, {
@@ -64,16 +73,24 @@ export function useProjectActions({
       }
     }
 
+    // Pick the URL whose extension matches the requested format
+    const pickUrl = (part) => {
+      const dlUrl = part.download_url || ''
+      const viewUrl = part.url || ''
+      if (dlUrl.split('?')[0].endsWith(`.${ext}`)) return dlUrl
+      if (viewUrl.split('?')[0].endsWith(`.${ext}`)) return viewUrl
+      return dlUrl || viewUrl
+    }
+
     if (downloadParts.length === 1) {
       const part = downloadParts[0]
-      const fileUrl = part.download_url || part.url
-      await downloadFile(fileUrl, `${projectSlug}_${mode}_${part.type}.${ext}`)
+      await downloadFile(pickUrl(part), `${projectSlug}_${mode}_${part.type}.${ext}`)
       return
     }
     setLogs(prev => prev + `\n${t("log.zipping")}`)
     try {
       const items = downloadParts.map(part => ({
-        url: part.download_url || part.url,
+        url: pickUrl(part),
         filename: `${projectSlug}_${mode}_${part.type}.${ext}`
       }))
       await downloadZip(items, `${projectSlug}_${mode}_all_parts.zip`)

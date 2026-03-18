@@ -273,6 +273,87 @@ describe('useProjectActions', () => {
       expect(items[0].url).toBe('http://a.stl')
       expect(items[1].url).toBe('http://b.stl')
     })
+
+    // ---------- viewport-match: skip re-render when viewer already has format ----------
+    it('skips re-render when viewer parts have matching download_url extension', async () => {
+      // Viewer rendered STL — download_url already points to the exact geometry displayed
+      const parts = [{
+        url: 'http://backend/rack.glb?t=123',
+        download_url: 'http://backend/rack.stl?t=123',
+        type: 'body',
+      }]
+      const { result } = renderActions({ parts, exportFormat: 'stl' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'http://backend/rack.stl?t=123',
+        'test-project_basic_body.stl'
+      )
+    })
+
+    it('skips re-render for multi-part when all parts have matching download_url', async () => {
+      const parts = [
+        { url: 'http://a.glb?t=1', download_url: 'http://a.stl?t=1', type: 'top' },
+        { url: 'http://b.glb?t=1', download_url: 'http://b.stl?t=1', type: 'bottom' },
+      ]
+      const setLogs = vi.fn()
+      const { result } = renderActions({ parts, setLogs, exportFormat: 'stl' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadZip).toHaveBeenCalled()
+      const [items] = downloadZip.mock.calls[0]
+      expect(items[0].url).toBe('http://a.stl?t=1')
+      expect(items[1].url).toBe('http://b.stl?t=1')
+    })
+
+    it('re-renders when export format differs from viewer parts', async () => {
+      // Viewer has STL, but user wants STEP — must re-render
+      const parts = [{
+        url: 'http://backend/rack.glb?t=123',
+        download_url: 'http://backend/rack.stl?t=123',
+        type: 'body',
+      }]
+      renderParts.mockResolvedValue([{
+        url: 'http://backend/rack.step',
+        type: 'body',
+      }])
+      const { result } = renderActions({ parts, exportFormat: 'step' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).toHaveBeenCalledWith(
+        'basic',
+        { x: 1 },
+        expect.any(Object),
+        expect.objectContaining({ exportFormat: 'step' })
+      )
+      expect(downloadFile).toHaveBeenCalledWith(
+        'http://backend/rack.step',
+        'test-project_basic_body.step'
+      )
+    })
+
+    it('uses viewer url for GLB download when viewer has GLB', async () => {
+      // Viewer always has GLB at part.url — should use it directly
+      const parts = [{
+        url: 'http://backend/rack.glb?t=123',
+        download_url: 'http://backend/rack.stl?t=123',
+        type: 'body',
+      }]
+      const { result } = renderActions({ parts, exportFormat: 'glb' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'http://backend/rack.glb?t=123',
+        'test-project_basic_body.glb'
+      )
+    })
   })
 
   // ---------- handleReset ----------

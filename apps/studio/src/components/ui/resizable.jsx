@@ -29,7 +29,7 @@ const ResizablePanel = ({ defaultSize, minSize, maxSize, collapsedSize, style, .
     minSize={toPercent(minSize)}
     maxSize={toPercent(maxSize)}
     collapsedSize={toPercent(collapsedSize)}
-    style={{ height: '100%', ...style }}
+    style={{ height: '100%', display: 'flex', flexDirection: 'column', ...style }}
     {...props}
   />
 )

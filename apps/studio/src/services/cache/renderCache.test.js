@@ -215,6 +215,32 @@ describe('renderCache', () => {
       expect(result[0].blob.type).toBe('model/stl')
     })
 
+    it('restores downloadBlob from downloadArrayBuffer when present', async () => {
+      const viewerBuf = new ArrayBuffer(4)
+      const dlBuf = new ArrayBuffer(8)
+      storeData['dl-key'] = {
+        parts: [{ type: 'body', arrayBuffer: viewerBuf, isGlb: true, downloadArrayBuffer: dlBuf }],
+        timestamp: Date.now(),
+      }
+      const { get } = await loadModule()
+      const result = await get('dl-key')
+      expect(result).toHaveLength(1)
+      expect(result[0].blob.type).toBe('model/gltf-binary')
+      expect(result[0].downloadBlob).toBeInstanceOf(Blob)
+      expect(result[0].downloadBlob.type).toBe('model/stl')
+      expect(result[0].downloadBlob.size).toBe(8)
+    })
+
+    it('omits downloadBlob when downloadArrayBuffer is absent', async () => {
+      storeData['no-dl-key'] = {
+        parts: [{ type: 'body', arrayBuffer: new ArrayBuffer(4), isGlb: false }],
+        timestamp: Date.now(),
+      }
+      const { get } = await loadModule()
+      const result = await get('no-dl-key')
+      expect(result[0].downloadBlob).toBeUndefined()
+    })
+
     it('returns null for expired entries', async () => {
       storeData['old-key'] = {
         parts: [{ type: 'shell', arrayBuffer: new ArrayBuffer(4) }],
@@ -305,6 +331,57 @@ describe('renderCache', () => {
         { type: 'invalid' },
       ])
       expect(storeData['mixed-key'].parts).toHaveLength(1)
+    })
+
+    it('stores download_url blob alongside viewer blob when they differ', async () => {
+      const viewerBuf = new ArrayBuffer(8)
+      const downloadBuf = new ArrayBuffer(16)
+      vi.stubGlobal('fetch', vi.fn().mockImplementation((url) => {
+        const buf = url.includes('.stl') ? downloadBuf : viewerBuf
+        return Promise.resolve({ arrayBuffer: () => Promise.resolve(buf) })
+      }))
+      const { put } = await loadModule()
+      await put('dual-key', [{
+        type: 'body',
+        url: 'http://example.com/model.glb?t=1',
+        download_url: 'http://example.com/model.stl?t=1',
+      }])
+      expect(storeData['dual-key'].parts[0].isGlb).toBe(true)
+      expect(storeData['dual-key'].parts[0].downloadArrayBuffer).toBeDefined()
+      expect(storeData['dual-key'].parts[0].downloadArrayBuffer.byteLength).toBe(16)
+    })
+
+    it('round-trips dual blobs via put then get', async () => {
+      const viewerBuf = new ArrayBuffer(4)
+      const downloadBuf = new ArrayBuffer(12)
+      vi.stubGlobal('fetch', vi.fn().mockImplementation((url) => {
+        const buf = url.includes('.stl') ? downloadBuf : viewerBuf
+        return Promise.resolve({ arrayBuffer: () => Promise.resolve(buf) })
+      }))
+      const { put, get } = await loadModule()
+      await put('rt-dual-key', [{
+        type: 'shell',
+        url: 'http://example.com/model.glb?t=1',
+        download_url: 'http://example.com/model.stl?t=1',
+      }])
+      const result = await get('rt-dual-key')
+      expect(result).toHaveLength(1)
+      expect(result[0].blob.type).toBe('model/gltf-binary')
+      expect(result[0].downloadBlob).toBeInstanceOf(Blob)
+      expect(result[0].downloadBlob.size).toBe(12)
+    })
+
+    it('does not store downloadArrayBuffer when download_url matches url', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      }))
+      const { put } = await loadModule()
+      await put('same-key', [{
+        type: 'body',
+        url: 'http://example.com/model.stl',
+        download_url: 'http://example.com/model.stl',
+      }])
+      expect(storeData['same-key'].parts[0].downloadArrayBuffer).toBeUndefined()
     })
 
     it('does not throw when DB open fails', async () => {

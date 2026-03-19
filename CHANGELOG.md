@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Added
+- **Multi-Rack Mode (custom-msh)** — New 6th mode producing 2–5 contiguous
+  staining racks joined side-by-side. Internal junctions use diamond grid guard
+  panels instead of double solid walls. Front/back guards span continuously
+  across the full width. Extracted reusable `diamond_grid_guard()` module into
+  `aocl_lib.scad` and refactored `rack.scad` to use it. New `multi_rack.scad`
+  file (248 lines), `multi_num_racks` parameter (slider 2–5), preset, and
+  `multi_rack_body` part (render_mode 5). Updated `visible_in_modes` on 14
+  existing parameters. 1491/1491 studio tests passing.
+
 ### Fixed
 - **Download Must Match Viewport (ISSUE-R2-3 follow-up)** — `handleDownloadStl`
   always triggered a fresh backend re-render for non-GLB formats, which could

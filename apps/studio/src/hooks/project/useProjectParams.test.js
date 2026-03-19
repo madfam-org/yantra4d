@@ -432,13 +432,16 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
   const carryManifest = {
     modes: [
       { id: 'rack', estimate: { formula: 'constant' } },
+      { id: 'multi_rack', estimate: { formula: 'constant' } },
       { id: 'assembly', estimate: { formula: 'constant' } },
     ],
     parameters: [
-      { id: 'assembly_level', type: 'slider', default: 3, group: 'system', visible_in_modes: [] },
-      { id: 'num_slots',      type: 'slider', default: 10, group: 'rack',   visible_in_modes: ['rack', 'assembly'] },
-      { id: 'handle',         type: 'checkbox', default: 1, group: 'rack',  visible_in_modes: ['rack', 'assembly'] },
-      { id: 'wall_thickness', type: 'slider', default: 2.0, group: 'structure', visible_in_modes: ['rack', 'assembly'] },
+      { id: 'assembly_level',  type: 'slider', default: 3, group: 'system', visible_in_modes: [] },
+      { id: 'num_slots',       type: 'slider', default: 10, group: 'rack',   visible_in_modes: ['rack', 'multi_rack', 'assembly'] },
+      { id: 'handle',          type: 'checkbox', default: 1, group: 'rack',  visible_in_modes: ['rack', 'multi_rack', 'assembly'] },
+      { id: 'wall_thickness',  type: 'slider', default: 2.0, group: 'structure', visible_in_modes: ['rack', 'multi_rack', 'assembly'] },
+      { id: 'multi_num_racks', type: 'slider', default: 3, group: 'rack',    visible_in_modes: ['multi_rack'] },
+      { id: 'multi_stack_y',   type: 'checkbox', default: 1, group: 'rack',  visible_in_modes: ['multi_rack'] },
     ],
     constraints: [],
     grid_presets: {},
@@ -450,13 +453,19 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     values: { num_slots: 10, handle: 1, wall_thickness: 2.0 },
   }
 
+  const multiRackPreset = {
+    id: 'default_multi_rack',
+    visible_in_modes: ['multi_rack'],
+    values: { num_slots: 10, handle: 1, wall_thickness: 2.0, multi_num_racks: 3, multi_stack_y: 1 },
+  }
+
   const assemblyPreset = {
     id: 'assembly_rack_slides',
     visible_in_modes: ['assembly'],
     values: { assembly_level: 1, num_slots: 10, handle: 1, wall_thickness: 2.0 },
   }
 
-  const carryPresets = [rackPreset, assemblyPreset]
+  const carryPresets = [rackPreset, multiRackPreset, assemblyPreset]
 
   beforeEach(() => {
     vi.mocked(_useManifest || vi.fn()).mockReturnValue?.({
@@ -554,6 +563,67 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     expect(next.num_slots).toBe(10)    // same as default → preset wins (same value)
     expect(next.handle).toBe(1)        // same as default → preset wins
     expect(next.assembly_level).toBe(2) // system always wins
+  })
+
+  // ────────────────────────────────────────
+  // Multi-rack mode carry-over
+  // ────────────────────────────────────────
+
+  it('setMode from rack → multi_rack preserves user-modified shared params', () => {
+    const defaultParams = { assembly_level: 3, num_slots: 10, handle: 1, wall_thickness: 2.0, multi_num_racks: 3, multi_stack_y: 1 }
+    const prev = { ...defaultParams, num_slots: 8, handle: 0 } // user changed these in rack mode
+    const systemParamIds = new Set(['assembly_level'])
+    const fallbackValues = multiRackPreset.values
+
+    const next = { ...prev }
+    for (const [key, val] of Object.entries(fallbackValues)) {
+      const isSystem = systemParamIds.has(key)
+      const isUserModified = key in defaultParams && prev[key] !== defaultParams[key]
+      if (isSystem || !isUserModified) next[key] = val
+    }
+
+    expect(next.num_slots).toBe(8)          // user modified → preserved
+    expect(next.handle).toBe(0)             // user modified → preserved
+    expect(next.multi_num_racks).toBe(3)    // unmodified → preset value
+    expect(next.multi_stack_y).toBe(1)      // unmodified → preset value
+    expect(next.wall_thickness).toBe(2.0)   // unmodified → preset value
+  })
+
+  it('setMode from multi_rack → assembly: multi_rack-only params not in fallback', () => {
+    const defaultParams = { assembly_level: 3, num_slots: 10, handle: 1, wall_thickness: 2.0, multi_num_racks: 3, multi_stack_y: 1 }
+    const prev = { ...defaultParams, multi_stack_y: 0, num_slots: 12 } // user toggled stacking + changed slots
+    const systemParamIds = new Set(['assembly_level'])
+    const fallbackValues = assemblyPreset.values // does NOT contain multi_stack_y or multi_num_racks
+
+    const next = { ...prev }
+    for (const [key, val] of Object.entries(fallbackValues)) {
+      const isSystem = systemParamIds.has(key)
+      const isUserModified = key in defaultParams && prev[key] !== defaultParams[key]
+      if (isSystem || !isUserModified) next[key] = val
+    }
+
+    expect(next.num_slots).toBe(12)         // user modified → preserved
+    expect(next.multi_stack_y).toBe(0)      // not in assembly preset → untouched (stays user value)
+    expect(next.multi_num_racks).toBe(3)    // not in assembly preset → untouched
+    expect(next.assembly_level).toBe(assemblyPreset.values.assembly_level) // system param → preset wins
+  })
+
+  it('setMode from multi_rack → rack: multi_stack_y user change preserved across round-trip', () => {
+    const defaultParams = { assembly_level: 3, num_slots: 10, handle: 1, wall_thickness: 2.0, multi_num_racks: 3, multi_stack_y: 1 }
+    const prev = { ...defaultParams, multi_stack_y: 0, multi_num_racks: 5 }
+    const systemParamIds = new Set(['assembly_level'])
+    const fallbackValues = rackPreset.values // does NOT contain multi_stack_y or multi_num_racks
+
+    const next = { ...prev }
+    for (const [key, val] of Object.entries(fallbackValues)) {
+      const isSystem = systemParamIds.has(key)
+      const isUserModified = key in defaultParams && prev[key] !== defaultParams[key]
+      if (isSystem || !isUserModified) next[key] = val
+    }
+
+    expect(next.multi_stack_y).toBe(0)      // user modified, not in rack preset → preserved
+    expect(next.multi_num_racks).toBe(5)    // user modified, not in rack preset → preserved
+    expect(next.num_slots).toBe(10)         // unmodified → preset value
   })
 
   // ────────────────────────────────────────

@@ -173,7 +173,7 @@ function SidebarContent({ compareMode, onToggleCompare }) {
   )
 
   return (
-    <Tabs defaultValue="config" className="w-full flex-1 flex flex-col h-full overflow-hidden relative">
+    <Tabs defaultValue="config" className="w-full flex-1 flex flex-col min-h-0 overflow-hidden relative">
       <div className="px-4 pt-4 pb-2 bg-background/95 backdrop-blur z-20">
         <TabsList className="grid w-full grid-cols-4 h-11 bg-muted/60">
           <TabsTrigger value="config" className="flex items-center gap-2 text-xs">
@@ -196,7 +196,7 @@ function SidebarContent({ compareMode, onToggleCompare }) {
         <ModeTabs className="hidden lg:block" />
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pb-4">
+      <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pb-6 min-h-0">
         <TabsContent value="config" className="m-0 space-y-5 animate-in fade-in-50 duration-300">
           <div className="pb-4">
             <Controls
@@ -345,13 +345,13 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
                 <span className="sr-only">{t('btn.open_controls')}</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="max-h-[85vh] landscape:max-h-[75vh] p-0 flex flex-col pb-safe">
+            <SheetContent side="bottom" className="max-h-[90dvh] landscape:max-h-[75dvh] p-0 flex flex-col gap-0 pb-safe">
               <div className="mx-auto mt-3 mb-2 h-1 w-10 rounded-full bg-muted-foreground/30 shrink-0" aria-hidden="true" />
               <SheetTitle className="sr-only">Controls</SheetTitle>
               <SheetDescription className="sr-only">
                 {t('a11y.controls_description')}
               </SheetDescription>
-              <div className="flex-1 min-h-0 relative h-full">
+              <div className="flex-1 min-h-0 relative">
                 <SidebarContent />
               </div>
             </SheetContent>

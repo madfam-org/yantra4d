@@ -143,7 +143,7 @@
 
 ### Tablet Portrait (768x1024)
 - Sidebar hidden, mobile bar with hamburger visible (correct breakpoint behavior)
-- Sheet dialog opens at 85vh with all controls
+- Sheet dialog opens at 90dvh with all controls
 - Mode tabs scrollable in mobile bar
 
 ### Mobile Portrait (375x812)
@@ -156,7 +156,7 @@
 - Checkbox hierarchy renders properly
 
 ### Mobile Landscape (812x375)
-- Sheet capped at 75vh (~280px) — scrollable, not collapsed
+- Sheet capped at 75dvh (~280px) — scrollable, not collapsed
 - Viewer canvas retains meaningful height
 - Mode tabs show as text labels (more horizontal space)
 - Landing: inline nav at 812px, hero renders well

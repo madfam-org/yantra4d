@@ -5,6 +5,7 @@ import { getApiBase } from '../../services/core/backendDetection'
 const PlatformContext = createContext({
     platformName: 'Yantra4D',
     platformLogo: '/logo.png',
+    tenantId: null,
     loading: true
 })
 
@@ -17,6 +18,7 @@ export function PlatformProvider({ children }) {
     const [state, setState] = useState({
         platformName: 'Yantra4D',
         platformLogo: '/logo.png',
+        tenantId: null,
         loading: true
     })
 
@@ -28,9 +30,14 @@ export function PlatformProvider({ children }) {
                 if (res.ok) {
                     const data = await res.json()
                     if (mounted) {
+                        // Namespace localStorage by tenant to prevent cross-tenant data leakage
+                        if (data.tenantId) {
+                            window.__yantra4d_tenant = data.tenantId
+                        }
                         setState({
                             platformName: data.platformName || 'Yantra4D',
                             platformLogo: data.platformLogo || '/logo.png',
+                            tenantId: data.tenantId || null,
                             loading: false
                         })
                         return // Skip fallback
@@ -45,6 +52,7 @@ export function PlatformProvider({ children }) {
                 setState({
                     platformName: 'Yantra4D',
                     platformLogo: '/logo.png',
+                    tenantId: null,
                     loading: false
                 })
             }

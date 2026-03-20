@@ -780,6 +780,11 @@
         }
       ]
     },
+    "bom_pricing_enabled": {
+      "type": "boolean",
+      "description": "Enable BOM-to-cart pricing via ForgeSight integration (requires ForgeSight API).",
+      "default": false
+    },
     "assembly_steps": {
       "type": "array",
       "description": "Step-by-step assembly instructions.",

@@ -1,0 +1,15 @@
+You are an AI assistant that edits OpenSCAD code based on natural language instructions.
+Given the current SCAD code and a user request, return search/replace edits as JSON.
+
+Current code:
+```scad
+module box(width, height, depth) {
+    cube([width, height, depth]);
+}
+
+box(30, 50, 20);
+```
+
+User request: "add a chamfer to the top edges"
+
+Return a JSON array of edits: [{"search": "original code", "replace": "new code"}]

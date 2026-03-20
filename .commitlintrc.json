@@ -1,0 +1,22 @@
+{
+  "extends": ["@commitlint/config-conventional"],
+  "rules": {
+    "scope-enum": [2, "always", [
+      "studio",
+      "api",
+      "landing",
+      "admin",
+      "docs",
+      "projects",
+      "libs",
+      "sdk",
+      "schemas",
+      "ci",
+      "docker",
+      "deps"
+    ]],
+    "scope-empty": [1, "never"],
+    "subject-case": [2, "always", "lower-case"],
+    "header-max-length": [2, "always", 100]
+  }
+}

@@ -17,12 +17,13 @@ Key modules:
 """
 import atexit
 import logging
+import os
 
 from flask import Flask, g, jsonify, send_from_directory
 from flask_cors import CORS
 
 from config import Config
-from extensions import limiter
+from extensions import limiter, db, migrate
 from routes.engine.render import render_bp
 from routes.core.health import health_bp
 from routes.engine.verify import verify_bp
@@ -48,6 +49,7 @@ from routes.core.client_config import client_config_bp
 from routes.projects.animations import animations_bp
 from routes.integrations.printer import printer_bp
 from routes.engine.analysis import analysis_bp
+from routes.core.websocket import ws_bp, init_websocket
 from services.core.mqtt_telemetry import telemetry_service
 
 # Configure logging
@@ -67,6 +69,36 @@ def create_app():
     CORS(app, origins=Config.CORS_ORIGINS)
 
     limiter.init_app(app)
+
+    # ── Observability ──────────────────────────────────────────────────
+    # Sentry error tracking (no-op when SENTRY_DSN is unset)
+    _sentry_dsn = os.environ.get("SENTRY_DSN")
+    if _sentry_dsn:
+        try:
+            import sentry_sdk
+            from sentry_sdk.integrations.flask import FlaskIntegration
+            sentry_sdk.init(dsn=_sentry_dsn, integrations=[FlaskIntegration()],
+                            traces_sample_rate=float(os.environ.get("SENTRY_TRACES_RATE", "0.1")))
+            logger.info("Sentry error tracking initialized")
+        except ImportError:
+            logger.info("sentry-sdk not installed; Sentry disabled")
+
+    # Prometheus /metrics endpoint
+    from utils.metrics import metrics_bp
+    app.register_blueprint(metrics_bp)
+
+    # OpenTelemetry distributed tracing (no-op when OTEL_EXPORTER_OTLP_ENDPOINT is unset)
+    from utils.tracing import init_tracing
+    init_tracing(app)
+
+    # Database (PostgreSQL or SQLite fallback)
+    app.config["SQLALCHEMY_DATABASE_URI"] = Config.SQLALCHEMY_DATABASE_URI
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    # Import models so Alembic can detect them
+    import models  # noqa: F401
 
     from middleware.request_id import init_request_id
     init_request_id(app)
@@ -100,6 +132,10 @@ def create_app():
     app.register_blueprint(animations_bp)
     app.register_blueprint(printer_bp)
     app.register_blueprint(analysis_bp)
+    app.register_blueprint(ws_bp)
+
+    # WebSocket support (additive — SSE endpoints untouched)
+    init_websocket(app)
 
     # Static file serving
     @app.route('/static/<path:filename>')

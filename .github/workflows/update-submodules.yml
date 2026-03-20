@@ -16,16 +16,32 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          fetch-depth: 0
+          fetch-depth: 1
       - name: Update all submodules to latest
-        run: git submodule update --remote --merge
+        run: |
+          # Skip tablaco (update = none in .gitmodules)
+          git submodule foreach '
+            name=$(basename "$sm_path")
+            mode=$(git config --file "$toplevel/.gitmodules" --get "submodule.$sm_path.update" 2>/dev/null || echo "")
+            if [ "$mode" = "none" ]; then
+              echo "Skipping $name (update = none)"
+            else
+              git fetch origin
+              git checkout origin/main 2>/dev/null || git checkout origin/master 2>/dev/null || true
+            fi
+          '
       - name: Create PR if changed
+        id: create-pr
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: "chore(deps): update submodules"
           title: "chore(deps): update submodules"
           body: |
             Automated weekly submodule update.
-            Review and merge after CI passes to ensure no breaking changes.
+
+            CI will run on this PR branch to verify integration before merging.
+
+            **Excluded submodules** (configured with `update = none` in `.gitmodules`):
+            - `tablaco` — managed separately
           branch: chore/update-submodules
           delete-branch: true

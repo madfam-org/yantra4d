@@ -1,56 +1,22 @@
 """
 Analytics Blueprint
 Privacy-respecting aggregate analytics: render counts, preset usage, export counts.
-Uses SQLite for zero-dependency storage.
+Uses SQLAlchemy (PostgreSQL in production, SQLite fallback in development).
 """
 import json
 import logging
-import sqlite3
 import time
-from contextlib import contextmanager
 
 from flask import Blueprint, request, jsonify, Response
+from sqlalchemy import func
 
-from config import Config
+from extensions import db
+from models.analytics import AnalyticsEvent
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
 analytics_bp = Blueprint("analytics", __name__)
 logger = logging.getLogger(__name__)
-
-DB_PATH = str(Config.ANALYTICS_DB_PATH)
-
-
-@contextmanager
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    try:
-        yield conn
-        conn.commit()
-    finally:
-        conn.close()
-
-
-def _init_db():
-    with get_db() as conn:
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                project TEXT NOT NULL,
-                event_type TEXT NOT NULL,
-                event_data TEXT,
-                created_at REAL NOT NULL
-            )
-        """)
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_events_project ON events(project)")
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_events_type ON events(event_type)")
-
-
-try:
-    _init_db()
-except Exception as e:
-    logger.warning("Analytics DB init failed (non-fatal): %s", e)
 
 
 @analytics_bp.route("/api/analytics/track", methods=["POST"])
@@ -79,11 +45,14 @@ def track_event() -> tuple[Response, int]:
             if isinstance(v, str) and len(v) > 200:
                 event_data[k] = v[:200]
 
-    with get_db() as conn:
-        conn.execute(
-            "INSERT INTO events (project, event_type, event_data, created_at) VALUES (?, ?, ?, ?)",
-            (project, event_type, json.dumps(event_data) if event_data else None, time.time()),
-        )
+    event = AnalyticsEvent(
+        project=project,
+        event_type=event_type,
+        event_data=json.dumps(event_data) if event_data else None,
+        created_at=time.time(),
+    )
+    db.session.add(event)
+    db.session.commit()
 
     return jsonify({"ok": True}), 201
 
@@ -95,36 +64,60 @@ def get_summary(slug: str) -> Response:
     days = int(request.args.get("days", 30))
     since = time.time() - (days * 86400)
 
-    with get_db() as conn:
-        # Event counts by type
-        rows = conn.execute(
-            "SELECT event_type, COUNT(*) as count FROM events WHERE project = ? AND created_at > ? GROUP BY event_type",
-            (slug, since),
-        ).fetchall()
-        counts = {row["event_type"]: row["count"] for row in rows}
+    # Event counts by type
+    count_rows = (
+        db.session.query(AnalyticsEvent.event_type, func.count(AnalyticsEvent.id))
+        .filter(AnalyticsEvent.project == slug, AnalyticsEvent.created_at > since)
+        .group_by(AnalyticsEvent.event_type)
+        .all()
+    )
+    counts = {row[0]: row[1] for row in count_rows}
 
-        # Mode distribution
-        mode_rows = conn.execute(
-            "SELECT json_extract(event_data, '$.mode') as mode, COUNT(*) as count "
-            "FROM events WHERE project = ? AND event_type = 'render' AND created_at > ? AND event_data IS NOT NULL "
-            "GROUP BY mode",
-            (slug, since),
-        ).fetchall()
-        modes = {row["mode"]: row["count"] for row in mode_rows if row["mode"]}
+    # Mode distribution (extract from JSON event_data)
+    # Use database-agnostic approach: fetch render events and parse in Python
+    render_events = (
+        db.session.query(AnalyticsEvent.event_data)
+        .filter(
+            AnalyticsEvent.project == slug,
+            AnalyticsEvent.event_type == "render",
+            AnalyticsEvent.created_at > since,
+            AnalyticsEvent.event_data.isnot(None),
+        )
+        .all()
+    )
+    mode_counts: dict[str, int] = {}
+    for (raw,) in render_events:
+        try:
+            parsed = json.loads(raw) if raw else {}
+            mode = parsed.get("mode")
+            if mode:
+                mode_counts[mode] = mode_counts.get(mode, 0) + 1
+        except (json.JSONDecodeError, TypeError):
+            pass
 
-        # Daily render counts (last N days)
-        daily_rows = conn.execute(
-            "SELECT date(created_at, 'unixepoch') as day, COUNT(*) as count "
-            "FROM events WHERE project = ? AND event_type = 'render' AND created_at > ? "
-            "GROUP BY day ORDER BY day",
-            (slug, since),
-        ).fetchall()
-        daily = [{"date": row["day"], "renders": row["count"]} for row in daily_rows]
+    # Daily render counts — database-agnostic date extraction
+    daily_rows = (
+        db.session.query(AnalyticsEvent.created_at)
+        .filter(
+            AnalyticsEvent.project == slug,
+            AnalyticsEvent.event_type == "render",
+            AnalyticsEvent.created_at > since,
+        )
+        .all()
+    )
+    daily_counts: dict[str, int] = {}
+    for (ts,) in daily_rows:
+        day = time.strftime("%Y-%m-%d", time.gmtime(ts))
+        daily_counts[day] = daily_counts.get(day, 0) + 1
+    daily = sorted(
+        [{"date": d, "renders": c} for d, c in daily_counts.items()],
+        key=lambda x: x["date"],
+    )
 
     return jsonify({
         "project": slug,
         "period_days": days,
         "event_counts": counts,
-        "mode_distribution": modes,
+        "mode_distribution": mode_counts,
         "daily_renders": daily,
     })

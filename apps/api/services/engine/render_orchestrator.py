@@ -32,6 +32,7 @@ from services.engine.render_cache import render_cache
 from services.engine.format_converter import stl_to_glb, convert_mesh
 from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
 from utils.route_helpers import cleanup_old_stl_files
+from utils.metrics import RENDERS_TOTAL, RENDER_DURATION
 
 ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf', 'glb', 'obj'}
 TRIMESH_CONVERTIBLE = {'obj', 'ply', 'glb', 'gltf', '3mf', 'off'}
@@ -316,6 +317,8 @@ def _run_engine_render(engine, part, payload, scad_path, output_path, export_for
 def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str,
                       actual_format: str, tier: str):
     """Execute a synchronous render for all parts. Returns (parts_list, log_str, cache_stats)."""
+    import time as _time
+
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']
     export_format = payload['export_format']
@@ -358,7 +361,11 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str,
         # Cache miss — clean up old files before re-rendering
         cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
 
+        t0 = _time.monotonic()
         success, stderr = _run_engine_render(engine, part, payload, scad_path, output_path, export_format, manifest)
+        duration = _time.monotonic() - t0
+        RENDER_DURATION.labels(engine=engine).observe(duration)
+        RENDERS_TOTAL.labels(engine=engine, format=export_format, tier=tier).inc()
         if not success:
             return None, stderr, (cache_hits, cache_total)
 

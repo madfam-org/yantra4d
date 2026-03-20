@@ -41,6 +41,24 @@ services:
       timeout: 5s
       retries: 3
 
+  # ── PostgreSQL (analytics + future persistent storage) ────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: yantra4d
+      POSTGRES_USER: yantra4d
+      POSTGRES_PASSWORD: yantra4d_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U yantra4d" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   # ── Redis (rate-limit / session storage) ──────────────────────────────────
   redis:
     image: redis:7-alpine
@@ -86,7 +104,10 @@ services:
       MQTT_BROKER: "mqtt-broker"
       MQTT_PORT: "1883"
       MQTT_ENABLED: "true"
+      DATABASE_URL: "postgresql://yantra4d:yantra4d_dev@postgres:5432/yantra4d"
     depends_on:
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_healthy
       mqtt-broker:
@@ -148,6 +169,7 @@ services:
       - admin
 
 volumes:
+  postgres_data:
   backend_static:
   studio_node_modules:
   landing_node_modules:

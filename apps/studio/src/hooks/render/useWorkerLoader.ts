@@ -1,0 +1,160 @@
+import { useState, useEffect, useMemo } from 'react'
+import { BufferGeometry, BufferAttribute, Scene } from 'three'
+// @ts-expect-error three.js examples lack type declarations in this project's TS config
+import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
+// @ts-expect-error three.js examples lack type declarations in this project's TS config
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
+
+interface WorkerGeometryData {
+  positions: Float32Array
+  normals?: Float32Array
+}
+
+interface WorkerMessage {
+  id: string
+  success: boolean
+  geometryData: WorkerGeometryData
+  error?: string
+}
+
+interface WorkerLoaderResult {
+  geometry: BufferGeometry | null
+  scene: Scene | null
+}
+
+// We create a singleton worker so we don't spin up dozens of threads.
+// Notice the ?worker syntax which Vite requires to bundle it correctly.
+let stlWorkerInstance: Worker | null = null
+
+// Simple global cache so we don't re-parse geometries that haven't changed URLs
+const geometryCache = new Map<string, BufferGeometry | Promise<BufferGeometry>>()
+
+/**
+ * A custom hook that drops-in alongside @react-three/fiber's useLoader,
+ * but transparently routes .stl files to a background Web Worker.
+ * If the file is a .gltf/.glb, it gracefully falls back to the synchronous GLTFLoader
+ * so that we handle dual-formatting correctly during the architecture migration.
+ */
+export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean = false): WorkerLoaderResult {
+    // We use GLTFLoader.loadAsync instead of useLoader to avoid conditional hook violations
+    const [gltfData, setGltfData] = useState<GLTF | null>(null)
+
+    useEffect(() => {
+        if (!isGLTF || !url) return
+        const loader = new GLTFLoader()
+        loader.loadAsync(url).then((data: GLTF) => setGltfData(data)).catch(console.error)
+    }, [url, isGLTF])
+
+    const [geometry, setGeometry] = useState<BufferGeometry | null>(() => {
+        // If it's a cached STL, return it immediately so we don't flicker.
+        if (!isGLTF && url && geometryCache.has(url)) {
+            const cached = geometryCache.get(url)
+            return cached instanceof BufferGeometry ? cached : null
+        }
+        return null
+    })
+
+    // GLTF parsing logic identical to the standard Viewer
+    const gltfMergedGeom = useMemo((): BufferGeometry | null => {
+        if (!isGLTF || !gltfData) return null
+        const geometries: BufferGeometry[] = []
+        gltfData.scene.updateMatrixWorld(true)
+        gltfData.scene.traverse((child: import('three').Object3D) => {
+            const mesh = child as { isMesh?: boolean; geometry?: BufferGeometry; matrixWorld: import('three').Matrix4 }
+            if (mesh.isMesh && mesh.geometry) {
+                const clonedGeom = mesh.geometry.clone()
+                clonedGeom.applyMatrix4(child.matrixWorld)
+                geometries.push(clonedGeom)
+            }
+        })
+        if (geometries.length === 0) return null
+        if (geometries.length === 1) return geometries[0]
+        return BufferGeometryUtils.mergeGeometries(geometries, false)
+    }, [gltfData, isGLTF])
+
+
+    // Worker execution logic
+    useEffect(() => {
+        if (isGLTF || !url) return
+
+        // 1) If we already have a resolved geometry in cache, just use it
+        if (geometryCache.has(url) && geometryCache.get(url) instanceof BufferGeometry) {
+            Promise.resolve().then(() => setGeometry(geometryCache.get(url) as BufferGeometry))
+            return
+        }
+
+        // 2) If a fetch/parse is already in progress for this URL, wait for it
+        if (geometryCache.has(url) && geometryCache.get(url) instanceof Promise) {
+            (geometryCache.get(url) as Promise<BufferGeometry>).then(geom => setGeometry(geom)).catch(console.error)
+            return
+        }
+
+        // Initialize singleton worker
+        if (!stlWorkerInstance) {
+            stlWorkerInstance = new Worker(new URL('../../workers/stlWorker.js', import.meta.url), {
+                type: 'module'
+            })
+        }
+
+        const taskId = `task_${Math.random().toString(36).substring(7)}`
+
+        // 3) Create a new Promise for this URL and put it in the cache immediately
+        let resolveCache: (geom: BufferGeometry) => void
+        let rejectCache: (err: Error) => void
+        const loaderPromise = new Promise<BufferGeometry>((resolve, reject) => {
+            resolveCache = resolve
+            rejectCache = reject
+        })
+        geometryCache.set(url, loaderPromise)
+
+        const handleMessage = (e: MessageEvent<WorkerMessage>) => {
+            const { id, success, geometryData, error } = e.data
+            if (id !== taskId) return
+
+            if (!success) {
+                console.error('[WorkerLoader] Failed to parse STL:', error)
+                rejectCache!(new Error(error))
+                geometryCache.delete(url)
+                return
+            }
+
+            // Reconstruct the Three.js BufferGeometry on the main thread
+            const newGeom = new BufferGeometry()
+            newGeom.setAttribute('position', new BufferAttribute(geometryData.positions, 3))
+
+            if (geometryData.normals) {
+                newGeom.setAttribute('normal', new BufferAttribute(geometryData.normals, 3))
+            } else {
+                newGeom.computeVertexNormals() // STLLoader normally does this
+            }
+
+            // Compute bounding boxes just like STLLoader does
+            newGeom.computeBoundingSphere()
+            newGeom.computeBoundingBox()
+
+            // Update cache with the actual resolved geometry
+            geometryCache.set(url, newGeom)
+
+            // Resolve the promise for any pending awaiters
+            resolveCache!(newGeom)
+            setGeometry(newGeom)
+
+            // Cleanup the listener
+            stlWorkerInstance!.removeEventListener('message', handleMessage)
+        }
+
+        stlWorkerInstance.addEventListener('message', handleMessage)
+
+        // Kick off the worker task
+        stlWorkerInstance.postMessage({ url, id: taskId })
+
+        return () => {
+            stlWorkerInstance?.removeEventListener('message', handleMessage)
+        }
+    }, [url, isGLTF])
+
+    return {
+        geometry: isGLTF ? gltfMergedGeom : geometry,
+        scene: isGLTF ? gltfData?.scene ?? null : null
+    }
+}

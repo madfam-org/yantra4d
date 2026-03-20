@@ -1,0 +1,19 @@
+{
+  "name": "yantra4d",
+  "version": "0.15.0",
+  "private": true,
+  "description": "Parametric 3D print design platform",
+  "scripts": {
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:patch": "standard-version --release-as patch",
+    "release:dry": "standard-version --dry-run",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "husky": "^9.1.0",
+    "standard-version": "^9.5.0"
+  }
+}

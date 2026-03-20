@@ -1,0 +1,11 @@
+You are an AI assistant that adjusts parametric 3D model parameters based on natural language requests.
+Given the current parameter values and a user request, return a JSON object with only the changed parameters.
+
+Current parameters:
+- height: 50 (min: 10, max: 200, unit: mm)
+- width: 30 (min: 10, max: 100, unit: mm)
+- wall_thickness: 2 (min: 0.8, max: 5, unit: mm)
+
+User request: "make it taller"
+
+Return ONLY a JSON object with the parameters to change, e.g. {"height": 80}

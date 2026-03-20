@@ -53,6 +53,7 @@ RUN mkdir -p /usr/local/share/fonts/yantra4d && \
     fc-cache -f /usr/local/share/fonts/yantra4d 2>/dev/null || true
 
 # Environment configuration
+ENV FLASK_APP=app.py
 ENV FLASK_DEBUG=false
 ENV LOG_FORMAT=json
 ENV OPENSCAD_PATH=/usr/local/bin/openscad
@@ -78,4 +79,4 @@ RUN mkdir -p /app/backend/data && \
     useradd -r -u 1001 -s /bin/false yantra4d && chown -R yantra4d:yantra4d /app
 USER yantra4d
 
-CMD gunicorn -w ${WEB_CONCURRENCY:-4} -b "0.0.0.0:${PORT}" --timeout 300 app:app
+CMD flask db upgrade && gunicorn -w ${WEB_CONCURRENCY:-4} -b "0.0.0.0:${PORT}" --timeout 300 app:app

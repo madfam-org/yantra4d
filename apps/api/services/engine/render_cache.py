@@ -15,6 +15,8 @@ from collections import OrderedDict
 
 import redis as redis_lib
 
+from utils.metrics import CACHE_HITS, CACHE_MISSES
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_TTL = int(os.getenv("RENDER_CACHE_TTL", "3600"))
@@ -130,6 +132,7 @@ class RenderCache:
                     self._cache.pop(key, None)
                 else:
                     self._cache.move_to_end(key)
+                    CACHE_HITS.inc()
                     return entry
 
         # L2: Redis
@@ -141,8 +144,10 @@ class RenderCache:
                 self._cache.move_to_end(key)
                 while len(self._cache) > self._max_entries:
                     self._cache.popitem(last=False)
+            CACHE_HITS.inc()
             return redis_entry
 
+        CACHE_MISSES.inc()
         return None
 
     def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, path: str, size_bytes: int | None, scad_content_hash: str | None = None):

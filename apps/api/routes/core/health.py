@@ -38,15 +38,27 @@ def _check_redis() -> tuple[bool, str]:
 
 
 def _check_analytics_db() -> tuple[bool, str]:
-    """Check analytics DB is writable."""
-    db_path = Config.ANALYTICS_DB_PATH
+    """Check analytics DB connectivity via SQLAlchemy."""
     try:
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-        # Test write by touching the parent dir
-        if db_path.exists():
-            return os.access(db_path, os.W_OK), "writable" if os.access(db_path, os.W_OK) else "read-only"
-        # DB doesn't exist yet — check parent is writable
-        return os.access(db_path.parent, os.W_OK), "parent writable"
+        from extensions import db
+        from sqlalchemy import text
+        db.session.execute(text("SELECT 1"))
+        db.session.rollback()  # don't hold open transactions
+        uri = Config.SQLALCHEMY_DATABASE_URI
+        if uri.startswith("postgresql"):
+            return True, "postgresql connected"
+        return True, "sqlite connected"
+    except Exception as e:
+        return False, f"unreachable: {e}"
+
+
+def _check_mqtt() -> tuple[bool, str]:
+    """Check MQTT telemetry service connectivity."""
+    try:
+        from services.core.mqtt_telemetry import telemetry_service
+        if not telemetry_service.enabled:
+            return True, "not enabled (optional)"
+        return telemetry_service.connected, "connected" if telemetry_service.connected else "disconnected"
     except Exception as e:
         return False, str(e)
 
@@ -124,6 +136,13 @@ def readiness():
     ok, detail = _check_memory()
     checks["memory"] = {"ok": ok, "detail": detail}
     if not ok:
+        if overall != "unhealthy":
+            overall = "degraded"
+
+    # Optional: MQTT
+    ok, detail = _check_mqtt()
+    checks["mqtt"] = {"ok": ok, "detail": detail}
+    if not ok and "not enabled" not in detail:
         if overall != "unhealthy":
             overall = "degraded"
 

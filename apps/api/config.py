@@ -70,6 +70,9 @@ class AppConfig:
     JANUA_API_URL: str = field(init=False)
     JANUA_API_KEY: str = field(default_factory=lambda: os.getenv("JANUA_API_KEY", ""))
 
+    # Database (PostgreSQL in production, SQLite fallback for dev)
+    DATABASE_URL: str = field(default_factory=lambda: os.getenv("DATABASE_URL", ""))
+
     # White-labeling Runtime Configuration
     PLATFORM_NAME: str = field(default_factory=lambda: os.getenv("PLATFORM_NAME", "Yantra4D"))
     PLATFORM_LOGO: str = field(default_factory=lambda: os.getenv("PLATFORM_LOGO", "/logo.png"))
@@ -128,6 +131,13 @@ class AppConfig:
             o.strip()
             for o in os.getenv("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS).split(",")
         ]
+
+        # Database URI: prefer DATABASE_URL (PostgreSQL), fall back to SQLite
+        if self.DATABASE_URL:
+            self.SQLALCHEMY_DATABASE_URI = self.DATABASE_URL
+        else:
+            self.ANALYTICS_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+            self.SQLALCHEMY_DATABASE_URI = f"sqlite:///{self.ANALYTICS_DB_PATH}"
 
         if not self.AI_API_KEY:
             logger.warning("AI_API_KEY not set — AI features unavailable")

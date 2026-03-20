@@ -5,13 +5,17 @@ Provides /api/admin/* endpoints for project management and monitoring.
 import json
 import logging
 import os
+import time
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request, Response
+from sqlalchemy import func
 
 from config import Config
+from extensions import db
 from manifest import discover_projects, get_manifest
 from middleware.auth import require_role, optional_auth
+from models.analytics import AnalyticsEvent
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
@@ -247,4 +251,95 @@ def tablaco_public_link() -> Response:
         "slug": "tablaco",
         "public_url": url,
         "note": "Share this URL to give customers access to the Tablaco storefront.",
+    })
+
+
+@admin_bp.route('/api/admin/analytics/global', methods=['GET'])
+@require_role("admin")
+def admin_global_analytics() -> Response:
+    """
+    Aggregate analytics across all projects for the last N days.
+
+    Query params:
+      ?days=30  (default 30)
+
+    Returns:
+      {
+        total_renders, total_exports, total_events,
+        daily_renders: [{date, count}],
+        top_projects: [{slug, renders}]
+      }
+    """
+    days = int(request.args.get("days", 30))
+    since = time.time() - (days * 86400)
+
+    # Total event counts by type
+    count_rows = (
+        db.session.query(AnalyticsEvent.event_type, func.count(AnalyticsEvent.id))
+        .filter(AnalyticsEvent.created_at > since)
+        .group_by(AnalyticsEvent.event_type)
+        .all()
+    )
+    counts = {row[0]: row[1] for row in count_rows}
+    total_renders = counts.get("render", 0)
+    total_exports = counts.get("export", 0)
+    total_events = sum(counts.values())
+
+    # Daily render counts (database-agnostic: fetch timestamps, bucket in Python)
+    daily_rows = (
+        db.session.query(AnalyticsEvent.created_at)
+        .filter(
+            AnalyticsEvent.event_type == "render",
+            AnalyticsEvent.created_at > since,
+        )
+        .all()
+    )
+    daily_counts: dict[str, int] = {}
+    for (ts,) in daily_rows:
+        day = time.strftime("%Y-%m-%d", time.gmtime(ts))
+        daily_counts[day] = daily_counts.get(day, 0) + 1
+    daily_renders = sorted(
+        [{"date": d, "count": c} for d, c in daily_counts.items()],
+        key=lambda x: x["date"],
+    )
+
+    # Top projects by render count
+    top_rows = (
+        db.session.query(AnalyticsEvent.project, func.count(AnalyticsEvent.id))
+        .filter(
+            AnalyticsEvent.event_type == "render",
+            AnalyticsEvent.created_at > since,
+        )
+        .group_by(AnalyticsEvent.project)
+        .order_by(func.count(AnalyticsEvent.id).desc())
+        .limit(10)
+        .all()
+    )
+    top_projects = [{"slug": row[0], "renders": row[1]} for row in top_rows]
+
+    return jsonify({
+        "period_days": days,
+        "total_renders": total_renders,
+        "total_exports": total_exports,
+        "total_events": total_events,
+        "event_counts": counts,
+        "daily_renders": daily_renders,
+        "top_projects": top_projects,
+    })
+
+
+@admin_bp.route('/api/admin/renders/active', methods=['GET'])
+@require_role("admin")
+def admin_active_renders() -> Response:
+    """
+    Return active render information.
+
+    Currently returns a placeholder — real-time render tracking would require
+    exposing render_orchestrator process state, which is non-trivial for
+    multi-worker deployments.
+    """
+    return jsonify({
+        "active_renders": 0,
+        "recent": [],
+        "note": "Real-time render tracking requires render_orchestrator state integration.",
     })

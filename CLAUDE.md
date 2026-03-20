@@ -2,6 +2,8 @@
 
 Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCAD models with 3D preview (wireframe/bounding-box), evolving into a **Hyperobjects Commons**.
 
+> **For human developers**: See [`docs/guides/developer-onboarding.md`](docs/guides/developer-onboarding.md) for a concise quickstart guide.
+
 ## Architecture
 
 ```

@@ -1,6 +1,7 @@
 # Competitive Landscape Research & Improvement Roadmap
 
-> **Date**: 2026-01-31
+> **Date**: 2026-03-20 (updated)
+> **Original**: 2026-01-31
 > **Purpose**: Market research benchmarking for Yantra4D's strategic positioning
 
 ---
@@ -27,12 +28,42 @@
 
 | Feature | Why Not |
 |---------|---------|
-| Code editor (Monaco) | Contradicts configurator identity. Users don't write code. |
 | Constraint-based sketch modeling | Different paradigm; requires building a geometry engine. |
-| STEP/IGES import | Professional exchange formats irrelevant to configurator users. |
 | Standard parts library | Code-level OpenSCAD library. BOM covers the user need. |
 | Real-time collaborative editing | Premature. Shareable links cover 80% of need at 5% cost. |
 | Python/JS scripting | Code-centric. Fragments platform identity. |
+
+---
+
+## Features Since Last Review (Jan → Mar 2026)
+
+The following capabilities were added since the original competitive analysis and change the strategic picture:
+
+| Feature | Impact on Competitive Position |
+|---------|-------------------------------|
+| **Monaco SCAD Code Editor** (`ScadEditor.jsx`) | Pro+ tier feature for advanced users. Complements (not contradicts) the configurator — end-users get sliders, power-users get code. Positions Yantra4D as a full authoring platform. |
+| **CadQuery STEP Export** | STEP is now a supported export format via CadQuery engine fallback. Professional exchange format support broadens the target audience to engineering teams. |
+| **AI Configurator** (basic+ tier) | Natural language parameter adjustment via LLM. No competitor offers this. |
+| **AI Code Editor** (pro+ tier) | Natural language SCAD editing with search/replace generation. Unique differentiator. |
+| **AI Project Synthesizer** (pro+ tier) | Generate entire SCAD projects from natural language descriptions. |
+| **MQTT Printer Integration** | Live telemetry bridge connecting Yantra4D to physical printers. Moves toward a full digital-to-physical pipeline. |
+| **Assembly Step Animations** | Auto-generated assembly instructions from BOSL2 attachments. Interactive 3D step-by-step guides. |
+| **Admin Dashboard** | Project management, feature flags, analytics. Platform operational maturity. |
+| **11 Material Hyperobjects** | PLA, PETG, ABS, TPU, Nylon, ASA, PC, PVA, Carbon Fiber PLA/PETG/Nylon with material-aware print estimation. |
+| **Overhang Analysis** (pro+) | Trimesh-based face normal analysis with color ramp visualization. AM-specific inspection tool. |
+| **Exploded View + Adjustable Lighting** | Enhanced 3D viewer for multi-part assembly review. |
+| **White-Label Platform** | JWT-based branding configuration for OEM deployments. |
+| **Headless SDK** (`@yantra4d/sdk`) | Programmatic API for embedding Yantra4D renders in third-party apps. |
+
+### Updated Competitor Developments (2026)
+
+| Competitor | 2026 Update |
+|-----------|-------------|
+| **OpenSCAD** | v2024.12 release with faster CGAL, but no web configurator progress |
+| **Manifold** | Growing WASM adoption; potential future backend engine for Yantra4D |
+| **FreeCAD** | 1.0 release upcoming; web version still experimental |
+| **Printables** | Customizer remains broken/deprecated; opportunity persists |
+| **CadQuery/build123d** | Strong Python community growth; no web UI, validates our CadQuery engine integration |
 
 ---
 

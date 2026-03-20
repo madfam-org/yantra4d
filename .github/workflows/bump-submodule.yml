@@ -10,10 +10,12 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: false
+          fetch-depth: 2
 
       - name: Extract payload
         id: payload
@@ -24,7 +26,32 @@ jobs:
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
           echo "sha=$SHA" >> $GITHUB_OUTPUT
 
-      - name: Update submodule
+      - name: Check for conflicts
+        id: conflict-check
+        run: |
+          git fetch origin main
+          if ! git merge --no-commit --no-ff origin/main 2>/dev/null; then
+            echo "conflict=true" >> $GITHUB_OUTPUT
+            git merge --abort
+          else
+            git reset --hard HEAD
+            echo "conflict=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create draft PR on conflict
+        if: steps.conflict-check.outputs.conflict == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore(deps): bump ${{ steps.payload.outputs.slug }} to ${{ steps.payload.outputs.sha }}"
+          title: "chore(deps): bump ${{ steps.payload.outputs.slug }} (conflict detected)"
+          body: |
+            Auto-bump of `${{ steps.payload.outputs.slug }}` to `${{ steps.payload.outputs.sha }}` detected a merge conflict.
+            Manual resolution required.
+          branch: chore/bump-${{ steps.payload.outputs.slug }}
+          draft: true
+
+      - name: Update submodule (no conflict)
+        if: steps.conflict-check.outputs.conflict != 'true'
         run: |
           SLUG="${{ steps.payload.outputs.slug }}"
           SHA="${{ steps.payload.outputs.sha }}"
@@ -32,7 +59,7 @@ jobs:
 
           # Check if submodule is registered in .gitmodules
           if ! git config --file .gitmodules --get "submodule.projects/$SLUG.path" > /dev/null 2>&1; then
-            echo "⚠️ Submodule projects/$SLUG not found in .gitmodules. Skipping."
+            echo "Submodule projects/$SLUG not found in .gitmodules. Skipping."
             exit 0
           fi
 

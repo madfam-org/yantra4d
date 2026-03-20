@@ -12,6 +12,7 @@ interface MaterialProfile {
   layerHeight: number   // mm default
   costPerKg: number     // USD approximate
   nozzleDiameter: number // mm
+  preheatMinutes: number // minutes before printing starts
 }
 
 type MaterialProfileMap = Record<string, MaterialProfile>
@@ -19,11 +20,12 @@ type MaterialProfileMap = Record<string, MaterialProfile>
 const MATERIAL_PROFILES: MaterialProfileMap = {
   pla: {
     name: 'PLA',
-    density: 1.24,       // g/cm³
-    speed: 50,           // mm/s typical
-    layerHeight: 0.2,    // mm default
-    costPerKg: 20,       // USD approximate
-    nozzleDiameter: 0.4, // mm
+    density: 1.24,        // g/cm³
+    speed: 50,            // mm/s typical
+    layerHeight: 0.2,     // mm default
+    costPerKg: 20,        // USD approximate
+    nozzleDiameter: 0.4,  // mm
+    preheatMinutes: 2,    // minutes for bed/nozzle warmup
   },
   petg: {
     name: 'PETG',
@@ -32,6 +34,7 @@ const MATERIAL_PROFILES: MaterialProfileMap = {
     layerHeight: 0.2,
     costPerKg: 22,
     nozzleDiameter: 0.4,
+    preheatMinutes: 5,
   },
   abs: {
     name: 'ABS',
@@ -40,6 +43,7 @@ const MATERIAL_PROFILES: MaterialProfileMap = {
     layerHeight: 0.2,
     costPerKg: 18,
     nozzleDiameter: 0.4,
+    preheatMinutes: 8,
   },
   tpu: {
     name: 'TPU',
@@ -48,7 +52,22 @@ const MATERIAL_PROFILES: MaterialProfileMap = {
     layerHeight: 0.2,
     costPerKg: 35,
     nozzleDiameter: 0.4,
+    preheatMinutes: 3,
   },
+}
+
+/**
+ * Infill pattern speed factors — relative to baseline rectilinear/grid speed.
+ * Gyroid is slower (curved paths), lightning is faster (sparse fills).
+ */
+const INFILL_SPEED_FACTORS: Record<string, number> = {
+  grid: 1.0,
+  rectilinear: 1.0,
+  triangles: 0.95,
+  gyroid: 0.85,
+  cubic: 0.90,
+  honeycomb: 0.80,
+  lightning: 1.3,
 }
 
 interface Vertex {
@@ -73,6 +92,9 @@ interface PrintOverrides {
   layerHeight?: number
   infill?: number
   speed?: number
+  nozzleDiameter?: number
+  infillPattern?: string
+  overhangPct?: number   // 0-1, from backend overhang analysis
 }
 
 interface ManifestMaterial {
@@ -237,6 +259,10 @@ export function estimatePrint(
   const layerHeight = overrides.layerHeight || profile.layerHeight
   const infill = overrides.infill ?? 0.20  // 20% default
   const speed = overrides.speed || profile.speed
+  const nozzleDiameter = overrides.nozzleDiameter || profile.nozzleDiameter
+  const infillPattern = overrides.infillPattern || 'grid'
+  const overhangPct = overrides.overhangPct ?? 0  // 0-1, from backend analysis
+  const infillSpeedFactor = INFILL_SPEED_FACTORS[infillPattern] ?? 1.0
 
   // Estimate actual printed volume (walls + infill)
   // Heuristic calibrated for thin-walled functional parts:
@@ -246,14 +272,18 @@ export function estimatePrint(
   const infillVolume = volumeMm3 * 0.60 * infill
   const printedVolume = shellVolume + infillVolume  // mm³
 
+  // Support material estimation (15% density supports for overhanging regions)
+  const supportVolume = overhangPct > 0 ? volumeMm3 * overhangPct * 0.15 : 0
+  const totalPrintedVolume = printedVolume + supportVolume
+
   // Filament weight
-  const volumeCm3 = printedVolume / 1000
+  const volumeCm3 = totalPrintedVolume / 1000
   const grams = volumeCm3 * profile.density
 
   // Filament length (1.75mm diameter standard FDM filament)
   const filamentDiameter = 1.75  // mm
   const crossSection = Math.PI * (filamentDiameter / 2) ** 2  // mm²
-  const meters = printedVolume / crossSection / 1000
+  const meters = totalPrintedVolume / crossSection / 1000
 
   // Cost
   const cost = (grams / 1000) * profile.costPerKg
@@ -266,13 +296,15 @@ export function estimatePrint(
   // Infill travel per layer:
   //   (area × infill_density) / nozzle_diameter gives total line length for one-direction passes
   //   × 0.5 accounts for bi-directional (zig-zag) infill paths avoiding double-counting
-  const infillTravelPerLayer = (bbox.width * bbox.depth * infill) / profile.nozzleDiameter * 0.5
+  const infillTravelPerLayer = (bbox.width * bbox.depth * infill) / nozzleDiameter * 0.5
   const travelPerLayer = perimeterPerLayer + infillTravelPerLayer
   const totalTravelMm = travelPerLayer * layers
-  const printSeconds = totalTravelMm / speed
-  // Add overhead: homing, bed heating, travel moves, first layer slow-down (~15%)
-  const totalSeconds = printSeconds * 1.15
-
+  // Apply infill pattern speed factor
+  const effectiveSpeed = speed * infillSpeedFactor
+  const printSeconds = totalTravelMm / effectiveSpeed
+  // Add preheat time + overhead (homing, travel moves, first layer slow-down ~15%)
+  const preheatSeconds = (profile.preheatMinutes || 0) * 60
+  const totalSeconds = printSeconds * 1.15 + preheatSeconds
 
   const hours = Math.floor(totalSeconds / 3600)
   const minutes = Math.round((totalSeconds % 3600) / 60)
@@ -305,6 +337,28 @@ export function getMaterialProfiles(manifestMaterials: ManifestMaterial[] | null
 }
 
 /**
+ * Get available infill patterns for the UI selector.
+ */
+export function getInfillPatterns(): { id: string; name: string }[] {
+  return Object.keys(INFILL_SPEED_FACTORS).map(id => ({
+    id,
+    name: id.charAt(0).toUpperCase() + id.slice(1),
+  }))
+}
+
+/**
+ * Get common nozzle diameters for the UI selector.
+ */
+export function getNozzleDiameters(): { value: number; label: string }[] {
+  return [
+    { value: 0.2, label: '0.2mm' },
+    { value: 0.4, label: '0.4mm' },
+    { value: 0.6, label: '0.6mm' },
+    { value: 0.8, label: '0.8mm' },
+  ]
+}
+
+/**
  * Build a merged profile lookup that includes manifest materials.
  */
 export function buildMaterialLookup(manifestMaterials: ManifestMaterial[] | null | undefined): MaterialProfileMap {
@@ -318,6 +372,7 @@ export function buildMaterialLookup(manifestMaterials: ManifestMaterial[] | null
         layerHeight: 0.2,
         costPerKg: m.cost_per_kg,
         nozzleDiameter: 0.4,
+        preheatMinutes: 3,  // reasonable default for custom materials
       }
     }
   }

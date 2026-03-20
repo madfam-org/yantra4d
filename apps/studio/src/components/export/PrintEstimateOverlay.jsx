@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useManifest } from '../../contexts/project/ManifestProvider'
-import { estimatePrint, getMaterialProfiles, buildMaterialLookup } from '../../lib/printEstimator'
+import { estimatePrint, getMaterialProfiles, buildMaterialLookup, getInfillPatterns, getNozzleDiameters } from '../../lib/printEstimator'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
 /**
@@ -42,14 +42,18 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
   const manifestMaterials = manifest?.materials || null
   const [material, setMaterial] = useState(manifest?.print_estimation?.default_material || 'pla')
   const [infill, setInfill] = useState(manifest?.print_estimation?.default_infill ?? 0.20)
+  const [infillPattern, setInfillPattern] = useState('grid')
+  const [nozzleDiameter, setNozzleDiameter] = useState(0.4)
   const [breakdownOpen, setBreakdownOpen] = useState(false)
   const materials = useMemo(() => getMaterialProfiles(manifestMaterials), [manifestMaterials])
   const materialLookup = useMemo(() => buildMaterialLookup(manifestMaterials), [manifestMaterials])
+  const infillPatterns = useMemo(() => getInfillPatterns(), [])
+  const nozzleDiameters = useMemo(() => getNozzleDiameters(), [])
 
   const estimate = useMemo(() => {
     if (!volumeMm3 || volumeMm3 <= 0 || !boundingBox) return null
-    return estimatePrint(volumeMm3, boundingBox, material, { infill }, materialLookup)
-  }, [volumeMm3, boundingBox, material, infill, materialLookup])
+    return estimatePrint(volumeMm3, boundingBox, material, { infill, infillPattern, nozzleDiameter }, materialLookup)
+  }, [volumeMm3, boundingBox, material, infill, infillPattern, nozzleDiameter, materialLookup])
 
   // Per-part estimates: compute independently for each part using its own bbox height
   const partEstimates = useMemo(() => {
@@ -59,10 +63,10 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
       const label = partDef?.label
         ? (typeof partDef.label === 'object' ? (partDef.label[language] || partDef.label.en || partType) : partDef.label)
         : partType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-      const est = pVol > 0 && pBox ? estimatePrint(pVol, pBox, material, { infill }, materialLookup) : null
+      const est = pVol > 0 && pBox ? estimatePrint(pVol, pBox, material, { infill, infillPattern, nozzleDiameter }, materialLookup) : null
       return { partType, label, est }
     }).filter(p => p.est !== null)
-  }, [perPartData, material, infill, materialLookup, manifest, language])
+  }, [perPartData, material, infill, infillPattern, nozzleDiameter, materialLookup, manifest, language])
 
   if (!volumeMm3 || volumeMm3 <= 0) return null
   if (!estimate) return null
@@ -105,12 +109,43 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
           </select>
         </div>
 
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <label htmlFor="pe-pattern-inline" className="text-muted-foreground shrink-0">{t('print.pattern') || 'Pattern'}:</label>
+          <select
+            id="pe-pattern-inline"
+            className="bg-background border border-border rounded px-2 py-2 md:py-0.5 text-base md:text-xs min-h-[44px] md:min-h-0 flex-1 min-w-0"
+            value={infillPattern}
+            onChange={e => setInfillPattern(e.target.value)}
+          >
+            {infillPatterns.map(p => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <label htmlFor="pe-nozzle-inline" className="text-muted-foreground shrink-0">{t('print.nozzle') || 'Nozzle'}:</label>
+          <select
+            id="pe-nozzle-inline"
+            className="bg-background border border-border rounded px-2 py-2 md:py-0.5 text-base md:text-xs min-h-[44px] md:min-h-0 flex-1 min-w-0"
+            value={nozzleDiameter}
+            onChange={e => setNozzleDiameter(parseFloat(e.target.value))}
+          >
+            {nozzleDiameters.map(n => (
+              <option key={n.value} value={n.value}>{n.label}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Aggregate total */}
         <div className="border-t border-border pt-2 space-y-1">
           {partEstimates && (
             <div className="text-muted-foreground font-medium mb-1">Total</div>
           )}
           <EstimateRows est={estimate} t={t} />
+          <div className="text-[10px] text-muted-foreground/60 mt-1 italic">
+            {t('print.disclaimer') || 'Estimate (\u00b130% for typical parts)'}
+          </div>
         </div>
 
         {/* Per-part breakdown accordion */}

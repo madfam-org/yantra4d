@@ -174,6 +174,21 @@ export default function BomPanel({ params, mode }) {
           </div>
         )}
       </div>
+
+      {/* ForgeSight pricing integration (coming soon) */}
+      <div className="pt-2 border-t border-border">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled
+          className="w-full h-9 gap-2 text-xs opacity-60"
+          title="Coming soon — requires ForgeSight integration"
+        >
+          <Printer className="h-3 w-3" />
+          Get Quote
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Soon</Badge>
+        </Button>
+      </div>
     </div>
   )
 }

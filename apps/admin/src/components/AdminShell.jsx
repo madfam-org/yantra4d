@@ -1,14 +1,20 @@
 import { useState, lazy, Suspense } from 'react'
-import { LayoutDashboard, ExternalLink, Menu, X, User } from 'lucide-react'
+import { LayoutDashboard, ExternalLink, Menu, X, User, BarChart3, Cpu, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import ProjectList from './projects/ProjectList'
 import TablacoLinkPanel from './projects/TablacoLinkPanel'
+import AnalyticsDashboard from './analytics/AnalyticsDashboard'
+import RenderQueuePanel from './renders/RenderQueuePanel'
+import UserOverview from './users/UserOverview'
 
 const UserProfile = lazy(() => import('@janua/react-sdk').then(m => ({ default: m.UserProfile })))
 
 const VIEWS = [
     { id: 'projects', label: 'Projects', icon: LayoutDashboard },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'renders', label: 'Renders', icon: Cpu },
+    { id: 'users', label: 'Users', icon: Users },
     { id: 'tablaco', label: 'Tablaco Link', icon: ExternalLink },
 ]
 
@@ -103,6 +109,9 @@ export default function AdminShell({ auth }) {
 
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6">
                     {activeView === 'projects' && <ProjectList />}
+                    {activeView === 'analytics' && <AnalyticsDashboard />}
+                    {activeView === 'renders' && <RenderQueuePanel />}
+                    {activeView === 'users' && <UserOverview />}
                     {activeView === 'tablaco' && <TablacoLinkPanel />}
                 </div>
             </main>

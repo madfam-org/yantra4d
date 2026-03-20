@@ -55,7 +55,13 @@ def create_ai_session():
         if not limits.get("ai_code_editor"):
             return error_response("AI Code Editor requires pro tier or above", 403)
 
-    session_id = create_session(project_slug, mode)
+    # Extract user_id for per-user session limits
+    claims = getattr(request, "auth_claims", None)
+    user_id = claims.get("sub") if claims else None
+
+    session_id = create_session(project_slug, mode, user_id=user_id)
+    if session_id is None:
+        return error_response("Maximum concurrent AI sessions reached (limit: 5)", 429)
     return jsonify({"session_id": session_id})
 
 

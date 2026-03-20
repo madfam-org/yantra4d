@@ -120,6 +120,24 @@ See `docs/reference/manifest.md` for the full manifest schema.
 2. Add `.scad` files to `projects/{slug}/`
 3. The project is auto-discovered — no code changes needed
 
+## Submodule Management
+
+OpenSCAD libraries in `libs/` and federated projects in `projects/` are git submodules.
+
+- **Weekly auto-update**: The `update-submodules.yml` workflow updates all submodules weekly and creates a PR
+- **Per-push auto-bump**: The `bump-submodule.yml` workflow bumps individual project submodules when their upstream repos push to main
+- **Excluded submodules**: `tablaco` has `update = none` in `.gitmodules` and is excluded from automated updates (managed separately via its own deployment pipeline)
+
+To manually update a specific submodule:
+```bash
+cd projects/my-project
+git fetch origin
+git checkout origin/main
+cd ../..
+git add projects/my-project
+git commit -m "chore(deps): update my-project submodule"
+```
+
 ## Questions?
 
 Open a GitHub Issue for bugs, feature requests, or questions.

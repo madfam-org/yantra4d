@@ -20,7 +20,7 @@ describe('idleCallback polyfill', () => {
     globalThis.requestIdleCallback = nativeRIC
 
     // Re-import to pick up the native version
-    const mod = await import('./idleCallback.js?native')
+    const mod = await import('./idleCallback.ts?native')
     expect(mod.requestIdleCallback).toBe(nativeRIC)
   })
 
@@ -31,7 +31,7 @@ describe('idleCallback polyfill', () => {
     vi.useFakeTimers()
 
     // Dynamic import to get fresh module without native rIC
-    const mod = await import('./idleCallback.js?fallback')
+    const mod = await import('./idleCallback.ts?fallback')
 
     const cb = vi.fn()
     mod.requestIdleCallback(cb, { timeout: 100 })
@@ -55,7 +55,7 @@ describe('idleCallback polyfill', () => {
 
     vi.useFakeTimers()
 
-    const mod = await import('./idleCallback.js?cancel')
+    const mod = await import('./idleCallback.ts?cancel')
 
     const cb = vi.fn()
     const id = mod.requestIdleCallback(cb, { timeout: 100 })

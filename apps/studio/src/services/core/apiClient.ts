@@ -69,6 +69,13 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
 /**
  * React hook to subscribe to rate limit state changes.
  */
+/**
+ * Check if the backend render rate limit has been exhausted.
+ */
+export function isRateLimitExhausted(): boolean {
+  return _rateLimitState.remaining !== null && _rateLimitState.remaining <= 0
+}
+
 export function useRateLimit(): RateLimitState {
   const [state, setState] = useState<RateLimitState>({ ..._rateLimitState })
 

@@ -34,10 +34,10 @@ describe('TierProvider tests', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({
-        guest: { renders_per_hour: 30 },
-        essentials: { renders_per_hour: 50 },
-        pro: { renders_per_hour: 200 },
-        madfam: { renders_per_hour: 500 },
+        guest: { backend_renders_per_hour: 10 },
+        essentials: { backend_renders_per_hour: 30 },
+        pro: { backend_renders_per_hour: 150 },
+        madfam: { backend_renders_per_hour: 500 },
       }),
     })
   })
@@ -54,7 +54,7 @@ describe('TierProvider tests', () => {
       const { apiFetch } = await import('../../services/core/apiClient')
       apiFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ tier: 'pro', limits: { renders_per_hour: 200 } }),
+        json: () => Promise.resolve({ tier: 'pro', limits: { backend_renders_per_hour: 150 } }),
       })
 
       const { result } = renderHook(() => useTier(), { wrapper })
@@ -83,7 +83,7 @@ describe('TierProvider tests', () => {
       const { apiFetch } = await import('../../services/core/apiClient')
       apiFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ tier: 'essentials', limits: { renders_per_hour: 50 } }),
+        json: () => Promise.resolve({ tier: 'essentials', limits: { backend_renders_per_hour: 30 } }),
       })
 
       const { result } = renderHook(() => useTier(), { wrapper })
@@ -100,7 +100,7 @@ describe('TierProvider tests', () => {
       const { apiFetch } = await import('../../services/core/apiClient')
       apiFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ tier: 'madfam', limits: { renders_per_hour: 500 } }),
+        json: () => Promise.resolve({ tier: 'madfam', limits: { backend_renders_per_hour: 500 } }),
       })
 
       const { result } = renderHook(() => useTier(), { wrapper })

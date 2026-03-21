@@ -243,5 +243,12 @@
   "projects.open_demo": "Abrir Proyecto Demo",
   "log.wasm_fallback": "Backend no disponible, usando renderizado del navegador...",
   "preview.hover_hint": "Pasa el cursor sobre un parámetro para previsualizar su efecto geométrico",
-  "preview.prerendering": "Pre-renderizando variantes…"
+  "preview.prerendering": "Pre-renderizando variantes…",
+  "demo.welcome": "El renderizado 3D se ejecuta en tu dispositivo — ilimitado y gratuito.",
+  "demo.create_account": "Crea una cuenta gratuita",
+  "demo.unlock_features": "para desbloquear herramientas de IA, creación de proyectos y más formatos de exportación.",
+  "ratelimit.server_exhausted": "Límite de renderizado del servidor alcanzado ({limit}/hr).",
+  "ratelimit.server_warning": "{remaining} renderizados del servidor restantes esta hora.",
+  "ratelimit.wasm_available": "El renderizado del navegador sigue disponible.",
+  "ratelimit.wasm_suggestion": "Tu navegador puede renderizar este modelo directamente."
 }

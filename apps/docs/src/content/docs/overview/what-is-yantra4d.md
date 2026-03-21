@@ -52,12 +52,14 @@ If the backend is unreachable, the studio falls back to WASM automatically.
 
 The platform supports four access tiers:
 
-| Tier | Renders/hr | Projects | Export formats | AI features |
+| Tier | Server renders/hr | Projects | Export formats | AI features |
 |------|:---:|:---:|---|---|
-| Guest | 30 | 0 | STL | -- |
-| Essentials | 50 | 3 | STL | Configurator |
-| Pro | 200 | Unlimited | STL, 3MF, OFF, STEP, GLB, GLTF, OBJ | Configurator + Code Editor |
+| Guest | 10 | 0 | STL | -- |
+| Essentials | 30 | 5 | STL, 3MF, OBJ | Configurator |
+| Pro | 150 | Unlimited | STL, 3MF, OFF, STEP, GLB, GLTF, OBJ | Configurator + Code Editor |
 | Madfam | 500 | Unlimited | All formats | All features + GitHub sync |
+
+WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to backend API calls.
 
 Guest access requires no account. For self-hosted deployments, authentication can be disabled entirely (all users receive full access).
 

@@ -215,5 +215,12 @@
   "projects.open_demo": "Demoprojekt öffnen",
   "log.wasm_fallback": "Backend nicht verfügbar, verwende Browser-Rendering...",
   "preview.hover_hint": "Fahren Sie mit der Maus über einen Parameter, um seine geometrische Auswirkung zu sehen",
-  "preview.prerendering": "Varianten werden vorgerendert…"
+  "preview.prerendering": "Varianten werden vorgerendert…",
+  "demo.welcome": "3D-Rendering läuft auf Ihrem Gerät — unbegrenzt und kostenlos.",
+  "demo.create_account": "Erstellen Sie ein kostenloses Konto",
+  "demo.unlock_features": "um KI-Werkzeuge, Projekterstellung und weitere Exportformate freizuschalten.",
+  "ratelimit.server_exhausted": "Server-Renderlimit erreicht ({limit}/Std.).",
+  "ratelimit.server_warning": "{remaining} Server-Renderings diese Stunde verbleibend.",
+  "ratelimit.wasm_available": "Browser-Rendering ist weiterhin verfügbar.",
+  "ratelimit.wasm_suggestion": "Ihr Browser kann dieses Modell direkt rendern."
 }

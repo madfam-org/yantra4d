@@ -45,7 +45,7 @@ export function UpgradeModal({ isOpen, onClose, feature, currentTier, userId }: 
             <span className="text-sm text-zinc-500">from $9/mo</span>
           </div>
           <ul className="mt-2 space-y-1 text-xs text-zinc-500 dark:text-zinc-400">
-            <li>Unlimited projects & renders</li>
+            <li>More server renders, all export formats</li>
             <li>CadQuery engine & STEP export</li>
             <li>GitHub import/editor</li>
             <li>AI code editor</li>

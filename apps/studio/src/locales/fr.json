@@ -215,5 +215,12 @@
   "projects.open_demo": "Ouvrir le projet démo",
   "log.wasm_fallback": "Backend indisponible, utilisation du rendu navigateur...",
   "preview.hover_hint": "Survolez un paramètre pour prévisualiser son effet géométrique",
-  "preview.prerendering": "Pré-rendu des variantes…"
+  "preview.prerendering": "Pré-rendu des variantes…",
+  "demo.welcome": "Le rendu 3D s'exécute sur votre appareil — illimité et gratuit.",
+  "demo.create_account": "Créez un compte gratuit",
+  "demo.unlock_features": "pour débloquer les outils IA, la création de projets et plus de formats d'export.",
+  "ratelimit.server_exhausted": "Limite de rendu serveur atteinte ({limit}/h).",
+  "ratelimit.server_warning": "{remaining} rendus serveur restants cette heure.",
+  "ratelimit.wasm_available": "Le rendu navigateur est toujours disponible.",
+  "ratelimit.wasm_suggestion": "Votre navigateur peut rendre ce modèle directement."
 }

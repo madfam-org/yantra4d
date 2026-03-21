@@ -362,7 +362,7 @@ SSE events: `chunk` (incremental text), `params` (validated parameter changes), 
 
 ### Rate Limits
 
-Default 500/hr. Stricter: Render 100/hr, Estimate 200/hr, Verify 50/hr, Analysis 20/hr, Creation 10/hr. Returns HTTP 429 with `Retry-After`.
+Default 500/hr. Stricter: Render per-tier (10-500/hr, backend only — WASM unlimited), Estimate 200/hr, Verify 50/hr, Analysis 20/hr, Creation 10/hr. Returns HTTP 429 with `Retry-After`.
 
 ### Error Format
 
@@ -374,12 +374,14 @@ All errors use: `{ "status": "error", "error": "Human-readable message" }`. Glob
 
 Tier definitions live in `apps/api/tiers.json`. Enforcement in `middleware/auth.py`.
 
-| Tier | Renders/hr | Projects | Export | GitHub | AI Config | AI Code | AI Req/hr |
+| Tier | Server renders/hr | Projects | Export | GitHub | AI Config | AI Code | AI Req/hr |
 |------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| guest | 30 | 0 | STL | — | — | — | 0 |
-| basic | 50 | 3 | STL | — | Yes | — | 30 |
-| pro | 200 | unlimited | STL/3MF/OFF/STEP | import, editor, private | Yes | Yes | 100 |
-| madfam | 500 | unlimited | STL/3MF/OFF/STEP | import, sync, editor, private | Yes | Yes | 300 |
+| guest | 10 | 0 | STL | — | — | — | 0 |
+| essentials | 30 | 5 | STL/3MF/OBJ | — | Yes | — | 20 |
+| pro | 150 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, editor, private | Yes | Yes | 100 |
+| madfam | 500 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, sync, editor, private | Yes | Yes | 300 |
+
+WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to /api/render* endpoints.
 
 Set `AUTH_ENABLED=false` to bypass auth in development (all users get madfam tier).
 
@@ -648,7 +650,7 @@ docker compose down         # stop
 | Project submodules | Every `projects/{slug}/` is its own GitHub submodule — `git clone --recurse-submodules` |
 | Project licenses | All hyperobject projects carry CERN-OHL-W-2.0 (see `docs/licenses/CERN-OHL-W-2.0.txt`) |
 | Client-side WASM | `openscad-worker.js` runs in Web Worker; no DOM access |
-| Rate limiting | Flask-Limiter: Render 100/hr, Estimate 200/hr, Verify 50/hr |
+| Rate limiting | Flask-Limiter: Render per-tier (backend only, WASM unlimited), Estimate 200/hr, Verify 50/hr |
 | CSP headers | Production nginx requires `wasm-unsafe-eval` for WASM |
 | Bundle splitting | Vite splits vendor chunks; `ProjectsView` and `OnboardingWizard` lazy-loaded |
 | Shareable URLs | `?p=` encodes non-default params as base64url JSON diff |

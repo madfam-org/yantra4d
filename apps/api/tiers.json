@@ -1,10 +1,8 @@
 {
   "guest": {
-    "renders_per_hour": 30,
+    "backend_renders_per_hour": 10,
     "max_projects": 0,
-    "export_formats": [
-      "stl"
-    ],
+    "export_formats": ["stl"],
     "cadquery_engine": false,
     "github_import": false,
     "github_sync": false,
@@ -20,11 +18,9 @@
     "overhang_analysis": false
   },
   "essentials": {
-    "renders_per_hour": 50,
-    "max_projects": 3,
-    "export_formats": [
-      "stl"
-    ],
+    "backend_renders_per_hour": 30,
+    "max_projects": 5,
+    "export_formats": ["stl", "3mf", "obj"],
     "cadquery_engine": false,
     "github_import": false,
     "github_sync": false,
@@ -32,7 +28,7 @@
     "github_private": false,
     "ai_configurator": true,
     "ai_code_editor": false,
-    "ai_requests_per_hour": 30,
+    "ai_requests_per_hour": 20,
     "premium_export": false,
     "print_dispatch": false,
     "animation": false,
@@ -40,17 +36,9 @@
     "overhang_analysis": false
   },
   "pro": {
-    "renders_per_hour": 200,
+    "backend_renders_per_hour": 150,
     "max_projects": -1,
-    "export_formats": [
-      "stl",
-      "3mf",
-      "off",
-      "step",
-      "glb",
-      "gltf",
-      "obj"
-    ],
+    "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],
     "cadquery_engine": true,
     "github_import": true,
     "github_sync": false,
@@ -66,17 +54,9 @@
     "overhang_analysis": true
   },
   "madfam": {
-    "renders_per_hour": 500,
+    "backend_renders_per_hour": 500,
     "max_projects": -1,
-    "export_formats": [
-      "stl",
-      "3mf",
-      "off",
-      "step",
-      "glb",
-      "gltf",
-      "obj"
-    ],
+    "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],
     "cadquery_engine": true,
     "github_import": true,
     "github_sync": true,

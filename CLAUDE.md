@@ -259,12 +259,14 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 
 Access is gated by user tier. Tier definitions live in `apps/api/tiers.json`; enforcement is in `middleware/auth.py`.
 
-| Tier | Renders/hr | Projects | Export | GitHub | AI Config | AI Code | AI Req/hr |
+| Tier | Server renders/hr | Projects | Export | GitHub | AI Config | AI Code | AI Req/hr |
 |------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| guest | 30 | 0 | STL | — | — | — | 0 |
-| basic | 50 | 3 | STL | — | Yes | — | 30 |
-| pro | 200 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, editor, private | Yes | Yes | 100 |
+| guest | 10 | 0 | STL | — | — | — | 0 |
+| essentials | 30 | 5 | STL/3MF/OBJ | — | Yes | — | 20 |
+| pro | 150 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, editor, private | Yes | Yes | 100 |
 | madfam | 500 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, sync, editor, private | Yes | Yes | 300 |
+
+> **Note**: WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to `/api/render*` endpoints.
 
 Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/services/tier_service.py`, `apps/studio/src/contexts/AuthProvider.jsx`, `apps/studio/src/contexts/TierProvider.jsx`.
 
@@ -335,8 +337,8 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | CORS origins | Backend restricts CORS via `CORS_ORIGINS` env var; add your domain when deploying |
 | Global SCAD libs | `libs/` are git submodules — run `git submodule update --init --recursive` after clone |
 | Client-side WASM | `openscad-worker.js` runs in a Web Worker; cannot access DOM |
-| Backend outage resilience | `detectMode()` checks backend availability *before* `force_backend`/`API_BASE` preferences. If backend is down, WASM fallback activates automatically (except CadQuery projects). `isBackendAvailable()` uses TTL cache: 30s negative (retries), 5min positive. `renderParts()` catches network errors and retries with WASM. ProjectsView shows Retry + Open Demo buttons on error. The fallback manifest omits `force_backend` so WASM works offline |
-| Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: 100/hr, Estimate: 200/hr, Verify: 50/hr |
+| Backend outage resilience | `detectMode()` checks backend availability *before* `force_backend`/`API_BASE` preferences. If backend is down, WASM fallback activates automatically (except CadQuery projects). `isBackendAvailable()` uses TTL cache: 30s negative (retries), 5min positive. `renderParts()` catches network errors **and HTTP 429 rate limit responses** and retries with WASM. `detectMode()` also overrides `force_backend` when rate limit is exhausted and WASM is capable. ProjectsView shows Retry + Open Demo buttons on error. The fallback manifest omits `force_backend` so WASM works offline |
+| Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: per-tier (see tier table above), Estimate: 200/hr, Verify: 50/hr. WASM renders are unlimited |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
 | Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links use path-based format `/project/slug/share/mode?p=...`. Legacy hash-based shared links auto-redirect via `main.jsx` |

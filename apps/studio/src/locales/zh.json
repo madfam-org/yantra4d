@@ -215,5 +215,12 @@
   "projects.open_demo": "打开演示项目",
   "log.wasm_fallback": "后端不可用，使用浏览器渲染...",
   "preview.hover_hint": "将鼠标悬停在参数上以预览其几何效果",
-  "preview.prerendering": "正在预渲染变体…"
+  "preview.prerendering": "正在预渲染变体…",
+  "demo.welcome": "3D 渲染在您的设备上运行 — 无限且免费。",
+  "demo.create_account": "创建免费账户",
+  "demo.unlock_features": "以解锁 AI 工具、项目创建和更多导出格式。",
+  "ratelimit.server_exhausted": "服务器渲染限额已达到（{limit}/小时）。",
+  "ratelimit.server_warning": "本小时还剩 {remaining} 次服务器渲染。",
+  "ratelimit.wasm_available": "浏览器渲染仍然可用。",
+  "ratelimit.wasm_suggestion": "您的浏览器可以直接渲染此模型。"
 }

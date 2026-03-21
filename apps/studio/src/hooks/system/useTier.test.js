@@ -5,7 +5,7 @@ vi.mock('../../contexts/auth/TierProvider', () => ({
     tier: 'pro',
     canAccess: (t) => t !== 'madfam',
     loading: false,
-    limits: { renders_per_hour: 200 },
+    limits: { backend_renders_per_hour: 150 },
   }),
 }))
 

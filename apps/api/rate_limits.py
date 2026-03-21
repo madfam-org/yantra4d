@@ -1,6 +1,11 @@
 """
 Centralized rate limit definitions for all API endpoints.
 Import these constants instead of using inline strings.
+
+Note: render rate limits apply to **backend (server-side) renders only**.
+Client-side WASM rendering never hits these endpoints and is unlimited.
+Per-tier backend render limits are defined in tiers.json
+(key: ``backend_renders_per_hour``) and enforced dynamically in render.py.
 """
 
 # Public / high-traffic

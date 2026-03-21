@@ -15,6 +15,10 @@ vi.mock('../../hooks/system/useTier', () => ({
   useTier: () => ({ tier: mockTier }),
 }))
 
+vi.mock('../../contexts/system/LanguageProvider', () => ({
+  useLanguage: () => ({ t: (key) => key }),
+}))
+
 import DemoBanner from './DemoBanner'
 
 beforeEach(() => {
@@ -25,19 +29,19 @@ beforeEach(() => {
 
 describe('DemoBanner', () => {
   it('renders for unauthenticated guest users', () => {
-    render(<DemoBanner />)
-    expect(screen.getByText(/demo mode/i)).toBeInTheDocument()
+    const { container } = render(<DemoBanner />)
+    expect(container.textContent).toContain('demo.welcome')
   })
 
-  it('shows sign up link', () => {
+  it('shows create account link', () => {
     render(<DemoBanner />)
-    expect(screen.getByText(/sign up/i)).toHaveAttribute('href', expect.stringContaining('pricing'))
+    expect(screen.getByText('demo.create_account')).toHaveAttribute('href', expect.stringContaining('pricing'))
   })
 
   it('dismiss button hides banner', () => {
     render(<DemoBanner />)
     fireEvent.click(screen.getByLabelText(/dismiss/i))
-    expect(screen.queryByText(/demo mode/i)).not.toBeInTheDocument()
+    expect(screen.queryByText('demo.welcome')).not.toBeInTheDocument()
   })
 
   it('hidden when authenticated', () => {

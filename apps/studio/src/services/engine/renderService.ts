@@ -8,7 +8,7 @@
 
 import { isBackendAvailable, getApiBase, resetDetection } from '../core/backendDetection'
 import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
-import { apiFetch } from '../core/apiClient'
+import { apiFetch, isRateLimitExhausted } from '../core/apiClient'
 
 interface Manifest {
   modes: ModeConfig[]
@@ -98,8 +98,12 @@ async function detectMode(manifest: Manifest | null, mode: string, params: Recor
   const available = await isBackendAvailable()
 
   if (available) {
-    // Backend is up — respect preferences
+    // Backend is up — respect preferences, but override if rate-limited and WASM-capable
     if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
+      if (isRateLimitExhausted() && hasWasmCapabilities() && manifest.engine !== 'cadquery') {
+        console.info('[RateLimit] Server render budget exhausted, using browser rendering.')
+        return 'wasm'
+      }
       return 'backend'
     }
     if (API_BASE) {
@@ -134,6 +138,13 @@ async function detectMode(manifest: Manifest | null, mode: string, params: Recor
 }
 
 /**
+ * Check whether the current manifest supports client-side WASM rendering.
+ */
+export function canRunWasm(manifest: Manifest | null): boolean {
+  return manifest?.engine !== 'cadquery' && manifest?.engine !== 'implicit'
+}
+
+/**
  * Check if an error is a network-level failure (not a backend render error).
  */
 function isNetworkError(err: unknown): boolean {
@@ -141,6 +152,13 @@ function isNetworkError(err: unknown): boolean {
   if (err instanceof DOMException && err.name === 'AbortError') return false // user cancel
   if (err instanceof Error && err.message.includes('net::ERR_')) return true
   return false
+}
+
+/**
+ * Check if an error is an HTTP 429 rate limit response.
+ */
+function isRateLimitError(err: unknown): boolean {
+  return err instanceof Error && err.message.includes('HTTP 429')
 }
 
 /**
@@ -411,17 +429,19 @@ export async function renderParts(
     try {
       return await renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
     } catch (err) {
-      // If backend fails with network error, try WASM fallback
-      if (manifest?.engine !== 'cadquery' && hasWasmCapabilities() && isNetworkError(err)) {
-        console.warn('[Fallback] Backend render failed, retrying with WASM:', (err as Error).message)
-        resetDetection() // clear cached availability so next render re-checks
+      // If backend fails with network error or rate limit, try WASM fallback
+      if (manifest?.engine !== 'cadquery' && hasWasmCapabilities() && (isNetworkError(err) || isRateLimitError(err))) {
+        const isRL = isRateLimitError(err)
+        console.warn(`[Fallback] Backend render failed (${isRL ? 'rate limited' : 'network'}), retrying with WASM:`, (err as Error).message)
+        if (!isRL) resetDetection() // clear cached availability so next render re-checks
         _hardwareMode = 'wasm'
-        // Console log — intentionally not i18n'd (service layer has no React context).
-        // The i18n key "log.wasm_fallback" exists in locale files for future UI-facing usage.
-        onProgress?.({ log: '[FALLBACK] Backend unavailable, using browser rendering...' })
+        onProgress?.({ log: isRL
+          ? '[FALLBACK] Server limit reached, rendering locally...'
+          : '[FALLBACK] Backend unavailable, using browser rendering...'
+        })
         return renderWasm(mode, params, manifest, onProgress, abortSignal)
       }
-      throw err // re-throw non-network errors
+      throw err // re-throw non-recoverable errors
     }
   } else {
     return renderWasm(mode, params, manifest, onProgress, abortSignal)

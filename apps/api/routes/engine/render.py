@@ -12,7 +12,7 @@ from flask import Blueprint, request, jsonify, Response
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.core.tier_service import resolve_tier, get_tier_limits, check_feature
+from services.core.tier_service import resolve_tier, get_render_limit, check_feature
 from services.engine.render_orchestrator import (
     extract_render_payload,
     resolve_engine_config,
@@ -31,19 +31,18 @@ render_bp = Blueprint('render', __name__)
 
 def _make_rate_limit_headers(tier: str) -> dict:
     """Build X-RateLimit-* headers for the response."""
-    limits = get_tier_limits(tier)
     return {
-        "X-RateLimit-Limit": str(limits["renders_per_hour"]),
+        "X-RateLimit-Limit": str(get_render_limit(tier)),
         "X-RateLimit-Tier": tier,
+        "X-RateLimit-Type": "backend",
     }
 
 
 def _get_tiered_limit() -> str:
-    """Return dynamic rate limit string based on user tier."""
+    """Return dynamic rate limit string based on user tier (backend renders only)."""
     claims = getattr(request, "auth_claims", None)
     tier = resolve_tier(claims)
-    limits = get_tier_limits(tier)
-    return f"{limits['renders_per_hour']}/hour"
+    return f"{get_render_limit(tier)}/hour"
 
 
 def _rate_limit_key() -> str:

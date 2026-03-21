@@ -18,6 +18,18 @@ vi.mock('../../contexts/auth/AuthProvider', () => ({
   get isAuthEnabled() { return mockIsAuthEnabled },
 }))
 
+vi.mock('../../contexts/system/LanguageProvider', () => ({
+  useLanguage: () => ({ t: (key) => key }),
+}))
+
+vi.mock('../../contexts/project/ManifestProvider', () => ({
+  useManifest: () => ({ manifest: { engine: 'openscad' } }),
+}))
+
+vi.mock('../../services/engine/renderService', () => ({
+  canRunWasm: () => true,
+}))
+
 import RateLimitBanner from './RateLimitBanner'
 
 beforeEach(() => {
@@ -48,19 +60,19 @@ describe('RateLimitBanner', () => {
   it('shows warning when low remaining', () => {
     mockRateLimit = { remaining: 5, limit: 100, tier: 'pro' }
     render(<RateLimitBanner />)
-    expect(screen.getByText(/5 renders? remaining/i)).toBeInTheDocument()
+    expect(screen.getByText('ratelimit.server_warning')).toBeInTheDocument()
   })
 
   it('shows exhausted message when remaining is 0', () => {
     mockRateLimit = { remaining: 0, limit: 100, tier: 'pro' }
     render(<RateLimitBanner />)
-    expect(screen.getByText(/render limit reached/i)).toBeInTheDocument()
+    expect(screen.getByText(/ratelimit\.server_exhausted/)).toBeInTheDocument()
   })
 
-  it('shows upgrade link for non-pro users', () => {
+  it('shows wasm available when exhausted and wasm capable', () => {
     mockRateLimit = { remaining: 0, limit: 30, tier: 'guest' }
     mockCanAccess = (tier) => tier === 'guest'
     render(<RateLimitBanner />)
-    expect(screen.getByText(/sign up/i)).toBeInTheDocument()
+    expect(screen.getByText('ratelimit.wasm_available')).toBeInTheDocument()
   })
 })

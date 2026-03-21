@@ -243,5 +243,12 @@
   "projects.open_demo": "Open Demo Project",
   "log.wasm_fallback": "Backend unavailable, using browser rendering...",
   "preview.hover_hint": "Hover a parameter to preview its geometric effect",
-  "preview.prerendering": "Pre-rendering variants…"
+  "preview.prerendering": "Pre-rendering variants…",
+  "demo.welcome": "3D rendering runs on your device — unlimited and free.",
+  "demo.create_account": "Create a free account",
+  "demo.unlock_features": "to unlock AI tools, project creation, and more export formats.",
+  "ratelimit.server_exhausted": "Server render limit reached ({limit}/hr).",
+  "ratelimit.server_warning": "{remaining} server renders remaining this hour.",
+  "ratelimit.wasm_available": "Browser rendering is still available.",
+  "ratelimit.wasm_suggestion": "Your browser can render this model directly."
 }

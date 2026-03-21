@@ -70,6 +70,16 @@ def get_tier_limits(tier: str) -> dict:
     return tiers.get(tier, tiers["guest"])
 
 
+def get_render_limit(tier: str) -> int:
+    """Return backend renders-per-hour for a tier.
+
+    Reads ``backend_renders_per_hour`` with fallback to the legacy
+    ``renders_per_hour`` key for backward compatibility.
+    """
+    limits = get_tier_limits(tier)
+    return limits.get("backend_renders_per_hour", limits.get("renders_per_hour", 30))
+
+
 def check_feature(tier: str, feature: str) -> bool:
     """Check if a tier has access to a specific feature (boolean key in tier config)."""
     limits = get_tier_limits(tier)

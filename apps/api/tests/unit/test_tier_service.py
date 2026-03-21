@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.core.tier_service import resolve_tier, has_tier, get_tier_limits, check_feature, load_tiers
+from services.core.tier_service import resolve_tier, has_tier, get_tier_limits, get_render_limit, check_feature, load_tiers
 
 
 class TestResolveTier:
@@ -47,16 +47,30 @@ class TestHasTier:
 class TestGetTierLimits:
     def test_guest_limits(self):
         limits = get_tier_limits("guest")
-        assert "renders_per_hour" in limits
-        assert limits["renders_per_hour"] == 30
+        assert "backend_renders_per_hour" in limits
+        assert limits["backend_renders_per_hour"] == 10
 
     def test_pro_limits(self):
         limits = get_tier_limits("pro")
-        assert limits["renders_per_hour"] == 200
+        assert limits["backend_renders_per_hour"] == 150
 
     def test_unknown_falls_back_to_guest(self):
         limits = get_tier_limits("unknown")
-        assert limits["renders_per_hour"] == 30
+        assert limits["backend_renders_per_hour"] == 10
+
+
+class TestGetRenderLimit:
+    def test_guest_render_limit(self):
+        assert get_render_limit("guest") == 10
+
+    def test_essentials_render_limit(self):
+        assert get_render_limit("essentials") == 30
+
+    def test_pro_render_limit(self):
+        assert get_render_limit("pro") == 150
+
+    def test_madfam_render_limit(self):
+        assert get_render_limit("madfam") == 500
 
 
 class TestCheckFeature:

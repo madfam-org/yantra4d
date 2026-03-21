@@ -126,7 +126,7 @@ Response: SSE stream with events:
 | Tier | Configurator | Code Editor | Requests/Hour |
 |------|:---:|:---:|:---:|
 | guest | — | — | 0 |
-| essentials | Yes | — | 30 |
+| essentials | Yes | — | 20 |
 | pro | Yes | Yes | 100 |
 | madfam | Yes | Yes | 300 |
 

@@ -94,10 +94,10 @@ export default function UserOverview() {
                             </div>
 
                             <div className="space-y-1.5 text-xs text-muted-foreground">
-                                {tierData.renders_per_hour != null && (
+                                {(tierData.backend_renders_per_hour ?? tierData.renders_per_hour) != null && (
                                     <div className="flex justify-between">
-                                        <span>Renders/hr</span>
-                                        <span className="font-mono tabular-nums">{tierData.renders_per_hour}</span>
+                                        <span>Server renders/hr</span>
+                                        <span className="font-mono tabular-nums">{tierData.backend_renders_per_hour ?? tierData.renders_per_hour}</span>
                                     </div>
                                 )}
                                 {tierData.max_projects != null && (

@@ -43,7 +43,7 @@ class TestGetTiers:
         assert "guest" in data
         assert "pro" in data
         assert "madfam" in data
-        assert "renders_per_hour" in data["guest"]
+        assert "backend_renders_per_hour" in data["guest"]
 
 
 class TestGetMe:

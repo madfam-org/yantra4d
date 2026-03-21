@@ -4,13 +4,22 @@
 # each one via the backend API, converting STL→GLB for optimal web delivery.
 #
 # Usage:
-#   ./scripts/prerender-carousel.sh [API_BASE_URL]
+#   ./scripts/prerender-carousel.sh [--clean] [API_BASE_URL]
+#
+# Options:
+#   --clean   Remove stale GLBs before rendering (prevents orphaned models)
 #
 # Defaults to http://localhost:5000 if no URL is provided.
 # Run against a local or staging backend; committed outputs are served
 # as static assets so the landing page makes zero API render calls.
 
 set -euo pipefail
+
+CLEAN=false
+if [ "${1:-}" = "--clean" ]; then
+  CLEAN=true
+  shift
+fi
 
 API_BASE="${1:-http://localhost:5000}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -20,12 +29,18 @@ OUTPUT_DIR="$REPO_ROOT/apps/landing/public/models"
 
 mkdir -p "$OUTPUT_DIR"
 
+if [ "$CLEAN" = true ]; then
+  echo "Cleaning stale models..."
+  rm -f "$OUTPUT_DIR"/*.glb
+fi
+
 # Extract slugs from the TypeScript projects array
 SLUGS=$(grep "slug: '" "$PROJECTS_TS" | sed -E "s/.*slug: '([^']+)'.*/\1/")
 
 total=$(echo "$SLUGS" | wc -l | tr -d ' ')
 count=0
 failed=0
+FAILED_SLUGS=""
 
 echo "=== Pre-rendering $total carousel models (GLB) ==="
 echo "API: $API_BASE"
@@ -55,7 +70,7 @@ if data.get('parts'):
     print(data['parts'][0]['url'])
 else:
     sys.exit(1)
-" 2>/dev/null) || { echo "FAIL (no parts in response)"; failed=$((failed + 1)); rm -f "$tmpfile"; continue; }
+" 2>/dev/null) || { echo "FAIL (no parts in response)"; failed=$((failed + 1)); FAILED_SLUGS="$FAILED_SLUGS $slug"; rm -f "$tmpfile"; continue; }
 
       # Fetch the actual model binary (GLB from updated backend, or STL from older backend)
       curl -s -o "$tmpfile" "$API_BASE$part_url" --max-time 60
@@ -74,6 +89,7 @@ mesh.export('$glbfile', file_type='glb')
       else
         echo "FAIL (STL→GLB conversion)"
         failed=$((failed + 1))
+        FAILED_SLUGS="$FAILED_SLUGS $slug"
         rm -f "$tmpfile"
         continue
       fi
@@ -91,6 +107,7 @@ mesh.export('$glbfile', file_type='glb')
     echo "FAIL (HTTP $http_code)"
     rm -f "$tmpfile"
     failed=$((failed + 1))
+    FAILED_SLUGS="$FAILED_SLUGS $slug"
   fi
 done
 
@@ -114,5 +131,6 @@ echo "Manifest written to $OUTPUT_DIR/manifest.json"
 
 if [ "$failed" -gt 0 ]; then
   echo "WARNING: Some models failed to render. Re-run with a running backend."
+  echo "Failed:$FAILED_SLUGS"
   exit 1
 fi

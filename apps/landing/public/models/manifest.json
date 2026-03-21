@@ -1,93 +1,24 @@
-{
-  "generated": "2026-03-07T01:17:17Z",
-  "models": [
-    {
-      "slug": "din-rail-clip",
-      "size": 6732
-    },
-    {
-      "slug": "faircap-filter",
-      "size": 40400
-    },
-    {
-      "slug": "fasteners",
-      "size": 118704
-    },
-    {
-      "slug": "framing-hyperobject",
-      "size": 18368
-    },
-    {
-      "slug": "gear-reducer",
-      "size": 15264
-    },
-    {
-      "slug": "gears",
-      "size": 43432
-    },
-    {
-      "slug": "glia-diagnostic",
-      "size": 9908
-    },
-    {
-      "slug": "gridfinity",
-      "size": 14464
-    },
-    {
-      "slug": "keyv2",
-      "size": 18416
-    },
-    {
-      "slug": "maze",
-      "size": 12748
-    },
-    {
-      "slug": "microscope-slide-holder",
-      "size": 21344
-    },
-    {
-      "slug": "motor-mount",
-      "size": 18324
-    },
-    {
-      "slug": "multiboard",
-      "size": 415236
-    },
-    {
-      "slug": "parametric-connector",
-      "size": 90704
-    },
-    {
-      "slug": "portacosas",
-      "size": 18792
-    },
-    {
-      "slug": "prosthetic-socket",
-      "size": 141228
-    },
-    {
-      "slug": "relief",
-      "size": 13148
-    },
-    {
-      "slug": "soft-jaw",
-      "size": 5948
-    },
-    {
-      "slug": "spiral-planter",
-      "size": 2353108
-    },
-    {
-      "slug": "stemfie",
-      "size": 36364
-    },
-    {
-      "slug": "torus-knot",
-      "size": 3412
-    },
-    {
-      "slug": "voronoi",
-      "size": 16324
-    }
-  ]
-}
+{ "generated": "2026-03-21T02:03:10Z", "models": [
+  { "slug": "din-rail-clip", "size": 6732 },
+  { "slug": "faircap-filter", "size": 40400 },
+  { "slug": "fasteners", "size": 118704 },
+  { "slug": "framing-hyperobject", "size": 18368 },
+  { "slug": "gear-reducer", "size": 15264 },
+  { "slug": "gears", "size": 43432 },
+  { "slug": "glia-diagnostic", "size": 9908 },
+  { "slug": "gridfinity", "size": 14464 },
+  { "slug": "keyv2", "size": 18416 },
+  { "slug": "maze", "size": 12748 },
+  { "slug": "microscope-slide-holder", "size": 21344 },
+  { "slug": "motor-mount", "size": 18324 },
+  { "slug": "multiboard", "size": 415236 },
+  { "slug": "parametric-connector", "size": 90704 },
+  { "slug": "portacosas", "size": 18792 },
+  { "slug": "prosthetic-socket", "size": 141228 },
+  { "slug": "relief", "size": 13148 },
+  { "slug": "soft-jaw", "size": 5948 },
+  { "slug": "spiral-planter", "size": 2353108 },
+  { "slug": "stemfie", "size": 36364 },
+  { "slug": "torus-knot", "size": 3412 },
+  { "slug": "voronoi", "size": 16324 }
+] }

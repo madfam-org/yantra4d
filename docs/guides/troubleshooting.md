@@ -167,6 +167,25 @@ If Redis is unreachable, Flask-Limiter will log a warning and fall back to in-me
 
 If ports conflict, edit `docker-compose.yml` port mappings or use `--port` flags in dev scripts.
 
+## Database & Migrations
+
+### CrashLoopBackOff After Deploy
+
+**Symptom**: New backend pods crash at startup with `OperationalError: table X already exists`. ArgoCD shows Degraded.
+
+**Cause**: The Dockerfile CMD runs `flask db upgrade` before gunicorn. If an Alembic migration uses `op.create_table()` unconditionally and the table already exists on the persistent volume, SQLite raises an error and the pod exits.
+
+**Fix**: Make migrations idempotent with an inspector guard:
+```python
+def upgrade():
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if "table_name" not in inspector.get_table_names():
+        op.create_table("table_name", ...)
+```
+
+**Prevention**: All new migrations must check for existing tables/indexes before creating them. This is the standard Alembic pattern for idempotent migrations.
+
 ## WASM-Specific Issues
 
 ### "wasm-unsafe-eval" CSP Error

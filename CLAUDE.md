@@ -327,6 +327,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 
 | Issue | Detail |
 |-------|--------|
+| DB migrations | Alembic migrations must be idempotent — use `sa.inspect(bind).get_table_names()` guard before `create_table`. The Dockerfile runs `flask db upgrade` at startup; non-idempotent migrations crash the pod on persistent volumes |
 | Manifest sync | After editing `project.json`, update `fallback-manifest.json` for Pages mode |
 | URL format | Path-based routing: `/project/slug/preset/mode`. Legacy hash URLs (`#/slug/preset/mode`) auto-redirect via pre-mount script in `main.jsx` |
 | Shadcn UI | **Never** hand-edit `components/ui/*` — use shadcn CLI to regenerate |

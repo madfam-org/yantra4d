@@ -84,6 +84,9 @@ class TestStorefrontAPI:
         assert "share_url" in data
         assert "preset=p1" in data["share_url"]
         assert "normal_param=10" in data["share_url"]
+        # Regression: URL must use path-based format, never hash fragment
+        assert "/project/store-test?" in data["share_url"]
+        assert "#" not in data["share_url"]
 
     def test_get_share_url_not_found_project(self, client):
         res = client.get("/api/projects/missing/share/p1")

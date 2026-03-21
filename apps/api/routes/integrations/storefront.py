@@ -113,13 +113,10 @@ def get_share_url(slug: str, preset_id: str):
     if not preset:
         return error_response(f"Preset '{preset_id}' not found in project '{slug}'", 404)
 
-    # Build query string from preset values
-    values = preset.get("values", {})
-    qs = "&".join(f"{k}={v}" for k, v in values.items())
+    from utils.studio_url import build_project_url
 
-    # Determine base URL from request host
-    base = request.host_url.rstrip("/")
-    share_url = f"{base}/studio#{slug}?mode=storefront&preset={preset_id}&{qs}"
+    values = preset.get("values", {})
+    share_url = build_project_url(slug, mode="storefront", preset_id=preset_id, params=values)
 
     return jsonify({
         "slug": slug,

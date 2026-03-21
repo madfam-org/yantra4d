@@ -39,12 +39,15 @@ describe('TablacoLinkPanel', () => {
     it('displays public URL after successful fetch', async () => {
         globalThis.fetch = vi.fn().mockResolvedValueOnce({
             ok: true,
-            json: () => Promise.resolve({ public_url: 'https://4d-app.madfam.io/storefront/tablaco' }),
+            json: () => Promise.resolve({
+                public_url: 'https://4d-app.madfam.io/project/tablaco?mode=storefront',
+                studio_url: 'https://4d-app.madfam.io/project/tablaco',
+            }),
         })
 
         render(<TablacoLinkPanel />)
         await waitFor(() => {
-            expect(screen.getByText('https://4d-app.madfam.io/storefront/tablaco')).toBeInTheDocument()
+            expect(screen.getByText('https://4d-app.madfam.io/project/tablaco?mode=storefront')).toBeInTheDocument()
         })
     })
 

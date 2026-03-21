@@ -40,6 +40,7 @@ services:
       - RATE_LIMIT_ENABLED=false
       - RATE_LIMIT_STORAGE=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379
       - REDIS_URL=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379
+      - PUBLIC_STUDIO_URL=http://localhost:3000
     depends_on:
       redis:
         condition: service_healthy

@@ -71,6 +71,8 @@ spec:
               value: "false"
             - name: RATE_LIMIT_ENABLED
               value: "true"
+            - name: PUBLIC_STUDIO_URL
+              value: "https://4d-app.madfam.io"
             - name: ANALYTICS_DB_PATH
               value: "/app/backend/data/.analytics.db"
           livenessProbe:

@@ -144,3 +144,25 @@ class TestAdminAPI:
         """Slug with path traversal characters is rejected by require_valid_slug."""
         res = client.get("/api/admin/projects/../etc")
         assert res.status_code in (400, 404)
+
+
+class TestTablacoPublicLink:
+    """Tests for the tablaco public-link admin endpoint."""
+
+    def test_public_link_url_format(self, client):
+        """URL must use path-based format, not hash fragment."""
+        res = client.get("/api/admin/projects/tablaco/public-link")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert "/project/tablaco" in data["public_url"]
+        assert "mode=storefront" in data["public_url"]
+        assert "#" not in data["public_url"]
+
+    def test_public_link_includes_studio_url(self, client):
+        """Response must include studio_url field."""
+        res = client.get("/api/admin/projects/tablaco/public-link")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert "studio_url" in data
+        assert "/project/tablaco" in data["studio_url"]
+        assert "storefront" not in data["studio_url"]

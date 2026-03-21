@@ -240,16 +240,15 @@ def tablaco_public_link() -> Response:
     This is the ONLY endpoint that exposes the tablaco public link.
     Protected by admin role — not available in any public API.
     """
-    public_base = os.getenv("PUBLIC_STUDIO_URL", "").rstrip("/")
-    if not public_base:
-        # Fallback: derive from request host (works for local dev)
-        public_base = request.host_url.rstrip("/")
+    from utils.studio_url import build_project_url, get_studio_base_url
 
-    url = f"{public_base}/studio#tablaco?mode=storefront"
+    url = build_project_url("tablaco", mode="storefront")
+    studio_url = f"{get_studio_base_url()}/project/tablaco"
 
     return jsonify({
         "slug": "tablaco",
         "public_url": url,
+        "studio_url": studio_url,
         "note": "Share this URL to give customers access to the Tablaco storefront.",
     })
 

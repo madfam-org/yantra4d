@@ -105,6 +105,10 @@
               "description": "Original license"
             }
           }
+        },
+        "unlisted": {
+          "type": "boolean",
+          "description": "If true, project is hidden from public listings but accessible via direct URL"
         }
       }
     },

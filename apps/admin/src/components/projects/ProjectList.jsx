@@ -28,6 +28,7 @@ export default function ProjectList() {
 
     const demoCount = projects.filter(p => p.is_demo).length
     const hyperobjectCount = projects.filter(p => p.is_hyperobject).length
+    const unlistedCount = projects.filter(p => p.unlisted).length
 
     return (
         <div className="space-y-4">
@@ -40,6 +41,11 @@ export default function ProjectList() {
                     <Badge variant="outline" className="text-violet-500 border-violet-500/40 bg-violet-500/10">
                         {hyperobjectCount} hyperobject
                     </Badge>
+                    {unlistedCount > 0 && (
+                        <Badge variant="outline" className="text-red-500 border-red-500/40 bg-red-500/10">
+                            {unlistedCount} unlisted
+                        </Badge>
+                    )}
                     <Badge variant="secondary">{projects.length} total</Badge>
                 </div>
                 <Button variant="ghost" size="icon" onClick={refresh} title="Refresh">
@@ -60,6 +66,9 @@ export default function ProjectList() {
                                 {project.is_hyperobject && (
                                     <Badge variant="outline" className="text-violet-500 border-violet-500/40 bg-violet-500/10 text-xs">hyper</Badge>
                                 )}
+                                {project.unlisted && (
+                                    <Badge variant="outline" className="text-red-500 border-red-500/40 bg-red-500/10 text-xs">unlisted</Badge>
+                                )}
                             </div>
                         </div>
                         <div className="text-xs text-muted-foreground font-mono">{project.slug}</div>
@@ -79,6 +88,7 @@ export default function ProjectList() {
                             <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Project</th>
                             <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Demo</th>
                             <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Hyperobject</th>
+                            <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Unlisted</th>
                             <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">Modes</th>
                             <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">Params</th>
                         </tr>
@@ -97,7 +107,8 @@ export default function ProjectList() {
 
             <p className="text-xs text-muted-foreground leading-relaxed">
                 <strong className="text-foreground">Demo</strong> projects appear in the landing page gallery and studio quick-start.{' '}
-                <strong className="text-foreground">Hyperobject</strong> projects expose CDG interfaces for parametric composition.
+                <strong className="text-foreground">Hyperobject</strong> projects expose CDG interfaces for parametric composition.{' '}
+                <strong className="text-foreground">Unlisted</strong> projects are hidden from public listings but accessible via direct URL.
             </p>
         </div>
     )

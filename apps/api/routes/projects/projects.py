@@ -61,6 +61,7 @@ def _get_project_stats():
 def list_projects():
     """Return list of available projects with optional analytics counts."""
     projects = discover_projects()
+    projects = [p for p in projects if not p.get("unlisted", False)]
     include_stats = request.args.get("stats") == "1"
     if include_stats:
         stats = _get_project_stats()

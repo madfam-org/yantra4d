@@ -23,7 +23,7 @@ admin_bp = Blueprint('admin', __name__)
 logger = logging.getLogger(__name__)
 
 # Flags that the admin UI is allowed to toggle
-_ALLOWED_FLAGS = {"is_demo", "is_hyperobject"}
+_ALLOWED_FLAGS = {"is_demo", "is_hyperobject", "unlisted"}
 
 
 def _load_raw_manifest(slug: str) -> dict | None:
@@ -72,6 +72,7 @@ def _enrich_project(proj):
         raw = _load_raw_manifest(proj["slug"]) or {}
         project_obj = raw.get("project", {})
         proj["is_demo"] = project_obj.get("is_demo", False)
+        proj["unlisted"] = project_obj.get("unlisted", False)
         ho = project_obj.get("hyperobject", {})
         proj["is_hyperobject"] = ho.get("is_hyperobject", False)
     else:
@@ -79,6 +80,7 @@ def _enrich_project(proj):
         proj["parameter_count"] = 0
         proj["estimate_constants"] = None
         proj["is_demo"] = False
+        proj["unlisted"] = False
         proj["is_hyperobject"] = False
 
     return proj
@@ -91,7 +93,7 @@ def admin_list_projects() -> Response:
     Return enriched list of projects.
     
     - Admins: See all projects.
-    - Public/Anonymous: See only demos and hyperobjects (excluding 'tablaco').
+    - Public/Anonymous: See only demos and hyperobjects (excluding unlisted).
     """
     projects = discover_projects()
     enriched = [_enrich_project(p) for p in projects]
@@ -123,8 +125,8 @@ def admin_list_projects() -> Response:
     if not is_admin and Config.AUTH_ENABLED:
          enriched = [
              p for p in enriched 
-             if (p.get("is_demo") or p.get("is_hyperobject")) 
-             and p["slug"] != "tablaco"
+             if (p.get("is_demo") or p.get("is_hyperobject"))
+             and not p.get("unlisted", False)
          ]
     
     # If AUTH_ENABLED is False (local dev), we usually allow everything in other parts of the app.
@@ -217,6 +219,11 @@ def patch_project_flags(slug: str) -> Response | tuple[Response, int]:
         ho = project_obj.setdefault("hyperobject", {})
         ho["is_hyperobject"] = val
         changed["is_hyperobject"] = val
+
+    if "unlisted" in body:
+        val = bool(body["unlisted"])
+        project_obj["unlisted"] = val
+        changed["unlisted"] = val
 
     if not changed:
         return error_response("No valid flags provided", 400)

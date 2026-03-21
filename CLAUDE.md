@@ -253,7 +253,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | POST | `/api/projects/<slug>/analyze/overhang` | `{threshold_deg?, sample_count?}` | Overhang angle analysis on latest render (pro+) |
 | GET | `/api/admin/projects` | — | Admin: all projects with metadata (admin) |
 | GET | `/api/admin/projects/<slug>` | — | Admin: detailed project info (admin) |
-| PATCH | `/api/admin/projects/<slug>/flags` | `{is_demo?, is_hyperobject?}` | Toggle project flags (admin) |
+| PATCH | `/api/admin/projects/<slug>/flags` | `{is_demo?, is_hyperobject?, unlisted?}` | Toggle project flags (admin) |
 
 ## Tiered Access Control
 

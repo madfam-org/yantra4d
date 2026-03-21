@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAdminProjects } from '../../hooks/useAdminProjects'
 import { Switch } from '@/components/ui/switch'
-import { Loader2, Check, X } from 'lucide-react'
+import { Loader2, Check, X, EyeOff } from 'lucide-react'
 
 export default function ProjectFlagsRow({ project, isLast }) {
     const { patchFlags } = useAdminProjects()
@@ -9,6 +9,7 @@ export default function ProjectFlagsRow({ project, isLast }) {
     const [localFlags, setLocalFlags] = useState({
         is_demo: project.is_demo,
         is_hyperobject: project.is_hyperobject,
+        unlisted: project.unlisted,
     })
     const [toast, setToast] = useState(null)
 
@@ -73,6 +74,22 @@ export default function ProjectFlagsRow({ project, isLast }) {
                             onCheckedChange={() => toggle('is_hyperobject')}
                             aria-label={`Toggle hyperobject for ${project.slug}`}
                             className="data-[state=checked]:bg-violet-500"
+                        />
+                    )
+                }
+            </td>
+
+            {/* Unlisted toggle */}
+            <td className="px-4 py-3 text-center">
+                {pending === 'unlisted'
+                    ? <Loader2 className="mx-auto h-4 w-4 animate-spin text-muted-foreground" />
+                    : (
+                        <Switch
+                            id={`${project.slug}-unlisted`}
+                            checked={localFlags.unlisted}
+                            onCheckedChange={() => toggle('unlisted')}
+                            aria-label={`Toggle unlisted for ${project.slug}`}
+                            className="data-[state=checked]:bg-red-500"
                         />
                     )
                 }

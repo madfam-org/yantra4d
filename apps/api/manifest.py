@@ -212,6 +212,7 @@ class ManifestService:
                             "name": proj.get("name", child.name),
                             "version": proj.get("version", "0.0.0"),
                             "description": proj.get("description", ""),
+                            "unlisted": proj.get("unlisted", False),
                         })
                         seen_slugs.add(slug)
                     except (json.JSONDecodeError, KeyError, RuntimeError) as e:

@@ -145,6 +145,53 @@ class TestAdminAPI:
         res = client.get("/api/admin/projects/../etc")
         assert res.status_code in (400, 404)
 
+    def test_patch_flags_set_unlisted(self, client):
+        """PATCH /api/admin/projects/<slug>/flags sets unlisted in project.json."""
+        res = client.patch(
+            "/api/admin/projects/test-project/flags",
+            json={"unlisted": True},
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["slug"] == "test-project"
+        assert data["updated"]["unlisted"] is True
+
+    def test_unlisted_project_hidden_from_list(self, client, tmp_path):
+        """After setting unlisted, project is excluded from GET /api/projects."""
+        # Set the project as unlisted via the flags endpoint
+        res = client.patch(
+            "/api/admin/projects/test-project/flags",
+            json={"unlisted": True},
+        )
+        assert res.status_code == 200
+
+        # Clear manifest cache so discover_projects re-reads the updated manifest
+        import manifest as manifest_mod
+        manifest_mod.manifest_service._manifest_cache.clear()
+
+        # The public listing should exclude the unlisted project
+        res = client.get("/api/projects")
+        assert res.status_code == 200
+        slugs = [p["slug"] for p in res.get_json()]
+        assert "test-project" not in slugs
+
+    def test_unlisted_project_still_accessible_directly(self, client, tmp_path):
+        """An unlisted project's manifest is still accessible via direct slug."""
+        # Set the project as unlisted
+        client.patch(
+            "/api/admin/projects/test-project/flags",
+            json={"unlisted": True},
+        )
+
+        # Clear manifest cache
+        import manifest as manifest_mod
+        manifest_mod.manifest_service._manifest_cache.clear()
+
+        # Direct access still works
+        res = client.get("/api/projects/test-project/manifest")
+        assert res.status_code == 200
+        assert res.get_json()["project"]["slug"] == "test-project"
+
 
 class TestTablacoPublicLink:
     """Tests for the tablaco public-link admin endpoint."""

@@ -90,7 +90,7 @@ backend/
 
 #### Key Modules
 
-- **`manifest.py`**: Multi-project manifest registry. `discover_projects()` scans `PROJECTS_DIR` for subdirectories with `project.json`. `get_manifest(slug)` loads and caches per-project `ProjectManifest` instances. Each manifest has a `project_dir` so SCAD paths resolve relative to the project, not a global config. Falls back to `SCAD_DIR` for single-project mode.
+- **`manifest.py`**: Multi-project manifest registry. `discover_projects()` scans `PROJECTS_DIR` for subdirectories with `project.json`. `get_manifest(slug)` loads and caches per-project `ProjectManifest` instances. Each manifest has a `project_dir` so SCAD paths resolve relative to the project, not a global config. Falls back to `SCAD_DIR` for single-project mode. Projects with `"unlisted": true` in their manifest are excluded from `GET /api/projects` (public listing) but remain accessible via direct slug endpoints (`/api/projects/<slug>/manifest`, `/api/render`, etc.).
 - **`config.py`**: Environment-level config (paths, ports, OpenSCAD binary, `STL_PREFIX`). Adds `PROJECTS_DIR` (default: `projects/`) and `MULTI_PROJECT` boolean. Adds `LIBS_DIR` / `OPENSCADPATH` for global OpenSCAD library resolution. Static methods delegate to the manifest for backward compatibility.
 - **`routes/render.py`**: Accepts both `mode` (new) and `scad_file` (legacy) fields in payloads. Also accepts optional `project` slug for multi-project routing. The `_resolve_render_context()` helper resolves to the correct SCAD path and part list. STL output is namespaced by project slug.
 - **`routes/projects.py`**: Lists available projects (`GET /api/projects`, supports `?stats=1` for 30-day analytics) and serves per-project manifests (`GET /api/projects/<slug>/manifest`).

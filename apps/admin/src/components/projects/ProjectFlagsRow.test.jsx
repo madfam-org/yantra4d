@@ -24,6 +24,7 @@ vi.mock('lucide-react', () => ({
     Loader2: (props) => <span data-testid="loader" {...props} />,
     Check: (props) => <span {...props} />,
     X: (props) => <span {...props} />,
+    EyeOff: (props) => <span {...props} />,
 }))
 
 import ProjectFlagsRow from './ProjectFlagsRow'
@@ -33,6 +34,7 @@ describe('ProjectFlagsRow', () => {
         slug: 'gridfinity',
         is_demo: false,
         is_hyperobject: true,
+        unlisted: false,
         mode_count: 3,
         parameter_count: 10,
     }
@@ -94,6 +96,19 @@ describe('ProjectFlagsRow', () => {
         fireEvent.click(screen.getByRole('switch', { name: /toggle demo/i }))
         await waitFor(() => {
             expect(screen.getByText(/Forbidden/)).toBeInTheDocument()
+        })
+    })
+
+    it('renders unlisted toggle switch', () => {
+        renderRow()
+        expect(screen.getByRole('switch', { name: /toggle unlisted for gridfinity/i })).toBeInTheDocument()
+    })
+
+    it('calls patchFlags when unlisted switch toggled', async () => {
+        renderRow()
+        fireEvent.click(screen.getByRole('switch', { name: /toggle unlisted/i }))
+        await waitFor(() => {
+            expect(mockPatchFlags).toHaveBeenCalledWith('gridfinity', { unlisted: true })
         })
     })
 

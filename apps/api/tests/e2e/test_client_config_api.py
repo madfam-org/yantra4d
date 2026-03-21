@@ -10,6 +10,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 @pytest.fixture
 def app(tmp_path):
+    import routes.core.client_config as cc_mod
+    cc_mod.LICENSE_CACHE_PATH = tmp_path / "license_cache.json"
+
     from app import create_app
 
     flask_app = create_app()

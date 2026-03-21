@@ -13,10 +13,9 @@ def app(tmp_path, monkeypatch):
     from config import Config
     monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
 
-    # Analytics module reads DB_PATH at import time, so patch it
-    import routes.integrations.analytics as analytics_mod
-    monkeypatch.setattr(analytics_mod, "DB_PATH", str(tmp_path / ".analytics.db"))
-    analytics_mod._init_db()
+    # Use temp SQLite for analytics DB via SQLAlchemy
+    db_uri = f"sqlite:///{tmp_path / 'test.db'}"
+    monkeypatch.setattr(Config, "SQLALCHEMY_DATABASE_URI", db_uri)
 
     project_dir = tmp_path / "test-project"
     project_dir.mkdir()
@@ -32,6 +31,11 @@ def app(tmp_path, monkeypatch):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+
+    with flask_app.app_context():
+        from extensions import db
+        db.create_all()
+
     return flask_app
 
 

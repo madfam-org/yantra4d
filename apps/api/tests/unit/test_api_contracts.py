@@ -14,20 +14,15 @@ with open(OPENAPI_PATH, "r") as f:
 
 def assert_matches_schema(data, schema_name):
     """Validate a Python dict against a schema component in the OpenAPI spec."""
+    from referencing import Registry, Resource
+    from referencing.jsonschema import DRAFT202012
+
     schema = OPENAPI_SPEC["components"]["schemas"][schema_name]
+    resource = Resource.from_contents(OPENAPI_SPEC, default_specification=DRAFT202012)
+    registry = Registry().with_resource("openapi.yaml", resource)
+
     try:
-        validate(data, schema)
-    except Exception as e:
-        pytest.fail(f"OpenAPI validation failed: {e}")
-    
-    
-    # However we can just resolve refs manually or use the built-in RefResolver mapping the whole spec
-    # A cleaner approach using the core jsonschema validation against the sub-schema:
-    from jsonschema import RefResolver
-    resolver = RefResolver.from_schema(OPENAPI_SPEC)
-    
-    try:
-        validate(instance=data, schema=schema, resolver=resolver)
+        validate(instance=data, schema=schema, registry=registry)
     except Exception as e:
         pytest.fail(f"JSON schema validation failed for {schema_name}: {e}")
 

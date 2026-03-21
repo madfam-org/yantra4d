@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://madfam.io/schemas/material-manifest.schema.json",
+    "$id": "https://yantra4d.com/schemas/material-manifest.schema.json",
     "title": "Material Hyperobject Manifest",
     "description": "Schema for defining nanoscale material properties and additive manufacturing compensations.",
     "type": "object",

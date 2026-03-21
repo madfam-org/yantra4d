@@ -5,14 +5,14 @@ description: Getting started with the Yantra4D REST API — health checks, proje
 
 The Yantra4D API is a Flask application that handles rendering, project management, export, and AI features. This guide covers the most common API operations with `curl` examples.
 
-**Base URL:** `https://4d-api.madfam.io` (production) or `http://localhost:5000` (local development)
+**Base URL:** `https://api.yantra4d.com` (production) or `http://localhost:5000` (local development)
 
 ## Health check
 
 Verify the API is running and OpenSCAD is available:
 
 ```bash
-curl https://4d-api.madfam.io/api/health
+curl https://api.yantra4d.com/api/health
 ```
 
 Response:
@@ -30,7 +30,7 @@ Response:
 Retrieve all available projects:
 
 ```bash
-curl https://4d-api.madfam.io/api/projects
+curl https://api.yantra4d.com/api/projects
 ```
 
 Response:
@@ -60,7 +60,7 @@ Add `?stats=1` to include 30-day analytics counts per project.
 The manifest is the single source of truth for a project's modes, parameters, parts, and configuration:
 
 ```bash
-curl https://4d-api.madfam.io/api/projects/gridfinity/manifest
+curl https://api.yantra4d.com/api/projects/gridfinity/manifest
 ```
 
 Response (abbreviated):
@@ -100,7 +100,7 @@ The manifest supports ETags for conditional requests. The API returns `304 Not M
 Trigger a synchronous render and receive the output file:
 
 ```bash
-curl -X POST https://4d-api.madfam.io/api/render \
+curl -X POST https://api.yantra4d.com/api/render \
   -H "Content-Type: application/json" \
   -d '{
     "project": "gridfinity",
@@ -118,7 +118,7 @@ curl -X POST https://4d-api.madfam.io/api/render \
 The response body is the rendered file. STL renders are automatically converted to GLB for web delivery. To get a specific format, add `export_format`:
 
 ```bash
-curl -X POST https://4d-api.madfam.io/api/render \
+curl -X POST https://api.yantra4d.com/api/render \
   -H "Content-Type: application/json" \
   -d '{
     "project": "gridfinity",
@@ -137,7 +137,7 @@ Available `export_format` values depend on the project's engine and tier access:
 For long-running renders, use the SSE streaming endpoint:
 
 ```bash
-curl -X POST https://4d-api.madfam.io/api/render-stream \
+curl -X POST https://api.yantra4d.com/api/render-stream \
   -H "Content-Type: application/json" \
   -d '{
     "project": "gridfinity",
@@ -154,7 +154,7 @@ The response is a Server-Sent Events stream with progress updates.
 Before rendering, you can estimate how long it will take:
 
 ```bash
-curl -X POST https://4d-api.madfam.io/api/estimate \
+curl -X POST https://api.yantra4d.com/api/estimate \
   -H "Content-Type: application/json" \
   -d '{
     "project": "gridfinity",
@@ -180,11 +180,11 @@ Download pre-built STL or SCAD source files directly:
 
 ```bash
 # Download an STL part
-curl https://4d-api.madfam.io/api/projects/gridfinity/download/stl/main.stl \
+curl https://api.yantra4d.com/api/projects/gridfinity/download/stl/main.stl \
   --output main.stl
 
 # Download a SCAD source file
-curl https://4d-api.madfam.io/api/projects/gridfinity/download/scad/half_cube.scad \
+curl https://api.yantra4d.com/api/projects/gridfinity/download/scad/half_cube.scad \
   --output half_cube.scad
 ```
 
@@ -194,10 +194,10 @@ Retrieve the hardware BOM for a project:
 
 ```bash
 # JSON format
-curl "https://4d-api.madfam.io/api/projects/gridfinity/bom?width_units=3&depth_units=2"
+curl "https://api.yantra4d.com/api/projects/gridfinity/bom?width_units=3&depth_units=2"
 
 # CSV format
-curl "https://4d-api.madfam.io/api/projects/gridfinity/bom?format=csv&width_units=3"
+curl "https://api.yantra4d.com/api/projects/gridfinity/bom?format=csv&width_units=3"
 ```
 
 BOM quantities are computed from formulas that reference parameter values. Changing parameters changes the quantities.
@@ -208,7 +208,7 @@ Most read endpoints work without authentication. Write operations and tier-gated
 
 ```bash
 curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  https://4d-api.madfam.io/api/projects/my-project/files
+  https://api.yantra4d.com/api/projects/my-project/files
 ```
 
 For local development, set `AUTH_ENABLED=false` in your environment to bypass authentication. All requests will receive full (madfam tier) access.

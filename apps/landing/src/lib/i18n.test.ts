@@ -39,20 +39,20 @@ describe('i18n', () => {
 
   describe('getLangFromUrl', () => {
     it('returns "en" for English paths', () => {
-      expect(getLangFromUrl(new URL('https://4d.madfam.io/en/'))).toBe('en')
-      expect(getLangFromUrl(new URL('https://4d.madfam.io/en/concepts/'))).toBe('en')
+      expect(getLangFromUrl(new URL('https://yantra4d.com/en/'))).toBe('en')
+      expect(getLangFromUrl(new URL('https://yantra4d.com/en/concepts/'))).toBe('en')
     })
 
     it('returns "es" for Spanish paths', () => {
-      expect(getLangFromUrl(new URL('https://4d.madfam.io/es/'))).toBe('es')
+      expect(getLangFromUrl(new URL('https://yantra4d.com/es/'))).toBe('es')
     })
 
     it('returns "es" as default for root path', () => {
-      expect(getLangFromUrl(new URL('https://4d.madfam.io/'))).toBe('es')
+      expect(getLangFromUrl(new URL('https://yantra4d.com/'))).toBe('es')
     })
 
     it('returns "es" for unknown language prefixes', () => {
-      expect(getLangFromUrl(new URL('https://4d.madfam.io/fr/'))).toBe('es')
+      expect(getLangFromUrl(new URL('https://yantra4d.com/fr/'))).toBe('es')
     })
   })
 })

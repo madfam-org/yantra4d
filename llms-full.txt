@@ -45,7 +45,7 @@ packages/
   tokens/              (shared CSS custom properties — colors, spacing)
 ```
 
-**Domains**: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api), `4d-admin.madfam.io` (admin)
+**Domains**: `yantra4d.com` (landing), `app.yantra4d.com` (studio), `api.yantra4d.com` (api), `admin.yantra4d.com` (admin)
 
 ---
 
@@ -716,7 +716,7 @@ Each project has: `project.json` (manifest), `*.scad` / `*.py` (geometry), `LICE
 | Docker | `docker compose up` (backend + studio + landing + admin) |
 | Local | Flask (5000) + Vite (5173) + Astro (4321) |
 
-Production domains: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api), `4d-admin.madfam.io` (admin).
+Production domains: `yantra4d.com` (landing), `app.yantra4d.com` (studio), `api.yantra4d.com` (api), `admin.yantra4d.com` (admin).
 
 ---
 

@@ -1,7 +1,7 @@
 import posthog from "posthog-js";
 
 const POSTHOG_KEY: string = import.meta.env.VITE_POSTHOG_KEY || "";
-const POSTHOG_HOST: string = import.meta.env.VITE_POSTHOG_HOST || "https://analytics.madfam.io";
+const POSTHOG_HOST: string = import.meta.env.VITE_POSTHOG_HOST || "https://analytics.yantra4d.com";
 
 let initialized = false;
 

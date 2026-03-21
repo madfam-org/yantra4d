@@ -9,7 +9,7 @@ Essential configuration for deploying Yantra4D in production.
 | Variable | Example | Purpose |
 |----------|---------|---------|
 | `AUTH_ENABLED` | `true` | Enable JWT authentication (never `false` in production) |
-| `CORS_ORIGINS` | `https://4d-app.madfam.io,https://4d.madfam.io` | Allowed origins (comma-separated) |
+| `CORS_ORIGINS` | `https://app.yantra4d.com,https://yantra4d.com` | Allowed origins (comma-separated) |
 | `JANUA_ISSUER` | `https://auth.madfam.io` | JWT issuer URL |
 | `JANUA_AUDIENCE` | `yantra4d-api` | JWT audience claim |
 

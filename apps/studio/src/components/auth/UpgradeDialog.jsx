@@ -32,7 +32,7 @@ export default function UpgradeDialog({ isOpen, onClose, feature }) {
                         {t("tier.maybe_later") || "Maybe Later"}
                     </AlertDialogCancel>
                     <a
-                        href="https://4d.madfam.io/#pricing"
+                        href="https://yantra4d.com/#pricing"
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={onClose}

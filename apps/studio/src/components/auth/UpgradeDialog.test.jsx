@@ -69,7 +69,7 @@ describe('UpgradeDialog', () => {
     it('has an upgrade link to pricing page', () => {
         render(<UpgradeDialog {...defaultProps} />)
         const link = screen.getByText('Upgrade to Pro')
-        expect(link.closest('a')).toHaveAttribute('href', 'https://4d.madfam.io/#pricing')
+        expect(link.closest('a')).toHaveAttribute('href', 'https://yantra4d.com/#pricing')
         expect(link.closest('a')).toHaveAttribute('target', '_blank')
     })
 })

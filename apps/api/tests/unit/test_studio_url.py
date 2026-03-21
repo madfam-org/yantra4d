@@ -16,15 +16,15 @@ def app():
 class TestBuildProjectUrl:
     def test_basic_url(self, app):
         with app.test_request_context():
-            with patch.dict(os.environ, {"PUBLIC_STUDIO_URL": "https://4d-app.madfam.io"}):
+            with patch.dict(os.environ, {"PUBLIC_STUDIO_URL": "https://app.yantra4d.com"}):
                 url = build_project_url("my-project")
-        assert url == "https://4d-app.madfam.io/project/my-project"
+        assert url == "https://app.yantra4d.com/project/my-project"
 
     def test_storefront_mode(self, app):
         with app.test_request_context():
-            with patch.dict(os.environ, {"PUBLIC_STUDIO_URL": "https://4d-app.madfam.io"}):
+            with patch.dict(os.environ, {"PUBLIC_STUDIO_URL": "https://app.yantra4d.com"}):
                 url = build_project_url("tablaco", mode="storefront")
-        assert url == "https://4d-app.madfam.io/project/tablaco?mode=storefront"
+        assert url == "https://app.yantra4d.com/project/tablaco?mode=storefront"
 
     def test_preset_with_params(self, app):
         with app.test_request_context():
@@ -42,9 +42,9 @@ class TestBuildProjectUrl:
 
     def test_trailing_slash_stripped(self, app):
         with app.test_request_context():
-            with patch.dict(os.environ, {"PUBLIC_STUDIO_URL": "https://4d-app.madfam.io/"}):
+            with patch.dict(os.environ, {"PUBLIC_STUDIO_URL": "https://app.yantra4d.com/"}):
                 url = build_project_url("test")
-        assert url == "https://4d-app.madfam.io/project/test"
+        assert url == "https://app.yantra4d.com/project/test"
 
     def test_no_hash_in_output(self, app):
         with app.test_request_context():

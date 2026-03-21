@@ -186,10 +186,10 @@ jobs:
           provenance: false
           sbom: false
           build-args: |
-            VITE_API_BASE=https://4d-api.madfam.io
+            VITE_API_BASE=https://api.yantra4d.com
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
             VITE_JANUA_CLIENT_ID=${{ secrets.JANUA_CLIENT_ID }}
-            VITE_JANUA_REDIRECT_URI=https://4d-app.madfam.io
+            VITE_JANUA_REDIRECT_URI=https://app.yantra4d.com
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
       - name: Install cosign
@@ -250,7 +250,7 @@ jobs:
           provenance: false
           sbom: false
           build-args: |
-            PUBLIC_STUDIO_URL=https://4d-app.madfam.io
+            PUBLIC_STUDIO_URL=https://app.yantra4d.com
 
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
@@ -310,10 +310,10 @@ jobs:
           provenance: false
           sbom: false
           build-args: |
-            VITE_API_BASE=https://4d-api.madfam.io
+            VITE_API_BASE=https://api.yantra4d.com
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
             VITE_JANUA_CLIENT_ID=jnc_-v2RiP_TMO-XSExftpCh41K46xeszlKh
-            VITE_JANUA_REDIRECT_URI=https://4d-admin.madfam.io
+            VITE_JANUA_REDIRECT_URI=https://admin.yantra4d.com
             VITE_AUTH_ENABLED=true
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
@@ -398,7 +398,7 @@ jobs:
       - name: Wait for backend health
         run: |
           for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://4d-api.madfam.io/api/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.yantra4d.com/api/health)
             [ "$STATUS" = "200" ] && echo "Backend healthy" && exit 0
             echo "Attempt $i: status=$STATUS, retrying in 30s..."
             sleep 30

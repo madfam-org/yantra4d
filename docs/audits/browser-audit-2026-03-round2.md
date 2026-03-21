@@ -109,7 +109,7 @@ The format selector is purely cosmetic with no functional effect on the download
 
 **Resolution**: Fixed in 4 files. Three interacting root causes:
 1. `renderService.ts` — `download_url` was conditionally set only when `viewer_url` was present; on cache hits it was `undefined`, causing fallback to the GLB viewer URL. Now always set.
-2. `downloadUtils.ts` — `<a download>` attribute is ignored for cross-origin URLs (`4d-api.madfam.io` → `4d-app.madfam.io`). Now fetches as blob first, creating a same-origin `blob:` URL that respects the `download` filename.
+2. `downloadUtils.ts` — `<a download>` attribute is ignored for cross-origin URLs (`api.yantra4d.com` → `app.yantra4d.com`). Now fetches as blob first, creating a same-origin `blob:` URL that respects the `download` filename.
 3. `ExportPanel.jsx` — Archive download used `part.url` (GLB viewer URL) instead of `part.download_url` (requested format). Fixed to prefer `download_url`.
 4. `useProjectActions.js` — Added `await` to match the now-async `downloadFile`.
 

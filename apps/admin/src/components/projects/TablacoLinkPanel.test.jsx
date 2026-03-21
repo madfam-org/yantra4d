@@ -40,14 +40,14 @@ describe('TablacoLinkPanel', () => {
         globalThis.fetch = vi.fn().mockResolvedValueOnce({
             ok: true,
             json: () => Promise.resolve({
-                public_url: 'https://4d-app.madfam.io/project/tablaco?mode=storefront',
-                studio_url: 'https://4d-app.madfam.io/project/tablaco',
+                public_url: 'https://app.yantra4d.com/project/tablaco?mode=storefront',
+                studio_url: 'https://app.yantra4d.com/project/tablaco',
             }),
         })
 
         render(<TablacoLinkPanel />)
         await waitFor(() => {
-            expect(screen.getByText('https://4d-app.madfam.io/project/tablaco?mode=storefront')).toBeInTheDocument()
+            expect(screen.getByText('https://app.yantra4d.com/project/tablaco?mode=storefront')).toBeInTheDocument()
         })
     })
 

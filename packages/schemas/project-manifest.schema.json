@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://4d.madfam.io/schemas/project-manifest.schema.json",
+  "$id": "https://yantra4d.com/schemas/project-manifest.schema.json",
   "title": "Yantra4D Project Manifest",
   "description": "Schema for project.json files used by the Yantra4D parametric 3D design platform.",
   "type": "object",

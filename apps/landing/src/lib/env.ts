@@ -5,8 +5,8 @@ const isLocal = import.meta.env.DEV || (typeof window !== 'undefined'
 
 export const STUDIO_URL = import.meta.env.PUBLIC_STUDIO_URL || (isLocal
   ? 'http://localhost:5173'
-  : 'https://4d-app.madfam.io');
+  : 'https://app.yantra4d.com');
 
 export const API_URL = isLocal
   ? 'http://localhost:5000'
-  : 'https://4d-api.madfam.io';
+  : 'https://api.yantra4d.com';

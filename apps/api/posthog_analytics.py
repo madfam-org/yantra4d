@@ -14,7 +14,7 @@ def init_posthog() -> None:
     try:
         import posthog
         posthog.api_key = api_key
-        posthog.host = os.environ.get("POSTHOG_HOST", "https://analytics.madfam.io")
+        posthog.host = os.environ.get("POSTHOG_HOST", "https://analytics.yantra4d.com")
         _client = posthog
     except ImportError:
         pass

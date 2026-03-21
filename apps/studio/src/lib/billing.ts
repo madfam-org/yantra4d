@@ -5,7 +5,7 @@
  */
 
 const DHANAM_CHECKOUT_URL =
-  import.meta.env.VITE_DHANAM_CHECKOUT_URL || 'https://dhanam.madfam.io/checkout';
+  import.meta.env.VITE_DHANAM_CHECKOUT_URL || 'https://billing.yantra4d.com/checkout';
 
 export type Yantra4DTier = 'guest' | 'essentials' | 'pro' | 'madfam';
 

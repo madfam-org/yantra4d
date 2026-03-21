@@ -31,7 +31,7 @@
     "semantic_ontology": {
         "iso_52900_category": "Material Extrusion",
         "emmo_class": "http://emmo.info/emmo#Thermoplastic",
-        "knowledge_graph_uri": "https://data.madfam.io/ontologies/thermoplastics"
+        "knowledge_graph_uri": "https://data.yantra4d.com/ontologies/thermoplastics"
     },
     "tda": {
         "euler_characteristic": 12,

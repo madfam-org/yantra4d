@@ -1,5 +1,5 @@
 {
-    "$schema": "https://4d.madfam.io/schemas/printer.schema.json",
+    "$schema": "https://yantra4d.com/schemas/printer.schema.json",
     "hardware": {
         "name": "My Printer",
         "brand": "Bambu Lab",

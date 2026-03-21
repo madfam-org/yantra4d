@@ -40,7 +40,7 @@ packages/
   tokens/              (shared CSS custom properties — colors, spacing)
 ```
 
-**Domains**: `4d.madfam.io` (landing), `4d-app.madfam.io` (studio), `4d-api.madfam.io` (api), `4d-admin.madfam.io` (admin)
+**Domains**: `yantra4d.com` (landing), `app.yantra4d.com` (studio), `api.yantra4d.com` (api), `admin.yantra4d.com` (admin)
 
 ## Critical File Map
 
@@ -365,7 +365,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 
 | Target | Method |
 |--------|--------|
-| Enclii PaaS | Auto-deploy on push to main — `yantra4d-landing` at 4d.madfam.io, `yantra4d-studio` at 4d-app.madfam.io, `yantra4d-backend` at 4d-api.madfam.io, `yantra4d-admin` at 4d-admin.madfam.io |
+| Enclii PaaS | Auto-deploy on push to main — `yantra4d-landing` at yantra4d.com, `yantra4d-studio` at app.yantra4d.com, `yantra4d-backend` at api.yantra4d.com, `yantra4d-admin` at admin.yantra4d.com |
 | Docker | `docker compose up` (backend + studio + landing + admin, local) |
 | Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) + Admin dev server (5174) |
 

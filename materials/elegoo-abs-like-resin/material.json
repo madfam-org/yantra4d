@@ -31,7 +31,7 @@
     "semantic_ontology": {
         "iso_52900_category": "Vat Photopolymerization",
         "emmo_class": "http://emmo.info/emmo#Polymer",
-        "knowledge_graph_uri": "https://data.madfam.io/ontologies/photopolymers"
+        "knowledge_graph_uri": "https://data.yantra4d.com/ontologies/photopolymers"
     },
     "tda": {
         "euler_characteristic": -320,

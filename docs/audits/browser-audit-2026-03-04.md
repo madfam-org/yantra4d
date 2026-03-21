@@ -108,7 +108,7 @@ The Spanish version has a simpler structure: Hero → "Elige Tu Camino" → Gall
 - **i18n**: ES↔EN language switching works smoothly via URL navigation
 - **3D Carousel**: GLB models load and render; wireframe fallback for missing models
 - **Gallery**: 15 projects with category tabs, domain filter, search — all functional
-- **"Open Studio" links**: Correctly point to `4d-app.madfam.io/project/{slug}`
+- **"Open Studio" links**: Correctly point to `app.yantra4d.com/project/{slug}`
 
 ### Studio — custom-msh
 - **Mode switching**: All 6 modes load correctly (except assembly partial failure)

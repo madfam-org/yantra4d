@@ -4,9 +4,9 @@
 
 Yantra4D is not just a CAD tool; it is a **Poly-Kernel Engine**, a **Continuous SDF Geometry Compiler**, and a thriving **Hyperobjects Commons**. It bridges the mathematical precision of programmatic CAD with the accessibility of a visual, web-native storefront — and uniquely integrates **nanoscale material intelligence** and **interactive Digital Twin simulation** directly into the browser.
 
-[![Astro](https://img.shields.io/badge/Docs-Starlight-blueviolet)](https://4d-docs.madfam.io)
+[![Astro](https://img.shields.io/badge/Docs-Starlight-blueviolet)](https://docs.yantra4d.com)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-red.svg)](./LICENSE)
-[![React](https://img.shields.io/badge/Studio-React%2019-61dafb)](https://4d-app.madfam.io)
+[![React](https://img.shields.io/badge/Studio-React%2019-61dafb)](https://app.yantra4d.com)
 
 ---
 
@@ -31,7 +31,7 @@ Yantra4D is the first browser-native platform to simulate **temporal phasing (4D
 - **CAD Engines**: Tri-kernel execution via [OpenSCAD](https://openscad.org/) (CSG), [CadQuery](https://cadquery.readthedocs.io/) (B-Rep), and a native **Implicit SDF Engine** (TPMS/Lattice).
 - **The Studio**: React 19 + Three.js + Manifold-3d for blisteringly fast volumetric browser rendering.
 - **The API**: Python Flask backend with Docker-orchestrated render clusters and slicer-grade physics estimation.
-- **The Knowledge Base**: [4D Docs](https://4d-docs.madfam.io) — Powered by Astro Starlight.
+- **The Knowledge Base**: [4D Docs](https://docs.yantra4d.com) — Powered by Astro Starlight.
 
 ---
 
@@ -54,9 +54,9 @@ All 33 projects are public repos under `madfam-org`, licensed **CERN-OHL-W-2.0**
 ## 📖 Deep Documentation
 For peak Developer Experience and Agentic Discovery, consult our interconnected docs:
 
-- [**Getting Started**](https://4d-docs.madfam.io/overview/getting-started/) — Launch your first project.
-- [**Manifest Specs**](https://4d-docs.madfam.io/commons/manifest-specs/) — How to author a "Cartridge".
-- [**Poly-Kernel Logic**](https://4d-docs.madfam.io/commons/poly-kernel/) — Understanding the dual SCAD/Python pipeline.
+- [**Getting Started**](https://docs.yantra4d.com/overview/getting-started/) — Launch your first project.
+- [**Manifest Specs**](https://docs.yantra4d.com/commons/manifest-specs/) — How to author a "Cartridge".
+- [**Poly-Kernel Logic**](https://docs.yantra4d.com/commons/poly-kernel/) — Understanding the dual SCAD/Python pipeline.
 - [**LLM Context** (llms.txt)](./llms.txt) — Structured entry point for AI Agents.
 
 ---

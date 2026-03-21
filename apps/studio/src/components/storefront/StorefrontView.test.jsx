@@ -391,7 +391,7 @@ describe('StorefrontView', () => {
       Object.assign(navigator, { clipboard: mockClipboard })
 
       globalThis.fetch = vi.fn().mockResolvedValue({
-        json: () => Promise.resolve({ share_url: 'https://4d-app.madfam.io/share/abc123' }),
+        json: () => Promise.resolve({ share_url: 'https://app.yantra4d.com/share/abc123' }),
       })
 
       render(<StorefrontView />)
@@ -407,7 +407,7 @@ describe('StorefrontView', () => {
         expect(screen.getByText('Link copied!')).toBeInTheDocument()
       })
 
-      expect(mockClipboard.writeText).toHaveBeenCalledWith('https://4d-app.madfam.io/share/abc123')
+      expect(mockClipboard.writeText).toHaveBeenCalledWith('https://app.yantra4d.com/share/abc123')
     })
 
     it('falls back to copying current URL when API fetch fails', async () => {

@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://4d.madfam.io/schemas/printer.schema.json",
+    "$id": "https://yantra4d.com/schemas/printer.schema.json",
     "title": "Yantra4D Printer Configuration",
     "description": "Schema for printer.json files that describe connected 3D printers in a Yantra4D deployment. Supports OctoPrint and Moonraker (Klipper) connections.",
     "type": "object",

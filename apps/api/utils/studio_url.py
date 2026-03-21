@@ -28,7 +28,7 @@ def build_project_url(
 ) -> str:
     """Build a path-based project URL with optional query parameters.
 
-    Returns e.g. ``https://4d-app.madfam.io/project/tablaco?mode=storefront``
+    Returns e.g. ``https://app.yantra4d.com/project/tablaco?mode=storefront``
     """
     base = get_studio_base_url()
     url = f"{base}/project/{slug}"

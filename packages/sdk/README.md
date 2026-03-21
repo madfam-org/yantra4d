@@ -15,11 +15,11 @@ import { YantraEngine } from '@yantra4d/sdk'
 import type { YantraCartridge } from '@yantra4d/sdk'
 
 // Initialize engine pointing at a Yantra4D API backend
-const engine = new YantraEngine({ apiBase: 'https://4d-api.madfam.io' })
+const engine = new YantraEngine({ apiBase: 'https://api.yantra4d.com' })
 
 // Load a cartridge (project manifest)
 const cartridge: YantraCartridge = {
-  manifest: await fetch('https://4d-api.madfam.io/api/projects/gridfinity/manifest').then(r => r.json())
+  manifest: await fetch('https://api.yantra4d.com/api/projects/gridfinity/manifest').then(r => r.json())
 }
 
 // Get default parameter values

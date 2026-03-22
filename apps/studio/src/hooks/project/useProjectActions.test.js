@@ -112,6 +112,22 @@ describe('useProjectActions', () => {
       expect(updater('')).toContain('log.fail')
     })
 
+    it('logs client-side fallback note when verify returns source=client', async () => {
+      verify.mockResolvedValue({ passed: true, output: 'manifold ok', source: 'client' })
+      const setLogs = vi.fn()
+      const parts = [{ url: 'u1', type: 'a' }]
+      const { result } = renderActions({ parts, setLogs })
+      await act(async () => {
+        await result.current.handleVerify()
+      })
+      const allLogUpdates = setLogs.mock.calls.map(c => c[0])
+      const fallbackUpdater = allLogUpdates.find(
+        fn => typeof fn === 'function' && fn('').includes('upgrade to Pro')
+      )
+      expect(fallbackUpdater).toBeDefined()
+      expect(fallbackUpdater('')).toContain('Verified in browser')
+    })
+
     it('handles verify error gracefully', async () => {
       verify.mockRejectedValue(new Error('network'))
       const setLogs = vi.fn()

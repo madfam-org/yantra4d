@@ -83,6 +83,9 @@ export function useProjectActions({
       setLogs(prev => prev + "\n\n--- VERIFICATION REPORT ---\n" + res.output)
       if (res.passed) setLogs(prev => prev + `\n${t("log.pass")}`)
       else setLogs(prev => prev + `\n${t("log.fail")}`)
+      if (res.source === 'client') {
+        setLogs(prev => prev + '\n(Verified in browser — upgrade to Pro for full server-side analysis)')
+      }
     } catch (e) {
       setLogs(prev => prev + `\n${t("log.error")}` + (e as Error).message)
     }

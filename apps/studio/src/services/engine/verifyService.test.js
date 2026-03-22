@@ -91,14 +91,50 @@ describe('verify', () => {
     expect(body.mode).toBe('unit')
   })
 
-  it('in backend mode, throws on non-ok response', async () => {
+  it('in backend mode, throws on non-403 error (e.g. 500)', async () => {
     const { isBackendAvailable } = await import('../core/backendDetection')
     isBackendAvailable.mockResolvedValue(true)
 
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockResolvedValueOnce({ ok: false, status: 500 }) // verify fails
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 500 })
 
     await expect(verifyService.verify([], 'unit')).rejects.toThrow('Verification failed: 500')
+  })
+
+  it('falls back to client verification on 403 from backend', async () => {
+    const { isBackendAvailable } = await import('../core/backendDetection')
+    isBackendAvailable.mockResolvedValue(true)
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // First call: backend returns 403
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 403 })
+    // Second call: client fetches STL
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(200)),
+    })
+
+    const result = await verifyService.verify(
+      [{ type: 'main', url: 'http://x/main.stl' }],
+      'unit'
+    )
+
+    expect(result.passed).toBe(true)
+    expect(result.source).toBe('client')
+  })
+
+  it('backend success includes source: backend', async () => {
+    const { isBackendAvailable } = await import('../core/backendDetection')
+    isBackendAvailable.mockResolvedValue(true)
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: 'passed', passed: true, output: 'ok', parts_checked: 1 }),
+    })
+
+    const result = await verifyService.verify([{ type: 'main', url: 'http://x/a.stl' }], 'unit')
+    expect(result.source).toBe('backend')
   })
 
   it('in client mode, throws on non-ok STL fetch', async () => {
@@ -198,5 +234,22 @@ describe('verify (client mode — manifold-3d path)', () => {
     const result = await verifyService.verify([], 'unit')
     expect(result.passed).toBe(true)
     expect(result.parts_checked).toBe(0)
+  })
+
+  it('client success includes source: client', async () => {
+    const { isBackendAvailable } = await import('../core/backendDetection')
+    isBackendAvailable.mockResolvedValue(false)
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(200)),
+    })
+
+    const result = await verifyService.verify(
+      [{ type: 'main', url: 'http://x/main.stl' }],
+      'unit'
+    )
+    expect(result.source).toBe('client')
   })
 })

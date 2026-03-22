@@ -351,7 +351,7 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
               <SheetDescription className="sr-only">
                 {t('a11y.controls_description')}
               </SheetDescription>
-              <div className="flex-1 min-h-0 relative">
+              <div className="flex-1 min-h-0 relative flex flex-col">
                 <SidebarContent />
               </div>
             </SheetContent>

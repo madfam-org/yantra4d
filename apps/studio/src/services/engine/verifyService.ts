@@ -30,6 +30,7 @@ interface VerifyResult {
   passed: boolean
   output: string
   parts_checked: number
+  source?: 'backend' | 'client'
 }
 
 interface ManifoldModule {
@@ -118,7 +119,8 @@ async function verifyClient(parts: PartInput[]): Promise<VerifyResult> {
     status: allPassed ? 'passed' : 'failed',
     passed: allPassed,
     output: outputLines.join('\n'),
-    parts_checked: results.length
+    parts_checked: results.length,
+    source: 'client',
   }
 }
 
@@ -133,8 +135,14 @@ async function verifyBackend(mode: string, project?: string): Promise<VerifyResu
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  if (!res.ok) throw new Error(`Verification failed: ${res.status}`)
-  return res.json()
+  if (!res.ok) {
+    const err = new Error(`Verification failed: ${res.status}`)
+    ;(err as Error & { status?: number }).status = res.status
+    throw err
+  }
+  const data: VerifyResult = await res.json()
+  data.source = 'backend'
+  return data
 }
 
 /**
@@ -143,7 +151,14 @@ async function verifyBackend(mode: string, project?: string): Promise<VerifyResu
 export async function verify(parts: PartInput[], mode: string, project?: string): Promise<VerifyResult> {
   const backend = await isBackendAvailable()
   if (backend) {
-    return verifyBackend(mode, project)
+    try {
+      return await verifyBackend(mode, project)
+    } catch (err: unknown) {
+      if (err instanceof Error && (err as Error & { status?: number }).status === 403) {
+        return verifyClient(parts)
+      }
+      throw err
+    }
   }
   return verifyClient(parts)
 }

@@ -81,3 +81,6 @@ apps/api/static/*.glb
 **/e2e_full_report.txt
 debug-dump-analysis.js
 debug_manifest.py
+
+# Audit screenshots (root-level PNGs from browser audits)
+mobile-controls-*.png

@@ -223,5 +223,16 @@
   "ratelimit.server_warning": "{remaining} renderizações do servidor restantes nesta hora.",
   "ratelimit.wasm_available": "A renderização do navegador continua disponível.",
   "ratelimit.wasm_suggestion": "Seu navegador pode renderizar este modelo diretamente.",
-  "ratelimit.force_backend_exhausted": "Limite de renderização atingido. Este projeto requer renderização no servidor — atualize seu plano ou aguarde a redefinição."
+  "ratelimit.force_backend_exhausted": "Limite de renderização atingido. Este projeto requer renderização no servidor — atualize seu plano ou aguarde a redefinição.",
+  "splash.loading": "Carregando projeto...",
+  "splash.tip_1": "Pressione O para alternar a visualização de câmera ortográfica",
+  "splash.tip_2": "Use Cmd/Ctrl+Z para desfazer alterações de parâmetros",
+  "splash.tip_3": "Passe o cursor sobre os controles deslizantes para visualizar o efeito na geometria",
+  "splash.tip_4": "Pressione ? para ver todos os atalhos de teclado",
+  "splash.tip_5": "A renderização 3D roda no seu navegador — ilimitada e gratuita",
+  "splash.tip_6": "Exporte para STL, STEP, GLB, OBJ, 3MF e mais",
+  "splash.tip_7": "Use o plano de corte (C) para inspecionar seções transversais",
+  "splash.tip_8": "Medição ponto a ponto: pressione M e clique em dois pontos",
+  "splash.tip_9": "Alterne a barra lateral com [ e o console com ]",
+  "splash.tip_10": "Todos os projetos funcionam offline via renderização no navegador"
 }

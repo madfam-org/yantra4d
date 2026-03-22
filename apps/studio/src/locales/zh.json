@@ -223,5 +223,16 @@
   "ratelimit.server_warning": "本小时还剩 {remaining} 次服务器渲染。",
   "ratelimit.wasm_available": "浏览器渲染仍然可用。",
   "ratelimit.wasm_suggestion": "您的浏览器可以直接渲染此模型。",
-  "ratelimit.force_backend_exhausted": "服务器渲染限额已达到。此项目需要服务器渲染 — 请升级方案或等待限额重置。"
+  "ratelimit.force_backend_exhausted": "服务器渲染限额已达到。此项目需要服务器渲染 — 请升级方案或等待限额重置。",
+  "splash.loading": "加载项目中...",
+  "splash.tip_1": "按 O 切换正交相机视图",
+  "splash.tip_2": "使用 Cmd/Ctrl+Z 撤销参数更改",
+  "splash.tip_3": "将鼠标悬停在滑块上以预览参数对几何体的影响",
+  "splash.tip_4": "按 ? 查看所有键盘快捷键",
+  "splash.tip_5": "3D 渲染在您的浏览器中运行 — 无限且免费",
+  "splash.tip_6": "导出为 STL、STEP、GLB、OBJ、3MF 等格式",
+  "splash.tip_7": "使用剖切面 (C) 检查截面",
+  "splash.tip_8": "点对点测量：按 M 并点击两个点",
+  "splash.tip_9": "用 [ 切换侧边栏，用 ] 切换控制台",
+  "splash.tip_10": "所有项目均可通过浏览器渲染离线工作"
 }

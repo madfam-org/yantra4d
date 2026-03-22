@@ -1,9 +1,10 @@
-import { createContext, useContext, useRef } from 'react'
+import { createContext, useContext, useRef, useState, useEffect } from 'react'
 import { useProjectParams } from '../../hooks/project/useProjectParams'
 import { useProjectActions } from '../../hooks/project/useProjectActions'
 import { useAssemblyGuide } from '../../hooks/editor/useAssemblyGuide'
 import { useManifest } from './ManifestProvider'
 import { useLanguage } from '../system/LanguageProvider'
+import SplashScreen from '../../components/feedback/SplashScreen'
 
 const ProjectContext = createContext(null)
 
@@ -188,15 +189,33 @@ export function ProjectProvider({ children }) {
   const manifestSlug = manifest.project?.slug || ''
   const manifestStale = manifestSlug && projectSlug && manifestSlug !== projectSlug
 
-  if (manifestStale) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 motion-safe:animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <span className="text-sm text-muted-foreground">Loading project…</span>
-        </div>
-      </div>
-    )
+  // Smooth exit: hold splash visible for 300ms fade-out after manifest loads.
+  // setState in effect is intentional here — it synchronizes with the timer
+  // (an external system) and only fires on the stale→ready edge transition.
+  const [showSplash, setShowSplash] = useState(manifestStale)
+  const [exiting, setExiting] = useState(false)
+
+  // Synchronize splash visibility with manifestStale transitions.
+  // setState in effect is intentional: this is an edge-triggered transition
+  // that coordinates with a timer (external system) for the exit animation.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (manifestStale) {
+      setShowSplash(true)
+      setExiting(false)
+    } else if (showSplash) {
+      setExiting(true)
+      const t = setTimeout(() => {
+        setShowSplash(false)
+        setExiting(false)
+      }, 300)
+      return () => clearTimeout(t)
+    }
+  }, [manifestStale]) // eslint-disable-line react-hooks/exhaustive-deps
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  if (showSplash) {
+    return <SplashScreen exiting={exiting} />
   }
 
   // Force full remount when project changes OR when the real manifest loads

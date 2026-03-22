@@ -251,5 +251,16 @@
   "ratelimit.server_warning": "{remaining} server renders remaining this hour.",
   "ratelimit.wasm_available": "Browser rendering is still available.",
   "ratelimit.wasm_suggestion": "Your browser can render this model directly.",
-  "ratelimit.force_backend_exhausted": "Server render limit reached. This project requires server rendering — upgrade your plan or wait for the limit to reset."
+  "ratelimit.force_backend_exhausted": "Server render limit reached. This project requires server rendering — upgrade your plan or wait for the limit to reset.",
+  "splash.loading": "Loading project...",
+  "splash.tip_1": "Press O to toggle orthographic camera view",
+  "splash.tip_2": "Use Cmd/Ctrl+Z to undo parameter changes",
+  "splash.tip_3": "Hover over sliders to preview how parameters affect geometry",
+  "splash.tip_4": "Press ? to see all keyboard shortcuts",
+  "splash.tip_5": "3D rendering runs in your browser — unlimited and free",
+  "splash.tip_6": "Export to STL, STEP, GLB, OBJ, 3MF, and more",
+  "splash.tip_7": "Use the clipping plane (C) to inspect cross-sections",
+  "splash.tip_8": "Point-to-point measurement: press M and click two points",
+  "splash.tip_9": "Toggle the sidebar with [ and console with ]",
+  "splash.tip_10": "All projects work offline via browser-based rendering"
 }

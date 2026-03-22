@@ -223,5 +223,16 @@
   "ratelimit.server_warning": "{remaining} Server-Renderings diese Stunde verbleibend.",
   "ratelimit.wasm_available": "Browser-Rendering ist weiterhin verfügbar.",
   "ratelimit.wasm_suggestion": "Ihr Browser kann dieses Modell direkt rendern.",
-  "ratelimit.force_backend_exhausted": "Server-Renderlimit erreicht. Dieses Projekt erfordert Server-Rendering — Upgrade oder warten Sie auf das Zurücksetzen des Limits."
+  "ratelimit.force_backend_exhausted": "Server-Renderlimit erreicht. Dieses Projekt erfordert Server-Rendering — Upgrade oder warten Sie auf das Zurücksetzen des Limits.",
+  "splash.loading": "Projekt wird geladen...",
+  "splash.tip_1": "Drücken Sie O, um die orthografische Kameraansicht umzuschalten",
+  "splash.tip_2": "Verwenden Sie Cmd/Ctrl+Z, um Parameteränderungen rückgängig zu machen",
+  "splash.tip_3": "Fahren Sie mit der Maus über Schieberegler, um die Auswirkung auf die Geometrie zu sehen",
+  "splash.tip_4": "Drücken Sie ?, um alle Tastenkürzel anzuzeigen",
+  "splash.tip_5": "3D-Rendering läuft in Ihrem Browser — unbegrenzt und kostenlos",
+  "splash.tip_6": "Exportieren Sie in STL, STEP, GLB, OBJ, 3MF und mehr",
+  "splash.tip_7": "Verwenden Sie die Schnittebene (C), um Querschnitte zu inspizieren",
+  "splash.tip_8": "Punkt-zu-Punkt-Messung: Drücken Sie M und klicken Sie auf zwei Punkte",
+  "splash.tip_9": "Seitenleiste mit [ und Konsole mit ] umschalten",
+  "splash.tip_10": "Alle Projekte funktionieren offline über Browser-Rendering"
 }

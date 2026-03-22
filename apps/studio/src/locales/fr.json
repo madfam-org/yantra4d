@@ -223,5 +223,16 @@
   "ratelimit.server_warning": "{remaining} rendus serveur restants cette heure.",
   "ratelimit.wasm_available": "Le rendu navigateur est toujours disponible.",
   "ratelimit.wasm_suggestion": "Votre navigateur peut rendre ce modèle directement.",
-  "ratelimit.force_backend_exhausted": "Limite de rendu serveur atteinte. Ce projet nécessite le rendu serveur — mettez à niveau votre plan ou attendez la réinitialisation."
+  "ratelimit.force_backend_exhausted": "Limite de rendu serveur atteinte. Ce projet nécessite le rendu serveur — mettez à niveau votre plan ou attendez la réinitialisation.",
+  "splash.loading": "Chargement du projet...",
+  "splash.tip_1": "Appuyez sur O pour basculer la vue caméra orthographique",
+  "splash.tip_2": "Utilisez Cmd/Ctrl+Z pour annuler les modifications de paramètres",
+  "splash.tip_3": "Survolez les curseurs pour prévisualiser l'effet sur la géométrie",
+  "splash.tip_4": "Appuyez sur ? pour voir tous les raccourcis clavier",
+  "splash.tip_5": "Le rendu 3D s'exécute dans votre navigateur — illimité et gratuit",
+  "splash.tip_6": "Exportez en STL, STEP, GLB, OBJ, 3MF et plus",
+  "splash.tip_7": "Utilisez le plan de coupe (C) pour inspecter les sections",
+  "splash.tip_8": "Mesure point à point : appuyez sur M et cliquez sur deux points",
+  "splash.tip_9": "Basculez la barre latérale avec [ et la console avec ]",
+  "splash.tip_10": "Tous les projets fonctionnent hors ligne via le rendu navigateur"
 }

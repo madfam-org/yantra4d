@@ -67,3 +67,14 @@ createRoot(document.getElementById('root')).render(
     </ErrorBoundary>
   </StrictMode>,
 )
+
+// Remove Layer 1 HTML splash after React mounts
+requestAnimationFrame(() => {
+  const splash = document.getElementById('yantra4d-splash')
+  if (splash) {
+    splash.classList.add('yantra4d-splash--exiting')
+    const remove = () => { if (splash.parentNode) splash.remove() }
+    splash.addEventListener('animationend', remove, { once: true })
+    setTimeout(remove, 500)
+  }
+})

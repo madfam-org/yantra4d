@@ -2,12 +2,116 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Yantra4D</title>
     <meta name="description" content="Yantra4D — parametric 3D print design platform" />
+    <style>
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+        --primary: 240 5.9% 10%;
+        --muted-foreground: 240 3.8% 40%;
+      }
+      .dark {
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+        --primary: 221 83% 53%;
+        --muted-foreground: 240 5% 64.9%;
+      }
+      #yantra4d-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+      }
+      .yantra4d-splash__title {
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: hsl(var(--foreground));
+      }
+      .yantra4d-splash__bar {
+        width: 160px;
+        height: 3px;
+        border-radius: 2px;
+        background: hsl(var(--muted-foreground) / 0.2);
+        overflow: hidden;
+      }
+      .yantra4d-splash__bar-fill {
+        width: 40%;
+        height: 100%;
+        border-radius: 2px;
+        background: hsl(var(--primary));
+        animation: splashIndeterminate 1.5s ease-in-out infinite;
+      }
+      @keyframes splashIndeterminate {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(400%); }
+      }
+      @keyframes splashPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      .yantra4d-splash__logo {
+        animation: splashPulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .yantra4d-splash__logo { animation: none; }
+        .yantra4d-splash__bar-fill { animation: none; width: 60%; }
+      }
+      .yantra4d-splash--exiting {
+        animation: splashFadeOut 300ms ease-out forwards;
+      }
+      @keyframes splashFadeOut {
+        to { opacity: 0; }
+      }
+      .yantra4d-splash__sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
   </head>
   <body>
+    <script>
+      ;(function() {
+        try {
+          var theme = localStorage.getItem('vite-ui-theme')
+          if (theme === 'dark' || (!theme || theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark')
+          } else {
+            document.documentElement.classList.add('light')
+          }
+        } catch (e) {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark')
+          }
+        }
+      })()
+    </script>
+    <div id="yantra4d-splash" role="status" aria-label="Loading Yantra4D Studio">
+      <svg class="yantra4d-splash__logo" width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="6" fill="#3B82F6"/>
+        <text x="16" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="14" fill="white">4D</text>
+      </svg>
+      <div class="yantra4d-splash__title">Yantra4D</div>
+      <div class="yantra4d-splash__bar"><div class="yantra4d-splash__bar-fill"></div></div>
+      <span class="yantra4d-splash__sr-only">Loading application</span>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

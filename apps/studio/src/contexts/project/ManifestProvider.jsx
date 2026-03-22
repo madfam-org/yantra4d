@@ -29,11 +29,14 @@ export function ManifestProvider({ children }) {
         setProjects(data)
         // Determine initial project from URL location
         const foundSlug = _getProjectSlug(location)
-        const slug = data.find(p => p.slug === foundSlug)?.slug
-        if (slug) {
-          setProjectSlug(slug)
+        const listedSlug = data.find(p => p.slug === foundSlug)?.slug
+        if (listedSlug) {
+          setProjectSlug(listedSlug)
+        } else if (foundSlug) {
+          // Slug from URL not in public list (may be unlisted) — try it anyway
+          setProjectSlug(foundSlug)
         } else {
-          // If no project in hash, ensure we don't have a stale fallback
+          // No project in URL at all
           setProjectSlug(null)
           setLoading(false)
         }

@@ -222,5 +222,6 @@
   "ratelimit.server_exhausted": "Limite de renderização do servidor atingido ({limit}/h).",
   "ratelimit.server_warning": "{remaining} renderizações do servidor restantes nesta hora.",
   "ratelimit.wasm_available": "A renderização do navegador continua disponível.",
-  "ratelimit.wasm_suggestion": "Seu navegador pode renderizar este modelo diretamente."
+  "ratelimit.wasm_suggestion": "Seu navegador pode renderizar este modelo diretamente.",
+  "ratelimit.force_backend_exhausted": "Limite de renderização atingido. Este projeto requer renderização no servidor — atualize seu plano ou aguarde a redefinição."
 }

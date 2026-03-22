@@ -222,5 +222,6 @@
   "ratelimit.server_exhausted": "服务器渲染限额已达到（{limit}/小时）。",
   "ratelimit.server_warning": "本小时还剩 {remaining} 次服务器渲染。",
   "ratelimit.wasm_available": "浏览器渲染仍然可用。",
-  "ratelimit.wasm_suggestion": "您的浏览器可以直接渲染此模型。"
+  "ratelimit.wasm_suggestion": "您的浏览器可以直接渲染此模型。",
+  "ratelimit.force_backend_exhausted": "服务器渲染限额已达到。此项目需要服务器渲染 — 请升级方案或等待限额重置。"
 }

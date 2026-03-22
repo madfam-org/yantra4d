@@ -508,7 +508,7 @@ describe('renderParts network error WASM fallback', () => {
     URL.createObjectURL = originalCreateObjectURL
   })
 
-  it('catches "Failed to fetch" and retries with WASM', async () => {
+  it('catches "Failed to fetch" and retries with WASM for non-force_backend projects', async () => {
     vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
@@ -527,20 +527,34 @@ describe('renderParts network error WASM fallback', () => {
     }
     vi.stubGlobal('Worker', MockWorker)
 
-    // Use force_backend to ensure detectMode picks backend (not WASM directly)
-    const forcedManifest = { ...manifest, force_backend: true }
+    // Use a heavy manifest to trigger circuit breaker → backend mode on WASM-capable device
+    const heavyManifest = {
+      modes: [{
+        id: 'grid',
+        parts: ['a', 'b', 'c', 'd'],
+        estimate: { formula_vars: ['rows', 'cols'], formula: 'grid' }
+      }],
+      parts: [
+        { id: 'a', render_mode: '3D' },
+        { id: 'b', render_mode: '3D' },
+        { id: 'c', render_mode: '3D' },
+        { id: 'd', render_mode: '3D' },
+      ],
+      estimate_constants: { base_time: 5, per_unit: 10, per_part: 20 },
+    }
+
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    // Health check succeeds → backend mode (force_backend respected)
+    // Health check succeeds → backend mode (via circuit breaker, est > 15s)
     fetchMock.mockResolvedValueOnce({ ok: true })
     // Render call fails with network error
     fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
 
     const progressEvents = []
-    const result = await renderService.renderParts('unit', {}, forcedManifest, {
+    const result = await renderService.renderParts('grid', { rows: 10, cols: 10 }, heavyManifest, {
       onProgress: e => progressEvents.push(e)
     })
 
-    expect(result).toHaveLength(1)
+    expect(result).toHaveLength(4)
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('[Fallback] Backend render failed'),
       'Failed to fetch'
@@ -548,6 +562,41 @@ describe('renderParts network error WASM fallback', () => {
     expect(progressEvents.some(e => e.log?.includes('[FALLBACK]'))).toBe(true)
 
     warnSpy.mockRestore()
+  })
+
+  it('does NOT fallback to WASM on network error for force_backend projects', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+
+    const forcedManifest = { ...manifest, force_backend: true }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+
+    await expect(
+      renderService.renderParts('unit', {}, forcedManifest, {})
+    ).rejects.toThrow('Failed to fetch')
+  })
+
+  it('does NOT fallback to WASM on rate limit for force_backend projects', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+
+    const forcedManifest = { ...manifest, force_backend: true }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      text: () => Promise.resolve('Rate limit exceeded')
+    })
+
+    const progressEvents = []
+    await expect(
+      renderService.renderParts('unit', {}, forcedManifest, {
+        onProgress: e => progressEvents.push(e)
+      })
+    ).rejects.toThrow('HTTP 429')
+
+    expect(progressEvents.some(e => e.log?.includes('Server render limit reached'))).toBe(true)
   })
 
   it('does NOT fallback on AbortError (user cancel)', async () => {

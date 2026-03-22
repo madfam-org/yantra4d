@@ -222,5 +222,6 @@
   "ratelimit.server_exhausted": "Limite de rendu serveur atteinte ({limit}/h).",
   "ratelimit.server_warning": "{remaining} rendus serveur restants cette heure.",
   "ratelimit.wasm_available": "Le rendu navigateur est toujours disponible.",
-  "ratelimit.wasm_suggestion": "Votre navigateur peut rendre ce modèle directement."
+  "ratelimit.wasm_suggestion": "Votre navigateur peut rendre ce modèle directement.",
+  "ratelimit.force_backend_exhausted": "Limite de rendu serveur atteinte. Ce projet nécessite le rendu serveur — mettez à niveau votre plan ou attendez la réinitialisation."
 }

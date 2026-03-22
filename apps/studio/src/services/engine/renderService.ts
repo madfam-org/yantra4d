@@ -8,7 +8,7 @@
 
 import { isBackendAvailable, getApiBase, resetDetection } from '../core/backendDetection'
 import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
-import { apiFetch, isRateLimitExhausted } from '../core/apiClient'
+import { apiFetch } from '../core/apiClient'
 
 interface Manifest {
   modes: ModeConfig[]
@@ -100,10 +100,6 @@ async function detectMode(manifest: Manifest | null, mode: string, params: Recor
   if (available) {
     // Backend is up — respect preferences, but override if rate-limited and WASM-capable
     if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
-      if (isRateLimitExhausted() && hasWasmCapabilities() && manifest.engine !== 'cadquery') {
-        console.info('[RateLimit] Server render budget exhausted, using browser rendering.')
-        return 'wasm'
-      }
       return 'backend'
     }
     if (API_BASE) {
@@ -430,7 +426,8 @@ export async function renderParts(
       return await renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
     } catch (err) {
       // If backend fails with network error or rate limit, try WASM fallback
-      if (manifest?.engine !== 'cadquery' && hasWasmCapabilities() && (isNetworkError(err) || isRateLimitError(err))) {
+      const forceBackend = manifest?.project?.force_backend || manifest?.force_backend
+      if (!forceBackend && manifest?.engine !== 'cadquery' && hasWasmCapabilities() && (isNetworkError(err) || isRateLimitError(err))) {
         const isRL = isRateLimitError(err)
         console.warn(`[Fallback] Backend render failed (${isRL ? 'rate limited' : 'network'}), retrying with WASM:`, (err as Error).message)
         if (!isRL) resetDetection() // clear cached availability so next render re-checks
@@ -440,6 +437,10 @@ export async function renderParts(
           : '[FALLBACK] Backend unavailable, using browser rendering...'
         })
         return renderWasm(mode, params, manifest, onProgress, abortSignal)
+      }
+      // For force_backend projects, provide a clear rate-limit message instead of cryptic WASM failure
+      if (forceBackend && isRateLimitError(err)) {
+        onProgress?.({ log: '[ERROR] Server render limit reached. This project requires server rendering — upgrade your plan or wait for the limit to reset.' })
       }
       throw err // re-throw non-recoverable errors
     }

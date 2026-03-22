@@ -222,5 +222,6 @@
   "ratelimit.server_exhausted": "Server-Renderlimit erreicht ({limit}/Std.).",
   "ratelimit.server_warning": "{remaining} Server-Renderings diese Stunde verbleibend.",
   "ratelimit.wasm_available": "Browser-Rendering ist weiterhin verfügbar.",
-  "ratelimit.wasm_suggestion": "Ihr Browser kann dieses Modell direkt rendern."
+  "ratelimit.wasm_suggestion": "Ihr Browser kann dieses Modell direkt rendern.",
+  "ratelimit.force_backend_exhausted": "Server-Renderlimit erreicht. Dieses Projekt erfordert Server-Rendering — Upgrade oder warten Sie auf das Zurücksetzen des Limits."
 }

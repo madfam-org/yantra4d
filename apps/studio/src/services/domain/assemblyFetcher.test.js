@@ -202,4 +202,58 @@ describe('fetchAssemblyGeometries', () => {
     const result = await fetchAssemblyGeometries({ size: 70, color: 'red', depth: 5 }, ['size', 'depth'])
     expect(result).toHaveLength(1)
   })
+
+  it('includes project slug in payload when provided', async () => {
+    const { fetchAssemblyGeometries } = await import('./assemblyFetcher')
+
+    apiFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        parts: [{ type: 'bottom', url: 'http://localhost:5000/static/bottom.stl' }],
+      }),
+    })
+
+    await fetchAssemblyGeometries({ size: 80 }, ['size'], 'tablaco')
+    const payload = JSON.parse(apiFetch.mock.calls[0][1].body)
+    expect(payload.project).toBe('tablaco')
+  })
+
+  it('caches separately per project slug', async () => {
+    const { fetchAssemblyGeometries } = await import('./assemblyFetcher')
+
+    apiFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        parts: [{ type: 'bottom', url: 'http://localhost:5000/static/bottom.stl' }],
+      }),
+    })
+
+    // First call caches under project-a
+    await fetchAssemblyGeometries({ size: 90 }, ['size'], 'project-a')
+    expect(apiFetch).toHaveBeenCalledTimes(1)
+
+    // Same params + same project should hit cache (no new fetch)
+    await fetchAssemblyGeometries({ size: 90 }, ['size'], 'project-a')
+    expect(apiFetch).toHaveBeenCalledTimes(1)
+
+    // Same params but different project should miss cache (new fetch)
+    // Don't await the result since the singleton Worker can't handle concurrent tasks
+    fetchAssemblyGeometries({ size: 90 }, ['size'], 'project-b').catch(() => {})
+    expect(apiFetch).toHaveBeenCalledTimes(2)
+  })
+
+  it('works without project slug (backward compatible)', async () => {
+    const { fetchAssemblyGeometries } = await import('./assemblyFetcher')
+
+    apiFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        parts: [{ type: 'bottom', url: 'http://localhost:5000/static/bottom.stl' }],
+      }),
+    })
+
+    await fetchAssemblyGeometries({ size: 100 }, ['size'])
+    const payload = JSON.parse(apiFetch.mock.calls[0][1].body)
+    expect(payload.project).toBeUndefined()
+  })
 })

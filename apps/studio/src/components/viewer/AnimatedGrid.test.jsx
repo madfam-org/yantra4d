@@ -95,6 +95,7 @@ const mockGetViewerConfig = vi.fn(() => ({ default_color: '#aabbcc' }))
 vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => ({
     getViewerConfig: mockGetViewerConfig,
+    projectSlug: 'tablaco',
     manifest: {
       parameters: [
         { id: 'size', type: 'number' },
@@ -146,6 +147,7 @@ function renderGrid(props = {}) {
       colors={{}}
       wireframe={false}
       onReady={vi.fn()}
+      onError={vi.fn()}
       {...props}
     />
   )
@@ -434,6 +436,28 @@ describe('AnimatedGrid', () => {
       await vi.waitFor(() => expect(fetchResolve).toBeTruthy())
       fetchResolve(makeGeometries())
       await vi.waitFor(() => expect(result.container.innerHTML).not.toBe(''))
+    })
+  })
+
+  // =========================================================================
+  // BRANCH: projectSlug passed to fetchAssemblyGeometries (bug fix)
+  // =========================================================================
+  describe('project slug forwarding', () => {
+    it('passes projectSlug to fetchAssemblyGeometries', async () => {
+      const { fetchAssemblyGeometries } = await import('../../services/domain/assemblyFetcher')
+      renderGrid()
+      await vi.waitFor(() => expect(fetchAssemblyGeometries).toHaveBeenCalled())
+      expect(fetchAssemblyGeometries.mock.calls[0][2]).toBe('tablaco')
+    })
+
+    it('calls onError when fetch rejects', async () => {
+      const onError = vi.fn()
+      renderGrid({ onError })
+      await vi.waitFor(() => expect(fetchReject).toBeTruthy())
+      fetchReject(new Error('render failed'))
+      await vi.waitFor(() => {
+        expect(onError).toHaveBeenCalledWith('render failed')
+      })
     })
   })
 

@@ -352,6 +352,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
     const [showAxes, setShowAxes] = useState(true)
     const [activeView, setActiveView] = useState('iso')
     const [animReady, setAnimReady] = useState(false)
+    const [animError, setAnimError] = useState(false)
 
     // When the mode changes AND loading completes (progress reaches 100), position the camera
     useEffect(() => {
@@ -371,9 +372,9 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         sceneRef.current.animateTo(camPos, [cx, cy, cz], 0.4)
     }, [mode, getModeBbox, progress])
 
-    // Reset animReady when animation is toggled off or mode changes
+    // Reset animReady and animError when animation is toggled off or mode changes
     useEffect(() => {
-        if (!animating) setAnimReady(false)
+        if (!animating) { setAnimReady(false); setAnimError(false) }
     }, [animating, mode])
 
 
@@ -419,7 +420,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
         <div className="relative h-full w-full" style={{ touchAction: 'none' }}>
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
-            {animating && mode === 'grid' && !animReady && (
+            {animating && mode === 'grid' && !animReady && !animError && (
                 <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none" aria-live="polite">
                     <div className="flex flex-col items-center gap-2 rounded-lg bg-background backdrop-blur-sm px-6 py-4 opacity-90">
                         <div className="text-sm font-medium">{t("anim.preparing")}</div>
@@ -655,6 +656,7 @@ const Viewer = forwardRef(({ parts = [], colors, wireframe, boundingBox, loading
                                             colors={colors}
                                             wireframe={wireframe}
                                             onReady={() => setAnimReady(true)}
+                                            onError={() => { setAnimError(true); setAnimating(false) }}
                                         />
                                     </group>
                                 )}

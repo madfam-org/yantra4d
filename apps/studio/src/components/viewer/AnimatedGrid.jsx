@@ -19,8 +19,8 @@ function getCombinedCenter(geometries) {
 const ROTATION_SPEED = Math.PI / 2 // π/2 rad/s → 1 full 90° turn per second
 const PAUSE_DURATION = 0.3 // seconds between rotations
 
-function AnimatedGrid({ params, colors, wireframe, onReady }) {
-  const { getViewerConfig, manifest } = useManifest()
+function AnimatedGrid({ params, colors, wireframe, onReady, onError }) {
+  const { getViewerConfig, manifest, projectSlug } = useManifest()
   const rows = params.rows
   const cols = params.cols
   const size = params.size
@@ -65,7 +65,7 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
   useEffect(() => {
     let cancelled = false
     setError(null) // eslint-disable-line react-hooks/set-state-in-effect
-    fetchAssemblyGeometries(params, geometryKeys)
+    fetchAssemblyGeometries(params, geometryKeys, projectSlug)
       .then(geos => {
         if (!cancelled) {
           setGeometries(geos)
@@ -73,7 +73,7 @@ function AnimatedGrid({ params, colors, wireframe, onReady }) {
           onReady?.()
         }
       })
-      .catch(err => { if (!cancelled) setError(err.message) })
+      .catch(err => { if (!cancelled) { setError(err.message); onError?.(err.message) } })
     return () => { cancelled = true }
   }, [geoHash]) // eslint-disable-line react-hooks/exhaustive-deps
 

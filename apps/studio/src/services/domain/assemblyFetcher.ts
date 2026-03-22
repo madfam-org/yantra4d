@@ -93,12 +93,14 @@ function parseSTLWithWorker(fullUrl: string): Promise<BufferGeometry> {
  */
 export async function fetchAssemblyGeometries(
   params: Record<string, unknown>,
-  geometryKeys: string[]
+  geometryKeys: string[],
+  project?: string
 ): Promise<AssemblyGeometry[]> {
-  const hash = paramHash(params, geometryKeys)
+  const hash = paramHash(params, geometryKeys) + (project ? '|' + project : '')
   if (cache.has(hash)) return cache.get(hash)!
 
   const payload: Record<string, unknown> = { ...params, mode: 'assembly' }
+  if (project) payload.project = project
   const response = await apiFetch(`${API_BASE}/api/render`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -110,9 +110,11 @@ vi.mock('./NumberedAxes', () => ({
 
 // ── Controllable AnimatedGrid mock ──
 let capturedAnimatedGridOnReady = null
+let capturedAnimatedGridOnError = null
 vi.mock('./AnimatedGrid', () => ({
   default: (props) => {
     capturedAnimatedGridOnReady = props.onReady
+    capturedAnimatedGridOnError = props.onError
     return <div data-testid="animated-grid" />
   },
 }))
@@ -194,6 +196,7 @@ describe('Viewer', () => {
     mockComputeBoundingBox.mockReturnValue({ width: 10, depth: 10, height: 10 })
     mockComputeCentroid.mockReturnValue({ x: 5, y: 5, z: 5 })
     capturedAnimatedGridOnReady = null
+    capturedAnimatedGridOnError = null
   })
 
   // ────────────────────────────────────────
@@ -530,6 +533,36 @@ describe('Viewer', () => {
     })
 
     // After onReady, preparing overlay should disappear
+    expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // AnimatedGrid onError callback dismisses overlay and stops animation
+  // ────────────────────────────────────────
+
+  it('dismisses preparing overlay and stops animation on AnimatedGrid error', () => {
+    const setAnimating = vi.fn()
+    render(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        mode="grid"
+        setAnimating={setAnimating}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    // Before error, preparing overlay should be visible
+    expect(screen.getByText('anim.preparing')).toBeInTheDocument()
+
+    // Simulate AnimatedGrid calling onError
+    act(() => {
+      capturedAnimatedGridOnError?.()
+    })
+
+    // onError sets animError=true and calls setAnimating(false)
+    expect(setAnimating).toHaveBeenCalledWith(false)
+    // Overlay should be dismissed (animError = true hides it)
     expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
   })
 

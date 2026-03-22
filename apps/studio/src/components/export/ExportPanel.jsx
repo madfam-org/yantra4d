@@ -50,7 +50,8 @@ export default function ExportPanel({ manifest: propManifest, parts, mode, onDow
   const slug = manifest?.project?.slug || projectSlug
 
   const hasDocuments = !!(manifest?.bom || manifest?.assembly_steps)
-  const hasPrintEstimate = parts.length > 0 && printEstimate
+  const hasPrintEstimate = manifest?.print_estimation?.enabled !== false
+    && parts.length > 0 && printEstimate
 
   // Build param query string for BOM CSV
   const paramQueryString = params

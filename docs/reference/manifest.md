@@ -150,6 +150,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
   "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],  // Optional: supported export formats (default: ["stl"])
 
   "print_estimation": {                     // Optional: print estimation defaults
+    "enabled": true,                        // Show print estimate UI (default: true; set false to hide)
     "default_material": "pla",              // "pla", "petg", "abs", or "tpu"
     "default_infill": 0.2                   // 0.0 to 1.0
   },

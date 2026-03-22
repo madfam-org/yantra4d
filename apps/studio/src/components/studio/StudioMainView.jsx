@@ -53,6 +53,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     thicknessData,
     overhangData,
     shortcutHelpOpen, setShortcutHelpOpen,
+    manifest,
   } = useProject()
 
   const { t } = useLanguage()
@@ -60,8 +61,9 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   const [estimateOpen, setEstimateOpen] = useState(true)
   const [consoleExpanded, setConsoleExpanded] = useState(false)
 
-  // Only show the estimate toggle when there's something to show
-  const hasEstimate = (printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3 ?? 0) > 0
+  // Only show the estimate toggle when there's something to show and manifest allows it
+  const hasEstimate = manifest?.print_estimation?.enabled !== false
+    && (printEstimate?.total?.volumeMm3 ?? printEstimate?.volumeMm3 ?? 0) > 0
 
   // Last log line for collapsed console preview
   const lastLogLine = typeof logs === 'string'

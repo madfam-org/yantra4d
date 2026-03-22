@@ -617,6 +617,11 @@
       "type": "object",
       "description": "Print estimation configuration for slicer heuristics.",
       "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Show print estimate UI. Defaults to true if omitted.",
+          "default": true
+        },
         "default_material": {
           "type": "string",
           "enum": [

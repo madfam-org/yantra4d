@@ -69,11 +69,10 @@
 **Repro**: Navigate to `/projects` → click a project card → URL updates to `/project/julia-vase` but project selector stays on previous project and controls don't update.
 **Root cause**: Was hash-based navigation from ProjectsView card links not triggering project switch in ManifestProvider. Fixed by converting all navigation to path-based routing (`/project/slug`) with React Router `<Link>` components. Legacy hash URLs auto-redirect via pre-mount script in `main.jsx`.
 
-### 5. Julia Vase slider values all show 100 (NOT FIXED)
+### 5. Julia Vase slider values all show 100 (RESOLVED — could not reproduce)
 
 **Severity**: Low — cosmetic
-**Repro**: Switch to Julia Vase project → all parameter values display "100" regardless of actual defaults. ARIA labels all say "Height".
-**Root cause**: Likely manifest parameter structure issue — needs investigation.
+**Investigated**: 2026-04-10. Manifest has correct unique parameter IDs (height=150, base_radius=40, twist_angle=360, etc.) with no duplicates. `SliderControl.tsx` correctly uses `value ?? param.default` with per-parameter `aria-labelledby`. `Controls.tsx` correctly passes `params[param.id]`. Likely resolved by path-based routing fix (finding #4) or a subsequent build.
 
 ### 6. Gridfinity render fails with OpenSCAD v2021.01 (KNOWN)
 

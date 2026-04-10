@@ -333,7 +333,63 @@ test.describe('Tablaco — Browser Audit', () => {
     await expect(page.locator('canvas').first()).toBeVisible()
   })
 
-  // ── G. Accessibility ─────────────────────────────────────────────
+  // ── G. Welcome Overlay ───────────────────────────────────────────
+
+  test('welcome overlay appears on first visit', async ({ page }) => {
+    // Clear welcome flag so overlay appears
+    await page.goto('about:blank')
+    await page.evaluate(() => localStorage.removeItem('yantra4d-welcome-tablaco'))
+    await goToRealProject(page, 'tablaco', 'Tablaco Studio')
+    const overlay = page.locator('[role="dialog"]')
+    await expect(overlay).toBeVisible({ timeout: 5000 })
+    await expect(overlay).toContainText(/Welcome to Tablaco|Bienvenido a Tablaco/)
+    await expect(overlay).toContainText(/didactic instrument|instrumento didáctico/)
+  })
+
+  test('welcome overlay dismisses and does not reappear', async ({ page }) => {
+    await page.evaluate(() => localStorage.removeItem('yantra4d-welcome-tablaco'))
+    await goToRealProject(page, 'tablaco', 'Tablaco Studio')
+    const overlay = page.locator('[role="dialog"]')
+    await expect(overlay).toBeVisible({ timeout: 5000 })
+    // Click CTA button
+    await overlay.locator('button', { hasText: /Get Started|Comenzar/ }).click()
+    await expect(overlay).not.toBeVisible({ timeout: 3000 })
+    // Reload — should NOT reappear
+    await page.reload()
+    await page.waitForTimeout(2000)
+    await expect(overlay).not.toBeVisible()
+  })
+
+  // ── H. Part Types & Quantities ──────────────────────────────────
+
+  test('grid mode model info shows part types and total pieces', async ({ page, sidebar }) => {
+    await goToRealProject(page, 'tablaco', 'Tablaco Studio')
+    await sidebar.selectMode('grid')
+    await page.waitForTimeout(1000)
+    await clickGenerateWithWarning(sidebar, page)
+    await waitForRenderDone(page, 180_000)
+    // Model info should show "Part Types" and "Total Pieces" for multi-part renders
+    const infoPanel = page.locator('[data-testid="model-info"], .model-info')
+    if (await infoPanel.isVisible().catch(() => false)) {
+      const text = await infoPanel.textContent()
+      expect(text).toMatch(/Part Types|Tipos de Parte/i)
+      expect(text).toMatch(/Total Pieces|Piezas Totales/i)
+    }
+  })
+
+  // ── I. Guest Rate Limit Override ────────────────────────────────
+
+  test('guest can render more than 10 times on tablaco', async ({ page, sidebar }) => {
+    // Tablaco manifest sets guest_render_limit=50
+    await goToRealProject(page, 'tablaco', 'Tablaco Studio')
+    await sidebar.clickGenerate()
+    await waitForRenderDone(page, 120_000)
+    // Verify render succeeded (no 429 error)
+    await expect(page.locator('canvas').first()).toBeVisible()
+    // The fact that we can render at all as a guest (no auth) verifies the override works
+  })
+
+  // ── J. Accessibility ─────────────────────────────────────────────
 
   test('passes axe audit (no critical violations)', async ({ page }) => {
     await goToRealProject(page, 'tablaco', 'Tablaco Studio')

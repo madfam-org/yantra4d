@@ -19,6 +19,7 @@ interface PrintEstimateData {
 interface ModelInfoPanelProps {
   printEstimate?: PrintEstimateData | null
   partCount?: number
+  totalPieceCount?: number
   triangleCount?: number
 }
 
@@ -26,7 +27,7 @@ interface ModelInfoPanelProps {
  * ModelInfoPanel — compact collapsible card showing model geometry stats.
  * Displays dimensions (W×D×H), volume, triangle count, and part count.
  */
-export default function ModelInfoPanel({ printEstimate, partCount, triangleCount }: ModelInfoPanelProps) {
+export default function ModelInfoPanel({ printEstimate, partCount, totalPieceCount, triangleCount }: ModelInfoPanelProps) {
   const { t } = useLanguage()
   const { format: formatDim, formatVolume } = useUnitSystem()
   const [open, setOpen] = useState(true)
@@ -72,8 +73,14 @@ export default function ModelInfoPanel({ printEstimate, partCount, triangleCount
           )}
           {partCount != null && partCount > 0 && (
             <div className="flex justify-between gap-2">
-              <span className="text-muted-foreground">{t('info.parts')}</span>
+              <span className="text-muted-foreground">{t('info.part_types') || t('info.parts')}</span>
               <span className="font-mono">{partCount}</span>
+            </div>
+          )}
+          {totalPieceCount != null && totalPieceCount > partCount! && (
+            <div className="flex justify-between gap-2">
+              <span className="text-muted-foreground">{t('info.total_pieces') || 'Pieces'}</span>
+              <span className="font-mono">{totalPieceCount}</span>
             </div>
           )}
         </div>

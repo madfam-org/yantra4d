@@ -206,6 +206,8 @@
   "info.volume": "Volumen",
   "info.triangles": "Triángulos",
   "info.parts": "Piezas",
+  "info.part_types": "Tipos de Pieza",
+  "info.total_pieces": "Piezas Totales",
   "ctrl.overhang": "Análisis de Voladizo",
   "ctrl.overhang_threshold": "Umbral de Voladizo (°)",
   "unit.mm": "Milímetros",

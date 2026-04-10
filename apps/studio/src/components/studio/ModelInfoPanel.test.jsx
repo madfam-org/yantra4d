@@ -64,16 +64,30 @@ describe('ModelInfoPanel', () => {
     expect(screen.getByText('3,000')).toBeInTheDocument()
   })
 
-  it('renders part count', () => {
+  it('renders part count and total pieces', () => {
     const estimate = {
       total: {
         volumeMm3: 100,
         boundingBox: { width: 10, depth: 10, height: 10 },
       },
     }
-    render(<ModelInfoPanel printEstimate={estimate} partCount={3} />)
+    render(<ModelInfoPanel printEstimate={estimate} partCount={3} totalPieceCount={12} />)
     expect(screen.getByText('3')).toBeInTheDocument()
-    expect(screen.getByText('info.parts')).toBeInTheDocument()
+    expect(screen.getByText('info.part_types')).toBeInTheDocument()
+    expect(screen.getByText('12')).toBeInTheDocument()
+    expect(screen.getByText('info.total_pieces')).toBeInTheDocument()
+  })
+
+  it('hides total pieces when equal to part count', () => {
+    const estimate = {
+      total: {
+        volumeMm3: 100,
+        boundingBox: { width: 10, depth: 10, height: 10 },
+      },
+    }
+    render(<ModelInfoPanel printEstimate={estimate} partCount={1} totalPieceCount={1} />)
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.queryByText('info.total_pieces')).not.toBeInTheDocument()
   })
 
   it('renders formatted dimensions', () => {

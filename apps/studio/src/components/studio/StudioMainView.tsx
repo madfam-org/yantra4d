@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import Viewer from '../viewer/Viewer'
 import ComparisonView from '../project/ComparisonView'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
@@ -10,6 +10,7 @@ import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useUnitSystem } from '../../hooks/system/useUnitSystem'
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
+import { Parser } from 'expr-eval'
 
 interface RenderStatusChipProps {
   loading: boolean
@@ -85,6 +86,31 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   const { unit, format: formatDim, formatVolume } = useUnitSystem()
   const [estimateOpen, setEstimateOpen] = useState(true)
   const [consoleExpanded, setConsoleExpanded] = useState(false)
+
+  // Compute total individual piece count from part_quantities formulas
+  const totalPieceCount = useMemo(() => {
+    try {
+      const modes = (manifest as Record<string, unknown>)?.modes as Array<Record<string, unknown>> | undefined
+      if (!modes) return undefined
+      const activeMode = modes.find(m => m.id === mode)
+      if (!activeMode) return undefined
+      const pqMap = activeMode.part_quantities as Record<string, string | number> | undefined
+      if (!pqMap) return undefined
+      const modeParts = activeMode.parts as string[] | undefined
+      if (!modeParts) return undefined
+      const parser = new Parser()
+      let total = 0
+      for (const partId of modeParts) {
+        const formula = pqMap[partId]
+        if (formula == null) { total += 1; continue }
+        if (typeof formula === 'number') { total += formula; continue }
+        try {
+          total += parser.parse(String(formula)).evaluate(params as Record<string, unknown>)
+        } catch { total += 1 }
+      }
+      return total > 0 ? Math.round(total) : undefined
+    } catch { return undefined }
+  }, [manifest, mode, params])
 
   // Only show the estimate toggle when there's something to show and manifest allows it
   const pe = printEstimate as Record<string, unknown>
@@ -164,7 +190,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
       />
       <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
       {!loading && parts.length > 0 && (
-        <ModelInfoPanel printEstimate={printEstimate as never} partCount={parts.length} />
+        <ModelInfoPanel printEstimate={printEstimate as never} partCount={parts.length} totalPieceCount={totalPieceCount} />
       )}
       {/* Accessible live region for render status and model summary */}
       <div aria-live="polite" className="sr-only" role="status">

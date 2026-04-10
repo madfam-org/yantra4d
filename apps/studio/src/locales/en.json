@@ -206,6 +206,8 @@
   "info.volume": "Volume",
   "info.triangles": "Triangles",
   "info.parts": "Parts",
+  "info.part_types": "Part Types",
+  "info.total_pieces": "Total Pieces",
   "ctrl.overhang": "Overhang Analysis",
   "ctrl.overhang_threshold": "Overhang Threshold (°)",
   "unit.mm": "Millimeters",

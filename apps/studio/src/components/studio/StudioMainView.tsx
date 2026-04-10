@@ -92,7 +92,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   const hasEstimate = !estimateDisabled
 
   // Welcome overlay: show once per project if manifest declares welcome.enabled
-  const welcomeData = (() => {
+  const welcomeData = React.useMemo(() => {
     try {
       const proj = (manifest as Record<string, unknown>)?.project
       if (!proj || typeof proj !== 'object') return null
@@ -100,10 +100,11 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
       if (!w || typeof w !== 'object' || !(w as Record<string, unknown>).enabled) return null
       return w as Record<string, unknown>
     } catch { return null }
-  })()
-  const showWelcome = welcomeData !== null && (() => {
-    try { return !localStorage.getItem(`yantra4d-welcome-${projectSlug}`) } catch { return false }
-  })()
+  }, [manifest])
+  const [welcomeDismissed] = useState(() => {
+    try { return !!localStorage.getItem(`yantra4d-welcome-${projectSlug}`) } catch { return true }
+  })
+  const showWelcome = welcomeData !== null && !welcomeDismissed
     && ((pe?.total?.volumeMm3 ?? pe?.volumeMm3 ?? 0) > 0)
 
   // Last log line for collapsed console preview

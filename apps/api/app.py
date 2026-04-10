@@ -35,6 +35,7 @@ from routes.users.onboard import onboard_bp
 from routes.users.admin import admin_bp
 from routes.engine.download import download_bp
 from routes.projects.bom import bom_bp
+from routes.projects.cart import cart_bp
 from routes.projects.datasheet import datasheet_bp
 from routes.integrations.analytics import analytics_bp
 from routes.users.user import user_bp
@@ -119,6 +120,7 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(download_bp)
     app.register_blueprint(bom_bp)
+    app.register_blueprint(cart_bp)
     app.register_blueprint(datasheet_bp)
     app.register_blueprint(analytics_bp)
     app.register_blueprint(user_bp)

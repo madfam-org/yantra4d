@@ -91,6 +91,53 @@ yantra4d/
 
 ---
 
+## Auth Setup (Janua)
+
+Authentication is **disabled by default** for local development (`AUTH_ENABLED=false`). All users get the `madfam` tier, which unlocks every feature.
+
+To test with real authentication:
+
+### 1. Start Janua
+
+```bash
+# Clone the Janua auth server
+git clone https://github.com/madfam/janua.git
+cd janua
+docker compose up -d
+# Janua runs at https://auth.madfam.io (or http://localhost:4000 locally)
+```
+
+### 2. Seed Client Credentials
+
+```bash
+cd janua/apps/api
+python seed_core_clients.py
+```
+
+This prints client IDs for each registered app. Copy the `jnc_*` value for **yantra4d-studio**.
+
+### 3. Configure Yantra4D
+
+Edit your `.env`:
+
+```env
+AUTH_ENABLED=true
+JANUA_ISSUER=http://localhost:4000   # or https://auth.madfam.io
+JANUA_AUDIENCE=yantra4d-api
+
+VITE_JANUA_BASE_URL=http://localhost:4000
+VITE_JANUA_CLIENT_ID=jnc_xxxxx      # paste the value from step 2
+VITE_JANUA_REDIRECT_URI=http://localhost:5173
+```
+
+### 4. Verify
+
+Restart the backend and studio. You should see a "Sign In" button in the studio header. Users get the `essentials` tier by default; tier upgrades are managed via Dhanam webhooks to Janua.
+
+> **Note**: The `VITE_JANUA_*` variables are baked into the JS bundle at build time (Vite convention). You must rebuild the studio after changing them.
+
+---
+
 ## Core Concept: Manifest-Driven Design
 
 Everything revolves around `projects/{slug}/project.json`. This manifest defines modes, parts, parameters, UI controls, colors, estimates, BOM, and assembly steps. The UI and backend read it dynamically.
@@ -240,6 +287,8 @@ All mobile inputs use `text-base` (16px) to prevent Safari auto-zoom. If adding 
 
 - [Manifest Schema Reference](../reference/manifest.md)
 - [AI Features Guide](ai-features.md)
+- [MQTT Telemetry](mqtt-telemetry.md)
+- [Rate Limiting](rate-limiting.md)
 - [WASM Mode](wasm-mode.md)
 - [Troubleshooting](troubleshooting.md)
 - [Production Checklist](production-checklist.md)

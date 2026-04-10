@@ -14,6 +14,7 @@ vi.mock('react-router-dom', () => ({
 import {
   isDemoView,
   isProjectsView,
+  isOnboardView,
   parseHash,
   buildHash,
   useHashNavigation,
@@ -72,6 +73,39 @@ describe('isDemoView', () => {
 
   it('returns false for path with demo in a later segment', () => {
     expect(isDemoView('/project/demo')).toBe(false)
+  })
+})
+
+// ========================================================================
+// isOnboardView
+// ========================================================================
+describe('isOnboardView', () => {
+  it('returns true for /onboard path', () => {
+    expect(isOnboardView('/onboard')).toBe(true)
+  })
+
+  it('returns false for root path', () => {
+    expect(isOnboardView('/')).toBe(false)
+  })
+
+  it('returns false for /projects path', () => {
+    expect(isOnboardView('/projects')).toBe(false)
+  })
+
+  it('returns false for /project/slug path', () => {
+    expect(isOnboardView('/project/gridfinity')).toBe(false)
+  })
+
+  it('returns false for /demo path', () => {
+    expect(isOnboardView('/demo')).toBe(false)
+  })
+
+  it('returns false for empty string', () => {
+    expect(isOnboardView('')).toBe(false)
+  })
+
+  it('returns false for path containing onboard as substring', () => {
+    expect(isOnboardView('/onboarding')).toBe(false)
   })
 })
 
@@ -348,6 +382,12 @@ describe('useHashNavigation', () => {
       expect(result.current.currentView).toBe('projects')
     })
 
+    it('returns "onboard" for /onboard path', () => {
+      mockPathname = '/onboard'
+      const { result } = renderNav()
+      expect(result.current.currentView).toBe('onboard')
+    })
+
     it('returns "studio" for /project/slug path', () => {
       mockPathname = '/project/gridfinity/unit/default'
       const { result } = renderNav()
@@ -417,6 +457,14 @@ describe('useHashNavigation', () => {
       expect(onHashChange).not.toHaveBeenCalled()
     })
 
+    it('does not call onHashChange for /onboard path', () => {
+      mockPathname = '/onboard'
+      const onHashChange = vi.fn()
+      renderNav({ onHashChange })
+
+      expect(onHashChange).not.toHaveBeenCalled()
+    })
+
     it('does not call onHashChange when modes is empty', () => {
       mockPathname = '/project/gridfinity/unit/default'
       const onHashChange = vi.fn()
@@ -467,6 +515,13 @@ describe('useHashNavigation', () => {
 
     it('does not navigate for /projects view', () => {
       mockPathname = '/projects'
+      renderNav()
+
+      expect(mockNavigate).not.toHaveBeenCalled()
+    })
+
+    it('does not navigate for /onboard view', () => {
+      mockPathname = '/onboard'
       renderNav()
 
       expect(mockNavigate).not.toHaveBeenCalled()

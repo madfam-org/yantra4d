@@ -2,38 +2,103 @@
 
 ## Current State
 
-The studio app (`apps/studio`) has ~244 JS/JSX files with zero TypeScript type annotations. The admin app has ~15 JS/JSX files. Both use Vite which supports TypeScript out of the box.
+The studio app (`apps/studio`) originally had ~244 JS/JSX files with zero TypeScript annotations. As of April 2026, **49 files** have been migrated to TypeScript — all hooks, services, and library utilities are done (Phase 2 complete). Phase 3 (components + contexts) is next.
 
-The SDK package (`packages/sdk`) is already written in TypeScript and exports types that could be consumed immediately.
+The admin app has ~15 JS/JSX files (migration deferred). The SDK package (`packages/sdk`) is already written in TypeScript and exports types consumed by the studio.
 
-## Recommended Approach: Gradual Adoption
+## TypeScript Configuration
 
-### Phase 1: Enable TypeScript Alongside JavaScript
+`apps/studio/tsconfig.json` uses:
 
-1. Add `tsconfig.json` to `apps/studio/` with `allowJs: true` and `strict: false`
-2. Add `// @ts-check` to leaf files as they're touched
-3. No existing files need to be renamed — `.js`/`.jsx` files work as-is
+- `strict: true` — full strict checking is active and passing
+- `allowJs: true` — `.js`/`.jsx` files can coexist with `.ts`/`.tsx`
+- `checkJs: false` — JavaScript files are not type-checked (prevents errors in unmigrated JSX)
+- `moduleResolution: "bundler"` — Vite-compatible resolution
 
-### Phase 2: Migrate Leaf Files First
+This combination means: TypeScript files get full strict checking, while JavaScript files compile without type errors. No `// @ts-check` is needed.
 
-Priority order (least dependencies, most benefit from types):
+## Migration Phases
 
-1. **`src/lib/`** — Utility functions, API boundaries (`billing.ts` already exists as reference)
-2. **`src/services/`** — `renderService.js`, `verifyService.js` (API response types)
-3. **`src/hooks/`** — Custom hooks with clear input/output contracts
-4. **`src/contexts/`** — Provider types propagate to all consumers
+### Phase 1: Enable TypeScript — COMPLETE
 
-### Phase 3: Components (Last)
+`tsconfig.json` added with `allowJs: true` and `strict: true`. `tsc --noEmit` passes with zero errors.
 
-Components benefit least from TypeScript initially since props are validated at runtime by React. Migrate these last, starting with complex ones (Controls, Viewer, ScadEditor).
+### Phase 2: Migrate Leaf Files — COMPLETE
 
-### Phase 4: Strict Mode
+All 49 leaf files migrated. Grouped by directory:
 
-Once >80% of files are TypeScript, enable `strict: true` in `tsconfig.json`.
+**`src/lib/` (12 files)**
+| File | Key Types Added |
+|------|----------------|
+| `downloadUtils.ts` | `ZipUrlItem`, `ZipDataItem` interfaces |
+| `slugUtils.ts` | `validateSlug` return type `string \| null` |
+| `utils.ts` | `ClassValue` from clsx |
+| `stl-utils.ts` | `ParsedSTL`, `BoundingBox` interfaces |
+| `analytics.ts` | Event tracking types |
+| `billing.ts` | Checkout URL generation types |
+| `idleCallback.ts` | `requestIdleCallback` wrapper types |
+| `monacoAiDiff.ts` | Monaco diff overlay types |
+| `openscad-phases.ts` | Render phase detection types |
+| `previewHintInference.ts` | Axis inference types |
+| `printEstimator.ts` | Print estimation types |
+| `scad-language.ts` | Monaco language definition |
+
+**`src/services/` (8 files)**
+| File | Key Types Added |
+|------|----------------|
+| `core/apiClient.ts` | `TokenGetter`, `RateLimitState`, `RateLimitListener` |
+| `core/backendDetection.ts` | Boolean state, explicit return types |
+| `core/websocketClient.ts` | WebSocket message types |
+| `cache/renderCache.ts` | `CacheEntry`, `SerializedPart`, `CachedPart`, `PutPart` |
+| `engine/renderService.ts` | `Manifest`, `ModeConfig`, `PartDef`, `RenderPart`, `RenderOptions`, `SSEData` |
+| `domain/aiService.ts` | AI endpoint request/response types |
+| `domain/assemblyFetcher.ts` | Assembly step types |
+| `domain/editorService.ts` | SCAD file CRUD types |
+| `domain/gitService.ts` | Git operation types |
+
+**`src/hooks/` (26 files)**
+| Directory | Files | Key Types |
+|-----------|-------|-----------|
+| `ai/` | `useAiChat.ts` | Chat state, SSE event types |
+| `editor/` | `useUndoRedo.ts`, `useAssemblyEditor.ts`, `useAssemblyGuide.ts`, `useConstraints.ts`, `useEditorRender.ts`, `useKeyboardShortcuts.ts` | Editor state interfaces |
+| `project/` | `useProjectActions.ts`, `useProjectMeta.ts`, `useProjectParams.ts`, `useShareableUrl.ts` | Project state, param types |
+| `render/` | `useImageExport.ts`, `useParameterPreviewCache.ts`, `useRender.ts`, `useRenderQueue.ts`, `useWorkerLoader.ts` | Render state, worker types |
+| `system/` | `useMediaQuery.ts`, `useUnitSystem.ts`, `useAnalytics.ts`, `useHashNavigation.ts`, `useLocalStoragePersistence.ts`, `usePanelLayout.ts`, `useThemeAndLanguage.ts`, `useTier.ts`, `useUpgradePrompt.ts` | System config types |
+
+**Other (3 files)**
+- `src/config/languages.ts` — Language configuration
+- `src/components/ui/UpgradeModal.tsx` — Typed component (shadcn extension)
+- `src/vite-env.d.ts` — Vite environment type definitions
+
+All importing files use implicit extension resolution — no import path changes required.
+
+### Phase 3: Components + Contexts — IN PROGRESS
+
+Remaining files to migrate (not counting shadcn UI or test files):
+
+| Category | Count | Notes |
+|----------|-------|-------|
+| Context providers (`src/contexts/`) | 10 | 9 JSX + 1 JS; typed contexts propagate to all consumers |
+| Root files | 2 | `main.jsx`, `App.jsx` |
+| Worker | 1 | `openscad-worker.js` (Web Worker, no JSX) |
+| Components (non-shadcn) | ~76 | Across 11 subdirectories |
+| **Total** | **~89** | |
+
+**Do NOT migrate:** `src/components/ui/*.jsx` — these are shadcn primitives managed by the CLI.
+
+Recommended migration order:
+1. Worker file (pure logic, no JSX)
+2. Context providers (typed contexts benefit entire app)
+3. Root files (`main.jsx`, `App.jsx`)
+4. Components in batches by directory
+
+### Phase 4: Strict Mode — ALREADY ACTIVE
+
+`strict: true` is already set and working. `checkJs: false` prevents strict checking of unmigrated `.jsx` files. Once all JSX files are converted to TSX, `checkJs` can be removed entirely.
 
 ## SDK Types
 
-`@yantra4d/sdk` exports these types that can be consumed immediately:
+`@yantra4d/sdk` exports these types that can be consumed in migrated files:
 
 - `YantraManifest` — Full project manifest type
 - `YantraParameter` — Parameter definition
@@ -42,36 +107,9 @@ Once >80% of files are TypeScript, enable `strict: true` in `tsconfig.json`.
 - `YantraCartridge` — Self-contained project cartridge
 - `RenderOptions` — Render API request
 
-## Estimated Effort
+## Estimated Remaining Effort
 
-- Phase 1: 1 hour (config only)
-- Phase 2: 2-3 days (services + hooks, ~30 files)
-- Phase 3: 1-2 weeks (components, ~200 files)
-- Phase 4: 1 day (config change + fix strict errors)
+- Phase 3 (components + contexts): 5-7 days across multiple PRs
+- Phase 4 cleanup (remove `checkJs: false`): 1 hour after Phase 3
 
 This is a multi-sprint effort and should not block feature work.
-
-## Progress
-
-### Wave 1 — Config (Phase 1)
-
-Completed. `tsconfig.json` added to `apps/studio/` with `allowJs: true`, `strict: false`, `moduleResolution: "bundler"`.
-
-### Wave 2 — Leaf Files (Phase 2, partial)
-
-Eight leaf utility and service files migrated from `.js` to `.ts`:
-
-| File | Key Types Added |
-|------|----------------|
-| `src/lib/downloadUtils.ts` | `ZipUrlItem`, `ZipDataItem` interfaces |
-| `src/lib/slugUtils.ts` | `validateSlug` return type `string \| null` |
-| `src/lib/utils.ts` | `ClassValue` from clsx |
-| `src/lib/stl-utils.ts` | `ParsedSTL`, `BoundingBox` interfaces |
-| `src/services/core/apiClient.ts` | `TokenGetter`, `RateLimitState`, `RateLimitListener` types |
-| `src/services/core/backendDetection.ts` | `boolean \| null` state, explicit return types |
-| `src/services/cache/renderCache.ts` | `CacheEntry`, `SerializedPart`, `CachedPart`, `PutPart` interfaces |
-| `src/services/engine/renderService.ts` | `Manifest`, `ModeConfig`, `PartDef`, `EstimateConstants`, `ProgressEvent`, `RenderPart`, `RenderOptions`, `SSEData` interfaces |
-
-All 43 importing files use implicit extension resolution — no import path changes required. `tsc --noEmit` passes with zero errors.
-
-**Remaining Phase 2 candidates** (~22 more files): hooks (`src/hooks/`), remaining services (`verifyService.js`, `aiService.js`, etc.), and remaining lib files (`printEstimator.js`, `openscad-phases.js`).

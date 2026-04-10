@@ -6,7 +6,9 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 
 ### Architecture
 -   [Architecture Audit](./architecture/architecture_audit.md): Deep dive into platform architecture and components.
+-   [Database & Analytics](./architecture/database.md): SQLite/PostgreSQL, Alembic migrations, analytics schema.
 -   [Dual-Engine Architecture](./architecture/dual-engine.md): Benefits of OpenSCAD + CadQuery parity and B-Rep export.
+-   [TypeScript Migration](./architecture/typescript-migration.md): Gradual TS adoption — current progress, phase status, remaining work.
 -   [Web Interface](./architecture/web_interface.md): Full-stack architecture (Flask/React), API reference, component structure.
 
 ### Guides
@@ -14,8 +16,10 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Developer Experience Guide](./guides/devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
 -   [WASM Mode](./guides/wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
 -   [Multi-Project Platform](./guides/multi-project.md): Multi-project setup, project switching, and Docker configuration.
--   [AI Features](./guides/ai-features.md): AI Configurator and Code Editor — setup, API reference, tier access.
+-   [AI Features](./guides/ai-features.md): AI Configurator, Code Editor, and Synthesizer — setup, API reference, session management, tier access.
 -   [Implicit SDF Engine](./guides/implicit-engine.md): TPMS lattice rendering, `engine: "implicit"` manifest usage, Digital Twin phase simulation.
+-   [MQTT Telemetry](./guides/mqtt-telemetry.md): Real-time sensor data injection for 4D hyperobjects — MQTT client, parameter merging, SSE streaming.
+-   [Rate Limiting](./guides/rate-limiting.md): Flask-Limiter, per-tier render limits, WASM fallback, production Redis setup.
 -   [White-Labeling](./guides/white-labeling.md): Deploying branded instances — env vars, Docker Compose override, Kubernetes pattern, license key enforcement.
 -   [Troubleshooting](./guides/troubleshooting.md): Common issues — render timeouts, CORS, Docker.
 

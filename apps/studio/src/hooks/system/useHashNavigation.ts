@@ -28,7 +28,7 @@ interface HashNavigationOptions {
 }
 
 interface HashNavigationResult {
-  currentView: string
+  currentView: 'projects' | 'studio' | 'onboard'
   isDemo: boolean
 }
 
@@ -56,6 +56,14 @@ export function isDemoView(pathname: string): boolean {
 export function isProjectsView(pathname: string): boolean {
   const parts = pathname.split('/').filter(Boolean)
   return parts.length === 0 || parts[0] === 'projects' || parts[0] === 'demo'
+}
+
+/**
+ * Check if the current path represents the onboarding wizard view.
+ */
+export function isOnboardView(pathname: string): boolean {
+  const parts = pathname.split('/').filter(Boolean)
+  return parts.length > 0 && parts[0] === 'onboard'
 }
 
 /**
@@ -137,14 +145,15 @@ export function useHashNavigation({
   const navigate = useNavigate()
 
   const [isDemo, setIsDemo] = useState(() => isDemoView(location.pathname))
-  const [currentView, setCurrentView] = useState(() => {
+  const [currentView, setCurrentView] = useState<'projects' | 'studio' | 'onboard'>(() => {
+    if (isOnboardView(location.pathname)) return 'onboard'
     if (isProjectsView(location.pathname)) return 'projects'
     return 'studio'
   })
 
   // Set initial path if missing or invalid, BUT ONLY if we are in studio view.
   useEffect(() => {
-    if (currentView === 'projects') return
+    if (currentView !== 'studio') return
     if (!modes || modes.length === 0) return
     const parsed = parseHash(location.pathname, presets, modes, defaultModeId, defaultPresetId)
     const presetId = parsed.preset?.id || presets[0]?.id
@@ -164,6 +173,10 @@ export function useHashNavigation({
       setIsDemo(true)
 
       setCurrentView('projects')
+      return
+    }
+    if (isOnboardView(location.pathname)) {
+      setCurrentView('onboard')
       return
     }
     if (isProjectsView(location.pathname)) {

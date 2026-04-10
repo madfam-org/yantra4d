@@ -161,8 +161,8 @@ _Dependency: **[ForgeSight Data Intelligence Platform](https://github.com/madfam
 
 The BOM API (`routes/bom.py`) and `BomPanel.jsx` already exist, and `supplier_url` is in the manifest schema. Sprint 16 adds the aggregation, pricing, and checkout layers powered by the ForgeSight Data Intelligence Platform.
 
-- [ ] **ForgeSight API client:** Backend service (`services/integrations/forgesight.py`) — query materials pricing, supplier stock, lead times via the data intelligence platform.
-- [ ] **Cart aggregation endpoint:** `POST /api/projects/<slug>/bom/cart` — resolves BOM hardware items against the ForgeSight data intelligence catalog, returns cart with live pricing.
-- [ ] **BOM-to-Cart UI:** Studio panel extension — "Add all to cart" button, per-item supplier selection, estimated total cost.
-- [ ] **Material hyperobject linking:** Auto-match `target_material` manifest param to ForgeSight material catalog entries for live `mat_shrinkage` / `mat_clearance` compensation values.
-- [ ] **Tier gating:** Cart export available at `basic+` tier; live pricing at `pro+`.
+- [x] **ForgeSight API client:** Backend service (`services/integrations/forgesight.py`) — real HTTP integration with timeout, error handling, circuit-safe fallback when disabled.
+- [x] **Cart aggregation endpoint:** `POST /api/projects/<slug>/bom/cart` — resolves BOM hardware items via ForgeSight, returns enriched BOM with pricing. Tier-gated at `pro+`.
+- [ ] **BOM-to-Cart UI:** Studio panel extension — "Add all to cart" button, per-item supplier selection, estimated total cost. _(deferred — waiting for full ForgeSight API stability)_
+- [ ] **Material hyperobject linking:** Auto-match `target_material` manifest param to ForgeSight material catalog entries for live `mat_shrinkage` / `mat_clearance` compensation values. _(deferred)_
+- [ ] **Tier gating refinement:** Cart export available at `basic+` tier; live pricing at `pro+`.

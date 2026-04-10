@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-PROJECTS_DIR = Path(__file__).resolve().parent.parent / "projects"
+PROJECTS_DIR = Path(__file__).resolve().parent.parent.parent / "projects"
 
 
 def get_label(obj, key="label", lang="en"):
@@ -36,9 +36,9 @@ def generate_doc(manifest, slug):
     if isinstance(desc, dict):
         desc_en = desc.get("en", desc.get("es", ""))
         desc_es = desc.get("es", "")
-        lines.append(f"{desc_en}")
+        lines.append(desc_en)
         if desc_es and desc_es != desc_en:
-            lines.append(f"")
+            lines.append("")
             lines.append(f"*{desc_es}*")
     elif desc:
         lines.append(desc)
@@ -168,6 +168,38 @@ def generate_doc(manifest, slug):
             unit = h.get("unit", "")
             lines.append(f"| {label} | {qty} | {unit} |")
         lines.append("")
+
+    # Hyperobject
+    hyperobject = manifest.get("hyperobject", {})
+    if hyperobject:
+        lines.append("## Hyperobject Profile")
+        lines.append("")
+        domain = hyperobject.get("domain", "")
+        if domain:
+            lines.append(f"**Domain**: {domain}  ")
+        license_ = hyperobject.get("commons_license", "")
+        if license_:
+            lines.append(f"**License**: {license_}  ")
+        benefit = hyperobject.get("societal_benefit", "")
+        if isinstance(benefit, dict):
+            benefit = benefit.get("en", benefit.get("es", ""))
+        if benefit:
+            lines.append(f"**Societal Benefit**: {benefit}")
+        lines.append("")
+
+        cdg = hyperobject.get("cdg_interfaces", [])
+        if cdg:
+            lines.append("### CDG Interfaces")
+            lines.append("")
+            lines.append("| ID | Label | Geometry | Standard |")
+            lines.append("|---|---|---|---|")
+            for iface in cdg:
+                iid = iface.get("id", "")
+                ilabel = get_label(iface)
+                geom = iface.get("geometry_type", "")
+                std = iface.get("standard", "")
+                lines.append(f"| `{iid}` | {ilabel} | {geom} | {std} |")
+            lines.append("")
 
     # Estimate constants
     est = manifest.get("estimate_constants", {})

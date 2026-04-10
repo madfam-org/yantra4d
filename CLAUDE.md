@@ -54,18 +54,18 @@ packages/
 | `apps/api/services/engine/render_orchestrator.py` | Render orchestration: engine selection, caching, format conversion | RARELY |
 | `apps/api/services/engine/render_gc.py` | Background render artifact garbage collection (24h TTL) | RARELY |
 | `apps/api/routes/verify.py` | STL verification endpoint | RARELY |
-| `apps/studio/src/App.jsx` | Main shell, state management | RARELY |
-| `apps/studio/src/components/Controls.jsx` | Data-driven param controls (reads manifest) | RARELY |
-| `apps/studio/src/components/Viewer.jsx` | Three.js 3D STL viewer | RARELY |
-| `apps/studio/src/contexts/project/ManifestProvider.jsx` | Fetches & provides manifest to app | RARELY |
+| `apps/studio/src/App.tsx` | Main shell, state management | RARELY |
+| `apps/studio/src/components/controls/Controls.tsx` | Data-driven param controls (reads manifest) | RARELY |
+| `apps/studio/src/components/viewer/Viewer.tsx` | Three.js 3D STL viewer | RARELY |
+| `apps/studio/src/contexts/project/ManifestProvider.tsx` | Fetches & provides manifest to app | RARELY |
 | `apps/api/routes/projects.py` | Multi-project listing API | RARELY |
 | `apps/api/routes/onboard.py` | Project onboarding API | RARELY |
 | `apps/api/services/scad_analyzer.py` | SCAD file analysis engine | RARELY |
 | `apps/api/services/manifest_generator.py` | Manifest scaffolding from SCAD analysis | RARELY |
-| `apps/studio/src/components/ProjectSelector.jsx` | Project switcher dropdown | RARELY |
-| `apps/studio/src/components/OnboardingWizard.jsx` | Web-based project onboarding wizard | RARELY |
-| `apps/studio/src/components/export/ExportPanel.jsx` | Accordion-based export hub: geometry, images, documents, print estimate, share & archive | RARELY |
-| `apps/studio/src/components/PrintEstimateOverlay.jsx` | Print time/filament/cost overlay | RARELY |
+| `apps/studio/src/components/project/ProjectSelector.tsx` | Project switcher dropdown | RARELY |
+| `apps/studio/src/components/onboarding/OnboardingWizard.tsx` | Web-based project onboarding wizard | RARELY |
+| `apps/studio/src/components/export/ExportPanel.tsx` | Accordion-based export hub: geometry, images, documents, print estimate, share & archive | RARELY |
+| `apps/studio/src/components/export/PrintEstimateOverlay.tsx` | Print time/filament/cost overlay | RARELY |
 | `apps/studio/src/hooks/project/useShareableUrl.js` | Shareable URL generation (base64url params) | RARELY |
 | `apps/studio/src/hooks/editor/useUndoRedo.js` | Parameter undo/redo history stack | RARELY |
 | `apps/studio/src/lib/printEstimator.js` | Print estimation from STL geometry volume | RARELY |
@@ -101,20 +101,20 @@ packages/
 | `apps/api/services/tier_service.py` | Tier lookup and feature gating | RARELY |
 | `apps/studio/src/lib/billing.ts` | Dhanam checkout URL generation for tier upgrades | RARELY |
 | `apps/studio/src/components/ui/UpgradeModal.tsx` | Tier upgrade modal (links to Dhanam checkout) | RARELY |
-| `apps/studio/src/contexts/auth/AuthProvider.jsx` | JWT auth context + login/logout | RARELY |
-| `apps/studio/src/contexts/auth/TierProvider.jsx` | User tier context + feature flags | RARELY |
-| `apps/studio/src/components/AiChatPanel.jsx` | AI chat UI (configurator + code-editor modes) | RARELY |
-| `apps/studio/src/components/GitPanel.jsx` | Git status, diff, commit, push/pull, version history UI | RARELY |
-| `apps/studio/src/components/viewer/ClippingPlane.jsx` | Cross-section clipping plane overlay | RARELY |
-| `apps/studio/src/components/viewer/MeasureTool.jsx` | Point-to-point raycaster measurement | RARELY |
-| `apps/studio/src/components/viewer/ThicknessOverlay.jsx` | Wall thickness heatmap point cloud | RARELY |
-| `apps/studio/src/components/viewer/OverhangOverlay.jsx` | Overhang angle colored point cloud | RARELY |
-| `apps/studio/src/components/studio/ModelInfoPanel.jsx` | Model geometry stats (dimensions, volume, triangles) | RARELY |
-| `apps/studio/src/components/studio/ShortcutHelpDialog.jsx` | Keyboard shortcut help overlay (? key) | RARELY |
+| `apps/studio/src/contexts/auth/AuthProvider.tsx` | JWT auth context + login/logout | RARELY |
+| `apps/studio/src/contexts/auth/TierProvider.tsx` | User tier context + feature flags | RARELY |
+| `apps/studio/src/components/ai/AiChatPanel.tsx` | AI chat UI (configurator + code-editor modes) | RARELY |
+| `apps/studio/src/components/editor/GitPanel.tsx` | Git status, diff, commit, push/pull, version history UI | RARELY |
+| `apps/studio/src/components/viewer/ClippingPlane.tsx` | Cross-section clipping plane overlay | RARELY |
+| `apps/studio/src/components/viewer/MeasureTool.tsx` | Point-to-point raycaster measurement | RARELY |
+| `apps/studio/src/components/viewer/ThicknessOverlay.tsx` | Wall thickness heatmap point cloud | RARELY |
+| `apps/studio/src/components/viewer/OverhangOverlay.tsx` | Overhang angle colored point cloud | RARELY |
+| `apps/studio/src/components/studio/ModelInfoPanel.tsx` | Model geometry stats (dimensions, volume, triangles) | RARELY |
+| `apps/studio/src/components/studio/ShortcutHelpDialog.tsx` | Keyboard shortcut help overlay (? key) | RARELY |
 | `apps/studio/src/hooks/system/useUnitSystem.js` | mm↔inches display conversion hook | RARELY |
-| `apps/studio/src/components/editor/VersionHistory.jsx` | Git commit history browser | RARELY |
-| `apps/studio/src/components/ScadEditor.jsx` | Monaco-based SCAD code editor | RARELY |
-| `apps/studio/src/components/ForkDialog.jsx` | Fork-to-edit modal for built-in projects | RARELY |
+| `apps/studio/src/components/editor/VersionHistory.tsx` | Git commit history browser | RARELY |
+| `apps/studio/src/components/editor/ScadEditor.tsx` | Monaco-based SCAD code editor | RARELY |
+| `apps/studio/src/components/project/ForkDialog.tsx` | Fork-to-edit modal for built-in projects | RARELY |
 | `audit/*.png` | Browser audit screenshots (mobile, tablet, landscape, desktop) | **NEVER** |
 | `docs/audits/*.md` | Internal audits (codebase, usability, deployment) | YES |
 | `llms.txt` | LLM-optimized project overview (llmstxt.org spec) | RARELY |
@@ -228,6 +228,7 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | POST | `/api/ai/session` | `{project, mode}` | Create AI chat session (basic+) |
 | POST | `/api/ai/chat-stream` | `{session_id, message, current_params}` | SSE streaming AI chat (basic+/pro+) |
 | GET | `/api/projects/<slug>/bom` | query params | Bill of materials as JSON/CSV |
+| POST | `/api/projects/<slug>/bom/cart` | `{parameter_overrides?}` | BOM-to-cart pricing via ForgeSight (pro+) |
 | GET | `/api/projects/<slug>/datasheet` | `?format=pdf&lang=en` | Project datasheet (PDF/HTML) |
 | GET | `/api/projects/<slug>/download/stl/<file>` | — | Download STL file |
 | GET | `/api/projects/<slug>/download/scad/<file>` | — | Download SCAD source file |
@@ -268,7 +269,7 @@ Access is gated by user tier. Tier definitions live in `apps/api/tiers.json`; en
 
 > **Note**: WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to `/api/render*` endpoints.
 
-Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/services/tier_service.py`, `apps/studio/src/contexts/AuthProvider.jsx`, `apps/studio/src/contexts/TierProvider.jsx`.
+Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/services/tier_service.py`, `apps/studio/src/contexts/auth/AuthProvider.tsx`, `apps/studio/src/contexts/auth/TierProvider.tsx`.
 
 **Note**: Set `AUTH_ENABLED=false` to bypass auth in development (all users get madfam tier).
 
@@ -278,8 +279,8 @@ Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/servi
 
 Two AI-powered features use LLMs to assist with parametric design:
 
-- **AI Configurator** (basic+): Chat-based parameter adjustment — describe what you want and the AI adjusts slider values. Lives in `AiChatPanel.jsx` (mode: configurator) + `services/ai_configurator.py`.
-- **AI Code Editor** (pro+): Natural language SCAD editing — describe changes and the AI generates search/replace edits. Lives in `ScadEditor.jsx` + `services/ai_code_editor.py`.
+- **AI Configurator** (basic+): Chat-based parameter adjustment — describe what you want and the AI adjusts slider values. Lives in `AiChatPanel.tsx` (mode: configurator) + `services/ai_configurator.py`.
+- **AI Code Editor** (pro+): Natural language SCAD editing — describe changes and the AI generates search/replace edits. Lives in `ScadEditor.tsx` + `services/ai_code_editor.py`.
 
 Both stream responses via SSE. Env vars: `AI_PROVIDER` (anthropic|openai), `AI_API_KEY` (required), `AI_MODEL` (optional override). Sessions are in-memory, expire after 1 hour.
 
@@ -297,7 +298,7 @@ GitHub features are tier-gated:
 | `/api/projects/<slug>/git/*` | GET/POST | pro+ | Git status, diff, commit, push, pull, connect-remote |
 | `/api/projects/<slug>/files/*` | GET/PUT/DELETE | pro+ | SCAD file CRUD with auto git-init |
 
-Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `services/github_import.py`, `services/github_token.py`, `services/git_operations.py`. Frontend: `GitPanel.jsx`, `ForkDialog.jsx`, `ScadEditor.jsx`.
+Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `services/github_import.py`, `services/github_token.py`, `services/git_operations.py`. Frontend: `GitPanel.tsx`, `ForkDialog.tsx`, `ScadEditor.tsx`.
 
 ## Code Conventions
 
@@ -329,7 +330,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 |-------|--------|
 | DB migrations | Alembic migrations must be idempotent — use `sa.inspect(bind).get_table_names()` guard before `create_table`. The Dockerfile runs `flask db upgrade` at startup; non-idempotent migrations crash the pod on persistent volumes |
 | Manifest sync | After editing `project.json`, update `fallback-manifest.json` for Pages mode |
-| URL format | Path-based routing: `/project/slug/preset/mode`. Legacy hash URLs (`#/slug/preset/mode`) auto-redirect via pre-mount script in `main.jsx` |
+| URL format | Path-based routing: `/project/slug/preset/mode`. Legacy hash URLs (`#/slug/preset/mode`) auto-redirect via pre-mount script in `main.tsx` |
 | Shadcn UI | **Never** hand-edit `components/ui/*` — use shadcn CLI to regenerate |
 | Verify false positives | Verification needs rendered STLs to exist first; render before verifying |
 | Render timeouts | Complex grid renders (high rows×cols) can exceed default timeout; Docker uses 300s |
@@ -342,7 +343,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: per-tier (see tier table above), Estimate: 200/hr, Verify: 50/hr. WASM renders are unlimited |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
-| Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links use path-based format `/project/slug/share/mode?p=...`. Legacy hash-based shared links auto-redirect via `main.jsx` |
+| Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links use path-based format `/project/slug/share/mode?p=...`. Legacy hash-based shared links auto-redirect via `main.tsx` |
 | Undo/Redo | Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z for parameter undo/redo; 50-entry history stack. Any `setParams()` call with `history: true` (default) truncates the redo stack |
 | Viewer shortcuts | `O` toggle orthographic camera, `C` toggle clipping plane, `M` toggle measure tool, `?` toggle keyboard shortcut help dialog, `[` toggle sidebar show/hide, `]` toggle console show/hide. Non-modifier keys, ignored when focus is on text inputs |
 | AM viewer tools | Cross-section clipping (axis selector + position slider), point-to-point measurement (two-click raycaster), wall thickness heatmap (backend trimesh analysis, pro+), overhang angle visualization (backend face normal analysis, color ramp green→yellow→red, configurable threshold, pro+), exploded view (displacement slider, multi-part only), adjustable lighting (brightness + environment preset), model info panel (dimensions, volume, triangle count, part count), unit system toggle (mm↔inches, display-only conversion), version history browser (git log), keyboard shortcut help overlay (`?` key), resizable sidebar and console panels (desktop, drag handle + `[`/`]` keyboard shortcuts, sizes persisted to localStorage), parameter geometry preview (hover parameter controls to see directional arrows + range labels for dimensional params, amber glow on affected parts for all params; disabled during assembly/diff/loading; auto-infers axis from label or uses explicit `preview_hint` in manifest; cached geometry ghost overlay shows semi-transparent purple ghost meshes at min/max values when IDB-cached variants exist, with breathing animation respecting prefers-reduced-motion) |

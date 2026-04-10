@@ -36,7 +36,12 @@ def load_tiers() -> dict:
 
 def _normalize_tier(tier: str) -> str:
     """Normalize legacy tier names to current names."""
-    return LEGACY_TIER_MAP.get(tier, tier)
+    normalized = LEGACY_TIER_MAP.get(tier)
+    if normalized:
+        logger.warning("Deprecated tier name '%s' used — mapped to '%s'. "
+                       "Update client to use '%s' directly.", tier, normalized, normalized)
+        return normalized
+    return tier
 
 
 def resolve_tier(auth_claims: dict | None) -> str:

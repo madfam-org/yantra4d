@@ -1,0 +1,36 @@
+import React from 'react'
+import { useManifest } from "../../contexts/project/ManifestProvider"
+import { Github } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+
+export default function ProjectSelector() {
+  const { projects, projectSlug, switchProject } = useManifest()
+  const navigate = useNavigate()
+
+  if (!projects || projects.length <= 1) return null
+
+  return (
+    <div className="flex items-center gap-2">
+      <select
+        value={projectSlug}
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+          if (e.target.value === '__github_import__') {
+            navigate('/projects')
+            return
+          }
+          switchProject(e.target.value)
+        }}
+        className="h-11 min-h-[44px] px-2 text-base md:text-sm rounded-md border border-border bg-background text-foreground"
+        aria-label="Select project"
+      >
+        {projects.map((p) => (
+          <option key={p.slug} value={p.slug}>
+            {(p as Record<string, unknown>).name as string}
+          </option>
+        ))}
+        <option disabled>───────────</option>
+        <option value="__github_import__">⊕ Import from GitHub…</option>
+      </select>
+    </div>
+  )
+}

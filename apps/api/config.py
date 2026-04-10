@@ -70,6 +70,11 @@ class AppConfig:
     JANUA_API_URL: str = field(init=False)
     JANUA_API_KEY: str = field(default_factory=lambda: os.getenv("JANUA_API_KEY", ""))
 
+    # ForgeSight Data Intelligence Platform
+    FORGESIGHT_API_URL: str = field(default_factory=lambda: os.getenv("FORGESIGHT_API_URL", ""))
+    FORGESIGHT_API_KEY: str = field(default_factory=lambda: os.getenv("FORGESIGHT_API_KEY", ""))
+    FORGESIGHT_ENABLED: bool = field(default_factory=lambda: os.getenv("FORGESIGHT_ENABLED", "false").lower() == "true")
+
     # Database (PostgreSQL in production, SQLite fallback for dev)
     DATABASE_URL: str = field(default_factory=lambda: os.getenv("DATABASE_URL", ""))
 

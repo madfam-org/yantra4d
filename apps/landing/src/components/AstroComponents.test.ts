@@ -329,6 +329,123 @@ describe('OpenSource.astro', () => {
   })
 })
 
+// ─── CDGSection ────────────────────────────────────────────────────────────
+describe('CDGSection.astro', () => {
+  let html: string
+
+  beforeAll(() => {
+    html = loadTemplate('CDGSection.astro')
+  })
+
+  it('has a section with id cdg-section', () => {
+    expect(html).toContain('id="cdg-section"')
+  })
+
+  it('has heading about CDG interfaces', () => {
+    expect(html).toContain('<h2')
+    expect(html).toMatch(/The Interfaces That Connect Everything|cdg\.heading/)
+  })
+
+  it('has CDG badge', () => {
+    expect(html).toMatch(/Common Denominator Geometry|cdg\.badge/)
+  })
+
+  it('has explainer section with What is CDG', () => {
+    expect(html).toContain('<h3')
+    expect(html).toMatch(/What is CDG|explainerTitle/)
+  })
+
+  it('has CDG catalog grid', () => {
+    expect(html).toMatch(/The CDG Catalog|catalogTitle/)
+    expect(html).toContain('sm:grid-cols-2')
+    expect(html).toContain('lg:grid-cols-3')
+  })
+
+  it('has SVG diagram with center CDG node', () => {
+    expect(html).toContain('<svg')
+    expect(html).toContain('>CDG<')
+  })
+
+  it('has interface strategy section', () => {
+    expect(html).toMatch(/The Interface Strategy|impactTitle/)
+  })
+
+  it('has stats grid', () => {
+    expect(html).toContain('md:grid-cols-4')
+    expect(html).toContain('stat.value')
+    expect(html).toContain('stat.label')
+  })
+
+  it('has graph paper background with aria-hidden', () => {
+    expect(html).toContain('cdg-graph-bg')
+    expect(html).toContain('aria-hidden="true"')
+  })
+
+  it('has fade-in animation classes', () => {
+    expect(html).toContain('cdg-fade-in')
+  })
+})
+
+// ─── HyperCommons ──────────────────────────────────────────────────────────
+describe('HyperCommons.astro', () => {
+  let html: string
+
+  beforeAll(() => {
+    html = loadTemplate('HyperCommons.astro')
+  })
+
+  it('has a section with id hyper-commons', () => {
+    expect(html).toContain('id="hyper-commons"')
+  })
+
+  it('has heading about parametric commons', () => {
+    expect(html).toContain('<h2')
+    expect(html).toMatch(/Los Comunes Paramétricos|hyperCommons\.heading/)
+  })
+
+  it('has Open Commons badge', () => {
+    expect(html).toContain('Open Commons')
+  })
+
+  it('has What is a Hyperobject section', () => {
+    expect(html).toMatch(/Qué es un Hiperobjeto|whatIsHeading/)
+  })
+
+  it('has parametric morph SVG visualization', () => {
+    expect(html).toContain('<svg')
+    expect(html).toContain('hc-shape-morph')
+    expect(html).toContain('width')
+    expect(html).toContain('height')
+  })
+
+  it('has paradigm shift comparison (STL vs SCAD)', () => {
+    expect(html).toMatch(/El Cambio de Paradigma|shiftHeading/)
+    expect(html).toMatch(/\.STL Estático|shiftFrom/)
+    expect(html).toMatch(/\.SCAD Paramétrico|shiftTo/)
+  })
+
+  it('has four domain impact cards', () => {
+    expect(html).toContain('lg:grid-cols-4')
+    expect(html).toContain('🏠')
+    expect(html).toContain('🏭')
+    expect(html).toContain('🏥')
+    expect(html).toContain('⚙️')
+  })
+
+  it('has impact stats section', () => {
+    expect(html).toMatch(/Impacto Real|impactHeading/)
+    expect(html).toContain('sm:grid-cols-4')
+  })
+
+  it('has fade-in animation classes', () => {
+    expect(html).toContain('hc-fade-in')
+  })
+
+  it('has reduced motion media query in styles', () => {
+    expect(html).toContain('prefers-reduced-motion')
+  })
+})
+
 // ─── ProjectGallery ─────────────────────────────────────────────────────────
 describe('ProjectGallery.astro', () => {
   let html: string

@@ -2,9 +2,7 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { setLanguage } from '../../helpers/test-utils.js'
 
-// Skipped: OnboardingWizard route (/onboard) is not integrated into the app's
-// routing system. The component is lazy-imported but never rendered.
-test.describe.skip('Onboarding Wizard', () => {
+test.describe('Onboarding Wizard', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
     await page.goto('/onboard')

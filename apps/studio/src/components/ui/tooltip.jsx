@@ -46,7 +46,7 @@ export function Tooltip({ content, children }) {
         <span
           id={tooltipId}
           role="tooltip"
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50 px-2 py-1 rounded bg-popover text-popover-foreground text-sm shadow-md border border-border whitespace-nowrap pointer-events-none"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50 px-2 py-1 rounded bg-popover text-popover-foreground text-xs shadow-md border border-border max-w-[200px] whitespace-normal pointer-events-none"
         >
           {content}
         </span>

@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useManifest } from '../../contexts/project/ManifestProvider'
-import { estimatePrint, getMaterialProfiles, buildMaterialLookup, getInfillPatterns, getNozzleDiameters } from '../../lib/printEstimator'
+import { estimatePrint, getMaterialProfiles, buildMaterialLookup, getInfillPatterns, getNozzleDiameters, fetchMaterialPricing, computeCostRange } from '../../lib/printEstimator'
+import type { LivePricing } from '../../lib/printEstimator'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
 interface EstimateResult {
@@ -15,12 +16,28 @@ interface BoundingBox {
   height?: number
 }
 
+interface CostRange {
+  low: number
+  mid: number
+  high: number
+  currency: string
+  source: string
+}
+
 interface EstimateRowsProps {
   est: EstimateResult
   t: (key: string) => string
+  costRange?: CostRange | null
+  priceCurrency?: string
 }
 
-function EstimateRows({ est, t }: EstimateRowsProps) {
+function formatCurrency(amount: number, currency: string): string {
+  const symbol = currency === 'MXN' ? '$' : currency === 'USD' ? '$' : ''
+  const suffix = currency === 'MXN' ? ' MXN' : currency === 'USD' ? ' USD' : ` ${currency}`
+  return `${symbol}${amount.toFixed(2)}${suffix}`
+}
+
+function EstimateRows({ est, t, costRange, priceCurrency }: EstimateRowsProps) {
   return (
     <>
       <div className="flex justify-between">
@@ -37,7 +54,15 @@ function EstimateRows({ est, t }: EstimateRowsProps) {
       </div>
       <div className="flex justify-between">
         <span className="text-muted-foreground">{t('print.cost')}:</span>
-        <span className="font-medium">~${est.filament.cost}</span>
+        {costRange ? (
+          <span className="font-medium text-right">
+            {formatCurrency(costRange.low, priceCurrency || costRange.currency)}
+            {' – '}
+            {formatCurrency(costRange.high, priceCurrency || costRange.currency)}
+          </span>
+        ) : (
+          <span className="font-medium">~${est.filament.cost}</span>
+        )}
       </div>
     </>
   )
@@ -59,6 +84,21 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
   const [infillPattern, setInfillPattern] = useState('grid')
   const [nozzleDiameter, setNozzleDiameter] = useState(0.4)
   const [breakdownOpen, setBreakdownOpen] = useState(false)
+  const [livePricing, setLivePricing] = useState<LivePricing | null>(null)
+  const [priceCurrency, setPriceCurrency] = useState<string>(() => {
+    try { return localStorage.getItem('yantra4d-price-currency') || 'MXN' } catch { return 'MXN' }
+  })
+
+  useEffect(() => {
+    fetchMaterialPricing(material).then(setLivePricing)
+  }, [material])
+
+  const toggleCurrency = () => {
+    const next = priceCurrency === 'MXN' ? 'USD' : 'MXN'
+    setPriceCurrency(next)
+    try { localStorage.setItem('yantra4d-price-currency', next) } catch { /* quota exceeded */ }
+  }
+
   const materials = useMemo(() => getMaterialProfiles(manifestMaterials as never), [manifestMaterials])
   const materialLookup = useMemo(() => buildMaterialLookup(manifestMaterials as never), [manifestMaterials])
   const infillPatterns = useMemo(() => getInfillPatterns(), [])
@@ -81,6 +121,11 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
       return { partType, label, est }
     }).filter(p => p.est !== null) as Array<{ partType: string; label: string; est: EstimateResult }>
   }, [perPartData, material, infill, infillPattern, nozzleDiameter, materialLookup, manifest, language])
+
+  const costRange = useMemo(() => {
+    if (!estimate) return null
+    return computeCostRange(estimate.filament.grams, livePricing)
+  }, [estimate, livePricing])
 
   if (!volumeMm3 || volumeMm3 <= 0) return null
   if (!estimate) return null
@@ -151,14 +196,32 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
           </select>
         </div>
 
+        {/* Currency toggle (when live pricing available) */}
+        {costRange && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">{t('print.currency') || 'Currency'}:</span>
+            <button
+              onClick={toggleCurrency}
+              className="bg-background border border-border rounded px-2 py-0.5 text-xs font-medium hover:bg-muted transition-colors min-h-[44px] md:min-h-0"
+            >
+              {priceCurrency}
+            </button>
+          </div>
+        )}
+
         {/* Aggregate total */}
         <div className="border-t border-border pt-2 space-y-1">
           {partEstimates && (
             <div className="text-muted-foreground font-medium mb-1">Total</div>
           )}
-          <EstimateRows est={estimate} t={t} />
+          <EstimateRows est={estimate} t={t} costRange={costRange} priceCurrency={priceCurrency} />
+          {costRange?.source === 'forgesight' && (
+            <div className="text-[10px] text-primary/70 mt-1 font-medium">
+              Market pricing via ForgeSight
+            </div>
+          )}
           <div className="text-[10px] text-muted-foreground/60 mt-1 italic">
-            {t('print.disclaimer') || 'Estimate (\u00b130% for typical parts)'}
+            {costRange ? (t('print.disclaimer_time') || 'Time estimate \u00b130%') : (t('print.disclaimer') || 'Estimate (\u00b130% for typical parts)')}
           </div>
         </div>
 

@@ -372,9 +372,77 @@ export function buildMaterialLookup(manifestMaterials: ManifestMaterial[] | null
         layerHeight: 0.2,
         costPerKg: m.cost_per_kg,
         nozzleDiameter: 0.4,
-        preheatMinutes: 3,  // reasonable default for custom materials
+        preheatMinutes: 3,
       }
     }
   }
   return lookup
+}
+
+// ── ForgeSight Live Pricing ─────────────────────────────────────────────
+
+export interface LivePricing {
+  p10PerKg: number
+  p50PerKg: number
+  p90PerKg: number
+  currency: string
+  source: 'forgesight' | 'hardcoded_default'
+  sampleCount: number
+}
+
+const pricingCache: Record<string, { data: LivePricing; timestamp: number }> = {}
+const PRICING_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+/**
+ * Fetch live material pricing from the backend (which proxies ForgeSight).
+ * Caches client-side for 5 minutes.
+ */
+export async function fetchMaterialPricing(materialId: string, apiBase?: string): Promise<LivePricing | null> {
+  const cacheKey = materialId
+  const cached = pricingCache[cacheKey]
+  if (cached && Date.now() - cached.timestamp < PRICING_CACHE_TTL) {
+    return cached.data
+  }
+
+  try {
+    const base = apiBase || ''
+    const resp = await fetch(`${base}/api/pricing/benchmark?material=${encodeURIComponent(materialId)}`)
+    if (!resp.ok) return null
+
+    const data = await resp.json()
+    if (!data.pricing) return null
+
+    const pricing: LivePricing = {
+      p10PerKg: data.pricing.p10_per_kg,
+      p50PerKg: data.pricing.p50_per_kg,
+      p90PerKg: data.pricing.p90_per_kg,
+      currency: data.pricing.currency,
+      source: data.source,
+      sampleCount: data.sample_count || 0,
+    }
+
+    pricingCache[cacheKey] = { data: pricing, timestamp: Date.now() }
+    return pricing
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Compute cost range using live pricing data.
+ * Returns { low, mid, high, currency } or null if no live pricing.
+ */
+export function computeCostRange(
+  grams: number,
+  livePricing: LivePricing | null
+): { low: number; mid: number; high: number; currency: string; source: string } | null {
+  if (!livePricing || !livePricing.p50PerKg) return null
+  const kg = grams / 1000
+  return {
+    low: Math.round(kg * livePricing.p10PerKg * 100) / 100,
+    mid: Math.round(kg * livePricing.p50PerKg * 100) / 100,
+    high: Math.round(kg * livePricing.p90PerKg * 100) / 100,
+    currency: livePricing.currency,
+    source: livePricing.source,
+  }
 }

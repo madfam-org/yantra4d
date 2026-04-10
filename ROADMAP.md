@@ -154,15 +154,14 @@ Users can send rendered geometry directly from the Yantra4D Studio to OctoPrint 
 ---
 
 ### Sprint 16 — BOM-to-Cart (ForgeSight Data Intelligence Platform Integration)
-_Dependency: **[ForgeSight Data Intelligence Platform](https://github.com/madfam-org/forgesight) must be production-ready.**_
-
-> [!IMPORTANT]
-> This sprint is explicitly blocked on the ForgeSight Data Intelligence Platform reaching production stability. ForgeSight is the commercial and industry data intelligence layer for Yantra4D — it provides real-time pricing, supplier availability, materials data, and consumables intelligence. Do not begin this sprint until ForgeSight's API is stable and versioned.
+_Integration: **[ForgeSight Data Intelligence Platform](https://forgesight.quest)** — live at `api.forgesight.quest` (Starter tier: 10 calls/hr, benchmarks cached 1hr)._
 
 The BOM API (`routes/bom.py`) and `BomPanel.jsx` already exist, and `supplier_url` is in the manifest schema. Sprint 16 adds the aggregation, pricing, and checkout layers powered by the ForgeSight Data Intelligence Platform.
 
-- [x] **ForgeSight API client:** Backend service (`services/integrations/forgesight.py`) — real HTTP integration with timeout, error handling, circuit-safe fallback when disabled.
+- [x] **ForgeSight API client:** OAuth2 auth, benchmark pricing (`GET /api/v1/benchmarks`), 1hr cache, material category mapping (PLA/PETG/ABS/TPU/Resin/Nylon), graceful fallback to hardcoded defaults.
+- [x] **Pricing endpoint:** `GET /api/pricing/benchmark?material=pla&region=CDMX` — returns p10/p50/p90 per-kg pricing from ForgeSight or hardcoded defaults. Public, rate-limited at 60/hr.
+- [x] **Live pricing in print estimates:** PrintEstimateOverlay fetches ForgeSight benchmarks, displays cost range (low–high) with MXN/USD currency toggle and "Market pricing via ForgeSight" attribution.
 - [x] **Cart aggregation endpoint:** `POST /api/projects/<slug>/bom/cart` — resolves BOM hardware items via ForgeSight, returns enriched BOM with pricing. Tier-gated at `pro+`.
-- [ ] **BOM-to-Cart UI:** Studio panel extension — "Add all to cart" button, per-item supplier selection, estimated total cost. _(deferred — waiting for full ForgeSight API stability)_
-- [ ] **Material hyperobject linking:** Auto-match `target_material` manifest param to ForgeSight material catalog entries for live `mat_shrinkage` / `mat_clearance` compensation values. _(deferred)_
+- [ ] **BOM-to-Cart UI:** Studio panel extension — "Add all to cart" button, per-item supplier selection, estimated total cost.
+- [ ] **Material hyperobject linking:** Auto-match `target_material` manifest param to ForgeSight material catalog entries for live `mat_shrinkage` / `mat_clearance` compensation values.
 - [ ] **Tier gating refinement:** Cart export available at `basic+` tier; live pricing at `pro+`.

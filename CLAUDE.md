@@ -229,6 +229,8 @@ POST `/api/verify` with `{mode}` — runs `apps/api/tests/verify_design.py` on r
 | POST | `/api/ai/chat-stream` | `{session_id, message, current_params}` | SSE streaming AI chat (basic+/pro+) |
 | GET | `/api/projects/<slug>/bom` | query params | Bill of materials as JSON/CSV |
 | POST | `/api/projects/<slug>/bom/cart` | `{parameter_overrides?}` | BOM-to-cart pricing via ForgeSight (pro+) |
+| GET | `/api/pricing/benchmark` | `?material=pla&region=CDMX` | Material price benchmark (p10/p50/p90 from ForgeSight or defaults) |
+| GET | `/api/pricing/materials` | — | List supported materials with ForgeSight category mappings |
 | GET | `/api/projects/<slug>/datasheet` | `?format=pdf&lang=en` | Project datasheet (PDF/HTML) |
 | GET | `/api/projects/<slug>/download/stl/<file>` | — | Download STL file |
 | GET | `/api/projects/<slug>/download/scad/<file>` | — | Download SCAD source file |

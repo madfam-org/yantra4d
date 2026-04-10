@@ -75,6 +75,7 @@ All endpoint limits are centralized in `apps/api/rate_limits.py`:
 | **GitHub** | Import | 10/hour |
 | **Projects** | Analyze/create/fork | 10-20/hour |
 | **Analysis** | Thickness/overhang | 20/hour |
+| **Pricing** | `/api/pricing/benchmark`, `/api/pricing/materials` | 60/hour |
 
 Health endpoints are exempt from rate limiting (K8s probes).
 

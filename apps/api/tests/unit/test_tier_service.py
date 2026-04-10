@@ -102,6 +102,22 @@ class TestGetRenderLimitForProject:
         manifest = {"project": {"name": "Demo", "guest_render_limit": "fifty"}}
         assert get_render_limit_for_project("guest", manifest) == 10
 
+    def test_project_manifest_object_with_override(self):
+        """ProjectManifest objects have .project attribute, not .get()."""
+        class FakeManifest:
+            project = {"name": "Demo", "guest_render_limit": 50}
+        assert get_render_limit_for_project("guest", FakeManifest()) == 50
+
+    def test_project_manifest_object_without_override(self):
+        class FakeManifest:
+            project = {"name": "Demo"}
+        assert get_render_limit_for_project("guest", FakeManifest()) == 10
+
+    def test_project_manifest_object_non_guest(self):
+        class FakeManifest:
+            project = {"name": "Demo", "guest_render_limit": 50}
+        assert get_render_limit_for_project("pro", FakeManifest()) == 150
+
 
 class TestCheckFeature:
     def test_pro_has_github_import(self):

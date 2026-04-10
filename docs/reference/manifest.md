@@ -26,7 +26,14 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "force_backend": true,                        // Optional: prefer backend rendering (overridden by WASM fallback when backend is unreachable)
     "hard_reload": true,                          // Optional: prevents preset persistence across reloads
     "unlisted": true,                              // Optional: hidden from public listings, accessible via direct URL
-    "guest_render_limit": 50                       // Optional: per-project guest render limit override (renders/hour)
+    "guest_render_limit": 50,                      // Optional: per-project guest render limit override (renders/hour)
+    "welcome": {                                    // Optional: first-visit welcome overlay
+      "enabled": true,
+      "heading": { "en": "Welcome", "es": "Bienvenido" },
+      "body": { "en": "Description text" },
+      "features": [{ "icon": "🎚️", "text": { "en": "Feature description" } }],
+      "cta_label": { "en": "Get Started" }
+    }
   },
 
   "modes": [

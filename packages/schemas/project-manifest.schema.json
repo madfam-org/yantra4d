@@ -114,6 +114,40 @@
           "type": "integer",
           "minimum": 1,
           "description": "Per-project override for guest render limit (renders/hour). Only applies to unauthenticated users. Use for client demos or featured projects that need higher render budgets without requiring sign-in."
+        },
+        "welcome": {
+          "type": "object",
+          "description": "First-visit welcome overlay content. Shown once per project, dismissed permanently via localStorage.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to show the welcome overlay on first visit"
+            },
+            "heading": {
+              "$ref": "#/$defs/i18nString",
+              "description": "Welcome overlay title"
+            },
+            "body": {
+              "$ref": "#/$defs/i18nString",
+              "description": "Welcome overlay description text"
+            },
+            "features": {
+              "type": "array",
+              "description": "Feature highlights shown as icon + text list",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "icon": { "type": "string", "description": "Emoji or icon character" },
+                  "text": { "$ref": "#/$defs/i18nString" }
+                }
+              }
+            },
+            "cta_label": {
+              "$ref": "#/$defs/i18nString",
+              "description": "Call-to-action button text (default: 'Get Started')"
+            }
+          }
         }
       }
     },

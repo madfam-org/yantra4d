@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Viewer from '../viewer/Viewer'
 import ComparisonView from '../project/ComparisonView'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
+import WelcomeOverlay from '../feedback/WelcomeOverlay'
 import ShortcutHelpDialog from './ShortcutHelpDialog'
 import ModelInfoPanel from './ModelInfoPanel'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
@@ -89,6 +90,20 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   const pe = printEstimate as Record<string, unknown>
   const estimateDisabled = (manifest?.print_estimation as Record<string, unknown> | undefined)?.enabled === false
   const hasEstimate = !estimateDisabled
+
+  // Welcome overlay: show once per project if manifest declares welcome.enabled
+  const welcomeData = (() => {
+    try {
+      const proj = (manifest as Record<string, unknown>)?.project
+      if (!proj || typeof proj !== 'object') return null
+      const w = (proj as Record<string, unknown>).welcome
+      if (!w || typeof w !== 'object' || !(w as Record<string, unknown>).enabled) return null
+      return w as Record<string, unknown>
+    } catch { return null }
+  })()
+  const showWelcome = welcomeData !== null && (() => {
+    try { return !localStorage.getItem(`yantra4d-welcome-${projectSlug}`) } catch { return false }
+  })()
     && ((pe?.total?.volumeMm3 ?? pe?.volumeMm3 ?? 0) > 0)
 
   // Last log line for collapsed console preview
@@ -232,6 +247,9 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
 
   return (
     <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
+      {showWelcome && projectSlug && welcomeData && (
+        <WelcomeOverlay slug={projectSlug} welcome={welcomeData as never} />
+      )}
       {/* Desktop: resizable vertical layout */}
       <div className="hidden lg:flex flex-col flex-1 min-h-0">
         <ResizablePanelGroup

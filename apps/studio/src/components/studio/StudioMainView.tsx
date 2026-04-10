@@ -78,7 +78,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     thicknessData,
     overhangData,
     shortcutHelpOpen, setShortcutHelpOpen,
-    manifest,
+    manifest, projectSlug,
   } = useProject()
 
   const { t } = useLanguage()
@@ -89,8 +89,6 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   // Only show the estimate toggle when there's something to show and manifest allows it
   const pe = printEstimate as Record<string, unknown>
   const estimateDisabled = (manifest?.print_estimation as Record<string, unknown> | undefined)?.enabled === false
-  const hasEstimate = !estimateDisabled
-
   // Welcome overlay: show once per project if manifest declares welcome.enabled
   const welcomeData = React.useMemo(() => {
     try {
@@ -105,6 +103,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     try { return !!localStorage.getItem(`yantra4d-welcome-${projectSlug}`) } catch { return true }
   })
   const showWelcome = welcomeData !== null && !welcomeDismissed
+
+  const hasEstimate = !estimateDisabled
     && ((pe?.total?.volumeMm3 ?? pe?.volumeMm3 ?? 0) > 0)
 
   // Last log line for collapsed console preview

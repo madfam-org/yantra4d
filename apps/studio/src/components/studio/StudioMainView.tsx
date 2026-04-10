@@ -247,8 +247,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   )
 
   return (
-    <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
-      {showWelcome && projectSlug && welcomeData && (
+    <div id="main-content" className="flex-1 relative flex flex-col min-h-0" data-welcome-debug={`show=${showWelcome},slug=${projectSlug},data=${welcomeData !== null},dismissed=${welcomeDismissed}`}>
+      {showWelcome && (
         <WelcomeOverlay slug={projectSlug} welcome={welcomeData as never} />
       )}
       {/* Desktop: resizable vertical layout */}

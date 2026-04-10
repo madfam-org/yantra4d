@@ -85,6 +85,21 @@ def get_render_limit(tier: str) -> int:
     return limits.get("backend_renders_per_hour", limits.get("renders_per_hour", 30))
 
 
+def get_render_limit_for_project(tier: str, manifest: dict | None = None) -> int:
+    """Return backend renders-per-hour, checking for per-project guest override.
+
+    Projects can declare ``guest_render_limit`` in ``project.json`` to allow
+    higher render rates for unauthenticated visitors (e.g., client demos).
+    The override only applies to the ``guest`` tier.
+    """
+    if manifest and tier == "guest":
+        project = manifest.get("project", {})
+        override = project.get("guest_render_limit")
+        if isinstance(override, int) and override > 0:
+            return override
+    return get_render_limit(tier)
+
+
 def check_feature(tier: str, feature: str) -> bool:
     """Check if a tier has access to a specific feature (boolean key in tier config)."""
     limits = get_tier_limits(tier)

@@ -39,7 +39,22 @@ Backend (server-side) render limits are defined per tier in `apps/api/tiers.json
 | pro | 150 | 100 |
 | madfam | 500 | 300 |
 
-Render limits are enforced dynamically in the render route via `tier_service.get_render_limit()`, which reads the user's tier from JWT claims and looks up `backend_renders_per_hour` in `tiers.json`.
+Render limits are enforced dynamically in the render route via `tier_service.get_render_limit_for_project()`, which reads the user's tier from JWT claims and looks up `backend_renders_per_hour` in `tiers.json`.
+
+### Per-Project Guest Override
+
+Individual projects can declare `guest_render_limit` in their `project.json` manifest to override the guest tier limit. This is useful for client demos or featured projects that need higher render budgets without requiring sign-in.
+
+```json
+{
+  "project": {
+    "name": "My Demo Project",
+    "guest_render_limit": 50
+  }
+}
+```
+
+The override only applies to the `guest` tier. Authenticated users always use their tier-based limit. If the override is missing, zero, negative, or non-integer, the standard guest limit (10/hr) applies.
 
 ## Per-Endpoint Limits
 

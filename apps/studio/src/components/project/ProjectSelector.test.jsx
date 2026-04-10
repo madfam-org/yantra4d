@@ -5,12 +5,14 @@ import React from 'react'
 const mockSwitchProject = vi.fn()
 let mockProjects = []
 let mockProjectSlug = 'gridfinity'
+let mockManifest = null
 
 vi.mock('../../contexts/project/ManifestProvider', () => ({
   useManifest: () => ({
     projects: mockProjects,
     projectSlug: mockProjectSlug,
     switchProject: mockSwitchProject,
+    manifest: mockManifest,
   }),
 }))
 
@@ -53,6 +55,18 @@ describe('ProjectSelector', () => {
     render(<ProjectSelector />)
     fireEvent.change(screen.getByLabelText('Select project'), { target: { value: 'demo' } })
     expect(mockSwitchProject).toHaveBeenCalledWith('demo')
+  })
+
+  it('shows unlisted project name in dropdown when loaded via direct URL', () => {
+    mockProjects = [
+      { slug: 'gridfinity', name: 'Gridfinity Extended' },
+      { slug: 'demo', name: 'Demo' },
+    ]
+    mockProjectSlug = 'tablaco'
+    mockManifest = { project: { name: 'Tablaco Studio', slug: 'tablaco' } }
+    render(<ProjectSelector />)
+    expect(screen.getByText('Tablaco Studio')).toBeInTheDocument()
+    expect(screen.getByLabelText('Select project').value).toBe('tablaco')
   })
 
   it('navigates to projects for github import option', () => {

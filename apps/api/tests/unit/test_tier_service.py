@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.core.tier_service import resolve_tier, has_tier, get_tier_limits, get_render_limit, check_feature, load_tiers
+from services.core.tier_service import resolve_tier, has_tier, get_tier_limits, get_render_limit, get_render_limit_for_project, check_feature, load_tiers
 
 
 class TestResolveTier:
@@ -71,6 +71,36 @@ class TestGetRenderLimit:
 
     def test_madfam_render_limit(self):
         assert get_render_limit("madfam") == 500
+
+
+class TestGetRenderLimitForProject:
+    def test_no_manifest_returns_tier_default(self):
+        assert get_render_limit_for_project("guest", None) == 10
+
+    def test_manifest_without_override_returns_tier_default(self):
+        manifest = {"project": {"name": "Test"}}
+        assert get_render_limit_for_project("guest", manifest) == 10
+
+    def test_guest_with_project_override(self):
+        manifest = {"project": {"name": "Demo", "guest_render_limit": 50}}
+        assert get_render_limit_for_project("guest", manifest) == 50
+
+    def test_override_only_applies_to_guest_tier(self):
+        manifest = {"project": {"name": "Demo", "guest_render_limit": 50}}
+        assert get_render_limit_for_project("pro", manifest) == 150
+        assert get_render_limit_for_project("essentials", manifest) == 30
+
+    def test_invalid_override_ignored(self):
+        manifest = {"project": {"name": "Demo", "guest_render_limit": -1}}
+        assert get_render_limit_for_project("guest", manifest) == 10
+
+    def test_zero_override_ignored(self):
+        manifest = {"project": {"name": "Demo", "guest_render_limit": 0}}
+        assert get_render_limit_for_project("guest", manifest) == 10
+
+    def test_string_override_ignored(self):
+        manifest = {"project": {"name": "Demo", "guest_render_limit": "fifty"}}
+        assert get_render_limit_for_project("guest", manifest) == 10
 
 
 class TestCheckFeature:

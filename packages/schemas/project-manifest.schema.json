@@ -109,6 +109,11 @@
         "unlisted": {
           "type": "boolean",
           "description": "If true, project is hidden from public listings but accessible via direct URL"
+        },
+        "guest_render_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Per-project override for guest render limit (renders/hour). Only applies to unauthenticated users. Use for client demos or featured projects that need higher render budgets without requiring sign-in."
         }
       }
     },

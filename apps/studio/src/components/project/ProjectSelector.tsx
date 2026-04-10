@@ -4,10 +4,12 @@ import { Github } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export default function ProjectSelector() {
-  const { projects, projectSlug, switchProject } = useManifest()
+  const { projects, projectSlug, switchProject, manifest } = useManifest()
   const navigate = useNavigate()
 
   if (!projects || projects.length <= 1) return null
+
+  const isUnlisted = projectSlug && !projects.find((p: Record<string, unknown>) => p.slug === projectSlug)
 
   return (
     <div className="flex items-center gap-2">
@@ -23,9 +25,16 @@ export default function ProjectSelector() {
         className="h-11 min-h-[44px] px-2 text-base md:text-sm rounded-md border border-border bg-background text-foreground"
         aria-label="Select project"
       >
-        {projects.map((p) => (
-          <option key={p.slug} value={p.slug}>
-            {(p as Record<string, unknown>).name as string}
+        {isUnlisted && (
+          <option value={projectSlug}>
+            {(manifest as Record<string, unknown>)?.project
+              ? ((manifest as Record<string, unknown>).project as Record<string, unknown>)?.name as string
+              : projectSlug}
+          </option>
+        )}
+        {projects.map((p: Record<string, unknown>) => (
+          <option key={p.slug as string} value={p.slug as string}>
+            {p.name as string}
           </option>
         ))}
         <option disabled>───────────</option>

@@ -25,7 +25,8 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "difficulty": "beginner",
     "force_backend": true,                        // Optional: prefer backend rendering (overridden by WASM fallback when backend is unreachable)
     "hard_reload": true,                          // Optional: prevents preset persistence across reloads
-    "unlisted": true                              // Optional: hidden from public listings, accessible via direct URL
+    "unlisted": true,                              // Optional: hidden from public listings, accessible via direct URL
+    "guest_render_limit": 50                       // Optional: per-project guest render limit override (renders/hour)
   },
 
   "modes": [

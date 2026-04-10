@@ -338,9 +338,9 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Env vars | Backend reads `OPENSCAD_PATH`, `SCAD_DIR`, `VERIFY_SCRIPT` — set in Docker or `.env` |
 | CORS origins | Backend restricts CORS via `CORS_ORIGINS` env var; add your domain when deploying |
 | Global SCAD libs | `libs/` are git submodules — run `git submodule update --init --recursive` after clone |
-| Client-side WASM | `openscad-worker.js` runs in a Web Worker; cannot access DOM |
+| Client-side WASM | `openscad-worker.ts` runs in a Web Worker; cannot access DOM |
 | Backend outage resilience | `detectMode()` checks backend availability *before* `API_BASE` preferences. If backend is down, WASM fallback activates automatically (except CadQuery and `force_backend` projects). `isBackendAvailable()` uses TTL cache: 30s negative (retries), 5min positive. `renderParts()` catches network errors **and HTTP 429 rate limit responses** and retries with WASM for non-`force_backend` projects. `force_backend` projects never fall back to WASM — on rate limit they show a clear upgrade/wait message instead. ProjectsView shows Retry + Open Demo buttons on error. The fallback manifest omits `force_backend` so WASM works offline |
-| Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: per-tier (see tier table above), Estimate: 200/hr, Verify: 50/hr. WASM renders are unlimited |
+| Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: per-tier (see tier table above), Estimate: 200/hr, Verify: 50/hr. WASM renders are unlimited. Projects can declare `guest_render_limit` in `project.json` to override the guest tier limit (e.g., for client demos) |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
 | Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links use path-based format `/project/slug/share/mode?p=...`. Legacy hash-based shared links auto-redirect via `main.tsx` |

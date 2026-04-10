@@ -12,7 +12,7 @@ from flask import Blueprint, request, jsonify, Response
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.core.tier_service import resolve_tier, get_render_limit, check_feature
+from services.core.tier_service import resolve_tier, get_render_limit, get_render_limit_for_project, check_feature
 from services.engine.render_orchestrator import (
     extract_render_payload,
     resolve_engine_config,
@@ -39,10 +39,21 @@ def _make_rate_limit_headers(tier: str) -> dict:
 
 
 def _get_tiered_limit() -> str:
-    """Return dynamic rate limit string based on user tier (backend renders only)."""
+    """Return dynamic rate limit string based on user tier (backend renders only).
+
+    Checks for per-project guest_render_limit override in the project manifest.
+    """
     claims = getattr(request, "auth_claims", None)
     tier = resolve_tier(claims)
-    return f"{get_render_limit(tier)}/hour"
+    manifest = None
+    try:
+        body = request.get_json(silent=True) or {}
+        project_slug = body.get("project")
+        if project_slug:
+            manifest = get_manifest(project_slug)
+    except Exception:
+        pass
+    return f"{get_render_limit_for_project(tier, manifest)}/hour"
 
 
 def _rate_limit_key() -> str:

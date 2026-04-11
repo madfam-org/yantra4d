@@ -76,8 +76,8 @@ describe('ErrorBoundary', () => {
         <ThrowingChild message="no t prop" />
       </ErrorBoundary>
     )
-    // Without t prop, it renders the key itself
-    expect(screen.getByText('error.title')).toBeInTheDocument()
-    expect(screen.getByText('error.retry')).toBeInTheDocument()
+    // Without t prop, it renders hardcoded English fallbacks
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+    expect(screen.getByText('Try Again')).toBeInTheDocument()
   })
 })

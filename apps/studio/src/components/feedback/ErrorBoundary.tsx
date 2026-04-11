@@ -30,7 +30,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   render() {
-    const translate = this.props.t || ((key: string) => key)
+    const fallbacks: Record<string, string> = {
+      'error.title': 'Something went wrong',
+      'error.fallback': 'An unexpected error occurred',
+      'error.retry': 'Try Again',
+    }
+    const translate = this.props.t || ((key: string) => fallbacks[key] || key)
 
     if (this.state.hasError) {
       return (

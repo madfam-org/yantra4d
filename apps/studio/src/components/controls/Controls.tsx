@@ -69,6 +69,10 @@ interface ManifestParam {
         [key: string]: unknown
     }
     maxlength?: number
+    options?: Array<{
+        value: string | number
+        label: Record<string, string> | string
+    }>
     [key: string]: unknown
 }
 
@@ -297,6 +301,8 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
     const sliders = parametersForMode.filter(p => p.type === 'slider' && !p.widget)
     const textInputs = parametersForMode.filter(p => p.type === 'text' && !p.widget)
     const checkboxes = parametersForMode.filter(p => p.type === 'checkbox')
+    const selectParams = parametersForMode.filter(p => p.type === 'select')
+    const colorWidgetParams = parametersForMode.filter(p => p.widget?.type === 'color')
     const gradientParams = parametersForMode.filter(p => p.widget?.type === 'color-gradient')
     const componentPickers = parametersForMode.filter(p => p.widget?.type === 'component-picker')
     const tpmsControls = parametersForMode.filter(p => p.widget?.type === 'tpms-topology')
@@ -423,6 +429,67 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
                                 value={(params[param.id] as string) ?? ''}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setParams(prev => ({ ...prev, [param.id]: e.target.value }))}
                                 aria-invalid={param.maxlength && ((params[param.id] as string)?.length || 0) > param.maxlength ? 'true' : undefined}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Select Parameters */}
+            {selectParams.length > 0 && (
+                <div className="space-y-4">
+                    {selectParams.map(param => (
+                        <div
+                            key={param.id}
+                            className="space-y-1"
+                            onPointerEnter={() => onParamHover?.(param.id)}
+                            onPointerLeave={() => onParamLeave?.()}
+                        >
+                            <Tooltip content={getLabel(param as unknown as Record<string, unknown>, 'tooltip', language)}>
+                                <Label htmlFor={`select-${param.id}`} className="cursor-help">{getLabel(param as unknown as Record<string, unknown>, 'label', language)}</Label>
+                            </Tooltip>
+                            <select
+                                id={`select-${param.id}`}
+                                className="w-full px-3 py-2 text-base md:text-sm min-h-[44px] md:min-h-0 rounded-md border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                value={String(params[param.id] ?? '')}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                    const val = e.target.value
+                                    // Preserve numeric type if the option value was numeric
+                                    const numVal = Number(val)
+                                    const resolved = param.options?.some(o => o.value === numVal) ? numVal : val
+                                    setParams(prev => ({ ...prev, [param.id]: resolved }))
+                                }}
+                            >
+                                {param.options?.map(opt => (
+                                    <option key={String(opt.value)} value={String(opt.value)}>
+                                        {getLabel(opt as unknown as Record<string, unknown>, 'label', language)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Color Widget Parameters */}
+            {colorWidgetParams.length > 0 && (
+                <div className="space-y-4">
+                    {colorWidgetParams.map(param => (
+                        <div
+                            key={param.id}
+                            className="space-y-1"
+                            onPointerEnter={() => onParamHover?.(param.id)}
+                            onPointerLeave={() => onParamLeave?.()}
+                        >
+                            <Tooltip content={getLabel(param as unknown as Record<string, unknown>, 'tooltip', language)}>
+                                <Label htmlFor={`color-${param.id}`} className="cursor-help">{getLabel(param as unknown as Record<string, unknown>, 'label', language)}</Label>
+                            </Tooltip>
+                            <input
+                                id={`color-${param.id}`}
+                                type="color"
+                                className="w-full h-11 min-h-[44px] rounded-md border border-border bg-background cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                value={(params[param.id] as string) ?? '#000000'}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setParams(prev => ({ ...prev, [param.id]: e.target.value }))}
                             />
                         </div>
                     ))}

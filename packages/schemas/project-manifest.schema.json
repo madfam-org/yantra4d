@@ -333,6 +333,18 @@
           "disabled": {
             "type": "boolean"
           },
+          "options": {
+            "type": "array",
+            "description": "Options for select-type parameters.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": { "type": ["string", "number"] },
+                "label": { "$ref": "#/$defs/i18nString" }
+              },
+              "required": ["value", "label"]
+            }
+          },
           "widget": {
             "type": "object",
             "description": "Custom widget plugin for this parameter.",
@@ -341,7 +353,10 @@
                 "type": "string",
                 "enum": [
                   "custom",
+                  "color",
                   "color-gradient",
+                  "component-picker",
+                  "tpms-topology",
                   "pattern-selector",
                   "image-picker"
                 ]

@@ -255,6 +255,17 @@ def run_render(cmd: list, scad_path: str | None = None) -> RenderResult:
             if arg == "-o" and i + 1 < len(cmd):
                 output_path = cmd[i + 1]
                 break
+        # After successful STL render, also produce 3MF for color-preserving viewer delivery
+        if output_path and output_path.endswith('.stl'):
+            threemf_path = output_path.rsplit('.stl', 1)[0] + '.3mf'
+            threemf_cmd = [threemf_path if arg == output_path else arg for arg in cmd]
+            try:
+                subprocess.run(threemf_cmd, check=True, capture_output=True, text=True,
+                              timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
+                logger.info(f"Color-preserving 3MF also generated: {threemf_path}")
+            except Exception:
+                pass  # 3MF is optional — STL viewer fallback still works
+
         return RenderResult(success=True, stderr=result.stderr, output_path=output_path, duration_ms=duration_ms)
     except subprocess.TimeoutExpired:
         duration_ms = (time.monotonic() - t0) * 1000

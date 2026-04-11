@@ -282,8 +282,17 @@ def _post_render_convert(output_path, output_filename, part, stl_prefix,
     if export_format == "stl":
         glb_filename = f"{stl_prefix}{part}.glb"
         glb_path = os.path.join(STATIC_FOLDER, glb_filename)
-        if stl_to_glb(output_path, glb_path):
-            # Keep serve_filename as the .stl for download; GLB is viewer-only.
+
+        # Prefer 3MF → GLB conversion (preserves per-face colors from OpenSCAD)
+        threemf_path = output_path.rsplit('.stl', 1)[0] + '.3mf' if output_path.endswith('.stl') else None
+        if threemf_path and os.path.isfile(threemf_path):
+            if convert_mesh(threemf_path, glb_path):
+                viewer_filename = glb_filename
+                logger.info("Color-preserving 3MF→GLB conversion for part %s", part)
+            elif stl_to_glb(output_path, glb_path):
+                viewer_filename = glb_filename
+        elif stl_to_glb(output_path, glb_path):
+            # Fallback: STL → GLB (no colors, but still works)
             viewer_filename = glb_filename
 
     return serve_path, serve_filename, viewer_filename

@@ -149,7 +149,7 @@ def validate_params(params: dict, project_slug: str | None = None) -> dict:
             cleaned[key] = num_val
         elif param_type == "text":
             str_val = str(value)
-            if not re.match(r'^[a-zA-Z0-9 _.-]*$', str_val):
+            if not re.match(r'^[a-zA-Z0-9 _.#,-]*$', str_val):
                 logger.warning(f"Rejecting unsafe text value for {key}")
                 continue
             maxlen = defn.get("maxlength", 255)

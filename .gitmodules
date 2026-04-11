@@ -121,3 +121,6 @@
 [submodule "projects/locking-mechanism-hyperobject"]
 	path = projects/locking-mechanism-hyperobject
 	url = https://github.com/madfam-org/locking-mechanism-hyperobject.git
+[submodule "projects/rubiks-hyperobject"]
+	path = projects/rubiks-hyperobject
+	url = https://github.com/madfam-org/rubiks-hyperobject.git

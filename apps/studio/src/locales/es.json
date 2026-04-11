@@ -267,5 +267,17 @@
   "splash.tip_10": "Todos los proyectos funcionan sin conexión mediante renderizado en el navegador",
   "error.project_not_found_title": "Proyecto No Encontrado",
   "error.project_not_found_body": "El proyecto \"{slug}\" no existe o aún no ha sido desplegado.",
-  "error.browse_projects": "Ver Proyectos"
+  "error.browse_projects": "Ver Proyectos",
+  "print.pattern": "Patrón de Relleno",
+  "print.nozzle": "Boquilla",
+  "print.currency": "Moneda",
+  "print.disclaimer": "Estimación (±30% para piezas típicas)",
+  "print.disclaimer_time": "Estimación de tiempo ±30%",
+  "tier.upgrade_title": "Desbloquea Creación Ilimitada",
+  "tier.upgrade_desc_1": "¡Descubriste una función Pro!",
+  "tier.upgrade_desc_2": "Mejora tu plan para acceder a:",
+  "tier.maybe_later": "Quizás después",
+  "tier.upgrade_button": "Mejorar a Pro",
+  "tier.pro_required": "Requiere nivel Pro",
+  "toast.copied_bom": "¡BOM copiado al portapapeles!"
 }

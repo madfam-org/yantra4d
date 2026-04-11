@@ -267,5 +267,17 @@
   "splash.tip_10": "All projects work offline via browser-based rendering",
   "error.project_not_found_title": "Project Not Found",
   "error.project_not_found_body": "The project \"{slug}\" doesn't exist or hasn't been deployed yet.",
-  "error.browse_projects": "Browse Projects"
+  "error.browse_projects": "Browse Projects",
+  "print.pattern": "Infill Pattern",
+  "print.nozzle": "Nozzle",
+  "print.currency": "Currency",
+  "print.disclaimer": "Estimate (±30% for typical parts)",
+  "print.disclaimer_time": "Time estimate ±30%",
+  "tier.upgrade_title": "Unlock Limitless Creation",
+  "tier.upgrade_desc_1": "You've discovered a Pro feature!",
+  "tier.upgrade_desc_2": "Upgrade your plan to access:",
+  "tier.maybe_later": "Maybe Later",
+  "tier.upgrade_button": "Upgrade to Pro",
+  "tier.pro_required": "Pro tier required",
+  "toast.copied_bom": "BOM copied to clipboard!"
 }

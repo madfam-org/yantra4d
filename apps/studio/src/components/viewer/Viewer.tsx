@@ -97,16 +97,27 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
     }, [geom, partType, onGeometry, onGeometryRemove])
 
     // Apply the React-driven UI colors to native GLTF/GLB scenes.
-    // The backend `stl_to_glb` optimizer generates default grey materials, 
+    // The backend `stl_to_glb` optimizer generates default grey materials,
     // so we must traverse and inject the correct dynamic part color here.
+    // If the GLB contains vertex colors (from 3MF color pipeline), those
+    // are preserved and vertex color rendering is enabled.
     useEffect(() => {
         if (gltfScene && color) {
             gltfScene.traverse((child) => {
                 const mesh = child as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>
                 if (mesh.isMesh && mesh.material) {
-                    // Update material color natively to reflect the UI color picker
-                    mesh.material.color.set(color)
-                    // If Emissive is active, copy the emissive props too
+                    // Check if mesh has vertex colors from the 3MF→GLB color pipeline
+                    const hasVertexColors = mesh.geometry?.attributes?.color != null
+
+                    if (hasVertexColors) {
+                        // GLB has per-vertex colors — enable vertex color rendering
+                        mesh.material.vertexColors = true
+                        mesh.material.color.set('#ffffff')  // White base lets vertex colors show true
+                    } else {
+                        // No vertex colors — apply the UI color picker color
+                        mesh.material.color.set(color)
+                    }
+
                     const isHighlight = highlightMode === 'highlight'
                     const isPreviewGltf = highlightMode === 'preview'
                     mesh.material.emissive.set(isHighlight ? color : isPreviewGltf ? '#f59e0b' : '#000000')

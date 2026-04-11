@@ -113,6 +113,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
   const [projects, setProjects] = useState<ProjectListItem[]>([])
   const [projectSlug, setProjectSlug] = useState<string | null>(() => _getProjectSlug(location))
   const [loading, setLoading] = useState(true)
+  const [manifestError, setManifestError] = useState<string | null>(null)
   // Track whether the projects list has been fetched (or failed).
   // The manifest fetch must wait for this so it can use the correct endpoint.
   const [projectsResolved, setProjectsResolved] = useState(false)
@@ -162,17 +163,25 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
 
     apiFetch(url, { signal: controller.signal })
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        if (!res.ok) {
+          setManifestError(res.status === 404 ? 'project_not_found' : 'manifest_load_failed')
+          setLoading(false)
+          return undefined
+        }
         return res.json()
       })
-      .then((data) => setManifest(data))
+      .then((data) => {
+        if (data) {
+          setManifestError(null)
+          setManifest(data)
+          setLoading(false)
+        }
+      })
       .catch((err) => {
         if (err.name === 'AbortError') return
-        console.warn('Manifest fetch failed, using fallback:', err)
-        setManifest(fallbackManifest as Manifest)
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false)
+        console.warn('Manifest fetch failed:', err)
+        setManifestError('network_error')
+        setLoading(false)
       })
 
     return () => controller.abort()
@@ -245,6 +254,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
     manifest,
     loading,
     ready,
+    manifestError,
     projects,
     projectSlug: projectSlug || manifest.project.slug,
     switchProject,
@@ -259,7 +269,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
     getViewerConfig,
     getEstimateConstants,
     presets: manifest.presets || [],
-  }), [manifest, loading, ready, projects, projectSlug, switchProject, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
+  }), [manifest, loading, ready, manifestError, projects, projectSlug, switchProject, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
 
   return <ManifestContext.Provider value={value}>{children}</ManifestContext.Provider>
 }

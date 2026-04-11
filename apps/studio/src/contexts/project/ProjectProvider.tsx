@@ -304,7 +304,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
 }
 
 export function ProjectProvider({ children }: ProjectProviderProps) {
-  const { projectSlug, manifest } = useManifest()
+  const { projectSlug, manifest, manifestError } = useManifest() as ReturnType<typeof useManifest> & { manifestError: string | null }
 
   // Gate: only block when the manifest belongs to a DIFFERENT project than
   // the one requested via URL.  This prevents the auto-render from firing with
@@ -312,7 +312,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   // We deliberately do NOT gate on generic `loading` so that views which don't
   // depend on the manifest (e.g. ProjectsView) can render immediately.
   const manifestSlug = manifest.project?.slug || ''
-  const manifestStale = manifestSlug && projectSlug && manifestSlug !== projectSlug
+  const manifestStale = !manifestError && manifestSlug && projectSlug && manifestSlug !== projectSlug
 
   // Smooth exit: hold splash visible for 300ms fade-out after manifest loads.
   // setState in effect is intentional here — it synchronizes with the timer

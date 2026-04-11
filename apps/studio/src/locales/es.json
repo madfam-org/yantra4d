@@ -264,5 +264,8 @@
   "splash.tip_7": "Usa el plano de corte (C) para inspeccionar secciones transversales",
   "splash.tip_8": "Medición punto a punto: pulsa M y haz clic en dos puntos",
   "splash.tip_9": "Alterna la barra lateral con [ y la consola con ]",
-  "splash.tip_10": "Todos los proyectos funcionan sin conexión mediante renderizado en el navegador"
+  "splash.tip_10": "Todos los proyectos funcionan sin conexión mediante renderizado en el navegador",
+  "error.project_not_found_title": "Proyecto No Encontrado",
+  "error.project_not_found_body": "El proyecto \"{slug}\" no existe o aún no ha sido desplegado.",
+  "error.browse_projects": "Ver Proyectos"
 }

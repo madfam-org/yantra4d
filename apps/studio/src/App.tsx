@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 import { useProject } from './contexts/project/ProjectProvider'
+import { useManifest } from './contexts/project/ManifestProvider'
 import { useThemeAndLanguage } from './hooks/system/useThemeAndLanguage'
 import { usePlatform } from './contexts/system/PlatformProvider'
 import { useIsMobile } from './hooks/system/useMediaQuery'
@@ -63,6 +64,7 @@ function App() {
 
   const isMobile = useIsMobile()
   const { layout, setSidebarSize, toggleSidebar, setConsoleSize, toggleConsole } = usePanelLayout()
+  const { manifestError: _manifestError } = useManifest() as { manifestError: string | null }
 
   // Get state from ProjectContext
   const {
@@ -179,6 +181,22 @@ function App() {
           <OnboardingWizard />
         </Suspense>
       </ErrorBoundary>
+    )
+  }
+
+  // Project not found or manifest error — show friendly error page
+  if (_manifestError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-dvh bg-background text-foreground gap-4 px-4 text-center">
+        <div className="text-6xl">🔍</div>
+        <h1 className="text-2xl font-bold">{t('error.project_not_found_title')}</h1>
+        <p className="text-muted-foreground max-w-md">
+          {t('error.project_not_found_body', { slug: projectSlug })}
+        </p>
+        <Button onClick={() => navigate('/projects')} variant="default" className="min-h-[44px]">
+          {t('error.browse_projects')}
+        </Button>
+      </div>
     )
   }
 

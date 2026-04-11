@@ -264,5 +264,8 @@
   "splash.tip_7": "Use the clipping plane (C) to inspect cross-sections",
   "splash.tip_8": "Point-to-point measurement: press M and click two points",
   "splash.tip_9": "Toggle the sidebar with [ and console with ]",
-  "splash.tip_10": "All projects work offline via browser-based rendering"
+  "splash.tip_10": "All projects work offline via browser-based rendering",
+  "error.project_not_found_title": "Project Not Found",
+  "error.project_not_found_body": "The project \"{slug}\" doesn't exist or hasn't been deployed yet.",
+  "error.browse_projects": "Browse Projects"
 }

@@ -7,6 +7,7 @@ psycopg2-binary~=2.9
 gunicorn~=21.0
 python-dotenv~=1.0
 trimesh~=4.0
+lxml>=4.9
 numpy>=1.24
 networkx~=3.0
 flask-limiter~=3.5

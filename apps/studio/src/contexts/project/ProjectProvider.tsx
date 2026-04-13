@@ -68,6 +68,13 @@ export interface ProjectContextValue {
   overhangThreshold: ProjectParamsReturn['overhangThreshold']
   setOverhangThreshold: ProjectParamsReturn['setOverhangThreshold']
 
+  // FEA
+  stressData: Record<string, unknown> | null
+  setStressData: React.Dispatch<React.SetStateAction<Record<string, unknown> | null>>
+  stressSimulationActive: boolean
+  setStressSimulationActive: React.Dispatch<React.SetStateAction<boolean>>
+  handleRunFEA: () => Promise<void>
+
   undoParams: ProjectParamsReturn['undoParams']
   redoParams: ProjectParamsReturn['redoParams']
   canUndo: ProjectParamsReturn['canUndo']
@@ -170,9 +177,41 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     exportFormat: projectParams.exportFormat,
     handleExportImage: projectParams.handleExportImage,
     handleExportAllViews: projectParams.handleExportAllViews,
+    handleExportAllViews: projectParams.handleExportAllViews,
     params: projectParams.params,
     manifest: projectParams.manifest,
   })
+
+  // 4. FEA integration
+  const [stressData, setStressData] = useState<Record<string, unknown> | null>(null)
+  const [stressSimulationActive, setStressSimulationActive] = useState<boolean>(false)
+
+  const handleRunFEA = async () => {
+    try {
+      projectParams.setLoading(true)
+      const res = await fetch(`/api/projects/${projectSlug}/simulate/stress`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify({ force_y: -50.0 })
+      })
+      const data = await res.json()
+      if (data.status === 'success' && data.simulation) {
+        setStressData(data.simulation)
+        setStressSimulationActive(true)
+      } else {
+        console.error('FEA Failed:', data.error)
+        setStressSimulationActive(false)
+        setStressData(null)
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      projectParams.setLoading(false)
+    }
+  }
 
   const value: ProjectContextValue = {
     // Refs
@@ -227,6 +266,13 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     setOverhangEnabled: projectParams.setOverhangEnabled,
     overhangThreshold: projectParams.overhangThreshold,
     setOverhangThreshold: projectParams.setOverhangThreshold,
+
+    // FEA
+    stressData,
+    setStressData,
+    stressSimulationActive,
+    setStressSimulationActive,
+    handleRunFEA,
 
     // Undo/Redo
     undoParams: projectParams.undoParams,

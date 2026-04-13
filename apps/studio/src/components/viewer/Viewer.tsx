@@ -80,9 +80,10 @@ interface ModelProps {
     onGeometryRemove?: (partType: string) => void
     highlightMode: HighlightMode
     isDark: boolean
+    stressData?: Record<string, unknown> | null
 }
 
-const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark }: ModelProps) => {
+const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData }: ModelProps) => {
     const bareUrl = (url || '').split('?')[0].toLowerCase()
     const isGLTF = isGlb || bareUrl.endsWith('.gltf') || bareUrl.endsWith('.glb')
 
@@ -102,12 +103,41 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
     // If the GLB contains vertex colors (from 3MF color pipeline), those
     // are preserved and vertex color rendering is enabled.
     useEffect(() => {
+        // Inject FEA heatmap if stressData exists matching this mesh part
+        // (Assuming stressData returns a monolithic array that matches our vertices,
+        // or for foundation demo we apply the vertex color generation globally)
+        let hasFEAVertexColors = false
+        if (stressData && stressData.stresses && geom) {
+            const stresses = stressData.stresses as number[]
+            const posAttr = geom.attributes.position
+            // Ensure safe mapping bounds (for foundation visualization)
+            if (posAttr && stresses.length >= posAttr.count) {
+                const colors = new Float32Array(posAttr.count * 3)
+                const colorObj = new THREE.Color()
+                const maxStress = (stressData.max as number) || 1
+                const minStress = (stressData.min as number) || 0
+                
+                for (let i = 0; i < posAttr.count; i++) {
+                    const s = stresses[i]
+                    const norm = Math.max(0, Math.min(1, (s - minStress) / (maxStress - minStress || 1)))
+                    const hue = 0.66 * (1.0 - norm) 
+                    colorObj.setHSL(hue, 1.0, 0.5)
+                    colors[i * 3] = colorObj.r
+                    colors[i * 3 + 1] = colorObj.g
+                    colors[i * 3 + 2] = colorObj.b
+                }
+                
+                geom.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+                hasFEAVertexColors = true
+            }
+        }
+
         if (gltfScene && color) {
             gltfScene.traverse((child) => {
                 const mesh = child as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>
                 if (mesh.isMesh && mesh.material) {
                     // Check if mesh has vertex colors from the 3MF→GLB color pipeline
-                    const hasVertexColors = mesh.geometry?.attributes?.color != null
+                    const hasVertexColors = hasFEAVertexColors || mesh.geometry?.attributes?.color != null
 
                     if (hasVertexColors) {
                         // GLB has per-vertex colors — enable vertex color rendering
@@ -127,7 +157,7 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                 }
             })
         }
-    }, [gltfScene, color, highlightMode])
+    }, [gltfScene, geom, color, highlightMode, stressData])
 
     // highlightMode: 'normal' | 'highlight' | 'ghost' | 'hidden' | 'preview'
     if (highlightMode === 'hidden') return null
@@ -323,9 +353,10 @@ interface ViewerProps {
     overhangData?: OverhangData | null
     formatDimension?: ((value: number, decimals?: number) => string) | null
     unit?: string
+    stressData?: Record<string, unknown> | null
 }
 
-const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm' }, ref) => {
+const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
     const geometriesRef = React.useRef<Record<string, THREE.BufferGeometry>>({})
     const prevCenterRef = React.useRef<number[] | null>(null)
     const prevMaxDimRef = React.useRef<number | null>(null)
@@ -697,7 +728,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                     onGeometry={handleGeometry}
                                                     onGeometryRemove={handleGeometryRemove}
                                                     highlightMode="ghost"
-                                                    isDark={isDark}
+                                                    isDark={isDark} stressData={stressData}
                                                 />
                                             ))}
                                             {parts.map((part) => (
@@ -712,7 +743,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                     onGeometry={handleGeometry}
                                                     onGeometryRemove={handleGeometryRemove}
                                                     highlightMode="ghost"
-                                                    isDark={isDark}
+                                                    isDark={isDark} stressData={stressData}
                                                 />
                                             ))}
                                         </group>
@@ -759,7 +790,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                             onGeometry={handleGeometry}
                                                             onGeometryRemove={handleGeometryRemove}
                                                             highlightMode={getHighlightMode(part.type)}
-                                                            isDark={isDark}
+                                                            isDark={isDark} stressData={stressData}
                                                         />
                                                     )
 
@@ -823,7 +854,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                             onGeometry={handleGeometry}
                                                             onGeometryRemove={handleGeometryRemove}
                                                             highlightMode={getHighlightMode(part.type)}
-                                                            isDark={isDark}
+                                                            isDark={isDark} stressData={stressData}
                                                         />
                                                     )
 

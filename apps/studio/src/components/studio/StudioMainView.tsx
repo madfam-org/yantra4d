@@ -80,6 +80,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     overhangData,
     shortcutHelpOpen, setShortcutHelpOpen,
     manifest, projectSlug,
+    stressData, stressSimulationActive, handleRunFEA
   } = useProject()
 
   const { t } = useLanguage()
@@ -185,10 +186,23 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         environmentPreset={environmentPreset}
         thicknessData={thicknessData}
         overhangData={overhangData}
+        stressData={stressData}
         formatDimension={formatDim}
         unit={unit}
       />
       <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
+      {/* FEA Overlay Trigger */}
+      {mode && parts.length > 0 && !loading && (
+        <div className="absolute bottom-4 left-4 z-20">
+          <button 
+            onClick={handleRunFEA}
+            disabled={stressSimulationActive}
+            className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors ${stressSimulationActive ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'}`}
+          >
+            {stressSimulationActive ? 'FEA Stress Active' : 'Run FEA Stress (Mock)'}
+          </button>
+        </div>
+      )}
       {!loading && parts.length > 0 && (
         <ModelInfoPanel printEstimate={printEstimate as never} partCount={parts.length} totalPieceCount={totalPieceCount} />
       )}

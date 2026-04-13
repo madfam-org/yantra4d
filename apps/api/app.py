@@ -51,6 +51,7 @@ from routes.core.client_config import client_config_bp
 from routes.projects.animations import animations_bp
 from routes.integrations.printer import printer_bp
 from routes.engine.analysis import analysis_bp
+from routes.engine.simulate import simulate_bp
 from routes.integrations.cotiza_export import cotiza_export_bp
 from routes.core.websocket import ws_bp, init_websocket
 from services.core.mqtt_telemetry import telemetry_service
@@ -137,6 +138,7 @@ def create_app():
     app.register_blueprint(animations_bp)
     app.register_blueprint(printer_bp)
     app.register_blueprint(analysis_bp)
+    app.register_blueprint(simulate_bp)
     app.register_blueprint(cotiza_export_bp)
     app.register_blueprint(ws_bp)
 

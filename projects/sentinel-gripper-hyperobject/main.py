@@ -2,177 +2,174 @@ import cadquery as cq
 import math
 
 # ─── Globals injected by Yantra4D cq_runner ──────────────────────────────────
-finger_length      = float(globals().get("finger_length",      65.0))
-base_radius        = float(globals().get("base_radius",        35.0))
-flexure_thickness  = float(globals().get("flexure_thickness",   1.2))
-finger_count       = int(globals().get("finger_count",           3))
-target_part        = str(globals().get("target_part",      "housing"))
-phalanx_width      = 18.0
+finger_length     = float(globals().get("finger_length",     65.0))
+base_radius       = float(globals().get("base_radius",       35.0))
+flexure_thickness = float(globals().get("flexure_thickness",  1.2))
+finger_count      = int(str(globals().get("finger_count",      3)))
+target_part       = str(globals().get("target_part",     "housing"))
+phalanx_width     = 18.0
+
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
-def finger_angle(i):
+def fa(i):
+    """Finger angle in degrees for finger i."""
     return (360.0 / finger_count) * i
 
 
-def _polar_union(base_wp, build_fn):
-    """Union together results of build_fn(angle) for each finger."""
-    result = None
-    for i in range(finger_count):
-        part = build_fn(finger_angle(i))
-        result = part if result is None else result.union(part)
+def polar_xy(radius, angle_deg):
+    """Return (x, y) for a point at radius and angle (degrees)."""
+    a = math.radians(angle_deg)
+    return radius * math.cos(a), radius * math.sin(a)
+
+
+def union_all(shapes):
+    """Reduce a list of Workplanes into a single union."""
+    result = shapes[0]
+    for s in shapes[1:]:
+        result = result.union(s)
     return result
 
 
 # ─── Housing ─────────────────────────────────────────────────────────────────
 def build_housing():
-    """ISO-style robotic wrist flange with 6-bolt pattern and knuckle hooks."""
+    """ISO wrist flange: cylinder hub + 6 bolt holes + knuckle hooks."""
 
-    # Tapered frustum hub
+    # Main hub (plain cylinder — no loft to avoid pending-wire issues)
     base = (
         cq.Workplane("XY")
-        .circle(base_radius + 5).wires().toPending()
-        .workplane(offset=15)
-        .circle(base_radius).wires().toPending()
-        .loft()
+        .cylinder(15, base_radius + 3)
     )
 
-    # Central hollow drive tube
+    # Central drive bore
     base = base.faces(">Z").hole(18)
 
-    # 6-bolt radial bolt holes (manual polar loop — most reliable in CQ)
-    bolt_r = base_radius - 12
+    # 6-bolt radial pattern
+    bolt_r = base_radius - 10
     for k in range(6):
-        a = math.radians(k * 60)
-        x = bolt_r * math.cos(a)
-        y = bolt_r * math.sin(a)
-        base = base.faces(">Z").workplane().center(x, y).hole(6.5)
+        bx, by = polar_xy(bolt_r, k * 60)
+        base = base.faces(">Z").workplane().center(bx, by).hole(6.5)
 
-    # Knuckle attachment hooks
-    def make_hook(angle_deg):
-        a = math.radians(angle_deg)
-        cx = (base_radius - 5) * math.cos(a)
-        cy = (base_radius - 5) * math.sin(a)
-        return (
+    # Knuckle attachment hooks per finger
+    hooks = []
+    for i in range(finger_count):
+        ang = fa(i)
+        cx, cy = polar_xy(base_radius - 4, ang)
+        hook = (
             cq.Workplane("XY")
-            .transformed(offset=cq.Vector(cx, cy, 15))
-            .box(15, phalanx_width, 10)
-            .edges(">Z or <Z").fillet(1.5)
+            .transformed(offset=cq.Vector(cx, cy, 7.5))
+            .transformed(rotate=cq.Vector(0, 0, ang))
+            .box(14, phalanx_width, 10)
         )
+        hooks.append(hook)
 
-    hooks = _polar_union(None, make_hook)
-    return base.union(hooks)
+    return union_all([base] + hooks)
 
 
 # ─── Skeleton ─────────────────────────────────────────────────────────────────
 def build_skeleton():
-    """PETG rigid phalanges: proximal (with lightening pocket) + tapered distal."""
+    """PETG phalanges: proximal box with lightening pocket + tapered distal box."""
 
     prox_len   = finger_length * 0.45
     prox_start = 22.0
     dist_len   = finger_length * 0.35
     dist_start = prox_start + prox_len + 6.0
 
-    def make_finger(angle_deg):
-        a  = math.radians(angle_deg)
-        ca = math.cos(a)
-        sa = math.sin(a)
+    fingers = []
+    for i in range(finger_count):
+        ang = fa(i)
+        cx1, cy1 = polar_xy(base_radius - 2, ang)
+        cx2, cy2 = polar_xy(base_radius - 5, ang)
 
         # Proximal phalanx
-        cx1 = (base_radius - 2) * ca
-        cy1 = (base_radius - 2) * sa
         prox = (
             cq.Workplane("XY")
             .transformed(offset=cq.Vector(cx1, cy1, prox_start))
-            .transformed(rotate=cq.Vector(0, 0, angle_deg))
+            .transformed(rotate=cq.Vector(0, 0, ang))
             .box(10, phalanx_width - 2, prox_len, centered=(True, True, False))
-            .edges("|Z").fillet(2.5)
         )
 
         # Lightening pocket
         pocket = (
             cq.Workplane("XY")
             .transformed(offset=cq.Vector(cx1, cy1, prox_start + 6))
-            .transformed(rotate=cq.Vector(0, 0, angle_deg))
-            .box(7, phalanx_width - 10, prox_len - 12, centered=(True, True, False))
+            .transformed(rotate=cq.Vector(0, 0, ang))
+            .box(6, phalanx_width - 10, prox_len - 12, centered=(True, True, False))
         )
         prox = prox.cut(pocket)
 
-        # Distal phalanx (simple tapered box — loft from rotated planes is error-prone)
-        cx2 = (base_radius - 5) * ca
-        cy2 = (base_radius - 5) * sa
+        # Distal phalanx
         dist = (
             cq.Workplane("XY")
             .transformed(offset=cq.Vector(cx2, cy2, dist_start))
-            .transformed(rotate=cq.Vector(0, 0, angle_deg))
+            .transformed(rotate=cq.Vector(0, 0, ang))
             .box(8, phalanx_width - 4, dist_len, centered=(True, True, False))
-            .edges(">Z").fillet(3.0)  # rounded fingertip
         )
 
-        return prox.union(dist)
+        fingers.append(prox.union(dist))
 
-    return _polar_union(None, make_finger)
+    return union_all(fingers)
 
 
 # ─── Flexure ─────────────────────────────────────────────────────────────────
 def build_flexure():
-    """TPU V-Notch living hinges carved via cylinder Boolean scoops."""
+    """TPU V-Notch living hinges: block with cylindrical scoops to thin the waist."""
 
     prox_len   = finger_length * 0.45
     prox_start = 22.0
 
-    def make_hinge(angle_deg):
-        a  = math.radians(angle_deg)
-        ca = math.cos(a)
-        sa = math.sin(a)
+    hinge_height = max(4.0, prox_start - 15.0)
+    scoop_r      = max(1.5, (12.0 - max(0.4, flexure_thickness)) / 2.0)
 
-        cx = (base_radius - 5) * ca
-        cy = (base_radius - 5) * sa
-        hinge_height = prox_start - 15.0
+    hinges = []
+    for i in range(finger_count):
+        ang     = fa(i)
+        a_rad   = math.radians(ang)
+        ca, sa  = math.cos(a_rad), math.sin(a_rad)
 
-        # ── Wrist hinge block
-        block = (
+        cx  = (base_radius - 5) * ca
+        cy  = (base_radius - 5) * sa
+        mid_z = 15.0 + hinge_height / 2.0
+
+        # Main hinge block (wrist → proximal)
+        block1 = (
             cq.Workplane("XY")
             .transformed(offset=cq.Vector(cx, cy, 15))
-            .transformed(rotate=cq.Vector(0, 0, angle_deg))
+            .transformed(rotate=cq.Vector(0, 0, ang))
             .box(12, phalanx_width - 2, hinge_height, centered=(True, True, False))
         )
 
-        # Compute scoop radius to achieve the flexure waist thickness
-        scoop_r = max(2.0, (12.0 - flexure_thickness) / 2.0)
-
-        # Inner scoop (subtract from +X face)
-        mid_z   = 15 + hinge_height / 2.0
-        inner_x = cx + (6 - scoop_r) * ca
-        inner_y = cy + (6 - scoop_r) * sa
-        inner = (
+        # Inner scoop cylinder (to thin the hinge to flexure_thickness)
+        inner_x = cx + (6.0 - scoop_r) * ca
+        inner_y = cy + (6.0 - scoop_r) * sa
+        scoop1 = (
             cq.Workplane("XY")
             .transformed(offset=cq.Vector(inner_x, inner_y, mid_z))
             .cylinder(phalanx_width + 4, scoop_r)
         )
 
-        # Outer scoop (subtract from -X face)
-        outer_x = cx - (6 - scoop_r) * ca
-        outer_y = cy - (6 - scoop_r) * sa
-        outer = (
+        outer_x = cx - (6.0 - scoop_r) * ca
+        outer_y = cy - (6.0 - scoop_r) * sa
+        scoop2 = (
             cq.Workplane("XY")
             .transformed(offset=cq.Vector(outer_x, outer_y, mid_z))
             .cylinder(phalanx_width + 4, scoop_r)
         )
 
-        # Distal hinge block (thinner)
-        dist_hinge_z = prox_start + prox_len
+        h1 = block1.cut(scoop1).cut(scoop2)
+
+        # Distal hinge block (proximal → distal)
         cx2 = (base_radius - 3) * ca
         cy2 = (base_radius - 3) * sa
-        block2 = (
+        h2 = (
             cq.Workplane("XY")
-            .transformed(offset=cq.Vector(cx2, cy2, dist_hinge_z))
-            .transformed(rotate=cq.Vector(0, 0, angle_deg))
+            .transformed(offset=cq.Vector(cx2, cy2, prox_start + prox_len))
+            .transformed(rotate=cq.Vector(0, 0, ang))
             .box(10, phalanx_width - 4, 6, centered=(True, True, False))
         )
 
-        return block.cut(inner).cut(outer).union(block2)
+        hinges.append(h1.union(h2))
 
-    return _polar_union(None, make_hinge)
+    return union_all(hinges)
 
 
 # ─── Grip Pad ─────────────────────────────────────────────────────────────────
@@ -184,10 +181,13 @@ def build_grip_pad():
     dist_len   = finger_length * 0.35
     dist_start = prox_start + prox_len + 6.0
 
-    def make_pad(angle_deg):
-        a  = math.radians(angle_deg)
-        ca = math.cos(a)
-        sa = math.sin(a)
+    total_ribs = max(1, int((dist_len - 8.0) / 4.0))
+
+    pads = []
+    for i in range(finger_count):
+        ang     = fa(i)
+        a_rad   = math.radians(ang)
+        ca, sa  = math.cos(a_rad), math.sin(a_rad)
 
         px = (base_radius - 9.5) * ca
         py = (base_radius - 9.5) * sa
@@ -195,38 +195,37 @@ def build_grip_pad():
         pad = (
             cq.Workplane("XY")
             .transformed(offset=cq.Vector(px, py, dist_start + 2))
-            .transformed(rotate=cq.Vector(0, 0, angle_deg))
+            .transformed(rotate=cq.Vector(0, 0, ang))
             .box(3, phalanx_width - 6, dist_len - 4, centered=(True, True, False))
-            .edges("|Z").fillet(0.8)
         )
 
-        # Generative rib loop
-        total_ribs = max(1, int((dist_len - 8) / 4))
         rx = (base_radius - 12) * ca
         ry = (base_radius - 12) * sa
 
+        ribs = []
         for r in range(total_ribs):
             rib_z = dist_start + 4 + (r * 4)
             rib = (
                 cq.Workplane("XY")
                 .transformed(offset=cq.Vector(rx, ry, rib_z))
-                .transformed(rotate=cq.Vector(0, 0, angle_deg))
+                .transformed(rotate=cq.Vector(0, 0, ang))
                 .box(2.5, phalanx_width - 8, 2, centered=(True, True, False))
-                .edges(">X").fillet(0.4)
             )
-            pad = pad.union(rib)
+            ribs.append(rib)
 
-        return pad
+        if ribs:
+            pad = union_all([pad] + ribs)
+        pads.append(pad)
 
-    return _polar_union(None, make_pad)
+    return union_all(pads)
 
 
 # ─── Dispatch ────────────────────────────────────────────────────────────────
 _dispatch = {
-    "skeleton":  build_skeleton,
-    "flexure":   build_flexure,
-    "grip_pad":  build_grip_pad,
-    "housing":   build_housing,
+    "skeleton": build_skeleton,
+    "flexure":  build_flexure,
+    "grip_pad": build_grip_pad,
+    "housing":  build_housing,
 }
 
 result = _dispatch.get(target_part, build_housing)()

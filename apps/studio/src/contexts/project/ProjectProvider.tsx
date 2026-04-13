@@ -75,6 +75,12 @@ export interface ProjectContextValue {
   setStressSimulationActive: React.Dispatch<React.SetStateAction<boolean>>
   handleRunFEA: () => Promise<void>
 
+  // Physics (PPF Contact Solver morph targets)
+  physicsJobId: string | null
+  physicsProgress: number
+  physicsFrames: boolean[] | null
+  handleRunPhysics: () => Promise<void>
+
   undoParams: ProjectParamsReturn['undoParams']
   redoParams: ProjectParamsReturn['redoParams']
   canUndo: ProjectParamsReturn['canUndo']
@@ -213,6 +219,67 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     }
   }
 
+  // 5. Advanced Physics (PPF Contact Solver Integration)
+  const [physicsJobId, setPhysicsJobId] = useState<string | null>(null)
+  const [physicsProgress, setPhysicsProgress] = useState<number>(0)
+  const [physicsFrames, setPhysicsFrames] = useState<boolean[] | null>(null)
+
+  const handleRunPhysics = async () => {
+    try {
+      projectParams.setLoading(true)
+      const res = await fetch(`/api/projects/${projectSlug}/simulate/physics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          parts: projectParams.parts, 
+          kinematics: manifest?.kinematics || {}
+        })
+      })
+      const data = await res.json()
+      if (res.ok && data.job_id) {
+        setPhysicsJobId(data.job_id)
+        setPhysicsProgress(0)
+      } else {
+        console.error("Failed to start physics:", data.error)
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      projectParams.setLoading(false)
+    }
+  }
+
+  // Poll for physics completion when a job is active
+  useEffect(() => {
+    if (!physicsJobId) return
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/projects/${projectSlug}/simulate/physics/${physicsJobId}`)
+        const data = await res.json()
+        
+        if (data.status === 'running') {
+          setPhysicsProgress(data.progress)
+        } else if (data.status === 'success') {
+          setPhysicsProgress(100)
+          setPhysicsFrames(data.frames)
+          setPhysicsJobId(null)
+          clearInterval(interval)
+        } else if (data.status === 'failed') {
+          console.error("Physics failed:", data.error)
+          setPhysicsJobId(null)
+          clearInterval(interval)
+        }
+      } catch (e) {
+        console.error("Physics polling fail:", e)
+      }
+    }, 1500)
+
+    return () => clearInterval(interval)
+  }, [physicsJobId, projectSlug])
+
   const value: ProjectContextValue = {
     // Refs
     viewerRef,
@@ -273,6 +340,12 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     stressSimulationActive,
     setStressSimulationActive,
     handleRunFEA,
+
+    // Physics
+    physicsJobId,
+    physicsProgress,
+    physicsFrames,
+    handleRunPhysics,
 
     // Undo/Redo
     undoParams: projectParams.undoParams,

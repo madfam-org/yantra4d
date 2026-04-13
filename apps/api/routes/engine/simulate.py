@@ -12,6 +12,7 @@ from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
 from services.geometry.stress_analyzer import compute_stress_field
+from tasks.simulation_tasks import queue_simulation, get_job_status
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 import rate_limits
@@ -67,4 +68,51 @@ def simulate_stress(slug: str):
         "project": slug,
         "mesh_file": os.path.basename(mesh_path),
         "simulation": result,
+    })
+
+@simulate_bp.route('/api/projects/<slug>/simulate/physics', methods=['POST'])
+@require_valid_slug
+@require_tier("pro")
+@handle_exceptions
+def start_physics_simulation(slug: str):
+    """Trigges a full GPU-bound PPF Physics simulation returning sequence frames."""
+    data = request.get_json(silent=True) or {}
+    
+    parts = data.get("parts", [])
+    kinematics = data.get("kinematics", {})
+    
+    if not parts or not kinematics:
+        return error_response("Missing parts or kinematics manifest payload.", 400)
+        
+    try:
+        # Dispatch the simulation job to GPU worker queue
+        job_id = queue_simulation(slug, parts, kinematics)
+    except Exception as e:
+        logger.exception("Failed to dispatch simulation job")
+        return error_response(f"Job dispatch failed: {str(e)}", 500)
+        
+    return jsonify({
+        "status": "success",
+        "message": "Physics simulation queued.",
+        "job_id": job_id
+    }), 202
+
+@simulate_bp.route('/api/projects/<slug>/simulate/physics/<job_id>', methods=['GET'])
+@require_valid_slug
+@handle_exceptions
+def get_physics_simulation_status(slug: str, job_id: str):
+    """Polls the status of the asynchronous physics simulation task."""
+    status_data = get_job_status(job_id)
+    
+    if not status_data:
+        return error_response("Job not found.", 404)
+        
+    if status_data.get("slug") != slug:
+        return error_response("Job does not belong to this project.", 403)
+        
+    return jsonify({
+        "status": status_data["status"],
+        "progress": status_data["progress"],
+        "frames": status_data["frames"],
+        "error": status_data["error"]
     })

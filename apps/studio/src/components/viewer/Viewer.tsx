@@ -81,6 +81,7 @@ interface ModelProps {
     highlightMode: HighlightMode
     isDark: boolean
     stressData?: Record<string, unknown> | null
+    physicsFrames?: boolean[] | null
 }
 
 const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData }: ModelProps) => {
@@ -354,9 +355,10 @@ interface ViewerProps {
     formatDimension?: ((value: number, decimals?: number) => string) | null
     unit?: string
     stressData?: Record<string, unknown> | null
+    physicsFrames?: boolean[] | null
 }
 
-const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
+const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null, physicsFrames = null }, ref) => {
     const geometriesRef = React.useRef<Record<string, THREE.BufferGeometry>>({})
     const prevCenterRef = React.useRef<number[] | null>(null)
     const prevMaxDimRef = React.useRef<number | null>(null)

@@ -80,7 +80,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     overhangData,
     shortcutHelpOpen, setShortcutHelpOpen,
     manifest, projectSlug,
-    stressData, stressSimulationActive, handleRunFEA
+    stressData, stressSimulationActive, handleRunFEA,
+    physicsJobId, physicsProgress, physicsFrames, handleRunPhysics
   } = useProject()
 
   const { t } = useLanguage()
@@ -187,19 +188,34 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         thicknessData={thicknessData}
         overhangData={overhangData}
         stressData={stressData}
+        physicsFrames={physicsFrames}
         formatDimension={formatDim}
         unit={unit}
       />
       <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
       {/* FEA Overlay Trigger */}
       {mode && parts.length > 0 && !loading && (
-        <div className="absolute bottom-4 left-4 z-20">
+        <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2">
+          {physicsJobId ? (
+            <div className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-card border border-border">
+              Simulating Physics... {Math.round(physicsProgress)}%
+            </div>
+          ) : (
+            <button 
+              onClick={handleRunPhysics}
+              disabled={physicsFrames !== null}
+              className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors ${physicsFrames !== null ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'}`}
+            >
+              {physicsFrames !== null ? 'Physics Baked' : 'Run Full Physics'}
+            </button>
+          )}
+
           <button 
             onClick={handleRunFEA}
             disabled={stressSimulationActive}
             className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors ${stressSimulationActive ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'}`}
           >
-            {stressSimulationActive ? 'FEA Stress Active' : 'Run FEA Stress (Mock)'}
+            {stressSimulationActive ? 'FEA Stress Active' : 'Show Stress Map (Fast)'}
           </button>
         </div>
       )}

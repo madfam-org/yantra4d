@@ -47,9 +47,9 @@
                 }
             ]
         },
-        "force_backend": true
+        "force_backend": true,
+        "engine": "cadquery"
     },
-    "engine": "cadquery",
     "modes": [
         {
             "id": "full_assembly",

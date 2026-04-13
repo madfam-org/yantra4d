@@ -17,6 +17,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [WASM Mode](./guides/wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
 -   [Multi-Project Platform](./guides/multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [AI Features](./guides/ai-features.md): AI Configurator, Code Editor, and Synthesizer — setup, API reference, session management, tier access.
+-   [Physics Simulation](./guides/physics-simulation.md): PPF Contact Solver integration, FEA stress heatmaps, AI Topology Optimization — architecture, REST API, local dev mock mode.
 -   [Implicit SDF Engine](./guides/implicit-engine.md): TPMS lattice rendering, `engine: "implicit"` manifest usage, Digital Twin phase simulation.
 -   [MQTT Telemetry](./guides/mqtt-telemetry.md): Real-time sensor data injection for 4D hyperobjects — MQTT client, parameter merging, SSE streaming.
 -   [Rate Limiting](./guides/rate-limiting.md): Flask-Limiter, per-tier render limits, WASM fallback, production Redis setup.
@@ -43,9 +44,14 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Usability Audit](../claudedocs/usability-audit.md): Browser-based UX testing results.
 -   [Production Verification](../claudedocs/enclii-verification-prompt.md): Deployment verification steps.
 
+### Cartridge Projects
+
+-   [Hyperobject Candidates](./cartridges/hyperobject_candidates.md): Three next-generation cartridge candidates leveraging the physics solver — Sentinel Gripper, Aegis Kinematic Fabric, Nautilus Continuum Spine.
+
 ### Per-Project Docs
 
-Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 36 built-in projects:
+Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 36+ built-in projects:
+-   [Sentinel Gripper](../projects/sentinel-gripper-hyperobject/README.md) 🤖 — Crown demo: soft-robotics compliant gripper with PPF physics optimization
 -   [Gridfinity](../projects/gridfinity/) — Modular storage bins (flagship)
 -   [Microscope Slide Holder](../projects/microscope-slide-holder/) 🔷 — Microscope slide retention (first hyperobject)
 -   [Polydice](../projects/polydice/) — Parametric dice set
@@ -74,11 +80,12 @@ Access: http://localhost:3000
 
 ## Architecture Overview
 
-The project has four layers:
+The platform has five layers:
 
-1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry definitions for web previews.
-2. **CadQuery Models** (`projects/{slug}/`) — Industrial-grade B-Rep mirrors for manufacturing.
-3. **Backend API** (`apps/api/`) — Flask server that invokes both engines and runs verification.
-4. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer.
+1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry for previews and fast iteration.
+2. **CadQuery Models** (`projects/{slug}/`) — Industrial-grade B-Rep mirrors for manufacturing export (STEP, GLB).
+3. **Physics Engine** (`apps/api/services/simulation/`) — PPF Contact Solver integration for FEM stress simulation and generative topology optimization.
+4. **Backend API** (`apps/api/`) — Flask server that invokes all three engines, runs verification, and queues background GPU tasks.
+5. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer, kinematic timeline, and real-time physics heatmap.
 
-All three layers are connected through **project manifests** (`projects/{slug}/project.json`), which declare modes, parameters, parts, and labels. The backend's manifest registry discovers projects at startup; the frontend fetches the active project's manifest via `/api/projects/{slug}/manifest` (with a bundled fallback). See [Project Manifest](./manifest.md) and [Multi-Project Platform](./multi-project.md) for details.
+All layers are connected through **project manifests** (`projects/{slug}/project.json`), which declare modes, parameters, parts, kinematics, physics targets, and labels. The backend's manifest registry discovers projects at startup; the frontend fetches the active project's manifest via `/api/projects/{slug}/manifest`. See [Project Manifest](./reference/manifest.md) and [Multi-Project Platform](./guides/multi-project.md) for details.

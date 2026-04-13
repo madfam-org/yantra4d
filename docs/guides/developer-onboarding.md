@@ -274,6 +274,9 @@ All mobile inputs use `text-base` (16px) to prevent Safari auto-zoom. If adding 
 | Project parameters/modes | `projects/{slug}/project.json` |
 | Backend route | `apps/api/routes/{domain}/` |
 | Backend service | `apps/api/services/{domain}/` |
+| Physics simulation task | `apps/api/tasks/simulation_tasks.py` |
+| Topology optimizer | `apps/api/services/simulation/optimizer.py` |
+| PPF script generator | `apps/api/services/simulation/script_generator.py` |
 | React component | `apps/studio/src/components/` |
 | React hook | `apps/studio/src/hooks/{domain}/` |
 | API client call | `apps/studio/src/services/` |
@@ -287,8 +290,10 @@ All mobile inputs use `text-base` (16px) to prevent Safari auto-zoom. If adding 
 
 - [Manifest Schema Reference](../reference/manifest.md)
 - [AI Features Guide](ai-features.md)
+- [Physics Simulation Guide](physics-simulation.md)
 - [MQTT Telemetry](mqtt-telemetry.md)
 - [Rate Limiting](rate-limiting.md)
 - [WASM Mode](wasm-mode.md)
 - [Troubleshooting](troubleshooting.md)
 - [Production Checklist](production-checklist.md)
+- [Hyperobject Cartridge Roadmap](../cartridges/hyperobject_candidates.md)

@@ -729,20 +729,55 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                     const displacement: [number, number, number] = explodeFactor > 0 && centroidVec
                                                         ? centroidVec.sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray() as [number, number, number]
                                                         : [0, 0, 0]
+
+                                                    // Kinematic Calculation
+                                                    const kinematicValue = (params.kinematic_value as number) || 0
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    const kDef = (manifest as any).kinematics?.find((k: any) => k.part === part.type && (k.modes ? k.modes.includes(mode) : true))
+                                                    const kRot: [number, number, number] = [0, 0, 0]
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    let origin: [number, number, number] = [0, 0, 0]
+                                                    
+                                                    if (kDef && kDef.type === 'rotation') {
+                                                        const angle = kDef.range[0] + (kDef.range[1] - kDef.range[0]) * kinematicValue
+                                                        const ax = kDef.axis.join(',')
+                                                        const rad = angle * Math.PI / 180
+                                                        if (ax === '1,0,0') kRot[0] = rad
+                                                        if (ax === '0,1,0') kRot[1] = rad
+                                                        if (ax === '0,0,1') kRot[2] = rad
+                                                        if (kDef.origin) origin = kDef.origin as [number, number, number]
+                                                    }
+
+                                                    let innerContent = (
+                                                        <Model
+                                                            url={part.url}
+                                                            isGlb={part.isGlb}
+                                                            partType={part.type}
+                                                            color={colors[part.type] || defaultColor}
+                                                            wireframe={wireframe}
+                                                            glass={partDef?.glass === true}
+                                                            onGeometry={handleGeometry}
+                                                            onGeometryRemove={handleGeometryRemove}
+                                                            highlightMode={getHighlightMode(part.type)}
+                                                            isDark={isDark}
+                                                        />
+                                                    )
+
+                                                    if (kDef?.origin) {
+                                                        innerContent = (
+                                                            <group position={origin}>
+                                                                <group rotation={kRot}>
+                                                                    <group position={[-origin[0], -origin[1], -origin[2]] as [number, number, number]}>
+                                                                        {innerContent}
+                                                                    </group>
+                                                                </group>
+                                                            </group>
+                                                        )
+                                                    }
+
                                                     return (
                                                         <group key={part.type} position={displacement}>
-                                                            <Model
-                                                                url={part.url}
-                                                                isGlb={part.isGlb}
-                                                                partType={part.type}
-                                                                color={colors[part.type] || defaultColor}
-                                                                wireframe={wireframe}
-                                                                glass={partDef?.glass === true}
-                                                                onGeometry={handleGeometry}
-                                                                onGeometryRemove={handleGeometryRemove}
-                                                                highlightMode={getHighlightMode(part.type)}
-                                                                isDark={isDark}
-                                                            />
+                                                            {innerContent}
                                                         </group>
                                                     )
                                                 })}
@@ -758,20 +793,55 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                     const displacement: [number, number, number] = explodeFactor > 0 && centroidVec
                                                         ? centroidVec.sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray() as [number, number, number]
                                                         : [0, 0, 0]
+
+                                                    // Kinematic Calculation
+                                                    const kinematicValue = (params.kinematic_value as number) || 0
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    const kDef = (manifest as any).kinematics?.find((k: any) => k.part === part.type && (k.modes ? k.modes.includes(mode) : true))
+                                                    const kRot: [number, number, number] = [0, 0, 0]
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    let origin: [number, number, number] = [0, 0, 0]
+                                                    
+                                                    if (kDef && kDef.type === 'rotation') {
+                                                        const angle = kDef.range[0] + (kDef.range[1] - kDef.range[0]) * kinematicValue
+                                                        const ax = kDef.axis.join(',')
+                                                        const rad = angle * Math.PI / 180
+                                                        if (ax === '1,0,0') kRot[0] = rad
+                                                        if (ax === '0,1,0') kRot[1] = rad
+                                                        if (ax === '0,0,1') kRot[2] = rad
+                                                        if (kDef.origin) origin = kDef.origin as [number, number, number]
+                                                    }
+
+                                                    let innerContent = (
+                                                        <Model
+                                                            url={part.url}
+                                                            isGlb={part.isGlb}
+                                                            partType={part.type}
+                                                            color={colors[part.type] || defaultColor}
+                                                            wireframe={wireframe}
+                                                            glass={partDef?.glass === true}
+                                                            onGeometry={handleGeometry}
+                                                            onGeometryRemove={handleGeometryRemove}
+                                                            highlightMode={getHighlightMode(part.type)}
+                                                            isDark={isDark}
+                                                        />
+                                                    )
+
+                                                    if (kDef?.origin) {
+                                                        innerContent = (
+                                                            <group position={origin}>
+                                                                <group rotation={kRot}>
+                                                                    <group position={[-origin[0], -origin[1], -origin[2]] as [number, number, number]}>
+                                                                        {innerContent}
+                                                                    </group>
+                                                                </group>
+                                                            </group>
+                                                        )
+                                                    }
+
                                                     return (
                                                         <group key={part.type} position={displacement}>
-                                                            <Model
-                                                                url={part.url}
-                                                                isGlb={part.isGlb}
-                                                                partType={part.type}
-                                                                color={colors[part.type] || defaultColor}
-                                                                wireframe={wireframe}
-                                                                glass={partDef?.glass === true}
-                                                                onGeometry={handleGeometry}
-                                                                onGeometryRemove={handleGeometryRemove}
-                                                                highlightMode={getHighlightMode(part.type)}
-                                                                isDark={isDark}
-                                                            />
+                                                            {innerContent}
                                                         </group>
                                                     )
                                                 })}

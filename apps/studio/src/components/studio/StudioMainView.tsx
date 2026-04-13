@@ -81,7 +81,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     shortcutHelpOpen, setShortcutHelpOpen,
     manifest, projectSlug,
     stressData, stressSimulationActive, handleRunFEA,
-    physicsJobId, physicsProgress, physicsFrames, handleRunPhysics
+    physicsJobId, physicsProgress, physicsFrames, handleRunPhysics,
+    optimizationJobId, optimizationProgress, optimizationLogs, handleOptimizeTopology
   } = useProject()
 
   const { t } = useLanguage()
@@ -217,6 +218,26 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
           >
             {stressSimulationActive ? 'FEA Stress Active' : 'Show Stress Map (Fast)'}
           </button>
+          
+          {/* Topo Optimization UI */}
+          {optimizationJobId ? (
+            <div className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-purple-900 border border-purple-500 text-white flex flex-col gap-1 max-w-[200px]">
+              <div>AI Optimizer... {Math.round(optimizationProgress)}%</div>
+              {optimizationLogs.length > 0 && (
+                <div className="text-[10px] opacity-80 truncate">
+                  {optimizationLogs[optimizationLogs.length - 1]}
+                </div>
+              )}
+            </div>
+          ) : (
+            <button 
+              onClick={handleOptimizeTopology}
+              className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-purple-600 text-white hover:bg-purple-500 border border-purple-400 transition-colors"
+            >
+              AI Topo Optimization
+            </button>
+          )}
+
         </div>
       )}
       {!loading && parts.length > 0 && (

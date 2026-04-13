@@ -81,6 +81,12 @@ export interface ProjectContextValue {
   physicsFrames: boolean[] | null
   handleRunPhysics: () => Promise<void>
 
+  // Topology Optimization
+  optimizationJobId: string | null
+  optimizationProgress: number
+  optimizationLogs: string[]
+  handleOptimizeTopology: () => Promise<void>
+
   undoParams: ProjectParamsReturn['undoParams']
   redoParams: ProjectParamsReturn['redoParams']
   canUndo: ProjectParamsReturn['canUndo']
@@ -280,6 +286,73 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     return () => clearInterval(interval)
   }, [physicsJobId, projectSlug])
 
+  // 6. Generative Topology Optimization
+  const [optimizationJobId, setOptimizationJobId] = useState<string | null>(null)
+  const [optimizationProgress, setOptimizationProgress] = useState<number>(0)
+  const [optimizationLogs, setOptimizationLogs] = useState<string[]>([])
+
+  const handleOptimizeTopology = async () => {
+    try {
+      projectParams.setLoading(true)
+      const res = await fetch(`/api/projects/${projectSlug}/simulate/optimize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ params: projectParams.params })
+      })
+      const data = await res.json()
+      if (res.ok && data.job_id) {
+        setOptimizationJobId(data.job_id)
+        setOptimizationProgress(0)
+        setOptimizationLogs([])
+      } else {
+        console.error("Failed to start optimization:", data.error)
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      projectParams.setLoading(false)
+    }
+  }
+
+  // Poll for optimization completion
+  useEffect(() => {
+    if (!optimizationJobId) return
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/projects/${projectSlug}/simulate/optimize/${optimizationJobId}`)
+        const data = await res.json()
+        
+        if (data.status === 'running') {
+          setOptimizationProgress(data.progress)
+          if (data.logs) setOptimizationLogs(data.logs)
+        } else if (data.status === 'success') {
+          setOptimizationProgress(100)
+          if (data.logs) setOptimizationLogs(data.logs)
+          
+          if (data.best_params) {
+            // Apply winning parameters!
+            projectParams.setParams(data.best_params)
+            setTimeout(() => projectParams.handleGenerate(), 500)
+          }
+
+          setOptimizationJobId(null)
+          clearInterval(interval)
+        } else if (data.status === 'failed') {
+          console.error("Optimization failed:", data.error)
+          setOptimizationJobId(null)
+          clearInterval(interval)
+        }
+      } catch (e) {
+        console.error("Optimization polling fail:", e)
+      }
+    }, 1500)
+
+    return () => clearInterval(interval)
+  }, [optimizationJobId, projectSlug, projectParams])
+
   const value: ProjectContextValue = {
     // Refs
     viewerRef,
@@ -346,6 +419,12 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     physicsProgress,
     physicsFrames,
     handleRunPhysics,
+
+    // Topology Optimization
+    optimizationJobId,
+    optimizationProgress,
+    optimizationLogs,
+    handleOptimizeTopology,
 
     // Undo/Redo
     undoParams: projectParams.undoParams,

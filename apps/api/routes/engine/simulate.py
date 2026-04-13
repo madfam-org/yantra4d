@@ -13,6 +13,7 @@ from extensions import limiter
 from middleware.auth import require_tier
 from services.geometry.stress_analyzer import compute_stress_field
 from tasks.simulation_tasks import queue_simulation, get_job_status
+from tasks.optimization_tasks import queue_optimization, get_opt_status
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 import rate_limits
@@ -114,5 +115,49 @@ def get_physics_simulation_status(slug: str, job_id: str):
         "status": status_data["status"],
         "progress": status_data["progress"],
         "frames": status_data["frames"],
+        "error": status_data["error"]
+    })
+
+@simulate_bp.route('/api/projects/<slug>/simulate/optimize', methods=['POST'])
+@require_valid_slug
+@require_tier("pro")
+@handle_exceptions
+def start_optimization(slug: str):
+    """Trigges a generative topology optimization task."""
+    data = request.get_json(silent=True) or {}
+    original_params = data.get("params", {})
+    
+    if not original_params:
+        return error_response("Missing base parameters for optimization constraint.", 400)
+    
+    try:
+        job_id = queue_optimization(slug, original_params)
+    except Exception as e:
+        logger.exception("Failed to dispatch topology optimizer")
+        return error_response(f"Job dispatch failed: {str(e)}", 500)
+        
+    return jsonify({
+        "status": "success",
+        "job_id": job_id
+    }), 202
+
+@simulate_bp.route('/api/projects/<slug>/simulate/optimize/<job_id>', methods=['GET'])
+@require_valid_slug
+@handle_exceptions
+def get_optimization_status(slug: str, job_id: str):
+    """Polls the multi-generation optimization track."""
+    status_data = get_opt_status(job_id)
+    
+    if not status_data:
+        return error_response("Optimization job not found.", 404)
+        
+    if status_data.get("slug") != slug:
+        return error_response("Optimization job does not belong to this project.", 403)
+        
+    return jsonify({
+        "status": status_data["status"],
+        "progress": status_data["progress"],
+        "best_params": status_data["best_params"],
+        "logs": status_data["logs"],
         "error": status_data["error"]
     })

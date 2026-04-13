@@ -1,91 +1,400 @@
 {
-  "name": "Sentinel Soft Gripper",
-  "slug": "sentinel-gripper-hyperobject",
-  "version": "1.0.0",
-  "description": "A fully parametric, multi-material compliant soft-robotics prosthetic end effector optimized for topological physics testing.",
-  "params": [
-    {
-      "id": "finger_length",
-      "type": "range",
-      "min": 40.0,
-      "max": 120.0,
-      "default": 65.0,
-      "step": 1.0,
-      "label": "Finger Length (mm)"
+    "project": {
+        "name": "Sentinel Soft Gripper",
+        "slug": "sentinel-gripper-hyperobject",
+        "author": "Yantra4D",
+        "version": "1.0.0",
+        "description": {
+            "en": "The Sentinel Soft Gripper: a multi-material, compliant-mechanism robotic end-effector designed as a crown demonstration of the Yantra4D platform.\n\nThis is not a static model — it is a parametric, physics-aware, generatively optimizable hyperobject. The Sentinel Gripper fuses three distinct material zones (Rigid Housing, PETG Phalanges, and TPU Flexures) into a single printable assembly. Its bio-inspired V-Notch living hinges eliminate all bearing components, relying entirely on controlled material compliance for actuation.\n\nThe geometry is purpose-built to exercise the full Yantra4D physics pipeline:\n1. Multi-material IDEX configuration for elastic/rigid biomorphic fingers.\n2. Kinematic actuation timeline — drag the slider to simulate tendon-driven finger closure.\n3. FEA Stress Maps — compute heuristic structural stress over the flexure waist in real-time.\n4. AI Topology Optimization — algorithmically search for the thinnest feasible flexure thickness that avoids fatigue failure under the target grip force.\n\nOfficial visualizer and configurator: Yantra4D",
+            "es": "El Sentinel Soft Gripper: un efector robótico de mecanismo flexible y multi-material, diseñado como demostración insignia de la plataforma Yantra4D.\n\nVisualizador y configurador oficial: Yantra4D"
+        },
+        "thumbnail": "/projects/sentinel-gripper-hyperobject.webp",
+        "tags": [
+            "robotics",
+            "soft-robotics",
+            "prosthetics",
+            "multi-material",
+            "compliant-mechanism",
+            "end-effector",
+            "hyperobject",
+            "physics",
+            "tpu",
+            "generative",
+            "commons"
+        ],
+        "difficulty": "advanced",
+        "hyperobject": {
+            "is_hyperobject": true
+        },
+        "attribution": {
+            "author": "Yantra4D",
+            "license": "CERN-OHL-W-2.0",
+            "lineage": [
+                {
+                    "project": "Festo Bionic Cobot Gripper",
+                    "url": "https://www.festo.com/e/en/e/bionic-cobot-14316/",
+                    "contribution": "Bio-inspired three-finger compliant grasping morphology with tendon-driven actuation."
+                },
+                {
+                    "project": "RBO Hand 2 (TU Berlin)",
+                    "url": "https://www.robotics.tu-berlin.de/menue/research/projects/rbo_hand/",
+                    "contribution": "Pneumatic soft robotic hand: material-embedded flexure compliance without discrete joints."
+                },
+                {
+                    "project": "PPF Contact Solver (ZOZO / SIGGRAPH Asia 2024)",
+                    "url": "https://github.com/st-tech/ppf-contact-solver",
+                    "contribution": "GPU-accelerated, penetration-free FEM contact simulation — the physics backend for generative optimization."
+                }
+            ]
+        },
+        "force_backend": true
     },
-    {
-      "id": "base_radius",
-      "type": "range",
-      "min": 25.0,
-      "max": 80.0,
-      "default": 35.0,
-      "step": 1.0,
-      "label": "Housing Radius (mm)"
+    "engine": "cadquery",
+    "modes": [
+        {
+            "id": "full_assembly",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "label": {
+                "en": "Full Gripper Assembly",
+                "es": "Ensamblaje Completo del Gripper"
+            },
+            "description": {
+                "en": "Complete print-ready assembly: Rigid housing flange, PETG phalanges, TPU living-hinge flexures, and textured friction grip pads. All parts are multi-material tagged for IDEX dual-extrusion printing."
+            },
+            "parts": [
+                "housing",
+                "skeleton",
+                "flexure",
+                "grip_pad"
+            ],
+            "part_quantities": {
+                "housing": 1,
+                "skeleton": 1,
+                "flexure": 1,
+                "grip_pad": 1
+            },
+            "estimate": {
+                "base_units": 4,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "rigid_core",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "label": {
+                "en": "Rigid Core Only (PETG)",
+                "es": "Núcleo Rígido (PETG)"
+            },
+            "description": {
+                "en": "The rigid structural skeleton: mounting flange and phalanges only. Use for stress analysis of the primary load-bearing structure before adding compliant elements."
+            },
+            "parts": [
+                "housing",
+                "skeleton"
+            ],
+            "estimate": {
+                "base_units": 2,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "compliant_elements",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "label": {
+                "en": "Compliant Elements Only (TPU)",
+                "es": "Elementos Flexibles (TPU)"
+            },
+            "description": {
+                "en": "The elastic components: V-Notch living flexures and ribbed grip pads. Ideal for topology optimization targeting flexure thickness and fatigue limits."
+            },
+            "parts": [
+                "flexure",
+                "grip_pad"
+            ],
+            "estimate": {
+                "base_units": 2,
+                "formula": "per_part"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "housing",
+            "render_mode": 0,
+            "label": {
+                "en": "Rigid Base Housing (ISO Wrist Flange)",
+                "es": "Base Rígida (Brida de Muñeca ISO)"
+            },
+            "default_color": "#2d3748"
+        },
+        {
+            "id": "skeleton",
+            "render_mode": 0,
+            "label": {
+                "en": "Phalanges — Rigid Structural Bones",
+                "es": "Falanges — Estructura Rígida"
+            },
+            "default_color": "#4a5568"
+        },
+        {
+            "id": "flexure",
+            "render_mode": 1,
+            "label": {
+                "en": "Living Flexures — V-Notch Hinges (TPU)",
+                "es": "Flexuras Vivas — Bisagras V-Notch (TPU)"
+            },
+            "default_color": "#38b2ac"
+        },
+        {
+            "id": "grip_pad",
+            "render_mode": 1,
+            "label": {
+                "en": "Friction Grip Pads — Ribbed TPU",
+                "es": "Almohadillas de Agarre — TPU Estriado"
+            },
+            "default_color": "#e53e3e"
+        }
+    ],
+    "kinematics": {
+        "housing": {
+            "pinned": true
+        },
+        "skeleton": {
+            "pinned": false,
+            "pivot": [0, 0, 22],
+            "actuation_range": [0, -40],
+            "axis": "z",
+            "flex_modulus": 3000
+        },
+        "flexure": {
+            "pinned": false,
+            "pivot": [0, 0, 18],
+            "actuation_range": [0, -40],
+            "axis": "z",
+            "flex_modulus": 90
+        },
+        "grip_pad": {
+            "pinned": false,
+            "pivot": [0, 0, 18],
+            "actuation_range": [0, -40],
+            "axis": "z",
+            "flex_modulus": 85
+        }
     },
-    {
-      "id": "flexure_thickness",
-      "type": "range",
-      "min": 0.4,
-      "max": 3.0,
-      "default": 1.2,
-      "step": 0.1,
-      "label": "Hinge Thickness (mm)"
+    "presets": [
+        {
+            "id": "precision_3f",
+            "label": {
+                "en": "Precision 3-Finger (Default)",
+                "es": "3 Dedos de Precisión (Predeterminado)"
+            },
+            "values": {
+                "finger_count": "3",
+                "finger_length": 65,
+                "base_radius": 35,
+                "flexure_thickness": 1.2,
+                "target_material": "bambu-tpu-95a"
+            }
+        },
+        {
+            "id": "heavy_duty_4f",
+            "label": {
+                "en": "Heavy-Duty 4-Finger",
+                "es": "4 Dedos de Alta Carga"
+            },
+            "values": {
+                "finger_count": "4",
+                "finger_length": 90,
+                "base_radius": 50,
+                "flexure_thickness": 2.0,
+                "target_material": "bambu-tpu-95a"
+            }
+        },
+        {
+            "id": "ultralight_2f",
+            "label": {
+                "en": "Ultralight 2-Finger Parallel Jaw",
+                "es": "Paralelo de 2 Dedos Ultraligero"
+            },
+            "values": {
+                "finger_count": "2",
+                "finger_length": 50,
+                "base_radius": 28,
+                "flexure_thickness": 0.8,
+                "target_material": "bambu-tpu-95a"
+            }
+        }
+    ],
+    "parameters": [
+        {
+            "id": "target_material",
+            "type": "select",
+            "default": "bambu-tpu-95a",
+            "options": [
+                { "value": "bambu-tpu-95a", "label": "Bambu TPU 95A (Flexible Elements)" },
+                { "value": "polymaker-polylite-pla", "label": "Polymaker PLA (Rigid Elements)" },
+                { "value": "formlabs-clear-v4", "label": "Formlabs Clear V4 (SLA)" }
+            ],
+            "label": {
+                "en": "Target Material (Elastic Zones)",
+                "es": "Material Objetivo (Zonas Elásticas)"
+            },
+            "group": "material"
+        },
+        {
+            "id": "finger_count",
+            "type": "select",
+            "default": "3",
+            "options": [
+                { "value": "2", "label": "2 — Parallel Jaw" },
+                { "value": "3", "label": "3 — Tri-Radial (Recommended)" },
+                { "value": "4", "label": "4 — Quad-Radial (Heavy Duty)" }
+            ],
+            "label": {
+                "en": "Finger Count",
+                "es": "Número de Dedos"
+            },
+            "tooltip": {
+                "en": "Number of fingers arranged radially. 3 is optimal for power grasping; 2 for precision gripping.",
+                "es": "Número de dedos distribuidos radialmente."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "finger_length",
+            "type": "slider",
+            "default": 65,
+            "min": 40,
+            "max": 120,
+            "step": 1,
+            "label": {
+                "en": "Finger Length (mm)",
+                "es": "Longitud del Dedo (mm)"
+            },
+            "tooltip": {
+                "en": "Total length from housing knuckle to fingertip. Longer fingers increase grip circumference but reduce grip force at the tip.",
+                "es": "Longitud total desde el nudillo hasta la punta del dedo."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "base_radius",
+            "type": "slider",
+            "default": 35,
+            "min": 25,
+            "max": 70,
+            "step": 1,
+            "label": {
+                "en": "Housing Radius (mm)",
+                "es": "Radio de la Base (mm)"
+            },
+            "tooltip": {
+                "en": "Radius of the central wrist flange. Must match your robot arm's ISO 9409-1 wrist diameter.",
+                "es": "Radio de la brida de muñeca. Debe coincidir con el diámetro ISO 9409-1 del brazo robótico."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "flexure_thickness",
+            "type": "slider",
+            "default": 1.2,
+            "min": 0.4,
+            "max": 3.0,
+            "step": 0.1,
+            "label": {
+                "en": "Flexure Hinge Thickness (mm)",
+                "es": "Grosor de la Bisagra Flexura (mm)"
+            },
+            "tooltip": {
+                "en": "The narrowest dimension of the V-Notch living hinge. This is the PRIMARY optimization target. Thinner = more compliant but higher fatigue risk. Use 'AI Topo Optimization' to find the optimum.",
+                "es": "La dimensión más estrecha de la bisagra viva V-Notch. Este es el objetivo principal de la optimización."
+            },
+            "group": "physics",
+            "visibility_level": "advanced"
+        }
+    ],
+    "parameter_groups": [
+        {
+            "id": "material",
+            "label": {
+                "en": "Material Hyperobject",
+                "es": "Hiperobjeto de Material"
+            }
+        },
+        {
+            "id": "geometry",
+            "label": {
+                "en": "Geometry & Morphology",
+                "es": "Geometría y Morfología"
+            }
+        },
+        {
+            "id": "physics",
+            "label": {
+                "en": "Physics Optimization Targets",
+                "es": "Objetivos de Optimización Física"
+            }
+        }
+    ],
+    "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+    ],
+    "estimate_constants": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 8,
+        "wasm_multiplier": 3,
+        "warning_threshold_seconds": 45
     },
-    {
-      "id": "finger_count",
-      "type": "select",
-      "options": ["2", "3", "4"],
-      "default": "3",
-      "label": "Total Fingers"
+    "hyperobject": {
+        "domain": "soft-robotics",
+        "cdg_interfaces": [
+            {
+                "id": "iso9409_flange",
+                "label": {
+                    "en": "ISO 9409-1 Robot Wrist Flange",
+                    "es": "Brida de Muñeca ISO 9409-1"
+                },
+                "geometry_type": "bolt_pattern",
+                "standard": "ISO 9409-1-50-4-M6",
+                "parameters": ["base_radius"]
+            },
+            {
+                "id": "ppf_contact_interface",
+                "label": {
+                    "en": "PPF Contact Solver Physics Interface",
+                    "es": "Interfaz de Física PPF Contact Solver"
+                },
+                "geometry_type": "fem_mesh",
+                "standard": "ppf-contact-solver (SIGGRAPH Asia 2024)",
+                "parameters": ["flexure_thickness", "finger_length"]
+            }
+        ],
+        "material_awareness": {
+            "shrinkage_compensation": true,
+            "recycled_material_toggle": false,
+            "tolerance_by_material": true
+        },
+        "societal_benefit": {
+            "en": "Democratizes production of high-performance soft-robotic prosthetic grippers, reducing cost from $500–$5000 (commercial) to <$15 in filament. Enables distributed, on-demand fabrication for amputees and rehabilitation clinics worldwide.",
+            "es": "Democratiza la producción de grippers protésicos de alto rendimiento, reduciendo el costo de $500–$5000 (comercial) a <$15 en filamento."
+        },
+        "commons_license": "CERN-OHL-W-2.0",
+        "ontological_framework": "The Sentinel Gripper is a 4D Bounded Hyperobject — its form is not fixed but emerges from the intersection of parametric biology (finger count, length), material physics (Shore A hardness, modulus), and generative algorithmic search (PPF topology optimization). No single STL file is 'the gripper'; it is the continuous, high-dimensional parameter manifold that the gripper inhabits.",
+        "physics_integration": {
+            "solver": "ppf-contact-solver",
+            "solver_url": "https://github.com/st-tech/ppf-contact-solver",
+            "simulation_type": "compliant_fem_contact",
+            "optimization_target": "flexure_thickness",
+            "optimization_objective": "minimize_sigma_under_load"
+        }
     }
-  ],
-  "parts": [
-    {
-      "id": "housing",
-      "mode": 0,
-      "color": "#333333",
-      "name": "Rigid Base Housing"
-    },
-    {
-      "id": "skeleton",
-      "mode": 0,
-      "color": "#666666",
-      "name": "Rigid Phalanges"
-    },
-    {
-      "id": "flexure",
-      "mode": 1,
-      "color": "#14b8a6",
-      "name": "TPU Compliant Hinges"
-    },
-    {
-      "id": "grip_pad",
-      "mode": 1,
-      "color": "#ef4444",
-      "name": "TPU Friction Pads"
-    }
-  ],
-  "kinematics": {
-    "housing": {
-      "pinned": true
-    },
-    "skeleton": {
-      "pinned": false,
-      "actuation_range": [0, -45],
-      "axis": "z",
-      "flex_modulus": 3000
-    },
-    "flexure": {
-      "pinned": false,
-      "actuation_range": [0, -45],
-      "axis": "z",
-      "flex_modulus": 90
-    },
-    "grip_pad": {
-      "pinned": false,
-      "actuation_range": [0, -45],
-      "axis": "z",
-      "flex_modulus": 85
-    }
-  }
 }

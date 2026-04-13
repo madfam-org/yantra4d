@@ -1,0 +1,91 @@
+{
+  "name": "Sentinel Soft Gripper",
+  "slug": "sentinel-gripper-hyperobject",
+  "version": "1.0.0",
+  "description": "A fully parametric, multi-material compliant soft-robotics prosthetic end effector optimized for topological physics testing.",
+  "params": [
+    {
+      "id": "finger_length",
+      "type": "range",
+      "min": 40.0,
+      "max": 120.0,
+      "default": 65.0,
+      "step": 1.0,
+      "label": "Finger Length (mm)"
+    },
+    {
+      "id": "base_radius",
+      "type": "range",
+      "min": 25.0,
+      "max": 80.0,
+      "default": 35.0,
+      "step": 1.0,
+      "label": "Housing Radius (mm)"
+    },
+    {
+      "id": "flexure_thickness",
+      "type": "range",
+      "min": 0.4,
+      "max": 3.0,
+      "default": 1.2,
+      "step": 0.1,
+      "label": "Hinge Thickness (mm)"
+    },
+    {
+      "id": "finger_count",
+      "type": "select",
+      "options": ["2", "3", "4"],
+      "default": "3",
+      "label": "Total Fingers"
+    }
+  ],
+  "parts": [
+    {
+      "id": "housing",
+      "mode": 0,
+      "color": "#333333",
+      "name": "Rigid Base Housing"
+    },
+    {
+      "id": "skeleton",
+      "mode": 0,
+      "color": "#666666",
+      "name": "Rigid Phalanges"
+    },
+    {
+      "id": "flexure",
+      "mode": 1,
+      "color": "#14b8a6",
+      "name": "TPU Compliant Hinges"
+    },
+    {
+      "id": "grip_pad",
+      "mode": 1,
+      "color": "#ef4444",
+      "name": "TPU Friction Pads"
+    }
+  ],
+  "kinematics": {
+    "housing": {
+      "pinned": true
+    },
+    "skeleton": {
+      "pinned": false,
+      "actuation_range": [0, -45],
+      "axis": "z",
+      "flex_modulus": 3000
+    },
+    "flexure": {
+      "pinned": false,
+      "actuation_range": [0, -45],
+      "axis": "z",
+      "flex_modulus": 90
+    },
+    "grip_pad": {
+      "pinned": false,
+      "actuation_range": [0, -45],
+      "axis": "z",
+      "flex_modulus": 85
+    }
+  }
+}

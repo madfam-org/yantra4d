@@ -308,7 +308,9 @@ def _run_engine_render(engine, part, payload, scad_path, output_path, export_for
     computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
 
     if engine == "cadquery":
-        cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
+        cp_copy = computed_params.copy()
+        cp_copy["target_part"] = part
+        cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
         return run_cadquery_render(cmd, scad_path=scad_path)
     elif engine == "implicit":
         config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
@@ -464,7 +466,9 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str,
         mode_map = payload['mode_map']
 
         if engine == "cadquery":
-            cmd = build_cadquery_command(output_path, scad_path, computed_params, export_format)
+            cp_copy = computed_params.copy()
+            cp_copy["target_part"] = part
+            cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
             stream_gen = stream_cadquery_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
         elif engine == "implicit":
             config = manifest.project.get("hyperobject", {}).get("implicit_field", {})

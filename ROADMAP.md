@@ -165,3 +165,26 @@ The BOM API (`routes/bom.py`) and `BomPanel.jsx` already exist, and `supplier_ur
 - [ ] **BOM-to-Cart UI:** Studio panel extension — "Add all to cart" button, per-item supplier selection, estimated total cost.
 - [ ] **Material hyperobject linking:** Auto-match `target_material` manifest param to ForgeSight material catalog entries for live `mat_shrinkage` / `mat_clearance` compensation values.
 - [ ] **Tier gating refinement:** Cart export available at `basic+` tier; live pricing at `pro+`.
+
+---
+
+### Sprint 17 — Production Physics Readiness & Generative Optimization
+_Integration: **[PPF Contact Solver](https://github.com/st-tech/ppf-contact-solver)** (SIGGRAPH Asia 2024)._
+
+Transition the current mock simulation pipeline to full GPU-accelerated production readiness for compliant hyperobjects.
+
+- [ ] **Infrastructure Provisioning:**
+    - Deploy NVIDIA `g6.2xlarge` or `g6e.2xlarge` GPU instances with CUDA 12.8+.
+    - Authenticate registry access to `ghcr.io/st-tech/ppf-contact-solver-compiled`.
+    - Configure static storage (S3 or mounted volume) for persistent PLY frame sequences.
+- [ ] **Backend Simulation Hardening:**
+    - Replace mock `time.sleep` loops in `simulation_tasks.py` with real `subprocess` execution of generated PPF Python scripts.
+    - Implement real-time STL path resolution in `script_generator.py` for concrete CAD-to-SOLVER mesh injection.
+    - Migrate from background threads to Celery `@celery.task(queue="gpu_tasks")` for distributed job management.
+- [ ] **Optimizer Physical Intelligence:**
+    - Refactor `optimizer.py` to parse real `max-sigma` (Von Mises stress) values from PPF solver logs instead of heuristic mocks.
+    - Implement generative feedback loop to apply optimized CAD parameters back to the active project state.
+- [ ] **Frontend Kinematic Animator:**
+    - Implement Three.js PLY binary parser in the Studio viewer.
+    - Build `MorphTarget` animation engine to interpolate between 100+ physics frames.
+    - Add Kinematic Timeline UI to allow users to scrub through the physics simulation sequence.

@@ -55,12 +55,28 @@ def _extract_bearer_token() -> str | None:
     return None
 
 
+def _sync_user_from_claims(claims: dict) -> None:
+    """Upsert the persistent User record from JWT claims (best-effort, non-blocking).
+
+    Stores the resulting User object on ``request.current_user`` for downstream use.
+    Failures are logged but never propagate to the caller.
+    """
+    try:
+        from services.core.user_service import upsert_user_from_claims
+        user = upsert_user_from_claims(claims)
+        request.current_user = user
+    except Exception:
+        logger.debug("User upsert failed (non-critical)", exc_info=True)
+        request.current_user = None
+
+
 def require_auth(f):
     """Decorator: reject request with 401 if no valid Bearer token."""
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         if not Config.AUTH_ENABLED:
             request.auth_claims = None
+            request.current_user = None
             return f(*args, **kwargs)
 
         token = _extract_bearer_token()
@@ -74,6 +90,7 @@ def require_auth(f):
             return error_response("Invalid or expired token", 401)
 
         request.auth_claims = claims
+        _sync_user_from_claims(claims)
         return f(*args, **kwargs)
 
     return decorated
@@ -133,6 +150,7 @@ def optional_auth(f):
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         request.auth_claims = None
+        request.current_user = None
 
         if not Config.AUTH_ENABLED:
             return f(*args, **kwargs)
@@ -141,6 +159,7 @@ def optional_auth(f):
         if token:
             try:
                 request.auth_claims = decode_token(token)
+                _sync_user_from_claims(request.auth_claims)
             except Exception as e:
                 logger.debug("Optional auth token invalid: %s", e)
 

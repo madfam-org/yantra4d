@@ -67,6 +67,18 @@ spec:
                   name: yantra4d-secrets
                   key: AI_API_KEY
                   optional: true
+            - name: COTIZA_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: COTIZA_WEBHOOK_SECRET
+                  optional: true
+            - name: FORGESIGHT_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: FORGESIGHT_WEBHOOK_SECRET
+                  optional: true
             - name: MQTT_ENABLED
               value: "false"
             - name: RATE_LIMIT_ENABLED

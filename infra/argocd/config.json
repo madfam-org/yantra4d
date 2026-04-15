@@ -1,0 +1,9 @@
+{
+  "name": "yantra4d",
+  "repoURL": "https://github.com/madfam-org/yantra4d.git",
+  "branch": "main",
+  "manifestPath": "k8s/production",
+  "namespace": "yantra4d",
+  "partOf": "yantra4d",
+  "ignoreExtraneous": true
+}

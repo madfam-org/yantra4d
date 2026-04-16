@@ -61,6 +61,14 @@ spec:
                 secretKeyRef:
                   name: yantra4d-secrets
                   key: JANUA_AUDIENCE
+            - name: AI_PROVIDER
+              value: "openai"
+            - name: AI_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: AI_BASE_URL
+                  optional: true
             - name: AI_API_KEY
               valueFrom:
                 secretKeyRef:

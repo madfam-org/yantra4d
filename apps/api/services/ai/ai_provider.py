@@ -45,7 +45,10 @@ def complete_chat(messages: list[dict], system: str = "", max_tokens: int | None
 def _stream_anthropic(messages: list[dict], system: str, max_tokens: int) -> Iterator[str]:
     import anthropic
 
-    client = anthropic.Anthropic(api_key=Config.AI_API_KEY)
+    client = anthropic.Anthropic(
+        api_key=Config.AI_API_KEY,
+        base_url=Config.AI_BASE_URL or None,
+    )
     with client.messages.stream(
         model=_get_model(),
         max_tokens=max_tokens,
@@ -59,7 +62,10 @@ def _stream_anthropic(messages: list[dict], system: str, max_tokens: int) -> Ite
 def _stream_openai(messages: list[dict], system: str, max_tokens: int) -> Iterator[str]:
     import openai
 
-    client = openai.OpenAI(api_key=Config.AI_API_KEY)
+    client = openai.OpenAI(
+        api_key=Config.AI_API_KEY,
+        base_url=Config.AI_BASE_URL or None,
+    )
     oai_messages = []
     if system:
         oai_messages.append({"role": "system", "content": system})

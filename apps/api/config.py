@@ -65,6 +65,7 @@ class AppConfig:
     AI_API_KEY: str = field(default_factory=lambda: os.getenv("AI_API_KEY", ""))
     AI_MODEL: str = field(default_factory=lambda: os.getenv("AI_MODEL", ""))
     AI_MAX_TOKENS: int = field(default_factory=lambda: int(os.getenv("AI_MAX_TOKENS", "2048")))
+    AI_BASE_URL: str = field(default_factory=lambda: os.getenv("AI_BASE_URL", ""))
 
     # Janua API
     JANUA_API_URL: str = field(init=False)

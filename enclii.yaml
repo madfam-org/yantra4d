@@ -4,6 +4,24 @@ metadata:
   name: yantra4d
   project: yantra4d
 spec:
+  status:
+    enabled: true
+    entries:
+      - name: Yantra4D Web
+        url: https://yantra4d.com
+        group: Yantra4D
+        family: Digital Fabrication
+        description: 3D printing platform
+      - name: Yantra4D Studio
+        url: https://app.yantra4d.com
+        group: Yantra4D
+        family: Digital Fabrication
+        description: 3D design studio
+      - name: Yantra4D Admin
+        url: https://admin.yantra4d.com
+        group: Yantra4D
+        family: Digital Fabrication
+        description: Print operations console
   domains:
     - name: yantra4d.com
       environment: production

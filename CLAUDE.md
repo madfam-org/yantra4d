@@ -4,6 +4,11 @@ Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCA
 
 > **For human developers**: See [`docs/guides/developer-onboarding.md`](docs/guides/developer-onboarding.md) for a concise quickstart guide.
 
+## Pricing & PMF Anchoring
+
+- **Pricing source-of-truth**: `internal-devops/decisions/2026-04-25-tulana-ecosystem-pricing.md`. Yantra4D tiers (Tulana v0.1 recommended, MXN/mo): Creator $0 / Pro 599 / Studio 2,999. Confidence: low — needs validation with real users.
+- **PMF measurement**: per RFC 0013, NPS + Sean Ellis + retention via `@madfam/pmf-widget` → Tulana `/v1/pmf/*` endpoints. Composite PMF Score informs price moves + sunset decisions.
+
 ## Architecture
 
 ```

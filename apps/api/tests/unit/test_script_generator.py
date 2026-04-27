@@ -1,7 +1,6 @@
 """
 Unit tests for services/simulation/script_generator.py
 """
-import pytest
 import sys
 import os
 

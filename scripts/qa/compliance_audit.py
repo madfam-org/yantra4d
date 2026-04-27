@@ -61,16 +61,21 @@ def audit_project(project_dir: Path, manifest: dict) -> list[str]:
         issues.append(f"[{slug}] Missing 'export_formats'")
 
     # --- Check 5: Dual-engine file pairing ---
-    # Only flag if project has BOTH .scad and .py files (true dual-engine)
+    # Only flag if a same-named .py exists on disk (mode-level dual-engine wiring missing).
+    # SCAD-only modes within a hyperobject project are valid (e.g., calibration gauges).
     if ho:
         py_files = list(project_dir.glob("*.py"))
         scad_files = list(project_dir.glob("*.scad"))
         if py_files and scad_files:
             for mode in manifest.get("modes", []):
-                if not mode.get("cq_file"):
+                if mode.get("cq_file"):
+                    continue
+                scad_file = mode.get("scad_file", "")
+                expected_py = scad_file.rsplit(".scad", 1)[0] + ".py" if scad_file else ""
+                if expected_py and (project_dir / expected_py).exists():
                     issues.append(
                         f"[{slug}] Mode '{mode['id']}' missing 'cq_file' "
-                        f"but .py files exist on disk"
+                        f"but '{expected_py}' exists on disk"
                     )
 
     # --- Check 6: Legacy checks (BOSL2, vendor, license) ---

@@ -5,7 +5,6 @@ Background thread system for running long multi-generation topological evolution
 import logging
 import threading
 import uuid
-import time
 from services.simulation.optimizer import TopologyOptimizer
 
 logger = logging.getLogger(__name__)

@@ -2,7 +2,6 @@
 Unit tests for tasks/optimization_tasks.py and services/simulation/optimizer.py
 """
 import time
-import pytest
 import sys
 import os
 

@@ -6,7 +6,7 @@ import glob
 import logging
 import os
 
-from flask import Blueprint, g, request, jsonify
+from flask import Blueprint, request, jsonify
 
 from config import Config
 from extensions import limiter

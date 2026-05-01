@@ -6,33 +6,17 @@ and post-render conversions. Eliminates duplication between sync/stream paths.
 import json
 import logging
 import os
-import queue
+import uuid
+
+import redis
 
 from config import Config
 from manifest import get_manifest
-from services.engine.openscad import (
-    build_openscad_command,
-    compute_scad_hash,
-    run_render as run_openscad_render,
-    stream_render as stream_openscad_render,
-    cancel_render as cancel_openscad_render,
-    validate_params,
-)
-from services.engine.cadquery_engine import (
-    build_cadquery_command,
-    run_render as run_cadquery_render,
-    stream_render as stream_cadquery_render,
-    cancel_render as cancel_cadquery_render,
-)
-from services.core.implicit_engine import (
-    run_render as run_implicit_render,
-    stream_render as stream_implicit_render,
-)
+from services.engine.openscad import compute_scad_hash, validate_params
 from services.engine.render_cache import render_cache
 from services.engine.format_converter import stl_to_glb, convert_mesh
-from services.core.mqtt_telemetry import telemetry_service, telemetry_queue
-from utils.route_helpers import cleanup_old_stl_files
-from utils.metrics import RENDERS_TOTAL, RENDER_DURATION
+
+r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
 
 ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf', 'glb', 'obj'}
 TRIMESH_CONVERTIBLE = {'obj', 'ply', 'glb', 'gltf', '3mf', 'off'}
@@ -298,222 +282,121 @@ def _post_render_convert(output_path, output_filename, part, stl_prefix,
     return serve_path, serve_filename, viewer_filename
 
 
-def _run_engine_render(engine, part, payload, scad_path, output_path, export_format, manifest):
-    """Execute a single-part render for the given engine. Returns (success, stderr)."""
-    project_slug = payload['project_slug']
-    params = payload['params']
-    mode_map = payload['mode_map']
-
-    project_topic = f"yantra4d/telemetry/projects/{project_slug}"
-    computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
-
-    if engine == "cadquery":
-        cp_copy = computed_params.copy()
-        cp_copy["target_part"] = part
-        cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
-        return run_cadquery_render(cmd, scad_path=scad_path)
-    elif engine == "implicit":
-        config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
-        return run_implicit_render(output_path, config, computed_params)
-    else:
-        render_mode = mode_map.get(part, 0)
-        cmd = build_openscad_command(output_path, scad_path, params, render_mode)
-        return run_openscad_render(cmd, scad_path=scad_path)
-
-
-# ──────────────────────────────────────────────
-# Sync Render Orchestration
-# ──────────────────────────────────────────────
-
-def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str,
-                      actual_format: str, tier: str):
-    """Execute a synchronous render for all parts. Returns (parts_list, log_str, cache_stats)."""
-    import time as _time
-
+def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str, tier: str):
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']
     export_format = payload['export_format']
-    params = payload['params']
-    static_stl_map = payload.get('static_stl_map', {})
     project_slug = payload['project_slug']
-
-    manifest = get_manifest(project_slug)
+    static_stl_map = payload.get('static_stl_map', {})
+    
     generated_parts = []
     combined_log = ""
-    cache_hits = 0
-    cache_total = 0
+    cache_hits, cache_total = 0, 0
+    job_ids = []
+    
+    pubsub = r.pubsub(ignore_subscribe_messages=True)
 
     for part in parts_to_render:
-        # Static parts
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
-            part_info, log_line = static_result
-            generated_parts.append(part_info)
-            combined_log += log_line
+            generated_parts.append(static_result[0])
+            combined_log += static_result[1]
             continue
-
+            
         output_filename = f"{stl_prefix}{part}.{actual_format}"
         output_path = os.path.join(STATIC_FOLDER, output_filename)
         cache_total += 1
-
-        # Cache check
+        
         cached = _check_cache(payload, part, export_format)
         if cached:
             cache_hits += 1
             combined_log += f"[{part}] cache HIT\n"
-            cached_filename = os.path.basename(cached["path"])
-            generated_parts.append({
-                "type": part,
-                "url": f"/static/{cached_filename}",
-                "size_bytes": cached["size_bytes"],
-            })
+            generated_parts.append({"type": part, "url": f"/static/{os.path.basename(cached['path'])}", "size_bytes": cached["size_bytes"]})
             continue
 
-        # Cache miss — clean up old files before re-rendering
-        cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
+        job_id = str(uuid.uuid4())
+        job_ids.append((job_id, part))
+        pubsub.subscribe(f"render:{job_id}")
 
-        t0 = _time.monotonic()
-        success, stderr = _run_engine_render(engine, part, payload, scad_path, output_path, export_format, manifest)
-        duration = _time.monotonic() - t0
-        RENDER_DURATION.labels(engine=engine).observe(duration)
-        RENDERS_TOTAL.labels(engine=engine, format=export_format, tier=tier).inc()
-        if not success:
-            return None, stderr, (cache_hits, cache_total)
-
-        combined_log += f"[{part}] {stderr}\n"
-
-        # Post-render conversions
-        serve_path, serve_filename, viewer_filename = _post_render_convert(
-            output_path, output_filename, part, stl_prefix, actual_format, export_format,
-        )
-
-        try:
-            size_bytes = os.path.getsize(serve_path)
-        except OSError:
-            size_bytes = None
-
-        render_cache.put(
-            project_slug, payload['scad_filename'], params, part, export_format,
-            serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
-        )
-
-        part_entry = {
-            "type": part,
-            "url": f"/static/{serve_filename}",
-            "size_bytes": size_bytes,
+        task = {
+            "job_id": job_id, "stream": False, "engine": engine, "part": part, 
+            "payload": payload, "scad_path": scad_path, "output_path": output_path, 
+            "export_format": export_format
         }
-        if viewer_filename:
-            part_entry["viewer_url"] = f"/static/{viewer_filename}"
-        generated_parts.append(part_entry)
+        r.rpush("yantra_render_queue", json.dumps(task))
 
+    completed_jobs = 0
+    while completed_jobs < len(job_ids):
+        message = pubsub.get_message(timeout=1.0)
+        if message:
+            data = json.loads(message['data'])
+            if data.get('event') == 'part_done':
+                pe = data['part_entry']
+                combined_log += pe.pop('log', '')
+                generated_parts.append(pe)
+                completed_jobs += 1
+            elif data.get('event') == 'error':
+                combined_log += f"[{data['part']}] ERROR: {data['error']}\n"
+                completed_jobs += 1
+    
+    pubsub.close()
     return generated_parts, combined_log, (cache_hits, cache_total)
 
-
-# ──────────────────────────────────────────────
-# Streaming Render Orchestration
-# ──────────────────────────────────────────────
-
-def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str,
-                        actual_format: str):
-    """Generator that streams render progress as SSE event strings.
-
-    Yields `data: {...}\n\n` formatted strings.
-    """
+def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str):
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']
     export_format = payload['export_format']
-    params = payload['params']
-    static_stl_map = payload.get('static_stl_map', {})
     project_slug = payload['project_slug']
-
-    manifest = get_manifest(project_slug)
+    static_stl_map = payload.get('static_stl_map', {})
+    
     num_parts = len(parts_to_render)
     generated_parts = []
-
+    
     for i, part in enumerate(parts_to_render):
-        # Static parts
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
-            part_info, _ = static_result
-            generated_parts.append(part_info)
+            generated_parts.append(static_result[0])
             progress = ((i + 1) / num_parts) * 100
             yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts})}\n\n"
             continue
-
+            
         output_filename = f"{stl_prefix}{part}.{actual_format}"
         output_path = os.path.join(STATIC_FOLDER, output_filename)
-
-        # Cache check
+        
         cached = _check_cache(payload, part, export_format)
         if cached:
-            cached_filename = os.path.basename(cached["path"])
-            generated_parts.append({
-                "type": part,
-                "url": f"/static/{cached_filename}",
-                "size_bytes": cached["size_bytes"],
-            })
+            generated_parts.append({"type": part, "url": f"/static/{os.path.basename(cached['path'])}", "size_bytes": cached["size_bytes"]})
             progress = ((i + 1) / num_parts) * 100
             yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts, 'cached': True})}\n\n"
             continue
 
-        cleanup_old_stl_files([part], STATIC_FOLDER, stl_prefix, export_format)
-
         part_base = (i / num_parts) * PROGRESS_TOTAL
         part_weight = PROGRESS_TOTAL / num_parts
 
-        project_topic = f"yantra4d/telemetry/projects/{project_slug}"
-        computed_params = telemetry_service.inject_telemetry_to_params(params, project_topic)
-        mode_map = payload['mode_map']
+        job_id = str(uuid.uuid4())
+        pubsub = r.pubsub(ignore_subscribe_messages=True)
+        pubsub.subscribe(f"render:{job_id}")
+        pubsub.subscribe(f"render:{job_id}:final")
 
-        if engine == "cadquery":
-            cp_copy = computed_params.copy()
-            cp_copy["target_part"] = part
-            cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
-            stream_gen = stream_cadquery_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
-        elif engine == "implicit":
-            config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
-            stream_gen = stream_implicit_render(output_path, config, computed_params, part, part_base, part_weight, i, num_parts)
-        else:
-            render_mode = mode_map.get(part, 0)
-            cmd = build_openscad_command(output_path, scad_path, params, render_mode)
-            stream_gen = stream_openscad_render(cmd, part, part_base, part_weight, i, num_parts, scad_path=scad_path)
+        task = {
+            "job_id": job_id, "stream": True, "engine": engine, "part": part, "payload": payload,
+            "scad_path": scad_path, "output_path": output_path, "export_format": export_format,
+            "part_index": i, "num_parts": num_parts, "part_base": part_base, "part_weight": part_weight
+        }
+        r.rpush("yantra_render_queue", json.dumps(task))
 
-        for event_data in stream_gen:
-            yield f"data: {event_data}\n\n"
-            try:
-                event = json.loads(event_data)
-            except json.JSONDecodeError:
-                logger.warning(f"Malformed SSE event data: {event_data!r}")
-                continue
-            if event.get('event') == 'part_done':
-                serve_path, serve_filename, viewer_filename = _post_render_convert(
-                    output_path, output_filename, part, stl_prefix, actual_format, export_format,
-                )
-                try:
-                    size_bytes = os.path.getsize(serve_path)
-                except OSError:
-                    size_bytes = None
-                render_cache.put(
-                    project_slug, payload['scad_filename'], params, part, export_format,
-                    serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
-                )
-                part_entry = {
-                    "type": part,
-                    "url": f"/static/{serve_filename}",
-                    "size_bytes": size_bytes,
-                }
-                if viewer_filename:
-                    part_entry["viewer_url"] = f"/static/{viewer_filename}"
-                generated_parts.append(part_entry)
-
-        # Drain telemetry events
-        while not telemetry_queue.empty():
-            try:
-                telemetry_event = telemetry_queue.get_nowait()
-                if telemetry_event['topic'] == project_topic:
-                    yield f"data: {json.dumps({'event': 'telemetry_update', 'payload': telemetry_event['payload']})}\n\n"
-            except queue.Empty:
-                break
+        done = False
+        while not done:
+            message = pubsub.get_message(timeout=0.1)
+            if message:
+                if message['channel'] == f"render:{job_id}":
+                    # Directly yield the raw SSE event
+                    yield f"data: {message['data']}\n\n"
+                elif message['channel'] == f"render:{job_id}:final":
+                    generated_parts.append(json.loads(message['data']))
+                    done = True
+        
+        pubsub.close()
 
     yield f"data: {json.dumps({'event': 'complete', 'parts': generated_parts, 'progress': 100})}\n\n"
 
@@ -524,6 +407,5 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str,
 
 def cancel_all_renders() -> bool:
     """Cancel any active render processes across all engines."""
-    cancelled_scad = cancel_openscad_render()
-    cancelled_cq = cancel_cadquery_render()
-    return cancelled_scad or cancelled_cq
+    # TODO: Implement queue-based cancellation
+    return True

@@ -60,6 +60,9 @@ spec:
       - name: yantra4d-redis
         port: 0
         egress: [dns]
+      - name: yantra4d-render-worker
+        port: 0
+        egress: [dns, https, postgres]
     custom:
       - name: landing-to-backend
         from: { app: yantra4d-landing }
@@ -78,6 +81,11 @@ spec:
         direction: both
       - name: backend-to-redis
         from: { app: yantra4d-backend }
+        to: { app: yantra4d-redis }
+        port: 6379
+        direction: both
+      - name: render-worker-to-redis
+        from: { app: yantra4d-render-worker }
         to: { app: yantra4d-redis }
         port: 6379
         direction: both

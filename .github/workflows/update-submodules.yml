@@ -19,7 +19,8 @@ jobs:
           fetch-depth: 1
       - name: Update all submodules to latest
         run: |
-          # Skip tablaco (update = none in .gitmodules)
+          # Honors `update = none` in .gitmodules for any submodule that
+          # ever needs to opt out — currently no submodules opt out.
           git submodule foreach '
             name=$(basename "$sm_path")
             mode=$(git config --file "$toplevel/.gitmodules" --get "submodule.$sm_path.update" 2>/dev/null || echo "")
@@ -41,7 +42,7 @@ jobs:
 
             CI will run on this PR branch to verify integration before merging.
 
-            **Excluded submodules** (configured with `update = none` in `.gitmodules`):
-            - `tablaco` — managed separately
+            Submodules with `update = none` in `.gitmodules` are skipped
+            automatically (none currently opt out).
           branch: chore/update-submodules
           delete-branch: true

@@ -4,8 +4,12 @@
  * Provides checkout URL generation for tier upgrades.
  */
 
+// Defaults to the canonical Dhanam web checkout. The fallback domain
+// (billing.yantra4d.com) was never provisioned and resulted in a DNS
+// failure when VITE_DHANAM_CHECKOUT_URL was unset. Dhanam's checkout
+// page accepts the same query-param shape this module produces.
 const DHANAM_CHECKOUT_URL =
-  import.meta.env.VITE_DHANAM_CHECKOUT_URL || 'https://billing.yantra4d.com/checkout';
+  import.meta.env.VITE_DHANAM_CHECKOUT_URL || 'https://app.dhan.am/checkout';
 
 export type Yantra4DTier = 'guest' | 'essentials' | 'pro' | 'madfam';
 

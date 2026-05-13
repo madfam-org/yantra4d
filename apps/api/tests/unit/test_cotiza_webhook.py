@@ -95,16 +95,21 @@ class TestCotizaWebhookSignature:
     def test_accepts_valid_signature(self, client):
         payload = json.dumps(_sample_payload()).encode()
         sig = _sign(payload)
-        resp = client.post(
-            "/api/webhooks/cotiza",
-            data=payload,
-            content_type="application/json",
-            headers={"x-cotiza-signature": sig},
-        )
+        with patch("routes.integrations.cotiza_webhook._persist_audit_event") as mock_audit:
+            mock_audit.return_value = {"persisted": True, "store": "analytics_events"}
+            resp = client.post(
+                "/api/webhooks/cotiza",
+                data=payload,
+                content_type="application/json",
+                headers={"x-cotiza-signature": sig},
+            )
         assert resp.status_code == 200
         data = resp.get_json()
         assert data["received"] is True
         assert data["event"] == "quote.completed"
+        assert data["market_verified"] is False
+        assert data["provenance"]["source"] == "cotiza"
+        assert data["audit"]["persisted"] is True
 
     def test_signature_is_body_sensitive(self, client):
         """Changing the body must invalidate the original signature."""
@@ -187,3 +192,11 @@ class TestCotizaWebhookPayload:
         resp = self._post(client, _sample_payload(project_slug="my-project"))
         data = resp.get_json()
         assert data["project_slug"] == "my-project"
+
+    @patch("routes.integrations.cotiza_webhook._persist_audit_event")
+    def test_attempts_audit_persistence(self, mock_audit, client):
+        mock_audit.return_value = {"persisted": True, "store": "analytics_events"}
+        resp = self._post(client, _sample_payload("quote.approved"))
+        assert resp.status_code == 200
+        mock_audit.assert_called_once()
+        assert resp.get_json()["audit"]["store"] == "analytics_events"

@@ -83,6 +83,7 @@ def get_cart(slug: str, project_dir) -> Response | tuple[Response, int]:
 
     # Merge pricing into BOM items
     price_by_name = {qi.part_name: qi for qi in quote.items}
+    fallback_reason = quote.fallback_reason or quote.error
     enriched = []
     for item in bom_items:
         qi = price_by_name.get(item["part_name"])
@@ -95,6 +96,9 @@ def get_cart(slug: str, project_dir) -> Response | tuple[Response, int]:
             "unit_price": qi.unit_price if qi else None,
             "lead_time_days": qi.lead_time_days if qi else None,
             "available": qi.available if qi else False,
+            "source": qi.source if qi else quote.source,
+            "market_verified": qi.market_verified if qi else False,
+            "fallback_reason": qi.fallback_reason if qi else fallback_reason,
         })
 
     return jsonify({
@@ -102,5 +106,10 @@ def get_cart(slug: str, project_dir) -> Response | tuple[Response, int]:
         "total_price": quote.total_price,
         "currency": quote.currency,
         "valid_until": quote.valid_until,
+        "source": quote.source,
+        "provenance": quote.provenance,
+        "market_verified": quote.market_verified,
+        "fallback_reason": fallback_reason,
+        "sample_count": quote.sample_count,
         "error": quote.error,
     })

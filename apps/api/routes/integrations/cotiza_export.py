@@ -160,6 +160,15 @@ def _build_quote_request_payload(
 
     return {
         "source": "yantra4d",
+        "provenance": {
+            "source": "yantra4d",
+            "system": "yantra4d",
+            "market_verified": False,
+            "fallback_reason": "Quote request export only; market pricing is determined by Cotiza.",
+            "geometry_source": "latest_render_mesh",
+        },
+        "market_verified": False,
+        "fallback_reason": "Quote request export only; market pricing is determined by Cotiza.",
         "project": {
             "slug": slug,
             "name": project_name,
@@ -333,4 +342,13 @@ def create_cotiza_quote_request(slug: str):
         "project": slug,
         "cotiza_quote": cotiza_response,
         "geometry": geometry,
+        "source": "cotiza",
+        "provenance": {
+            "source": "cotiza",
+            "upstream_request_source": "yantra4d",
+            "market_verified": False,
+            "fallback_reason": "Yantra4D relayed Cotiza response without independently verifying market pricing.",
+        },
+        "market_verified": False,
+        "fallback_reason": "Yantra4D relayed Cotiza response without independently verifying market pricing.",
     }), 201

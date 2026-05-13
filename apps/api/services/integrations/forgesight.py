@@ -60,6 +60,20 @@ class MaterialBenchmark:
     updated_at: str = ""
     source: str = "forgesight"
     error: str | None = None
+    market_verified: bool = False
+    fallback_reason: str | None = None
+
+    @property
+    def provenance(self) -> dict:
+        """Return explicit truth labels for callers and clients."""
+        return {
+            "provider": "forgesight" if self.source == "forgesight" else "yantra4d",
+            "source": self.source,
+            "market_verified": self.market_verified,
+            "fallback_reason": self.fallback_reason,
+            "sample_count": self.sample_count,
+            "updated_at": self.updated_at,
+        }
 
 
 @dataclass
@@ -70,6 +84,9 @@ class QuoteItem:
     unit_price: float | None = None
     lead_time_days: int | None = None
     available: bool = False
+    source: str | None = None
+    market_verified: bool = False
+    fallback_reason: str | None = None
 
 
 @dataclass
@@ -80,6 +97,21 @@ class Quote:
     currency: str = "USD"
     valid_until: str | None = None
     error: str | None = None
+    source: str = "forgesight"
+    market_verified: bool = False
+    fallback_reason: str | None = None
+    sample_count: int = 0
+
+    @property
+    def provenance(self) -> dict:
+        """Return explicit truth labels for quote/cart responses."""
+        return {
+            "provider": "forgesight" if self.source == "forgesight" else "yantra4d",
+            "source": self.source,
+            "market_verified": self.market_verified,
+            "fallback_reason": self.fallback_reason,
+            "sample_count": self.sample_count,
+        }
 
 
 class ForgeSightClient:
@@ -196,17 +228,23 @@ class ForgeSightClient:
             resp.raise_for_status()
             data = resp.json()
 
+            sample_count = int(data.get("sample_count", data.get("count", 0)) or 0)
+            updated_at = data.get("updated_at", "")
+            p50_per_kg = data.get("p50", data.get("percentile_50", 0))
+
             benchmark = MaterialBenchmark(
                 material=material_id,
                 category=category,
                 region=region,
                 p10_per_kg=data.get("p10", data.get("percentile_10", 0)),
-                p50_per_kg=data.get("p50", data.get("percentile_50", 0)),
+                p50_per_kg=p50_per_kg,
                 p90_per_kg=data.get("p90", data.get("percentile_90", 0)),
                 currency=data.get("currency", "MXN"),
-                sample_count=data.get("sample_count", data.get("count", 0)),
-                updated_at=data.get("updated_at", ""),
+                sample_count=sample_count,
+                updated_at=updated_at,
                 source="forgesight",
+                market_verified=sample_count > 0 and bool(updated_at) and float(p50_per_kg or 0) > 0,
+                fallback_reason=None,
             )
 
             self._benchmark_cache[cache_key] = (benchmark, time.time())
@@ -239,6 +277,7 @@ class ForgeSightClient:
     ) -> MaterialBenchmark:
         """Return hardcoded fallback benchmark when ForgeSight is unavailable."""
         default_cost = DEFAULT_PRICING.get(material_id, 20.0)
+        fallback_reason = error or "ForgeSight integration not configured"
         return MaterialBenchmark(
             material=material_id,
             category=MATERIAL_CATEGORY_MAP.get(material_id, "unknown"),
@@ -249,6 +288,8 @@ class ForgeSightClient:
             currency="USD",
             source="hardcoded_default",
             error=error,
+            market_verified=False,
+            fallback_reason=fallback_reason,
         )
 
     def get_supported_materials(self) -> list[str]:
@@ -264,22 +305,38 @@ class ForgeSightClient:
         Full BOM-to-cart workflow is Sprint 16 scope.
         """
         if not self.available:
-            return Quote(error="ForgeSight integration not configured")
+            return Quote(
+                error="ForgeSight integration not configured",
+                source="unavailable",
+                market_verified=False,
+                fallback_reason="ForgeSight integration not configured",
+            )
 
         headers = self._auth_headers()
         if not headers:
-            return Quote(error="ForgeSight authentication failed")
+            return Quote(
+                error="ForgeSight authentication failed",
+                source="unavailable",
+                market_verified=False,
+                fallback_reason="ForgeSight authentication failed",
+            )
 
         items = []
         for item in bom_items:
             items.append(QuoteItem(
                 part_name=item.get("part_name", "unknown"),
                 quantity=item.get("quantity", 1),
+                source="forgesight_pending",
+                market_verified=False,
+                fallback_reason="ForgeSight offers quote integration not implemented",
             ))
 
         return Quote(
             items=items,
             error="BOM quoting via ForgeSight offers API — coming in Sprint 16",
+            source="forgesight_pending",
+            market_verified=False,
+            fallback_reason="ForgeSight offers quote integration not implemented",
         )
 
 

@@ -31,10 +31,15 @@ Payload:
 """
 import hashlib
 import hmac
+import json
 import logging
 import os
+import time
 
 from flask import Blueprint, request, jsonify
+
+from extensions import db
+from models.analytics import AnalyticsEvent
 
 logger = logging.getLogger(__name__)
 
@@ -57,13 +62,59 @@ def _verify_signature(payload: bytes, signature: str | None) -> bool:
     return hmac.compare_digest(signature, expected)
 
 
+def _persist_audit_event(payload: dict) -> dict:
+    """Persist a lightweight Cotiza lifecycle audit event when DB is available."""
+    event_type = payload.get("event_type", "unknown")
+    project_slug = payload.get("project_slug", "unknown")
+    audit_data = {
+        "provider": "cotiza",
+        "quote_id": payload.get("quote_id", ""),
+        "quote_number": payload.get("quote_number", ""),
+        "status": payload.get("status", ""),
+        "total_amount": payload.get("total_amount", 0),
+        "currency": payload.get("currency", "MXN"),
+        "timestamp": payload.get("timestamp", ""),
+        "source": payload.get("source", "cotiza"),
+        "market_verified": bool(payload.get("market_verified", False)),
+        "fallback_reason": payload.get(
+            "fallback_reason",
+            "Lifecycle webhook only; Yantra4D did not independently verify market pricing.",
+        ),
+    }
+
+    try:
+        event = AnalyticsEvent(
+            project=project_slug,
+            event_type=f"cotiza.{event_type}",
+            event_data=json.dumps(audit_data),
+            created_at=time.time(),
+        )
+        db.session.add(event)
+        db.session.commit()
+        return {
+            "persisted": True,
+            "store": "analytics_events",
+            "event_type": event.event_type,
+        }
+    except Exception as exc:
+        logger.warning("Cotiza webhook audit persistence skipped: %s", exc)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        return {
+            "persisted": False,
+            "store": "analytics_events",
+            "reason": "audit_store_unavailable",
+        }
+
+
 @cotiza_webhook_bp.route("/api/webhooks/cotiza", methods=["POST"])
 def handle_cotiza_webhook():
     """Receive and process Cotiza quote lifecycle webhooks.
 
-    On a valid event, logs the quote result associated with the project.
-    Persistence is deferred to a future release -- for now, logging
-    provides an audit trail and confirms the integration works.
+    On a valid event, logs the quote result associated with the project and
+    attempts a lightweight local audit write using the analytics events table.
 
     Returns 200 on success, 401 on signature failure, 400 on bad payload.
     """
@@ -116,19 +167,36 @@ def handle_cotiza_webhook():
     else:
         logger.debug("Cotiza webhook: unrecognized event_type=%s", event_type)
 
+    audit = _persist_audit_event(payload)
+
     return jsonify({
         "received": True,
         "event": event_type,
         "project_slug": project_slug,
+        "source": "cotiza",
+        "provenance": {
+            "source": "cotiza",
+            "market_verified": bool(payload.get("market_verified", False)),
+            "fallback_reason": payload.get(
+                "fallback_reason",
+                "Lifecycle webhook only; Yantra4D did not independently verify market pricing.",
+            ),
+        },
+        "market_verified": bool(payload.get("market_verified", False)),
+        "fallback_reason": payload.get(
+            "fallback_reason",
+            "Lifecycle webhook only; Yantra4D did not independently verify market pricing.",
+        ),
+        "audit": audit,
     }), 200
 
 
 def _handle_quote_completed(payload: dict) -> None:
     """Handle a completed quote from Cotiza.
 
-    Future: persist the quote result to the project's metadata or a
-    dedicated quotes table so the Yantra4D studio can display pricing
-    history and order status.
+    The generic webhook handler persists a lightweight audit event after
+    lifecycle-specific logging. A dedicated quote table can later project
+    these events into queryable quote/order state.
     """
     logger.info(
         "Cotiza quote completed for project '%s': quote_number=%s total=%s %s",

@@ -86,9 +86,12 @@ class TestCartEndpoint:
         assert data["total_price"] == 1.60
         assert data["currency"] == "USD"
         assert data["error"] is None
+        assert data["market_verified"] is False
+        assert data["provenance"]["source"] == "forgesight"
         assert len(data["items"]) == 2
         assert data["items"][0]["unit_price"] == 0.12
         assert data["items"][0]["available"] is True
+        assert data["items"][0]["market_verified"] is False
 
     @patch("routes.projects.cart.forgesight_client")
     def test_returns_null_pricing_when_forgesight_unavailable(self, mock_fs, client):
@@ -107,9 +110,13 @@ class TestCartEndpoint:
         data = resp.get_json()
         assert data["error"] is not None
         assert data["total_price"] is None
+        assert data["market_verified"] is False
+        assert data["fallback_reason"] == "ForgeSight integration not configured"
         for item in data["items"]:
             assert item["unit_price"] is None
             assert item["available"] is False
+            assert item["market_verified"] is False
+            assert item["fallback_reason"] == "ForgeSight integration not configured"
 
     @patch("routes.projects.cart.forgesight_client")
     def test_applies_parameter_overrides(self, mock_fs, client):

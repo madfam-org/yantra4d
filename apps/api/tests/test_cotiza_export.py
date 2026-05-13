@@ -165,6 +165,9 @@ class TestBuildQuoteRequestPayload:
         )
 
         assert payload["source"] == "yantra4d"
+        assert payload["market_verified"] is False
+        assert payload["provenance"]["source"] == "yantra4d"
+        assert payload["fallback_reason"] == "Quote request export only; market pricing is determined by Cotiza."
         assert payload["project"]["slug"] == "test-cube"
         assert payload["project"]["name"] == "Test Cube"
         assert payload["project"]["description"] == "A test cube for quoting"
@@ -522,6 +525,8 @@ class TestCotizaQuoteRequestRoute:
         assert data["project"] == slug
         assert data["cotiza_quote"]["quote_id"] == "q-999"
         assert data["geometry"]["volume_cm3"] == SAMPLE_GEOMETRY["volume_cm3"]
+        assert data["market_verified"] is False
+        assert data["provenance"]["source"] == "cotiza"
 
         # Verify the payload sent to Cotiza had correct process mapping
         sent_payload = mock_send.call_args[0][0]

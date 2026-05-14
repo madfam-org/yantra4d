@@ -180,12 +180,12 @@ _Integration: Selva agent quote generation, Cotiza Studio tenant quote creation,
 
 Yantra4D must act as a truthful project and geometry relay. It should not invent pricing truth, downgrade verified downstream results, or hide the reason a quote is not client-ready.
 
-- [ ] **Strict market verification propagation:** Forward `require_market_verified` as a top-level Cotiza request field for `/api/projects/<slug>/cotiza-quote-request`.
-- [ ] **Market context preservation:** Preserve Cotiza `market_verified`, `market_context`, `pricing_source`, `fallback_reason`, and `needs_review` in the Yantra4D response.
-- [ ] **Tablaco quote fixture:** Add a canonical `tablaco/unit` fixture with known parameters, geometry metadata, material, process, quantity, and currency.
+- [x] **Strict market verification propagation:** Forward `require_market_verified` as a top-level Cotiza request field for `/api/projects/<slug>/cotiza-quote-request`.
+- [x] **Market context preservation:** Preserve Cotiza `market_verified`, `market_context`, `pricing_source`, `fallback_reason`, and `needs_review` in the Yantra4D response.
+- [x] **Tablaco quote fixture:** Add a canonical `tablaco/unit` fixture with known parameters, geometry metadata, material, process, quantity, and currency.
 - [ ] **Authenticated smoke path:** Verify pro-tier Selva/Janua credentials can render and request a Tablaco quote without bypassing tier policy.
-- [ ] **Fail-closed behavior:** If Cotiza or ForgeSight cannot verify market data while strict mode is requested, return a non-client-ready response with the blocking reason.
-- [ ] **Runbook coverage:** Document the live Tablaco quote flow and how Enclii verifies it without direct production container access.
+- [x] **Fail-closed behavior:** If Cotiza or ForgeSight cannot verify market data while strict mode is requested, return a non-client-ready response with the blocking reason.
+- [x] **Runbook coverage:** Document the live Tablaco quote flow and how Enclii verifies it without direct production container access.
 
 ---
 
@@ -197,6 +197,7 @@ This sprint closes the gap between locally validated stability and production-gr
 - [x] **CI hotfix shipped:** Commit `2b0c397` removed the unsafe Studio formula dependency, hardened CI/runtime assumptions, repaired backend migration drift, and stabilized mobile responsive Playwright checks.
 - [x] **High-severity npm gate:** Studio, Landing, and Admin pass `npm audit --audit-level=high`.
 - [x] **Studio formula and constraint regression coverage:** `safeFormula`, BOM ternary formulas, and constraint paths have targeted tests.
+- [x] **Studio CI typecheck contract:** CI now runs the stable TypeScript utility/type boundary through `tsconfig.ci.json`; strict TSX migration remains explicit backlog instead of blocking unrelated stability releases.
 - [x] **Backend migration and coverage gate:** Isolated migration upgrade/check passes; backend coverage passes at 80.68%.
 - [x] **Mobile responsive browser project:** Playwright mobile project passes with 22 passing tests and 2 intentional skips.
 - [ ] **GitHub Actions post-push confirmation:** Verify all workflows are green on `main` for `2b0c397` or newer.

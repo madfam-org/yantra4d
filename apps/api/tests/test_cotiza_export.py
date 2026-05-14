@@ -21,6 +21,7 @@ import requests
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from routes.integrations.cotiza_export import (
+    CotizaAPIError,
     _build_quote_request_payload,
     _map_process_type,
     _send_to_cotiza,
@@ -165,9 +166,9 @@ class TestBuildQuoteRequestPayload:
         )
 
         assert payload["source"] == "yantra4d"
-        assert payload["market_verified"] is False
+        assert payload["require_market_verified"] is False
         assert payload["provenance"]["source"] == "yantra4d"
-        assert payload["fallback_reason"] == "Quote request export only; market pricing is determined by Cotiza."
+        assert payload["provenance"]["fallback_reason"] == "Quote request export only; market pricing is determined by Cotiza."
         assert payload["project"]["slug"] == "test-cube"
         assert payload["project"]["name"] == "Test Cube"
         assert payload["project"]["description"] == "A test cube for quoting"
@@ -205,6 +206,36 @@ class TestBuildQuoteRequestPayload:
         assert payload["item"]["process"] == "3d_sla"
         assert payload["currency"] == "USD"
         assert payload["notes"] == "Urgent order"
+
+    def test_tablaco_strict_quote_fixture_preserves_mode_and_parameters(self):
+        body = {
+            "material": "PLA",
+            "quantity": 1,
+            "finish": "standard",
+            "process": "fdm",
+            "currency": "MXN",
+            "mode": "unit",
+            "parameters": {"size": 20, "thick": 2.5, "rod_D": 3, "clearance": 0.2},
+            "require_market_verified": True,
+        }
+        payload = _build_quote_request_payload(
+            slug="tablaco",
+            manifest={
+                "name": "Tablaco Studio",
+                "description": "Didactic tactile truth table project",
+            },
+            geometry=SAMPLE_GEOMETRY,
+            body=body,
+        )
+
+        assert payload["source"] == "yantra4d"
+        assert payload["require_market_verified"] is True
+        assert payload["project"]["slug"] == "tablaco"
+        assert payload["project"]["name"] == "Tablaco Studio"
+        assert payload["item"]["process"] == "3d_fff"
+        assert payload["item"]["options"]["yantra4d_mode"] == "unit"
+        assert payload["item"]["options"]["yantra4d_parameters"]["size"] == 20
+        assert "require_market_verified" not in payload["item"]["options"]
 
     def test_quantity_floor_is_one(self):
         """Quantity must be at least 1, even if 0 or negative is passed."""
@@ -249,6 +280,7 @@ class TestBuildQuoteRequestPayload:
             "currency": "USD",
             "mode": "default",
             "parameters": {"size": 10},
+            "require_market_verified": True,
         }
         payload = _build_quote_request_payload(
             slug="test-cube",
@@ -264,6 +296,7 @@ class TestBuildQuoteRequestPayload:
         assert "currency" not in opts
         assert "mode" not in opts
         assert "parameters" not in opts
+        assert "require_market_verified" not in opts
 
     def test_manifest_name_fallback_to_slug(self):
         """When manifest has no 'name', slug is used as project name."""
@@ -329,8 +362,27 @@ class TestSendToCotiza:
         mock_resp.text = "Invalid material"
         mock_post.return_value = mock_resp
 
-        with pytest.raises(RuntimeError, match="422.*Invalid material"):
+        with pytest.raises(CotizaAPIError, match="422.*Invalid material"):
             _send_to_cotiza({"source": "yantra4d"})
+
+    @patch("routes.integrations.cotiza_export.requests.post")
+    def test_market_data_unavailable_error_preserves_424(self, mock_post):
+        mock_resp = MagicMock()
+        mock_resp.status_code = 424
+        mock_resp.json.return_value = {
+            "detail": {
+                "code": "market_data_unavailable",
+                "message": "No matching benchmark series met requirements.",
+            }
+        }
+        mock_resp.text = "market unavailable"
+        mock_post.return_value = mock_resp
+
+        with pytest.raises(CotizaAPIError) as exc_info:
+            _send_to_cotiza({"source": "yantra4d", "require_market_verified": True})
+
+        assert exc_info.value.status_code == 424
+        assert exc_info.value.error_code == "market_data_unavailable"
 
     @patch("routes.integrations.cotiza_export.requests.post")
     def test_http_error_with_unparseable_body(self, mock_post):
@@ -512,7 +564,17 @@ class TestCotizaQuoteRequestRoute:
 
         mock_find.return_value = "/fake/mesh.glb"
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
-        mock_send.return_value = {"quote_id": "q-999", "total": 150.0}
+        mock_send.return_value = {
+            "quote_id": "q-999",
+            "total": 150.0,
+            "status": "auto_quoted",
+            "market_context": {
+                "market_verified": True,
+                "pricing_source": "forgesight",
+                "sample_count": 12,
+                "fallback_reason": None,
+            },
+        }
 
         resp = client.post(
             f"/api/projects/{slug}/cotiza-quote-request",
@@ -525,14 +587,107 @@ class TestCotizaQuoteRequestRoute:
         assert data["project"] == slug
         assert data["cotiza_quote"]["quote_id"] == "q-999"
         assert data["geometry"]["volume_cm3"] == SAMPLE_GEOMETRY["volume_cm3"]
-        assert data["market_verified"] is False
+        assert data["market_verified"] is True
+        assert data["client_ready"] is True
+        assert data["pricing_source"] == "forgesight"
         assert data["provenance"]["source"] == "cotiza"
 
         # Verify the payload sent to Cotiza had correct process mapping
         sent_payload = mock_send.call_args[0][0]
+        assert sent_payload["require_market_verified"] is False
         assert sent_payload["item"]["process"] == "3d_sla"
         assert sent_payload["item"]["material"] == "PETG"
         assert sent_payload["item"]["quantity"] == 3
+
+    @patch("routes.integrations.cotiza_export._send_to_cotiza")
+    @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
+    @patch("routes.integrations.cotiza_export._find_latest_render")
+    def test_strict_unverified_cotiza_success_fails_closed(
+        self, mock_find, mock_geo, mock_send, client, project_on_disk
+    ):
+        """Yantra refuses client-ready relay if strict mode lacks verified market data."""
+        slug = project_on_disk[0]
+
+        mock_find.return_value = "/fake/mesh.glb"
+        mock_geo.return_value = SAMPLE_GEOMETRY.copy()
+        mock_send.return_value = {
+            "quote_id": "q-review",
+            "status": "needs_review",
+            "warnings": ["Market-verified pricing unavailable"],
+            "market_context": {
+                "market_verified": False,
+                "pricing_source": "internal_pricing",
+                "fallback_reason": "market_data_unavailable",
+            },
+        }
+
+        resp = client.post(
+            f"/api/projects/{slug}/cotiza-quote-request",
+            json={"require_market_verified": True},
+        )
+
+        assert resp.status_code == 424
+        data = resp.get_json()
+        assert data.get("error_code") == "MARKET_DATA_UNAVAILABLE"
+
+    @patch("routes.integrations.cotiza_export._send_to_cotiza")
+    @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
+    @patch("routes.integrations.cotiza_export._find_latest_render")
+    def test_non_strict_review_response_is_truthfully_labeled(
+        self, mock_find, mock_geo, mock_send, client, project_on_disk
+    ):
+        """Review-only Cotiza responses remain successful but not client-ready."""
+        slug = project_on_disk[0]
+
+        mock_find.return_value = "/fake/mesh.glb"
+        mock_geo.return_value = SAMPLE_GEOMETRY.copy()
+        mock_send.return_value = {
+            "quote_id": "q-review",
+            "status": "needs_review",
+            "warnings": ["Market-verified pricing unavailable"],
+            "market_context": {
+                "market_verified": False,
+                "pricing_source": "internal_pricing",
+                "fallback_reason": "market_data_unavailable",
+            },
+        }
+
+        resp = client.post(
+            f"/api/projects/{slug}/cotiza-quote-request",
+            json={"require_market_verified": False},
+        )
+
+        assert resp.status_code == 201
+        data = resp.get_json()
+        assert data["market_verified"] is False
+        assert data["needs_review"] is True
+        assert data["client_ready"] is False
+        assert data["fallback_reason"] == "market_data_unavailable"
+
+    @patch("routes.integrations.cotiza_export._send_to_cotiza")
+    @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
+    @patch("routes.integrations.cotiza_export._find_latest_render")
+    def test_cotiza_424_is_preserved(
+        self, mock_find, mock_geo, mock_send, client, project_on_disk
+    ):
+        """Cotiza strict-market failures should not be hidden as a generic 502."""
+        slug = project_on_disk[0]
+
+        mock_find.return_value = "/fake/mesh.glb"
+        mock_geo.return_value = SAMPLE_GEOMETRY.copy()
+        mock_send.side_effect = CotizaAPIError(
+            424,
+            "No matching benchmark series met requirements.",
+            error_code="market_data_unavailable",
+        )
+
+        resp = client.post(
+            f"/api/projects/{slug}/cotiza-quote-request",
+            json={"require_market_verified": True},
+        )
+
+        assert resp.status_code == 424
+        assert resp.get_json().get("error_code") == "MARKET_DATA_UNAVAILABLE"
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")

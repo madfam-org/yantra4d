@@ -6,6 +6,13 @@ import fs from 'fs'
 import path from 'path'
 
 // Custom plugin to keep fallback manifest continuously in sync with the flagship project (Gridfinity)
+function writeFallbackManifest(src, dest) {
+  const manifestText = fs
+    .readFileSync(src, 'utf8')
+    .replace(/\n\s+"force_backend":\s*true,\n/, '\n')
+  fs.writeFileSync(dest, manifestText)
+}
+
 function syncManifestPlugin() {
   return {
     name: 'sync-manifest',
@@ -15,7 +22,7 @@ function syncManifestPlugin() {
       const dest = path.resolve(process.cwd(), 'src/config/fallback-manifest.json')
       try {
         if (fs.existsSync(src)) {
-          fs.copyFileSync(src, dest)
+          writeFallbackManifest(src, dest)
           console.log('\x1b[32m%s\x1b[0m', '✅ Synced gridfinity manifest to fallback-manifest.json')
         }
       } catch (err) {
@@ -29,7 +36,7 @@ function syncManifestPlugin() {
       server.watcher.on('change', (file) => {
         if (file === src) {
           const dest = path.resolve(process.cwd(), 'src/config/fallback-manifest.json')
-          fs.copyFileSync(src, dest)
+          writeFallbackManifest(src, dest)
           console.log('\x1b[32m%s\x1b[0m', '🔄 Synced gridfinity manifest (watched file changed)')
         }
       })

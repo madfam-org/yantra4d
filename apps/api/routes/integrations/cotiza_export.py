@@ -40,6 +40,34 @@ COTIZA_TIMEOUT_SECONDS = int(os.getenv("COTIZA_TIMEOUT_SECONDS", "30"))
 
 # Supported mesh extensions in preference order (same as analysis.py)
 _MESH_EXTENSIONS = (".glb", ".stl", ".3mf")
+_RESERVED_OPTION_KEYS = {
+    "material",
+    "quantity",
+    "finish",
+    "process",
+    "notes",
+    "currency",
+    "mode",
+    "parameters",
+    "require_market_verified",
+}
+
+
+class CotizaAPIError(RuntimeError):
+    """Cotiza returned an HTTP error that should retain its meaning."""
+
+    def __init__(
+        self,
+        status_code: int,
+        message: str,
+        error_code: str = "COTIZA_API_ERROR",
+        body: dict | None = None,
+    ):
+        super().__init__(f"Cotiza API returned {status_code}: {message}")
+        self.status_code = status_code
+        self.message = message
+        self.error_code = error_code
+        self.body = body or {}
 
 
 # ---------------------------------------------------------------------------
@@ -135,6 +163,89 @@ def _map_process_type(process: str) -> str:
     return mapping.get(process.lower(), "3d_fff")
 
 
+def _bool_from_body(value) -> bool:
+    """Interpret JSON/env-style booleans without treating arbitrary strings as true."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+    return bool(value)
+
+
+def _cotiza_error_from_response(resp) -> CotizaAPIError:
+    """Build a typed error while preserving Cotiza's truth/error contract."""
+    body = {}
+    try:
+        parsed = resp.json()
+        if isinstance(parsed, dict):
+            body = parsed
+    except Exception:
+        body = {}
+
+    detail = body.get("detail") if isinstance(body.get("detail"), dict) else {}
+    message = (
+        body.get("message")
+        or detail.get("message")
+        or body.get("error")
+        or resp.text
+        or "Cotiza API error"
+    )
+    error_code = (
+        body.get("error_code")
+        or detail.get("code")
+        or body.get("error")
+        or "COTIZA_API_ERROR"
+    )
+    return CotizaAPIError(
+        status_code=resp.status_code,
+        message=str(message),
+        error_code=str(error_code),
+        body=body,
+    )
+
+
+def _cotiza_market_truth(cotiza_response: dict) -> dict:
+    """Extract the downstream market truth labels without inventing them."""
+    market_context = cotiza_response.get("market_context") or {}
+    if not isinstance(market_context, dict):
+        market_context = {}
+
+    provenance = cotiza_response.get("provenance") or market_context.get("provenance") or {}
+    if not isinstance(provenance, dict):
+        provenance = {}
+
+    market_verified = bool(
+        cotiza_response.get(
+            "market_verified",
+            market_context.get(
+                "market_verified",
+                provenance.get("market_verified", False),
+            ),
+        )
+    )
+    status = str(cotiza_response.get("status", "")).lower()
+    warnings = cotiza_response.get("warnings") or []
+    needs_review = bool(cotiza_response.get("needs_review")) or status == "needs_review"
+
+    return {
+        "market_verified": market_verified,
+        "market_context": market_context,
+        "pricing_source": (
+            cotiza_response.get("pricing_source")
+            or market_context.get("pricing_source")
+            or market_context.get("source")
+            or provenance.get("source")
+        ),
+        "fallback_reason": (
+            cotiza_response.get("fallback_reason")
+            or market_context.get("fallback_reason")
+            or provenance.get("fallback_reason")
+        ),
+        "needs_review": needs_review,
+        "warnings": warnings,
+    }
+
+
 def _build_quote_request_payload(
     slug: str,
     manifest: dict,
@@ -153,22 +264,32 @@ def _build_quote_request_payload(
     process = _map_process_type(body.get("process", "fff"))
     notes = body.get("notes", "")
     currency = body.get("currency", "MXN")
+    require_market_verified = _bool_from_body(body.get("require_market_verified", False))
 
     # Pull project display info from manifest
     project_name = manifest.get("name", slug)
     project_description = manifest.get("description", "")
+    options = {
+        "material": material,
+        "finish": finish,
+        **{k: v for k, v in body.items() if k not in _RESERVED_OPTION_KEYS},
+    }
+    if body.get("mode") is not None:
+        options["yantra4d_mode"] = body.get("mode")
+    if body.get("parameters") is not None:
+        options["yantra4d_parameters"] = body.get("parameters")
 
     return {
         "source": "yantra4d",
+        "require_market_verified": require_market_verified,
         "provenance": {
             "source": "yantra4d",
             "system": "yantra4d",
             "market_verified": False,
             "fallback_reason": "Quote request export only; market pricing is determined by Cotiza.",
             "geometry_source": "latest_render_mesh",
+            "mode": body.get("mode"),
         },
-        "market_verified": False,
-        "fallback_reason": "Quote request export only; market pricing is determined by Cotiza.",
         "project": {
             "slug": slug,
             "name": project_name,
@@ -185,13 +306,7 @@ def _build_quote_request_payload(
             "material": material,
             "quantity": quantity,
             "finish": finish,
-            "options": {
-                "material": material,
-                "finish": finish,
-                **{k: v for k, v in body.items()
-                   if k not in ("material", "quantity", "finish", "process",
-                                "notes", "currency", "mode", "parameters")},
-            },
+            "options": options,
         },
         "currency": currency,
         "notes": notes,
@@ -227,14 +342,7 @@ def _send_to_cotiza(payload: dict, auth_token: str | None = None) -> dict:
         raise RuntimeError(f"Cotiza API request failed: {exc}")
 
     if resp.status_code >= 400:
-        try:
-            err_body = resp.json()
-            err_msg = err_body.get("message", err_body.get("error", resp.text))
-        except Exception:
-            err_msg = resp.text
-        raise RuntimeError(
-            f"Cotiza API returned {resp.status_code}: {err_msg}"
-        )
+        raise _cotiza_error_from_response(resp)
 
     return resp.json()
 
@@ -306,6 +414,7 @@ def create_cotiza_quote_request(slug: str):
 
     # -- Build payload --
     payload = _build_quote_request_payload(slug, manifest, geometry, body)
+    require_market_verified = payload["require_market_verified"]
 
     logger.info(
         "Sending quote request to Cotiza for project '%s' "
@@ -328,6 +437,21 @@ def create_cotiza_quote_request(slug: str):
     # -- Send to Cotiza --
     try:
         cotiza_response = _send_to_cotiza(payload, auth_token=auth_token)
+    except CotizaAPIError as exc:
+        status_code = exc.status_code if 400 <= exc.status_code < 500 else 502
+        error_code = exc.error_code
+        if exc.status_code == 424 or error_code == "market_data_unavailable":
+            status_code = 424
+            error_code = "MARKET_DATA_UNAVAILABLE"
+        logger.error(
+            "Cotiza export failed for '%s' [request_id=%s status=%d code=%s]: %s",
+            slug,
+            getattr(g, "request_id", None),
+            exc.status_code,
+            exc.error_code,
+            exc.message,
+        )
+        return error_response(exc.message, status_code, error_code=error_code)
     except RuntimeError as exc:
         logger.error(
             "Cotiza export failed for '%s' [request_id=%s]: %s",
@@ -337,18 +461,41 @@ def create_cotiza_quote_request(slug: str):
         )
         return error_response(str(exc), 502, error_code="COTIZA_API_ERROR")
 
+    market_truth = _cotiza_market_truth(cotiza_response)
+    if require_market_verified and not market_truth["market_verified"]:
+        logger.error(
+            "Cotiza returned unverified quote despite strict market verification "
+            "for '%s' [request_id=%s fallback_reason=%s]",
+            slug,
+            getattr(g, "request_id", None),
+            market_truth["fallback_reason"],
+        )
+        return error_response(
+            "Market-verified ForgeSight pricing was required, but Cotiza did not return a verified market context.",
+            424,
+            error_code="MARKET_DATA_UNAVAILABLE",
+        )
+
+    client_ready = market_truth["market_verified"] and not market_truth["needs_review"]
+
     return jsonify({
         "status": "success",
         "project": slug,
         "cotiza_quote": cotiza_response,
         "geometry": geometry,
         "source": "cotiza",
+        "market_verified": market_truth["market_verified"],
+        "market_context": market_truth["market_context"],
+        "pricing_source": market_truth["pricing_source"],
+        "fallback_reason": market_truth["fallback_reason"],
+        "needs_review": market_truth["needs_review"],
+        "client_ready": client_ready,
         "provenance": {
             "source": "cotiza",
             "upstream_request_source": "yantra4d",
-            "market_verified": False,
-            "fallback_reason": "Yantra4D relayed Cotiza response without independently verifying market pricing.",
+            "market_verified": market_truth["market_verified"],
+            "pricing_source": market_truth["pricing_source"],
+            "fallback_reason": market_truth["fallback_reason"],
+            "needs_review": market_truth["needs_review"],
         },
-        "market_verified": False,
-        "fallback_reason": "Yantra4D relayed Cotiza response without independently verifying market pricing.",
     }), 201

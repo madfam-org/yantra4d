@@ -29,6 +29,7 @@ const studioUrl = STUDIO_URL;
         &copy; {new Date().getFullYear()} Yantra4D. By <a href="https://madfam.io" class="hover:text-foreground transition-colors">Innovaciones MADFAM</a>.
       </p>
       <nav class="flex flex-wrap justify-center items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+        <a href="#gallery" class="min-h-[44px] inline-flex items-center px-2 hover:text-foreground transition-colors">{t?.nav.gallery ?? 'Gallery'}</a>
         <a href="https://github.com/madfam-org/yantra4d/tree/main/docs" target="_blank" rel="noopener noreferrer" class="min-h-[44px] inline-flex items-center px-2 hover:text-foreground transition-colors">{t?.footer.docs ?? 'Docs'}</a>
         <a href={studioUrl} class="min-h-[44px] inline-flex items-center px-2 hover:text-foreground transition-colors">{t?.footer.studio ?? 'Studio'}</a>
         <a href="https://madfam.io/privacy" class="min-h-[44px] inline-flex items-center px-2 hover:text-foreground transition-colors">Privacy</a>

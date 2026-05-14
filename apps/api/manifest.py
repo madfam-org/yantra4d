@@ -259,20 +259,44 @@ class ManifestService:
     def _validate_manifest_strictness(self, data: dict, manifest_path: Path):
         """Enforces quality metadata constraints on the loaded manifest."""
         proj = data.get("project", {})
+        strictness = getattr(Config, "MANIFEST_STRICTNESS", "warn").lower()
+
+        def _warn(message: str) -> None:
+            if strictness == "warn":
+                logger.warning(message)
+
+        if not isinstance(proj, dict):
+            message = (
+                f"Manifest {manifest_path} has invalid 'project' value. Expected object."
+            )
+            if strictness == "strict":
+                raise RuntimeError(message)
+            _warn(message)
+            data["project"] = {}
+            proj = data["project"]
         
         # 1. Thumbnail
         if not proj.get("thumbnail") or not isinstance(proj["thumbnail"], str):
-            raise RuntimeError(f"Manifest {manifest_path} is missing a required string 'thumbnail' property in 'project'.")
+            if strictness == "strict":
+                raise RuntimeError(f"Manifest {manifest_path} is missing a required string 'thumbnail' property in 'project'.")
+            _warn(f"Manifest {manifest_path} is missing a required string 'thumbnail' property in 'project'; defaulting to '/logo.png'.")
+            proj["thumbnail"] = "/logo.png"
             
         # 2. Tags
         tags = proj.get("tags")
         if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
-            raise RuntimeError(f"Manifest {manifest_path} must have a 'tags' array of strings in 'project'.")
+            if strictness == "strict":
+                raise RuntimeError(f"Manifest {manifest_path} must have a 'tags' array of strings in 'project'.")
+            _warn(f"Manifest {manifest_path} has invalid 'tags'; defaulting to empty list.")
+            proj["tags"] = []
             
         # 3. Difficulty
         difficulty = proj.get("difficulty")
-        if difficulty not in ("beginner", "intermediate", "advanced"):
+        if strictness == "strict" and difficulty not in ("beginner", "intermediate", "advanced"):
             raise RuntimeError(f"Manifest {manifest_path} 'difficulty' must be one of: beginner, intermediate, advanced. Got: {difficulty}")
+        if strictness != "strict" and difficulty not in ("beginner", "intermediate", "advanced"):
+            _warn(f"Manifest {manifest_path} has invalid 'difficulty' ({difficulty}); defaulting to 'beginner'.")
+            proj["difficulty"] = "beginner"
 
     def load_manifest(self, slug: str | None = None) -> ProjectManifest:
         """Load and cache the project manifest for a given slug."""

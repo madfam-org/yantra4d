@@ -13,6 +13,15 @@ export default tseslint.config(
         ecmaFeatures: { jsx: true },
       },
     },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    files: ['src/**/*.test.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
   },
   {
     ignores: ['dist/', 'node_modules/', '.astro/'],

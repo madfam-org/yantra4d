@@ -9,12 +9,18 @@ import time
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request, Response
-from sqlalchemy import func
+from sqlalchemy import desc, func
 
 from config import Config
 from extensions import db
 from manifest import discover_projects, get_manifest
 from middleware.auth import require_role, optional_auth
+from services.engine.render_orchestrator import (
+    ACTIVE_RENDER_JOBS_KEY,
+    ACTIVE_RENDER_META_PREFIX,
+    RENDER_QUEUE,
+    r,
+)
 from models.analytics import AnalyticsEvent
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
@@ -24,6 +30,121 @@ logger = logging.getLogger(__name__)
 
 # Flags that the admin UI is allowed to toggle
 _ALLOWED_FLAGS = {"is_demo", "is_hyperobject", "unlisted"}
+
+
+def _safe_float(value) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _safe_int(value) -> int | None:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _safe_json(value: str | None) -> dict:
+    if not value:
+        return {}
+    try:
+        parsed = json.loads(value)
+    except (TypeError, json.JSONDecodeError):
+        return {}
+    if isinstance(parsed, dict):
+        return parsed
+    return {}
+
+
+def _collect_active_render_state() -> dict:
+    """Return best-effort active render metrics from Redis."""
+    active_jobs = []
+
+    try:
+        queued_jobs = int(r.llen(RENDER_QUEUE) or 0)
+        active_ids = r.smembers(ACTIVE_RENDER_JOBS_KEY) or []
+    except Exception as exc:
+        logger.warning("Render activity unavailable from Redis: %s", exc)
+        return {
+            "active_jobs": [],
+            "active_count": 0,
+            "queued_jobs": 0,
+            "note": "Redis unavailable for render worker telemetry. Start Redis to enable live render status.",
+        }
+
+    for raw_job_id in active_ids:
+        job_id = str(raw_job_id)
+        if not job_id:
+            continue
+
+        meta = _safe_json(r.get(f"{ACTIVE_RENDER_META_PREFIX}{job_id}"))
+        started_at = _safe_float(meta.get("started_at"))
+        duration_ms = None
+        if started_at is not None:
+            duration_ms = max(0, int((time.time() - started_at) * 1000))
+
+        part = meta.get("part") or ""
+        project = meta.get("project_slug") or meta.get("project") or "unknown"
+        mode = meta.get("mode") or meta.get("scad_filename") or "unknown"
+        engine = meta.get("engine") or "unknown"
+        scad_filename = meta.get("scad_filename") or "unknown"
+        request_id = meta.get("request_id") or ""
+
+        active_jobs.append({
+            "job_id": job_id,
+            "project": str(project),
+            "mode": str(mode),
+            "part": str(part),
+            "engine": str(engine),
+            "scad_filename": str(scad_filename),
+            "request_id": str(request_id),
+            "duration_ms": _safe_int(duration_ms) or 0,
+            "started_at": started_at,
+        })
+
+    active_jobs.sort(key=lambda row: row["duration_ms"], reverse=True)
+    return {
+        "active_jobs": active_jobs,
+        "active_count": len(active_jobs),
+        "queued_jobs": queued_jobs,
+        "note": None,
+    }
+
+
+def _collect_recent_render_events(limit: int = 10) -> list[dict]:
+    try:
+        rows = (
+            db.session.query(AnalyticsEvent.project, AnalyticsEvent.event_data)
+            .filter(AnalyticsEvent.event_type == "render")
+            .order_by(desc(AnalyticsEvent.created_at))
+            .limit(limit)
+            .all()
+        )
+    except Exception as exc:
+        logger.warning("Failed to read recent render analytics: %s", exc)
+        return []
+
+    recent = []
+    for project, event_data in rows:
+        parsed = _safe_json(event_data) if event_data else {}
+        duration = parsed.get("duration_ms")
+        duration_ms = _safe_int(duration)
+        if duration_ms is None:
+            duration_ms = 0
+
+        mode = parsed.get("mode") or parsed.get("preset") or "unknown"
+        if not mode:
+            mode = "unknown"
+
+        recent.append({
+            "project": str(project or "unknown"),
+            "mode": str(mode),
+            "duration_ms": duration_ms,
+        })
+
+    return recent
 
 
 def _load_raw_manifest(slug: str) -> dict | None:
@@ -99,7 +220,7 @@ def admin_list_projects() -> Response:
     enriched = [_enrich_project(p) for p in projects]
 
     # Check if user is admin
-    is_admin = False
+    is_admin = not Config.AUTH_ENABLED
     if Config.AUTH_ENABLED:
         claims = getattr(request, "auth_claims", None)
         if claims:
@@ -109,17 +230,6 @@ def admin_list_projects() -> Response:
             if claims.get("role"):
                 roles.append(claims.get("role"))
             is_admin = "admin" in roles
-    else:
-        # If auth is disabled (local dev default), treat as admin unless restricted?
-        # Requirement: "Locally, we should not be asked to authenticate" -> implied public access is enough?
-        # Actually, if AUTH_ENABLED is False, middleware sets auth_claims=None.
-        # But for local dev, we might want full access?
-        # The user said: "Locally, we should not be asked to authenticate"
-        # If AUTH_ENABLED is false, we probably just want to show everything or use the public logic?
-        # Let's stick to the prompt: "Globally, every single user should have access to hyperobject and demo projects"
-        # "Locally we should not be asked to authenticate" -> This implies we simply want it to work.
-        # If AUTH_ENABLED is False, we typically bypass auth checks.
-        pass
 
     # If not admin, filter the list
     if not is_admin and Config.AUTH_ENABLED:
@@ -128,13 +238,6 @@ def admin_list_projects() -> Response:
              if (p.get("is_demo") or p.get("is_hyperobject"))
              and not p.get("unlisted", False)
          ]
-    
-    # If AUTH_ENABLED is False (local dev), we usually allow everything in other parts of the app.
-    # However, to be safe and consistent with "Global" rule, we might strictly filter unless we decide local dev = admin.
-    # But usually AUTH_ENABLED=False means we are in dev mode and should see everything.
-    # Let's check how require_role handles AUTH_ENABLED=False.
-    # require_role simply calls f(*args) if not Config.AUTH_ENABLED.
-    # So if Auth is disabled, we should probably return everything.
     
     return jsonify(enriched)
 
@@ -337,15 +440,24 @@ def admin_global_analytics() -> Response:
 @admin_bp.route('/api/admin/renders/active', methods=['GET'])
 @require_role("admin")
 def admin_active_renders() -> Response:
-    """
-    Return active render information.
+    """Return active render information."""
+    active_state = _collect_active_render_state()
+    recent = _collect_recent_render_events(limit=10)
 
-    Currently returns a placeholder — real-time render tracking would require
-    exposing render_orchestrator process state, which is non-trivial for
-    multi-worker deployments.
-    """
+    note_parts = []
+    if active_state.get("note"):
+        note_parts.append(active_state["note"])
+
+    if active_state["queued_jobs"] > 0:
+        note_parts.append(f"{active_state['queued_jobs']} render task(s) waiting in queue")
+
+    if not note_parts:
+        note_parts.append("Live render state sourced from Redis worker tracking and analytics DB recency.")
+
     return jsonify({
-        "active_renders": 0,
-        "recent": [],
-        "note": "Real-time render tracking requires render_orchestrator state integration.",
+        "active_renders": active_state["active_count"],
+        "queued_renders": active_state["queued_jobs"],
+        "active_jobs": active_state["active_jobs"],
+        "recent": recent,
+        "note": " | ".join(note_parts),
     })

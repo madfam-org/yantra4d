@@ -63,6 +63,27 @@ def _check_mqtt() -> tuple[bool, str]:
         return False, str(e)
 
 
+def _check_render_worker() -> tuple[bool, str]:
+    """Check render worker heartbeat freshness."""
+    try:
+        from services.engine.render_orchestrator import get_render_worker_status
+
+        status = get_render_worker_status()
+        detail_parts = []
+        if status["age_seconds"] is None:
+            detail_parts.append("heartbeat missing")
+        else:
+            detail_parts.append(f"heartbeat age {status['age_seconds']}s")
+        if status["queue_depth"] is not None:
+            detail_parts.append(f"queue depth {status['queue_depth']}")
+        if status["active_jobs"] is not None:
+            detail_parts.append(f"active jobs {status['active_jobs']}")
+
+        return status["available"], "; ".join(detail_parts)
+    except Exception as e:
+        return False, f"unreachable: {e}"
+
+
 def _check_disk_space() -> tuple[bool, str]:
     """Check available disk space on STATIC_DIR."""
     try:
@@ -90,6 +111,14 @@ def _check_memory() -> tuple[bool, str]:
         return False, str(e)
 
 
+def _env_bool(name: str, default: bool = False) -> bool:
+    """Parse common boolean env var values."""
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.lower() in {"1", "true", "yes", "on"}
+
+
 @health_bp.route('/api/health/live')
 @limiter.exempt
 def liveness():
@@ -103,6 +132,7 @@ def readiness():
     """Readiness probe — checks all subsystems."""
     checks = {}
     overall = "healthy"
+    render_worker_required = _env_bool("RENDER_WORKER_REQUIRED", False)
 
     # Optional: OpenSCAD (platform supports WASM fallback)
     ok, detail = _check_openscad()
@@ -146,11 +176,20 @@ def readiness():
         if overall != "unhealthy":
             overall = "degraded"
 
+    ok, detail = _check_render_worker()
+    checks["render_worker"] = {"ok": ok, "detail": detail}
+    if not ok:
+        if render_worker_required:
+            overall = "unhealthy"
+        elif overall != "unhealthy":
+            overall = "degraded"
+
     status_code = 200 if overall != "unhealthy" else 503
     resp = jsonify({
         "status": overall,
         "checks": checks,
         "debug_mode": Config.DEBUG,
+        "render_worker_required": render_worker_required,
     })
     resp.headers["Cache-Control"] = "no-cache"
     return resp, status_code

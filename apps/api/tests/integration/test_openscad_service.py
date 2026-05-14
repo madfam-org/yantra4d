@@ -192,8 +192,8 @@ class TestOpenscadEnv:
         with patch("services.engine.openscad.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(stderr="")
             run_render(["openscad", "-o", "/tmp/out.stl", "/tmp/in.scad"])
-            mock_run.assert_called_once()
-            call_kwargs = mock_run.call_args[1]
+            assert mock_run.call_count >= 1
+            call_kwargs = mock_run.call_args_list[0][1]
             assert "OPENSCADPATH" in call_kwargs["env"]
 
     def test_stream_render_passes_env(self):

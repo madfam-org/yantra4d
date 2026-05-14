@@ -189,7 +189,6 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     exportFormat: projectParams.exportFormat,
     handleExportImage: projectParams.handleExportImage,
     handleExportAllViews: projectParams.handleExportAllViews,
-    handleExportAllViews: projectParams.handleExportAllViews,
     params: projectParams.params,
     manifest: projectParams.manifest,
   })

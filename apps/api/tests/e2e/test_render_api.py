@@ -279,24 +279,14 @@ class TestDualEngineRouting:
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
 
-        # Track which engine was invoked
+        # Track which engine was selected before dispatch to the render worker.
         engine_calls = []
-        monkeypatch.setattr(
-            "services.engine.render_orchestrator.build_cadquery_command",
-            lambda *args, **kwargs: (engine_calls.append("cadquery"), ["echo", "ok"])[1],
-        )
-        monkeypatch.setattr(
-            "services.engine.render_orchestrator.run_cadquery_render",
-            lambda *args, **kwargs: (True, "cadquery render ok"),
-        )
-        monkeypatch.setattr(
-            "services.engine.render_orchestrator.build_openscad_command",
-            lambda *args, **kwargs: (engine_calls.append("openscad"), ["echo", "ok"])[1],
-        )
-        monkeypatch.setattr(
-            "services.engine.render_orchestrator.run_openscad_render",
-            lambda *args, **kwargs: (True, "openscad render ok"),
-        )
+
+        def fake_render_parts_sync(_data, _payload, engine, *_args):
+            engine_calls.append(engine)
+            return [{"type": "main", "url": "/static/dual_pre_main.stl"}], f"{engine} render ok", (0, 1)
+
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", fake_render_parts_sync)
         return engine_calls
 
     # -- Fallback activates when cq_file is present --------------------------
@@ -424,10 +414,12 @@ class TestDualEngineRouting:
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
         engine_calls = []
-        monkeypatch.setattr("services.engine.render_orchestrator.build_cadquery_command",
-            lambda *args, **kwargs: (engine_calls.append("cadquery"), ["echo", "ok"])[1])
-        monkeypatch.setattr("services.engine.render_orchestrator.run_cadquery_render",
-            lambda *args, **kwargs: (True, "cadquery ok"))
+
+        def fake_render_parts_sync(_data, _payload, engine, *_args):
+            engine_calls.append(engine)
+            return [{"type": "lattice", "url": "/static/impl_pre_lattice.step"}], f"{engine} ok", (0, 1)
+
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", fake_render_parts_sync)
         res = client.post("/api/render", json={"project": "impl-test", "mode": "unit", "export_format": "step"})
         assert res.status_code == 200
         assert engine_calls == ["cadquery"]
@@ -493,12 +485,12 @@ class TestTrimeshConversion:
         monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
 
         engine_calls = []
-        monkeypatch.setattr("services.engine.render_orchestrator.build_openscad_command",
-            lambda *args, **kwargs: (engine_calls.append("openscad"), ["echo", "ok"])[1])
-        monkeypatch.setattr("services.engine.render_orchestrator.run_openscad_render",
-            lambda *args, **kwargs: (True, "ok"))
-        monkeypatch.setattr("services.engine.render_orchestrator.convert_mesh",
-            lambda *args, **kwargs: True)
+
+        def fake_render_parts_sync(_data, _payload, engine, *_args):
+            engine_calls.append(engine)
+            return [{"type": "main", "url": "/static/tri_pre_main.obj"}], "ok", (0, 1)
+
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", fake_render_parts_sync)
 
         res = client.post("/api/render", json={"project": "tri-test", "mode": "unit", "export_format": "obj"})
         assert res.status_code == 200

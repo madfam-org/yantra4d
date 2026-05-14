@@ -145,3 +145,108 @@ class TestPostRenderConvert:
         mock_glb.assert_not_called()
         assert viewer_filename is None
         assert serve_filename.endswith(".glb")
+
+
+def test_render_worker_unavailable_when_heartbeat_missing(monkeypatch):
+    """Render worker is unavailable when no heartbeat key exists in Redis."""
+    import services.engine.render_orchestrator as render_orchestrator
+
+    class _FakeRedis:
+        def get(self, _key):
+            return None
+
+    monkeypatch.setattr(render_orchestrator, "r", _FakeRedis())
+    assert not render_orchestrator.is_render_worker_available()
+
+
+def test_render_worker_available_with_recent_heartbeat(monkeypatch):
+    """Render worker becomes available when heartbeat timestamp is fresh."""
+    import time
+    import services.engine.render_orchestrator as render_orchestrator
+
+    class _FakeRedis:
+        def get(self, _key):
+            return str(int(time.time()))
+
+    monkeypatch.setattr(render_orchestrator, "r", _FakeRedis())
+    monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 10)
+    assert render_orchestrator.is_render_worker_available()
+
+
+def test_render_worker_status_includes_queue_and_active_jobs(monkeypatch):
+    """Render worker status includes operational queue depth and active job count."""
+    import time
+    import services.engine.render_orchestrator as render_orchestrator
+
+    class _FakeRedis:
+        def get(self, _key):
+            return str(int(time.time()) - 3)
+
+        def llen(self, _key):
+            return 7
+
+        def scard(self, _key):
+            return 2
+
+    monkeypatch.setattr(render_orchestrator, "r", _FakeRedis())
+    monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 10)
+
+    status = render_orchestrator.get_render_worker_status()
+    assert status["available"] is True
+    assert status["age_seconds"] >= 3
+    assert status["queue_depth"] == 7
+    assert status["active_jobs"] == 2
+
+
+def test_render_parts_sync_rejects_when_worker_unavailable(monkeypatch):
+    """Sync rendering should reject quickly if no worker heartbeat is available."""
+    import services.engine.render_orchestrator as render_orchestrator
+
+    monkeypatch.setattr(render_orchestrator, "is_render_worker_available", lambda: False)
+    generated_parts, message, cache_stats = render_orchestrator.render_parts_sync(
+        {},
+        {
+            "parts": ["body"],
+            "stl_prefix": "test_",
+            "export_format": "stl",
+            "project_slug": "sample",
+            "scad_filename": "sample.scad",
+            "params": {},
+            "static_stl_map": {},
+        },
+        "openscad",
+        "/tmp/sample.scad",
+        "stl",
+        "guest",
+    )
+    assert generated_parts is None
+    assert message == "Render worker unavailable or not healthy"
+    assert cache_stats == (0, 1)
+
+
+def test_render_parts_stream_emits_unavailable_error_when_worker_unavailable(monkeypatch):
+    """Stream rendering should emit explicit unavailable error and complete events."""
+    import json
+    import services.engine.render_orchestrator as render_orchestrator
+
+    monkeypatch.setattr(render_orchestrator, "is_render_worker_available", lambda: False)
+    stream = render_orchestrator.render_parts_stream(
+        {},
+        {
+            "parts": ["body"],
+            "stl_prefix": "test_",
+            "export_format": "stl",
+            "project_slug": "sample",
+            "scad_filename": "sample.scad",
+            "params": {},
+            "static_stl_map": {},
+        },
+        "openscad",
+        "/tmp/sample.scad",
+        "stl",
+    )
+    events = [json.loads(event.split("data: ", 1)[1].strip()) for event in stream]
+    assert len(events) == 2
+    assert events[0]["event"] == "error"
+    assert events[0]["part"] == "body"
+    assert events[1]["event"] == "complete"

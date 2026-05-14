@@ -11,6 +11,10 @@ vi.mock('../../contexts/system/ThemeProvider', () => ({
   useTheme: vi.fn(),
 }))
 
+vi.mock('../../contexts/system/PlatformProvider', () => ({
+  usePlatform: vi.fn(),
+}))
+
 vi.mock('../../contexts/project/ProjectProvider', () => ({
   useProject: vi.fn(),
 }))
@@ -44,6 +48,7 @@ vi.mock('../../config/languages', () => ({
 
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTheme } from '../../contexts/system/ThemeProvider'
+import { usePlatform } from '../../contexts/system/PlatformProvider'
 import { useProject } from '../../contexts/project/ProjectProvider'
 
 const baseProjectContext = {
@@ -68,6 +73,12 @@ const baseLanguageContext = {
   t: (key) => key,
 }
 
+const basePlatformContext = {
+  platformName: '',
+  platformLogo: '/logo.png',
+  loading: false,
+}
+
 const defaultProps = {
   editorOpen: false,
   toggleEditor: vi.fn(),
@@ -81,6 +92,7 @@ beforeEach(() => {
   useProject.mockReturnValue(baseProjectContext)
   useTheme.mockReturnValue(baseThemeContext)
   useLanguage.mockReturnValue(baseLanguageContext)
+  usePlatform.mockReturnValue(basePlatformContext)
 })
 
 describe('StudioHeader', () => {
@@ -233,9 +245,7 @@ describe('StudioHeader', () => {
   })
 
   it('does not show platform logo when loading', () => {
-    vi.mock('../../contexts/system/PlatformProvider', () => ({
-      usePlatform: () => ({ platformName: 'Custom', platformLogo: '/custom.png', loading: true }),
-    }))
+    usePlatform.mockReturnValue({ platformName: 'Custom', platformLogo: '/custom.png', loading: true })
     // platformLoading is true, so logo should not render
     render(<StudioHeader {...defaultProps} />)
     expect(screen.queryByAltText('Logo')).not.toBeInTheDocument()

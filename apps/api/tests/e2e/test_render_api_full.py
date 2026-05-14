@@ -65,38 +65,45 @@ def _mock_validate_params(monkeypatch):
 
 
 class TestRenderEndpoint:
-    @patch("services.engine.render_orchestrator.run_openscad_render")
-    @patch("services.engine.render_orchestrator.build_openscad_command")
-    @patch("services.engine.render_orchestrator.render_cache")
-    def test_render_success(self, mock_cache, mock_cmd, mock_run, client, tmp_path, monkeypatch):
-        from config import Config
-        static_dir = Config.STATIC_DIR
-        stl_path = static_dir / "test-project_preview_main.stl"
-        stl_path.write_bytes(b"\x00" * 100)
+    def test_render_success(self, client):
+        with patch(
+            "routes.engine.render.render_parts_sync",
+            return_value=(
+                [{"type": "main", "url": "/static/test-project_preview_main.stl"}],
+                "Render complete",
+                (0, 1),
+            ),
+        ):
+            res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
 
-        mock_cache.get.return_value = None
-        mock_cmd.return_value = ["openscad", "-o", str(stl_path)]
-        mock_run.return_value = (True, "Render complete")
-
-        res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
         assert res.status_code == 200
         data = res.get_json()
         assert data["status"] == "success"
         assert len(data["parts"]) == 1
         assert data["parts"][0]["type"] == "main"
 
-    @patch("services.engine.render_orchestrator.run_openscad_render")
-    @patch("services.engine.render_orchestrator.build_openscad_command")
-    @patch("services.engine.render_orchestrator.render_cache")
-    def test_render_failure(self, mock_cache, mock_cmd, mock_run, client):
-        mock_cache.get.return_value = None
-        mock_cmd.return_value = ["openscad", "-o", "out.stl"]
-        mock_run.return_value = (False, "OpenSCAD error: syntax error")
+    def test_render_failure(self, client):
+        with patch(
+            "routes.engine.render.render_parts_sync",
+            return_value=(None, "OpenSCAD error: syntax error", (0, 1)),
+        ):
+            res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
 
-        res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
         assert res.status_code == 500
         data = res.get_json()
         assert data["status"] == "error"
+
+    def test_render_worker_unavailable_returns_503(self, client):
+        with patch(
+            "routes.engine.render.render_parts_sync",
+            return_value=(None, "Render worker unavailable or not healthy", (0, 0)),
+        ):
+            res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
+
+        assert res.status_code == 503
+        data = res.get_json()
+        assert data["status"] == "error"
+        assert data["error_code"] == "render_worker_unavailable"
 
     def test_render_invalid_scad(self, client):
         res = client.post("/api/render", json={"scad_file": "nonexistent.scad", "project": "test-project"})
@@ -106,57 +113,76 @@ class TestRenderEndpoint:
         res = client.post("/api/render", content_type="application/json")
         assert res.status_code == 400
 
-    @patch("services.engine.render_orchestrator.render_cache")
-    def test_render_cache_hit(self, mock_cache, client, tmp_path, monkeypatch):
-        from config import Config
-        stl_path = Config.STATIC_DIR / "test-project_preview_main.stl"
-        stl_path.write_bytes(b"\x00" * 50)
+    def test_render_cache_hit(self, client):
+        with patch(
+            "routes.engine.render.render_parts_sync",
+            return_value=(
+                [{"type": "main", "url": "/static/test-project_preview_main.stl"}],
+                "[main] cache HIT\n",
+                (1, 1),
+            ),
+        ):
+            res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
 
-        mock_cache.get.return_value = {"path": str(stl_path), "size_bytes": 50, "ts": 1000}
-
-        res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
         assert res.status_code == 200
         assert res.headers.get("X-Cache") == "HIT"
 
     def test_render_export_format_3mf(self, client):
-        with patch("services.engine.render_orchestrator.run_openscad_render", return_value=(True, "")), \
-             patch("services.engine.render_orchestrator.build_openscad_command", return_value=["cmd"]), \
-             patch("routes.engine.render.check_feature", return_value=True), \
-             patch("services.engine.render_orchestrator.render_cache") as mc:
-            mc.get.return_value = None
+        with patch("routes.engine.render.check_feature", return_value=True), \
+             patch(
+                 "routes.engine.render.render_parts_sync",
+                 return_value=(
+                     [{"type": "main", "url": "/static/test-project_preview_main.3mf"}],
+                     "",
+                     (0, 1),
+                 ),
+             ):
             res = client.post("/api/render", json={
                 "mode": "single", "project": "test-project", "export_format": "3mf",
             })
             assert res.status_code == 200
 
     def test_render_invalid_export_format_falls_back(self, client):
-        with patch("services.engine.render_orchestrator.run_openscad_render", return_value=(True, "")), \
-             patch("services.engine.render_orchestrator.build_openscad_command", return_value=["cmd"]), \
-             patch("services.engine.render_orchestrator.render_cache") as mc:
-            mc.get.return_value = None
+        with patch(
+            "routes.engine.render.render_parts_sync",
+            return_value=(
+                [{"type": "main", "url": "/static/test-project_preview_main.stl"}],
+                "",
+                (0, 1),
+            ),
+        ):
             res = client.post("/api/render", json={
                 "mode": "single", "project": "test-project", "export_format": "exe",
             })
             assert res.status_code == 200
 
     def test_render_rate_limit_headers(self, client):
-        with patch("services.engine.render_orchestrator.run_openscad_render", return_value=(True, "")), \
-             patch("services.engine.render_orchestrator.build_openscad_command", return_value=["cmd"]), \
-             patch("services.engine.render_orchestrator.render_cache") as mc:
-            mc.get.return_value = None
+        with patch(
+            "routes.engine.render.render_parts_sync",
+            return_value=(
+                [{"type": "main", "url": "/static/test-project_preview_main.stl"}],
+                "",
+                (0, 1),
+            ),
+        ):
             res = client.post("/api/render", json={"mode": "single", "project": "test-project"})
             assert res.status_code == 200
             assert "X-RateLimit-Tier" in res.headers
 
-    @patch("services.engine.render_orchestrator.run_openscad_render")
-    @patch("services.engine.render_orchestrator.build_openscad_command")
-    @patch("services.engine.render_orchestrator.render_cache")
-    def test_render_grid_multiple_parts(self, mock_cache, mock_cmd, mock_run, client):
-        mock_cache.get.return_value = None
-        mock_cmd.return_value = ["cmd"]
-        mock_run.return_value = (True, "ok")
+    def test_render_grid_multiple_parts(self, client):
+        with patch(
+            "routes.engine.render.render_parts_sync",
+            return_value=(
+                [
+                    {"type": "grid_a", "url": "/static/test-project_preview_grid_a.stl"},
+                    {"type": "grid_b", "url": "/static/test-project_preview_grid_b.stl"},
+                ],
+                "ok",
+                (0, 2),
+            ),
+        ):
+            res = client.post("/api/render", json={"mode": "grid", "project": "test-project"})
 
-        res = client.post("/api/render", json={"mode": "grid", "project": "test-project"})
         assert res.status_code == 200
         data = res.get_json()
         assert len(data["parts"]) == 2
@@ -171,35 +197,31 @@ class TestRenderStreamEndpoint:
         res = client.post("/api/render-stream", content_type="application/json")
         assert res.status_code == 400
 
-    @patch("services.engine.render_orchestrator.stream_openscad_render")
-    @patch("services.engine.render_orchestrator.build_openscad_command")
-    @patch("services.engine.render_orchestrator.render_cache")
-    def test_stream_returns_sse(self, mock_cache, mock_cmd, mock_stream, client):
-        mock_cache.get.return_value = None
-        mock_cmd.return_value = ["cmd"]
-        mock_stream.return_value = [
-            json.dumps({"event": "progress", "progress": 50}),
-            json.dumps({"event": "part_done", "part": "main"}),
-        ]
+    def test_stream_returns_sse(self, client):
+        with patch(
+            "routes.engine.render.render_parts_stream",
+            return_value=iter([
+                'data: {"event":"progress","progress":50}\n\n',
+                'data: {"event":"complete","parts":[{"type":"main","url":"/static/main.stl"}],"progress":100}\n\n',
+            ]),
+        ):
+            res = client.post("/api/render-stream", json={"mode": "single", "project": "test-project"})
 
-        res = client.post("/api/render-stream", json={"mode": "single", "project": "test-project"})
         assert res.status_code == 200
         assert "text/event-stream" in res.content_type
 
 
 class TestCancelEndpoint:
-    @patch("services.engine.render_orchestrator.cancel_openscad_render", return_value=True)
-    @patch("services.engine.render_orchestrator.cancel_cadquery_render", return_value=True)
-    def test_cancel_active(self, mock_cancel_cq, mock_cancel_scad, client):
+    @patch("routes.engine.render.cancel_all_renders", return_value=True)
+    def test_cancel_active(self, mock_cancel, client):
         res = client.post("/api/render-cancel")
         assert res.status_code == 200
         data = res.get_json()
         assert data["cancelled"] is True
         assert data["status"] == "cancelled"
 
-    @patch("services.engine.render_orchestrator.cancel_openscad_render", return_value=False)
-    @patch("services.engine.render_orchestrator.cancel_cadquery_render", return_value=False)
-    def test_cancel_no_active(self, mock_cancel_cq, mock_cancel_scad, client):
+    @patch("routes.engine.render.cancel_all_renders", return_value=False)
+    def test_cancel_no_active(self, mock_cancel, client):
         res = client.post("/api/render-cancel")
         assert res.status_code == 200
         data = res.get_json()

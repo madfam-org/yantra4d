@@ -55,6 +55,24 @@ class TestReadiness:
         assert data["status"] in ("degraded", "healthy")
         assert "redis" in data["checks"]
 
+    def test_unhealthy_when_required_render_worker_missing(self, client, monkeypatch):
+        from config import Config
+        from routes.core import health
+
+        monkeypatch.setattr(Config, "OPENSCAD_PATH", "/bin/sh")
+        monkeypatch.setenv("RENDER_WORKER_REQUIRED", "true")
+        monkeypatch.setattr(
+            health,
+            "_check_render_worker",
+            lambda: (False, "heartbeat missing"),
+        )
+
+        resp = client.get("/api/health/ready")
+        assert resp.status_code == 503
+        assert resp.json["status"] == "unhealthy"
+        assert resp.json["checks"]["render_worker"]["ok"] is False
+        assert resp.json["render_worker_required"] is True
+
     def test_backward_compat_health_endpoint(self, client, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "OPENSCAD_PATH", "/bin/sh")

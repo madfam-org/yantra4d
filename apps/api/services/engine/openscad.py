@@ -326,6 +326,11 @@ def run_render(
         duration_ms = (time.monotonic() - t0) * 1000
         logger.error("OpenSCAD render timed out after %ds", RENDER_TIMEOUT_S)
         return RenderResult(success=False, stderr=f"Render timed out after {RENDER_TIMEOUT_S} seconds", duration_ms=duration_ms)
+    except subprocess.CalledProcessError as e:
+        duration_ms = (time.monotonic() - t0) * 1000
+        stderr = e.stderr or e.output or str(e)
+        logger.exception("OpenSCAD render error")
+        return RenderResult(success=False, stderr=stderr, output_path=output_path, duration_ms=duration_ms)
     except Exception as e:
         duration_ms = (time.monotonic() - t0) * 1000
         logger.exception("OpenSCAD render error")

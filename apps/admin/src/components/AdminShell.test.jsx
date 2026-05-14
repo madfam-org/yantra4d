@@ -30,6 +30,9 @@ vi.mock('lucide-react', () => ({
     Menu: (props) => <span {...props} />,
     X: (props) => <span {...props} />,
     User: (props) => <span {...props} />,
+    BarChart3: (props) => <span {...props} />,
+    Cpu: (props) => <span {...props} />,
+    Users: (props) => <span {...props} />,
 }))
 
 import AdminShell from './AdminShell'

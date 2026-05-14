@@ -137,6 +137,12 @@ def render_stl():
         return error_response(str(e))
 
     if generated_parts is None:
+        if log_or_error == "Render worker unavailable or not healthy":
+            return error_response(
+                log_or_error,
+                503,
+                error_code="render_worker_unavailable",
+            )
         return error_response(log_or_error)
 
     cache_hits, cache_total = cache_stats

@@ -131,7 +131,7 @@ function LiveModel({ project, defaults }: LiveModelProps) {
         return () => {
             cancelled = true
         }
-    }, [project.slug, project.modes, defaults])
+    }, [project, defaults])
 
     if (loading) {
         return (

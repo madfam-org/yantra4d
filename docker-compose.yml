@@ -24,6 +24,7 @@ services:
       - "5000:5000"
     volumes:
       - ./projects:/app/projects:ro
+      - render_output:/app/backend/static
       - analytics_data:/app/backend/data
     environment:
       - FLASK_DEBUG=false
@@ -70,6 +71,28 @@ services:
       timeout: 10s
       retries: 3
 
+  render-worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    command: ["python", "/app/worker/render_worker.py"]
+    depends_on:
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    environment:
+      - FLASK_DEBUG=false
+      - PROJECTS_DIR=/app/projects
+      - AUTH_ENABLED=false
+      - RATE_LIMIT_ENABLED=false
+      - RATE_LIMIT_STORAGE=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379
+    volumes:
+      - ./projects:/app/projects:ro
+      - render_output:/app/backend/static
+
   landing:
     build:
       context: .
@@ -108,3 +131,4 @@ services:
 volumes:
   redis_data:
   analytics_data:
+  render_output:

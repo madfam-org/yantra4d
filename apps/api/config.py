@@ -50,10 +50,12 @@ class AppConfig:
     IMPLICIT_ALLOWED_EXPORT_FORMATS: set = field(default_factory=lambda: {'stl', 'glb', 'gltf', '3mf', 'off', 'obj'})
 
     # Janua Auth
+    MANIFEST_STRICTNESS: str = field(default_factory=lambda: os.getenv("MANIFEST_STRICTNESS", ""))
     JANUA_ISSUER: str = field(default_factory=lambda: os.getenv("JANUA_ISSUER", "https://auth.madfam.io"))
     JANUA_JWKS_URL: str = field(init=False)
     JANUA_AUDIENCE: str = field(default_factory=lambda: os.getenv("JANUA_AUDIENCE", "yantra4d-api"))
     AUTH_ENABLED: bool = field(default_factory=lambda: os.getenv("AUTH_ENABLED", "true").lower() == "true")
+    JWT_ALGORITHMS: list = field(default_factory=lambda: [a.strip().upper() for a in os.getenv("JWT_ALGORITHMS", "RS256").split(",") if a.strip()])
 
     # Tiers
     TIERS_FILE: Path = field(init=False)
@@ -87,6 +89,9 @@ class AppConfig:
     YANTRA4D_LICENSE_KEY: str = field(default_factory=lambda: os.getenv("YANTRA4D_LICENSE_KEY", ""))
 
     def __post_init__(self):
+        self.MANIFEST_STRICTNESS = self._normalize_manifest_strictness(self.MANIFEST_STRICTNESS)
+        self.JWT_ALGORITHMS = self._normalize_jwt_algorithms(self.JWT_ALGORITHMS)
+
         # Initialize paths and computed fields
         parent = self.BASE_DIR.parent.parent
 
@@ -149,6 +154,39 @@ class AppConfig:
 
         if not self.AI_API_KEY:
             logger.warning("AI_API_KEY not set — AI features unavailable")
+
+    def _normalize_manifest_strictness(self, value: str) -> str:
+        value = (value or "").strip().lower()
+        if value in {"strict", "warn", "off"}:
+            return value
+
+        if value:
+            logger.warning("Invalid MANIFEST_STRICTNESS=%s, falling back to environment default", value)
+
+        flask_env = os.getenv("FLASK_ENV", "").strip().lower()
+        if flask_env in {"production", "prod"}:
+            return "strict"
+
+        if self.DEBUG:
+            return "warn"
+
+        return "warn"
+
+    def _normalize_jwt_algorithms(self, value: list) -> list:
+        algorithms = [a.strip().upper() for a in value if isinstance(a, str)]
+        if not algorithms:
+            algorithms = ["RS256"]
+
+        # Default to RS256-only for production compatibility with Janua.
+        if "RS256" not in algorithms:
+            logger.warning("JWT_ALGORITHMS does not include RS256; Janua tokens may fail verification")
+
+        # Normalize duplicates while preserving order
+        normalized = []
+        for alg in algorithms:
+            if alg not in normalized:
+                normalized.append(alg)
+        return normalized
 
     # --- Manifest-delegated accessors (backward compat) ---
     # These are kept as instance methods now, but clients calling Config.method() will still work

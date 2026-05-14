@@ -19,6 +19,14 @@ from services.engine.cadquery_engine import build_cadquery_command, run_render a
 from services.core.implicit_engine import run_render as run_implicit_render, stream_render as stream_implicit_render
 from services.engine.render_cache import render_cache
 from services.engine.format_converter import convert_mesh, stl_to_glb
+from services.engine.render_contract import (
+    RENDER_EVENT_CANCELLED,
+    RENDER_EVENT_ERROR,
+    RENDER_EVENT_PART_DONE,
+    build_render_event,
+    render_channel_for_job,
+    render_final_channel_for_job,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,8 +41,30 @@ CANCEL_ALL_KEY = getattr(render_orchestrator, "CANCEL_ALL_KEY", "yantra_render_c
 CANCEL_JOB_PREFIX = getattr(render_orchestrator, "CANCEL_JOB_PREFIX", "yantra_render_cancel_job:")
 ACTIVE_JOB_META_TTL = getattr(render_orchestrator, "ACTIVE_JOB_META_TTL", 300)
 CANCEL_TTL_SECONDS = getattr(render_orchestrator, "CANCEL_TTL_SECONDS", 120)
+RENDER_WORKER_HEARTBEAT_KEY = getattr(
+    render_orchestrator,
+    "RENDER_WORKER_HEARTBEAT_KEY",
+    "yantra_render_worker_heartbeat",
+)
+RENDER_WORKER_HEARTBEAT_TTL_SECONDS = getattr(
+    render_orchestrator,
+    "RENDER_WORKER_HEARTBEAT_TTL_SECONDS",
+    60,
+)
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
+
+
+def _publish_heartbeat() -> None:
+    """Publish worker heartbeat metadata for API readiness probes."""
+    try:
+        r.set(
+            RENDER_WORKER_HEARTBEAT_KEY,
+            str(int(time.time())),
+            ex=RENDER_WORKER_HEARTBEAT_TTL_SECONDS,
+        )
+    except Exception:
+        logger.debug("Failed to publish render worker heartbeat", exc_info=True)
 
 
 def _is_cancelled(job_id: str) -> bool:
@@ -47,12 +77,16 @@ def _is_cancelled(job_id: str) -> bool:
         return False
 
 
-def _set_active_job(job_id: str, part: str, engine: str) -> None:
+def _set_active_job(job_id: str, part: str, engine: str, payload: dict) -> None:
     """Track an active job for cancellation and observability."""
     meta = {
         "job_id": job_id,
         "part": part,
         "engine": engine,
+        "project_slug": payload.get("project_slug", ""),
+        "mode": payload.get("mode", ""),
+        "scad_filename": payload.get("scad_filename", ""),
+        "request_id": payload.get("request_id", ""),
         "started_at": int(time.time()),
     }
     r.sadd(ACTIVE_RENDER_JOBS_KEY, job_id)
@@ -73,19 +107,20 @@ def _clear_active_job(job_id: str) -> None:
 def _publish_job_event(job_id: str, payload: dict, emit_final: bool = False) -> None:
     """Publish job progress/final events to both normal and final channels."""
     message = json.dumps(payload)
-    r.publish(f"render:{job_id}", message)
+    r.publish(render_channel_for_job(job_id), message)
     if emit_final:
-        r.publish(f"render:{job_id}:final", message)
+        r.publish(render_final_channel_for_job(job_id), message)
 
 
 def _notify_cancelled(job_id: str, part: str) -> None:
     _publish_job_event(
         job_id,
-        {
-            "event": "error",
-            "part": part or "",
-            "error": "Render cancelled by user request",
-        },
+        build_render_event(
+            RENDER_EVENT_CANCELLED,
+            part=part or "",
+            message="Render cancelled by user request",
+            reason="user_request",
+        ),
         emit_final=True,
     )
 
@@ -93,11 +128,12 @@ def _notify_cancelled(job_id: str, part: str) -> None:
 def _notify_error(job_id: str, part: str, error: str) -> None:
     _publish_job_event(
         job_id,
-        {
-            "event": "error",
-            "part": part,
-            "error": error,
-        },
+        build_render_event(
+            RENDER_EVENT_ERROR,
+            part=part,
+            error=error,
+            message=error,
+        ),
         emit_final=True,
     )
 
@@ -147,7 +183,7 @@ def process_sync_task(task):
         _notify_cancelled(job_id, part)
         return
 
-    _set_active_job(job_id, part, engine)
+    _set_active_job(job_id, part, engine, payload)
     try:
     # Simple execution (no telemetry routing for worker sync simplicity)
         if engine == "cadquery":
@@ -201,7 +237,18 @@ def process_sync_task(task):
         if viewer_filename:
             part_entry["viewer_url"] = f"/static/{viewer_filename}"
 
-        r.publish(f"render:{job_id}", json.dumps({"event": "part_done", "part_entry": part_entry}))
+        final_payload = build_render_event(
+            RENDER_EVENT_PART_DONE,
+            part=part,
+            type=part,
+            url=f"/static/{serve_filename}",
+            size_bytes=size_bytes,
+            log=f"[{part}] {stderr}\n",
+        )
+        if viewer_filename:
+            final_payload["viewer_url"] = f"/static/{viewer_filename}"
+
+        _publish_job_event(job_id, final_payload, emit_final=True)
     except Exception as exc:
         logger.exception("Sync render failed for job %s part %s: %s", job_id, part, exc)
         if _is_cancelled(job_id):
@@ -235,7 +282,7 @@ def process_stream_task(task):
         _notify_cancelled(job_id, part)
         return
 
-    _set_active_job(job_id, part, engine)
+    _set_active_job(job_id, part, engine, payload)
     emitted_final = False
     try:
         if engine == "cadquery":
@@ -263,13 +310,14 @@ def process_stream_task(task):
                 emitted_final = True
                 break
 
-            # Pass stream events directly to PubSub
-            r.publish(f"render:{job_id}", event_data)
             try:
                 event = json.loads(event_data)
-                if event.get('event') == 'error':
-                    error_message = event.get('error') or 'Render failed'
-                    if error_message == 'Render cancelled by user request':
+                _publish_job_event(job_id, event)
+                if event.get("event") == RENDER_EVENT_ERROR or (
+                    event.get("event") == "progress" and event.get("error")
+                ):
+                    error_message = event.get("error") or event.get("message") or "Render failed"
+                    if "cancel" in str(error_message).lower():
                         _notify_cancelled(job_id, part)
                     else:
                         _notify_error(job_id, part, error_message)
@@ -291,12 +339,24 @@ def process_stream_task(task):
                         project_slug, payload['scad_filename'], params, part, export_format,
                         serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash')
                     )
-                    part_entry = {"type": part, "url": f"/static/{serve_filename}", "size_bytes": size_bytes}
+                    part_entry = {
+                        "type": part,
+                        "url": f"/static/{serve_filename}",
+                        "size_bytes": size_bytes,
+                    }
                     if viewer_filename:
                         part_entry["viewer_url"] = f"/static/{viewer_filename}"
 
                     # Publish the fully baked part info
-                    r.publish(f"render:{job_id}:final", json.dumps(part_entry))
+                    _publish_job_event(
+                        job_id,
+                        build_render_event(
+                            RENDER_EVENT_PART_DONE,
+                            part=part,
+                            **part_entry,
+                        ),
+                        emit_final=True,
+                    )
                     emitted_final = True
                     break
             except Exception as e:
@@ -320,6 +380,7 @@ def run_worker():
     logger.info("Render worker listening on queue '%s'", RENDER_QUEUE)
     while True:
         try:
+            _publish_heartbeat()
             _, message = r.blpop(RENDER_QUEUE, timeout=5)
             if message:
                 try:

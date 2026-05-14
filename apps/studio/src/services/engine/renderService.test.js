@@ -126,6 +126,44 @@ describe('renderParts (backend mode)', () => {
     ).rejects.toThrow('Render stream completed without producing any parts')
   })
 
+  it('throws the backend stream error when no parts are produced', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"error","part":"all","error":"Render worker unavailable or not healthy","message":"Render worker unavailable or not healthy"}',
+        'data: {"event":"complete","part":"all","error":"Render worker unavailable or not healthy","progress":100}',
+        ''
+      ])
+    })
+
+    const progressEvents = []
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {
+        onProgress: e => progressEvents.push(e)
+      })
+    ).rejects.toThrow('Render worker unavailable or not healthy')
+
+    expect(progressEvents.some(e => e.log?.includes('Render worker unavailable'))).toBe(true)
+  })
+
+  it('throws the cancellation reason when stream ends without parts', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"cancelled","part":"main","message":"Render cancelled by user request"}',
+        ''
+      ])
+    })
+
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow('Render cancelled by user request')
+  })
+
   it('warns on malformed SSE JSON and continues', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { })
     const fetchMock = vi.spyOn(globalThis, 'fetch')
@@ -560,6 +598,64 @@ describe('renderParts network error WASM fallback', () => {
       'Failed to fetch'
     )
     expect(progressEvents.some(e => e.log?.includes('[FALLBACK]'))).toBe(true)
+
+    warnSpy.mockRestore()
+  })
+
+  it('falls back to WASM when backend reports render worker unavailable', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    class MockWorker {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
+        } else if (msg.type === 'render') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'result', stl: new Uint8Array([1]).buffer } }), 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorker)
+
+    const heavyManifest = {
+      modes: [{
+        id: 'grid',
+        parts: ['a', 'b'],
+        estimate: { formula_vars: ['rows', 'cols'], formula: 'grid' }
+      }],
+      parts: [
+        { id: 'a', render_mode: '3D' },
+        { id: 'b', render_mode: '3D' },
+      ],
+      estimate_constants: { base_time: 5, per_unit: 10, per_part: 20 },
+    }
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health succeeds
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"error","part":"all","error":"Render worker unavailable or not healthy","message":"Render worker unavailable or not healthy"}',
+        'data: {"event":"complete","part":"all","error":"Render worker unavailable or not healthy","progress":100}',
+        ''
+      ])
+    })
+
+    const progressEvents = []
+    const result = await renderService.renderParts('grid', { rows: 10, cols: 10 }, heavyManifest, {
+      onProgress: e => progressEvents.push(e)
+    })
+
+    expect(result).toHaveLength(2)
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('worker unavailable'),
+      'Render worker unavailable or not healthy'
+    )
+    expect(progressEvents.some(e => e.log?.includes('Render worker unavailable, rendering locally'))).toBe(true)
 
     warnSpy.mockRestore()
   })

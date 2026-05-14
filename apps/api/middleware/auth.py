@@ -15,7 +15,6 @@ from utils.route_helpers import error_response
 logger = logging.getLogger(__name__)
 
 JWKS_CACHE_LIFESPAN = 3600  # seconds
-JWT_ALGORITHMS = ["RS256", "ES256"]
 
 # Lazy-initialized JWKS client (created on first use)
 _jwk_client = None
@@ -39,7 +38,7 @@ def decode_token(token: str) -> dict:
     claims = jwt.decode(
         token,
         signing_key.key,
-        algorithms=JWT_ALGORITHMS,
+        algorithms=Config.JWT_ALGORITHMS or ["RS256"],
         issuer=Config.JANUA_ISSUER,
         audience=Config.JANUA_AUDIENCE,
         options={"require": ["exp", "iss", "sub"]},

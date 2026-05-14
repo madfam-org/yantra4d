@@ -69,6 +69,11 @@ def simulate_stress(slug: str):
         "project": slug,
         "mesh_file": os.path.basename(mesh_path),
         "simulation": result,
+        "force_vector": {
+            "x": force_x,
+            "y": force_y,
+            "z": force_z,
+        },
     })
 
 @simulate_bp.route('/api/projects/<slug>/simulate/physics', methods=['POST'])
@@ -111,12 +116,17 @@ def get_physics_simulation_status(slug: str, job_id: str):
     if status_data.get("slug") != slug:
         return error_response("Job does not belong to this project.", 403)
         
-    return jsonify({
+    response = {
         "status": status_data["status"],
         "progress": status_data["progress"],
         "frames": status_data["frames"],
-        "error": status_data["error"]
-    })
+        "error": status_data["error"],
+    }
+    for key in ["duration_ms", "metadata", "frames_generated", "created_at", "started_at", "finished_at"]:
+        if key in status_data:
+            response[key] = status_data[key]
+
+    return jsonify(response)
 
 @simulate_bp.route('/api/projects/<slug>/simulate/optimize', methods=['POST'])
 @require_valid_slug
@@ -154,10 +164,15 @@ def get_optimization_status(slug: str, job_id: str):
     if status_data.get("slug") != slug:
         return error_response("Optimization job does not belong to this project.", 403)
         
-    return jsonify({
+    response = {
         "status": status_data["status"],
         "progress": status_data["progress"],
         "best_params": status_data["best_params"],
         "logs": status_data["logs"],
-        "error": status_data["error"]
-    })
+        "error": status_data["error"],
+    }
+    for key in ["duration_ms", "current_sigma", "best_iteration", "current_params", "cancel_requested", "created_at", "started_at", "finished_at"]:
+        if key in status_data:
+            response[key] = status_data[key]
+
+    return jsonify(response)

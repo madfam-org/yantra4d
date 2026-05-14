@@ -36,6 +36,7 @@ WORKDIR /app
 
 # Install Python dependencies
 COPY apps/api/requirements.txt ./backend/
+COPY apps/worker/ /app/worker/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
 # Copy application code

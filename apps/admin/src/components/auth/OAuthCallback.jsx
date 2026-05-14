@@ -42,7 +42,7 @@ export default function OAuthCallback({ auth }) {
                 console.error('OAuth callback error:', err)
                 setError(err?.message || 'Authentication failed. Please try again.')
             })
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [auth])
 
     if (error) {
         return (

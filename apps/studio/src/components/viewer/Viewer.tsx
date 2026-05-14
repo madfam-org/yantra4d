@@ -69,6 +69,27 @@ interface GeometryStats {
     parts: Record<string, { volumeMm3: number; boundingBox: { width: number; depth: number; height: number } }>
 }
 
+interface KinematicDef {
+    part: string
+    modes?: string[]
+    type?: string
+    range?: [number, number]
+    axis?: [number, number, number]
+    origin?: [number, number, number]
+}
+
+function getKinematicDef(manifest: unknown, partType: string, mode: string): KinematicDef | undefined {
+    const kinematics = (manifest as { kinematics?: unknown }).kinematics
+    if (!Array.isArray(kinematics)) return undefined
+
+    return kinematics.find((item): item is KinematicDef => {
+        if (!item || typeof item !== 'object') return false
+        const candidate = item as Partial<KinematicDef>
+        return candidate.part === partType
+            && (!Array.isArray(candidate.modes) || candidate.modes.includes(mode))
+    })
+}
+
 interface ModelProps {
     url: string
     isGlb?: boolean
@@ -358,7 +379,7 @@ interface ViewerProps {
     physicsFrames?: boolean[] | null
 }
 
-const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null, physicsFrames = null }, ref) => {
+const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
     const geometriesRef = React.useRef<Record<string, THREE.BufferGeometry>>({})
     const prevCenterRef = React.useRef<number[] | null>(null)
     const prevMaxDimRef = React.useRef<number | null>(null)
@@ -765,20 +786,18 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
 
                                                     // Kinematic Calculation
                                                     const kinematicValue = (params.kinematic_value as number) || 0
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    const kDef = (manifest as any).kinematics?.find((k: any) => k.part === part.type && (k.modes ? k.modes.includes(mode) : true))
+                                                    const kDef = getKinematicDef(manifest, part.type, mode)
                                                     const kRot: [number, number, number] = [0, 0, 0]
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                     let origin: [number, number, number] = [0, 0, 0]
                                                     
-                                                    if (kDef && kDef.type === 'rotation') {
+                                                    if (kDef?.type === 'rotation' && kDef.range && kDef.axis) {
                                                         const angle = kDef.range[0] + (kDef.range[1] - kDef.range[0]) * kinematicValue
                                                         const ax = kDef.axis.join(',')
                                                         const rad = angle * Math.PI / 180
                                                         if (ax === '1,0,0') kRot[0] = rad
                                                         if (ax === '0,1,0') kRot[1] = rad
                                                         if (ax === '0,0,1') kRot[2] = rad
-                                                        if (kDef.origin) origin = kDef.origin as [number, number, number]
+                                                        if (kDef.origin) origin = kDef.origin
                                                     }
 
                                                     let innerContent = (
@@ -829,20 +848,18 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
 
                                                     // Kinematic Calculation
                                                     const kinematicValue = (params.kinematic_value as number) || 0
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    const kDef = (manifest as any).kinematics?.find((k: any) => k.part === part.type && (k.modes ? k.modes.includes(mode) : true))
+                                                    const kDef = getKinematicDef(manifest, part.type, mode)
                                                     const kRot: [number, number, number] = [0, 0, 0]
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                     let origin: [number, number, number] = [0, 0, 0]
                                                     
-                                                    if (kDef && kDef.type === 'rotation') {
+                                                    if (kDef?.type === 'rotation' && kDef.range && kDef.axis) {
                                                         const angle = kDef.range[0] + (kDef.range[1] - kDef.range[0]) * kinematicValue
                                                         const ax = kDef.axis.join(',')
                                                         const rad = angle * Math.PI / 180
                                                         if (ax === '1,0,0') kRot[0] = rad
                                                         if (ax === '0,1,0') kRot[1] = rad
                                                         if (ax === '0,0,1') kRot[2] = rad
-                                                        if (kDef.origin) origin = kDef.origin as [number, number, number]
+                                                        if (kDef.origin) origin = kDef.origin
                                                     }
 
                                                     let innerContent = (

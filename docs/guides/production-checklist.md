@@ -12,6 +12,7 @@ Essential configuration for deploying Yantra4D in production.
 | `CORS_ORIGINS` | `https://app.yantra4d.com,https://yantra4d.com` | Allowed origins (comma-separated) |
 | `JANUA_ISSUER` | `https://auth.madfam.io` | JWT issuer URL |
 | `JANUA_AUDIENCE` | `yantra4d-api` | JWT audience claim |
+| `RENDER_WORKER_REQUIRED` | `true` | Fail readiness when the render worker heartbeat is stale or missing |
 
 ### Recommended
 
@@ -19,6 +20,8 @@ Essential configuration for deploying Yantra4D in production.
 |----------|---------|---------|
 | `LOG_FORMAT` | `text` | Set to `json` for structured logging in production |
 | `REDIS_URL` | — | Redis URL for shared cache and rate limiting |
+| `RENDER_WORKER_HEARTBEAT_KEY` | `yantra_render_worker_heartbeat` | Shared Redis key used for worker liveness checks |
+| `RENDER_WORKER_HEARTBEAT_TTL_SECONDS` | `60` | TTL for worker heartbeat window (also used as staleness baseline in API) |
 | `RATE_LIMIT_STORAGE` | `memory://` | Set to `redis://host:6379` for multi-worker rate limiting |
 | `ANALYTICS_DB_PATH` | `data/analytics.db` | Path to analytics SQLite (use persistent volume) |
 | `RENDER_TIMEOUT_S` | `300` | Max render time in seconds |
@@ -38,7 +41,12 @@ Configure K8s/load balancer probes:
 | Probe | Endpoint | Purpose |
 |-------|----------|---------|
 | Liveness | `GET /api/health/live` | Always 200 unless process hung |
-| Readiness | `GET /api/health/ready` | Checks OpenSCAD, Redis, disk, memory |
+| Readiness | `GET /api/health/ready` | Checks OpenSCAD, Redis, render worker heartbeat, disk, memory |
+
+The readiness payload includes render-worker heartbeat age plus Redis queue
+depth and active job count when Redis is reachable. Treat a missing or stale
+render-worker heartbeat as a degraded render plane even if the API process is
+otherwise alive.
 
 ### Readiness States
 

@@ -42,7 +42,7 @@ export function useJanuaAuth() {
         }
     }
 
-    const auth = useAuth() // eslint-disable-line react-hooks/rules-of-hooks
+    const auth = useAuth()
 
     return {
         user: auth.user ?? null,

@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect, Suspense, useMemo } from 'react';
+import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { ScrollControls, Scroll, useScroll, Environment, ContactShadows, Image, useGLTF } from '@react-three/drei';
+import { ScrollControls, useScroll, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 const SearchIcon = ({ className }: { className?: string }) => (
@@ -155,7 +155,7 @@ function CarouselTrack({ projects, onActiveChange, availableModels }: { projects
     const revolutions = useRef(0);
 
     useFrame((state, delta) => {
-        let offset = scroll.offset;
+        const offset = scroll.offset;
 
         // Detect wrap-around when using infinite scroll
         // threshold 0.8 / 0.2 handles the jump from ~1 back to 0 or 0 to ~1
@@ -200,7 +200,7 @@ function CarouselTrack({ projects, onActiveChange, availableModels }: { projects
     );
 }
 
-function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t?: Translations, index: number, total: number, lang: string }) {
+function CarouselUIOverlay({ project, index, total, lang }: { project: any, t?: Translations, index: number, total: number, lang: string }) {
     if (!project) return null;
     const isEs = lang === 'es';
 
@@ -260,7 +260,6 @@ function CarouselUIOverlay({ project, t, index, total, lang }: { project: any, t
 
 export default function ProjectCarousel3D({
     lang = 'es',
-    t,
     projects,
     searchQuery,
     setSearchQuery,
@@ -282,7 +281,6 @@ export default function ProjectCarousel3D({
     const [activeIndex, setActiveIndex] = useState(0);
     const availableModels = useAvailableModels();
 
-    const gap = 4;
     const isEs = lang === 'es';
 
     const carouselProjects = projects;
@@ -396,7 +394,6 @@ export default function ProjectCarousel3D({
                 <CarouselUIOverlay
                     project={activeProject}
                     lang={lang}
-                    t={t}
                     index={activeIndex}
                     total={carouselProjects.length}
                 />

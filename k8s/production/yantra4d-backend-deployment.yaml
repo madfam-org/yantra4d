@@ -91,6 +91,10 @@ spec:
               value: "false"
             - name: RATE_LIMIT_ENABLED
               value: "true"
+            - name: RENDER_WORKER_REQUIRED
+              value: "true"
+            - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
+              value: "60"
             - name: PUBLIC_STUDIO_URL
               value: "https://app.yantra4d.com"
             - name: ANALYTICS_DB_PATH
@@ -121,6 +125,40 @@ spec:
           resources:
             requests:
               cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+        - name: render-worker
+          image: ghcr.io/madfam-org/yantra4d/backend
+          imagePullPolicy: Always
+          command: ["python", "/app/worker/render_worker.py"]
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1001
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: FLASK_DEBUG
+              value: "false"
+            - name: PROJECTS_DIR
+              value: "/app/projects"
+            - name: REDIS_URL
+              value: "redis://yantra4d-redis:6379/0"
+            - name: RATE_LIMIT_STORAGE
+              value: "redis://yantra4d-redis:6379/1"
+            - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
+              value: "60"
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: render-output
+              mountPath: /app/backend/static
+          resources:
+            requests:
+              cpu: 250m
               memory: 256Mi
             limits:
               cpu: 1000m

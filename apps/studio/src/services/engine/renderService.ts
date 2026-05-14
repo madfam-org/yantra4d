@@ -158,6 +158,15 @@ function isRateLimitError(err: unknown): boolean {
 }
 
 /**
+ * Check if backend rendering failed because the render worker plane is unavailable.
+ */
+function isRenderWorkerUnavailableError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false
+  return err.message.includes('Render worker unavailable or not healthy')
+    || err.message.includes('render_worker_unavailable')
+}
+
+/**
  * Initialize the WASM worker (lazy, called on first WASM render).
  */
 function initWorker(manifest: Manifest | null): Promise<void> {
@@ -197,6 +206,8 @@ interface SSEData {
   total?: number
   line?: string
   message?: string
+  error?: string
+  reason?: string
   parts?: RenderPart[]
 }
 
@@ -348,6 +359,7 @@ async function renderBackend(
   const reader = response.body!.getReader()
   const decoder = new TextDecoder()
   let finalParts: RenderPart[] = []
+  let streamFailure: string | null = null
 
   while (true) {
     const { done, value } = await reader.read()
@@ -380,13 +392,23 @@ async function renderBackend(
         })
       } else if (data.event === 'complete') {
         finalParts = data.parts || []
+        if (data.error) {
+          streamFailure = data.error
+        }
       } else if (data.event === 'error') {
-        onProgress?.({ log: `[ERROR] ${data.part}: ${data.message}` })
+        streamFailure = data.error || data.message || 'Render failed'
+        onProgress?.({ log: `[ERROR] ${data.part}: ${streamFailure}` })
+      } else if (data.event === 'cancelled') {
+        streamFailure = data.message || data.reason || 'Render cancelled'
+        onProgress?.({ log: `[CANCELLED] ${data.part}: ${streamFailure}` })
       }
     }
   }
 
   if (finalParts.length === 0) {
+    if (streamFailure) {
+      throw new Error(streamFailure)
+    }
     throw new Error('Render stream completed without producing any parts')
   }
 
@@ -425,22 +447,39 @@ export async function renderParts(
     try {
       return await renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
     } catch (err) {
-      // If backend fails with network error or rate limit, try WASM fallback
+      // If backend fails with network/capacity errors, try WASM fallback.
       const forceBackend = manifest?.project?.force_backend || manifest?.force_backend
-      if (!forceBackend && manifest?.engine !== 'cadquery' && hasWasmCapabilities() && (isNetworkError(err) || isRateLimitError(err))) {
+      const canFallbackToWasm = (
+        !forceBackend
+        && manifest?.engine !== 'cadquery'
+        && hasWasmCapabilities()
+      )
+      const shouldFallback = (
+        isNetworkError(err)
+        || isRateLimitError(err)
+        || isRenderWorkerUnavailableError(err)
+      )
+      if (canFallbackToWasm && shouldFallback) {
         const isRL = isRateLimitError(err)
-        console.warn(`[Fallback] Backend render failed (${isRL ? 'rate limited' : 'network'}), retrying with WASM:`, (err as Error).message)
+        const isWorkerUnavailable = isRenderWorkerUnavailableError(err)
+        const reason = isRL ? 'rate limited' : isWorkerUnavailable ? 'worker unavailable' : 'network'
+        console.warn(`[Fallback] Backend render failed (${reason}), retrying with WASM:`, (err as Error).message)
         if (!isRL) resetDetection() // clear cached availability so next render re-checks
         _hardwareMode = 'wasm'
-        onProgress?.({ log: isRL
+        const fallbackLog = isRL
           ? '[FALLBACK] Server limit reached, rendering locally...'
-          : '[FALLBACK] Backend unavailable, using browser rendering...'
-        })
+          : isWorkerUnavailable
+            ? '[FALLBACK] Render worker unavailable, rendering locally...'
+            : '[FALLBACK] Backend unavailable, using browser rendering...'
+        onProgress?.({ log: fallbackLog })
         return renderWasm(mode, params, manifest, onProgress, abortSignal)
       }
       // For force_backend projects, provide a clear rate-limit message instead of cryptic WASM failure
       if (forceBackend && isRateLimitError(err)) {
         onProgress?.({ log: '[ERROR] Server render limit reached. This project requires server rendering — upgrade your plan or wait for the limit to reset.' })
+      }
+      if (forceBackend && isRenderWorkerUnavailableError(err)) {
+        onProgress?.({ log: '[ERROR] Server render worker is unavailable. This project requires server rendering — retry after the render service recovers.' })
       }
       throw err // re-throw non-recoverable errors
     }

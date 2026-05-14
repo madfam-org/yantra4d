@@ -16,6 +16,17 @@ from manifest import get_manifest
 from services.engine.openscad import compute_scad_hash, validate_params
 from services.engine.render_cache import render_cache
 from services.engine.format_converter import stl_to_glb, convert_mesh
+from services.engine.render_contract import (
+    RENDER_EVENT_CANCELLED,
+    RENDER_EVENT_COMPLETE,
+    RENDER_EVENT_ERROR,
+    RENDER_EVENT_PART_DONE,
+    RENDER_STREAM_SCHEMA_VERSION,
+    build_render_event,
+    is_terminal_render_event,
+    render_channel_for_job,
+    render_final_channel_for_job,
+)
 
 r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
 
@@ -30,10 +41,20 @@ CANCEL_JOB_PREFIX = "yantra_render_cancel_job:"
 CANCEL_TTL_SECONDS = 120
 ACTIVE_JOB_META_TTL = 300
 CANCEL_EVENT_TTL_SECONDS = 30
+RENDER_WORKER_HEARTBEAT_KEY = os.environ.get(
+    "RENDER_WORKER_HEARTBEAT_KEY",
+    "yantra_render_worker_heartbeat",
+)
+RENDER_WORKER_HEARTBEAT_TTL_SECONDS = int(os.environ.get(
+    "RENDER_WORKER_HEARTBEAT_TTL_SECONDS",
+    "60",
+))
 
 logger = logging.getLogger(__name__)
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
+RENDER_STREAM_PART_TIMEOUT_SECONDS = 120
+RENDER_PART_WAIT_TIMEOUT_SECONDS = 120
 
 
 # ──────────────────────────────────────────────
@@ -51,7 +72,7 @@ class RenderPayloadError:
 def resolve_render_context(data: dict):
     """Resolve scad_file, parts, and mode_map from request payload.
 
-    Returns (scad_filename, scad_path, parts, mode_map, static_stl_map)
+    Returns (scad_filename, scad_path, parts, mode_map, static_stl_map, mode_id)
     or RenderPayloadError on failure.
     """
     project_slug = data.get('project')
@@ -61,11 +82,15 @@ def resolve_render_context(data: dict):
 
     if mode_id:
         scad_filename = manifest.get_scad_file_for_mode(mode_id)
+        if scad_filename is None:
+            return RenderPayloadError(f"Invalid mode id: {mode_id}", bad_name=mode_id)
         parts = manifest.get_parts_for_mode(mode_id)
     else:
         if scad_filename:
             logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
+            mode_id = "legacy"
         else:
+            mode_id = manifest.modes[0]["id"]
             scad_filename = manifest.modes[0]["scad_file"]
         parts_map = manifest.get_parts_map()
         parts = parts_map.get(scad_filename, manifest.modes[0]["parts"])
@@ -77,7 +102,7 @@ def resolve_render_context(data: dict):
     scad_path = str(allowed[scad_filename])
     mode_map = manifest.get_mode_map()
     static_stl_map = manifest.get_static_stl_map()
-    return scad_filename, scad_path, parts, mode_map, static_stl_map
+    return scad_filename, scad_path, parts, mode_map, static_stl_map, mode_id
 
 
 def extract_render_payload(data: dict) -> dict | RenderPayloadError:
@@ -91,7 +116,7 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
     if isinstance(result, RenderPayloadError):
         return result
 
-    scad_filename, scad_path, parts_to_render, mode_map, static_stl_map = result
+    scad_filename, scad_path, parts_to_render, mode_map, static_stl_map, mode_id = result
 
     project_slug = data.get('project', '')
     export_format = data.get('export_format', 'stl')
@@ -119,6 +144,8 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         'parts': parts_to_render,
         'mode_map': mode_map,
         'stl_prefix': stl_prefix,
+        'mode': mode_id,
+        'request_id': data.get("request_id") or str(uuid.uuid4()),
         'export_format': export_format,
         'params': params,
         'static_stl_map': static_stl_map,
@@ -291,6 +318,104 @@ def _post_render_convert(output_path, output_filename, part, stl_prefix,
     return serve_path, serve_filename, viewer_filename
 
 
+def _coerce_channel(value) -> str:
+    """Decode Redis pubsub channel names consistently across client versions."""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return str(value)
+
+
+def _read_render_worker_last_seen() -> int | None:
+    """Return the last worker heartbeat timestamp from Redis."""
+    try:
+        raw = r.get(RENDER_WORKER_HEARTBEAT_KEY)
+        if not raw:
+            return None
+
+        if isinstance(raw, bytes):
+            raw = raw.decode("utf-8", errors="replace")
+        return int(float(raw.strip()))
+    except Exception:
+        return None
+
+
+def is_render_worker_available() -> bool:
+    """Return True when the dedicated render worker has published heartbeat."""
+    last_seen = _read_render_worker_last_seen()
+    if last_seen is None:
+        return False
+    return (int(time.time()) - last_seen) <= RENDER_WORKER_HEARTBEAT_TTL_SECONDS * 2
+
+
+def get_render_worker_status() -> dict:
+    """Return render worker and queue status for readiness/operations surfaces."""
+    last_seen = _read_render_worker_last_seen()
+    now = int(time.time())
+    age_seconds = None if last_seen is None else max(0, now - last_seen)
+    available = (
+        age_seconds is not None
+        and age_seconds <= RENDER_WORKER_HEARTBEAT_TTL_SECONDS * 2
+    )
+
+    try:
+        queue_depth = r.llen(RENDER_QUEUE)
+    except Exception:
+        queue_depth = None
+
+    try:
+        active_jobs = r.scard(ACTIVE_RENDER_JOBS_KEY)
+    except Exception:
+        active_jobs = None
+
+    return {
+        "available": available,
+        "heartbeat_key": RENDER_WORKER_HEARTBEAT_KEY,
+        "heartbeat_ttl_seconds": RENDER_WORKER_HEARTBEAT_TTL_SECONDS,
+        "last_seen": last_seen,
+        "age_seconds": age_seconds,
+        "queue_depth": queue_depth,
+        "active_jobs": active_jobs,
+    }
+
+
+def _parse_stream_payload(message_data) -> dict | None:
+    """Parse JSON from Redis payload and normalize missing protocol metadata."""
+    if message_data is None:
+        return None
+    try:
+        payload = json.loads(message_data)
+    except Exception:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    payload.setdefault("stream_protocol", RENDER_STREAM_SCHEMA_VERSION)
+    return payload
+
+
+def _sse_event(payload: dict) -> str:
+    """Serialize one render event as an SSE data frame."""
+    return f"data: {json.dumps(payload)}\n\n"
+
+
+def _sanitize_terminal_payload(payload: dict | None) -> dict:
+    """Strip protocol metadata and event envelope for client-facing artifacts."""
+    payload = payload or {}
+    clean = payload.copy()
+    if isinstance(clean.get("part_entry"), dict) and "type" in clean["part_entry"]:
+        nested = clean.pop("part_entry")
+        if isinstance(nested, dict):
+            merged = nested.copy()
+            for key, value in clean.items():
+                if key in {"event", "stream_protocol", "part_entry"}:
+                    continue
+                if key not in merged:
+                    merged[key] = value
+            clean = merged
+    clean.pop("event", None)
+    clean.pop("stream_protocol", None)
+    return clean
+
+
 def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str, tier: str):
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']
@@ -301,10 +426,6 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
     generated_parts = []
     combined_log = ""
     cache_hits, cache_total = 0, 0
-    job_ids = []
-    
-    pubsub = r.pubsub(ignore_subscribe_messages=True)
-
     for part in parts_to_render:
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
@@ -323,101 +444,244 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             generated_parts.append({"type": part, "url": f"/static/{os.path.basename(cached['path'])}", "size_bytes": cached["size_bytes"]})
             continue
 
+        if not is_render_worker_available():
+            return None, "Render worker unavailable or not healthy", (cache_hits, cache_total)
+
         job_id = str(uuid.uuid4())
-        job_ids.append((job_id, part))
-        pubsub.subscribe(f"render:{job_id}")
+        render_channel = render_channel_for_job(job_id)
+        final_channel = render_final_channel_for_job(job_id)
+        part_sub = r.pubsub(ignore_subscribe_messages=True)
+        part_sub.subscribe(render_channel)
+        part_sub.subscribe(final_channel)
 
         task = {
+            "request_id": payload.get("request_id"),
+            "mode": payload.get("mode"),
+            "scad_filename": payload.get("scad_filename"),
             "job_id": job_id, "stream": False, "engine": engine, "part": part, 
             "payload": payload, "scad_path": scad_path, "output_path": output_path, 
             "export_format": export_format
         }
         r.rpush(RENDER_QUEUE, json.dumps(task))
 
-    completed_jobs = 0
-    while completed_jobs < len(job_ids):
-        message = pubsub.get_message(timeout=1.0)
-        if message:
-            data = json.loads(message['data'])
-            if data.get('event') == 'part_done':
-                pe = data['part_entry']
-                combined_log += pe.pop('log', '')
-                generated_parts.append(pe)
-                completed_jobs += 1
-            elif data.get('event') == 'error':
-                combined_log += f"[{data['part']}] ERROR: {data['error']}\n"
-                completed_jobs += 1
-    
-    pubsub.close()
+        part_deadline = time.time() + RENDER_PART_WAIT_TIMEOUT_SECONDS
+        part_complete = False
+        while not part_complete:
+            if time.time() > part_deadline:
+                combined_log += f"[{part}] ERROR: Render timed out while waiting for completion\n"
+                _notify_error(job_id, part, "Render job timed out")
+                break
+
+            message = part_sub.get_message(timeout=1.0)
+            if not message:
+                continue
+
+            channel = _coerce_channel(message.get("channel", ""))
+            event_payload = _parse_stream_payload(message.get("data"))
+            if not event_payload:
+                logger.debug("Skipping non-JSON render payload for job %s", job_id)
+                continue
+
+            event_type = event_payload.get("event")
+            if channel == final_channel and is_terminal_render_event(event_payload):
+                if event_type == RENDER_EVENT_PART_DONE:
+                    part_entry = _sanitize_terminal_payload(event_payload)
+                    combined_log += part_entry.pop("log", "")
+                    generated_parts.append(part_entry)
+                elif event_type == RENDER_EVENT_ERROR:
+                    combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
+                elif event_type == RENDER_EVENT_CANCELLED:
+                    combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
+                else:
+                    combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_type}\n"
+                part_complete = True
+            elif channel == render_channel and event_type in {
+                RENDER_EVENT_PART_DONE,
+                RENDER_EVENT_ERROR,
+                RENDER_EVENT_CANCELLED,
+            }:
+                # Legacy/compat fallback: handle terminal payloads on primary channel.
+                if event_type == RENDER_EVENT_PART_DONE:
+                    part_entry = _sanitize_terminal_payload(event_payload)
+                    combined_log += part_entry.pop("log", "")
+                    generated_parts.append(part_entry)
+                elif event_type == RENDER_EVENT_ERROR:
+                    combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
+                else:
+                    combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
+                part_complete = True
+
+        part_sub.close()
+
     return generated_parts, combined_log, (cache_hits, cache_total)
 
 def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str):
-    parts_to_render = payload['parts']
-    stl_prefix = payload['stl_prefix']
-    export_format = payload['export_format']
-    project_slug = payload['project_slug']
-    static_stl_map = payload.get('static_stl_map', {})
-    
+    parts_to_render = payload["parts"]
+    stl_prefix = payload["stl_prefix"]
+    export_format = payload["export_format"]
+    project_slug = payload["project_slug"]
+    static_stl_map = payload.get("static_stl_map", {})
+
     num_parts = len(parts_to_render)
     generated_parts = []
-    
+
     for i, part in enumerate(parts_to_render):
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
             generated_parts.append(static_result[0])
             progress = ((i + 1) / num_parts) * 100
-            yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts})}\n\n"
+            yield _sse_event(build_render_event(
+                    RENDER_EVENT_PART_DONE,
+                    part=part,
+                    progress=progress,
+                    part_index=i,
+                    total_parts=num_parts,
+                )
+            )
             continue
-            
+
         output_filename = f"{stl_prefix}{part}.{actual_format}"
         output_path = os.path.join(STATIC_FOLDER, output_filename)
-        
+
         cached = _check_cache(payload, part, export_format)
         if cached:
-            generated_parts.append({"type": part, "url": f"/static/{os.path.basename(cached['path'])}", "size_bytes": cached["size_bytes"]})
+            generated_parts.append(
+                {
+                    "type": part,
+                    "url": f"/static/{os.path.basename(cached['path'])}",
+                    "size_bytes": cached["size_bytes"],
+                }
+            )
             progress = ((i + 1) / num_parts) * 100
-            yield f"data: {json.dumps({'event': 'part_done', 'part': part, 'progress': progress, 'part_index': i, 'total_parts': num_parts, 'cached': True})}\n\n"
+            yield _sse_event(build_render_event(
+                    RENDER_EVENT_PART_DONE,
+                    part=part,
+                    progress=progress,
+                    part_index=i,
+                    total_parts=num_parts,
+                    cached=True,
+                )
+            )
             continue
+
+        if not is_render_worker_available():
+            unavailable_error = build_render_event(
+                RENDER_EVENT_ERROR,
+                part=part,
+                error="Render worker unavailable or not healthy",
+                message="Render worker unavailable or not healthy",
+            )
+            unavailable_complete = build_render_event(
+                RENDER_EVENT_COMPLETE,
+                parts=generated_parts,
+                progress=100,
+                error="Render worker unavailable or not healthy",
+                part=part,
+            )
+            yield _sse_event(unavailable_error)
+            yield _sse_event(unavailable_complete)
+            return
 
         part_base = (i / num_parts) * PROGRESS_TOTAL
         part_weight = PROGRESS_TOTAL / num_parts
 
         job_id = str(uuid.uuid4())
         pubsub = r.pubsub(ignore_subscribe_messages=True)
-        pubsub.subscribe(f"render:{job_id}")
-        pubsub.subscribe(f"render:{job_id}:final")
+        render_channel = render_channel_for_job(job_id)
+        final_channel = render_final_channel_for_job(job_id)
+        pubsub.subscribe(render_channel)
+        pubsub.subscribe(final_channel)
 
         task = {
-            "job_id": job_id, "stream": True, "engine": engine, "part": part, "payload": payload,
-            "scad_path": scad_path, "output_path": output_path, "export_format": export_format,
-            "part_index": i, "num_parts": num_parts, "part_base": part_base, "part_weight": part_weight
+            "request_id": payload.get("request_id"),
+            "mode": payload.get("mode"),
+            "scad_filename": payload.get("scad_filename"),
+            "job_id": job_id,
+            "stream": True,
+            "engine": engine,
+            "part": part,
+            "payload": payload,
+            "scad_path": scad_path,
+            "output_path": output_path,
+            "export_format": export_format,
+            "part_index": i,
+            "num_parts": num_parts,
+            "part_base": part_base,
+            "part_weight": part_weight,
         }
         r.rpush(RENDER_QUEUE, json.dumps(task))
 
         done = False
+        part_deadline = time.time() + RENDER_STREAM_PART_TIMEOUT_SECONDS
+
         while not done:
-            message = pubsub.get_message(timeout=0.1)
-            if message:
-                if message['channel'] == f"render:{job_id}":
-                    # Directly yield the raw SSE event
-                    yield f"data: {message['data']}\n\n"
-                elif message['channel'] == f"render:{job_id}:final":
-                    final_data = json.loads(message['data'])
-                    if isinstance(final_data, dict) and final_data.get('event') in {'part_done', 'error', 'cancelled'}:
-                        if final_data.get('event') == 'part_done':
-                            generated_parts.append({k: v for k, v in final_data.items() if k != 'event'})
-                        done = True
-                    elif isinstance(final_data, dict):
-                        # legacy worker payload (part metadata, no explicit event)
-                        generated_parts.append(final_data)
-                        done = True
-                    else:
-                        # malformed payload should not block UI; close this part with empty record
-                        done = True
-        
+            if time.time() > part_deadline:
+                timeout_event = build_render_event(
+                    RENDER_EVENT_ERROR,
+                    part=part,
+                    error="Render stream timed out waiting for completion",
+                    message="Render stream timed out waiting for completion",
+                )
+                yield f"data: {json.dumps(timeout_event)}\n\n"
+                _notify_error(job_id, part, "Render stream timed out waiting for completion")
+                break
+
+            message = pubsub.get_message(timeout=0.2)
+            if not message:
+                continue
+
+            channel = _coerce_channel(message.get("channel", ""))
+            event_data = _parse_stream_payload(message.get("data"))
+            if event_data is None:
+                logger.debug("Skipping malformed render payload for part %s", part)
+                continue
+
+            if channel == render_channel:
+                yield f"data: {json.dumps(event_data)}\n\n"
+                if event_data.get("event") == RENDER_EVENT_PART_DONE and event_data.get("type"):
+                    generated_parts.append(_sanitize_terminal_payload(event_data))
+                    done = True
+                continue
+
+            if channel != final_channel:
+                continue
+
+            event_type = event_data.get("event")
+            if event_type == RENDER_EVENT_PART_DONE:
+                generated_parts.append(_sanitize_terminal_payload(event_data))
+                done = True
+            elif event_type == RENDER_EVENT_ERROR:
+                logger.error(
+                    "Render stream error for part %s: %s",
+                    event_data.get("part"),
+                    event_data.get("error"),
+                )
+                yield f"data: {json.dumps(event_data)}\n\n"
+                done = True
+            elif event_type == RENDER_EVENT_CANCELLED:
+                logger.info(
+                    "Render stream cancelled for part %s (reason=%s)",
+                    event_data.get("part"),
+                    event_data.get("reason"),
+                )
+                yield f"data: {json.dumps(event_data)}\n\n"
+                done = True
+            elif event_type:
+                logger.info("Render stream event for part %s: %s", part, event_type)
+                yield f"data: {json.dumps(event_data)}\n\n"
+                done = True
+            else:
+                generated_parts.append(event_data)
+                done = True
+
         pubsub.close()
 
-    yield f"data: {json.dumps({'event': 'complete', 'parts': generated_parts, 'progress': 100})}\n\n"
+    yield _sse_event(build_render_event(
+            RENDER_EVENT_COMPLETE,
+            parts=generated_parts,
+            progress=100,
+        )
+    )
 
 
 # ──────────────────────────────────────────────
@@ -431,7 +695,11 @@ def cancel_all_renders() -> bool:
     now = int(time.time())
 
     # Mark a global cancel signal for safety if cancellation happens mid-process.
-    r.set(CANCEL_ALL_KEY, str(now), ex=CANCEL_EVENT_TTL_SECONDS)
+    try:
+        r.set(CANCEL_ALL_KEY, str(now), ex=CANCEL_EVENT_TTL_SECONDS)
+    except Exception as e:
+        logger.warning("Render cancel requested but Redis is unavailable: %s", e)
+        return False
 
     # Cancel queued jobs by stripping them from the queue and notifying listeners.
     try:
@@ -459,7 +727,11 @@ def cancel_all_renders() -> bool:
         logger.warning("Failed to clear pending render queue items: %s", e)
 
     # Cancel active jobs currently being processed in the worker.
-    active_jobs = [jid for jid in r.smembers(ACTIVE_RENDER_JOBS_KEY) if jid]
+    try:
+        active_jobs = [jid for jid in r.smembers(ACTIVE_RENDER_JOBS_KEY) if jid]
+    except Exception as e:
+        logger.warning("Failed to read active render jobs for cancellation: %s", e)
+        active_jobs = []
     for job_id in active_jobs:
         try:
             _set_job_cancel(job_id)
@@ -483,17 +755,35 @@ def cancel_all_renders() -> bool:
 
 
 def _notify_cancelled(job_id: str, part: str, emit_final: bool = True) -> None:
-    payload = json.dumps({
-        "event": "error",
-        "part": part or "",
-        "error": "Render cancelled by user request"
-    })
+    payload = build_render_event(
+        RENDER_EVENT_CANCELLED,
+        part=part or "",
+        message="Render cancelled by user request",
+        reason="user_request",
+    )
+    payload_json = json.dumps(payload)
     try:
-        r.publish(f"render:{job_id}", payload)
+        r.publish(render_channel_for_job(job_id), payload_json)
         if emit_final:
-            r.publish(f"render:{job_id}:final", payload)
+            r.publish(render_final_channel_for_job(job_id), payload_json)
     except Exception:
         logger.debug("Failed to notify cancellation for job %s", job_id, exc_info=True)
+
+
+def _notify_error(job_id: str, part: str, message: str, emit_final: bool = True) -> None:
+    payload = build_render_event(
+        RENDER_EVENT_ERROR,
+        part=part or "",
+        error=message,
+        message=message,
+    )
+    payload_json = json.dumps(payload)
+    try:
+        r.publish(render_channel_for_job(job_id), payload_json)
+        if emit_final:
+            r.publish(render_final_channel_for_job(job_id), payload_json)
+    except Exception:
+        logger.debug("Failed to notify render error for job %s", job_id, exc_info=True)
 
 
 def _set_job_cancel(job_id: str) -> None:

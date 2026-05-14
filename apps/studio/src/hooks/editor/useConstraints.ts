@@ -1,7 +1,5 @@
 import { useMemo } from 'react'
-import { Parser } from 'expr-eval'
-
-const parser = new Parser()
+import { evaluateSafeFormula } from '../../lib/safeFormula'
 
 interface Constraint {
   rule: string
@@ -41,8 +39,7 @@ export function useConstraints(
 
     for (const constraint of constraints) {
       try {
-        const expr = parser.parse(constraint.rule)
-        const result = expr.evaluate(params as Record<string, number>)
+        const result = evaluateSafeFormula(constraint.rule, params)
         if (!result) {
           const violation: Violation = {
             rule: constraint.rule,

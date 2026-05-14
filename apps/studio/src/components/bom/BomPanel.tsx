@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Parser } from 'expr-eval'
+import { evaluateSafeFormula } from '../../lib/safeFormula'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useManifest } from '../../contexts/project/ManifestProvider'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -8,12 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Copy, ExternalLink, Printer, Settings, Wrench } from 'lucide-react'
 import { toast } from 'sonner'
 
-const parser = new Parser()
-
 function evaluateQuantity(formula: string | number, params: Record<string, unknown>): number | string {
   if (typeof formula === 'number') return formula
   try {
-    return parser.parse(formula).evaluate(params as Record<string, number>)
+    const result = evaluateSafeFormula(formula, params)
+    return typeof result === 'number' ? result : Number(result)
   } catch {
     return formula
   }

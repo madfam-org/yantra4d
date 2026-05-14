@@ -168,6 +168,20 @@ The BOM API (`routes/bom.py`) and `BomPanel.jsx` already exist, and `supplier_ur
 
 ---
 
+### Sprint 16.1 — Tablaco Verified Quote Relay (Selva -> Yantra4D -> Cotiza -> ForgeSight)
+_Integration: Selva agent quote generation, Cotiza Studio tenant quote creation, and ForgeSight verified market data._
+
+Yantra4D must act as a truthful project and geometry relay. It should not invent pricing truth, downgrade verified downstream results, or hide the reason a quote is not client-ready.
+
+- [ ] **Strict market verification propagation:** Forward `require_market_verified` as a top-level Cotiza request field for `/api/projects/<slug>/cotiza-quote-request`.
+- [ ] **Market context preservation:** Preserve Cotiza `market_verified`, `market_context`, `pricing_source`, `fallback_reason`, and `needs_review` in the Yantra4D response.
+- [ ] **Tablaco quote fixture:** Add a canonical `tablaco/unit` fixture with known parameters, geometry metadata, material, process, quantity, and currency.
+- [ ] **Authenticated smoke path:** Verify pro-tier Selva/Janua credentials can render and request a Tablaco quote without bypassing tier policy.
+- [ ] **Fail-closed behavior:** If Cotiza or ForgeSight cannot verify market data while strict mode is requested, return a non-client-ready response with the blocking reason.
+- [ ] **Runbook coverage:** Document the live Tablaco quote flow and how Enclii verifies it without direct production container access.
+
+---
+
 ### Sprint 17 — Production Physics Readiness & Generative Optimization
 _Integration: **[PPF Contact Solver](https://github.com/st-tech/ppf-contact-solver)** (SIGGRAPH Asia 2024)._
 

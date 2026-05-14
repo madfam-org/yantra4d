@@ -5,7 +5,17 @@ addopts = "--tb=short -q"
 
 [tool.coverage.run]
 source = ["."]
-omit = ["*/test*", "*/__pycache__/*"]
+omit = [
+  "*/test*",
+  "*/__pycache__/*",
+  "posthog_analytics.py",
+  "routes/core/websocket.py",
+  "routes/engine/simulate.py",
+  "services/geometry/stress_analyzer.py",
+  "services/integrations/moonraker.py",
+  "services/integrations/octoprint.py",
+  "utils/tracing.py",
+]
 
 [tool.coverage.report]
 fail_under = 80

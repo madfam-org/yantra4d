@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci --legacy-peer-deps
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: apps/admin/package-lock.json
       - run: npm ci --legacy-peer-deps
@@ -97,9 +97,14 @@ jobs:
       - run: ruff check .
       - run: pip install pytest pytest-cov
       - name: Check for pending migrations
-        run: cd $GITHUB_WORKSPACE/apps/api && flask db check 2>&1 || echo "::warning::Pending migrations detected"
+        run: |
+          cd $GITHUB_WORKSPACE/apps/api
+          flask db upgrade
+          flask db check
         env:
           FLASK_APP: app.py
+          DATABASE_URL: sqlite:////tmp/yantra4d-ci-migrations.db
+          PROJECTS_DIR: ${{ github.workspace }}/projects
       - name: Run backend tests
         run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing --cov-fail-under=80
 
@@ -117,7 +122,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
       - run: npm ci --legacy-peer-deps
@@ -159,6 +164,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -174,6 +180,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
       - name: Check manifest sync
         run: |
           # Fallback manifest = source minus force_backend (stripped for offline/WASM mode)
@@ -201,6 +208,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -215,6 +223,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -243,6 +252,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -259,4 +269,3 @@ jobs:
     steps:
       - name: All checks passed
         run: echo "All CI checks passed successfully!"
-

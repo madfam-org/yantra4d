@@ -45,7 +45,6 @@
     "@react-three/fiber": "^9.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "expr-eval": "^2.0.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.563.0",
     "manifold-3d": "^3.3.2",
@@ -83,12 +82,51 @@
     "jest-axe": "^9.0.0",
     "jsdom": "^24.0.0",
     "lint-staged": "^16.2.7",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.14",
     "rollup-plugin-visualizer": "^5.14.0",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^7.2.4",
+    "vite": "^7.3.3",
     "vitest": "^4.0.18"
+  },
+  "overrides": {
+    "axios": "^1.16.1",
+    "protobufjs": "^7.5.8",
+    "dompurify": "^3.4.3",
+    "follow-redirects": "^1.16.0",
+    "flatted": "^3.4.2",
+    "postcss": "^8.5.14",
+    "yaml": "^2.9.0",
+    "anymatch": {
+      "picomatch": "^2.3.2"
+    },
+    "micromatch": {
+      "picomatch": "^2.3.2"
+    },
+    "readdirp": {
+      "picomatch": "^2.3.2"
+    },
+    "tinyglobby": {
+      "picomatch": "^4.0.4"
+    },
+    "vite": {
+      "picomatch": "^4.0.4"
+    },
+    "lint-staged": {
+      "picomatch": "^4.0.4"
+    },
+    "rollup-plugin-visualizer": {
+      "picomatch": "^4.0.4"
+    },
+    "minimatch@3.1.5": {
+      "brace-expansion": "^1.1.13"
+    },
+    "minimatch@9.0.9": {
+      "brace-expansion": "^2.0.3"
+    },
+    "minimatch@10.2.4": {
+      "brace-expansion": "^5.0.6"
+    }
   }
 }

@@ -10,7 +10,7 @@ import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useUnitSystem } from '../../hooks/system/useUnitSystem'
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
-import { Parser } from 'expr-eval'
+import { evaluateSafeFormula } from '../../lib/safeFormula'
 
 interface RenderStatusChipProps {
   loading: boolean
@@ -101,14 +101,14 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
       if (!pqMap) return undefined
       const modeParts = activeMode.parts as string[] | undefined
       if (!modeParts) return undefined
-      const parser = new Parser()
       let total = 0
       for (const partId of modeParts) {
         const formula = pqMap[partId]
         if (formula == null) { total += 1; continue }
         if (typeof formula === 'number') { total += formula; continue }
         try {
-          total += parser.parse(String(formula)).evaluate(params as Record<string, unknown>)
+          const result = evaluateSafeFormula(String(formula), params)
+          total += typeof result === 'number' ? result : Number(result)
         } catch { total += 1 }
       }
       return total > 0 ? Math.round(total) : undefined

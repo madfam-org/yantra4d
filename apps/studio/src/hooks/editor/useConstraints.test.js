@@ -96,4 +96,22 @@ describe('useConstraints', () => {
     // Should not throw — skips constraints that fail to evaluate
     expect(result.current).toBeDefined()
   })
+
+  it('supports boolean logic without dynamic code evaluation', () => {
+    const constraints = [
+      {
+        rule: '(width_units >= 1 && depth_units >= 1) || force_override == 1',
+        message: { en: 'Dimensions must be positive' },
+        severity: 'error',
+        applies_to: ['width_units', 'depth_units'],
+      },
+    ]
+    const { result } = renderHook(() => useConstraints(constraints, {
+      width_units: 0,
+      depth_units: 1,
+      force_override: 0,
+    }))
+    expect(result.current.violations).toHaveLength(1)
+    expect(result.current.hasErrors).toBe(true)
+  })
 })

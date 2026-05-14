@@ -4,10 +4,14 @@ from extensions import db
 
 class AnalyticsEvent(db.Model):
     __tablename__ = "events"
+    __table_args__ = (
+        db.Index("idx_events_project", "project"),
+        db.Index("idx_events_type", "event_type"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    project = db.Column(db.String(100), nullable=False, index=True)
-    event_type = db.Column(db.String(50), nullable=False, index=True)
+    project = db.Column(db.String(100), nullable=False)
+    event_type = db.Column(db.String(50), nullable=False)
     event_data = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.Float, nullable=False)
 

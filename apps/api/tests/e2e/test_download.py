@@ -26,6 +26,8 @@ def tmp_projects(tmp_path):
     exports_dir = project_dir / "exports"
     exports_dir.mkdir()
     (exports_dir / "test.stl").write_bytes(b"solid test\nendsolid")
+    (exports_dir / "test.3mf").write_bytes(b"solid test\nendsolid")
+    (exports_dir / "test.off").write_bytes(b"test off mesh")
 
     return tmp_path
 
@@ -94,3 +96,35 @@ class TestScadDownload:
     def test_rejects_unlisted_file(self, client):
         resp = client.get("/api/projects/test-project/download/scad/secret.scad")
         assert resp.status_code == 403
+
+
+class TestRenderFormatDownload:
+    def test_returns_supported_format_file(self, client):
+        resp = client.get("/api/projects/test-project/download/3mf/test.3mf")
+        assert resp.status_code == 200
+
+    def test_rejects_unsupported_format(self, client):
+        resp = client.get("/api/projects/test-project/download/stlx/test.stl")
+        assert resp.status_code == 400
+
+    def test_rejects_filename_extension_mismatch(self, client):
+        resp = client.get("/api/projects/test-project/download/stl/test.3mf")
+        assert resp.status_code == 400
+
+    def test_uses_format_specific_access_control_when_present(self, tmp_projects):
+        manifest_path = tmp_projects / "test-project" / "project.json"
+        manifest = json.loads(manifest_path.read_text())
+        manifest["access_control"] = {"download_3mf": "authenticated"}
+        manifest_path.write_text(json.dumps(manifest))
+
+        with patch("config.Config.PROJECTS_DIR", tmp_projects), \
+             patch("config.Config.STATIC_DIR", tmp_projects / "static"), \
+             patch("config.Config.AUTH_ENABLED", True):
+            app = create_app()
+            app.config["TESTING"] = True
+            client = app.test_client()
+            import manifest as m
+            m._manifest_cache.clear()
+
+            resp = client.get("/api/projects/test-project/download/3mf/test.3mf")
+            assert resp.status_code == 401

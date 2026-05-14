@@ -6,6 +6,7 @@ and post-render conversions. Eliminates duplication between sync/stream paths.
 import json
 import logging
 import os
+import time
 import uuid
 
 import redis
@@ -21,6 +22,14 @@ r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), 
 ALLOWED_EXPORT_FORMATS = {'stl', '3mf', 'off', 'step', 'gltf', 'glb', 'obj'}
 TRIMESH_CONVERTIBLE = {'obj', 'ply', 'glb', 'gltf', '3mf', 'off'}
 PROGRESS_TOTAL = 100
+RENDER_QUEUE = "yantra_render_queue"
+ACTIVE_RENDER_JOBS_KEY = "yantra_render_active_jobs"
+ACTIVE_RENDER_META_PREFIX = "yantra_render_job_meta:"
+CANCEL_ALL_KEY = "yantra_render_cancel_all"
+CANCEL_JOB_PREFIX = "yantra_render_cancel_job:"
+CANCEL_TTL_SECONDS = 120
+ACTIVE_JOB_META_TTL = 300
+CANCEL_EVENT_TTL_SECONDS = 30
 
 logger = logging.getLogger(__name__)
 
@@ -323,7 +332,7 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             "payload": payload, "scad_path": scad_path, "output_path": output_path, 
             "export_format": export_format
         }
-        r.rpush("yantra_render_queue", json.dumps(task))
+        r.rpush(RENDER_QUEUE, json.dumps(task))
 
     completed_jobs = 0
     while completed_jobs < len(job_ids):
@@ -383,7 +392,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             "scad_path": scad_path, "output_path": output_path, "export_format": export_format,
             "part_index": i, "num_parts": num_parts, "part_base": part_base, "part_weight": part_weight
         }
-        r.rpush("yantra_render_queue", json.dumps(task))
+        r.rpush(RENDER_QUEUE, json.dumps(task))
 
         done = False
         while not done:
@@ -393,8 +402,18 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                     # Directly yield the raw SSE event
                     yield f"data: {message['data']}\n\n"
                 elif message['channel'] == f"render:{job_id}:final":
-                    generated_parts.append(json.loads(message['data']))
-                    done = True
+                    final_data = json.loads(message['data'])
+                    if isinstance(final_data, dict) and final_data.get('event') in {'part_done', 'error', 'cancelled'}:
+                        if final_data.get('event') == 'part_done':
+                            generated_parts.append({k: v for k, v in final_data.items() if k != 'event'})
+                        done = True
+                    elif isinstance(final_data, dict):
+                        # legacy worker payload (part metadata, no explicit event)
+                        generated_parts.append(final_data)
+                        done = True
+                    else:
+                        # malformed payload should not block UI; close this part with empty record
+                        done = True
         
         pubsub.close()
 
@@ -407,5 +426,112 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
 
 def cancel_all_renders() -> bool:
     """Cancel any active render processes across all engines."""
-    # TODO: Implement queue-based cancellation
-    return True
+    cancelled = False
+    queued_jobs: dict[str, str] = {}
+    now = int(time.time())
+
+    # Mark a global cancel signal for safety if cancellation happens mid-process.
+    r.set(CANCEL_ALL_KEY, str(now), ex=CANCEL_EVENT_TTL_SECONDS)
+
+    # Cancel queued jobs by stripping them from the queue and notifying listeners.
+    try:
+        queued_tasks = r.lrange(RENDER_QUEUE, 0, -1)
+        for raw_task in queued_tasks:
+            if not raw_task:
+                continue
+            try:
+                task = json.loads(raw_task)
+            except json.JSONDecodeError:
+                continue
+
+            job_id = task.get("job_id")
+            part = task.get("part")
+            if not job_id:
+                continue
+
+            queued_jobs[job_id] = part or ""
+            r.lrem(RENDER_QUEUE, 0, raw_task)
+            _notify_cancelled(job_id, part, emit_final=True)
+            cancelled = True
+        if queued_tasks:
+            logger.info("Cancel queue prune: removed %d pending render tasks", len(queued_jobs))
+    except Exception as e:
+        logger.warning("Failed to clear pending render queue items: %s", e)
+
+    # Cancel active jobs currently being processed in the worker.
+    active_jobs = [jid for jid in r.smembers(ACTIVE_RENDER_JOBS_KEY) if jid]
+    for job_id in active_jobs:
+        try:
+            _set_job_cancel(job_id)
+            meta = r.get(f"{ACTIVE_RENDER_META_PREFIX}{job_id}")
+            part = ""
+            if meta:
+                try:
+                    part = json.loads(meta).get("part", "")
+                except json.JSONDecodeError:
+                    pass
+            queued_jobs.setdefault(job_id, part)
+            _notify_cancelled(job_id, part, emit_final=True)
+            cancelled = True
+        except Exception as e:
+            logger.warning("Failed to mark active render %s for cancellation: %s", job_id, e)
+
+    if cancelled:
+        logger.info("Render cancel requested; marked %d jobs", len(queued_jobs))
+
+    return cancelled
+
+
+def _notify_cancelled(job_id: str, part: str, emit_final: bool = True) -> None:
+    payload = json.dumps({
+        "event": "error",
+        "part": part or "",
+        "error": "Render cancelled by user request"
+    })
+    try:
+        r.publish(f"render:{job_id}", payload)
+        if emit_final:
+            r.publish(f"render:{job_id}:final", payload)
+    except Exception:
+        logger.debug("Failed to notify cancellation for job %s", job_id, exc_info=True)
+
+
+def _set_job_cancel(job_id: str) -> None:
+    r.set(f"{CANCEL_JOB_PREFIX}{job_id}", "1", ex=CANCEL_TTL_SECONDS)
+
+
+def cancel_openscad_render() -> bool:
+    """Backward-compatible cancellation hook for OpenSCAD jobs."""
+    return _cancel_by_engine("openscad")
+
+
+def cancel_cadquery_render() -> bool:
+    """Backward-compatible cancellation hook for CadQuery jobs."""
+    return _cancel_by_engine("cadquery")
+
+
+def cancel_active_render() -> bool:
+    """Backward-compatible alias used by websocket cancel path."""
+    return cancel_all_renders()
+
+
+def _cancel_by_engine(engine: str) -> bool:
+    """Cancel only jobs currently tracked for a specific engine."""
+    cancelled = False
+    for raw_job_id in r.smembers(ACTIVE_RENDER_JOBS_KEY):
+        if not raw_job_id:
+            continue
+        meta = r.get(f"{ACTIVE_RENDER_META_PREFIX}{raw_job_id}")
+        if not meta:
+            continue
+        try:
+            parsed = json.loads(meta)
+        except json.JSONDecodeError:
+            continue
+        if parsed.get("engine") != engine:
+            continue
+        _set_job_cancel(raw_job_id)
+        part = parsed.get("part", "")
+        _notify_cancelled(raw_job_id, part, emit_final=True)
+        cancelled = True
+    return cancelled

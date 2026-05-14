@@ -58,7 +58,7 @@ The platform currently ships **20 built-in parametric projects** across three we
 | `github.py` | `POST /api/github/validate`, `/api/github/import`, `/api/github/sync` | GitHub repo import and sync |
 | `git_ops.py` | `GET/POST /api/projects/<slug>/git/*` | Git status, diff, commit, push, pull |
 | `admin.py` | `POST /api/admin/clear-cache`, `/api/admin/override-tier` | Admin operations |
-| `download.py` | `GET /api/download/stl/<part>`, `/api/download/scad/<file>` | Auth-gated file downloads |
+| `download.py` | `GET /api/projects/<slug>/download/stl/<file>`, `GET /api/projects/<slug>/download/<format>/<file>`, `GET /api/projects/<slug>/download/scad/<file>` | Auth-gated render/S CAD artifact downloads |
 | `bom.py` | `GET /api/projects/<slug>/bom` | Bill of materials CSV export |
 | `datasheet.py` | `GET /api/projects/<slug>/datasheet` | Project datasheet PDF generation |
 | `analytics.py` | `POST /api/analytics` | Privacy-respecting render/export analytics (SQLite) |

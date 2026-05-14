@@ -12,6 +12,7 @@ import tempfile
 import threading
 import time
 from pathlib import Path
+from collections.abc import Callable
 
 from config import Config
 from manifest import get_manifest
@@ -237,7 +238,9 @@ def _sanitize_cmd_for_log(cmd: list) -> str:
     return " ".join(sanitized)
 
 
-def run_render(cmd: list, scad_path: str | None = None) -> RenderResult:
+def run_render(
+    cmd: list, scad_path: str | None = None, is_cancelled: Callable[[], bool] | None = None
+) -> RenderResult:
     """Execute OpenSCAD render synchronously.
 
     Returns a RenderResult dataclass. Supports tuple unpacking for backward
@@ -246,38 +249,88 @@ def run_render(cmd: list, scad_path: str | None = None) -> RenderResult:
 
     logger.info(f"Running OpenSCAD: {_sanitize_cmd_for_log(cmd)}")
     t0 = time.monotonic()
+    output_path = None
+
+    # Extract output_path from cmd: the -o flag value
+    for i, arg in enumerate(cmd):
+        if arg == "-o" and i + 1 < len(cmd):
+            output_path = cmd[i + 1]
+            break
+
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
-        duration_ms = (time.monotonic() - t0) * 1000
-        # Extract output_path from cmd: the -o flag value
-        output_path = None
-        for i, arg in enumerate(cmd):
-            if arg == "-o" and i + 1 < len(cmd):
-                output_path = cmd[i + 1]
-                break
-        # After successful STL render, also produce 3MF for color-preserving viewer delivery
+        # Default path: preserve historical behavior for tests and legacy callers.
+        if is_cancelled is None:
+            result = subprocess.run(
+                cmd, check=True, capture_output=True, text=True,
+                timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path)
+            )
+            duration_ms = (time.monotonic() - t0) * 1000
+            # After successful STL render, also produce 3MF for color-preserving viewer delivery
+            if output_path and output_path.endswith('.stl'):
+                threemf_path = output_path.rsplit('.stl', 1)[0] + '.3mf'
+                threemf_cmd = [threemf_path if arg == output_path else arg for arg in cmd]
+                try:
+                    subprocess.run(threemf_cmd, check=True, capture_output=True, text=True,
+                                   timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
+                    logger.info(f"Color-preserving 3MF also generated: {threemf_path}")
+                except Exception:
+                    pass  # 3MF is optional — STL viewer fallback still works
+
+            return RenderResult(success=True, stderr=result.stderr, output_path=output_path, duration_ms=duration_ms)
+
+        process = _process_manager.start(
+            subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=_openscad_env(scad_path)
+            )
+        )
+        kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
+        kill_timer.start()
+        try:
+            while process.poll() is None:
+                if is_cancelled():
+                    _process_manager.cancel()
+                    break
+                time.sleep(0.05)
+
+            _, stderr = process.communicate()
+        finally:
+            duration_ms = (time.monotonic() - t0) * 1000
+            kill_timer.cancel()
+            _process_manager.clear()
+
+        if is_cancelled():
+            return RenderResult(
+                success=False,
+                stderr="Render cancelled by user request",
+                output_path=output_path,
+                duration_ms=duration_ms,
+            )
+
+        if process.returncode != 0:
+            logger.error(f"OpenSCAD failed with code {process.returncode}: {stderr}")
+            return RenderResult(success=False, stderr=stderr, output_path=output_path, duration_ms=duration_ms)
+
         if output_path and output_path.endswith('.stl'):
             threemf_path = output_path.rsplit('.stl', 1)[0] + '.3mf'
             threemf_cmd = [threemf_path if arg == output_path else arg for arg in cmd]
             try:
                 subprocess.run(threemf_cmd, check=True, capture_output=True, text=True,
-                              timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
+                               timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
                 logger.info(f"Color-preserving 3MF also generated: {threemf_path}")
             except Exception:
                 pass  # 3MF is optional — STL viewer fallback still works
 
-        return RenderResult(success=True, stderr=result.stderr, output_path=output_path, duration_ms=duration_ms)
+        return RenderResult(success=True, stderr=stderr, output_path=output_path, duration_ms=duration_ms)
+
     except subprocess.TimeoutExpired:
         duration_ms = (time.monotonic() - t0) * 1000
         logger.error("OpenSCAD render timed out after %ds", RENDER_TIMEOUT_S)
         return RenderResult(success=False, stderr=f"Render timed out after {RENDER_TIMEOUT_S} seconds", duration_ms=duration_ms)
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         duration_ms = (time.monotonic() - t0) * 1000
-        logger.error(f"OpenSCAD failed: {e.stderr}")
-        return RenderResult(success=False, stderr=e.stderr, duration_ms=duration_ms)
-
-
-def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int, scad_path: str | None = None):
+        logger.exception("OpenSCAD render error")
+        return RenderResult(success=False, stderr=str(e), output_path=output_path, duration_ms=duration_ms)
+def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int, scad_path: str | None = None, is_cancelled: Callable[[], bool] | None = None):
     """
     Generator that streams OpenSCAD progress as SSE events.
     Yields JSON-formatted SSE data strings.
@@ -325,8 +378,17 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         t.start()
 
         while True:
+            if is_cancelled and is_cancelled():
+                _process_manager.cancel()
+                yield json.dumps({
+                    'event': 'error',
+                    'part': part,
+                    'message': 'Render cancelled by user request'
+                })
+                return
+
             try:
-                line = q.get(timeout=10.0)
+                line = q.get(timeout=1.0)
                 if line is None:
                     break
                     
@@ -350,6 +412,15 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
                     'progress': round(overall_progress)
                 })
             except queue.Empty:
+                if is_cancelled and is_cancelled():
+                    _process_manager.cancel()
+                    yield json.dumps({
+                        'event': 'error',
+                        'part': part,
+                        'message': 'Render cancelled by user request'
+                    })
+                    return
+
                 yield json.dumps({
                     'event': 'ping',
                     'part': part,

@@ -176,10 +176,14 @@ Response:
 
 ## Download files
 
-Download pre-built STL or SCAD source files directly:
+Download rendered or source artifacts directly:
 
 ```bash
-# Download an STL part
+# Download any supported artifact format
+curl https://api.yantra4d.com/api/projects/gridfinity/download/3mf/main.3mf \
+  --output main.3mf
+
+# Download legacy STL route
 curl https://api.yantra4d.com/api/projects/gridfinity/download/stl/main.stl \
   --output main.stl
 
@@ -187,6 +191,8 @@ curl https://api.yantra4d.com/api/projects/gridfinity/download/stl/main.stl \
 curl https://api.yantra4d.com/api/projects/gridfinity/download/scad/half_cube.scad \
   --output half_cube.scad
 ```
+
+Supported file formats: `stl`, `scad`, `3mf`, `obj`, `off`, `step`, `glb`, `gltf`.
 
 ## Bill of Materials
 

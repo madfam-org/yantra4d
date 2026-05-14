@@ -688,6 +688,55 @@ paths:
                     type: boolean
 
   # ── Download ────────────────────────────────────────────
+  /api/projects/{slug}/download/{file_format}/{filename}:
+    get:
+      tags: [download]
+      summary: Download rendered or source artifact
+      operationId: downloadArtifact
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: file_format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - stl
+              - scad
+              - 3mf
+              - obj
+              - off
+              - step
+              - glb
+              - gltf
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Artifact binary
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Unsupported file format
+        "401":
+          description: Authentication required
+        "403":
+          description: File not in manifest allowlist
+        "404":
+          description: File not found
+
   /api/projects/{slug}/download/stl/{filename}:
     get:
       tags: [download]

@@ -18,6 +18,9 @@ Key modules:
 import atexit
 import logging
 import os
+import shutil
+from pathlib import Path
+from urllib.parse import urlparse
 
 from flask import Flask, g, jsonify, send_from_directory
 from flask_cors import CORS
@@ -62,6 +65,81 @@ from services.core.mqtt_telemetry import telemetry_service
 from utils.logging_config import setup_logging
 setup_logging(Config.DEBUG)
 logger = logging.getLogger(__name__)
+
+
+def _check_capabilities():
+    """Collect startup capability status for observability and non-fatal diagnostics."""
+    capabilities = {}
+
+    # OpenSCAD binary detection
+    configured_path = Config.OPENSCAD_PATH
+    resolved_openscad = configured_path if os.path.isabs(configured_path) else shutil.which(configured_path)
+    if resolved_openscad and os.path.isfile(resolved_openscad) and os.access(resolved_openscad, os.X_OK):
+        capabilities["openscad"] = {"status": "ok", "path": resolved_openscad}
+    else:
+        capabilities["openscad"] = {
+            "status": "missing",
+            "configured_path": configured_path,
+            "resolved_path": resolved_openscad,
+        }
+
+    # Redis ping
+    redis_url = Config.REDIS_URL
+    try:
+        import redis
+        r = redis.Redis.from_url(redis_url, decode_responses=True, socket_connect_timeout=1, socket_timeout=1)
+        r.ping()
+        capabilities["redis"] = {"status": "ok", "url": redis_url}
+    except Exception as exc:
+        capabilities["redis"] = {"status": "unavailable", "url": redis_url, "error": str(exc)}
+
+    # Database URI sanity
+    parsed_db = urlparse(Config.SQLALCHEMY_DATABASE_URI)
+    if parsed_db.scheme == "sqlite":
+        db_path = Path(parsed_db.path)
+        if os.access(db_path.parent, os.R_OK | os.W_OK):
+            db_status = "ok"
+            db_error = None
+        else:
+            db_status = "path_inaccessible"
+            db_error = f"Cannot access sqlite directory: {db_path.parent}"
+    elif parsed_db.scheme and parsed_db.netloc:
+        db_status = "ok"
+        db_error = None
+    else:
+        db_status = "invalid"
+        db_error = f"Unrecognized database URI: {Config.SQLALCHEMY_DATABASE_URI!r}"
+    capabilities["database"] = {"status": db_status, "uri": Config.SQLALCHEMY_DATABASE_URI}
+    if db_error:
+        capabilities["database"]["error"] = db_error
+
+    # Static path readiness
+    static_path = Config.STATIC_DIR
+    static_test = static_path / ".yantra_startup_write_test"
+    if static_path.exists() and os.access(static_path, os.R_OK | os.W_OK):
+        try:
+            static_test.write_text("ok", encoding="utf-8")
+            static_test.unlink()
+            static_status = "ok"
+            static_error = None
+        except Exception as exc:
+            static_status = "path_inaccessible"
+            static_error = f"Static directory not writable: {exc}"
+    else:
+        static_status = "path_inaccessible"
+        static_error = f"Static directory not readable/writable: {static_path}"
+
+    capabilities["static_dir"] = {"status": static_status, "path": str(static_path)}
+    if static_error:
+        capabilities["static_dir"]["error"] = static_error
+
+    # Optional AI credentials
+    if Config.AI_API_KEY:
+        capabilities["ai"] = {"status": "configured", "provider": Config.AI_PROVIDER}
+    else:
+        capabilities["ai"] = {"status": "disabled", "provider": Config.AI_PROVIDER, "note": "AI_API_KEY not configured"}
+
+    return capabilities
 
 
 def create_app():
@@ -186,6 +264,12 @@ def create_app():
     logger.info(f"Projects Directory: {Config.PROJECTS_DIR}")
     logger.info(f"Multi-project mode: {Config.MULTI_PROJECT}")
     logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")
+    startup_caps = _check_capabilities()
+    logger.info("Startup capabilities: %s", startup_caps)
+    app.config["STARTUP_CAPABILITIES"] = startup_caps
+    for area, status in startup_caps.items():
+        if status.get("status") not in ("ok", "configured"):
+            logger.warning("Startup capability warning in %s: %s", area, status)
 
     # Start the continuous 4D Telemetry Bridge
     telemetry_service.start()

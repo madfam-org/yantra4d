@@ -23,6 +23,7 @@ class AppConfig:
     PROJECTS_DIR: Path = field(init=False)
     CARTRIDGES_DIRS: list[Path] = field(init=False)
     LIBS_DIR: Path = field(init=False)
+    REDIS_URL: str = field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379"))
     OPENSCADPATH: str = field(init=False)
     MULTI_PROJECT: bool = field(init=False)
     STATIC_DIR: Path = field(init=False)

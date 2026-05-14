@@ -7,6 +7,8 @@ import os
 import subprocess
 import json
 import threading
+import time
+from collections.abc import Callable
 
 from config import Config
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager
@@ -38,21 +40,60 @@ def build_cadquery_command(output_path: str, script_path: str, params: dict, exp
     return cmd
 
 
-def run_render(cmd: list, scad_path: str | None = None) -> tuple[bool, str]:
+def run_render(
+    cmd: list, scad_path: str | None = None, is_cancelled: Callable[[], bool] | None = None
+) -> tuple[bool, str]:
     """Execute CadQuery render synchronously. Returns (success, stderr/stdout)."""
     logger.info(f"Running CadQuery: {' '.join(cmd)}")
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=RENDER_TIMEOUT_S, env=_cadquery_env())
-        return True, result.stdout + result.stderr
+        if is_cancelled is None:
+            result = subprocess.run(
+                cmd, check=True, capture_output=True, text=True,
+                timeout=RENDER_TIMEOUT_S, env=_cadquery_env()
+            )
+            return True, result.stdout + result.stderr
+
+        process = _cq_process_manager.start(
+            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_cadquery_env())
+        )
+        kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
+        kill_timer.start()
+        try:
+            while process.poll() is None:
+                if is_cancelled():
+                    _cq_process_manager.cancel()
+                    break
+                time.sleep(0.05)
+
+            stdout_text = process.communicate()[0] or ""
+        finally:
+            kill_timer.cancel()
+            _cq_process_manager.clear()
+
+        if is_cancelled():
+            return False, "Render cancelled by user request"
+
+        if process.returncode != 0:
+            logger.error("CadQuery failed with code %s", process.returncode)
+            return False, stdout_text
+
+        return True, stdout_text
     except subprocess.TimeoutExpired:
         logger.error("CadQuery render timed out after %ds", RENDER_TIMEOUT_S)
         return False, f"Render timed out after {RENDER_TIMEOUT_S} seconds"
     except subprocess.CalledProcessError as e:
-        logger.error(f"CadQuery failed: {e.stdout}\n{e.stderr}")
+        logger.error("CadQuery failed: %s%s", e.stdout, e.stderr)
         return False, e.stdout + e.stderr
+    except Exception:
+        logger.exception("CadQuery render error")
+        return False, "CadQuery render error"
 
 
-def stream_render(cmd: list, part: str, part_base: float, part_weight: float, index: int, total: int, scad_path: str | None = None):
+def stream_render(
+    cmd: list, part: str, part_base: float, part_weight: float,
+    index: int, total: int, scad_path: str | None = None,
+    is_cancelled: Callable[[], bool] | None = None
+):
     """
     Generator that streams CadQuery progress as SSE events.
     """
@@ -95,8 +136,17 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
 
         lines_read = 0
         while True:
+            if is_cancelled and is_cancelled():
+                _cq_process_manager.cancel()
+                yield json.dumps({
+                    'event': 'error',
+                    'part': part,
+                    'message': 'Render cancelled by user request'
+                })
+                return
+
             try:
-                line = q.get(timeout=10.0)
+                line = q.get(timeout=1.0)
                 if line is None:
                     break
                     
@@ -116,6 +166,15 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
                     'progress': round(overall_progress)
                 })
             except queue.Empty:
+                if is_cancelled and is_cancelled():
+                    _cq_process_manager.cancel()
+                    yield json.dumps({
+                        'event': 'error',
+                        'part': part,
+                        'message': 'Render cancelled by user request'
+                    })
+                    return
+
                 yield json.dumps({
                     'event': 'ping',
                     'part': part,

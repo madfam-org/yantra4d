@@ -300,8 +300,9 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on re
 | GET | `/api/pricing/benchmark` | `?material=pla&region=CDMX` | Material price benchmark (p10/p50/p90 from ForgeSight or defaults) |
 | GET | `/api/pricing/materials` | -- | List supported materials with ForgeSight category mappings |
 | GET | `/api/projects/<slug>/datasheet` | `?format=pdf&lang=en` | Project datasheet (PDF/HTML) |
-| GET | `/api/projects/<slug>/download/stl/<file>` | -- | Download STL file |
-| GET | `/api/projects/<slug>/download/scad/<file>` | -- | Download SCAD source file |
+| GET | `/api/projects/<slug>/download/<file_format>/<file>` | -- | Download artifact by file format (stl, scad, 3mf, obj, off, step, glb, gltf) |
+| GET | `/api/projects/<slug>/download/stl/<file>` | -- | Legacy STL download route |
+| GET | `/api/projects/<slug>/download/scad/<file>` | -- | Legacy SCAD source download route |
 | POST | `/api/analytics/track` | `{event, slug, ...}` | Record analytics event |
 | GET | `/api/analytics/<slug>/summary` | `?days=30` | Aggregate analytics for project |
 | GET | `/api/tiers` | -- | Public tier definitions |

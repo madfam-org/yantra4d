@@ -8,6 +8,8 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: yantra4d-backend
@@ -145,12 +147,24 @@ spec:
               value: "false"
             - name: PROJECTS_DIR
               value: "/app/projects"
+            - name: PYTHONPATH
+              value: "/app/backend"
             - name: REDIS_URL
               value: "redis://yantra4d-redis:6379/0"
             - name: RATE_LIMIT_STORAGE
               value: "redis://yantra4d-redis:6379/1"
             - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
               value: "60"
+          readinessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import os, time, redis; r=redis.Redis.from_url(os.environ.get('REDIS_URL', 'redis://localhost:6379'), decode_responses=True); ts=r.get(os.environ.get('RENDER_WORKER_HEARTBEAT_KEY', 'yantra_render_worker_heartbeat')); raise SystemExit(0 if ts and time.time() - int(ts) < int(os.environ.get('RENDER_WORKER_HEARTBEAT_TTL_SECONDS', '60')) else 1)"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           volumeMounts:
             - name: tmp
               mountPath: /tmp
@@ -171,5 +185,5 @@ spec:
           emptyDir:
             sizeLimit: 512Mi
         - name: analytics-data
-          persistentVolumeClaim:
-            claimName: yantra4d-analytics
+          emptyDir:
+            sizeLimit: 128Mi

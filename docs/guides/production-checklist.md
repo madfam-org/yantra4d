@@ -23,7 +23,7 @@ Essential configuration for deploying Yantra4D in production.
 | `RENDER_WORKER_HEARTBEAT_KEY` | `yantra_render_worker_heartbeat` | Shared Redis key used for worker liveness checks |
 | `RENDER_WORKER_HEARTBEAT_TTL_SECONDS` | `60` | TTL for worker heartbeat window (also used as staleness baseline in API) |
 | `RATE_LIMIT_STORAGE` | `memory://` | Set to `redis://host:6379` for multi-worker rate limiting |
-| `ANALYTICS_DB_PATH` | `data/analytics.db` | Path to analytics SQLite (use persistent volume) |
+| `ANALYTICS_DB_PATH` | `data/analytics.db` | Path to analytics SQLite (ephemeral is acceptable for stateless API pods; use Postgres for durable user/analytics data) |
 | `RENDER_TIMEOUT_S` | `300` | Max render time in seconds |
 
 ### AI Features (optional)
@@ -61,6 +61,18 @@ For local Docker deployment, `docker-compose.yml` includes:
 - Redis with AOF persistence (`redis_data` volume)
 - Analytics DB on persistent volume (`analytics_data` volume)
 - Rate limiting disabled by default for local dev
+
+## Production Storage and Rollouts
+
+The backend must remain schedulable even when analytics persistence is
+unavailable. Do not block API readiness on a single-writer SQLite PVC. For
+production:
+
+- Prefer `DATABASE_URL` pointing to managed Postgres for durable users and analytics.
+- If SQLite is used as a fallback, mount `ANALYTICS_DB_PATH` on `emptyDir` and accept ephemeral analytics data.
+- Use `Recreate` rollout strategy for any deployment that mounts an RWO volume.
+- Keep the render worker in the same pod as the API only when shared render artifacts are required; otherwise prefer a separate worker deployment plus shared object storage.
+- Set `PYTHONPATH=/app/backend` for the render worker or keep the worker import path bootstrapped in `apps/worker/render_worker.py`.
 
 ## Multi-Worker Rate Limiting
 

@@ -184,6 +184,31 @@ describe('renderParts (backend mode)', () => {
     warnSpy.mockRestore()
   })
 
+  it('buffers SSE JSON split across network chunks', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { })
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health -> backend
+
+    const encoder = new TextEncoder()
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode('data: {"event":"complete","parts":[{"type":"main",'))
+          controller.enqueue(encoder.encode('"url":"http://x/a.stl"}],"progress":100}\n\n'))
+          controller.close()
+        }
+      })
+    })
+
+    const result = await renderService.renderParts('unit', {}, manifest, {})
+
+    expect(result).toHaveLength(1)
+    expect(result[0].download_url).toContain('http://x/a.stl')
+    expect(warnSpy).not.toHaveBeenCalledWith('Malformed SSE data:', expect.any(SyntaxError))
+    warnSpy.mockRestore()
+  })
+
   it('includes project slug in render payload when provided', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend

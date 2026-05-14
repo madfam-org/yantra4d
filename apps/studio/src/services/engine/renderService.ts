@@ -212,19 +212,30 @@ interface SSEData {
 }
 
 /**
- * Parse a raw SSE chunk string into individual JSON data objects.
+ * Parse complete SSE data lines into individual JSON data objects while
+ * preserving any incomplete trailing line for the next network chunk.
+ *
+ * The backend emits one JSON object per `data:` line. Network chunks can split
+ * those lines arbitrarily, so parsing must happen only after a newline arrives.
  */
-function parseSSEChunk(chunk: string): SSEData[] {
-  const lines = chunk.split('\n').filter(line => line.startsWith('data: '))
+function parseSSEBuffer(buffer: string): { events: SSEData[], remainder: string } {
+  const normalized = buffer.replace(/\r\n/g, '\n')
+  const lines = normalized.split('\n')
+  const remainder = normalized.endsWith('\n') ? '' : (lines.pop() ?? '')
   const results: SSEData[] = []
-  for (const rawLine of lines) {
+  for (const line of lines) {
+    if (!line.startsWith('data:')) continue
+
+    const data = line.slice(5).trimStart()
+    if (!data) continue
+
     try {
-      results.push(JSON.parse(rawLine.slice(6)))
+      results.push(JSON.parse(data))
     } catch (e) {
       console.warn('Malformed SSE data:', e)
     }
   }
-  return results
+  return { events: results, remainder }
 }
 
 /**
@@ -360,49 +371,59 @@ async function renderBackend(
   const decoder = new TextDecoder()
   let finalParts: RenderPart[] = []
   let streamFailure: string | null = null
+  let sseBuffer = ''
+
+  const processEvent = (data: SSEData) => {
+    if (data.progress !== undefined) {
+      onProgress?.({ percent: data.progress })
+    }
+
+    if (data.event === 'part_start') {
+      onProgress?.({
+        part: data.part,
+        log: `[${data.part}] Starting... (${data.index! + 1}/${data.total})`
+      })
+    } else if (data.event === 'output') {
+      const line = data.line!
+      const phase = detectPhase(line)
+      if (phase) onProgress?.({ phase })
+      if (isLogWorthy(line)) {
+        onProgress?.({ log: `  ${line}` })
+      }
+    } else if (data.event === 'part_done') {
+      onProgress?.({
+        part: data.part,
+        log: `[${data.part}] Done (${data.progress}%)`
+      })
+    } else if (data.event === 'complete') {
+      finalParts = data.parts || []
+      if (data.error) {
+        streamFailure = data.error
+      }
+    } else if (data.event === 'error') {
+      streamFailure = data.error || data.message || 'Render failed'
+      onProgress?.({ log: `[ERROR] ${data.part}: ${streamFailure}` })
+    } else if (data.event === 'cancelled') {
+      streamFailure = data.message || data.reason || 'Render cancelled'
+      onProgress?.({ log: `[CANCELLED] ${data.part}: ${streamFailure}` })
+    }
+  }
 
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
 
-    const chunk = decoder.decode(value, { stream: true })
-    const events = parseSSEChunk(chunk)
+    sseBuffer += decoder.decode(value, { stream: true })
+    const parsed = parseSSEBuffer(sseBuffer)
+    sseBuffer = parsed.remainder
 
-    for (const data of events) {
-      if (data.progress !== undefined) {
-        onProgress?.({ percent: data.progress })
-      }
+    for (const data of parsed.events) processEvent(data)
+  }
 
-      if (data.event === 'part_start') {
-        onProgress?.({
-          part: data.part,
-          log: `[${data.part}] Starting... (${data.index! + 1}/${data.total})`
-        })
-      } else if (data.event === 'output') {
-        const line = data.line!
-        const phase = detectPhase(line)
-        if (phase) onProgress?.({ phase })
-        if (isLogWorthy(line)) {
-          onProgress?.({ log: `  ${line}` })
-        }
-      } else if (data.event === 'part_done') {
-        onProgress?.({
-          part: data.part,
-          log: `[${data.part}] Done (${data.progress}%)`
-        })
-      } else if (data.event === 'complete') {
-        finalParts = data.parts || []
-        if (data.error) {
-          streamFailure = data.error
-        }
-      } else if (data.event === 'error') {
-        streamFailure = data.error || data.message || 'Render failed'
-        onProgress?.({ log: `[ERROR] ${data.part}: ${streamFailure}` })
-      } else if (data.event === 'cancelled') {
-        streamFailure = data.message || data.reason || 'Render cancelled'
-        onProgress?.({ log: `[CANCELLED] ${data.part}: ${streamFailure}` })
-      }
-    }
+  sseBuffer += decoder.decode()
+  if (sseBuffer.trim()) {
+    const parsed = parseSSEBuffer(`${sseBuffer}\n\n`)
+    for (const data of parsed.events) processEvent(data)
   }
 
   if (finalParts.length === 0) {

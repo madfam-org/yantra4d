@@ -47,10 +47,10 @@ def upgrade():
             sa.Column("role", sa.String(50), nullable=False, server_default="editor"),
             sa.Column("last_accessed_at", sa.DateTime(timezone=True), nullable=True,
                        server_default=sa.text("CURRENT_TIMESTAMP")),
+            sa.UniqueConstraint("user_id", "project_slug", name="uq_user_project"),
         )
         op.create_index("ix_user_projects_user_id", "user_projects", ["user_id"])
         op.create_index("ix_user_projects_project_slug", "user_projects", ["project_slug"])
-        op.create_unique_constraint("uq_user_project", "user_projects", ["user_id", "project_slug"])
 
 
 def downgrade():

@@ -4,11 +4,17 @@ Yantra4D Render Worker.
 Consumes CAD rendering tasks from Redis queue and executes them via OpenSCAD or CadQuery.
 Publishes progress and completion events via Redis Pub/Sub back to the API.
 """
+# ruff: noqa: E402
 import json
 import logging
 import os
+import sys
 import time
 import redis
+
+BACKEND_PATH = os.environ.get("YANTRA4D_BACKEND_PATH", "/app/backend")
+if BACKEND_PATH not in sys.path:
+    sys.path.insert(0, BACKEND_PATH)
 
 # Use the same imports as the orchestrator to run the actual engines
 from config import Config

@@ -35,3 +35,13 @@ The Tablaco quote endpoint is present, but Selva needs a dedicated service ident
 - Missing render returns a render-required failure.
 - Unverified market data returns `424`.
 - Successful quotes include `client_ready=true`, `market_verified=true`, and ForgeSight provenance.
+
+## 2026-05-14 follow-up evidence
+
+Live Yantra4D surfaces checked during the quote-flow audit:
+
+- `https://yantra4d.com/` returns HTTP 200.
+- `https://app.yantra4d.com/` returns HTTP 200.
+- `https://api.yantra4d.com/` returns HTTP 404 at the root path, which confirms the API origin is reachable but root is not a quote-specific endpoint.
+
+The Tablaco quote flow remains blocked on ForgeSight market-data evidence and Enclii job provisioning, not on the public Yantra4D web surfaces.

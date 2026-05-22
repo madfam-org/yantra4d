@@ -1,0 +1,22 @@
+# Cursor indexing excludes — match .gitignore build/dep bloat
+node_modules/
+dist/
+coverage/
+**/__pycache__/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+**/playwright-report/
+**/test-results/
+e2e/screenshots/
+apps/api/data/
+apps/api/static/*.stl
+apps/api/static/*.3mf
+apps/api/static/*.off
+apps/api/static/*.step
+apps/api/static/*.gltf
+apps/api/static/*.glb
+.playwright-mcp/
+.serena/

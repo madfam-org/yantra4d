@@ -1,5 +1,6 @@
 ---
 import type { Translations } from '../lib/i18n';
+import { EcosystemBannerClient } from '../components/EcosystemBannerClient';
 
 interface Props {
   lang?: string;
@@ -29,8 +30,9 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>
-  <body class="min-h-screen bg-background text-foreground antialiased">
+  <body class="min-h-screen bg-background text-foreground antialiased pb-8">
     <slot />
+    <EcosystemBannerClient client:load />
   </body>
 </html>
 

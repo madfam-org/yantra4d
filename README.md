@@ -2,7 +2,7 @@
 
 > **Manifest-driven parametric design for the decentralized manufacturing age.**
 
-Yantra4D is not just a CAD tool; it is a **Poly-Kernel Engine**, a **Continuous SDF Geometry Compiler**, and a thriving **Hyperobjects Commons**. It bridges the mathematical precision of programmatic CAD with the accessibility of a visual, web-native storefront — and uniquely integrates **nanoscale material intelligence** and **interactive Digital Twin simulation** directly into the browser.
+Yantra4D is not just a CAD tool; it is a **Poly-Kernel Engine**, a **Continuous SDF Geometry Compiler**, and a thriving **Hyperobjects Commons**. It bridges the mathematical precision of programmatic CAD with the accessibility of a visual, web-native storefront — integrating **material metadata** into the geometry pipeline, with **interactive Digital Twin simulation** in progress (see "Current status" below: parts of the simulation stack are heuristic or mocked today).
 
 [![Astro](https://img.shields.io/badge/Docs-Starlight-blueviolet)](https://docs.yantra4d.com)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-red.svg)](./LICENSE)
@@ -22,8 +22,12 @@ Every project in Yantra4D is a self-contained **"Cartridge"**.
 ### 🧠 Material Hyperobjects & Hyperawareness
 Geometry is meaningless without material context. The Yantra4D Commons pioneers the integration of **Material Hyperobjects**—metadata modules (`/materials/`) capturing the Topological Data Analysis (TDA), spatial compensations, and semantic ontologies of physical AM substrates. By feeding this nanoscale intelligence directly into the geometric compiler, our additively manufacturable hyperobjects are imbued with **"hyperawareness"**, actively warping and adapting their dimensions to survive physical reality.
 
-### 🌡️ Interactive Digital Twin (4D Simulation)
-Yantra4D is the first browser-native platform to simulate **temporal phasing (4D printing)**. Users can apply simulated energy to any hyperobject and watch the continuous SDF morph in real-time as it crosses material phase boundaries (glass transition, yield, melt). An intelligent **WASM Circuit Breaker** automatically routes computationally intensive renders to the Docker backend, keeping the UI perfectly fluid regardless of topological complexity.
+### 🌡️ Interactive Digital Twin (4D Simulation) — partially implemented / roadmap
+The vision: apply simulated energy to any hyperobject and watch the continuous SDF morph in real-time as it crosses material phase boundaries (glass transition, yield, melt).
+
+**What is real today (2026-07-04):** the Studio energy slider (`simulated_energy`) drives a thermodynamic-collapse heuristic in the implicit SDF engine (sag past glass-transition temperature), and the **WASM Circuit Breaker** genuinely routes complex renders from browser WASM to the server backend (`apps/studio/src/services/engine/renderService.ts`).
+
+**What is mocked or heuristic today:** the "full physics simulation" pipeline (`POST /api/projects/:slug/simulate/physics`) generates a PPF solver script but never executes it — the background worker produces synthetic progress frames only (`apps/api/tasks/simulation_tasks.py`). The FEA stress endpoint returns a labeled geometry-derived **stress proxy**, not a structural solve. Real PPF/FEM execution on GPU nodes is **roadmap**. See the [Current status](#-current-status-2026-07-04) section.
 
 ---
 
@@ -32,6 +36,25 @@ Yantra4D is the first browser-native platform to simulate **temporal phasing (4D
 - **The Studio**: React 19 + Three.js + Manifold-3d for blisteringly fast volumetric browser rendering.
 - **The API**: Python Flask backend with Docker-orchestrated render clusters and slicer-grade physics estimation.
 - **The Knowledge Base**: [4D Docs](https://docs.yantra4d.com) — Powered by Astro Starlight.
+
+---
+
+## ✅ Current status (2026-07-04)
+
+Honest, code-verified snapshot. **Working today:**
+
+- **Interactive 3D preview** — Studio (React 19 + Three.js) renders projects live with parameter controls.
+- **Dual rendering paths** — browser-side OpenSCAD **WASM** worker plus server-side native rendering, with automatic backend detection and a complexity **circuit breaker** that falls back between them.
+- **STL / mesh export** — server render pipeline produces STL/GLB/3MF artifacts.
+- **Geometry verification** — dedicated verify endpoint (`apps/api/routes/engine/verify.py`) and parity QA scripts (`scripts/qa/verify_parity.py`).
+- **Cartridge project system** — `project.json` manifests, 33 submodule projects, admin app, Janua-authenticated admin flows.
+- **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
+
+**Mocked or heuristic today (presented as roadmap, not shipped):**
+
+- **PPF physics simulation** — the worker generates a solver script but does not execute it; progress and frames are synthetic (`apps/api/tasks/simulation_tasks.py`). No GPU execution path exists in this repo yet.
+- **FEA stress heatmap** — a deterministic geometry-derived proxy (`schema_version: stress_proxy_v1`, `approximation: true`), not a structural solver.
+- **Topology optimization** — a deterministic heuristic optimizer (`apps/api/services/simulation/optimizer.py` describes itself as the stand-in used "when full PDE-backed" solving is unavailable), not a real generative/PDE optimization.
 
 ---
 

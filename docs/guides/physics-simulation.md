@@ -1,6 +1,15 @@
 # Physics Simulation — PPF Contact Solver Integration
 
-Yantra4D includes a physics simulation pipeline backed by the **PPF Contact Solver** (`st-tech/ppf-contact-solver`, SIGGRAPH Asia 2024). This enables penetration-free FEM contact simulation for compliant mechanism hyperobjects.
+> [!IMPORTANT]
+> **Current status (2026-07-04): the solver execution is mocked in this repo.**
+> The pipeline (endpoints, job queue, script generation, polling, Studio UI) is
+> real, but `apps/api/tasks/simulation_tasks.py` never executes the generated
+> PPF script — every environment gets synthetic progress/frames, and there is
+> no CUDA-detection or subprocess execution path in the codebase yet. Real
+> PPF/FEM execution on GPU nodes is **roadmap**. The FEA stress endpoint is a
+> labeled geometry-derived proxy (`stress_proxy_v1`), not a structural solve.
+
+Yantra4D includes a physics simulation pipeline designed around the **PPF Contact Solver** (`st-tech/ppf-contact-solver`, SIGGRAPH Asia 2024). The target capability is penetration-free FEM contact simulation for compliant mechanism hyperobjects.
 
 ## Overview
 
@@ -14,7 +23,7 @@ Yantra4D includes a physics simulation pipeline backed by the **PPF Contact Solv
 
 ## Architecture
 
-The simulation pipeline uses a **decoupled background worker** pattern, keeping the API non-blocking. On MacOS / local dev, the CUDA dependency is absent so the pipeline runs a **mock mode** that exercises the full data pipeline with synthetic frames. On a GPU-provisioned node (e.g. AWS `g6.2xlarge` with NVIDIA CUDA 12.8+), the real PPF solver executes.
+The simulation pipeline uses a **decoupled background worker** pattern, keeping the API non-blocking. **As implemented today, the worker always runs in mock mode**: it exercises the full data pipeline with synthetic frames on every platform. Running the real PPF solver on a GPU-provisioned node (e.g. AWS `g6.2xlarge` with NVIDIA CUDA 12.8+) is the intended production design, but that execution path is not implemented in this repository yet.
 
 ```
 Studio frontend
@@ -168,7 +177,7 @@ Polling interval: **1500ms** via `setInterval` / `useEffect` cleanup.
 ## Local Development Notes
 
 > [!TIP]
-> On macOS without NVIDIA CUDA, the simulation worker runs in **mock mode** automatically. The pipeline still exercises the full HTTP→Context→Polling loop — only the PPF computation itself is synthetic. This makes frontend development fully possible without GPU hardware.
+> The simulation worker runs in **mock mode** everywhere today (there is no CUDA branch in the code). The pipeline still exercises the full HTTP→Context→Polling loop — only the PPF computation itself is synthetic. This makes frontend development fully possible without GPU hardware.
 
 To switch to real GPU execution, replace the `thread.start()` call in `simulation_tasks.py` with:
 ```python
@@ -180,7 +189,10 @@ And set `CELERY_BROKER_URL` + `CELERY_RESULT_BACKEND` in `.env`.
 
 ---
 
-## Production Deployment
+## Production Deployment (roadmap — not yet wired up)
+
+The steps below describe the intended GPU deployment; the repo does not yet
+contain the code that would invoke the solver (see status note at top).
 
 Provision an NVIDIA instance (e.g. `g6.2xlarge`) and install:
 ```bash

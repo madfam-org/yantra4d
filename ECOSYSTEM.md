@@ -39,12 +39,15 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 
 ### Upstream dependencies (this repo consumes)
 
-- geom-core (C++ geometry analysis + WASM bindings)
+- geom-core (C++ geometry analysis + WASM bindings) — **planned, not yet wired**;
+  geometry is currently implemented in-house (Python SDF engine + OpenSCAD/CadQuery)
 - postgres (catalog, user designs)
-- cloudflare R2 (asset storage)
+- cloudflare R2 (asset storage) — **planned, not yet wired**; render artifacts are
+  currently written to ephemeral local disk (garbage-collected), not R2
 - janua (auth)
 - dhanam (billing for paid features)
-- selva (LLM-assisted design)
+- selva (LLM-assisted design) — inference routed through the Selva gateway
+  (`SELVA_BASE_URL`); direct provider calls are disallowed
 
 ### Downstream consumers (this repo is consumed by)
 

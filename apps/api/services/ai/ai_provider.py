@@ -2,6 +2,11 @@
 Dual LLM provider abstraction (Anthropic + OpenAI).
 
 Pure functions matching project convention. Supports streaming and non-streaming.
+
+All calls route through the Selva inference gateway (OpenAI-compatible ``/v1``);
+per the ecosystem convention, service code does not talk directly to Anthropic
+or OpenAI. The gateway URL comes from ``SELVA_BASE_URL`` (or an explicit
+``AI_BASE_URL`` override); if neither is set the call fails closed.
 """
 import logging
 from typing import Iterator
@@ -14,6 +19,19 @@ DEFAULT_MODELS = {
     "anthropic": "claude-sonnet-4-20250514",
     "openai": "gpt-4o",
 }
+
+
+def _resolve_base_url() -> str:
+    """Return the Selva gateway URL, or fail closed to prevent direct calls."""
+    base = Config.AI_BASE_URL or getattr(Config, "SELVA_BASE_URL", "")
+    if not base:
+        raise RuntimeError(
+            "LLM calls must route through the Selva inference gateway. Set "
+            "SELVA_BASE_URL (or AI_BASE_URL) to the OpenAI-compatible /v1 "
+            "endpoint; direct calls to Anthropic/OpenAI are disallowed by the "
+            "ecosystem inference convention."
+        )
+    return base
 
 
 def get_provider() -> str:
@@ -47,7 +65,7 @@ def _stream_anthropic(messages: list[dict], system: str, max_tokens: int) -> Ite
 
     client = anthropic.Anthropic(
         api_key=Config.AI_API_KEY,
-        base_url=Config.AI_BASE_URL or None,
+        base_url=_resolve_base_url(),
     )
     with client.messages.stream(
         model=_get_model(),
@@ -64,7 +82,7 @@ def _stream_openai(messages: list[dict], system: str, max_tokens: int) -> Iterat
 
     client = openai.OpenAI(
         api_key=Config.AI_API_KEY,
-        base_url=Config.AI_BASE_URL or None,
+        base_url=_resolve_base_url(),
     )
     oai_messages = []
     if system:

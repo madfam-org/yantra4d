@@ -9,7 +9,7 @@ on:
 
 jobs:
   validate-and-audit:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-latest' }}
     timeout-minutes: 10
     steps:
       - name: Checkout project repository

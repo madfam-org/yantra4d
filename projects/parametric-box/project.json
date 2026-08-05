@@ -1,0 +1,197 @@
+{
+  "project": {
+    "name": "Parametric Storage Box",
+    "slug": "parametric-box",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A fits-anything storage box with independent wall and floor control, rounded corners, an optional press-fit lid, and an optional interior divider grid. Sized by interior dimensions.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una caja de almacenamiento que se adapta a todo, con control independiente de pared y piso, esquinas redondeadas, tapa a presión opcional y rejilla divisoria interior opcional. Se dimensiona por medidas interiores.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/parametric-box.webp",
+    "difficulty": "beginner",
+    "tags": ["box", "storage", "enclosure", "container", "lid", "organizer", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "box",
+      "label": { "en": "Box", "es": "Caja" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["box"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "lid",
+      "label": { "en": "Lid", "es": "Tapa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lid"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "box", "label": { "en": "Box", "es": "Caja" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "lid", "label": { "en": "Lid", "es": "Tapa" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "dimensions", "label": { "en": "Interior Size", "es": "Tamaño Interior" } },
+    { "id": "walls", "label": { "en": "Walls & Corners", "es": "Paredes y Esquinas" } },
+    { "id": "dividers", "label": { "en": "Dividers", "es": "Divisores" } },
+    { "id": "lid", "label": { "en": "Lid", "es": "Tapa" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_w", "type": "slider", "default": 80, "min": 15, "max": 250, "step": 1,
+      "group": "dimensions", "modes": ["box", "lid"],
+      "label": { "en": "Interior Width (mm)", "es": "Ancho Interior (mm)" },
+      "tooltip": { "en": "Usable interior X dimension", "es": "Dimensión interior X utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_d", "type": "slider", "default": 60, "min": 15, "max": 250, "step": 1,
+      "group": "dimensions", "modes": ["box", "lid"],
+      "label": { "en": "Interior Depth (mm)", "es": "Profundidad Interior (mm)" },
+      "tooltip": { "en": "Usable interior Y dimension", "es": "Dimensión interior Y utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_h", "type": "slider", "default": 40, "min": 10, "max": 200, "step": 1,
+      "group": "dimensions", "modes": ["box"],
+      "label": { "en": "Interior Height (mm)", "es": "Altura Interior (mm)" },
+      "tooltip": { "en": "Usable interior Z depth", "es": "Profundidad interior Z utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.2,
+      "group": "walls", "modes": ["box", "lid"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Side wall thickness", "es": "Grosor de la pared lateral" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.0, "min": 1.0, "max": 8.0, "step": 0.2,
+      "group": "walls", "modes": ["box", "lid"],
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Bottom thickness", "es": "Grosor del fondo" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 4.0, "min": 0.0, "max": 20.0, "step": 0.5,
+      "group": "walls", "modes": ["box", "lid"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Outer corner rounding (0 = sharp)", "es": "Redondeo de esquina exterior (0 = recto)" }
+    },
+    {
+      "id": "fillet_top", "type": "checkbox", "default": true,
+      "group": "walls", "modes": ["box"],
+      "label": { "en": "Soften Top Rim", "es": "Suavizar Borde Superior" },
+      "tooltip": { "en": "Round the top edge for comfort", "es": "Redondear el borde superior" }
+    },
+    {
+      "id": "div_x", "type": "slider", "default": 0, "min": 0, "max": 8, "step": 1,
+      "group": "dividers", "modes": ["box"],
+      "label": { "en": "Dividers across Width", "es": "Divisores a lo Ancho" },
+      "tooltip": { "en": "Number of interior partitions along X", "es": "Número de particiones interiores en X" }
+    },
+    {
+      "id": "div_y", "type": "slider", "default": 0, "min": 0, "max": 8, "step": 1,
+      "group": "dividers", "modes": ["box"],
+      "label": { "en": "Dividers across Depth", "es": "Divisores a lo Profundo" },
+      "tooltip": { "en": "Number of interior partitions along Y", "es": "Número de particiones interiores en Y" }
+    },
+    {
+      "id": "div_thick", "type": "slider", "default": 1.6, "min": 0.8, "max": 4.0, "step": 0.2,
+      "group": "dividers", "modes": ["box"], "advanced": true,
+      "label": { "en": "Divider Thickness (mm)", "es": "Grosor de Divisor (mm)" },
+      "tooltip": { "en": "Thickness of interior partitions", "es": "Grosor de las particiones interiores" }
+    },
+    {
+      "id": "lid_enabled", "type": "checkbox", "default": true,
+      "group": "lid", "modes": ["lid"],
+      "label": { "en": "Enable Lid", "es": "Habilitar Tapa" },
+      "tooltip": { "en": "Generate a press-fit lid", "es": "Generar una tapa a presión" }
+    },
+    {
+      "id": "lid_height", "type": "slider", "default": 8.0, "min": 3.0, "max": 25.0, "step": 0.5,
+      "group": "lid", "modes": ["lid"],
+      "label": { "en": "Lid Skirt Height (mm)", "es": "Altura de Faldón (mm)" },
+      "tooltip": { "en": "How deep the lid nests into the box", "es": "Qué tan profundo encaja la tapa en la caja" }
+    },
+    {
+      "id": "lid_clear", "type": "slider", "default": 0.3, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "lid", "modes": ["lid"], "advanced": true,
+      "label": { "en": "Lid Clearance (mm)", "es": "Holgura de Tapa (mm)" },
+      "tooltip": { "en": "Per-side gap for a printable press fit", "es": "Espacio por lado para un ajuste imprimible" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "small_parts_tray", "mode": "box",
+      "label": { "en": "Small Parts Tray (2×2)", "es": "Bandeja de Piezas (2×2)" },
+      "values": { "inner_w": 90, "inner_d": 90, "inner_h": 25, "div_x": 1, "div_y": 1, "corner_r": 3 }
+    },
+    {
+      "id": "deep_bin", "mode": "box",
+      "label": { "en": "Deep Bin", "es": "Contenedor Profundo" },
+      "values": { "inner_w": 70, "inner_d": 50, "inner_h": 90, "wall": 2.4, "corner_r": 5 }
+    },
+    {
+      "id": "lidded_case", "mode": "box",
+      "label": { "en": "Lidded Case (base)", "es": "Estuche con Tapa (base)" },
+      "values": { "inner_w": 100, "inner_d": 60, "inner_h": 30, "corner_r": 4, "lid_enabled": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "corner_r <= inner_w / 2 + wall",
+      "severity": "warning",
+      "message": { "en": "Corner radius is large relative to width", "es": "El radio de esquina es grande respecto al ancho" }
+    },
+    {
+      "expression": "wall >= 1",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1 mm", "es": "La pared debe ser de al menos 1 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "press_fit_lid_seam",
+        "label": { "en": "Press-Fit Lid Seam", "es": "Junta de Tapa a Presión" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["inner_w", "inner_d", "lid_height", "lid_clear", "wall"]
+      },
+      {
+        "id": "interior_divider_grid",
+        "label": { "en": "Interior Divider Grid", "es": "Rejilla Divisoria Interior" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["div_x", "div_y", "div_thick"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The most-printed functional object class — on-demand storage sized to the exact space and contents, reducing packaging waste and store dependency.",
+      "es": "La clase de objeto funcional más impresa — almacenamiento bajo demanda dimensionado al espacio y contenido exactos, reduciendo residuos de empaque y dependencia de tiendas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["box", "storage", "container", "household", "hyperobject", "commons"]
+}

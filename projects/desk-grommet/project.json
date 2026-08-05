@@ -1,0 +1,192 @@
+{
+  "project": {
+    "name": "Cable Grommet / Desk Port",
+    "slug": "desk-grommet",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A grommet that drops into a round cable pass-through hole in a desk. A tubular body sized to the desk bore, a flange lip that rests on the desktop, and an open cable slot so cords route in from the side without threading. Includes a closed round variant and a matching lid that caps the port.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un pasacables (grommet) que se inserta en un orificio redondo de paso de cables en un escritorio. Un cuerpo tubular dimensionado al orificio del escritorio, un labio de brida que descansa sobre la superficie y una ranura abierta para que los cables entren desde el lado sin enhebrar. Incluye una variante redonda cerrada y una tapa que cierra el puerto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/desk-grommet.webp",
+    "difficulty": "beginner",
+    "tags": ["grommet", "cable-management", "desk", "cable-port", "office", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "grommet",
+      "label": { "en": "Grommet (slotted)", "es": "Pasacables (ranurado)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grommet"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "round_grommet",
+      "label": { "en": "Round Grommet (closed)", "es": "Pasacables Redondo (cerrado)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["round_grommet"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "grommet_lid",
+      "label": { "en": "Lid", "es": "Tapa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grommet_lid"],
+      "estimate": { "base_time": 5, "per_unit": 1, "per_part": 7 }
+    }
+  ],
+  "parts": [
+    { "id": "grommet", "label": { "en": "Grommet (slotted)", "es": "Pasacables (ranurado)" }, "render_mode": 0, "color": "#4a4a52" },
+    { "id": "round_grommet", "label": { "en": "Round Grommet (closed)", "es": "Pasacables Redondo (cerrado)" }, "render_mode": 0, "color": "#6a6a72" },
+    { "id": "grommet_lid", "label": { "en": "Lid", "es": "Tapa" }, "render_mode": 0, "color": "#8a8a92" }
+  ],
+  "parameter_groups": [
+    { "id": "bore", "label": { "en": "Desk Bore", "es": "Orificio del Escritorio" } },
+    { "id": "flange", "label": { "en": "Flange", "es": "Brida" } },
+    { "id": "cable", "label": { "en": "Cable Slot & Lid", "es": "Ranura de Cable y Tapa" } }
+  ],
+  "parameters": [
+    {
+      "id": "bore_dia", "type": "slider", "default": 60.0, "min": 10.0, "max": 120.0, "step": 1.0,
+      "group": "bore", "modes": ["grommet", "round_grommet", "grommet_lid"],
+      "label": { "en": "Desk Hole Diameter (mm)", "es": "Diámetro del Orificio (mm)" },
+      "tooltip": { "en": "Diameter of the desk hole the grommet fits into", "es": "Diámetro del orificio del escritorio donde encaja el pasacables" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 25.0, "min": 3.0, "max": 60.0, "step": 1.0,
+      "group": "bore", "modes": ["grommet", "round_grommet"],
+      "label": { "en": "Desk Thickness (mm)", "es": "Grosor del Escritorio (mm)" },
+      "tooltip": { "en": "How far the body drops below the flange", "es": "Qué tan profundo baja el cuerpo bajo la brida" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.5, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "bore", "modes": ["grommet", "round_grommet"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Tube wall thickness", "es": "Grosor de la pared del tubo" }
+    },
+    {
+      "id": "fit_clear", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "bore", "modes": ["grommet", "round_grommet"], "advanced": true,
+      "label": { "en": "Bore Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap for a slip fit into the desk hole", "es": "Espacio por lado para un ajuste deslizante en el orificio" }
+    },
+    {
+      "id": "flange", "type": "slider", "default": 6.0, "min": 2.0, "max": 25.0, "step": 0.5,
+      "group": "flange", "modes": ["grommet", "round_grommet", "grommet_lid"],
+      "label": { "en": "Flange Width (mm)", "es": "Ancho de Brida (mm)" },
+      "tooltip": { "en": "Lip width beyond the bore that rests on the desktop", "es": "Ancho del labio más allá del orificio que descansa sobre la superficie" }
+    },
+    {
+      "id": "flange_t", "type": "slider", "default": 3.0, "min": 1.2, "max": 8.0, "step": 0.2,
+      "group": "flange", "modes": ["grommet", "round_grommet", "grommet_lid"],
+      "label": { "en": "Flange Thickness (mm)", "es": "Grosor de Brida (mm)" },
+      "tooltip": { "en": "Flange plate thickness", "es": "Grosor de la placa de la brida" }
+    },
+    {
+      "id": "slot", "type": "checkbox", "default": true,
+      "group": "cable", "modes": ["grommet"],
+      "label": { "en": "Open Cable Slot", "es": "Ranura de Cable Abierta" },
+      "tooltip": { "en": "Open channel so cables route in without threading", "es": "Canal abierto para que los cables entren sin enhebrar" }
+    },
+    {
+      "id": "slot_w", "type": "slider", "default": 20.0, "min": 3.0, "max": 100.0, "step": 1.0,
+      "group": "cable", "modes": ["grommet"],
+      "label": { "en": "Cable Slot Width (mm)", "es": "Ancho de Ranura de Cable (mm)" },
+      "tooltip": { "en": "Width of the open cable channel", "es": "Ancho del canal de cable abierto" }
+    },
+    {
+      "id": "lid", "type": "checkbox", "default": true,
+      "group": "cable", "modes": ["grommet", "round_grommet"],
+      "label": { "en": "Lid Seat", "es": "Asiento de Tapa" },
+      "tooltip": { "en": "Recess the flange top so the matching lid sits flush", "es": "Rebaja la parte superior de la brida para que la tapa quede al ras" }
+    },
+    {
+      "id": "lid_slot_w", "type": "slider", "default": 14.0, "min": 3.0, "max": 100.0, "step": 1.0,
+      "group": "cable", "modes": ["grommet_lid"],
+      "label": { "en": "Lid Cable Slot Width (mm)", "es": "Ancho de Ranura de Tapa (mm)" },
+      "tooltip": { "en": "Width of the cable slot in the lid", "es": "Ancho de la ranura de cable en la tapa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_60", "mode": "grommet",
+      "label": { "en": "Standard 60 mm Port", "es": "Puerto Estándar 60 mm" },
+      "values": { "bore_dia": 60, "depth": 25, "slot_w": 22, "flange": 6 }
+    },
+    {
+      "id": "small_closed_35", "mode": "round_grommet",
+      "label": { "en": "Small Closed 35 mm", "es": "Cerrado Pequeño 35 mm" },
+      "values": { "bore_dia": 35, "depth": 20, "flange": 5 }
+    },
+    {
+      "id": "lid_60", "mode": "grommet_lid",
+      "label": { "en": "60 mm Lid", "es": "Tapa 60 mm" },
+      "values": { "bore_dia": 60, "lid_slot_w": 16 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    },
+    {
+      "expression": "slot_w <= bore_dia - 4",
+      "severity": "warning",
+      "message": { "en": "Cable slot is wide relative to the bore", "es": "La ranura de cable es ancha respecto al orificio" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "desk_bore_grommet",
+        "label": { "en": "Desk Bore Grommet", "es": "Pasacables de Orificio de Escritorio" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["bore_dia", "depth", "wall", "fit_clear"]
+      },
+      {
+        "id": "cable_slot",
+        "label": { "en": "Open Cable Slot", "es": "Ranura de Cable Abierta" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["slot", "slot_w"]
+      },
+      {
+        "id": "lid_seat",
+        "label": { "en": "Lid Seat", "es": "Asiento de Tapa" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["lid", "bore_dia", "flange", "flange_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A slotted desk grommet tidies cable clutter without unplugging anything — cords drop in from the side — and replaces the mismatched plastic ports desks ship with, sized to whatever hole is already drilled.",
+      "es": "Un pasacables ranurado ordena el desorden de cables sin desconectar nada — los cables entran desde el lado — y reemplaza los puertos plásticos disparejos que traen los escritorios, dimensionado a cualquier orificio ya perforado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["grommet", "cable-management", "desk", "household", "hyperobject", "commons"]
+}

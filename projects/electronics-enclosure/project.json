@@ -1,0 +1,231 @@
+{
+  "project": {
+    "name": "Parametric Project Enclosure",
+    "slug": "electronics-enclosure",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A Hammond-style two-part project box for electronics, sized by its interior cavity to a PCB. The base carries corner PCB standoffs bored for M2.5 or M3 screws, optional rectangular side-port cutouts, and optional vent slots; the lid closes with either screw tabs or a snap lip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una caja de proyecto estilo Hammond en dos partes para electrónica, dimensionada por su cavidad interior a una PCB. La base lleva soportes (standoffs) en las esquinas de la placa, perforados para tornillos M2.5 o M3, cortes rectangulares laterales opcionales para puertos y ranuras de ventilación opcionales; la tapa cierra con pestañas atornilladas o un labio a presión.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/electronics-enclosure.webp",
+    "difficulty": "intermediate",
+    "tags": ["enclosure", "project-box", "electronics", "hammond", "pcb", "case", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "base",
+      "label": { "en": "Base", "es": "Base" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["base"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "lid",
+      "label": { "en": "Lid", "es": "Tapa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lid"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "base", "label": { "en": "Base", "es": "Base" }, "render_mode": 0, "color": "#4b6b8a" },
+    { "id": "lid", "label": { "en": "Lid", "es": "Tapa" }, "render_mode": 0, "color": "#7fa8c9" }
+  ],
+  "parameter_groups": [
+    { "id": "dimensions", "label": { "en": "Interior Size", "es": "Tamaño Interior" } },
+    { "id": "shell", "label": { "en": "Shell", "es": "Carcasa" } },
+    { "id": "pcb", "label": { "en": "PCB Mounting", "es": "Montaje de PCB" } },
+    { "id": "closure", "label": { "en": "Lid Closure", "es": "Cierre de Tapa" } },
+    { "id": "ports", "label": { "en": "Ports & Vents", "es": "Puertos y Ventilación" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_w", "type": "slider", "default": 90, "min": 30, "max": 250, "step": 1,
+      "group": "dimensions", "modes": ["base", "lid"],
+      "label": { "en": "Interior Width (mm)", "es": "Ancho Interior (mm)" },
+      "tooltip": { "en": "Usable interior X dimension", "es": "Dimensión interior X utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_d", "type": "slider", "default": 60, "min": 30, "max": 250, "step": 1,
+      "group": "dimensions", "modes": ["base", "lid"],
+      "label": { "en": "Interior Depth (mm)", "es": "Profundidad Interior (mm)" },
+      "tooltip": { "en": "Usable interior Y dimension", "es": "Dimensión interior Y utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_h", "type": "slider", "default": 35, "min": 12, "max": 150, "step": 1,
+      "group": "dimensions", "modes": ["base"],
+      "label": { "en": "Interior Height (mm)", "es": "Altura Interior (mm)" },
+      "tooltip": { "en": "Usable interior Z depth of the base", "es": "Profundidad interior Z de la base" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "shell", "modes": ["base", "lid"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Side wall thickness", "es": "Grosor de la pared lateral" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.4, "min": 1.2, "max": 8.0, "step": 0.2,
+      "group": "shell", "modes": ["base", "lid"],
+      "label": { "en": "Floor / Lid Thickness (mm)", "es": "Grosor de Piso / Tapa (mm)" },
+      "tooltip": { "en": "Base floor and lid plate thickness", "es": "Grosor del piso de la base y de la placa de la tapa" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 3.0, "min": 0.0, "max": 15.0, "step": 0.5,
+      "group": "shell", "modes": ["base", "lid"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Outer corner rounding (0 = sharp)", "es": "Redondeo de esquina exterior (0 = recto)" }
+    },
+    {
+      "id": "pcb_w", "type": "slider", "default": 70, "min": 10, "max": 240, "step": 1,
+      "group": "pcb", "modes": ["base"],
+      "label": { "en": "PCB Width (mm)", "es": "Ancho de PCB (mm)" },
+      "tooltip": { "en": "Board X size — sets the standoff column spacing", "es": "Tamaño X de la placa — define la separación de columnas de standoffs" }
+    },
+    {
+      "id": "pcb_d", "type": "slider", "default": 50, "min": 10, "max": 240, "step": 1,
+      "group": "pcb", "modes": ["base"],
+      "label": { "en": "PCB Depth (mm)", "es": "Profundidad de PCB (mm)" },
+      "tooltip": { "en": "Board Y size — sets the standoff row spacing", "es": "Tamaño Y de la placa — define la separación de filas de standoffs" }
+    },
+    {
+      "id": "standoff_h", "type": "slider", "default": 5.0, "min": 1.0, "max": 30.0, "step": 0.5,
+      "group": "pcb", "modes": ["base"],
+      "label": { "en": "Standoff Height (mm)", "es": "Altura de Standoff (mm)" },
+      "tooltip": { "en": "Height the PCB sits above the floor", "es": "Altura a la que la PCB queda sobre el piso" }
+    },
+    {
+      "id": "screw_size", "type": "select", "default": "M3",
+      "group": "pcb", "modes": ["base", "lid"],
+      "label": { "en": "Screw Size", "es": "Tamaño de Tornillo" },
+      "tooltip": { "en": "Standoff / lid screw size (sets bore & head recess)", "es": "Tamaño de tornillo de standoff / tapa (define perforación y rebaje de cabeza)" },
+      "options": [
+        { "value": "M2.5", "label": { "en": "M2.5", "es": "M2.5" } },
+        { "value": "M3", "label": { "en": "M3", "es": "M3" } }
+      ]
+    },
+    {
+      "id": "lid_mount", "type": "select", "default": "screw",
+      "group": "closure", "modes": ["base", "lid"],
+      "label": { "en": "Lid Mounting", "es": "Fijación de Tapa" },
+      "tooltip": { "en": "Screw tabs, or a printed snap lip (no hardware)", "es": "Pestañas atornilladas o labio a presión impreso (sin herrajes)" },
+      "options": [
+        { "value": "screw", "label": { "en": "Screw tabs", "es": "Pestañas atornilladas" } },
+        { "value": "snap", "label": { "en": "Snap lip", "es": "Labio a presión" } }
+      ]
+    },
+    {
+      "id": "port_count", "type": "slider", "default": 0, "min": 0, "max": 4, "step": 1,
+      "group": "ports", "modes": ["base"],
+      "label": { "en": "Side Ports", "es": "Puertos Laterales" },
+      "tooltip": { "en": "Rectangular cutouts through the front wall", "es": "Cortes rectangulares en la pared frontal" }
+    },
+    {
+      "id": "port_w", "type": "slider", "default": 16.0, "min": 3.0, "max": 80.0, "step": 1.0,
+      "group": "ports", "modes": ["base"], "advanced": true,
+      "label": { "en": "Port Width (mm)", "es": "Ancho de Puerto (mm)" },
+      "tooltip": { "en": "Port opening width along X", "es": "Ancho de la abertura del puerto en X" }
+    },
+    {
+      "id": "port_h", "type": "slider", "default": 8.0, "min": 2.0, "max": 60.0, "step": 1.0,
+      "group": "ports", "modes": ["base"], "advanced": true,
+      "label": { "en": "Port Height (mm)", "es": "Altura de Puerto (mm)" },
+      "tooltip": { "en": "Port opening height along Z", "es": "Altura de la abertura del puerto en Z" }
+    },
+    {
+      "id": "port_z", "type": "slider", "default": 4.0, "min": 0.0, "max": 60.0, "step": 0.5,
+      "group": "ports", "modes": ["base"], "advanced": true,
+      "label": { "en": "Port Height Above Floor (mm)", "es": "Altura del Puerto Sobre el Piso (mm)" },
+      "tooltip": { "en": "Vertical offset of the port bottom above the floor", "es": "Desplazamiento vertical del fondo del puerto sobre el piso" }
+    },
+    {
+      "id": "vents", "type": "checkbox", "default": false,
+      "group": "ports", "modes": ["base"],
+      "label": { "en": "Vent Slots", "es": "Ranuras de Ventilación" },
+      "tooltip": { "en": "Add cooling slots through the side walls", "es": "Agrega ranuras de refrigeración en las paredes laterales" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "arduino_case", "mode": "base",
+      "label": { "en": "Arduino Uno Case", "es": "Caja Arduino Uno" },
+      "values": { "inner_w": 75, "inner_d": 58, "inner_h": 28, "pcb_w": 68, "pcb_d": 53, "screw_size": "M3", "port_count": 2, "port_w": 14 }
+    },
+    {
+      "id": "sensor_node", "mode": "base",
+      "label": { "en": "Sensor Node (snap)", "es": "Nodo de Sensor (a presión)" },
+      "values": { "inner_w": 50, "inner_d": 40, "inner_h": 22, "pcb_w": 42, "pcb_d": 32, "screw_size": "M2.5", "lid_mount": "snap", "vents": true }
+    },
+    {
+      "id": "psu_box", "mode": "base",
+      "label": { "en": "Vented Power Box", "es": "Caja de Fuente Ventilada" },
+      "values": { "inner_w": 120, "inner_d": 80, "inner_h": 45, "pcb_w": 100, "pcb_d": 60, "wall": 3.0, "vents": true, "port_count": 1, "port_w": 24, "port_h": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    },
+    {
+      "expression": "standoff_h <= inner_h - 1",
+      "severity": "warning",
+      "message": { "en": "Standoff height is close to the interior height", "es": "La altura del standoff se acerca a la altura interior" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "pcb_standoff_mount",
+        "label": { "en": "PCB Standoff Mount", "es": "Montaje de Standoff de PCB" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["pcb_w", "pcb_d", "standoff_h", "screw_size"]
+      },
+      {
+        "id": "side_port_cutout",
+        "label": { "en": "Side Port Cutout", "es": "Corte de Puerto Lateral" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["port_count", "port_w", "port_h", "port_z"]
+      },
+      {
+        "id": "lid_closure_seam",
+        "label": { "en": "Lid Closure Seam", "es": "Junta de Cierre de Tapa" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["lid_mount", "inner_w", "inner_d", "wall", "screw_size"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A print-on-demand project box sized to the exact board and ports, replacing off-the-shelf enclosures that never quite fit and keeping DIY electronics housed, protected, and repairable.",
+      "es": "Una caja de proyecto por impresión bajo demanda dimensionada a la placa y los puertos exactos, reemplazando gabinetes comerciales que nunca ajustan del todo y manteniendo la electrónica casera alojada, protegida y reparable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["enclosure", "project-box", "electronics", "industrial", "hyperobject", "commons"]
+}

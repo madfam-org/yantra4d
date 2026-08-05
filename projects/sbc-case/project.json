@@ -1,0 +1,210 @@
+{
+  "project": {
+    "name": "Raspberry Pi / SBC Case",
+    "slug": "sbc-case",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A case for a single-board computer. A board table gives the correct PCB footprint and 4-hole mounting spacing for the Raspberry Pi 4, Pi 5, and Pi Zero, or a fully parametric generic board. The case models the mounting standoffs at the right hole rectangle, a base tray with walls, and a large port-edge opening for the USB / HDMI connectors, plus a vented lid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una caja para una computadora de placa única (SBC). Una tabla de placas da la huella de PCB correcta y la separación de los 4 orificios de montaje para la Raspberry Pi 4, Pi 5 y Pi Zero, o una placa genérica totalmente paramétrica. La caja modela los standoffs de montaje en el rectángulo de orificios correcto, una bandeja base con paredes y una gran abertura en el borde de puertos para los conectores USB / HDMI, más una tapa ventilada.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sbc-case.webp",
+    "difficulty": "intermediate",
+    "tags": ["raspberry-pi", "sbc", "case", "enclosure", "rpi", "single-board-computer", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "base",
+      "label": { "en": "Base", "es": "Base" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["base"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "lid",
+      "label": { "en": "Lid", "es": "Tapa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lid"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "tray",
+      "label": { "en": "Tray Only", "es": "Solo Bandeja" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "base", "label": { "en": "Base", "es": "Base" }, "render_mode": 0, "color": "#8a4b4b" },
+    { "id": "lid", "label": { "en": "Lid", "es": "Tapa" }, "render_mode": 0, "color": "#c98080" },
+    { "id": "tray", "label": { "en": "Tray Only", "es": "Solo Bandeja" }, "render_mode": 0, "color": "#b56a6a" }
+  ],
+  "parameter_groups": [
+    { "id": "board", "label": { "en": "Board", "es": "Placa" } },
+    { "id": "generic", "label": { "en": "Generic Board", "es": "Placa Genérica" } },
+    { "id": "shell", "label": { "en": "Shell", "es": "Carcasa" } },
+    { "id": "features", "label": { "en": "Openings & Vents", "es": "Aberturas y Ventilación" } }
+  ],
+  "parameters": [
+    {
+      "id": "board", "type": "select", "default": "rpi4",
+      "group": "board", "modes": ["base", "lid", "tray"],
+      "label": { "en": "Board", "es": "Placa" },
+      "tooltip": { "en": "Selects PCB footprint and mounting-hole spacing", "es": "Selecciona la huella de PCB y la separación de orificios de montaje" },
+      "options": [
+        { "value": "rpi4", "label": { "en": "Raspberry Pi 4 (85×56)", "es": "Raspberry Pi 4 (85×56)" } },
+        { "value": "rpi5", "label": { "en": "Raspberry Pi 5 (85×56)", "es": "Raspberry Pi 5 (85×56)" } },
+        { "value": "rpi_zero", "label": { "en": "Raspberry Pi Zero (65×30)", "es": "Raspberry Pi Zero (65×30)" } },
+        { "value": "generic", "label": { "en": "Generic (custom)", "es": "Genérica (personalizada)" } }
+      ]
+    },
+    {
+      "id": "gen_pcb_w", "type": "slider", "default": 80.0, "min": 20.0, "max": 200.0, "step": 1.0,
+      "group": "generic", "modes": ["base", "lid", "tray"], "advanced": true,
+      "label": { "en": "Generic Board Width (mm)", "es": "Ancho de Placa Genérica (mm)" },
+      "tooltip": { "en": "Board X size (generic only)", "es": "Tamaño X de la placa (solo genérica)" }
+    },
+    {
+      "id": "gen_pcb_d", "type": "slider", "default": 55.0, "min": 20.0, "max": 200.0, "step": 1.0,
+      "group": "generic", "modes": ["base", "lid", "tray"], "advanced": true,
+      "label": { "en": "Generic Board Depth (mm)", "es": "Profundidad de Placa Genérica (mm)" },
+      "tooltip": { "en": "Board Y size (generic only)", "es": "Tamaño Y de la placa (solo genérica)" }
+    },
+    {
+      "id": "gen_hole_x", "type": "slider", "default": 70.0, "min": 8.0, "max": 190.0, "step": 1.0,
+      "group": "generic", "modes": ["base", "lid", "tray"], "advanced": true,
+      "label": { "en": "Generic Hole Spacing X (mm)", "es": "Separación de Orificios X Genérica (mm)" },
+      "tooltip": { "en": "Mounting-hole X spacing (generic only)", "es": "Separación X de orificios de montaje (solo genérica)" }
+    },
+    {
+      "id": "gen_hole_y", "type": "slider", "default": 45.0, "min": 8.0, "max": 190.0, "step": 1.0,
+      "group": "generic", "modes": ["base", "lid", "tray"], "advanced": true,
+      "label": { "en": "Generic Hole Spacing Y (mm)", "es": "Separación de Orificios Y Genérica (mm)" },
+      "tooltip": { "en": "Mounting-hole Y spacing (generic only)", "es": "Separación Y de orificios de montaje (solo genérica)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "shell", "modes": ["base", "lid", "tray"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Side wall thickness", "es": "Grosor de la pared lateral" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.4, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "shell", "modes": ["base", "lid", "tray"],
+      "label": { "en": "Floor / Lid Thickness (mm)", "es": "Grosor de Piso / Tapa (mm)" },
+      "tooltip": { "en": "Tray floor and lid plate thickness", "es": "Grosor del piso de la bandeja y de la placa de la tapa" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 1.5, "min": 0.3, "max": 5.0, "step": 0.1,
+      "group": "shell", "modes": ["base", "lid", "tray"], "advanced": true,
+      "label": { "en": "Board Clearance (mm)", "es": "Holgura de Placa (mm)" },
+      "tooltip": { "en": "Gap between the board edge and the wall, per side", "es": "Espacio entre el borde de la placa y la pared, por lado" }
+    },
+    {
+      "id": "standoff_h", "type": "slider", "default": 4.0, "min": 1.5, "max": 20.0, "step": 0.5,
+      "group": "shell", "modes": ["base", "tray"],
+      "label": { "en": "Standoff Height (mm)", "es": "Altura de Standoff (mm)" },
+      "tooltip": { "en": "Height the board sits above the tray floor", "es": "Altura a la que la placa queda sobre el piso de la bandeja" }
+    },
+    {
+      "id": "wall_h", "type": "slider", "default": 18.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "shell", "modes": ["base"],
+      "label": { "en": "Wall Height (mm)", "es": "Altura de Pared (mm)" },
+      "tooltip": { "en": "Base wall height above the floor", "es": "Altura de la pared de la base sobre el piso" }
+    },
+    {
+      "id": "port_cutout", "type": "checkbox", "default": true,
+      "group": "features", "modes": ["base"],
+      "label": { "en": "Port-Edge Opening", "es": "Abertura del Borde de Puertos" },
+      "tooltip": { "en": "Large rectangular opening for the USB / HDMI edge", "es": "Gran abertura rectangular para el borde USB / HDMI" }
+    },
+    {
+      "id": "vents", "type": "checkbox", "default": true,
+      "group": "features", "modes": ["lid"],
+      "label": { "en": "Lid Vents", "es": "Ventilación de Tapa" },
+      "tooltip": { "en": "Cooling slots across the lid", "es": "Ranuras de refrigeración en la tapa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "pi4_case", "mode": "base",
+      "label": { "en": "Pi 4 Case", "es": "Caja Pi 4" },
+      "values": { "board": "rpi4", "wall_h": 20, "standoff_h": 4, "port_cutout": true }
+    },
+    {
+      "id": "pi_zero_slim", "mode": "base",
+      "label": { "en": "Pi Zero Slim", "es": "Pi Zero Delgada" },
+      "values": { "board": "rpi_zero", "wall_h": 12, "standoff_h": 3, "wall": 2.0 }
+    },
+    {
+      "id": "pi5_lid", "mode": "lid",
+      "label": { "en": "Pi 5 Vented Lid", "es": "Tapa Ventilada Pi 5" },
+      "values": { "board": "rpi5", "vents": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall_h >= standoff_h + 3",
+      "severity": "warning",
+      "message": { "en": "Wall height should exceed standoff height plus board", "es": "La altura de pared debe superar la altura del standoff más la placa" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "sbc_mounting_holes",
+        "label": { "en": "SBC Mounting Holes", "es": "Orificios de Montaje SBC" },
+        "geometry_type": "bolt_pattern",
+        "standard": "RPi 40-pin form factor",
+        "parameters": ["board", "gen_hole_x", "gen_hole_y", "standoff_h"]
+      },
+      {
+        "id": "port_edge_opening",
+        "label": { "en": "Port-Edge Opening", "es": "Abertura del Borde de Puertos" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["port_cutout", "wall_h", "standoff_h"]
+      },
+      {
+        "id": "lid_slip_fit",
+        "label": { "en": "Lid Slip Fit", "es": "Ajuste Deslizante de Tapa" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["wall", "clearance", "floor"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Single-board computers ship as bare PCBs; a print-on-demand case built to the exact board keeps millions of Pis housed, cooled, and out of e-waste, without buying a proprietary shell per revision.",
+      "es": "Las computadoras de placa única se venden como PCB desnudas; una caja por impresión bajo demanda hecha a la placa exacta mantiene millones de Pis alojadas, refrigeradas y fuera de la basura electrónica, sin comprar una carcasa propietaria por revisión."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["raspberry-pi", "sbc", "case", "industrial", "hyperobject", "commons"]
+}

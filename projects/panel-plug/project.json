@@ -1,0 +1,179 @@
+{
+  "project": {
+    "name": "Panel / Blind Grommet & Plug",
+    "slug": "panel-plug",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A snap-in plug that fills an unused knockout hole in a panel or enclosure. A flange caps the top face and a snap lip retains it below, sized to the panel thickness. Blind (solid), cable grommet, and vented types.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un tapón a presión que rellena un agujero ciego sin usar en un panel o gabinete. Una brida cubre la cara superior y un labio de encaje lo retiene por debajo, dimensionado al grosor del panel. Tipos ciego (macizo), pasacables y ventilado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/panel-plug.webp",
+    "difficulty": "beginner",
+    "tags": ["plug", "grommet", "knockout", "panel", "enclosure", "snap-fit", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "blind_plug",
+      "label": { "en": "Blind Plug", "es": "Tapón Ciego" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["blind_plug"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "cable_grommet",
+      "label": { "en": "Cable Grommet", "es": "Pasacables" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cable_grommet"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "vented_plug",
+      "label": { "en": "Vented Plug", "es": "Tapón Ventilado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["vented_plug"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "blind_plug", "label": { "en": "Blind Plug", "es": "Tapón Ciego" }, "render_mode": 0, "color": "#4a4e57" },
+    { "id": "cable_grommet", "label": { "en": "Cable Grommet", "es": "Pasacables" }, "render_mode": 0, "color": "#5c616b" },
+    { "id": "vented_plug", "label": { "en": "Vented Plug", "es": "Tapón Ventilado" }, "render_mode": 0, "color": "#3a3e46" }
+  ],
+  "parameter_groups": [
+    { "id": "hole", "label": { "en": "Knockout Hole", "es": "Agujero Ciego" } },
+    { "id": "snap", "label": { "en": "Flange & Snap", "es": "Brida y Encaje" } },
+    { "id": "type_opts", "label": { "en": "Type Options", "es": "Opciones de Tipo" } }
+  ],
+  "parameters": [
+    {
+      "id": "hole_dia", "type": "slider", "default": 20.0, "min": 6.0, "max": 60.0, "step": 0.5,
+      "group": "hole", "modes": ["blind_plug", "cable_grommet", "vented_plug"],
+      "label": { "en": "Knockout Hole Ø (mm)", "es": "Ø del Agujero Ciego (mm)" },
+      "tooltip": { "en": "Diameter of the panel hole to fill", "es": "Diámetro del agujero del panel a rellenar" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "panel_t", "type": "slider", "default": 2.0, "min": 0.8, "max": 8.0, "step": 0.2,
+      "group": "hole", "modes": ["blind_plug", "cable_grommet", "vented_plug"],
+      "label": { "en": "Panel Thickness (mm)", "es": "Grosor del Panel (mm)" },
+      "tooltip": { "en": "Panel thickness the snap groove clamps onto", "es": "Grosor del panel que el canal de encaje sujeta" }
+    },
+    {
+      "id": "hole_fit", "type": "slider", "default": 0.3, "min": 0.0, "max": 0.8, "step": 0.05,
+      "group": "hole", "modes": ["blind_plug", "cable_grommet", "vented_plug"], "advanced": true,
+      "label": { "en": "Hole Clearance (mm)", "es": "Holgura del Agujero (mm)" },
+      "tooltip": { "en": "Per-side gap between shank and hole", "es": "Espacio por lado entre el vástago y el agujero" }
+    },
+    {
+      "id": "snap_fit", "type": "slider", "default": 1.2, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "snap", "modes": ["blind_plug", "cable_grommet", "vented_plug"],
+      "label": { "en": "Snap Engagement (mm)", "es": "Enganche del Encaje (mm)" },
+      "tooltip": { "en": "How far the lip catches under the panel", "es": "Cuánto engancha el labio bajo el panel" }
+    },
+    {
+      "id": "flange_w", "type": "slider", "default": 3.0, "min": 1.0, "max": 10.0, "step": 0.5,
+      "group": "snap", "modes": ["blind_plug", "cable_grommet", "vented_plug"],
+      "label": { "en": "Flange Overhang (mm)", "es": "Voladizo de la Brida (mm)" },
+      "tooltip": { "en": "How far the flange laps over the hole edge", "es": "Cuánto sobrepasa la brida el borde del agujero" }
+    },
+    {
+      "id": "flange_t", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.2,
+      "group": "snap", "modes": ["blind_plug", "cable_grommet", "vented_plug"],
+      "label": { "en": "Flange Thickness (mm)", "es": "Grosor de la Brida (mm)" },
+      "tooltip": { "en": "Cap height above the panel", "es": "Altura de la tapa sobre el panel" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 5.0, "step": 0.2,
+      "group": "snap", "modes": ["blind_plug", "cable_grommet"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall around the flex cavity / cable bore", "es": "Pared alrededor de la cavidad flexible / barreno de cable" }
+    },
+    {
+      "id": "cable_dia", "type": "slider", "default": 8.0, "min": 2.0, "max": 40.0, "step": 0.5,
+      "group": "type_opts", "modes": ["cable_grommet"],
+      "label": { "en": "Cable Bore Ø (mm)", "es": "Ø del Barreno de Cable (mm)" },
+      "tooltip": { "en": "Through-bore diameter for the cable", "es": "Diámetro del barreno pasante para el cable" }
+    },
+    {
+      "id": "vents", "type": "slider", "default": 6, "min": 2, "max": 16, "step": 1,
+      "group": "type_opts", "modes": ["vented_plug"],
+      "label": { "en": "Vent Slots", "es": "Ranuras de Ventilación" },
+      "tooltip": { "en": "Number of radial airflow slots", "es": "Número de ranuras radiales de flujo de aire" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "m20_blank", "mode": "blind_plug",
+      "label": { "en": "M20 Conduit Blank", "es": "Tapón Conduit M20" },
+      "values": { "hole_dia": 20.0, "panel_t": 2.0, "snap_fit": 1.2, "flange_w": 3.0 }
+    },
+    {
+      "id": "cable_pass_through", "mode": "cable_grommet",
+      "label": { "en": "6 mm Cable Pass-Through", "es": "Pasacables 6 mm" },
+      "values": { "hole_dia": 16.0, "panel_t": 1.5, "cable_dia": 6.0, "snap_fit": 1.0 }
+    },
+    {
+      "id": "fan_vent_plug", "mode": "vented_plug",
+      "label": { "en": "Vented Fan Blank", "es": "Tapón Ventilado" },
+      "values": { "hole_dia": 30.0, "panel_t": 2.5, "vents": 8, "flange_w": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hole_dia >= 6",
+      "severity": "error",
+      "message": { "en": "Hole diameter must be at least 6 mm", "es": "El diámetro del agujero debe ser de al menos 6 mm" }
+    },
+    {
+      "expression": "cable_dia < hole_dia - 2",
+      "severity": "warning",
+      "message": { "en": "Cable bore is large relative to the hole", "es": "El barreno de cable es grande respecto al agujero" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 7,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "panel_knockout_plug",
+        "label": { "en": "Panel Knockout Plug", "es": "Tapón de Agujero de Panel" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["hole_dia", "panel_t", "hole_fit", "snap_fit", "flange_w"]
+      },
+      {
+        "id": "cable_bore",
+        "label": { "en": "Cable Bore", "es": "Barreno de Cable" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["cable_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Finishes enclosures without buying vendor blanking plugs — one parametric snap plug fills any knockout, protects cable runs, or vents a panel, cutting waste and letting repairs reuse an existing hole.",
+      "es": "Termina gabinetes sin comprar tapones ciegos de proveedor — un tapón a presión paramétrico rellena cualquier agujero, protege el paso de cables o ventila un panel, reduciendo residuos y permitiendo reparaciones que reutilizan un agujero existente."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["plug", "grommet", "knockout", "panel", "industrial", "hyperobject", "commons"]
+}

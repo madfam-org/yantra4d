@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "Assistive Grip / Utensil Aid",
+    "slug": "assistive-grip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A grip aid that slips over a utensil, pen, or tool handle to enlarge it for users with limited hand dexterity. Choose a plain cylindrical grip, a mid-swell bulb for a relaxed power grasp, or add a strap slot. Sized to the handle it fits over.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una ayuda de agarre que se desliza sobre el mango de un utensilio, bolígrafo o herramienta para engrosarlo para usuarios con destreza manual limitada. Elija un agarre cilíndrico simple, un bulbo central para un agarre de fuerza relajado, o agregue una ranura para correa. Dimensionado al mango sobre el que se coloca.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/assistive-grip.webp",
+    "difficulty": "beginner",
+    "tags": ["grip", "utensil", "accessibility", "assistive", "dexterity", "ergonomic", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "grip",
+      "label": { "en": "Cylindrical Grip", "es": "Agarre Cilíndrico" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "bulb_grip",
+      "label": { "en": "Bulb Grip", "es": "Agarre de Bulbo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bulb_grip"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 14 }
+    },
+    {
+      "id": "strap_grip",
+      "label": { "en": "Strap Grip", "es": "Agarre con Correa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strap_grip"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "grip", "label": { "en": "Grip", "es": "Agarre" }, "render_mode": 0, "color": "#b7794a" },
+    { "id": "bulb_grip", "label": { "en": "Bulb Grip", "es": "Agarre de Bulbo" }, "render_mode": 0, "color": "#c88b5f" },
+    { "id": "strap_grip", "label": { "en": "Strap Grip", "es": "Agarre con Correa" }, "render_mode": 0, "color": "#d99d73" }
+  ],
+  "parameter_groups": [
+    { "id": "fit", "label": { "en": "Handle Fit", "es": "Ajuste del Mango" } },
+    { "id": "shape", "label": { "en": "Grip Shape", "es": "Forma del Agarre" } }
+  ],
+  "parameters": [
+    {
+      "id": "handle_dia", "type": "slider", "default": 8.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "fit", "modes": ["grip", "bulb_grip", "strap_grip"],
+      "label": { "en": "Handle Diameter (mm)", "es": "Diámetro del Mango (mm)" },
+      "tooltip": { "en": "Diameter of the utensil handle the grip slips over", "es": "Diámetro del mango del utensilio sobre el que se desliza el agarre" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 2.0, "step": 0.1,
+      "group": "fit", "modes": ["grip", "bulb_grip", "strap_grip"], "advanced": true,
+      "label": { "en": "Bore Clearance (mm)", "es": "Holgura del Orificio (mm)" },
+      "tooltip": { "en": "Radial slip gap over the handle (larger = looser)", "es": "Espacio radial de deslizamiento sobre el mango (mayor = más suelto)" }
+    },
+    {
+      "id": "grip_dia", "type": "slider", "default": 32.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "shape", "modes": ["grip", "bulb_grip", "strap_grip"],
+      "label": { "en": "Grip Diameter (mm)", "es": "Diámetro del Agarre (mm)" },
+      "tooltip": { "en": "Enlarged outer diameter for an easier hold", "es": "Diámetro exterior engrosado para un agarre más fácil" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "length", "type": "slider", "default": 95.0, "min": 30.0, "max": 200.0, "step": 1.0,
+      "group": "shape", "modes": ["grip", "bulb_grip", "strap_grip"],
+      "label": { "en": "Grip Length (mm)", "es": "Longitud del Agarre (mm)" },
+      "tooltip": { "en": "Overall length of the grip", "es": "Longitud total del agarre" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "shape", "type": "select", "default": "cylindrical",
+      "group": "shape", "modes": ["grip", "strap_grip"],
+      "label": { "en": "Outer Shape", "es": "Forma Exterior" },
+      "tooltip": { "en": "Cross-section profile of the grip", "es": "Perfil de sección transversal del agarre" },
+      "options": [
+        { "value": "cylindrical", "label": { "en": "Cylindrical", "es": "Cilíndrico" } },
+        { "value": "bulb", "label": { "en": "Bulb (mid-swell)", "es": "Bulbo (central)" } },
+        { "value": "triangular", "label": { "en": "Triangular", "es": "Triangular" } }
+      ]
+    },
+    {
+      "id": "bulb_gain", "type": "slider", "default": 1.35, "min": 1.05, "max": 1.8, "step": 0.05,
+      "group": "shape", "modes": ["bulb_grip", "grip"], "advanced": true,
+      "label": { "en": "Bulb Swell Factor", "es": "Factor de Abultamiento" },
+      "tooltip": { "en": "How much fatter the middle is (bulb shape)", "es": "Cuánto más grueso es el centro (forma de bulbo)" }
+    },
+    {
+      "id": "strap", "type": "checkbox", "default": false,
+      "group": "shape", "modes": ["grip"],
+      "label": { "en": "Strap Slot", "es": "Ranura para Correa" },
+      "tooltip": { "en": "Add a transverse slot for a hand strap", "es": "Agregar una ranura transversal para una correa de mano" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cutlery", "mode": "grip",
+      "label": { "en": "Cutlery Enlarger", "es": "Engrosador de Cubiertos" },
+      "values": { "handle_dia": 8, "grip_dia": 32, "length": 95, "shape": "cylindrical" }
+    },
+    {
+      "id": "pen_bulb", "mode": "bulb_grip",
+      "label": { "en": "Pen Bulb Grip", "es": "Agarre de Bulbo para Bolígrafo" },
+      "values": { "handle_dia": 9, "grip_dia": 28, "length": 80, "bulb_gain": 1.4 }
+    },
+    {
+      "id": "tool_strap", "mode": "strap_grip",
+      "label": { "en": "Tool Grip + Strap", "es": "Agarre de Herramienta + Correa" },
+      "values": { "handle_dia": 14, "grip_dia": 38, "length": 110 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "grip_dia >= handle_dia + 6",
+      "severity": "warning",
+      "message": { "en": "Grip barely thicker than the handle; increase grip diameter", "es": "El agarre es apenas más grueso que el mango; aumente el diámetro del agarre" }
+    },
+    {
+      "expression": "handle_dia >= 3",
+      "severity": "error",
+      "message": { "en": "Handle diameter must be at least 3 mm", "es": "El diámetro del mango debe ser de al menos 3 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "utensil_handle_bore",
+        "label": { "en": "Utensil Handle Bore", "es": "Orificio del Mango del Utensilio" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["handle_dia", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Built-up handles are a core occupational-therapy aid for arthritis, tremor, and reduced grip strength; a grip sized to the exact utensil and hand restores independent eating, writing, and tool use at near-zero cost.",
+      "es": "Los mangos engrosados son una ayuda central de terapia ocupacional para la artritis, el temblor y la fuerza de agarre reducida; un agarre dimensionado al utensilio y la mano exactos restaura la alimentación, la escritura y el uso de herramientas de forma independiente a un costo casi nulo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["grip", "utensil", "accessibility", "assistive", "medical", "hyperobject", "commons"]
+}

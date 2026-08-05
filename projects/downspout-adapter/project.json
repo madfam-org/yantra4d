@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Rain-Barrel / Downspout Adapter",
+    "slug": "downspout-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Adapts a rectangular house downspout to a round pipe or rain-barrel inlet — the missing piece for rainwater harvesting. A hollow transition lofts a rectangular mouth (2×3\" or 3×4\") to a round outlet; variants add a barrel-lid mounting flange and a coarse debris screen so leaves and grit stay out.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Adapta una bajante rectangular de casa a un tubo redondo o entrada de barril de lluvia — la pieza faltante para la captación de agua de lluvia. Una transición hueca convierte una boca rectangular (2×3\" o 3×4\") en una salida redonda; las variantes agregan una brida de montaje para la tapa del barril y una malla para hojas y sedimentos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/downspout-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": ["downspout", "rain-barrel", "rainwater", "gutter", "adapter", "transition", "harvesting", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rect_to_round",
+      "label": { "en": "Rectangle → Round", "es": "Rectángulo → Redondo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rect_to_round"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "barrel_inlet",
+      "label": { "en": "Barrel Inlet (flanged)", "es": "Entrada de Barril (con brida)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["barrel_inlet"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "screen_box",
+      "label": { "en": "Debris Screen Box", "es": "Caja de Malla para Hojas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["screen_box"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "rect_to_round", "label": { "en": "Rectangle → Round", "es": "Rectángulo → Redondo" }, "render_mode": 0, "color": "#6d7d8d" },
+    { "id": "barrel_inlet", "label": { "en": "Barrel Inlet", "es": "Entrada de Barril" }, "render_mode": 0, "color": "#5d6d7d" },
+    { "id": "screen_box", "label": { "en": "Screen Box", "es": "Caja de Malla" }, "render_mode": 0, "color": "#7d8d9d" }
+  ],
+  "parameter_groups": [
+    { "id": "downspout", "label": { "en": "Downspout Mouth", "es": "Boca de Bajante" } },
+    { "id": "outlet", "label": { "en": "Round Outlet", "es": "Salida Redonda" } },
+    { "id": "shell", "label": { "en": "Shell & Options", "es": "Casco y Opciones" } }
+  ],
+  "parameters": [
+    {
+      "id": "spout_w", "type": "slider", "default": 76.0, "min": 20, "max": 200, "step": 1,
+      "group": "downspout", "modes": ["rect_to_round", "barrel_inlet", "screen_box"],
+      "label": { "en": "Downspout Width (mm)", "es": "Ancho de Bajante (mm)" },
+      "tooltip": { "en": "Wide side of the rectangular downspout (3\" ≈ 76)", "es": "Lado ancho de la bajante rectangular (3\" ≈ 76)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "spout_d", "type": "slider", "default": 51.0, "min": 20, "max": 200, "step": 1,
+      "group": "downspout", "modes": ["rect_to_round", "barrel_inlet", "screen_box"],
+      "label": { "en": "Downspout Depth (mm)", "es": "Profundidad de Bajante (mm)" },
+      "tooltip": { "en": "Narrow side of the rectangular downspout (2\" ≈ 51)", "es": "Lado angosto de la bajante rectangular (2\" ≈ 51)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "outlet_dia", "type": "slider", "default": 60.0, "min": 15, "max": 200, "step": 1,
+      "group": "outlet", "modes": ["rect_to_round", "barrel_inlet"],
+      "label": { "en": "Round Outlet Diameter (mm)", "es": "Diámetro de Salida Redonda (mm)" },
+      "tooltip": { "en": "Diameter of the round pipe or barrel bulkhead", "es": "Diámetro del tubo redondo o mamparo del barril" }
+    },
+    {
+      "id": "trans_len", "type": "slider", "default": 70.0, "min": 20, "max": 200, "step": 1,
+      "group": "outlet", "modes": ["rect_to_round", "barrel_inlet"],
+      "label": { "en": "Transition Length (mm)", "es": "Longitud de Transición (mm)" },
+      "tooltip": { "en": "Height over which the shape morphs rectangle to round", "es": "Altura en la que la forma pasa de rectángulo a redondo" }
+    },
+    {
+      "id": "flange_w", "type": "slider", "default": 30.0, "min": 10, "max": 80, "step": 1,
+      "group": "outlet", "modes": ["barrel_inlet"],
+      "label": { "en": "Barrel Flange Width (mm)", "es": "Ancho de Brida de Barril (mm)" },
+      "tooltip": { "en": "Radial width of the mounting flange around the outlet", "es": "Ancho radial de la brida de montaje alrededor de la salida" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "shell", "modes": ["rect_to_round", "barrel_inlet", "screen_box"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shell wall thickness of the hollow transition", "es": "Grosor de pared del casco de la transición hueca" }
+    },
+    {
+      "id": "collar_len", "type": "slider", "default": 12.0, "min": 4, "max": 40, "step": 1,
+      "group": "shell", "modes": ["rect_to_round", "barrel_inlet"], "advanced": true,
+      "label": { "en": "End Collar Length (mm)", "es": "Longitud de Collar Extremo (mm)" },
+      "tooltip": { "en": "Straight sealing/slip collar at each end", "es": "Collar recto de sellado/deslizamiento en cada extremo" }
+    },
+    {
+      "id": "screen", "type": "checkbox", "default": false,
+      "group": "shell", "modes": ["rect_to_round", "barrel_inlet"],
+      "label": { "en": "Debris Screen", "es": "Malla para Hojas" },
+      "tooltip": { "en": "Perforated grid across the round outlet", "es": "Rejilla perforada a través de la salida redonda" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_2x3_to_60", "mode": "rect_to_round",
+      "label": { "en": "2×3\" → 60 mm Round", "es": "2×3\" → Redondo 60 mm" },
+      "values": { "spout_w": 76, "spout_d": 51, "outlet_dia": 60, "trans_len": 70 }
+    },
+    {
+      "id": "barrel_3x4", "mode": "barrel_inlet",
+      "label": { "en": "3×4\" Barrel Inlet", "es": "Entrada de Barril 3×4\"" },
+      "values": { "spout_w": 102, "spout_d": 76, "outlet_dia": 70, "flange_w": 34, "screen": true }
+    },
+    {
+      "id": "leaf_screen_2x3", "mode": "screen_box",
+      "label": { "en": "2×3\" Leaf Screen", "es": "Malla de Hojas 2×3\"" },
+      "values": { "spout_w": 76, "spout_d": 51, "wall": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "outlet_dia <= spout_w",
+      "severity": "warning",
+      "message": { "en": "Outlet larger than the downspout width may look odd", "es": "Una salida mayor que el ancho de la bajante puede verse extraña" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "downspout_transition",
+        "label": { "en": "Downspout Transition", "es": "Transición de Bajante" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["spout_w", "spout_d", "outlet_dia", "trans_len", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Rainwater harvesting made buildable: a printed transition connects an odd rectangular downspout to a standard round barrel inlet, so households can capture roof runoff for gardens and cut mains-water use without custom sheet-metal work.",
+      "es": "Captación de agua de lluvia construible: una transición impresa conecta una bajante rectangular a una entrada redonda estándar de barril, para que los hogares capten el agua del techo para el jardín y reduzcan el uso de agua de red sin trabajo de hojalatería a medida."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["downspout", "rain-barrel", "rainwater", "infrastructure", "hyperobject", "commons"]
+}

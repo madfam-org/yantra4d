@@ -1,0 +1,201 @@
+{
+  "project": {
+    "name": "Wire / Cable Labels & Markers",
+    "slug": "cable-label",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Clip-on cable labels that snap onto a wire and carry a short text marker, embossed or debossed on a plate. Flag mode is a C-clip with a flat tag sticking out to the side; Wrap mode is a fuller band that cuffs the cable with a text panel on the outside; Clip mode is a compact C-marker. The clip bore is sized to the cable diameter, and the text (a couple of characters by default) is cut or raised on the label face.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Etiquetas de cable a presión que se enganchan en un cable y llevan un marcador de texto corto, en relieve o hundido sobre una placa. El modo Bandera es una pinza en C con una etiqueta plana que sobresale al costado; el modo Banda es una banda más completa que abraza el cable con un panel de texto por fuera; el modo Clip es un marcador en C compacto. El diámetro interior de la pinza se ajusta al diámetro del cable, y el texto (un par de caracteres por defecto) se hunde o se levanta en la cara de la etiqueta.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cable-label.webp",
+    "difficulty": "beginner",
+    "tags": ["cable", "label", "marker", "wire", "clip", "identification", "text", "cable-management", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "flag_label",
+      "label": { "en": "Flag Label", "es": "Etiqueta Bandera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flag_label"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "wrap_label",
+      "label": { "en": "Wrap Label", "es": "Etiqueta Banda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wrap_label"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "clip_marker",
+      "label": { "en": "Clip Marker", "es": "Marcador Clip" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip_marker"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "flag_label", "label": { "en": "Flag Label", "es": "Etiqueta Bandera" }, "render_mode": 0, "color": "#c9a227" },
+    { "id": "wrap_label", "label": { "en": "Wrap Label", "es": "Etiqueta Banda" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "clip_marker", "label": { "en": "Clip Marker", "es": "Marcador Clip" }, "render_mode": 0, "color": "#6fae8f" }
+  ],
+  "parameter_groups": [
+    { "id": "cable", "label": { "en": "Cable & Clip", "es": "Cable y Pinza" } },
+    { "id": "plate", "label": { "en": "Label Plate", "es": "Placa de Etiqueta" } },
+    { "id": "text", "label": { "en": "Text", "es": "Texto" } }
+  ],
+  "parameters": [
+    {
+      "id": "style", "type": "select", "default": "flag",
+      "group": "cable", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Label Style", "es": "Estilo de Etiqueta" },
+      "tooltip": { "en": "Flag tag on a clip, a wrap-around band, or a compact clip marker", "es": "Etiqueta bandera en pinza, banda envolvente, o marcador clip compacto" },
+      "options": [
+        { "value": "flag", "label": { "en": "Flag (tag on a C-clip)", "es": "Bandera (etiqueta en pinza C)" } },
+        { "value": "wrap", "label": { "en": "Wrap (cuff band + panel)", "es": "Banda (envolvente + panel)" } },
+        { "value": "clip", "label": { "en": "Clip (compact marker)", "es": "Clip (marcador compacto)" } }
+      ]
+    },
+    {
+      "id": "cable_dia", "type": "slider", "default": 6.0, "min": 2.0, "max": 40.0, "step": 0.5,
+      "group": "cable", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro del Cable (mm)" },
+      "tooltip": { "en": "Outside diameter of the cable = the clip bore it snaps onto", "es": "Diámetro exterior del cable = el orificio de la pinza donde se engancha" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clip_wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "cable", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Clip Wall (mm)", "es": "Pared de Pinza (mm)" },
+      "tooltip": { "en": "Ring wall thickness — thicker grips harder", "es": "Grosor de la pared del anillo — más grueso sujeta con más fuerza" }
+    },
+    {
+      "id": "clip_len", "type": "slider", "default": 12.0, "min": 5.0, "max": 60.0, "step": 1.0,
+      "group": "cable", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Clip Length (mm)", "es": "Longitud de Pinza (mm)" },
+      "tooltip": { "en": "How much of the cable the clip grips along its length", "es": "Cuánto del cable sujeta la pinza a lo largo" }
+    },
+    {
+      "id": "gap_frac", "type": "slider", "default": 0.55, "min": 0.2, "max": 0.85, "step": 0.05,
+      "group": "cable", "modes": ["flag_label", "clip_marker"], "advanced": true,
+      "label": { "en": "Mouth Opening (× dia)", "es": "Apertura de Boca (× diám.)" },
+      "tooltip": { "en": "Snap mouth width as a fraction of the cable diameter (smaller grips more)", "es": "Ancho de la boca de encaje como fracción del diámetro (menor sujeta más)" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 22.0, "min": 8.0, "max": 120.0, "step": 1.0,
+      "group": "plate", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Width of the label face", "es": "Ancho de la cara de la etiqueta" }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 12.0, "min": 6.0, "max": 80.0, "step": 1.0,
+      "group": "plate", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Plate Height (mm)", "es": "Alto de Placa (mm)" },
+      "tooltip": { "en": "Height of the label face", "es": "Alto de la cara de la etiqueta" }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "plate", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Thickness of the label plate", "es": "Grosor de la placa de etiqueta" }
+    },
+    {
+      "id": "text", "type": "text", "default": "A1", "maxlength": 12,
+      "group": "text", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Marker Text", "es": "Texto del Marcador" },
+      "tooltip": { "en": "Short label text (a couple of characters is best); embossed or debossed on the plate", "es": "Texto corto de la etiqueta (un par de caracteres es lo ideal); en relieve o hundido sobre la placa" }
+    },
+    {
+      "id": "text_mode", "type": "select", "default": "deboss",
+      "group": "text", "modes": ["flag_label", "wrap_label", "clip_marker"],
+      "label": { "en": "Text Mode", "es": "Modo de Texto" },
+      "tooltip": { "en": "Deboss (cut in, most robust), Emboss (raised), or None", "es": "Hundido (grabado, más robusto), Relieve (levantado), o Ninguno" },
+      "options": [
+        { "value": "deboss", "label": { "en": "Deboss (cut in)", "es": "Hundido (grabado)" } },
+        { "value": "emboss", "label": { "en": "Emboss (raised)", "es": "Relieve (levantado)" } },
+        { "value": "none", "label": { "en": "None (blank plate)", "es": "Ninguno (placa lisa)" } }
+      ]
+    },
+    {
+      "id": "text_depth", "type": "slider", "default": 0.6, "min": 0.2, "max": 2.0, "step": 0.1,
+      "group": "text", "modes": ["flag_label", "wrap_label", "clip_marker"], "advanced": true,
+      "label": { "en": "Text Depth (mm)", "es": "Profundidad de Texto (mm)" },
+      "tooltip": { "en": "How deep to cut or how high to raise the glyphs (auto-clamped below plate thickness)", "es": "Qué tan profundo grabar o qué tan alto levantar los caracteres (limitado bajo el grosor de la placa)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "patch_flag", "mode": "flag_label",
+      "label": { "en": "Patch Cable Flag", "es": "Bandera de Cable de Red" },
+      "values": { "style": "flag", "cable_dia": 6, "text": "A1", "text_mode": "deboss", "plate_w": 22, "plate_h": 12 }
+    },
+    {
+      "id": "power_wrap", "mode": "wrap_label",
+      "label": { "en": "Power Cord Wrap", "es": "Banda de Cable de Poder" },
+      "values": { "style": "wrap", "cable_dia": 9, "clip_wall": 2.4, "text": "PC", "text_mode": "emboss" }
+    },
+    {
+      "id": "thin_clip", "mode": "clip_marker",
+      "label": { "en": "Thin Wire Clip (Ø3)", "es": "Marcador Alambre Fino (Ø3)" },
+      "values": { "style": "clip", "cable_dia": 3, "clip_wall": 1.4, "text": "7", "plate_w": 12, "plate_h": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "text_depth <= plate_t - 0.6",
+      "severity": "warning",
+      "message": { "en": "Text depth is close to the plate thickness", "es": "La profundidad del texto se acerca al grosor de la placa" }
+    },
+    {
+      "expression": "clip_wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Clip wall must be at least 1.2 mm", "es": "La pared de la pinza debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 50] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [-90, 0, 0] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "cable_clip_label",
+        "label": { "en": "Cable Clip + Label", "es": "Pinza de Cable + Etiqueta" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["cable_dia", "clip_wall", "clip_len", "gap_frac"]
+      },
+      {
+        "id": "text_marker",
+        "label": { "en": "Text Marker Face", "es": "Cara del Marcador de Texto" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["text", "text_mode", "text_depth", "plate_w", "plate_h", "plate_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Unlabeled cables cost hours in racks, walls, and workshops; a snap-on marker sized to the exact wire and printed with its ID makes every cable traceable without adhesive tags that fall off or heat-shrink that needs a gun.",
+      "es": "Los cables sin etiquetar cuestan horas en racks, paredes y talleres; un marcador a presión dimensionado al cable exacto e impreso con su identificador hace cada cable rastreable sin etiquetas adhesivas que se caen ni termocontraíbles que requieren pistola."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cable", "label", "marker", "wire", "industrial", "hyperobject", "commons"]
+}

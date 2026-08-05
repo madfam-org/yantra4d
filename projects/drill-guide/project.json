@@ -1,0 +1,199 @@
+{
+  "project": {
+    "name": "Drill Guide / Bushing Jig",
+    "slug": "drill-guide",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A drill jig that guides a bit (or press-fit steel bushing) to repeatable hole positions. Choose a linear row, a rectangular grid, or an edge guide with a registration fence.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una plantilla de taladrado que guía la broca (o un buje de acero a presión) a posiciones de agujero repetibles. Elige una fila lineal, una cuadrícula rectangular o una guía de borde con tope de registro.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/drill-guide.webp",
+    "difficulty": "intermediate",
+    "tags": ["drill", "jig", "bushing", "template", "woodworking", "repeatable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "linear_guide",
+      "label": { "en": "Linear Guide", "es": "Guía Lineal" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["linear_guide"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "grid_guide",
+      "label": { "en": "Grid Guide", "es": "Guía en Cuadrícula" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grid_guide"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "edge_guide",
+      "label": { "en": "Edge Guide (Fenced)", "es": "Guía de Borde (con Tope)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["edge_guide"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "linear_guide", "label": { "en": "Linear Guide", "es": "Guía Lineal" }, "render_mode": 0, "color": "#b0793b" },
+    { "id": "grid_guide", "label": { "en": "Grid Guide", "es": "Guía en Cuadrícula" }, "render_mode": 0, "color": "#c8934a" },
+    { "id": "edge_guide", "label": { "en": "Edge Guide", "es": "Guía de Borde" }, "render_mode": 0, "color": "#9a6a34" }
+  ],
+  "parameter_groups": [
+    { "id": "bore", "label": { "en": "Bore & Bushing", "es": "Barreno y Buje" } },
+    { "id": "block", "label": { "en": "Guide Block", "es": "Bloque Guía" } },
+    { "id": "pattern", "label": { "en": "Hole Pattern", "es": "Patrón de Agujeros" } },
+    { "id": "fence", "label": { "en": "Registration Fence", "es": "Tope de Registro" } }
+  ],
+  "parameters": [
+    {
+      "id": "hole_dia", "type": "slider", "default": 6.0, "min": 1.5, "max": 20.0, "step": 0.1,
+      "group": "bore", "modes": ["linear_guide", "grid_guide", "edge_guide"],
+      "label": { "en": "Hole Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Nominal drill bit or bushing size", "es": "Tamaño nominal de la broca o del buje" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bushing_fit", "type": "slider", "default": 0.2, "min": 0.0, "max": 0.6, "step": 0.05,
+      "group": "bore", "modes": ["linear_guide", "grid_guide", "edge_guide"], "advanced": true,
+      "label": { "en": "Bushing Press-Fit Oversize (mm)", "es": "Sobredimensión de Ajuste del Buje (mm)" },
+      "tooltip": { "en": "Per-side oversize so a printed hole accepts a steel bushing (0 = raw drill guide)", "es": "Sobredimensión por lado para que un agujero impreso acepte un buje de acero (0 = guía de broca directa)" }
+    },
+    {
+      "id": "block_thick", "type": "slider", "default": 12.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "block", "modes": ["linear_guide", "grid_guide", "edge_guide"],
+      "label": { "en": "Block Thickness (mm)", "es": "Grosor del Bloque (mm)" },
+      "tooltip": { "en": "Guide depth — longer keeps the bit square (bushing length)", "es": "Profundidad de la guía — más larga mantiene la broca a escuadra (longitud del buje)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 5.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "block", "modes": ["linear_guide", "grid_guide", "edge_guide"],
+      "label": { "en": "Wall Around Bore (mm)", "es": "Pared Alrededor del Barreno (mm)" },
+      "tooltip": { "en": "Material surrounding each hole", "es": "Material que rodea cada agujero" }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 25.0, "min": 5.0, "max": 100.0, "step": 1.0,
+      "group": "pattern", "modes": ["linear_guide", "grid_guide", "edge_guide"],
+      "label": { "en": "Hole Spacing / Pitch (mm)", "es": "Espaciado / Paso de Agujeros (mm)" },
+      "tooltip": { "en": "Centre-to-centre distance between holes", "es": "Distancia centro a centro entre agujeros" }
+    },
+    {
+      "id": "holes", "type": "slider", "default": 4, "min": 1, "max": 12, "step": 1,
+      "group": "pattern", "modes": ["linear_guide", "edge_guide"],
+      "label": { "en": "Hole Count (row)", "es": "Cantidad de Agujeros (fila)" },
+      "tooltip": { "en": "Number of holes in the row", "es": "Número de agujeros en la fila" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 3, "min": 1, "max": 10, "step": 1,
+      "group": "pattern", "modes": ["grid_guide"],
+      "label": { "en": "Grid Rows", "es": "Filas de la Cuadrícula" },
+      "tooltip": { "en": "Number of rows in the grid", "es": "Número de filas en la cuadrícula" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 3, "min": 1, "max": 10, "step": 1,
+      "group": "pattern", "modes": ["grid_guide"],
+      "label": { "en": "Grid Columns", "es": "Columnas de la Cuadrícula" },
+      "tooltip": { "en": "Number of columns in the grid", "es": "Número de columnas en la cuadrícula" }
+    },
+    {
+      "id": "edge_offset", "type": "slider", "default": 15.0, "min": 3.0, "max": 60.0, "step": 1.0,
+      "group": "pattern", "modes": ["edge_guide"],
+      "label": { "en": "Setback from Edge (mm)", "es": "Retranqueo desde el Borde (mm)" },
+      "tooltip": { "en": "Bore-centre distance in from the registration edge", "es": "Distancia del centro del barreno desde el borde de registro" }
+    },
+    {
+      "id": "fence", "type": "checkbox", "default": true,
+      "group": "fence", "modes": ["edge_guide"],
+      "label": { "en": "Registration Lip", "es": "Labio de Registro" },
+      "tooltip": { "en": "Drop a lip below the edge to index off the workpiece edge", "es": "Baja un labio bajo el borde para indexar en el borde de la pieza" }
+    },
+    {
+      "id": "fence_h", "type": "slider", "default": 8.0, "min": 3.0, "max": 25.0, "step": 0.5,
+      "group": "fence", "modes": ["edge_guide"],
+      "label": { "en": "Fence Drop (mm)", "es": "Caída del Tope (mm)" },
+      "tooltip": { "en": "How far the lip hangs below the block", "es": "Cuánto cuelga el labio bajo el bloque" }
+    },
+    {
+      "id": "fence_t", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "fence", "modes": ["edge_guide"], "advanced": true,
+      "label": { "en": "Fence Thickness (mm)", "es": "Grosor del Tope (mm)" },
+      "tooltip": { "en": "Thickness of the registration lip", "es": "Grosor del labio de registro" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shelf_pin_row", "mode": "linear_guide",
+      "label": { "en": "Shelf-Pin Row (5mm @32)", "es": "Fila para Clavijas (5mm @32)" },
+      "values": { "hole_dia": 5.0, "bushing_fit": 0.0, "block_thick": 12.0, "pitch": 32.0, "holes": 6 }
+    },
+    {
+      "id": "pegboard_grid", "mode": "grid_guide",
+      "label": { "en": "Pegboard Grid (6mm @25)", "es": "Cuadrícula tipo Pegboard (6mm @25)" },
+      "values": { "hole_dia": 6.0, "bushing_fit": 0.0, "block_thick": 10.0, "pitch": 25.0, "rows": 4, "cols": 4 }
+    },
+    {
+      "id": "dowel_edge_jig", "mode": "edge_guide",
+      "label": { "en": "Dowel Edge Jig (8mm bushed)", "es": "Plantilla de Espigas al Borde (8mm con buje)" },
+      "values": { "hole_dia": 8.0, "bushing_fit": 0.2, "block_thick": 20.0, "pitch": 32.0, "holes": 3, "edge_offset": 9.5, "fence": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall around the bore must be at least 2 mm", "es": "La pared alrededor del barreno debe ser de al menos 2 mm" }
+    },
+    {
+      "expression": "pitch >= hole_dia + 2 * wall",
+      "severity": "warning",
+      "message": { "en": "Pitch is tight — holes may merge into each other", "es": "El paso es ajustado — los agujeros pueden fusionarse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "drill_bushing_bore",
+        "label": { "en": "Drill Bushing Bore", "es": "Barreno de Buje de Broca" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["hole_dia", "bushing_fit", "block_thick", "pitch", "holes", "rows", "cols"]
+      },
+      {
+        "id": "hole_grid_pattern",
+        "label": { "en": "Hole Grid Pattern", "es": "Patrón de Cuadrícula de Agujeros" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["pitch", "rows", "cols", "holes"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns a printer into a machine-shop jig maker — repeatable, square holes for shelf pins, dowel joinery and enclosure panels without a drill press or layout marking.",
+      "es": "Convierte una impresora en fabricante de plantillas de taller — agujeros repetibles y a escuadra para clavijas de estante, ensambles con espigas y paneles de gabinete sin taladro de banco ni trazado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drill", "jig", "bushing", "template", "industrial", "hyperobject", "commons"]
+}

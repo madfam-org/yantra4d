@@ -1,0 +1,188 @@
+{
+  "project": {
+    "name": "PCB Standoff / Mounting Plate",
+    "slug": "pcb-standoff",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Standoffs to mount a PCB above a surface. A hole pattern — the four corners of a W×D rectangle, or a rows×cols grid — drives the standoff positions; each standoff is a bored tube. Choose a connecting base plate for a one-piece mounting plate, a thin runner for a loose set, or a single tubular spacer.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Soportes (standoffs) para montar una PCB sobre una superficie. Un patrón de orificios — las cuatro esquinas de un rectángulo W×D, o una cuadrícula filas×columnas — define las posiciones; cada standoff es un tubo perforado. Elige una placa base conectora para una placa de montaje de una pieza, un riel delgado para un juego suelto, o un separador tubular individual.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pcb-standoff.webp",
+    "difficulty": "beginner",
+    "tags": ["standoff", "pcb", "spacer", "mounting-plate", "electronics", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "plate",
+      "label": { "en": "Plate", "es": "Placa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["plate"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "standoffs",
+      "label": { "en": "Loose Standoffs", "es": "Standoffs Sueltos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["standoffs"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "spacer",
+      "label": { "en": "Single Spacer", "es": "Separador Único" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spacer"],
+      "estimate": { "base_time": 4, "per_unit": 1, "per_part": 5 }
+    }
+  ],
+  "parts": [
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" }, "render_mode": 0, "color": "#3f7d5a" },
+    { "id": "standoffs", "label": { "en": "Loose Standoffs", "es": "Standoffs Sueltos" }, "render_mode": 0, "color": "#5aa87c" },
+    { "id": "spacer", "label": { "en": "Single Spacer", "es": "Separador Único" }, "render_mode": 0, "color": "#78c39a" }
+  ],
+  "parameter_groups": [
+    { "id": "pattern", "label": { "en": "Hole Pattern", "es": "Patrón de Orificios" } },
+    { "id": "standoff", "label": { "en": "Standoff", "es": "Standoff" } },
+    { "id": "plate", "label": { "en": "Base Plate", "es": "Placa Base" } }
+  ],
+  "parameters": [
+    {
+      "id": "pattern", "type": "select", "default": "corners",
+      "group": "pattern", "modes": ["plate", "standoffs"],
+      "label": { "en": "Pattern", "es": "Patrón" },
+      "tooltip": { "en": "Four corners of a rectangle, or a rows×cols grid", "es": "Cuatro esquinas de un rectángulo, o una cuadrícula filas×columnas" },
+      "options": [
+        { "value": "corners", "label": { "en": "Corners (W × D)", "es": "Esquinas (W × D)" } },
+        { "value": "grid", "label": { "en": "Grid (rows × cols)", "es": "Cuadrícula (filas × columnas)" } }
+      ]
+    },
+    {
+      "id": "rect_w", "type": "slider", "default": 58.0, "min": 8.0, "max": 240.0, "step": 1.0,
+      "group": "pattern", "modes": ["plate", "standoffs"],
+      "label": { "en": "Corner Spacing X (mm)", "es": "Separación de Esquinas X (mm)" },
+      "tooltip": { "en": "Hole-to-hole X distance for the corners pattern", "es": "Distancia X entre orificios para el patrón de esquinas" }
+    },
+    {
+      "id": "rect_d", "type": "slider", "default": 49.0, "min": 8.0, "max": 240.0, "step": 1.0,
+      "group": "pattern", "modes": ["plate", "standoffs"],
+      "label": { "en": "Corner Spacing Y (mm)", "es": "Separación de Esquinas Y (mm)" },
+      "tooltip": { "en": "Hole-to-hole Y distance for the corners pattern", "es": "Distancia Y entre orificios para el patrón de esquinas" }
+    },
+    {
+      "id": "grid_rows", "type": "slider", "default": 3, "min": 1, "max": 12, "step": 1,
+      "group": "pattern", "modes": ["plate", "standoffs"],
+      "label": { "en": "Grid Rows", "es": "Filas de Cuadrícula" },
+      "tooltip": { "en": "Number of standoff rows (Y) in grid mode", "es": "Número de filas de standoffs (Y) en modo cuadrícula" }
+    },
+    {
+      "id": "grid_cols", "type": "slider", "default": 3, "min": 1, "max": 12, "step": 1,
+      "group": "pattern", "modes": ["plate", "standoffs"],
+      "label": { "en": "Grid Columns", "es": "Columnas de Cuadrícula" },
+      "tooltip": { "en": "Number of standoff columns (X) in grid mode", "es": "Número de columnas de standoffs (X) en modo cuadrícula" }
+    },
+    {
+      "id": "grid_pitch", "type": "slider", "default": 20.0, "min": 5.0, "max": 60.0, "step": 0.5,
+      "group": "pattern", "modes": ["plate", "standoffs"], "advanced": true,
+      "label": { "en": "Grid Pitch (mm)", "es": "Paso de Cuadrícula (mm)" },
+      "tooltip": { "en": "Hole-to-hole spacing in grid mode", "es": "Separación entre orificios en modo cuadrícula" }
+    },
+    {
+      "id": "standoff_h", "type": "slider", "default": 6.0, "min": 1.5, "max": 40.0, "step": 0.5,
+      "group": "standoff", "modes": ["plate", "standoffs", "spacer"],
+      "label": { "en": "Standoff Height (mm)", "es": "Altura de Standoff (mm)" },
+      "tooltip": { "en": "Height of each standoff / spacer", "es": "Altura de cada standoff / separador" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "screw_size", "type": "select", "default": "M3",
+      "group": "standoff", "modes": ["plate", "standoffs", "spacer"],
+      "label": { "en": "Screw Size", "es": "Tamaño de Tornillo" },
+      "tooltip": { "en": "Sets the bore diameter and standoff outer diameter", "es": "Define el diámetro de la perforación y el diámetro exterior del standoff" },
+      "options": [
+        { "value": "M2", "label": { "en": "M2", "es": "M2" } },
+        { "value": "M2.5", "label": { "en": "M2.5", "es": "M2.5" } },
+        { "value": "M3", "label": { "en": "M3", "es": "M3" } }
+      ]
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 2.0, "min": 0.0, "max": 6.0, "step": 0.2,
+      "group": "plate", "modes": ["plate"],
+      "label": { "en": "Base Plate Thickness (mm)", "es": "Grosor de Placa Base (mm)" },
+      "tooltip": { "en": "Connecting plate thickness (0 uses a thin default slab)", "es": "Grosor de la placa conectora (0 usa una losa delgada por defecto)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "rpi_hat_plate", "mode": "plate",
+      "label": { "en": "Pi HAT Plate (58×49)", "es": "Placa HAT de Pi (58×49)" },
+      "values": { "pattern": "corners", "rect_w": 58, "rect_d": 49, "standoff_h": 8, "screw_size": "M2.5", "plate_t": 2.0 }
+    },
+    {
+      "id": "proto_grid", "mode": "plate",
+      "label": { "en": "Prototype Grid (4×4)", "es": "Cuadrícula de Prototipo (4×4)" },
+      "values": { "pattern": "grid", "grid_rows": 4, "grid_cols": 4, "grid_pitch": 18, "standoff_h": 6, "screw_size": "M3" }
+    },
+    {
+      "id": "tall_spacer", "mode": "spacer",
+      "label": { "en": "Tall M3 Spacer", "es": "Separador M3 Alto" },
+      "values": { "standoff_h": 15, "screw_size": "M3" }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "grid_pitch >= 5",
+      "severity": "error",
+      "message": { "en": "Grid pitch must be at least 5 mm", "es": "El paso de cuadrícula debe ser de al menos 5 mm" }
+    },
+    {
+      "expression": "standoff_h >= 1.5",
+      "severity": "warning",
+      "message": { "en": "Very short standoffs may be fragile", "es": "Standoffs muy cortos pueden ser frágiles" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "pcb_mount_pattern",
+        "label": { "en": "PCB Mount Pattern", "es": "Patrón de Montaje de PCB" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["pattern", "rect_w", "rect_d", "grid_rows", "grid_cols", "grid_pitch", "screw_size"]
+      },
+      {
+        "id": "standoff_bore",
+        "label": { "en": "Standoff Screw Bore", "es": "Perforación de Tornillo de Standoff" },
+        "geometry_type": "socket",
+        "standard": "ISO metric (M2/M2.5/M3)",
+        "parameters": ["screw_size", "standoff_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The simplest, most-reprinted electronics primitive — raise any board off any surface at the exact height and hole pattern needed, ending the drawer of mismatched nylon spacers.",
+      "es": "El primitivo de electrónica más simple y reimpreso — eleva cualquier placa sobre cualquier superficie a la altura y patrón de orificios exactos, acabando con el cajón de separadores de nailon disparejos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["standoff", "pcb", "spacer", "industrial", "hyperobject", "commons"]
+}

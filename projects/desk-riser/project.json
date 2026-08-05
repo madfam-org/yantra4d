@@ -1,0 +1,204 @@
+{
+  "project": {
+    "name": "Laptop / Monitor Riser",
+    "slug": "desk-riser",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A riser that lifts a laptop or monitor to eye or airflow height on two solid side panels or four corner posts, with a cable pass-through at the back and open space underneath to slide a keyboard. Riser mode is a flat platform on legs; Monitor Stand is taller on a narrower base; Laptop Stand adds a typing tilt and ventilation slots for airflow.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un elevador que sube una laptop o monitor a la altura de los ojos o de ventilación sobre dos paneles laterales sólidos o cuatro postes de esquina, con paso de cables atrás y espacio libre debajo para deslizar un teclado. El modo Elevador es una plataforma plana sobre patas; el Soporte de Monitor es más alto sobre una base más angosta; el Soporte de Laptop añade inclinación para escribir y ranuras de ventilación para el flujo de aire.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/desk-riser.webp",
+    "difficulty": "intermediate",
+    "tags": ["riser", "laptop", "monitor", "stand", "desk", "ergonomic", "ventilation", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "riser",
+      "label": { "en": "Riser", "es": "Elevador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["riser"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "monitor_stand",
+      "label": { "en": "Monitor Stand", "es": "Soporte de Monitor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["monitor_stand"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "laptop_stand",
+      "label": { "en": "Laptop Stand", "es": "Soporte de Laptop" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["laptop_stand"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 20 }
+    }
+  ],
+  "parts": [
+    { "id": "riser", "label": { "en": "Riser", "es": "Elevador" }, "render_mode": 0, "color": "#4b5f74" },
+    { "id": "monitor_stand", "label": { "en": "Monitor Stand", "es": "Soporte de Monitor" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "laptop_stand", "label": { "en": "Laptop Stand", "es": "Soporte de Laptop" }, "render_mode": 0, "color": "#6fae8f" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Platform & Height", "es": "Plataforma y Altura" } },
+    { "id": "legs", "label": { "en": "Legs", "es": "Patas" } },
+    { "id": "features", "label": { "en": "Cable & Airflow", "es": "Cable y Ventilación" } }
+  ],
+  "parameters": [
+    {
+      "id": "height", "type": "slider", "default": 95.0, "min": 30.0, "max": 250.0, "step": 1.0,
+      "group": "size", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Clearance Height (mm)", "es": "Altura Libre (mm)" },
+      "tooltip": { "en": "Open height under the platform (Monitor Stand is raised to at least 110 mm)", "es": "Altura libre bajo la plataforma (el Soporte de Monitor se eleva a al menos 110 mm)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plat_w", "type": "slider", "default": 260.0, "min": 80.0, "max": 500.0, "step": 5.0,
+      "group": "size", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Platform Width (mm)", "es": "Ancho de Plataforma (mm)" },
+      "tooltip": { "en": "Top platform width (Monitor Stand narrows this for the base)", "es": "Ancho de la plataforma superior (el Soporte de Monitor lo reduce para la base)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plat_d", "type": "slider", "default": 240.0, "min": 80.0, "max": 400.0, "step": 5.0,
+      "group": "size", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Platform Depth (mm)", "es": "Profundidad de Plataforma (mm)" },
+      "tooltip": { "en": "Top platform depth (front-to-back)", "es": "Profundidad de la plataforma (adelante-atrás)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plat_t", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "size", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Platform Thickness (mm)", "es": "Grosor de Plataforma (mm)" },
+      "tooltip": { "en": "Thickness of the top plate (thicker carries a heavier monitor)", "es": "Grosor de la placa superior (más grueso soporta un monitor más pesado)" }
+    },
+    {
+      "id": "leg_style", "type": "select", "default": "solid_sides",
+      "group": "legs", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Leg Style", "es": "Estilo de Patas" },
+      "tooltip": { "en": "Two solid side panels (stiffer, hides cables) or four corner posts (lighter, less filament)", "es": "Dos paneles laterales sólidos (más rígido, oculta cables) o cuatro postes de esquina (más ligero, menos material)" },
+      "options": [
+        { "value": "solid_sides", "label": { "en": "Solid Side Panels", "es": "Paneles Laterales Sólidos" } },
+        { "value": "posts", "label": { "en": "Four Corner Posts", "es": "Cuatro Postes de Esquina" } }
+      ]
+    },
+    {
+      "id": "leg_t", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "legs", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Leg Thickness (mm)", "es": "Grosor de Pata (mm)" },
+      "tooltip": { "en": "Panel / post thickness (posts are auto-widened for strength)", "es": "Grosor del panel / poste (los postes se ensanchan automáticamente por resistencia)" }
+    },
+    {
+      "id": "cable_slot", "type": "checkbox", "default": true,
+      "group": "features", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Cable Pass-Through", "es": "Paso de Cables" },
+      "tooltip": { "en": "Slot in the back edge of the platform to route cables", "es": "Ranura en el borde trasero de la plataforma para pasar cables" }
+    },
+    {
+      "id": "cable_w", "type": "slider", "default": 60.0, "min": 10.0, "max": 200.0, "step": 5.0,
+      "group": "features", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Cable Slot Width (mm)", "es": "Ancho de Ranura de Cable (mm)" },
+      "tooltip": { "en": "Width of the rear cable pass-through", "es": "Ancho del paso de cables trasero" }
+    },
+    {
+      "id": "vents", "type": "checkbox", "default": true,
+      "group": "features", "modes": ["laptop_stand"],
+      "label": { "en": "Ventilation Slots", "es": "Ranuras de Ventilación" },
+      "tooltip": { "en": "Cut airflow slots through the top for a laptop (Laptop Stand)", "es": "Corta ranuras de flujo de aire en la parte superior para una laptop (Soporte de Laptop)" }
+    },
+    {
+      "id": "kbd_slot", "type": "checkbox", "default": true,
+      "group": "features", "modes": ["riser", "monitor_stand", "laptop_stand"],
+      "label": { "en": "Keyboard Space Underneath", "es": "Espacio de Teclado Debajo" },
+      "tooltip": { "en": "Keep the underside open to slide a keyboard; off adds a rear rail cubby (solid sides)", "es": "Mantiene la parte inferior abierta para deslizar un teclado; desactivado añade un riel trasero (paneles sólidos)" }
+    },
+    {
+      "id": "tilt", "type": "slider", "default": 6.0, "min": 0.0, "max": 15.0, "step": 0.5,
+      "group": "features", "modes": ["laptop_stand"], "advanced": true,
+      "label": { "en": "Typing Tilt (deg)", "es": "Inclinación para Escribir (grados)" },
+      "tooltip": { "en": "Forward slope of the top plate for typing comfort (Laptop Stand)", "es": "Inclinación frontal de la placa superior para escribir con comodidad (Soporte de Laptop)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "desk_riser_wide", "mode": "riser",
+      "label": { "en": "Wide Desk Riser", "es": "Elevador de Escritorio Ancho" },
+      "values": { "height": 90, "plat_w": 300, "plat_d": 240, "leg_style": "solid_sides", "cable_slot": true, "kbd_slot": true }
+    },
+    {
+      "id": "monitor_riser", "mode": "monitor_stand",
+      "label": { "en": "Monitor Riser", "es": "Elevador de Monitor" },
+      "values": { "height": 120, "plat_w": 280, "plat_d": 220, "plat_t": 8, "leg_style": "solid_sides", "cable_slot": true }
+    },
+    {
+      "id": "laptop_cooler", "mode": "laptop_stand",
+      "label": { "en": "Laptop Stand (vented)", "es": "Soporte de Laptop (ventilado)" },
+      "values": { "height": 70, "plat_w": 280, "plat_d": 240, "leg_style": "posts", "vents": true, "tilt": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cable_w <= plat_w - 4 * leg_t",
+      "severity": "warning",
+      "message": { "en": "Cable slot is wide relative to the platform and legs", "es": "La ranura de cable es ancha respecto a la plataforma y las patas" }
+    },
+    {
+      "expression": "plat_t >= 3",
+      "severity": "error",
+      "message": { "en": "Platform must be at least 3 mm thick", "es": "La plataforma debe tener al menos 3 mm de grosor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [320, 320, 240] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 500] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -500, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 18,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "riser_footprint",
+        "label": { "en": "Riser Footprint", "es": "Huella del Elevador" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["height", "plat_w", "plat_d", "leg_style", "leg_t"]
+      },
+      {
+        "id": "cable_pass",
+        "label": { "en": "Cable Pass-Through", "es": "Paso de Cables" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["cable_slot", "cable_w"]
+      },
+      {
+        "id": "vent_grid",
+        "label": { "en": "Ventilation Slot Grid", "es": "Rejilla de Ventilación" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["vents", "plat_w", "plat_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Raising a screen to eye level and a laptop into airflow is basic ergonomics and thermal health; a made-to-fit riser sized to the exact desk and device replaces bulky retail stands and improves posture without buying furniture.",
+      "es": "Elevar una pantalla a la altura de los ojos y una laptop hacia el flujo de aire es ergonomía básica y salud térmica; un elevador a medida del escritorio y dispositivo exactos reemplaza soportes comerciales voluminosos y mejora la postura sin comprar muebles."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["riser", "laptop", "monitor", "desk", "commercial", "hyperobject", "commons"]
+}

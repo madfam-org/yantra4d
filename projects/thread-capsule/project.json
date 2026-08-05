@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Threaded Storage Capsule",
+    "slug": "thread-capsule",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A screw-together waterproof EDC canister: a tube body with an external thread, and a lid with a matching internal thread, an O-ring seat groove, and a keyring loop. Body and lid threads share the same nominal and clearance so they mate. Render the body, the lid, or a 2-part preview.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una cápsula EDC impermeable que se enrosca: un cuerpo tubular con rosca externa, y una tapa con rosca interna a juego, una ranura para O-ring y un aro para llavero. Las roscas del cuerpo y la tapa comparten el mismo nominal y holgura para que encajen. Renderiza el cuerpo, la tapa, o una vista previa de 2 piezas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/thread-capsule.webp",
+    "difficulty": "intermediate",
+    "tags": ["capsule", "canister", "waterproof", "thread", "edc", "oring", "container", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "body",
+      "label": { "en": "Body", "es": "Cuerpo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["body"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "lid",
+      "label": { "en": "Lid", "es": "Tapa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lid"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "capsule",
+      "label": { "en": "Capsule (both)", "es": "Cápsula (ambos)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["body", "lid"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" }, "render_mode": 0, "color": "#2b6cb0" },
+    { "id": "lid", "label": { "en": "Lid", "es": "Tapa" }, "render_mode": 0, "color": "#4299e1" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Interior Size", "es": "Tamaño Interior" } },
+    { "id": "fit", "label": { "en": "Thread & Walls", "es": "Rosca y Paredes" } },
+    { "id": "seal", "label": { "en": "Seal & Loop", "es": "Sello y Aro" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_dia", "type": "slider", "default": 24.0, "min": 10.0, "max": 80.0, "step": 1.0,
+      "group": "size", "modes": ["body", "lid", "capsule"],
+      "label": { "en": "Interior Diameter (mm)", "es": "Diámetro Interior (mm)" },
+      "tooltip": { "en": "Usable interior diameter — also sets the thread nominal", "es": "Diámetro interior utilizable — también define el nominal de rosca" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_len", "type": "slider", "default": 50.0, "min": 15.0, "max": 160.0, "step": 1.0,
+      "group": "size", "modes": ["body", "capsule"],
+      "label": { "en": "Interior Length (mm)", "es": "Longitud Interior (mm)" },
+      "tooltip": { "en": "Usable interior length of the body tube", "es": "Longitud interior utilizable del tubo del cuerpo" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "fit", "modes": ["body", "lid", "capsule"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall thickness of body and lid", "es": "Grosor de pared del cuerpo y la tapa" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "fit", "modes": ["body", "lid", "capsule"],
+      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Per-side gap between body and lid threads for a printable screw fit (0.3-0.5 typical)", "es": "Espacio por lado entre roscas de cuerpo y tapa para un ajuste imprimible (0.3-0.5 típico)" }
+    },
+    {
+      "id": "oring", "type": "checkbox", "default": true,
+      "group": "seal", "modes": ["lid", "capsule"],
+      "label": { "en": "O-Ring Groove", "es": "Ranura de O-Ring" },
+      "tooltip": { "en": "Cut a groove in the lid seat for a rubber O-ring (waterproofing)", "es": "Corta una ranura en el asiento de la tapa para un O-ring de goma (impermeabilidad)" }
+    },
+    {
+      "id": "oring_dia", "type": "slider", "default": 2.0, "min": 1.0, "max": 5.0, "step": 0.1,
+      "group": "seal", "modes": ["lid", "capsule"], "advanced": true,
+      "label": { "en": "O-Ring Cord Diameter (mm)", "es": "Diámetro de Cordón O-Ring (mm)" },
+      "tooltip": { "en": "Cross-section (cord) diameter of the O-ring the groove holds", "es": "Diámetro de sección (cordón) del O-ring que aloja la ranura" }
+    },
+    {
+      "id": "loop", "type": "checkbox", "default": true,
+      "group": "seal", "modes": ["lid", "capsule"],
+      "label": { "en": "Keyring Loop", "es": "Aro para Llavero" },
+      "tooltip": { "en": "Add a keyring loop on top of the lid", "es": "Añade un aro para llavero encima de la tapa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "match_body", "mode": "body",
+      "label": { "en": "Pocket Capsule Body", "es": "Cuerpo de Cápsula de Bolsillo" },
+      "values": { "inner_dia": 24, "inner_len": 50, "wall": 2.4, "clearance": 0.4 }
+    },
+    {
+      "id": "match_lid", "mode": "lid",
+      "label": { "en": "Matching Lid (O-ring)", "es": "Tapa a Juego (O-ring)" },
+      "values": { "inner_dia": 24, "wall": 2.4, "clearance": 0.4, "oring": true, "loop": true }
+    },
+    {
+      "id": "match_bottle", "mode": "lid",
+      "label": { "en": "Big Waterproof Lid", "es": "Tapa Grande Impermeable" },
+      "values": { "inner_dia": 40, "wall": 3.0, "clearance": 0.45, "oring": true, "oring_dia": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm around the thread", "es": "La pared debe ser de al menos 1.6 mm alrededor de la rosca" }
+    },
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Large clearance may leak / feel loose", "es": "Una holgura grande puede fugar / sentirse floja" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "capsule_screw_thread",
+        "label": { "en": "Capsule Screw Thread", "es": "Rosca de Cápsula" },
+        "geometry_type": "thread",
+        "standard": "internal",
+        "parameters": ["inner_dia", "clearance", "oring", "oring_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A waterproof screw-together capsule sized to its contents — for matches, medication, cash, electronics, or geocaching. An O-ring seal and printable thread give an airtight, reusable canister on demand instead of single-use packaging.",
+      "es": "Una cápsula impermeable que se enrosca, dimensionada a su contenido — para cerillos, medicamentos, efectivo, electrónica o geocaching. Un sello O-ring y rosca imprimible dan un recipiente hermético y reutilizable bajo demanda en vez de empaque de un solo uso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["capsule", "canister", "waterproof", "thread", "edc", "household", "hyperobject", "commons"]
+}

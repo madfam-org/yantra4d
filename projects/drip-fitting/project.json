@@ -1,0 +1,158 @@
+{
+  "project": {
+    "name": "Drip-Irrigation Fitting",
+    "slug": "drip-fitting",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Barbed fittings for drip-irrigation tubing — straight couplers, tees, elbows, and end caps. The barbs are sized to the tubing inner diameter and push in to grip from inside, so pressurized water won't blow the joint. Sized for the two common drip tubes: 1/4\" (~6 mm ID) and 1/2\" (~16 mm ID).\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Conexiones con púas para tubería de riego por goteo — acoples rectos, tees, codos y tapones. Las púas se dimensionan al diámetro interior de la tubería y se insertan para sujetar desde adentro, para que el agua a presión no reviente la unión. Dimensionadas para las dos tuberías comunes de goteo: 1/4\" (~6 mm DI) y 1/2\" (~16 mm DI).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/drip-fitting.webp",
+    "difficulty": "intermediate",
+    "tags": ["drip", "irrigation", "barb", "fitting", "tubing", "garden", "water-saving", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "straight",
+      "label": { "en": "Straight Coupler", "es": "Acople Recto" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["straight"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "tee",
+      "label": { "en": "Tee", "es": "Tee" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tee"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "elbow_cap",
+      "label": { "en": "Elbow / End Cap", "es": "Codo / Tapón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["elbow_cap"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "straight", "label": { "en": "Straight Coupler", "es": "Acople Recto" }, "render_mode": 0, "color": "#3a7d9a" },
+    { "id": "tee", "label": { "en": "Tee", "es": "Tee" }, "render_mode": 0, "color": "#4a8daa" },
+    { "id": "elbow_cap", "label": { "en": "Elbow / End Cap", "es": "Codo / Tapón" }, "render_mode": 0, "color": "#2d6d8a" }
+  ],
+  "parameter_groups": [
+    { "id": "tube", "label": { "en": "Tubing", "es": "Tubería" } },
+    { "id": "barb", "label": { "en": "Barb & Fit", "es": "Púas y Ajuste" } },
+    { "id": "shape", "label": { "en": "Fitting Shape", "es": "Forma de Conexión" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_id", "type": "slider", "default": 6.0, "min": 3, "max": 24, "step": 0.5,
+      "group": "tube", "modes": ["straight", "tee", "elbow_cap"],
+      "label": { "en": "Tubing Inner Diameter (mm)", "es": "Diámetro Interior de Tubería (mm)" },
+      "tooltip": { "en": "1/4\" drip ≈ 6 mm, 1/2\" drip ≈ 16 mm", "es": "Goteo 1/4\" ≈ 6 mm, goteo 1/2\" ≈ 16 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "fitting", "type": "select", "default": "straight",
+      "group": "shape", "modes": ["elbow_cap"],
+      "label": { "en": "Elbow-Mode Shape", "es": "Forma en Modo Codo" },
+      "tooltip": { "en": "In the Elbow / End Cap mode, choose which one to build", "es": "En el modo Codo / Tapón, elija cuál construir" },
+      "options": [
+        { "value": "elbow", "label": { "en": "Elbow (90°)", "es": "Codo (90°)" } },
+        { "value": "end_cap", "label": { "en": "End Cap", "es": "Tapón" } }
+      ]
+    },
+    {
+      "id": "barb_count", "type": "slider", "default": 3, "min": 1, "max": 6, "step": 1,
+      "group": "barb", "modes": ["straight", "tee", "elbow_cap"],
+      "label": { "en": "Barb Ridges per Prong", "es": "Anillos por Prong" },
+      "tooltip": { "en": "More ridges grip harder but insert stiffer", "es": "Más anillos sujetan más fuerte pero cuesta más insertar" }
+    },
+    {
+      "id": "prong_len", "type": "slider", "default": 14.0, "min": 6, "max": 40, "step": 1,
+      "group": "barb", "modes": ["straight", "tee", "elbow_cap"],
+      "label": { "en": "Prong Insertion Length (mm)", "es": "Longitud de Inserción (mm)" },
+      "tooltip": { "en": "How far each prong pushes into the tube", "es": "Cuánto entra cada prong en la tubería" }
+    },
+    {
+      "id": "grip", "type": "slider", "default": 0.5, "min": 0.1, "max": 1.5, "step": 0.05,
+      "group": "barb", "modes": ["straight", "tee", "elbow_cap"],
+      "label": { "en": "Barb Over-size (mm)", "es": "Sobre-medida de Púa (mm)" },
+      "tooltip": { "en": "How far barb crests exceed the tube ID (radial grip)", "es": "Cuánto exceden las púas el DI de la tubería (agarre radial)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.4, "min": 0.8, "max": 3.0, "step": 0.1,
+      "group": "barb", "modes": ["straight", "tee", "elbow_cap"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Prong / collar wall thickness", "es": "Grosor de pared del prong / collar" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "quarter_inch_coupler", "mode": "straight",
+      "label": { "en": "1/4\" Straight Coupler", "es": "Acople Recto 1/4\"" },
+      "values": { "tube_id": 6, "barb_count": 3, "prong_len": 12 }
+    },
+    {
+      "id": "quarter_inch_tee", "mode": "tee",
+      "label": { "en": "1/4\" Tee", "es": "Tee 1/4\"" },
+      "values": { "tube_id": 6, "barb_count": 3, "prong_len": 12 }
+    },
+    {
+      "id": "half_inch_elbow", "mode": "elbow_cap",
+      "label": { "en": "1/2\" Elbow", "es": "Codo 1/2\"" },
+      "values": { "tube_id": 16, "fitting": "elbow", "barb_count": 3, "prong_len": 18 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "grip < tube_id / 2",
+      "severity": "warning",
+      "message": { "en": "Barb over-size is large relative to the tube", "es": "La sobre-medida de púa es grande respecto a la tubería" }
+    },
+    {
+      "expression": "wall >= 0.8",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 0.8 mm", "es": "La pared debe ser de al menos 0.8 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -110, 8] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "drip_barb_fitting",
+        "label": { "en": "Drip Barb Fitting", "es": "Conexión con Púas de Goteo" },
+        "geometry_type": "socket",
+        "standard": "1/4in & 1/2in drip",
+        "parameters": ["tube_id", "fitting", "barb_count", "grip", "prong_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Water-saving irrigation on demand: printed barbed fittings let anyone build or repair a drip system from standard tubing, delivering water straight to roots and cutting garden water use where commercial fittings are scarce or costly.",
+      "es": "Riego que ahorra agua bajo demanda: las conexiones con púas impresas permiten construir o reparar un sistema de goteo con tubería estándar, llevando agua directo a las raíces y reduciendo el consumo de agua del jardín donde las conexiones comerciales escasean o son caras."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drip", "irrigation", "barb", "household", "hyperobject", "commons"]
+}

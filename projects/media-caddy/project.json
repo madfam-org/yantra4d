@@ -1,0 +1,174 @@
+{
+  "project": {
+    "name": "USB / SD / Battery Caddy",
+    "slug": "media-caddy",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A desk organizer with an array of correctly-sized slots or bores for one class of small media or battery. Pick the form factor — USB-A, full-size SD, microSD, AA, AAA, or 18650 — and how many; every pocket is sized to the real part plus a small clearance. Tray mode is a shallow single wide row; Block mode is a compact near-square standing block; Grid mode is an explicit rows × columns matrix.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un organizador de escritorio con un arreglo de ranuras o perforaciones del tamaño correcto para una clase de medio o batería pequeña. Elige el formato — USB-A, SD completa, microSD, AA, AAA o 18650 — y cuántos; cada hueco se dimensiona a la pieza real más una pequeña holgura. El modo Bandeja es una fila ancha y poco profunda; el modo Bloque es un bloque vertical casi cuadrado y compacto; el modo Cuadrícula es una matriz explícita de filas × columnas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/media-caddy.webp",
+    "difficulty": "beginner",
+    "tags": ["caddy", "organizer", "usb", "sd", "microsd", "battery", "18650", "aa", "storage", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "label": { "en": "Tray", "es": "Bandeja" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 8, "per_unit": 1, "per_part": 8 }
+    },
+    {
+      "id": "block",
+      "label": { "en": "Block", "es": "Bloque" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["block"],
+      "estimate": { "base_time": 9, "per_unit": 1, "per_part": 9 }
+    },
+    {
+      "id": "grid",
+      "label": { "en": "Grid", "es": "Cuadrícula" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grid"],
+      "estimate": { "base_time": 10, "per_unit": 1, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "tray", "label": { "en": "Tray", "es": "Bandeja" }, "render_mode": 0, "color": "#6fae8f" },
+    { "id": "block", "label": { "en": "Block", "es": "Bloque" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "grid", "label": { "en": "Grid", "es": "Cuadrícula" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "media", "label": { "en": "Media", "es": "Medio" } },
+    { "id": "layout", "label": { "en": "Layout", "es": "Distribución" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "media", "type": "select", "default": "usb_a",
+      "group": "media", "modes": ["tray", "block", "grid"],
+      "label": { "en": "Media Type", "es": "Tipo de Medio" },
+      "tooltip": { "en": "The part each pocket holds; pockets are sized to the real form factor", "es": "La pieza que sostiene cada hueco; los huecos se dimensionan al formato real" },
+      "options": [
+        { "value": "usb_a", "label": { "en": "USB-A flash drive (12 × 4.5)", "es": "Memoria USB-A (12 × 4.5)" } },
+        { "value": "sd", "label": { "en": "SD card (24 × 2.1)", "es": "Tarjeta SD (24 × 2.1)" } },
+        { "value": "microsd", "label": { "en": "microSD card (11 × 1)", "es": "Tarjeta microSD (11 × 1)" } },
+        { "value": "aa", "label": { "en": "AA battery (Ø14.5)", "es": "Pila AA (Ø14.5)" } },
+        { "value": "aaa", "label": { "en": "AAA battery (Ø10.5)", "es": "Pila AAA (Ø10.5)" } },
+        { "value": "18650", "label": { "en": "18650 cell (Ø18.5)", "es": "Celda 18650 (Ø18.5)" } }
+      ]
+    },
+    {
+      "id": "slots", "type": "slider", "default": 8, "min": 1, "max": 100, "step": 1,
+      "group": "layout", "modes": ["tray", "block", "grid"],
+      "label": { "en": "Slot Count", "es": "Cantidad de Huecos" },
+      "tooltip": { "en": "How many pockets in total", "es": "Cuántos huecos en total" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 3, "min": 1, "max": 20, "step": 1,
+      "group": "layout", "modes": ["grid"],
+      "label": { "en": "Rows (Grid)", "es": "Filas (Cuadrícula)" },
+      "tooltip": { "en": "Number of rows in Grid mode; columns fill to reach the slot count", "es": "Número de filas en modo Cuadrícula; las columnas se llenan hasta alcanzar la cantidad de huecos" }
+    },
+    {
+      "id": "pocket_depth", "type": "slider", "default": 0.0, "min": 0.0, "max": 60.0, "step": 1.0,
+      "group": "layout", "modes": ["tray", "block", "grid"], "advanced": true,
+      "label": { "en": "Pocket Depth Override (mm)", "es": "Profundidad de Hueco (mm)" },
+      "tooltip": { "en": "0 uses the media default (Tray is auto-shallow); set a value to force a depth", "es": "0 usa el valor por defecto del medio (Bandeja es poco profunda); fija un valor para forzar la profundidad" }
+    },
+    {
+      "id": "base", "type": "slider", "default": 3.0, "min": 1.5, "max": 20.0, "step": 0.5,
+      "group": "body", "modes": ["tray", "block", "grid"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Solid floor under the blind pockets", "es": "Piso sólido bajo los huecos ciegos" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.5, "max": 12.0, "step": 0.5,
+      "group": "body", "modes": ["tray", "block", "grid"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Material between and around the pockets", "es": "Material entre y alrededor de los huecos" }
+    },
+    {
+      "id": "clear", "type": "slider", "default": 0.6, "min": 0.0, "max": 2.0, "step": 0.1,
+      "group": "body", "modes": ["tray", "block", "grid"], "advanced": true,
+      "label": { "en": "Pocket Clearance (mm)", "es": "Holgura de Hueco (mm)" },
+      "tooltip": { "en": "Per-side gap added around each part for an easy fit", "es": "Espacio por lado agregado alrededor de cada pieza para un ajuste fácil" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "usb_tray", "mode": "tray",
+      "label": { "en": "USB Stick Tray (8)", "es": "Bandeja de USB (8)" },
+      "values": { "media": "usb_a", "slots": 8, "base": 3, "wall": 3 }
+    },
+    {
+      "id": "aa_block", "mode": "block",
+      "label": { "en": "AA Battery Block (12)", "es": "Bloque de Pilas AA (12)" },
+      "values": { "media": "aa", "slots": 12, "base": 4, "wall": 3 }
+    },
+    {
+      "id": "cell_grid", "mode": "grid",
+      "label": { "en": "18650 Grid (4×4)", "es": "Cuadrícula 18650 (4×4)" },
+      "values": { "media": "18650", "slots": 16, "rows": 4, "base": 4, "wall": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "base >= 1.5",
+      "severity": "error",
+      "message": { "en": "Base must be at least 1.5 mm", "es": "La base debe ser de al menos 1.5 mm" }
+    },
+    {
+      "expression": "rows <= slots",
+      "severity": "warning",
+      "message": { "en": "More rows than slots — some rows will be empty", "es": "Más filas que huecos — algunas filas quedarán vacías" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 1, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "media_slot",
+        "label": { "en": "Media Slot", "es": "Hueco de Medio" },
+        "geometry_type": "pocket",
+        "standard": "USB-A / SD / 18650 form factors",
+        "parameters": ["media", "slots", "clear", "pocket_depth"]
+      },
+      {
+        "id": "slot_matrix",
+        "label": { "en": "Slot Matrix", "es": "Matriz de Huecos" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["slots", "rows", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Loose USB sticks, SD cards, and cells get lost, shorted, or damaged; a caddy sized to the exact media keeps them sorted, upright, and contact-safe, extending the life of small storage and batteries and cutting e-waste.",
+      "es": "Las memorias USB, tarjetas SD y celdas sueltas se pierden, se cortocircuitan o se dañan; un organizador dimensionado al medio exacto los mantiene ordenados, verticales y a salvo de contactos, alargando la vida del almacenamiento y las pilas y reduciendo la basura electrónica."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["caddy", "organizer", "usb", "battery", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,190 @@
+{
+  "project": {
+    "name": "Modular Wall Hook Rail / French Cleat",
+    "slug": "french-cleat",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 45° French-cleat shop-wall system: a wall-mounted cleat strip screws to the wall, and accessory backs carry the complementary 45° cleat and hang on it, so the whole wall becomes reconfigurable storage. Print the wall cleat, a hook back, or a bin back — all sharing the same cleat interface.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un sistema de pared de taller con riel francés a 45°: una tira de riel montada en la pared se atornilla al muro, y los respaldos de accesorios llevan el riel complementario a 45° y cuelgan de ella, de modo que toda la pared se vuelve almacenamiento reconfigurable. Imprime el riel de pared, un respaldo con gancho o con cajón — todos comparten la misma interfaz de riel.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/french-cleat.webp",
+    "difficulty": "intermediate",
+    "tags": ["french-cleat", "wall", "storage", "hook", "rail", "shop", "organizer", "modular", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "wall_cleat",
+      "label": { "en": "Wall Cleat", "es": "Riel de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_cleat"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "hook_back",
+      "label": { "en": "Hook Back", "es": "Respaldo con Gancho" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_back"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "bin_back",
+      "label": { "en": "Bin Back", "es": "Respaldo con Cajón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bin_back"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "wall_cleat", "label": { "en": "Wall Cleat", "es": "Riel de Pared" }, "render_mode": 0, "color": "#975a16" },
+    { "id": "hook_back", "label": { "en": "Hook Back", "es": "Respaldo con Gancho" }, "render_mode": 0, "color": "#b7791f" },
+    { "id": "bin_back", "label": { "en": "Bin Back", "es": "Respaldo con Cajón" }, "render_mode": 0, "color": "#d69e2e" }
+  ],
+  "parameter_groups": [
+    { "id": "cleat", "label": { "en": "Cleat", "es": "Riel" } },
+    { "id": "wall_strip", "label": { "en": "Wall Strip", "es": "Tira de Pared" } },
+    { "id": "accessory", "label": { "en": "Accessory", "es": "Accesorio" } }
+  ],
+  "parameters": [
+    {
+      "id": "angle", "type": "slider", "default": 45.0, "min": 30.0, "max": 60.0, "step": 1.0,
+      "group": "cleat", "modes": ["wall_cleat", "hook_back", "bin_back"],
+      "label": { "en": "Cleat Angle (deg)", "es": "Ángulo de Riel (grados)" },
+      "tooltip": { "en": "Bevel angle of the cleat (45° is the standard). Wall and accessory share it so they mate.", "es": "Ángulo del bisel del riel (45° es el estándar). La pared y el accesorio lo comparten para encajar." }
+    },
+    {
+      "id": "cleat_h", "type": "slider", "default": 30.0, "min": 15.0, "max": 60.0, "step": 1.0,
+      "group": "cleat", "modes": ["wall_cleat", "hook_back", "bin_back"],
+      "label": { "en": "Cleat Height (mm)", "es": "Altura de Riel (mm)" },
+      "tooltip": { "en": "Height of the cleat wedge band", "es": "Altura de la banda del riel" }
+    },
+    {
+      "id": "cleat_depth", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "cleat", "modes": ["wall_cleat", "hook_back", "bin_back"],
+      "label": { "en": "Cleat Depth (mm)", "es": "Profundidad de Riel (mm)" },
+      "tooltip": { "en": "How far the cleat projects out from the wall", "es": "Cuánto sobresale el riel de la pared" }
+    },
+    {
+      "id": "strip_len", "type": "slider", "default": 120.0, "min": 40.0, "max": 400.0, "step": 5.0,
+      "group": "wall_strip", "modes": ["wall_cleat"],
+      "label": { "en": "Strip Length (mm)", "es": "Largo de Tira (mm)" },
+      "tooltip": { "en": "Length of the wall cleat", "es": "Largo del riel de pared" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 0.0, "max": 10.0, "step": 0.2,
+      "group": "wall_strip", "modes": ["wall_cleat"],
+      "label": { "en": "Screw Hole Diameter (mm)", "es": "Diámetro de Tornillo (mm)" },
+      "tooltip": { "en": "Wall-screw clearance-hole diameter (0 = none, 4.5 ≈ #8 / M4)", "es": "Diámetro de holgura para tornillo de pared (0 = ninguno, 4.5 ≈ #8 / M4)" }
+    },
+    {
+      "id": "screw_count", "type": "slider", "default": 2, "min": 0, "max": 12, "step": 1,
+      "group": "wall_strip", "modes": ["wall_cleat"],
+      "label": { "en": "Screw Holes", "es": "Agujeros de Tornillo" },
+      "tooltip": { "en": "Number of mounting screw holes along the strip", "es": "Número de agujeros de montaje a lo largo de la tira" }
+    },
+    {
+      "id": "accessory", "type": "select", "default": "hook",
+      "group": "accessory", "modes": ["hook_back", "bin_back"],
+      "label": { "en": "Accessory Type", "es": "Tipo de Accesorio" },
+      "tooltip": { "en": "The hanging piece (Bin Back mode also builds tool holder / shelf)", "es": "La pieza colgante (el modo Respaldo con Cajón también hace portaherramientas / repisa)" },
+      "options": [
+        { "value": "hook", "label": { "en": "Hook", "es": "Gancho" } },
+        { "value": "bin", "label": { "en": "Bin", "es": "Cajón" } },
+        { "value": "tool_holder", "label": { "en": "Tool Holder", "es": "Portaherramientas" } },
+        { "value": "shelf", "label": { "en": "Shelf", "es": "Repisa" } }
+      ]
+    },
+    {
+      "id": "back_w", "type": "slider", "default": 70.0, "min": 30.0, "max": 200.0, "step": 5.0,
+      "group": "accessory", "modes": ["hook_back", "bin_back"],
+      "label": { "en": "Accessory Width (mm)", "es": "Ancho de Accesorio (mm)" },
+      "tooltip": { "en": "Width of the accessory back", "es": "Ancho del respaldo del accesorio" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "accessory", "modes": ["hook_back", "bin_back"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall thickness of the accessory body", "es": "Grosor de pared del cuerpo del accesorio" }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "accessory", "modes": ["hook_back", "bin_back"], "advanced": true,
+      "label": { "en": "Hang Clearance (mm)", "es": "Holgura de Cuelgue (mm)" },
+      "tooltip": { "en": "Gap between the accessory lip and the wall ramp for an easy hang", "es": "Espacio entre el labio del accesorio y la rampa de la pared para un cuelgue fácil" }
+    },
+    {
+      "id": "tool_dia", "type": "slider", "default": 25.0, "min": 4.0, "max": 80.0, "step": 1.0,
+      "group": "accessory", "modes": ["bin_back"], "advanced": true,
+      "label": { "en": "Tool Hole Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Hole diameter for the Tool Holder accessory", "es": "Diámetro del agujero para el accesorio Portaherramientas" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_cleat", "mode": "wall_cleat",
+      "label": { "en": "Standard 45° Wall Cleat", "es": "Riel de Pared 45° Estándar" },
+      "values": { "angle": 45, "cleat_h": 30, "cleat_depth": 14, "strip_len": 120, "screw_count": 2 }
+    },
+    {
+      "id": "tool_hook", "mode": "hook_back",
+      "label": { "en": "Tool Hook", "es": "Gancho para Herramienta" },
+      "values": { "angle": 45, "cleat_h": 30, "cleat_depth": 14, "back_w": 60, "accessory": "hook" }
+    },
+    {
+      "id": "parts_bin", "mode": "bin_back",
+      "label": { "en": "Parts Bin", "es": "Cajón de Piezas" },
+      "values": { "angle": 45, "cleat_h": 30, "cleat_depth": 14, "back_w": 90, "accessory": "bin" }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cleat_depth >= 8",
+      "severity": "error",
+      "message": { "en": "Cleat depth must be at least 8 mm to hold", "es": "La profundidad del riel debe ser de al menos 8 mm" }
+    },
+    {
+      "expression": "angle >= 30",
+      "severity": "warning",
+      "message": { "en": "Shallow angles hold less securely", "es": "Ángulos poco pronunciados sujetan con menos firmeza" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "french_cleat_45",
+        "label": { "en": "French Cleat 45°", "es": "Riel Francés 45°" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["angle", "cleat_h", "cleat_depth"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The French cleat is the open, universal shop-wall standard. A parametric cleat plus a growing family of accessory backs turns any wall into reconfigurable, on-demand storage — the whole system printable from one shared 45° interface.",
+      "es": "El riel francés es el estándar abierto y universal de pared de taller. Un riel paramétrico más una familia creciente de respaldos de accesorios convierte cualquier pared en almacenamiento reconfigurable bajo demanda — todo el sistema imprimible desde una interfaz compartida de 45°."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["french-cleat", "wall", "storage", "hook", "rail", "household", "hyperobject", "commons"]
+}

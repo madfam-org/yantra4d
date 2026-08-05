@@ -1,0 +1,180 @@
+{
+  "project": {
+    "name": "Test-Tube / Vial Rack",
+    "slug": "tube-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A benchtop rack that holds round test tubes or vials in a cols x rows grid. Choose blind cradles that support the tubes, through-bores for washing and air-drying, or a compact single-row rack. Sized to your tube diameter with a printable slip clearance.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una gradilla de laboratorio que sostiene tubos de ensayo o viales redondos en una cuadrícula de columnas x filas. Elija cavidades ciegas que sostienen los tubos, perforaciones pasantes para lavado y secado al aire, o una gradilla compacta de una sola fila. Dimensionada al diámetro de su tubo con holgura imprimible.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tube-rack.webp",
+    "difficulty": "beginner",
+    "tags": ["rack", "test-tube", "vial", "laboratory", "organizer", "lab", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rack",
+      "label": { "en": "Rack (cradles)", "es": "Gradilla (cavidades)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rack"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "rack_drain",
+      "label": { "en": "Drain Rack (through)", "es": "Gradilla de Drenaje (pasante)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rack_drain"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "single_row",
+      "label": { "en": "Single Row", "es": "Fila Única" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_row"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "rack", "label": { "en": "Rack", "es": "Gradilla" }, "render_mode": 0, "color": "#4a8db7" },
+    { "id": "rack_drain", "label": { "en": "Drain Rack", "es": "Gradilla de Drenaje" }, "render_mode": 0, "color": "#5fa0c8" },
+    { "id": "single_row", "label": { "en": "Single Row", "es": "Fila Única" }, "render_mode": 0, "color": "#73b3d9" }
+  ],
+  "parameter_groups": [
+    { "id": "tubes", "label": { "en": "Tubes", "es": "Tubos" } },
+    { "id": "grid", "label": { "en": "Grid", "es": "Cuadrícula" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_dia", "type": "slider", "default": 16, "min": 5, "max": 60, "step": 0.5,
+      "group": "tubes", "modes": ["rack", "rack_drain", "single_row"],
+      "label": { "en": "Tube Diameter (mm)", "es": "Diámetro del Tubo (mm)" },
+      "tooltip": { "en": "Outer diameter of the tube or vial body", "es": "Diámetro exterior del cuerpo del tubo o vial" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.8, "min": 0.0, "max": 3.0, "step": 0.1,
+      "group": "tubes", "modes": ["rack", "rack_drain", "single_row"], "advanced": true,
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura de Deslizamiento (mm)" },
+      "tooltip": { "en": "Radial gap so tubes drop in and out freely", "es": "Espacio radial para que los tubos entren y salgan libremente" }
+    },
+    {
+      "id": "well_depth", "type": "slider", "default": 30, "min": 5, "max": 120, "step": 1,
+      "group": "tubes", "modes": ["rack", "single_row"],
+      "label": { "en": "Cradle Depth (mm)", "es": "Profundidad de Cavidad (mm)" },
+      "tooltip": { "en": "How deep the blind tube well is", "es": "Qué tan profunda es la cavidad ciega del tubo" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 6, "min": 1, "max": 16, "step": 1,
+      "group": "grid", "modes": ["rack", "rack_drain", "single_row"],
+      "label": { "en": "Tubes Across (X)", "es": "Tubos a lo Ancho (X)" },
+      "tooltip": { "en": "Number of tubes per row", "es": "Número de tubos por fila" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 20.0 }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 4, "min": 1, "max": 12, "step": 1,
+      "group": "grid", "modes": ["rack", "rack_drain"],
+      "label": { "en": "Tubes Deep (Y)", "es": "Tubos a lo Profundo (Y)" },
+      "tooltip": { "en": "Number of rows of tubes", "es": "Número de filas de tubos" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 20.0 }
+    },
+    {
+      "id": "well_pitch", "type": "slider", "default": 0, "min": 0, "max": 40, "step": 0.5,
+      "group": "grid", "modes": ["rack", "rack_drain", "single_row"], "advanced": true,
+      "label": { "en": "Well Pitch (mm, 0 = auto)", "es": "Paso de Cavidad (mm, 0 = auto)" },
+      "tooltip": { "en": "Centre-to-centre spacing; 0 derives it from tube diameter (SBS 9 mm for small tubes)", "es": "Espaciado centro a centro; 0 lo deriva del diámetro del tubo (SBS 9 mm para tubos pequeños)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "body", "modes": ["rack", "rack_drain", "single_row"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Material between and around the bores", "es": "Material entre y alrededor de las perforaciones" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 3.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "body", "modes": ["rack", "single_row"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Solid floor under the blind cradles", "es": "Piso sólido bajo las cavidades ciegas" }
+    },
+    {
+      "id": "feet", "type": "checkbox", "default": true,
+      "group": "body", "modes": ["rack", "rack_drain", "single_row"],
+      "label": { "en": "Corner Feet", "es": "Patas de Esquina" },
+      "tooltip": { "en": "Raise the rack on four small feet", "es": "Elevar la gradilla sobre cuatro patas pequeñas" }
+    },
+    {
+      "id": "drain", "type": "checkbox", "default": false,
+      "group": "body", "modes": ["rack", "single_row"],
+      "label": { "en": "Drain Hole in Cradle", "es": "Orificio de Drenaje en Cavidad" },
+      "tooltip": { "en": "A small hole in each cradle floor for drainage/drying", "es": "Un pequeño orificio en el piso de cada cavidad para drenaje/secado" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "micro_9mm", "mode": "rack",
+      "label": { "en": "Microtube 9 mm SBS (8x12)", "es": "Microtubo 9 mm SBS (8x12)" },
+      "values": { "tube_dia": 8, "well_pitch": 9, "cols": 12, "rows": 8, "well_depth": 20, "clearance": 0.5 }
+    },
+    {
+      "id": "test_tube_16", "mode": "rack",
+      "label": { "en": "16 mm Test Tubes (6x4)", "es": "Tubos de Ensayo 16 mm (6x4)" },
+      "values": { "tube_dia": 16, "cols": 6, "rows": 4, "well_depth": 35, "clearance": 0.8 }
+    },
+    {
+      "id": "drying_rack", "mode": "rack_drain",
+      "label": { "en": "Drying Rack (through)", "es": "Gradilla de Secado (pasante)" },
+      "values": { "tube_dia": 16, "cols": 8, "rows": 4, "clearance": 1.0, "feet": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "well_pitch == 0 || well_pitch >= tube_dia + 2 * clearance + 1.2",
+      "severity": "warning",
+      "message": { "en": "Pitch is tight for this tube diameter; walls may be very thin", "es": "El paso es ajustado para este diámetro; las paredes pueden quedar muy delgadas" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "tube_well_array",
+        "label": { "en": "Tube Well Array", "es": "Arreglo de Cavidades de Tubo" },
+        "geometry_type": "grid",
+        "standard": "SBS 9mm pitch (small)",
+        "parameters": ["tube_dia", "cols", "rows", "well_pitch", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "On-demand labware sized to any tube diameter — clinics, schools, and field labs can print sample organization matched to what they already have, instead of buying fixed-format racks.",
+      "es": "Material de laboratorio bajo demanda dimensionado a cualquier diámetro de tubo — clínicas, escuelas y laboratorios de campo pueden imprimir organización de muestras a la medida de lo que ya tienen, en lugar de comprar gradillas de formato fijo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["rack", "test-tube", "vial", "laboratory", "medical", "hyperobject", "commons"]
+}

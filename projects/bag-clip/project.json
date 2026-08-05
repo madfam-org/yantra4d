@@ -1,0 +1,163 @@
+{
+  "project": {
+    "name": "Sprung Bag Clip",
+    "slug": "bag-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A one-piece sprung clip that reseals bags. A curved back spine acts as a living spring joining two jaws that pinch a bag shut at the mouth; the beam thickness tunes the grip force. Choose a friction mouth or a snap-hook catch that latches closed for thicker or heavier bags, in a standard or extra-wide size.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una pinza resorte de una sola pieza para volver a sellar bolsas. Un lomo trasero curvo actúa como resorte vivo que une dos mordazas que aprietan la bolsa en la boca; el grosor de la viga ajusta la fuerza de agarre. Elige una boca de fricción o un gancho de presión que cierra con traba para bolsas más gruesas o pesadas, en tamaño estándar o extra ancho.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bag-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["clip", "bag", "chip-clip", "kitchen", "spring", "closure", "living-hinge", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": { "en": "Clip", "es": "Pinza" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "wide_clip",
+      "label": { "en": "Wide Clip", "es": "Pinza Ancha" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wide_clip"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "clip", "label": { "en": "Clip", "es": "Pinza" }, "render_mode": 0, "color": "#c0563f" },
+    { "id": "wide_clip", "label": { "en": "Wide Clip", "es": "Pinza Ancha" }, "render_mode": 0, "color": "#d1795f" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Clip Size", "es": "Tamaño de Pinza" } },
+    { "id": "spring", "label": { "en": "Spring & Mouth", "es": "Resorte y Boca" } },
+    { "id": "grip", "label": { "en": "Grip & Catch", "es": "Agarre y Traba" } }
+  ],
+  "parameters": [
+    {
+      "id": "clip_width", "type": "slider", "default": 40, "min": 15, "max": 80, "step": 1,
+      "group": "size", "modes": ["clip", "wide_clip"],
+      "label": { "en": "Clip Width (mm)", "es": "Ancho de Pinza (mm)" },
+      "tooltip": { "en": "Jaw width across the bag. Wide Clip mode multiplies this by 1.8.", "es": "Ancho de la mordaza sobre la bolsa. El modo Pinza Ancha lo multiplica por 1.8." },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "jaw_length", "type": "slider", "default": 28, "min": 12, "max": 45, "step": 1,
+      "group": "size", "modes": ["clip", "wide_clip"],
+      "label": { "en": "Jaw Length (mm)", "es": "Largo de Mordaza (mm)" },
+      "tooltip": { "en": "How far the jaws reach forward from the spine", "es": "Cuánto se extienden las mordazas desde el lomo" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "jaw_height", "type": "slider", "default": 12, "min": 6, "max": 40, "step": 1,
+      "group": "size", "modes": ["clip", "wide_clip"],
+      "label": { "en": "Clip Height (mm)", "es": "Altura de Pinza (mm)" },
+      "tooltip": { "en": "Overall height of the C-clamp (throat opening)", "es": "Altura total de la pinza en C (apertura de la garganta)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "beam_thick", "type": "slider", "default": 2.4, "min": 1.2, "max": 6.0, "step": 0.1,
+      "group": "spring", "modes": ["clip", "wide_clip"],
+      "label": { "en": "Beam / Spring Thickness (mm)", "es": "Grosor de Viga / Resorte (mm)" },
+      "tooltip": { "en": "Spine and jaw wall thickness — thicker beams grip harder but flex less", "es": "Grosor del lomo y las mordazas — vigas más gruesas agarran más pero flexionan menos" }
+    },
+    {
+      "id": "mouth_gap", "type": "slider", "default": 1.2, "min": 0.0, "max": 6.0, "step": 0.1,
+      "group": "spring", "modes": ["clip", "wide_clip"],
+      "label": { "en": "Resting Mouth Gap (mm)", "es": "Abertura de Boca en Reposo (mm)" },
+      "tooltip": { "en": "Gap left between the jaw tips at rest (a 0.4 mm floor keeps it printable)", "es": "Espacio entre las puntas de las mordazas en reposo (un mínimo de 0.4 mm lo mantiene imprimible)" }
+    },
+    {
+      "id": "tail_len", "type": "slider", "default": 8.0, "min": 0.0, "max": 14.0, "step": 0.5,
+      "group": "spring", "modes": ["clip", "wide_clip"], "advanced": true,
+      "label": { "en": "Finger Tail Length (mm)", "es": "Largo de Lengüeta (mm)" },
+      "tooltip": { "en": "Tabs behind the spine to pinch the clip open", "es": "Lengüetas detrás del lomo para abrir la pinza" }
+    },
+    {
+      "id": "catch", "type": "select", "default": "friction",
+      "group": "grip", "modes": ["clip", "wide_clip"],
+      "label": { "en": "Catch Style", "es": "Tipo de Traba" },
+      "tooltip": { "en": "Friction mouth, or a snap-hook that latches the tips closed", "es": "Boca de fricción, o un gancho que traba las puntas cerradas" },
+      "options": [
+        { "value": "friction", "label": { "en": "Friction (sprung mouth)", "es": "Fricción (boca resorte)" } },
+        { "value": "snap-hook", "label": { "en": "Snap-Hook (latching)", "es": "Gancho de Presión (con traba)" } }
+      ]
+    },
+    {
+      "id": "grip_teeth", "type": "checkbox", "default": true,
+      "group": "grip", "modes": ["clip", "wide_clip"],
+      "label": { "en": "Grip Ribs", "es": "Nervaduras de Agarre" },
+      "tooltip": { "en": "Add shallow ridges on the inner jaw faces to bite the bag", "es": "Agrega nervaduras en las caras internas de las mordazas para sujetar la bolsa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "chip_bag", "mode": "clip",
+      "label": { "en": "Chip Bag Clip", "es": "Pinza para Bolsa de Papas" },
+      "values": { "clip_width": 40, "jaw_length": 28, "jaw_height": 12, "beam_thick": 2.4, "catch": "friction" }
+    },
+    {
+      "id": "freezer_bag", "mode": "wide_clip",
+      "label": { "en": "Freezer / Cereal Bag", "es": "Bolsa de Congelador / Cereal" },
+      "values": { "clip_width": 45, "jaw_length": 32, "jaw_height": 14, "beam_thick": 3.0, "catch": "snap-hook", "grip_teeth": true }
+    },
+    {
+      "id": "coffee_bag", "mode": "clip",
+      "label": { "en": "Coffee Bag (heavy latch)", "es": "Bolsa de Café (traba fuerte)" },
+      "values": { "clip_width": 55, "jaw_length": 30, "jaw_height": 16, "beam_thick": 3.4, "mouth_gap": 0.6, "catch": "snap-hook" }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "beam_thick <= jaw_height / 2 - 0.75",
+      "severity": "warning",
+      "message": { "en": "Beam is thick relative to the clip height — throat may be very small", "es": "La viga es gruesa respecto a la altura — la garganta puede ser muy pequeña" }
+    },
+    {
+      "expression": "beam_thick >= 1.2",
+      "severity": "error",
+      "message": { "en": "Beam must be at least 1.2 mm to print a working spring", "es": "La viga debe ser de al menos 1.2 mm para imprimir un resorte funcional" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 15] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "snap",
+        "label": { "en": "Sprung Bag Clamp", "es": "Mordaza Resorte para Bolsa" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["clip_width", "beam_thick", "mouth_gap", "jaw_height", "catch"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps food fresh with a printed clip instead of a bought bag-clip or wasted zip bag — a trivially reprintable household staple that reduces single-use packaging and store dependency.",
+      "es": "Mantiene los alimentos frescos con una pinza impresa en vez de una comprada o una bolsa hermética desperdiciada — un artículo doméstico fácilmente reimprimible que reduce el empaque de un solo uso y la dependencia de tiendas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["clip", "bag", "kitchen", "household", "hyperobject", "commons"]
+}

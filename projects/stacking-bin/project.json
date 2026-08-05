@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Stackable Tray / Sorting Bin",
+    "slug": "stacking-bin",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An open-front stacking sorting bin — the classic parts / hardware bin. Angled open front for easy scooping, a stacking lip so bins nest squarely, and an optional recessed label slot. Optionally add one or two internal dividers.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un contenedor de clasificación apilable de frente abierto — el clásico contenedor de piezas / ferretería. Frente abierto en ángulo para tomar contenido fácilmente, un labio de apilado para que los contenedores encajen a escuadra, y una ranura de etiqueta opcional. Opcionalmente añade uno o dos divisores internos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/stacking-bin.webp",
+    "difficulty": "beginner",
+    "tags": ["bin", "stacking", "sorting", "hardware", "parts", "storage", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bin",
+      "label": { "en": "Bin", "es": "Contenedor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bin"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "bin_with_divider",
+      "label": { "en": "Bin + Dividers", "es": "Contenedor + Divisores" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bin_with_divider"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "bin", "label": { "en": "Bin", "es": "Contenedor" }, "render_mode": 0, "color": "#4f8a8b" },
+    { "id": "bin_with_divider", "label": { "en": "Bin + Dividers", "es": "Contenedor + Divisores" }, "render_mode": 0, "color": "#6aa8a9" }
+  ],
+  "parameter_groups": [
+    { "id": "dimensions", "label": { "en": "Interior Size", "es": "Tamaño Interior" } },
+    { "id": "front", "label": { "en": "Open Front & Label", "es": "Frente Abierto y Etiqueta" } },
+    { "id": "stacking", "label": { "en": "Stacking", "es": "Apilado" } },
+    { "id": "walls", "label": { "en": "Walls & Dividers", "es": "Paredes y Divisores" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_w", "type": "slider", "default": 90, "min": 30, "max": 250, "step": 1,
+      "group": "dimensions", "modes": ["bin", "bin_with_divider"],
+      "label": { "en": "Interior Width (mm)", "es": "Ancho Interior (mm)" },
+      "tooltip": { "en": "Usable interior X dimension", "es": "Dimensión interior X utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_d", "type": "slider", "default": 120, "min": 40, "max": 300, "step": 1,
+      "group": "dimensions", "modes": ["bin", "bin_with_divider"],
+      "label": { "en": "Interior Depth (mm)", "es": "Profundidad Interior (mm)" },
+      "tooltip": { "en": "Usable front-to-back Y dimension", "es": "Dimensión Y de frente a fondo utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_h", "type": "slider", "default": 70, "min": 25, "max": 200, "step": 1,
+      "group": "dimensions", "modes": ["bin", "bin_with_divider"],
+      "label": { "en": "Interior Height (mm)", "es": "Altura Interior (mm)" },
+      "tooltip": { "en": "Usable interior Z depth", "es": "Profundidad interior Z utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "front_cut", "type": "slider", "default": 35, "min": 0, "max": 180, "step": 1,
+      "group": "front", "modes": ["bin", "bin_with_divider"],
+      "label": { "en": "Front Wall Height (mm)", "es": "Altura de Pared Frontal (mm)" },
+      "tooltip": { "en": "How tall the standing front wall is (angled opening above)", "es": "Altura de la pared frontal (abertura en ángulo por encima)" }
+    },
+    {
+      "id": "label", "type": "checkbox", "default": true,
+      "group": "front", "modes": ["bin", "bin_with_divider"],
+      "label": { "en": "Label Slot", "es": "Ranura de Etiqueta" },
+      "tooltip": { "en": "Recessed pocket on the front face for a label", "es": "Bolsillo hundido en la cara frontal para una etiqueta" }
+    },
+    {
+      "id": "lip", "type": "slider", "default": 4.0, "min": 0.0, "max": 10.0, "step": 0.5,
+      "group": "stacking", "modes": ["bin", "bin_with_divider"],
+      "label": { "en": "Stacking Lip Height (mm)", "es": "Altura del Labio de Apilado (mm)" },
+      "tooltip": { "en": "Raised rim that nests the bin above (0 = flat)", "es": "Borde elevado que encaja el contenedor de arriba (0 = plano)" }
+    },
+    {
+      "id": "lip_clear", "type": "slider", "default": 0.4, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "stacking", "modes": ["bin", "bin_with_divider"], "advanced": true,
+      "label": { "en": "Stacking Clearance (mm)", "es": "Holgura de Apilado (mm)" },
+      "tooltip": { "en": "Per-side gap for a printable stack fit", "es": "Espacio por lado para un ajuste de apilado imprimible" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 5.0, "step": 0.2,
+      "group": "walls", "modes": ["bin", "bin_with_divider"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and floor thickness", "es": "Grosor de pared y piso" }
+    },
+    {
+      "id": "dividers", "type": "slider", "default": 1, "min": 0, "max": 2, "step": 1,
+      "group": "walls", "modes": ["bin_with_divider"],
+      "label": { "en": "Internal Dividers", "es": "Divisores Internos" },
+      "tooltip": { "en": "Number of internal partitions across the width", "es": "Número de particiones internas a lo ancho" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "small_hardware", "mode": "bin",
+      "label": { "en": "Small Hardware Bin", "es": "Contenedor de Ferretería" },
+      "values": { "inner_w": 70, "inner_d": 100, "inner_h": 50, "front_cut": 22, "wall": 2.0, "lip": 4 }
+    },
+    {
+      "id": "sorted_bin", "mode": "bin_with_divider",
+      "label": { "en": "Sorted Bin (2 cells)", "es": "Contenedor Dividido (2 celdas)" },
+      "values": { "inner_w": 120, "inner_d": 120, "inner_h": 70, "front_cut": 30, "dividers": 1, "wall": 2.2 }
+    },
+    {
+      "id": "deep_stack", "mode": "bin",
+      "label": { "en": "Deep Stacking Bin", "es": "Contenedor Profundo Apilable" },
+      "values": { "inner_w": 100, "inner_d": 150, "inner_h": 140, "front_cut": 60, "wall": 2.4, "lip": 5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "front_cut <= inner_h - 2",
+      "severity": "warning",
+      "message": { "en": "Front wall nearly as tall as the bin — little opening", "es": "Pared frontal casi tan alta como el contenedor — abertura mínima" }
+    },
+    {
+      "expression": "wall >= 1",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1 mm", "es": "La pared debe ser de al menos 1 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, -150, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "snap",
+        "label": { "en": "Stacking Lip", "es": "Labio de Apilado" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["inner_w", "inner_d", "lip", "lip_clear", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "On-demand, space-efficient parts storage that stacks and labels — a printed-to-fit alternative to bought bin systems, keeping small parts sorted and reducing plastic-packaging waste.",
+      "es": "Almacenamiento de piezas bajo demanda, eficiente en espacio, que se apila y etiqueta — una alternativa impresa a medida a los sistemas de contenedores comerciales, manteniendo las piezas ordenadas y reduciendo residuos de empaque plástico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bin", "stacking", "sorting", "storage", "household", "hyperobject", "commons"]
+}

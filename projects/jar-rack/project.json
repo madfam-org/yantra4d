@@ -1,0 +1,159 @@
+{
+  "project": {
+    "name": "Spice / Jar Rack",
+    "slug": "jar-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holds round jars in a row of circular cradles sized to the jar body. Set the jar diameter and count, arrange them across one or more tiers, and optionally add a magnet-pocket back so the rack clamps to steel. Rack mode is a shelf with N cradles; Magnetic Lid Holder mode is a plate of 6 × 2 mm magnet pockets that grabs the steel lids of jars hung under a shelf.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sostiene frascos redondos en una fila de cunas circulares a la medida del cuerpo del frasco. Define el diámetro y la cantidad, distribúyelos en uno o varios niveles y, opcionalmente, añade un respaldo con alojamientos para imán para fijar el organizador al acero. El modo Organizador es un estante con N cunas; el modo Portatapas Magnético es una placa con alojamientos de imán de 6 × 2 mm que sujeta las tapas metálicas de frascos colgados bajo un estante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/jar-rack.webp",
+    "difficulty": "beginner",
+    "tags": ["spice", "jar", "rack", "kitchen", "organizer", "magnet", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rack",
+      "label": { "en": "Rack", "es": "Organizador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rack"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "magnetic_lid_holder",
+      "label": { "en": "Magnetic Lid Holder", "es": "Portatapas Magnético" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["magnetic_lid_holder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "rack", "label": { "en": "Rack", "es": "Organizador" }, "render_mode": 0, "color": "#b0784f" },
+    { "id": "magnetic_lid_holder", "label": { "en": "Magnetic Lid Holder", "es": "Portatapas Magnético" }, "render_mode": 0, "color": "#cc9a6c" }
+  ],
+  "parameter_groups": [
+    { "id": "jars", "label": { "en": "Jars", "es": "Frascos" } },
+    { "id": "layout", "label": { "en": "Layout", "es": "Distribución" } },
+    { "id": "magnet", "label": { "en": "Magnets", "es": "Imanes" } }
+  ],
+  "parameters": [
+    {
+      "id": "jar_dia", "type": "slider", "default": 45, "min": 15, "max": 120, "step": 1,
+      "group": "jars", "modes": ["rack", "magnetic_lid_holder"],
+      "label": { "en": "Jar Diameter (mm)", "es": "Diámetro del Frasco (mm)" },
+      "tooltip": { "en": "Body diameter of the jars to hold", "es": "Diámetro del cuerpo de los frascos a sostener" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 1.0, "min": 0.0, "max": 4.0, "step": 0.1,
+      "group": "jars", "modes": ["rack"], "advanced": true,
+      "label": { "en": "Cradle Clearance (mm)", "es": "Holgura de Cuna (mm)" },
+      "tooltip": { "en": "Radial gap added around each jar so it drops in", "es": "Espacio radial añadido alrededor de cada frasco para que entre" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 5, "min": 1, "max": 12, "step": 1,
+      "group": "layout", "modes": ["rack", "magnetic_lid_holder"],
+      "label": { "en": "Columns (jars per row)", "es": "Columnas (frascos por fila)" },
+      "tooltip": { "en": "Number of cradles across", "es": "Número de cunas a lo ancho" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 1, "min": 1, "max": 6, "step": 1,
+      "group": "layout", "modes": ["rack", "magnetic_lid_holder"],
+      "label": { "en": "Rows (tiers)", "es": "Filas (niveles)" },
+      "tooltip": { "en": "Number of rows / tiers", "es": "Número de filas / niveles" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "layout", "modes": ["rack", "magnetic_lid_holder"], "advanced": true,
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Material between and around the cradles", "es": "Material entre y alrededor de las cunas" }
+    },
+    {
+      "id": "shelf_thick", "type": "slider", "default": 6.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "layout", "modes": ["rack"],
+      "label": { "en": "Shelf Thickness (mm)", "es": "Grosor del Estante (mm)" },
+      "tooltip": { "en": "Thickness of the cradle shelf", "es": "Grosor del estante de cunas" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "magnet", "type": "checkbox", "default": false,
+      "group": "magnet", "modes": ["rack"],
+      "label": { "en": "Magnet-Pocket Back", "es": "Respaldo con Imanes" },
+      "tooltip": { "en": "Add a rear wall with 6 × 2 mm magnet pockets so the rack clamps to steel", "es": "Añade un respaldo con alojamientos de imán de 6 × 2 mm para fijar el organizador al acero" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "five_spice_strip", "mode": "rack",
+      "label": { "en": "Five-Jar Spice Strip", "es": "Tira para Cinco Especias" },
+      "values": { "jar_dia": 45, "cols": 5, "rows": 1, "shelf_thick": 6, "magnet": false }
+    },
+    {
+      "id": "two_tier_spice_rack", "mode": "rack",
+      "label": { "en": "Two-Tier Spice Rack", "es": "Especiero de Dos Niveles" },
+      "values": { "jar_dia": 50, "cols": 4, "rows": 2, "shelf_thick": 7, "magnet": true }
+    },
+    {
+      "id": "under_shelf_lid_holder", "mode": "magnetic_lid_holder",
+      "label": { "en": "Under-Shelf Lid Holder", "es": "Portatapas Bajo Estante" },
+      "values": { "jar_dia": 45, "cols": 4, "rows": 2, "wall": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cols <= 12",
+      "severity": "warning",
+      "message": { "en": "Very wide racks may exceed print bed size", "es": "Los organizadores muy anchos pueden exceder la cama de impresión" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 160, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -300, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "jar_cradle",
+        "label": { "en": "Jar Cradle", "es": "Cuna de Frasco" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["jar_dia", "cols", "rows", "clearance"]
+      },
+      {
+        "id": "disc_magnet_pocket",
+        "label": { "en": "Disc Magnet Pocket (6×2 mm)", "es": "Alojamiento de Imán (6×2 mm)" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["magnet", "cols", "rows"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns a jumble of spice jars and reused food jars into a tidy, wall- or shelf-mounted set sized to whatever jars you already own, reducing throwaway organizers and reclaiming cabinet space.",
+      "es": "Convierte un montón de frascos de especias y frascos reutilizados en un conjunto ordenado, de pared o estante, a la medida de los frascos que ya tienes, reduciendo organizadores desechables y recuperando espacio en la alacena."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["spice", "jar", "rack", "organizer", "household", "hyperobject", "commons"]
+}

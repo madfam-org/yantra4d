@@ -1,0 +1,153 @@
+{
+  "project": {
+    "name": "Tube Squeezer Key",
+    "slug": "tube-squeezer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A winding key that squeezes the last of a toothpaste, cosmetic, or paint tube. Feed the flattened end of the tube through the lengthwise slot and turn the bar so the tube winds around it, driving the contents forward. Choose winged finger tabs or a cross-hole for a rod, in a standard or wide roller size.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una llave enrolladora que exprime lo último de un tubo de pasta dental, cosmético o pintura. Pasa el extremo aplanado del tubo por la ranura longitudinal y gira la barra para que el tubo se enrolle, empujando el contenido hacia adelante. Elige aletas para los dedos o un orificio para una varilla, en tamaño estándar o rodillo ancho.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tube-squeezer.webp",
+    "difficulty": "beginner",
+    "tags": ["tube", "squeezer", "toothpaste", "key", "winder", "bathroom", "zero-waste", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "squeezer",
+      "label": { "en": "Squeezer Key", "es": "Llave Exprimidora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["squeezer"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "roller_squeezer",
+      "label": { "en": "Roller Squeezer", "es": "Exprimidor de Rodillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["roller_squeezer"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "squeezer", "label": { "en": "Squeezer Key", "es": "Llave Exprimidora" }, "render_mode": 0, "color": "#4d7d9c" },
+    { "id": "roller_squeezer", "label": { "en": "Roller Squeezer", "es": "Exprimidor de Rodillo" }, "render_mode": 0, "color": "#6f9db8" }
+  ],
+  "parameter_groups": [
+    { "id": "tube", "label": { "en": "Tube & Slot", "es": "Tubo y Ranura" } },
+    { "id": "bar", "label": { "en": "Winding Bar", "es": "Barra Enrolladora" } },
+    { "id": "grip", "label": { "en": "Turn Handle", "es": "Manija de Giro" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_width", "type": "slider", "default": 35, "min": 10, "max": 60, "step": 1,
+      "group": "tube", "modes": ["squeezer", "roller_squeezer"],
+      "label": { "en": "Tube Width (mm)", "es": "Ancho del Tubo (mm)" },
+      "tooltip": { "en": "Width of the flattened tube end — sets the slot length", "es": "Ancho del extremo aplanado del tubo — define el largo de la ranura" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "slot_width", "type": "slider", "default": 1.6, "min": 0.8, "max": 3.0, "step": 0.1,
+      "group": "tube", "modes": ["squeezer", "roller_squeezer"],
+      "label": { "en": "Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Slot opening for the crimped tube end to thread through", "es": "Abertura de la ranura para pasar el extremo prensado del tubo" }
+    },
+    {
+      "id": "wall_margin", "type": "slider", "default": 6.0, "min": 3.0, "max": 15.0, "step": 0.5,
+      "group": "tube", "modes": ["squeezer", "roller_squeezer"], "advanced": true,
+      "label": { "en": "Slot End Margin (mm)", "es": "Margen de Extremo de Ranura (mm)" },
+      "tooltip": { "en": "Material at each end of the slot", "es": "Material en cada extremo de la ranura" }
+    },
+    {
+      "id": "bar_thick", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "bar", "modes": ["squeezer", "roller_squeezer"],
+      "label": { "en": "Bar Thickness (mm)", "es": "Grosor de Barra (mm)" },
+      "tooltip": { "en": "Thickness of the winding bar (Roller mode uses at least 9 mm)", "es": "Grosor de la barra enrolladora (el modo Rodillo usa al menos 9 mm)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bar_height", "type": "slider", "default": 14.0, "min": 6.0, "max": 30.0, "step": 1.0,
+      "group": "bar", "modes": ["squeezer", "roller_squeezer"],
+      "label": { "en": "Bar Height (mm)", "es": "Altura de Barra (mm)" },
+      "tooltip": { "en": "How tall the bar is — how much tube can wind around it", "es": "Qué tan alta es la barra — cuánto tubo se puede enrollar" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "handle", "type": "checkbox", "default": true,
+      "group": "grip", "modes": ["squeezer", "roller_squeezer"],
+      "label": { "en": "Winged Tabs", "es": "Aletas" },
+      "tooltip": { "en": "On = finger wings to turn by hand; off = cross-hole for a rod", "es": "Activado = aletas para girar a mano; desactivado = orificio para varilla" }
+    },
+    {
+      "id": "rod_dia", "type": "slider", "default": 6.5, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "grip", "modes": ["squeezer", "roller_squeezer"], "advanced": true,
+      "label": { "en": "Rod Hole Diameter (mm)", "es": "Diámetro de Orificio de Varilla (mm)" },
+      "tooltip": { "en": "Cross-hole diameter for a rod / pencil (when Winged Tabs is off)", "es": "Diámetro del orificio para varilla / lápiz (cuando las aletas están desactivadas)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "toothpaste", "mode": "squeezer",
+      "label": { "en": "Toothpaste (winged)", "es": "Pasta Dental (con aletas)" },
+      "values": { "tube_width": 35, "bar_thick": 6, "bar_height": 14, "slot_width": 1.6, "handle": true }
+    },
+    {
+      "id": "cosmetic_rod", "mode": "squeezer",
+      "label": { "en": "Cosmetic Tube (rod)", "es": "Tubo Cosmético (varilla)" },
+      "values": { "tube_width": 25, "bar_thick": 6, "bar_height": 16, "slot_width": 1.2, "handle": false, "rod_dia": 6.5 }
+    },
+    {
+      "id": "paint_roller", "mode": "roller_squeezer",
+      "label": { "en": "Paint / Ointment Roller", "es": "Rodillo de Pintura / Pomada" },
+      "values": { "tube_width": 55, "bar_thick": 10, "bar_height": 24, "slot_width": 2.4, "wall_margin": 8, "handle": false, "rod_dia": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_width <= bar_thick - 2",
+      "severity": "error",
+      "message": { "en": "Slot is too wide for the bar — increase bar thickness", "es": "La ranura es muy ancha para la barra — aumenta el grosor" }
+    },
+    {
+      "expression": "bar_height >= 6",
+      "severity": "warning",
+      "message": { "en": "A short bar holds little wound tube", "es": "Una barra corta sostiene poco tubo enrollado" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [40, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [40, -150, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "tube_slot",
+        "label": { "en": "Tube Slot", "es": "Ranura del Tubo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["tube_width", "slot_width", "bar_thick"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Recovers the 5–15% of product left in a tube that is otherwise thrown away — a reusable printed key that reduces waste and stretches every tube of toothpaste, ointment, glue, or paint.",
+      "es": "Recupera el 5–15% del producto que queda en un tubo y que de otro modo se desperdicia — una llave impresa reutilizable que reduce el desperdicio y aprovecha cada tubo de pasta dental, pomada, pegamento o pintura."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["tube", "squeezer", "toothpaste", "household", "hyperobject", "commons"]
+}

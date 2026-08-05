@@ -1,0 +1,213 @@
+{
+  "project": {
+    "name": "Pegboard Hook Set",
+    "slug": "pegboard-hooks",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A set of wall-storage accessories that snap onto a standard perforated pegboard. The peg / insert geometry is modeled to the real board pitch so printed parts actually seat in the holes. Supports the North-American 1-inch pegboard (25.4 mm pitch, round holes) and IKEA SKÅDIS (40 mm pitch, 5 mm vertical slots). Build a J-hook, a hanging bin, or a bored tool holder.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un conjunto de accesorios de almacenamiento de pared que encajan en un panel perforado estándar. La geometría del perno / inserto se modela al paso real del panel para que las piezas impresas realmente asienten en los orificios. Compatible con el panel de 1 pulgada norteamericano (paso de 25.4 mm, orificios redondos) e IKEA SKÅDIS (paso de 40 mm, ranuras verticales de 5 mm). Crea un gancho en J, un contenedor colgante o un portaherramientas perforado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pegboard-hooks.webp",
+    "difficulty": "intermediate",
+    "tags": ["pegboard", "skadis", "hook", "bin", "tool holder", "wall storage", "organizer", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "hook",
+      "label": { "en": "J-Hook", "es": "Gancho en J" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "bin",
+      "label": { "en": "Hanging Bin", "es": "Contenedor Colgante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bin"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "tool_holder",
+      "label": { "en": "Tool Holder", "es": "Portaherramientas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tool_holder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "hook", "label": { "en": "J-Hook", "es": "Gancho en J" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "bin", "label": { "en": "Hanging Bin", "es": "Contenedor Colgante" }, "render_mode": 0, "color": "#4b9f7a" },
+    { "id": "tool_holder", "label": { "en": "Tool Holder", "es": "Portaherramientas" }, "render_mode": 0, "color": "#b0865b" }
+  ],
+  "parameter_groups": [
+    { "id": "board", "label": { "en": "Board & Pegs", "es": "Panel y Pernos" } },
+    { "id": "plate", "label": { "en": "Back Plate", "es": "Placa Trasera" } },
+    { "id": "hook", "label": { "en": "Hook", "es": "Gancho" } },
+    { "id": "bin", "label": { "en": "Bin", "es": "Contenedor" } },
+    { "id": "tool", "label": { "en": "Tool Holder", "es": "Portaherramientas" } }
+  ],
+  "parameters": [
+    {
+      "id": "board_standard", "type": "select", "default": "us_1inch",
+      "group": "board", "modes": ["hook", "bin", "tool_holder"],
+      "label": { "en": "Board Standard", "es": "Estándar de Panel" },
+      "tooltip": { "en": "The pegboard the part mounts to. 1-inch uses 25.4 mm round-hole pitch; SKÅDIS uses a 40 mm slotted pitch.", "es": "El panel al que se monta la pieza. 1 pulgada usa paso de 25.4 mm con orificios redondos; SKÅDIS usa paso ranurado de 40 mm." },
+      "options": [
+        { "value": "us_1inch", "label": { "en": "1-inch pegboard (25.4 mm)", "es": "Panel de 1 pulgada (25.4 mm)" } },
+        { "value": "skadis", "label": { "en": "IKEA SKÅDIS (40 mm)", "es": "IKEA SKÅDIS (40 mm)" } }
+      ]
+    },
+    {
+      "id": "peg_count", "type": "slider", "default": 2, "min": 1, "max": 2, "step": 1,
+      "group": "board", "modes": ["hook", "bin", "tool_holder"],
+      "label": { "en": "Pegs (rows)", "es": "Pernos (filas)" },
+      "tooltip": { "en": "1 or 2 vertically stacked pegs. Two pegs resist rotation and hold more load.", "es": "1 o 2 pernos apilados verticalmente. Dos pernos resisten la rotación y soportan más carga." }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 26.0, "min": 18.0, "max": 80.0, "step": 1.0,
+      "group": "plate", "modes": ["hook", "tool_holder"],
+      "label": { "en": "Back Plate Width (mm)", "es": "Ancho de Placa Trasera (mm)" },
+      "tooltip": { "en": "Width of the plate that presses against the board", "es": "Ancho de la placa que se apoya contra el panel" }
+    },
+    {
+      "id": "plate_thick", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "plate", "modes": ["hook", "bin", "tool_holder"],
+      "label": { "en": "Back Plate Thickness (mm)", "es": "Grosor de Placa Trasera (mm)" },
+      "tooltip": { "en": "Thickness of the back plate (stiffness / load capacity)", "es": "Grosor de la placa trasera (rigidez / capacidad de carga)" }
+    },
+    {
+      "id": "hook_reach", "type": "slider", "default": 35.0, "min": 15.0, "max": 80.0, "step": 1.0,
+      "group": "hook", "modes": ["hook"],
+      "label": { "en": "Hook Reach (mm)", "es": "Alcance del Gancho (mm)" },
+      "tooltip": { "en": "How far the hook projects out from the board", "es": "Cuánto sobresale el gancho del panel" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "hook_dia", "type": "slider", "default": 6.0, "min": 4.0, "max": 10.0, "step": 0.5,
+      "group": "hook", "modes": ["hook"],
+      "label": { "en": "Hook Bar Diameter (mm)", "es": "Diámetro de Barra del Gancho (mm)" },
+      "tooltip": { "en": "Round-stock diameter of the hook arm", "es": "Diámetro de la barra redonda del brazo del gancho" }
+    },
+    {
+      "id": "hook_up", "type": "slider", "default": 14.0, "min": 4.0, "max": 30.0, "step": 1.0,
+      "group": "hook", "modes": ["hook"],
+      "label": { "en": "Tip Up-Return (mm)", "es": "Retorno Superior de la Punta (mm)" },
+      "tooltip": { "en": "Upward return at the hook tip so items do not slide off", "es": "Retorno hacia arriba en la punta para que los objetos no se deslicen" }
+    },
+    {
+      "id": "bin_w", "type": "slider", "default": 60.0, "min": 30.0, "max": 120.0, "step": 1.0,
+      "group": "bin", "modes": ["bin"],
+      "label": { "en": "Bin Width (mm)", "es": "Ancho del Contenedor (mm)" },
+      "tooltip": { "en": "Interior width of the hanging bin", "es": "Ancho interior del contenedor colgante" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bin_d", "type": "slider", "default": 45.0, "min": 20.0, "max": 80.0, "step": 1.0,
+      "group": "bin", "modes": ["bin"],
+      "label": { "en": "Bin Depth (mm)", "es": "Profundidad del Contenedor (mm)" },
+      "tooltip": { "en": "How far the bin projects out from the board", "es": "Cuánto sobresale el contenedor del panel" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bin_h", "type": "slider", "default": 45.0, "min": 20.0, "max": 90.0, "step": 1.0,
+      "group": "bin", "modes": ["bin"],
+      "label": { "en": "Bin Height (mm)", "es": "Altura del Contenedor (mm)" },
+      "tooltip": { "en": "Overall height of the bin", "es": "Altura total del contenedor" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bin_wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 4.0, "step": 0.2,
+      "group": "bin", "modes": ["bin"], "advanced": true,
+      "label": { "en": "Bin Wall Thickness (mm)", "es": "Grosor de Pared del Contenedor (mm)" },
+      "tooltip": { "en": "Wall thickness of the bin body", "es": "Grosor de pared del cuerpo del contenedor" }
+    },
+    {
+      "id": "tool_dia", "type": "slider", "default": 20.0, "min": 4.0, "max": 40.0, "step": 0.5,
+      "group": "tool", "modes": ["tool_holder"],
+      "label": { "en": "Tool Shaft Diameter (mm)", "es": "Diámetro del Vástago de Herramienta (mm)" },
+      "tooltip": { "en": "Diameter of the round tool the holder cradles", "es": "Diámetro de la herramienta redonda que sostiene el portaherramientas" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tool_ring", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "tool", "modes": ["tool_holder"], "advanced": true,
+      "label": { "en": "Ring Wall (mm)", "es": "Pared del Anillo (mm)" },
+      "tooltip": { "en": "Material around the tool hole", "es": "Material alrededor del orificio de la herramienta" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "us_utility_hook", "mode": "hook",
+      "label": { "en": "1-inch Utility Hook", "es": "Gancho Utilitario 1 pulgada" },
+      "values": { "board_standard": "us_1inch", "peg_count": 2, "hook_reach": 35, "hook_dia": 6, "hook_up": 14 }
+    },
+    {
+      "id": "skadis_deep_hook", "mode": "hook",
+      "label": { "en": "SKÅDIS Long Hook", "es": "Gancho Largo SKÅDIS" },
+      "values": { "board_standard": "skadis", "peg_count": 2, "hook_reach": 55, "hook_dia": 8, "hook_up": 20 }
+    },
+    {
+      "id": "us_parts_bin", "mode": "bin",
+      "label": { "en": "1-inch Parts Bin", "es": "Contenedor de Piezas 1 pulgada" },
+      "values": { "board_standard": "us_1inch", "bin_w": 70, "bin_d": 50, "bin_h": 55, "bin_wall": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_thick >= 2.5",
+      "severity": "error",
+      "message": { "en": "Back plate must be at least 2.5 mm thick", "es": "La placa trasera debe tener al menos 2.5 mm de grosor" }
+    },
+    {
+      "expression": "tool_dia <= plate_w + 20",
+      "severity": "warning",
+      "message": { "en": "Tool diameter is large relative to the plate width", "es": "El diámetro de la herramienta es grande respecto al ancho de la placa" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "pegboard_peg_pattern",
+        "label": { "en": "Pegboard Peg Pattern", "es": "Patrón de Pernos de Panel" },
+        "geometry_type": "grid",
+        "standard": "1-inch pegboard / IKEA SKÅDIS",
+        "parameters": ["board_standard", "peg_count", "plate_thick"]
+      },
+      {
+        "id": "tool_cradle_bore",
+        "label": { "en": "Tool Cradle Bore", "es": "Orificio Cuna de Herramienta" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["tool_dia", "tool_ring"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Pegboard is the ubiquitous open standard for wall organization. Printing accessories to the exact tool and the board you already own eliminates blister-pack hooks and lets one board serve any shop, kitchen, or craft wall.",
+      "es": "El panel perforado es el estándar abierto ubicuo para organización de pared. Imprimir accesorios a la medida exacta de la herramienta y el panel que ya tienes elimina los ganchos empacados y permite que un panel sirva para cualquier taller, cocina o pared de manualidades."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pegboard", "skadis", "hook", "household", "hyperobject", "commons"]
+}

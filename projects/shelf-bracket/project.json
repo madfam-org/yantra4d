@@ -1,0 +1,159 @@
+{
+  "project": {
+    "name": "Shelf Bracket",
+    "slug": "shelf-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A right-angle L-bracket that supports a shelf, load-aware. The plate thickness is bounded so the part stays structurally sane, an optional diagonal gusset braces the corner, and screw holes sit on both arms to bolt into the wall and up into the shelf. Print a single bracket or a mirrored left+right pair.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte en L de ángulo recto que sostiene un estante, consciente de la carga. El grosor de la placa está acotado para que la pieza sea estructuralmente sensata, una escuadra diagonal opcional refuerza la esquina, y hay agujeros para tornillos en ambos brazos para fijar a la pared y al estante. Imprime un solo soporte o un par izquierdo+derecho espejado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shelf-bracket.webp",
+    "difficulty": "intermediate",
+    "tags": ["bracket", "shelf", "L-bracket", "support", "gusset", "mount", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bracket",
+      "label": { "en": "Single Bracket", "es": "Soporte Individual" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bracket"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "bracket_pair",
+      "label": { "en": "Mirrored Pair", "es": "Par Espejado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bracket_pair"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "bracket", "label": { "en": "Bracket", "es": "Soporte" }, "render_mode": 0, "color": "#7a7f87" },
+    { "id": "bracket_pair", "label": { "en": "Bracket Pair", "es": "Par de Soportes" }, "render_mode": 0, "color": "#9aa0a8" }
+  ],
+  "parameter_groups": [
+    { "id": "arms", "label": { "en": "Arms & Size", "es": "Brazos y Tamaño" } },
+    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } },
+    { "id": "fastening", "label": { "en": "Screw Holes", "es": "Agujeros de Tornillo" } }
+  ],
+  "parameters": [
+    {
+      "id": "arm_h", "type": "slider", "default": 80, "min": 20, "max": 250, "step": 1,
+      "group": "arms", "modes": ["bracket", "bracket_pair"],
+      "label": { "en": "Horizontal Arm (mm)", "es": "Brazo Horizontal (mm)" },
+      "tooltip": { "en": "Length of the arm under the shelf", "es": "Longitud del brazo bajo el estante" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "arm_v", "type": "slider", "default": 80, "min": 20, "max": 250, "step": 1,
+      "group": "arms", "modes": ["bracket", "bracket_pair"],
+      "label": { "en": "Vertical Arm (mm)", "es": "Brazo Vertical (mm)" },
+      "tooltip": { "en": "Length of the arm up the wall", "es": "Longitud del brazo sobre la pared" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "width", "type": "slider", "default": 30, "min": 12, "max": 80, "step": 1,
+      "group": "arms", "modes": ["bracket", "bracket_pair"],
+      "label": { "en": "Width (mm)", "es": "Ancho (mm)" },
+      "tooltip": { "en": "Bracket width (X)", "es": "Ancho del soporte (X)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 5.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "structure", "modes": ["bracket", "bracket_pair"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Bounded to ~1/4 of the shorter arm for a sane load path", "es": "Acotado a ~1/4 del brazo más corto para una carga sensata" }
+    },
+    {
+      "id": "brace", "type": "checkbox", "default": true,
+      "group": "structure", "modes": ["bracket", "bracket_pair"],
+      "label": { "en": "Diagonal Gusset", "es": "Escuadra Diagonal" },
+      "tooltip": { "en": "Triangular brace across the corner for higher load", "es": "Refuerzo triangular en la esquina para mayor carga" }
+    },
+    {
+      "id": "screw_d", "type": "slider", "default": 4.5, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "fastening", "modes": ["bracket", "bracket_pair"],
+      "label": { "en": "Screw Hole Ø (mm)", "es": "Ø de Agujero (mm)" },
+      "tooltip": { "en": "Clearance diameter for your screws (e.g. 4.5 for #8/M4)", "es": "Diámetro de holgura para tus tornillos (ej. 4.5 para #8/M4)" }
+    },
+    {
+      "id": "holes_per_arm", "type": "slider", "default": 2, "min": 0, "max": 4, "step": 1,
+      "group": "fastening", "modes": ["bracket", "bracket_pair"],
+      "label": { "en": "Holes per Arm", "es": "Agujeros por Brazo" },
+      "tooltip": { "en": "Number of screw holes on each arm", "es": "Número de agujeros de tornillo en cada brazo" }
+    },
+    {
+      "id": "gap", "type": "slider", "default": 10.0, "min": 2.0, "max": 60.0, "step": 1,
+      "group": "fastening", "modes": ["bracket_pair"], "advanced": true,
+      "label": { "en": "Pair Spacing (mm)", "es": "Separación del Par (mm)" },
+      "tooltip": { "en": "Gap between the two brackets on the plate", "es": "Espacio entre los dos soportes en la placa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "light_shelf", "mode": "bracket",
+      "label": { "en": "Light Shelf (60 mm)", "es": "Estante Ligero (60 mm)" },
+      "values": { "arm_h": 60, "arm_v": 60, "width": 25, "thickness": 4, "brace": true, "screw_d": 4.5 }
+    },
+    {
+      "id": "heavy_pair", "mode": "bracket_pair",
+      "label": { "en": "Heavy-Duty Pair", "es": "Par de Alta Resistencia" },
+      "values": { "arm_h": 120, "arm_v": 100, "width": 40, "thickness": 10, "brace": true, "screw_d": 5.5, "holes_per_arm": 3 }
+    },
+    {
+      "id": "slim_no_brace", "mode": "bracket",
+      "label": { "en": "Slim (no gusset)", "es": "Delgado (sin escuadra)" },
+      "values": { "arm_h": 90, "arm_v": 70, "width": 20, "thickness": 5, "brace": false, "holes_per_arm": 2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness <= arm_h / 4",
+      "severity": "warning",
+      "message": { "en": "Thickness is large relative to the arm length", "es": "El grosor es grande respecto a la longitud del brazo" }
+    },
+    {
+      "expression": "screw_d <= width - 4",
+      "severity": "error",
+      "message": { "en": "Screw hole too large for the bracket width", "es": "Agujero de tornillo demasiado grande para el ancho del soporte" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "bracket",
+        "label": { "en": "Right-Angle Shelf Support", "es": "Soporte de Estante en Ángulo Recto" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["arm_h", "arm_v", "width", "thickness", "screw_d", "holes_per_arm"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A load-aware, printed-to-fit shelf support with a gusset option — puts safe, custom-length shelving within reach without a trip to the hardware store, and the bounded thickness discourages under-built brackets.",
+      "es": "Un soporte de estante consciente de la carga, impreso a medida y con opción de escuadra — pone al alcance estanterías seguras de longitud personalizada sin ir a la ferretería, y el grosor acotado desalienta soportes mal dimensionados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bracket", "shelf", "support", "mount", "household", "hyperobject", "commons"]
+}

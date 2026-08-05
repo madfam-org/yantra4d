@@ -1,0 +1,157 @@
+{
+  "project": {
+    "name": "Soap / Sponge Holder",
+    "slug": "soap-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A draining dish for a bar of soap or a sponge. The floor carries a lattice of drain holes so water runs out instead of pooling, an optional front spout tips runoff toward the sink, and a wall-mount variant adds a hook clip plus a suction-cup boss. Dish mode is freestanding; Wall Dish mode hangs on a rail or cabinet edge.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un platillo con drenaje para una barra de jabón o una esponja. El piso lleva una retícula de orificios de drenaje para que el agua escurra en vez de acumularse, un pico frontal opcional dirige el escurrimiento hacia el fregadero, y una variante de pared añade un gancho y una base para ventosa. El modo Platillo es de sobremesa; el modo Platillo de Pared cuelga de un riel o borde de gabinete.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/soap-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["soap", "sponge", "dish", "bathroom", "kitchen", "drainage", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dish",
+      "label": { "en": "Dish", "es": "Platillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dish"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "wall_dish",
+      "label": { "en": "Wall Dish", "es": "Platillo de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_dish"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "dish", "label": { "en": "Dish", "es": "Platillo" }, "render_mode": 0, "color": "#5aa9c9" },
+    { "id": "wall_dish", "label": { "en": "Wall Dish", "es": "Platillo de Pared" }, "render_mode": 0, "color": "#87c4dd" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Tray Size", "es": "Tamaño del Platillo" } },
+    { "id": "drainage", "label": { "en": "Drainage", "es": "Drenaje" } },
+    { "id": "mounting", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "width", "type": "slider", "default": 100, "min": 40, "max": 200, "step": 1,
+      "group": "size", "modes": ["dish", "wall_dish"],
+      "label": { "en": "Width (mm)", "es": "Ancho (mm)" },
+      "tooltip": { "en": "Tray X dimension", "es": "Dimensión X del platillo" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 75, "min": 40, "max": 160, "step": 1,
+      "group": "size", "modes": ["dish", "wall_dish"],
+      "label": { "en": "Depth (mm)", "es": "Profundidad (mm)" },
+      "tooltip": { "en": "Tray Y dimension", "es": "Dimensión Y del platillo" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 22, "min": 10, "max": 50, "step": 1,
+      "group": "size", "modes": ["dish", "wall_dish"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Overall tray height", "es": "Altura total del platillo" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "size", "modes": ["dish", "wall_dish"], "advanced": true,
+      "label": { "en": "Wall & Floor (mm)", "es": "Pared y Piso (mm)" },
+      "tooltip": { "en": "Side wall and floor thickness", "es": "Grosor de pared lateral y piso" }
+    },
+    {
+      "id": "drain_density", "type": "slider", "default": 1.0, "min": 0.5, "max": 2.0, "step": 0.1,
+      "group": "drainage", "modes": ["dish", "wall_dish"],
+      "label": { "en": "Drain Density", "es": "Densidad de Drenaje" },
+      "tooltip": { "en": "Higher = more, smaller holes (0.5 sparse … 2.0 dense)", "es": "Mayor = más orificios y más pequeños (0.5 escaso … 2.0 denso)" }
+    },
+    {
+      "id": "spout", "type": "checkbox", "default": true,
+      "group": "drainage", "modes": ["dish", "wall_dish"],
+      "label": { "en": "Front Spout", "es": "Pico Frontal" },
+      "tooltip": { "en": "Notch the front rim so runoff drains toward the sink", "es": "Rebaja el borde frontal para que el escurrimiento drene hacia el fregadero" }
+    },
+    {
+      "id": "mount", "type": "select", "default": "freestanding",
+      "group": "mounting", "modes": ["dish"],
+      "label": { "en": "Mount Style", "es": "Tipo de Montaje" },
+      "tooltip": { "en": "Freestanding, or a wall clip with a suction-cup boss", "es": "De sobremesa, o gancho de pared con base para ventosa" },
+      "options": [
+        { "value": "freestanding", "label": { "en": "Freestanding", "es": "De Sobremesa" } },
+        { "value": "wall_clip", "label": { "en": "Wall Clip + Suction Boss", "es": "Gancho + Base para Ventosa" } }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "kitchen_sponge_tray", "mode": "dish",
+      "label": { "en": "Kitchen Sponge Tray", "es": "Bandeja para Esponja" },
+      "values": { "width": 130, "depth": 90, "height": 20, "drain_density": 1.4, "spout": true }
+    },
+    {
+      "id": "bar_soap_dish", "mode": "dish",
+      "label": { "en": "Bar Soap Dish", "es": "Jabonera" },
+      "values": { "width": 95, "depth": 65, "height": 18, "drain_density": 1.0, "spout": true }
+    },
+    {
+      "id": "shower_wall_dish", "mode": "wall_dish",
+      "label": { "en": "Shower Wall Dish", "es": "Platillo de Ducha de Pared" },
+      "values": { "width": 110, "depth": 80, "height": 26, "drain_density": 1.6, "spout": false }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall <= width / 6",
+      "severity": "warning",
+      "message": { "en": "Wall is thick relative to tray width", "es": "La pared es gruesa respecto al ancho del platillo" }
+    },
+    {
+      "expression": "height >= 10",
+      "severity": "error",
+      "message": { "en": "Tray must be at least 10 mm tall", "es": "El platillo debe medir al menos 10 mm de alto" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "drainage_lattice",
+        "label": { "en": "Drainage Lattice", "es": "Retícula de Drenaje" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["drain_density", "width", "depth", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps soap and sponges dry so they last longer and grow less mildew, replacing a cheap disposable plastic dish with a printable, right-sized one that drains where you want it.",
+      "es": "Mantiene secos el jabón y las esponjas para que duren más y críen menos moho, sustituyendo un platillo de plástico desechable por uno imprimible, a la medida y que drena donde se necesita."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["soap", "sponge", "dish", "drainage", "household", "hyperobject", "commons"]
+}

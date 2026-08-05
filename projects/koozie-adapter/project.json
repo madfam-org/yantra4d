@@ -1,0 +1,159 @@
+{
+  "project": {
+    "name": "Bottle / Can Koozie Adapter",
+    "slug": "koozie-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A sleeve or adapter that fits a small can or bottle into a larger cup holder, and insulates it. Choose a straight or tapered sleeve, or a stepping adapter whose bore matches the vessel and whose outside matches the holder. Sized by real vessel and holder diameters with a tunable fit clearance.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una funda o adaptador que ajusta una lata o botella pequeña en un portavasos más grande, y la aísla. Elige una funda recta o cónica, o un adaptador escalonado cuyo interior coincide con el recipiente y cuyo exterior coincide con el portavasos. Dimensionado por diámetros reales de recipiente y portavasos con holgura de ajuste ajustable.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/koozie-adapter.webp",
+    "difficulty": "beginner",
+    "tags": ["koozie", "sleeve", "adapter", "cup-holder", "bottle", "can", "insulator", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "sleeve",
+      "label": { "en": "Sleeve", "es": "Funda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sleeve"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "adapter",
+      "label": { "en": "Stepping Adapter", "es": "Adaptador Escalonado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["adapter"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "sleeve", "label": { "en": "Sleeve", "es": "Funda" }, "render_mode": 0, "color": "#b05b7a" },
+    { "id": "adapter", "label": { "en": "Stepping Adapter", "es": "Adaptador Escalonado" }, "render_mode": 0, "color": "#c97a9a" }
+  ],
+  "parameter_groups": [
+    { "id": "diameters", "label": { "en": "Diameters", "es": "Diámetros" } },
+    { "id": "shape", "label": { "en": "Shape & Fit", "es": "Forma y Ajuste" } },
+    { "id": "base", "label": { "en": "Base", "es": "Base" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_dia", "type": "slider", "default": 66, "min": 30, "max": 110, "step": 1,
+      "group": "diameters", "modes": ["sleeve", "adapter"],
+      "label": { "en": "Vessel Ø (mm)", "es": "Ø del Recipiente (mm)" },
+      "tooltip": { "en": "Diameter of the can/bottle the bore must hold (66 ≈ 355 ml can)", "es": "Diámetro de la lata/botella que sostiene el interior (66 ≈ lata de 355 ml)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "outer_dia", "type": "slider", "default": 90, "min": 40, "max": 130, "step": 1,
+      "group": "diameters", "modes": ["sleeve", "adapter"],
+      "label": { "en": "Holder Ø (mm)", "es": "Ø del Portavasos (mm)" },
+      "tooltip": { "en": "Diameter of the cup holder the outside must fill", "es": "Diámetro del portavasos que llena el exterior" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 95, "min": 20, "max": 200, "step": 1,
+      "group": "diameters", "modes": ["sleeve", "adapter"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Overall sleeve height (Z)", "es": "Altura total de la funda (Z)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "taper", "type": "slider", "default": 6.0, "min": 0.0, "max": 30.0, "step": 0.5,
+      "group": "shape", "modes": ["sleeve"],
+      "label": { "en": "Taper (Ø top vs bottom, mm)", "es": "Conicidad (Ø arriba vs abajo, mm)" },
+      "tooltip": { "en": "How much narrower the top is than the bottom (0 = straight)", "es": "Cuánto más angosto es arriba que abajo (0 = recto)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.2, "max": 8.0, "step": 0.2,
+      "group": "shape", "modes": ["sleeve", "adapter"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Minimum wall thickness (also the insulating thickness)", "es": "Grosor mínimo de pared (también el grosor aislante)" }
+    },
+    {
+      "id": "fit_clear", "type": "slider", "default": 0.5, "min": 0.0, "max": 1.5, "step": 0.1,
+      "group": "shape", "modes": ["sleeve", "adapter"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Added to the bore and removed from the outside for a slip fit", "es": "Se añade al interior y se quita del exterior para un ajuste deslizante" }
+    },
+    {
+      "id": "base", "type": "checkbox", "default": true,
+      "group": "base", "modes": ["sleeve", "adapter"],
+      "label": { "en": "Closed Base", "es": "Base Cerrada" },
+      "tooltip": { "en": "Close the bottom so the vessel rests on an insulating floor", "es": "Cierra el fondo para que el recipiente descanse sobre un piso aislante" }
+    },
+    {
+      "id": "base_th", "type": "slider", "default": 3.0, "min": 1.0, "max": 10.0, "step": 0.5,
+      "group": "base", "modes": ["sleeve", "adapter"], "advanced": true,
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Thickness of the closed base", "es": "Grosor de la base cerrada" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "can_to_holder", "mode": "adapter",
+      "label": { "en": "355 ml Can → Cup Holder", "es": "Lata 355 ml → Portavasos" },
+      "values": { "inner_dia": 66, "outer_dia": 90, "height": 90, "wall": 3, "base": true }
+    },
+    {
+      "id": "slim_can_sleeve", "mode": "sleeve",
+      "label": { "en": "Slim Can Sleeve (tapered)", "es": "Funda Lata Slim (cónica)" },
+      "values": { "inner_dia": 58, "outer_dia": 84, "height": 130, "taper": 10, "wall": 3.5 }
+    },
+    {
+      "id": "bottle_insulator", "mode": "sleeve",
+      "label": { "en": "Bottle Insulator", "es": "Aislante de Botella" },
+      "values": { "inner_dia": 70, "outer_dia": 92, "height": 160, "taper": 4, "wall": 5, "base": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "outer_dia >= inner_dia + 2 * wall + 2",
+      "severity": "error",
+      "message": { "en": "Holder Ø must exceed vessel Ø by at least two walls", "es": "El Ø del portavasos debe superar al del recipiente en al menos dos paredes" }
+    },
+    {
+      "expression": "taper <= outer_dia - inner_dia",
+      "severity": "warning",
+      "message": { "en": "Taper is large relative to the wall thickness", "es": "La conicidad es grande respecto al grosor de pared" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 150] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 90] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "profile",
+        "label": { "en": "Vessel Taper", "es": "Conicidad del Recipiente" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["inner_dia", "outer_dia", "taper", "wall", "fit_clear"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Rescues the mismatch between a drink and a cup holder — a printed-to-fit adapter/insulator that keeps a can or bottle secure and cool, extending the life of vehicles, furniture and vessels people already own instead of replacing them.",
+      "es": "Resuelve el desajuste entre una bebida y un portavasos — un adaptador/aislante impreso a medida que mantiene una lata o botella segura y fría, alargando la vida de vehículos, muebles y recipientes que la gente ya posee en vez de reemplazarlos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["koozie", "sleeve", "adapter", "insulator", "household", "hyperobject", "commons"]
+}

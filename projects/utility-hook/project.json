@@ -1,0 +1,193 @@
+{
+  "project": {
+    "name": "Utility Hook / Coat Peg",
+    "slug": "utility-hook",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A wall hook for coats, bags, towels, or keys. The hook reaches forward and curls upward at the tip so items cannot slide off, sized with load-appropriate stock thickness. Choose a screw plate, an adhesive plate, or an over-door yoke that hangs without fixings. Build a single hook or a rail of several.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un gancho de pared para abrigos, bolsas, toallas o llaves. El gancho se proyecta hacia adelante y se curva hacia arriba en la punta para que los objetos no se deslicen, con grosor adecuado a la carga. Elige una placa atornillada, una placa adhesiva o un yugo sobre puerta que cuelga sin herrajes. Crea un gancho individual o un riel de varios.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/utility-hook.webp",
+    "difficulty": "beginner",
+    "tags": ["hook", "coat", "peg", "wall hook", "over-door", "rail", "entryway", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "hook",
+      "label": { "en": "Single Hook", "es": "Gancho Individual" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 8 }
+    },
+    {
+      "id": "hook_rail",
+      "label": { "en": "Hook Rail", "es": "Riel de Ganchos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_rail"],
+      "estimate": { "base_time": 10, "per_unit": 4, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "hook", "label": { "en": "Single Hook", "es": "Gancho Individual" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "hook_rail", "label": { "en": "Hook Rail", "es": "Riel de Ganchos" }, "render_mode": 0, "color": "#4b9f7a" }
+  ],
+  "parameter_groups": [
+    { "id": "hook", "label": { "en": "Hook", "es": "Gancho" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } },
+    { "id": "rail", "label": { "en": "Rail", "es": "Riel" } }
+  ],
+  "parameters": [
+    {
+      "id": "mount_type", "type": "select", "default": "screw",
+      "group": "mount", "modes": ["hook", "hook_rail"],
+      "label": { "en": "Mount Type", "es": "Tipo de Montaje" },
+      "tooltip": { "en": "How the hook fixes: screw plate, adhesive plate, or an over-door yoke", "es": "Cómo se fija el gancho: placa atornillada, placa adhesiva o yugo sobre puerta" },
+      "options": [
+        { "value": "screw", "label": { "en": "Screw plate", "es": "Placa atornillada" } },
+        { "value": "adhesive", "label": { "en": "Adhesive plate", "es": "Placa adhesiva" } },
+        { "value": "over_door", "label": { "en": "Over-door yoke", "es": "Yugo sobre puerta" } }
+      ]
+    },
+    {
+      "id": "hook_reach", "type": "slider", "default": 40.0, "min": 15.0, "max": 90.0, "step": 1.0,
+      "group": "hook", "modes": ["hook", "hook_rail"],
+      "label": { "en": "Hook Reach (mm)", "es": "Alcance del Gancho (mm)" },
+      "tooltip": { "en": "How far the hook projects out from the wall before curling up", "es": "Cuánto se proyecta el gancho desde la pared antes de curvarse hacia arriba" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "hook_curl_r", "type": "slider", "default": 12.0, "min": 5.0, "max": 30.0, "step": 1.0,
+      "group": "hook", "modes": ["hook", "hook_rail"],
+      "label": { "en": "Up-Curl Radius (mm)", "es": "Radio de Curva Superior (mm)" },
+      "tooltip": { "en": "Radius of the upward curl at the hook tip", "es": "Radio de la curva hacia arriba en la punta del gancho" }
+    },
+    {
+      "id": "hook_thick", "type": "slider", "default": 8.0, "min": 3.0, "max": 15.0, "step": 0.5,
+      "group": "hook", "modes": ["hook", "hook_rail"],
+      "label": { "en": "Hook Thickness (mm)", "es": "Grosor del Gancho (mm)" },
+      "tooltip": { "en": "Stock thickness of the hook — thicker carries more load", "es": "Grosor del material del gancho — más grueso soporta más carga" }
+    },
+    {
+      "id": "hook_width", "type": "slider", "default": 12.0, "min": 4.0, "max": 25.0, "step": 0.5,
+      "group": "hook", "modes": ["hook", "hook_rail"], "advanced": true,
+      "label": { "en": "Hook Width (mm)", "es": "Ancho del Gancho (mm)" },
+      "tooltip": { "en": "Width of the hook stock (across)", "es": "Ancho del material del gancho (transversal)" }
+    },
+    {
+      "id": "plate_thick", "type": "slider", "default": 5.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "mount", "modes": ["hook", "hook_rail"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Thickness of the mounting plate / yoke", "es": "Grosor de la placa / yugo de montaje" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 26.0, "min": 16.0, "max": 60.0, "step": 1.0,
+      "group": "mount", "modes": ["hook"], "advanced": true,
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Width of the single-hook back plate", "es": "Ancho de la placa trasera del gancho individual" }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 45.0, "min": 25.0, "max": 90.0, "step": 1.0,
+      "group": "mount", "modes": ["hook", "hook_rail"], "advanced": true,
+      "label": { "en": "Plate Height (mm)", "es": "Alto de Placa (mm)" },
+      "tooltip": { "en": "Height of the back plate / yoke", "es": "Alto de la placa trasera / yugo" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["hook", "hook_rail"], "advanced": true,
+      "label": { "en": "Screw Hole Diameter (mm)", "es": "Diámetro de Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Screw clearance hole (screw-plate mount only)", "es": "Orificio de paso del tornillo (solo montaje con placa atornillada)" }
+    },
+    {
+      "id": "door_thick", "type": "slider", "default": 40.0, "min": 15.0, "max": 60.0, "step": 1.0,
+      "group": "mount", "modes": ["hook", "hook_rail"],
+      "label": { "en": "Door Thickness (mm)", "es": "Grosor de Puerta (mm)" },
+      "tooltip": { "en": "Leaf thickness the over-door yoke wraps around (over-door mount only)", "es": "Grosor de la hoja que envuelve el yugo sobre puerta (solo montaje sobre puerta)" }
+    },
+    {
+      "id": "count", "type": "slider", "default": 3, "min": 2, "max": 8, "step": 1,
+      "group": "rail", "modes": ["hook_rail"],
+      "label": { "en": "Hooks on Rail", "es": "Ganchos en el Riel" },
+      "tooltip": { "en": "Number of hooks on one shared plate", "es": "Número de ganchos en una placa compartida" }
+    },
+    {
+      "id": "spacing", "type": "slider", "default": 60.0, "min": 40.0, "max": 90.0, "step": 1.0,
+      "group": "rail", "modes": ["hook_rail"],
+      "label": { "en": "Hook Spacing (mm)", "es": "Separación de Ganchos (mm)" },
+      "tooltip": { "en": "Centre-to-centre distance between hooks", "es": "Distancia de centro a centro entre ganchos" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "coat_hook", "mode": "hook",
+      "label": { "en": "Coat Hook (screw)", "es": "Gancho de Abrigo (tornillo)" },
+      "values": { "mount_type": "screw", "hook_reach": 45, "hook_curl_r": 14, "hook_thick": 9 }
+    },
+    {
+      "id": "towel_adhesive", "mode": "hook",
+      "label": { "en": "Towel Hook (adhesive)", "es": "Gancho de Toalla (adhesivo)" },
+      "values": { "mount_type": "adhesive", "hook_reach": 30, "hook_curl_r": 10, "hook_thick": 6 }
+    },
+    {
+      "id": "over_door_rail", "mode": "hook_rail",
+      "label": { "en": "Over-Door Rail (3 hooks)", "es": "Riel Sobre Puerta (3 ganchos)" },
+      "values": { "mount_type": "over_door", "count": 3, "hook_reach": 35, "door_thick": 40 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hook_thick >= 3",
+      "severity": "error",
+      "message": { "en": "Hook must be at least 3 mm thick to carry load", "es": "El gancho debe tener al menos 3 mm de grosor para soportar carga" }
+    },
+    {
+      "expression": "hook_curl_r <= hook_reach",
+      "severity": "warning",
+      "message": { "en": "Curl radius is large relative to the reach", "es": "El radio de la curva es grande respecto al alcance" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "wall_mount",
+        "label": { "en": "Wall Mount", "es": "Montaje de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_type", "plate_thick", "plate_w", "plate_h", "screw_dia", "door_thick"]
+      },
+      {
+        "id": "hook_curl",
+        "label": { "en": "Hook Up-Curl", "es": "Curva Superior del Gancho" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["hook_reach", "hook_curl_r", "hook_thick", "hook_width"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A hook is the smallest useful piece of furniture. One parametric hook that mounts by screw, tape, or over a door, at the reach and load the item needs, replaces a shelf of single-purpose plastic hooks and outfits an entire entryway from a single print file.",
+      "es": "Un gancho es la pieza de mobiliario útil más pequeña. Un gancho paramétrico que se monta con tornillo, cinta o sobre una puerta, con el alcance y la carga que el objeto necesita, reemplaza un estante de ganchos plásticos de un solo uso y equipa una entrada completa desde un solo archivo de impresión."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hook", "coat", "peg", "household", "hyperobject", "commons"]
+}

@@ -283,8 +283,8 @@ def render_head(slug):
     cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
     
     manifest = get_manifest(slug)
-    engine = manifest.engine
-    
+    engine = manifest.mode_engine(payload.get('mode'))
+
     # Extract HEAD to a temp dir
     with tempfile.TemporaryDirectory(prefix="yantra_head_") as tmpdir_name:
         target_dir = Path(tmpdir_name)

@@ -135,7 +135,7 @@ def render_animation(slug: str, animation_id: str):
 
     scad_path = str(allowed[scad_filename])
     mode_map = manifest.get_mode_map()
-    engine = manifest.engine
+    engine = manifest.mode_engine(mode_id)
 
     # Merge request-time base params (e.g., user's current slider state)
     data = request.get_json(silent=True) or {}

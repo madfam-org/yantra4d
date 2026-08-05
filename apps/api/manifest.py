@@ -60,6 +60,44 @@ class ProjectManifest:
 
         return explicit
 
+    def mode_engine(self, mode_id: str | None) -> str:
+        """Resolve the rendering engine for a specific mode.
+
+        Enables dual-engine cartridges where individual modes render with a
+        different kernel than the project default (e.g. legacy OpenSCAD modes
+        alongside new CadQuery modes in one manifest).
+
+        Resolution order (highest priority first):
+        1. An explicit ``"engine"`` on the mode object, if it is a known engine.
+        2. Inference from the mode's ``scad_file`` extension: a ``.py`` / ``.cq``
+           primary file implies the ``cadquery`` engine.
+        3. Fall back to the project-level engine (``self.engine``).
+
+        A project whose ``engine`` is ``implicit`` always renders every mode with
+        the implicit engine — implicit fields are a whole-project concern and are
+        not overridden per mode.
+        """
+        project_engine = self.engine
+        if project_engine == "implicit":
+            return project_engine
+
+        if mode_id:
+            mode = next((m for m in self._data.get("modes", []) if m.get("id") == mode_id), None)
+            if mode:
+                explicit = mode.get("engine")
+                if explicit in self.KNOWN_ENGINES:
+                    return explicit
+                if explicit is not None:
+                    logger.warning(
+                        f"Unknown engine '{explicit}' on mode '{mode_id}' in {self.slug}; "
+                        f"inferring from scad_file / project engine instead."
+                    )
+                primary = str(mode.get("scad_file", ""))
+                if primary.endswith((".py", ".cq")):
+                    return "cadquery"
+
+        return project_engine
+
     @property
     def modes(self) -> list:
         return self._data["modes"]

@@ -198,11 +198,14 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     scad_path = payload['scad_path']
 
     manifest = get_manifest(project_slug)
-    engine = manifest.engine
+    # Per-mode engine resolution enables dual-engine cartridges (e.g. legacy
+    # OpenSCAD modes alongside CadQuery modes). `scad_path` already points at the
+    # active mode's primary file, so a per-mode engine routes each mode correctly.
+    mode_id = data.get('mode')
+    engine = manifest.mode_engine(mode_id)
 
     # Dual-engine fallback: CadQuery for formats the primary engine can't produce
     if engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
-        mode_id = data.get('mode')
         if mode_id:
             mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
             if mode_config and mode_config.get('cq_file'):

@@ -1,0 +1,433 @@
+{
+  "project": {
+    "name": "Cord-Lock / Toggle Stopper",
+    "slug": "cord-lock",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A small toggle that locks drawstrings and cords on apparel, bags, and gear. Single-piece, print-in-place designs: a spring toggle with a printed pincher, a friction bead, or a squeeze cleat. Sized to the cord and holds 1 or 2 cords.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un pequeño tope que bloquea cordones y cuerdas en ropa, bolsas y equipo. Diseños de una sola pieza impresos en el sitio: un tope de resorte con pinza impresa, una cuenta de fricción o una cuña de apriete. Dimensionado al cordón y sostiene 1 o 2 cordones.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cord-lock.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "cord-lock",
+      "toggle",
+      "drawstring",
+      "stopper",
+      "cleat",
+      "apparel",
+      "print-in-place",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "spring_toggle",
+      "label": {
+        "en": "Spring Toggle",
+        "es": "Tope de Resorte"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "spring_toggle"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "simple_toggle",
+      "label": {
+        "en": "Simple Toggle",
+        "es": "Tope Simple"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "simple_toggle"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "cleat",
+      "label": {
+        "en": "Squeeze Cleat",
+        "es": "Cuña de Apriete"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cleat"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "spring_toggle",
+      "label": {
+        "en": "Spring Toggle",
+        "es": "Tope de Resorte"
+      },
+      "render_mode": 0,
+      "color": "#6ea8fe"
+    },
+    {
+      "id": "simple_toggle",
+      "label": {
+        "en": "Simple Toggle",
+        "es": "Tope Simple"
+      },
+      "render_mode": 0,
+      "color": "#f59e0b"
+    },
+    {
+      "id": "cleat",
+      "label": {
+        "en": "Squeeze Cleat",
+        "es": "Cuña de Apriete"
+      },
+      "render_mode": 0,
+      "color": "#34d399"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "cord",
+      "label": {
+        "en": "Cord",
+        "es": "Cordón"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "lock_style",
+      "type": "select",
+      "default": "spring_button",
+      "group": "body",
+      "modes": [
+        "spring_toggle",
+        "simple_toggle",
+        "cleat"
+      ],
+      "label": {
+        "en": "Lock Style",
+        "es": "Estilo de Cierre"
+      },
+      "tooltip": {
+        "en": "Spring button (printed pincher clamps the cord), twist (friction bead), or clam (squeeze cleat)",
+        "es": "Botón de resorte (pinza impresa que aprieta el cordón), giro (cuenta de fricción) o almeja (cuña de apriete)"
+      },
+      "options": [
+        {
+          "value": "spring_button",
+          "label": {
+            "en": "Spring Button",
+            "es": "Botón de Resorte"
+          }
+        },
+        {
+          "value": "twist",
+          "label": {
+            "en": "Twist / Friction",
+            "es": "Giro / Fricción"
+          }
+        },
+        {
+          "value": "clam",
+          "label": {
+            "en": "Clam / Cleat",
+            "es": "Almeja / Cuña"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cord_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "cord",
+      "modes": [
+        "spring_toggle",
+        "simple_toggle",
+        "cleat"
+      ],
+      "label": {
+        "en": "Cord Diameter (mm)",
+        "es": "Diámetro de Cordón (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the cord / drawstring",
+        "es": "Diámetro del cordón / cuerda"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "cords",
+      "type": "slider",
+      "default": 1,
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "group": "cord",
+      "modes": [
+        "spring_toggle",
+        "simple_toggle",
+        "cleat"
+      ],
+      "label": {
+        "en": "Number of Cords",
+        "es": "Número de Cordones"
+      },
+      "tooltip": {
+        "en": "1 or 2 cords through the lock",
+        "es": "1 o 2 cordones a través del tope"
+      }
+    },
+    {
+      "id": "body_size",
+      "type": "slider",
+      "default": 14.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "spring_toggle",
+        "simple_toggle",
+        "cleat"
+      ],
+      "label": {
+        "en": "Body Size (mm)",
+        "es": "Tamaño del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal body size (barrel diameter / cleat height)",
+        "es": "Tamaño nominal del cuerpo (diámetro del barril / altura de la cuña)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "body",
+      "modes": [
+        "spring_toggle",
+        "simple_toggle",
+        "cleat"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Wall / Rib (mm)",
+        "es": "Pared / Nervio (mm)"
+      },
+      "tooltip": {
+        "en": "Wall and spring-rib thickness",
+        "es": "Grosor de la pared y del nervio de resorte"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "hoodie_spring",
+      "mode": "spring_toggle",
+      "label": {
+        "en": "Hoodie Spring Toggle (4 mm)",
+        "es": "Tope de Resorte Sudadera (4 mm)"
+      },
+      "values": {
+        "lock_style": "spring_button",
+        "cord_dia": 4,
+        "cords": 2,
+        "body_size": 14,
+        "wall": 2
+      }
+    },
+    {
+      "id": "backpack_bead",
+      "mode": "simple_toggle",
+      "label": {
+        "en": "Backpack Friction Bead (5 mm)",
+        "es": "Cuenta de Fricción Mochila (5 mm)"
+      },
+      "values": {
+        "lock_style": "twist",
+        "cord_dia": 5,
+        "cords": 1,
+        "body_size": 16
+      }
+    },
+    {
+      "id": "tent_cleat",
+      "mode": "cleat",
+      "label": {
+        "en": "Tent Guy-Line Cleat (3 mm)",
+        "es": "Cuña de Viento Tienda (3 mm)"
+      },
+      "values": {
+        "lock_style": "clam",
+        "cord_dia": 3,
+        "cords": 1,
+        "body_size": 14
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cord_dia <= body_size * 0.45",
+      "severity": "warning",
+      "message": {
+        "en": "Cord is large relative to the body",
+        "es": "El cordón es grande respecto al cuerpo"
+      }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.2 mm to print reliably",
+        "es": "La pared debe ser de al menos 1.2 mm para imprimir de forma fiable"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        45,
+        45,
+        40
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        80
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -80,
+        12
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 7,
+    "per_unit": 2,
+    "per_part": 7,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cord_pincher",
+        "label": {
+          "en": "Cord Pincher",
+          "es": "Pinza de Cordón"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "cord_dia",
+          "cords",
+          "wall"
+        ]
+      },
+      {
+        "id": "cord_channel",
+        "label": {
+          "en": "Cord Channel",
+          "es": "Canal de Cordón"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "cord_dia",
+          "cords",
+          "body_size"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cord locks are the tiny plastic part that fails first and can never be found to replace — a print-in-place stopper sized to any cord keeps a jacket, bag, or tent in service instead of the landfill.",
+      "es": "Los topes de cordón son la pequeña pieza de plástico que falla primero y nunca se encuentra para reemplazar — un tope impreso en el sitio dimensionado a cualquier cordón mantiene una chaqueta, bolsa o tienda en uso en vez del basurero."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "cord-lock",
+    "toggle",
+    "drawstring",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

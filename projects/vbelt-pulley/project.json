@@ -1,0 +1,221 @@
+{
+  "project": {
+    "name": "V-Belt / Round-Belt Pulley",
+    "slug": "vbelt-pulley",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric friction-drive pulley (sheave) for A-section V-belts or for round belts and O-rings. The rim carries one or more grooves revolved about the axis: an ~40° A-section V-groove that wedges a V-belt by its flanks, or a semicircular groove sized to a round belt. Choose a single V-groove, a round-belt groove, or a multi-groove sheave, all with an optional set-screw hub.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una polea de transmisión por fricción (roldana) paramétrica para bandas en V sección A o para bandas redondas y anillos O. El aro lleva una o más ranuras revolucionadas alrededor del eje: una ranura en V de ~40° sección A que aprisiona la banda por sus flancos, o una ranura semicircular al tamaño de una banda redonda. Elige una sola ranura en V, una ranura para banda redonda, o una roldana de varias ranuras, todas con cubo con prisionero opcional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vbelt-pulley.webp",
+    "difficulty": "intermediate",
+    "tags": ["vbelt-pulley", "sheave", "v-belt", "round-belt", "o-ring", "friction-drive", "pulley", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "vbelt",
+      "label": { "en": "V-Belt", "es": "Banda en V" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["vbelt"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "roundbelt",
+      "label": { "en": "Round Belt", "es": "Banda Redonda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["roundbelt"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "multi_groove",
+      "label": { "en": "Multi-Groove", "es": "Multi-Ranura" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_groove"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "vbelt", "label": { "en": "V-Belt Pulley", "es": "Polea en V" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "roundbelt", "label": { "en": "Round-Belt Pulley", "es": "Polea Redonda" }, "render_mode": 0, "color": "#8bb5cc" },
+    { "id": "multi_groove", "label": { "en": "Multi-Groove Sheave", "es": "Roldana Multi-Ranura" }, "render_mode": 0, "color": "#4b7f9c" }
+  ],
+  "parameter_groups": [
+    { "id": "groove", "label": { "en": "Belt & Groove", "es": "Banda y Ranura" } },
+    { "id": "multi", "label": { "en": "Multi-Groove", "es": "Multi-Ranura" } },
+    { "id": "body", "label": { "en": "Body & Bore", "es": "Cuerpo y Barreno" } },
+    { "id": "hub", "label": { "en": "Hub & Set Screw", "es": "Cubo y Prisionero" } }
+  ],
+  "parameters": [
+    {
+      "id": "belt_profile", "type": "select", "default": "A/13",
+      "group": "groove", "modes": ["vbelt", "roundbelt", "multi_groove"],
+      "label": { "en": "Belt Profile", "es": "Perfil de Banda" },
+      "tooltip": { "en": "A/13 is a 40° A-section V-belt groove; roundbelt is a semicircular O-ring / round-belt groove.", "es": "A/13 es una ranura en V sección A de 40°; roundbelt es una ranura semicircular para anillo O / banda redonda." },
+      "options": [
+        { "value": "A/13", "label": { "en": "V-Belt A / 13 mm (40°)", "es": "Banda en V A / 13 mm (40°)" } },
+        { "value": "roundbelt", "label": { "en": "Round Belt / O-Ring", "es": "Banda Redonda / Anillo O" } }
+      ]
+    },
+    {
+      "id": "outer_dia", "type": "slider", "default": 60.0, "min": 16.0, "max": 160.0, "step": 1.0,
+      "group": "groove", "modes": ["vbelt", "roundbelt", "multi_groove"],
+      "label": { "en": "Outer Diameter (mm)", "es": "Diámetro Exterior (mm)" },
+      "tooltip": { "en": "Rim outer diameter — the belt rides near this diameter", "es": "Diámetro exterior del aro — la banda corre cerca de este diámetro" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "groove_angle", "type": "slider", "default": 40.0, "min": 20.0, "max": 60.0, "step": 1.0,
+      "group": "groove", "modes": ["vbelt", "multi_groove"],
+      "label": { "en": "V Included Angle (°)", "es": "Ángulo Incluido en V (°)" },
+      "tooltip": { "en": "Groove included angle (34–40° is typical for A-section V-belts)", "es": "Ángulo incluido de la ranura (34–40° es típico para bandas en V sección A)" }
+    },
+    {
+      "id": "groove_width", "type": "slider", "default": 13.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "groove", "modes": ["vbelt", "multi_groove"],
+      "label": { "en": "Groove Top Width (mm)", "es": "Ancho Superior de Ranura (mm)" },
+      "tooltip": { "en": "V-groove width at the rim (auto-clamped to the included angle)", "es": "Ancho de la ranura en V en el aro (limitado al ángulo incluido)" }
+    },
+    {
+      "id": "groove_depth", "type": "slider", "default": 11.0, "min": 2.0, "max": 25.0, "step": 0.5,
+      "group": "groove", "modes": ["vbelt", "multi_groove"],
+      "label": { "en": "Groove Depth (mm)", "es": "Profundidad de Ranura (mm)" },
+      "tooltip": { "en": "Radial depth of the V-groove into the rim", "es": "Profundidad radial de la ranura en V en el aro" }
+    },
+    {
+      "id": "belt_dia", "type": "slider", "default": 5.0, "min": 1.5, "max": 12.0, "step": 0.5,
+      "group": "groove", "modes": ["roundbelt"],
+      "label": { "en": "Round-Belt Diameter (mm)", "es": "Diámetro de Banda Redonda (mm)" },
+      "tooltip": { "en": "Round belt / O-ring cross-section diameter (sizes the semicircular groove)", "es": "Diámetro de sección de la banda redonda / anillo O (dimensiona la ranura semicircular)" }
+    },
+    {
+      "id": "grooves", "type": "slider", "default": 2, "min": 2, "max": 8, "step": 1,
+      "group": "multi", "modes": ["multi_groove"],
+      "label": { "en": "Groove Count", "es": "Número de Ranuras" },
+      "tooltip": { "en": "Number of parallel V-grooves in the sheave", "es": "Número de ranuras en V paralelas en la roldana" }
+    },
+    {
+      "id": "groove_pitch", "type": "slider", "default": 15.0, "min": 6.0, "max": 30.0, "step": 0.5,
+      "group": "multi", "modes": ["multi_groove"], "advanced": true,
+      "label": { "en": "Groove Spacing (mm)", "es": "Separación entre Ranuras (mm)" },
+      "tooltip": { "en": "Centre-to-centre spacing between adjacent grooves", "es": "Separación centro a centro entre ranuras adyacentes" }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 8.0, "min": 2.0, "max": 30.0, "step": 0.5,
+      "group": "body", "modes": ["vbelt", "roundbelt", "multi_groove"],
+      "label": { "en": "Shaft Bore (mm)", "es": "Barreno de Eje (mm)" },
+      "tooltip": { "en": "Shaft hole diameter (auto-clamped inside the rim)", "es": "Diámetro del agujero del eje (limitado dentro del aro)" }
+    },
+    {
+      "id": "hub", "type": "checkbox", "default": true,
+      "group": "hub", "modes": ["vbelt", "roundbelt", "multi_groove"],
+      "label": { "en": "Set-Screw Hub", "es": "Cubo con Prisionero" },
+      "tooltip": { "en": "Add a cylindrical hub below the rim to carry a radial set screw", "es": "Agrega un cubo cilíndrico bajo el aro para alojar un prisionero radial" }
+    },
+    {
+      "id": "hub_dia", "type": "slider", "default": 22.0, "min": 8.0, "max": 40.0, "step": 0.5,
+      "group": "hub", "modes": ["vbelt", "roundbelt", "multi_groove"], "advanced": true,
+      "label": { "en": "Hub Diameter (mm)", "es": "Diámetro de Cubo (mm)" },
+      "tooltip": { "en": "Outer diameter of the set-screw hub", "es": "Diámetro exterior del cubo del prisionero" }
+    },
+    {
+      "id": "hub_height", "type": "slider", "default": 8.0, "min": 2.0, "max": 25.0, "step": 0.5,
+      "group": "hub", "modes": ["vbelt", "roundbelt", "multi_groove"], "advanced": true,
+      "label": { "en": "Hub Height (mm)", "es": "Altura de Cubo (mm)" },
+      "tooltip": { "en": "How far the hub extends below the rim", "es": "Cuánto se extiende el cubo bajo el aro" }
+    },
+    {
+      "id": "setscrew", "type": "checkbox", "default": true,
+      "group": "hub", "modes": ["vbelt", "roundbelt", "multi_groove"],
+      "label": { "en": "Set-Screw Hole", "es": "Agujero de Prisionero" },
+      "tooltip": { "en": "Radial hole through the hub wall to lock the pulley to the shaft", "es": "Agujero radial por la pared del cubo para fijar la polea al eje" }
+    },
+    {
+      "id": "setscrew_dia", "type": "slider", "default": 4.2, "min": 1.5, "max": 8.0, "step": 0.1,
+      "group": "hub", "modes": ["vbelt", "roundbelt", "multi_groove"], "advanced": true,
+      "label": { "en": "Set-Screw Clearance (mm)", "es": "Holgura de Prisionero (mm)" },
+      "tooltip": { "en": "Set-screw through-hole diameter (4.2 mm ≈ M4)", "es": "Diámetro del agujero del prisionero (4.2 mm ≈ M4)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "a_section_60", "mode": "vbelt",
+      "label": { "en": "A-Section Ø60 · 8 mm bore", "es": "Sección A Ø60 · barreno 8 mm" },
+      "values": { "belt_profile": "A/13", "outer_dia": 60, "groove_angle": 40, "groove_width": 13, "groove_depth": 11, "bore": 8 }
+    },
+    {
+      "id": "oring_drive_40", "mode": "roundbelt",
+      "label": { "en": "O-Ring Drive Ø40 (5 mm belt)", "es": "Transmisión Anillo O Ø40 (banda 5 mm)" },
+      "values": { "belt_profile": "roundbelt", "outer_dia": 40, "belt_dia": 5, "bore": 5 }
+    },
+    {
+      "id": "twin_groove_80", "mode": "multi_groove",
+      "label": { "en": "Twin-Groove Sheave Ø80", "es": "Roldana de Doble Ranura Ø80" },
+      "values": { "outer_dia": 80, "grooves": 2, "groove_pitch": 16, "groove_depth": 11, "bore": 12, "hub_dia": 26 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "groove_depth <= outer_dia / 2 - 3",
+      "severity": "warning",
+      "message": { "en": "Groove depth is close to the pulley radius", "es": "La profundidad de la ranura se acerca al radio de la polea" }
+    },
+    {
+      "expression": "bore <= outer_dia - 6",
+      "severity": "error",
+      "message": { "en": "Bore must leave a rim wall around it", "es": "El barreno debe dejar una pared de aro alrededor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 12] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "v_belt_groove",
+        "label": { "en": "V-Belt Groove", "es": "Ranura de Banda en V" },
+        "geometry_type": "profile",
+        "standard": "ISO 4183 (A/SPZ)",
+        "parameters": ["belt_profile", "groove_angle", "groove_width", "groove_depth", "outer_dia"]
+      },
+      {
+        "id": "round_belt_groove",
+        "label": { "en": "Round-Belt / O-Ring Groove", "es": "Ranura de Banda Redonda / Anillo O" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["belt_dia", "outer_dia"]
+      },
+      {
+        "id": "shaft_bore",
+        "label": { "en": "Shaft Bore & Set Screw", "es": "Barreno de Eje y Prisionero" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["bore", "setscrew", "setscrew_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "V-belt and round-belt sheaves drive fans, tools, and small machinery. A printable sheave at a chosen diameter lets a maker set a drive ratio or replace a cracked pulley without sourcing a proprietary casting.",
+      "es": "Las roldanas de banda en V y redonda mueven ventiladores, herramientas y maquinaria pequeña. Una roldana imprimible al diámetro elegido permite fijar una relación de transmisión o reemplazar una polea agrietada sin conseguir una pieza fundida propietaria."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["vbelt-pulley", "sheave", "v-belt", "round-belt", "industrial", "hyperobject", "commons"]
+}

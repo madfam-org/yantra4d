@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Lead-Screw Nut",
+    "slug": "leadscrew-nut",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A printable nut that threads onto a trapezoidal (Acme / metric-trapezoidal) lead screw — the common motion-repair part for 3D-printer Z axes, small CNC stages, and linear actuators. Pick a thread standard (Tr8x8, Tr8x2, ACME-3/8) and a body style; the functional interface is a real internal trapezoidal thread at the correct nominal diameter and pitch.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tuerca imprimible que se enrosca en un husillo trapezoidal (Acme / trapezoidal métrico) — la pieza común de reparación de movimiento para ejes Z de impresoras 3D, etapas CNC pequeñas y actuadores lineales. Elige un estándar de rosca (Tr8x8, Tr8x2, ACME-3/8) y un estilo de cuerpo; la interfaz funcional es una rosca trapezoidal interna real con el diámetro nominal y paso correctos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/leadscrew-nut.webp",
+    "difficulty": "advanced",
+    "tags": ["leadscrew", "lead-screw", "nut", "trapezoidal", "acme", "tr8x8", "motion", "z-axis", "repair", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "round_nut",
+      "label": { "en": "Round Nut", "es": "Tuerca Redonda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["round_nut"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "flange_nut",
+      "label": { "en": "Flange Nut", "es": "Tuerca con Brida" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flange_nut"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "anti_backlash",
+      "label": { "en": "Anti-Backlash Nut", "es": "Tuerca Anti-Holgura" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["anti_backlash"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "round_nut", "label": { "en": "Round Nut", "es": "Tuerca Redonda" }, "render_mode": 0, "color": "#7a6a58" },
+    { "id": "flange_nut", "label": { "en": "Flange Nut", "es": "Tuerca con Brida" }, "render_mode": 0, "color": "#8a7a68" },
+    { "id": "anti_backlash", "label": { "en": "Anti-Backlash Nut", "es": "Tuerca Anti-Holgura" }, "render_mode": 0, "color": "#9a8a78" }
+  ],
+  "parameter_groups": [
+    { "id": "thread", "label": { "en": "Thread", "es": "Rosca" } },
+    { "id": "body", "label": { "en": "Nut Body", "es": "Cuerpo de Tuerca" } },
+    { "id": "flange", "label": { "en": "Flange", "es": "Brida" } }
+  ],
+  "parameters": [
+    {
+      "id": "thread_spec", "type": "select", "default": "Tr8x8",
+      "group": "thread", "modes": ["round_nut", "flange_nut", "anti_backlash"],
+      "label": { "en": "Thread Standard", "es": "Estándar de Rosca" },
+      "tooltip": { "en": "Lead-screw thread this nut runs on (sets diameter, pitch, flank)", "es": "Rosca del husillo sobre el que corre esta tuerca (define diámetro, paso, flanco)" },
+      "options": [
+        { "value": "Tr8x8", "label": { "en": "Tr8x8 — printer Z (8 mm, 2 mm pitch, 4-start)", "es": "Tr8x8 — Z de impresora (8 mm, paso 2 mm, 4 entradas)" } },
+        { "value": "Tr8x2", "label": { "en": "Tr8x2 — 8 mm, 2 mm pitch, single-start", "es": "Tr8x2 — 8 mm, paso 2 mm, entrada única" } },
+        { "value": "Acme-3/8", "label": { "en": "ACME-3/8 — 9.5 mm, 12 TPI, 29° form", "es": "ACME-3/8 — 9.5 mm, 12 TPI, forma 29°" } }
+      ]
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.35, "min": 0.15, "max": 0.8, "step": 0.05,
+      "group": "thread", "modes": ["round_nut", "flange_nut", "anti_backlash"],
+      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Per-side gap for a printable running fit on the screw", "es": "Espacio por lado para un ajuste deslizante imprimible sobre el husillo" }
+    },
+    {
+      "id": "height", "type": "slider", "default": 12, "min": 6, "max": 60, "step": 1,
+      "group": "body", "modes": ["round_nut", "flange_nut", "anti_backlash"],
+      "label": { "en": "Nut Height (mm)", "es": "Altura de Tuerca (mm)" },
+      "tooltip": { "en": "Length along the screw; taller = more thread engagement", "es": "Longitud a lo largo del husillo; más alta = más engrane de rosca" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "body_dia", "type": "slider", "default": 16, "min": 12, "max": 60, "step": 1,
+      "group": "body", "modes": ["round_nut", "flange_nut", "anti_backlash"],
+      "label": { "en": "Body Diameter (mm)", "es": "Diámetro del Cuerpo (mm)" },
+      "tooltip": { "en": "Outer diameter of the round barrel", "es": "Diámetro exterior del cilindro" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "flange", "type": "checkbox", "default": false,
+      "group": "flange", "modes": ["round_nut"],
+      "label": { "en": "Add Flange", "es": "Agregar Brida" },
+      "tooltip": { "en": "Turn a round nut into a bolt-down flange nut", "es": "Convertir una tuerca redonda en una tuerca con brida atornillable" },
+      "preview_hint": { "type": "toggle_geometry" }
+    },
+    {
+      "id": "flange_dia", "type": "slider", "default": 26, "min": 18, "max": 90, "step": 1,
+      "group": "flange", "modes": ["flange_nut"],
+      "label": { "en": "Flange Diameter (mm)", "es": "Diámetro de Brida (mm)" },
+      "tooltip": { "en": "Outer diameter of the mounting flange", "es": "Diámetro exterior de la brida de montaje" }
+    },
+    {
+      "id": "hole_count", "type": "slider", "default": 4, "min": 2, "max": 8, "step": 1,
+      "group": "flange", "modes": ["flange_nut"],
+      "label": { "en": "Bolt Holes", "es": "Agujeros de Perno" },
+      "tooltip": { "en": "Number of flange mounting holes", "es": "Número de agujeros de montaje de la brida" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 3.4, "min": 2.0, "max": 8.0, "step": 0.1,
+      "group": "flange", "modes": ["flange_nut"], "advanced": true,
+      "label": { "en": "Bolt Hole Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Flange bolt-hole clearance diameter (M3 ≈ 3.4)", "es": "Diámetro de holgura del agujero (M3 ≈ 3.4)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "printer_z_repair", "mode": "round_nut",
+      "label": { "en": "Printer Z Repair (Tr8x8)", "es": "Reparación Z de Impresora (Tr8x8)" },
+      "values": { "thread_spec": "Tr8x8", "height": 12, "body_dia": 16, "clearance": 0.35 }
+    },
+    {
+      "id": "carriage_flange", "mode": "flange_nut",
+      "label": { "en": "Carriage Flange (Tr8x2)", "es": "Brida de Carro (Tr8x2)" },
+      "values": { "thread_spec": "Tr8x2", "height": 14, "body_dia": 18, "flange_dia": 30, "hole_count": 4 }
+    },
+    {
+      "id": "acme_stage", "mode": "anti_backlash",
+      "label": { "en": "ACME Stage (long)", "es": "Etapa ACME (larga)" },
+      "values": { "thread_spec": "Acme-3/8", "height": 24, "body_dia": 18, "clearance": 0.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "body_dia >= 12",
+      "severity": "error",
+      "message": { "en": "Body diameter must clear the thread plus a wall", "es": "El diámetro del cuerpo debe librar la rosca más una pared" }
+    },
+    {
+      "expression": "flange_dia >= body_dia + 6",
+      "severity": "warning",
+      "message": { "en": "Flange should be wider than the body for usable bolt holes", "es": "La brida debe ser más ancha que el cuerpo para agujeros útiles" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [45, 45, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -80, 15] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "trapezoidal_leadscrew_thread",
+        "label": { "en": "Trapezoidal Lead-Screw Thread", "es": "Rosca Trapezoidal de Husillo" },
+        "geometry_type": "thread",
+        "standard": "ISO 2904 (Tr) / ACME",
+        "parameters": ["thread_spec", "clearance", "height"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Lead-screw nuts wear out and back-order for weeks; a stripped Z nut halts a printer or CNC entirely. A printable trapezoidal nut in the exact standard restores motion the same day with no proprietary spare.",
+      "es": "Las tuercas de husillo se desgastan y tardan semanas en reponerse; una tuerca Z barrida detiene por completo una impresora o CNC. Una tuerca trapezoidal imprimible en el estándar exacto restaura el movimiento el mismo día sin repuesto propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["leadscrew", "nut", "trapezoidal", "acme", "motion", "industrial", "repair", "hyperobject", "commons"]
+}

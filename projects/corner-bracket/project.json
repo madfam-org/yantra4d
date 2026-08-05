@@ -1,0 +1,520 @@
+{
+  "project": {
+    "name": "Corner Bracket / Angle Gusset",
+    "slug": "corner-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A simple angle bracket that joins two panels or boards at any angle. Two legs meet at a configurable angle (default 90°); each leg carries a row of screw holes with an optional countersink and an optional triangular gusset brace.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un simple ángulo de fijación que une dos paneles o tablas en cualquier ángulo. Dos patas se encuentran en un ángulo configurable (90° por defecto); cada pata lleva una fila de agujeros para tornillos con avellanado opcional y un refuerzo triangular opcional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/corner-bracket.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "bracket",
+      "angle",
+      "gusset",
+      "corner",
+      "L-bracket",
+      "joiner",
+      "fastener",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "L_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Ángulo en L"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "L_bracket"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "T_bracket",
+      "label": {
+        "en": "T-Bracket",
+        "es": "Ángulo en T"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "T_bracket"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "gusset_bracket",
+      "label": {
+        "en": "Gusset Bracket",
+        "es": "Ángulo con Refuerzo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "gusset_bracket"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "L_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Ángulo en L"
+      },
+      "render_mode": 0,
+      "color": "#6ea8fe"
+    },
+    {
+      "id": "T_bracket",
+      "label": {
+        "en": "T-Bracket",
+        "es": "Ángulo en T"
+      },
+      "render_mode": 0,
+      "color": "#f59e0b"
+    },
+    {
+      "id": "gusset_bracket",
+      "label": {
+        "en": "Gusset Bracket",
+        "es": "Ángulo con Refuerzo"
+      },
+      "render_mode": 0,
+      "color": "#34d399"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "geometry",
+      "label": {
+        "en": "Geometry",
+        "es": "Geometría"
+      }
+    },
+    {
+      "id": "holes",
+      "label": {
+        "en": "Screw Holes",
+        "es": "Agujeros"
+      }
+    },
+    {
+      "id": "options",
+      "label": {
+        "en": "Options",
+        "es": "Opciones"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "angle",
+      "type": "slider",
+      "default": 90,
+      "min": 30,
+      "max": 160,
+      "step": 1,
+      "group": "geometry",
+      "modes": [
+        "L_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Angle (deg)",
+        "es": "Ángulo (grados)"
+      },
+      "tooltip": {
+        "en": "Angle between the two legs",
+        "es": "Ángulo entre las dos patas"
+      }
+    },
+    {
+      "id": "leg_a",
+      "type": "slider",
+      "default": 40,
+      "min": 10,
+      "max": 150,
+      "step": 1,
+      "group": "geometry",
+      "modes": [
+        "L_bracket",
+        "T_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Leg A Length (mm)",
+        "es": "Longitud de Pata A (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the first leg (base plate in T-mode)",
+        "es": "Longitud de la primera pata (placa base en modo T)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "leg_b",
+      "type": "slider",
+      "default": 40,
+      "min": 10,
+      "max": 150,
+      "step": 1,
+      "group": "geometry",
+      "modes": [
+        "L_bracket",
+        "T_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Leg B Length (mm)",
+        "es": "Longitud de Pata B (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the second leg (upright in T-mode)",
+        "es": "Longitud de la segunda pata (vertical en modo T)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 30,
+      "min": 8,
+      "max": 80,
+      "step": 1,
+      "group": "geometry",
+      "modes": [
+        "L_bracket",
+        "T_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Width (mm)",
+        "es": "Ancho (mm)"
+      },
+      "tooltip": {
+        "en": "Bracket width",
+        "es": "Ancho del ángulo"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "geometry",
+      "modes": [
+        "L_bracket",
+        "T_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Thickness (mm)",
+        "es": "Grosor (mm)"
+      },
+      "tooltip": {
+        "en": "Material thickness of the legs",
+        "es": "Grosor del material de las patas"
+      }
+    },
+    {
+      "id": "holes_per_leg",
+      "type": "slider",
+      "default": 2,
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "group": "holes",
+      "modes": [
+        "L_bracket",
+        "T_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Holes per Leg",
+        "es": "Agujeros por Pata"
+      },
+      "tooltip": {
+        "en": "Number of screw holes on each leg (0 = none)",
+        "es": "Número de agujeros para tornillos en cada pata (0 = ninguno)"
+      }
+    },
+    {
+      "id": "screw_dia",
+      "type": "slider",
+      "default": 4.5,
+      "min": 1.5,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "holes",
+      "modes": [
+        "L_bracket",
+        "T_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Screw Hole Diameter (mm)",
+        "es": "Diámetro de Agujero (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance hole diameter (M4 ≈ 4.5, M5 ≈ 5.5)",
+        "es": "Diámetro de agujero de holgura (M4 ≈ 4.5, M5 ≈ 5.5)"
+      }
+    },
+    {
+      "id": "countersink",
+      "type": "checkbox",
+      "default": false,
+      "group": "options",
+      "modes": [
+        "L_bracket",
+        "T_bracket",
+        "gusset_bracket"
+      ],
+      "label": {
+        "en": "Countersink Heads",
+        "es": "Avellanar Cabezas"
+      },
+      "tooltip": {
+        "en": "Add a flat counterbore so screw heads sit flush",
+        "es": "Añadir un rebaje plano para que las cabezas queden al ras"
+      }
+    },
+    {
+      "id": "gusset",
+      "type": "checkbox",
+      "default": false,
+      "group": "options",
+      "modes": [
+        "L_bracket"
+      ],
+      "label": {
+        "en": "Add Gusset Brace",
+        "es": "Añadir Refuerzo"
+      },
+      "tooltip": {
+        "en": "Add a triangular brace across the corner for stiffness",
+        "es": "Añadir un refuerzo triangular en la esquina para rigidez"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shelf_l",
+      "mode": "L_bracket",
+      "label": {
+        "en": "Shelf L-Bracket (M4)",
+        "es": "Ángulo de Repisa (M4)"
+      },
+      "values": {
+        "angle": 90,
+        "leg_a": 50,
+        "leg_b": 50,
+        "width": 30,
+        "thickness": 4,
+        "holes_per_leg": 2,
+        "screw_dia": 4.5
+      }
+    },
+    {
+      "id": "heavy_gusset",
+      "mode": "gusset_bracket",
+      "label": {
+        "en": "Heavy Gusset (M5)",
+        "es": "Refuerzo Reforzado (M5)"
+      },
+      "values": {
+        "angle": 90,
+        "leg_a": 60,
+        "leg_b": 60,
+        "width": 40,
+        "thickness": 6,
+        "holes_per_leg": 3,
+        "screw_dia": 5.5,
+        "gusset": true
+      }
+    },
+    {
+      "id": "t_joiner",
+      "mode": "T_bracket",
+      "label": {
+        "en": "T-Joiner (M4)",
+        "es": "Unión en T (M4)"
+      },
+      "values": {
+        "leg_a": 60,
+        "leg_b": 40,
+        "width": 25,
+        "thickness": 4,
+        "holes_per_leg": 2,
+        "countersink": true
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "screw_dia <= width - 4",
+      "severity": "warning",
+      "message": {
+        "en": "Screw holes are large relative to the width",
+        "es": "Los agujeros son grandes respecto al ancho"
+      }
+    },
+    {
+      "expression": "thickness >= 2",
+      "severity": "error",
+      "message": {
+        "en": "Thickness must be at least 2 mm",
+        "es": "El grosor debe ser de al menos 2 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        100,
+        100,
+        90
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        180
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -180,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 6,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "bracket_screw_pattern",
+        "label": {
+          "en": "Bracket Screw Pattern",
+          "es": "Patrón de Tornillos"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "holes_per_leg",
+          "screw_dia",
+          "leg_a",
+          "leg_b",
+          "width"
+        ]
+      },
+      {
+        "id": "leg_face",
+        "label": {
+          "en": "Leg Mounting Face",
+          "es": "Cara de Montaje"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "leg_a",
+          "leg_b",
+          "width",
+          "thickness",
+          "angle"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The universal joiner — one parametric angle bracket replaces the fixed 90° stamped brackets sold in blister packs, sized to the exact boards, screws, and angle a repair or build actually needs.",
+      "es": "El unificador universal — un ángulo paramétrico reemplaza los ángulos estampados fijos de 90° vendidos en blísters, dimensionado a las tablas, tornillos y ángulo exactos que una reparación o construcción realmente necesita."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bracket",
+    "angle",
+    "gusset",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "Compliant Spring",
+    "slug": "compliant-spring",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A printable geometric spring — no coil — that flexes because its shape bends. Three flexure families: wave (a vertical column of stacked sine flexures that compress), leaf (a curved cantilever leaf spring), and cantilever (a simple beam / snap flexure). Beam thickness tunes stiffness. Models geometry only; real force depends on the material.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un resorte geométrico imprimible — sin espiral — que flexiona porque su forma se dobla. Tres familias de flexura: onda (una columna vertical de flexuras sinusoidales apiladas que se comprimen), lámina (un resorte de lámina en voladizo curvo) y voladizo (una viga simple / flexura de encaje). El grosor de la viga ajusta la rigidez. Modela solo geometría; la fuerza real depende del material.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/compliant-spring.webp",
+    "difficulty": "advanced",
+    "tags": ["spring", "flexure", "compliant", "leaf-spring", "wave-spring", "cantilever", "snap", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "wave_spring",
+      "label": { "en": "Wave Spring", "es": "Resorte de Onda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wave_spring"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "leaf_spring",
+      "label": { "en": "Leaf Spring", "es": "Resorte de Lámina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["leaf_spring"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "cantilever",
+      "label": { "en": "Cantilever", "es": "Voladizo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cantilever"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "wave_spring", "label": { "en": "Wave Spring", "es": "Resorte de Onda" }, "render_mode": 0, "color": "#5a7a5a" },
+    { "id": "leaf_spring", "label": { "en": "Leaf Spring", "es": "Resorte de Lámina" }, "render_mode": 0, "color": "#6a8a6a" },
+    { "id": "cantilever", "label": { "en": "Cantilever", "es": "Voladizo" }, "render_mode": 0, "color": "#7a9a7a" }
+  ],
+  "parameter_groups": [
+    { "id": "flexure", "label": { "en": "Flexure", "es": "Flexura" } },
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } }
+  ],
+  "parameters": [
+    {
+      "id": "spring_type", "type": "select", "default": "wave",
+      "group": "flexure", "modes": ["wave_spring", "leaf_spring", "cantilever"],
+      "label": { "en": "Spring Type", "es": "Tipo de Resorte" },
+      "tooltip": { "en": "Which flexure family to build", "es": "Qué familia de flexura construir" },
+      "options": [
+        { "value": "wave", "label": { "en": "Wave — stacked sine flexures (compression)", "es": "Onda — flexuras sinusoidales apiladas (compresión)" } },
+        { "value": "leaf", "label": { "en": "Leaf — curved cantilever leaf", "es": "Lámina — lámina en voladizo curva" } },
+        { "value": "cantilever", "label": { "en": "Cantilever — simple beam / snap", "es": "Voladizo — viga simple / encaje" } }
+      ]
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 2.0, "min": 0.6, "max": 8.0, "step": 0.1,
+      "group": "flexure", "modes": ["wave_spring", "leaf_spring", "cantilever"],
+      "label": { "en": "Beam Thickness (mm)", "es": "Grosor de Viga (mm)" },
+      "tooltip": { "en": "Beam/wall thickness — the primary stiffness lever", "es": "Grosor de viga/pared — la palanca principal de rigidez" }
+    },
+    {
+      "id": "waves", "type": "slider", "default": 4, "min": 1, "max": 12, "step": 1,
+      "group": "flexure", "modes": ["wave_spring"],
+      "label": { "en": "Wave Count", "es": "Número de Ondas" },
+      "tooltip": { "en": "Sine cycles stacked over the height (wave type)", "es": "Ciclos sinusoidales apilados sobre la altura (tipo onda)" }
+    },
+    {
+      "id": "amplitude", "type": "slider", "default": 10.0, "min": 2.0, "max": 40.0, "step": 0.5,
+      "group": "flexure", "modes": ["wave_spring", "leaf_spring"],
+      "label": { "en": "Sway / Bow (mm)", "es": "Vaivén / Curvatura (mm)" },
+      "tooltip": { "en": "Peak sway of the meander (wave) or bow rise of the leaf", "es": "Vaivén máximo de la serpentina (onda) o curvatura de la lámina" }
+    },
+    {
+      "id": "free_length", "type": "slider", "default": 40, "min": 10, "max": 200, "step": 1,
+      "group": "size", "modes": ["wave_spring", "leaf_spring", "cantilever"],
+      "label": { "en": "Free Length / Height (mm)", "es": "Longitud / Altura Libre (mm)" },
+      "tooltip": { "en": "Unloaded height (wave) or beam length (leaf/cantilever)", "es": "Altura sin carga (onda) o longitud de viga (lámina/voladizo)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "width", "type": "slider", "default": 16, "min": 4, "max": 80, "step": 1,
+      "group": "size", "modes": ["wave_spring", "leaf_spring", "cantilever"],
+      "label": { "en": "Width (mm)", "es": "Ancho (mm)" },
+      "tooltip": { "en": "Spring width across (Y); wider = stiffer", "es": "Ancho del resorte (Y); más ancho = más rígido" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pad", "type": "slider", "default": 4.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "size", "modes": ["wave_spring"], "advanced": true,
+      "label": { "en": "End Pad Thickness (mm)", "es": "Grosor de Almohadilla (mm)" },
+      "tooltip": { "en": "Flat mounting-pad thickness at each end of the wave", "es": "Grosor de la almohadilla de montaje plana en cada extremo de la onda" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "soft_wave", "mode": "wave_spring",
+      "label": { "en": "Soft Wave (TPU)", "es": "Onda Suave (TPU)" },
+      "values": { "spring_type": "wave", "free_length": 45, "waves": 5, "amplitude": 12, "thickness": 1.4, "width": 16 }
+    },
+    {
+      "id": "leaf_suspension", "mode": "leaf_spring",
+      "label": { "en": "Leaf Suspension", "es": "Suspensión de Lámina" },
+      "values": { "spring_type": "leaf", "free_length": 60, "amplitude": 12, "thickness": 3.0, "width": 20 }
+    },
+    {
+      "id": "snap_latch", "mode": "cantilever",
+      "label": { "en": "Snap Latch", "es": "Pestillo de Encaje" },
+      "values": { "spring_type": "cantilever", "free_length": 30, "thickness": 2.0, "width": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness < amplitude",
+      "severity": "warning",
+      "message": { "en": "Beam thickness approaches the sway; the wave may bind instead of flex", "es": "El grosor de la viga se acerca al vaivén; la onda puede trabarse en vez de flexionar" }
+    },
+    {
+      "expression": "free_length >= 10",
+      "severity": "error",
+      "message": { "en": "Free length must be at least 10 mm", "es": "La longitud libre debe ser de al menos 10 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "compliant_flexure",
+        "label": { "en": "Compliant Flexure", "es": "Flexura Compliante" },
+        "geometry_type": "spline",
+        "standard": "internal",
+        "parameters": ["thickness", "free_length", "waves", "amplitude"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Springs are consumable hardware rarely stocked in the exact rate a repair needs. A printable compliant flexure — coil-free and mono-material — replaces a broken spring in a latch, clip, or suspension on demand, tuned by geometry rather than a catalog.",
+      "es": "Los resortes son ferretería consumible rara vez disponible en la constante exacta que necesita una reparación. Una flexura compliante imprimible — sin espiral y monomaterial — reemplaza un resorte roto en un pestillo, clip o suspensión bajo demanda, ajustada por geometría en vez de por catálogo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["spring", "flexure", "compliant", "mechanism", "industrial", "hyperobject", "commons"]
+}

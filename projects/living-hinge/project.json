@@ -1,0 +1,512 @@
+{
+  "project": {
+    "name": "Living-Hinge Panel",
+    "slug": "living-hinge",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place flexure hinge that folds two flat panels without a separate pin. Choose a continuous thin web, a segmented slot lattice, or a coiled knuckle — for boxes, lids, cases, and folding parts.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bisagra de flexión impresa en el sitio que dobla dos paneles planos sin un pasador aparte. Elija una membrana delgada continua, una retícula de ranuras segmentadas o un nudo enrollado — para cajas, tapas, estuches y piezas plegables.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/living-hinge.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "hinge",
+      "flexure",
+      "living-hinge",
+      "fold",
+      "box",
+      "lid",
+      "print-in-place",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "web_hinge",
+      "label": {
+        "en": "Web Hinge",
+        "es": "Bisagra de Membrana"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "web_hinge"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "segmented_hinge",
+      "label": {
+        "en": "Segmented Hinge",
+        "es": "Bisagra Segmentada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "segmented_hinge"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 3,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "box_corner",
+      "label": {
+        "en": "Box Corner",
+        "es": "Esquina de Caja"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "box_corner"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 9
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "web_hinge",
+      "label": {
+        "en": "Web Hinge",
+        "es": "Bisagra de Membrana"
+      },
+      "render_mode": 0,
+      "color": "#6ea8fe"
+    },
+    {
+      "id": "segmented_hinge",
+      "label": {
+        "en": "Segmented Hinge",
+        "es": "Bisagra Segmentada"
+      },
+      "render_mode": 0,
+      "color": "#f59e0b"
+    },
+    {
+      "id": "box_corner",
+      "label": {
+        "en": "Box Corner",
+        "es": "Esquina de Caja"
+      },
+      "render_mode": 0,
+      "color": "#34d399"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "panels",
+      "label": {
+        "en": "Panels",
+        "es": "Paneles"
+      }
+    },
+    {
+      "id": "hinge",
+      "label": {
+        "en": "Hinge",
+        "es": "Bisagra"
+      }
+    },
+    {
+      "id": "segmented",
+      "label": {
+        "en": "Segmented Options",
+        "es": "Opciones Segmentadas"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "hinge_type",
+      "type": "select",
+      "default": "thin_web",
+      "group": "hinge",
+      "modes": [
+        "web_hinge",
+        "segmented_hinge",
+        "box_corner"
+      ],
+      "label": {
+        "en": "Hinge Type",
+        "es": "Tipo de Bisagra"
+      },
+      "tooltip": {
+        "en": "Thin web (a continuous flexing membrane), segmented (alternating cut slots that curl), or coiled (a rolled knuckle)",
+        "es": "Membrana delgada (una película continua que flexiona), segmentada (ranuras alternas que se enrollan) o enrollada (un nudo)"
+      },
+      "options": [
+        {
+          "value": "thin_web",
+          "label": {
+            "en": "Thin Web",
+            "es": "Membrana Delgada"
+          }
+        },
+        {
+          "value": "segmented",
+          "label": {
+            "en": "Segmented",
+            "es": "Segmentada"
+          }
+        },
+        {
+          "value": "coiled",
+          "label": {
+            "en": "Coiled Knuckle",
+            "es": "Nudo Enrollado"
+          }
+        }
+      ]
+    },
+    {
+      "id": "panel_w",
+      "type": "slider",
+      "default": 60,
+      "min": 15,
+      "max": 200,
+      "step": 1,
+      "group": "panels",
+      "modes": [
+        "web_hinge",
+        "segmented_hinge",
+        "box_corner"
+      ],
+      "label": {
+        "en": "Panel Width (mm)",
+        "es": "Ancho del Panel (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the fold line (Y span shared by both panels)",
+        "es": "Longitud de la línea de doblez (span Y compartido por ambos paneles)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "panel_len",
+      "type": "slider",
+      "default": 40,
+      "min": 10,
+      "max": 150,
+      "step": 1,
+      "group": "panels",
+      "modes": [
+        "web_hinge",
+        "segmented_hinge",
+        "box_corner"
+      ],
+      "label": {
+        "en": "Panel Length each (mm)",
+        "es": "Longitud de cada Panel (mm)"
+      },
+      "tooltip": {
+        "en": "Length of each panel on either side of the hinge",
+        "es": "Longitud de cada panel a cada lado de la bisagra"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "panel_thick",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.0,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "panels",
+      "modes": [
+        "web_hinge",
+        "segmented_hinge",
+        "box_corner"
+      ],
+      "label": {
+        "en": "Panel Thickness (mm)",
+        "es": "Grosor del Panel (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the rigid panels",
+        "es": "Grosor de los paneles rígidos"
+      }
+    },
+    {
+      "id": "web_thick",
+      "type": "slider",
+      "default": 0.5,
+      "min": 0.2,
+      "max": 1.2,
+      "step": 0.05,
+      "group": "hinge",
+      "modes": [
+        "web_hinge",
+        "box_corner"
+      ],
+      "label": {
+        "en": "Web Thickness (mm)",
+        "es": "Grosor de Membrana (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flexing membrane (0.4-0.6 mm flexes best in PLA/PETG)",
+        "es": "Grosor de la película que flexiona (0.4-0.6 mm flexiona mejor en PLA/PETG)"
+      }
+    },
+    {
+      "id": "hinge_len",
+      "type": "slider",
+      "default": 8.0,
+      "min": 2.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "hinge",
+      "modes": [
+        "web_hinge",
+        "segmented_hinge",
+        "box_corner"
+      ],
+      "label": {
+        "en": "Hinge Length (mm)",
+        "es": "Longitud de Bisagra (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the flexing zone along the fold direction",
+        "es": "Longitud de la zona de flexión en la dirección del doblez"
+      }
+    },
+    {
+      "id": "seg_count",
+      "type": "slider",
+      "default": 6,
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "group": "segmented",
+      "modes": [
+        "segmented_hinge"
+      ],
+      "label": {
+        "en": "Slot Rows",
+        "es": "Filas de Ranuras"
+      },
+      "tooltip": {
+        "en": "Number of cut slots across the segmented hinge",
+        "es": "Número de ranuras cortadas en la bisagra segmentada"
+      }
+    },
+    {
+      "id": "seg_gap",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.4,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "segmented",
+      "modes": [
+        "segmented_hinge"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Slot Width (mm)",
+        "es": "Ancho de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each cut slot; wider = more flexible, weaker",
+        "es": "Ancho de cada ranura; más ancho = más flexible, más débil"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "lid_web",
+      "mode": "web_hinge",
+      "label": {
+        "en": "Snap-Lid Web (0.5 mm)",
+        "es": "Membrana de Tapa (0.5 mm)"
+      },
+      "values": {
+        "hinge_type": "thin_web",
+        "panel_w": 70,
+        "panel_len": 35,
+        "panel_thick": 2.4,
+        "web_thick": 0.5,
+        "hinge_len": 6
+      }
+    },
+    {
+      "id": "curling_band",
+      "mode": "segmented_hinge",
+      "label": {
+        "en": "Curling Segmented Band",
+        "es": "Banda Segmentada Enrollable"
+      },
+      "values": {
+        "hinge_type": "segmented",
+        "panel_w": 80,
+        "panel_len": 30,
+        "panel_thick": 3,
+        "hinge_len": 18,
+        "seg_count": 10,
+        "seg_gap": 1.2
+      }
+    },
+    {
+      "id": "folded_case_corner",
+      "mode": "box_corner",
+      "label": {
+        "en": "Folded Case Corner",
+        "es": "Esquina de Estuche Plegada"
+      },
+      "values": {
+        "hinge_type": "thin_web",
+        "panel_w": 60,
+        "panel_len": 45,
+        "panel_thick": 3,
+        "web_thick": 0.6,
+        "hinge_len": 8
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "web_thick <= panel_thick - 0.2",
+      "severity": "warning",
+      "message": {
+        "en": "Web must be thinner than the panel to flex",
+        "es": "La membrana debe ser más delgada que el panel para flexionar"
+      }
+    },
+    {
+      "expression": "web_thick >= 0.2",
+      "severity": "error",
+      "message": {
+        "en": "Web must be at least 0.2 mm to print",
+        "es": "La membrana debe ser de al menos 0.2 mm para imprimir"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        90
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        200
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "flexure_web",
+        "label": {
+          "en": "Flexure Web",
+          "es": "Membrana de Flexión"
+        },
+        "geometry_type": "spline",
+        "standard": "internal",
+        "parameters": [
+          "web_thick",
+          "hinge_len",
+          "panel_w"
+        ]
+      },
+      {
+        "id": "panel_edge",
+        "label": {
+          "en": "Panel Edge",
+          "es": "Borde de Panel"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "panel_w",
+          "panel_thick",
+          "panel_len"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Print-in-place hinges remove the last piece of hardware from folding boxes, cases, and enclosures — one continuous part replaces a pin, two knuckles, and an assembly step, cutting waste and repair friction.",
+      "es": "Las bisagras impresas en el sitio eliminan la última pieza de ferretería de cajas, estuches y carcasas plegables — una sola pieza continua reemplaza un pasador, dos nudos y un paso de ensamblaje, reduciendo residuos y fricción de reparación."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "hinge",
+    "flexure",
+    "fold",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

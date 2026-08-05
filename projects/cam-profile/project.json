@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "Cam / Eccentric",
+    "slug": "cam-profile",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A rotating cam that converts rotation into linear follower motion — the heart of timers, automatons, indexers, engines, and clamping fixtures. Choose a motion law: eccentric (offset circle), snail (Archimedean rise with a sharp return), or harmonic (smooth rise-dwell-fall). The follower's displacement curve is the printed cam edge.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una leva rotativa que convierte la rotación en movimiento lineal del seguidor — el corazón de temporizadores, autómatas, indexadores, motores y dispositivos de sujeción. Elige una ley de movimiento: excéntrica (círculo desplazado), caracol (subida arquimediana con retorno brusco) o armónica (subida-reposo-bajada suave). La curva de desplazamiento del seguidor es el borde impreso de la leva.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cam-profile.webp",
+    "difficulty": "advanced",
+    "tags": ["cam", "eccentric", "snail-cam", "motion", "follower", "timing", "mechanism", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "eccentric",
+      "label": { "en": "Eccentric", "es": "Excéntrica" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["eccentric"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "snail_cam",
+      "label": { "en": "Snail Cam", "es": "Leva de Caracol" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["snail_cam"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "harmonic_cam",
+      "label": { "en": "Harmonic Cam", "es": "Leva Armónica" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["harmonic_cam"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "eccentric", "label": { "en": "Eccentric", "es": "Excéntrica" }, "render_mode": 0, "color": "#58707a" },
+    { "id": "snail_cam", "label": { "en": "Snail Cam", "es": "Leva de Caracol" }, "render_mode": 0, "color": "#688a8a" },
+    { "id": "harmonic_cam", "label": { "en": "Harmonic Cam", "es": "Leva Armónica" }, "render_mode": 0, "color": "#789a9a" }
+  ],
+  "parameter_groups": [
+    { "id": "profile", "label": { "en": "Cam Profile", "es": "Perfil de Leva" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "cam_type", "type": "select", "default": "eccentric",
+      "group": "profile", "modes": ["eccentric", "snail_cam", "harmonic_cam"],
+      "label": { "en": "Cam Type", "es": "Tipo de Leva" },
+      "tooltip": { "en": "Motion law shaping the follower rise", "es": "Ley de movimiento que da forma a la subida del seguidor" },
+      "options": [
+        { "value": "eccentric", "label": { "en": "Eccentric — offset circle (simple, smooth)", "es": "Excéntrica — círculo desplazado (simple, suave)" } },
+        { "value": "snail", "label": { "en": "Snail — Archimedean rise, sharp return", "es": "Caracol — subida arquimediana, retorno brusco" } },
+        { "value": "harmonic", "label": { "en": "Harmonic — smooth rise-dwell-fall", "es": "Armónica — subida-reposo-bajada suave" } }
+      ]
+    },
+    {
+      "id": "base_radius", "type": "slider", "default": 15, "min": 5, "max": 120, "step": 1,
+      "group": "profile", "modes": ["eccentric", "snail_cam", "harmonic_cam"],
+      "label": { "en": "Base Radius (mm)", "es": "Radio Base (mm)" },
+      "tooltip": { "en": "Low/dwell radius of the cam", "es": "Radio bajo/de reposo de la leva" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "lift", "type": "slider", "default": 10, "min": 1, "max": 120, "step": 1,
+      "group": "profile", "modes": ["eccentric", "snail_cam", "harmonic_cam"],
+      "label": { "en": "Lift / Rise (mm)", "es": "Elevación / Subida (mm)" },
+      "tooltip": { "en": "Peak rise of the follower above base radius", "es": "Subida máxima del seguidor sobre el radio base" }
+    },
+    {
+      "id": "dwell_angle", "type": "slider", "default": 90, "min": 0, "max": 300, "step": 5,
+      "group": "profile", "modes": ["harmonic_cam"],
+      "label": { "en": "Low Dwell Angle (deg)", "es": "Ángulo de Reposo Bajo (grados)" },
+      "tooltip": { "en": "Span held at base radius before the rise (harmonic)", "es": "Tramo mantenido en el radio base antes de la subida (armónica)" }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 8.0, "min": 2.0, "max": 40.0, "step": 0.5,
+      "group": "body", "modes": ["eccentric", "snail_cam", "harmonic_cam"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Cam thickness in Z", "es": "Grosor de la leva en Z" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 6.0, "min": 2.0, "max": 40.0, "step": 0.5,
+      "group": "body", "modes": ["eccentric", "snail_cam", "harmonic_cam"],
+      "label": { "en": "Shaft Bore (mm)", "es": "Barreno de Eje (mm)" },
+      "tooltip": { "en": "Center shaft bore diameter (with a set-screw flat)", "es": "Diámetro del barreno central del eje (con plano para tornillo)" }
+    },
+    {
+      "id": "hub", "type": "checkbox", "default": true,
+      "group": "body", "modes": ["eccentric", "snail_cam", "harmonic_cam"], "advanced": true,
+      "label": { "en": "Raised Hub", "es": "Cubo Elevado" },
+      "tooltip": { "en": "Add a raised hub around the bore for set-screw grip", "es": "Agregar un cubo elevado alrededor del barreno para agarre de tornillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "timer_eccentric", "mode": "eccentric",
+      "label": { "en": "Timer Eccentric", "es": "Excéntrica de Temporizador" },
+      "values": { "cam_type": "eccentric", "base_radius": 18, "lift": 8, "thickness": 8, "bore": 6 }
+    },
+    {
+      "id": "escapement_snail", "mode": "snail_cam",
+      "label": { "en": "Escapement Snail", "es": "Caracol de Escape" },
+      "values": { "cam_type": "snail", "base_radius": 15, "lift": 14, "thickness": 6, "bore": 5 }
+    },
+    {
+      "id": "valve_harmonic", "mode": "harmonic_cam",
+      "label": { "en": "Valve Harmonic", "es": "Válvula Armónica" },
+      "values": { "cam_type": "harmonic", "base_radius": 20, "lift": 12, "dwell_angle": 120, "thickness": 10 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "lift <= base_radius * 2.5",
+      "severity": "warning",
+      "message": { "en": "Lift is large relative to base radius; it is clamped for a printable profile", "es": "La elevación es grande respecto al radio base; se limita para un perfil imprimible" }
+    },
+    {
+      "expression": "bore <= base_radius * 1.2",
+      "severity": "warning",
+      "message": { "en": "Bore is large relative to the base radius", "es": "El barreno es grande respecto al radio base" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [50, 50, 45] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 15] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "cam_rise_profile",
+        "label": { "en": "Cam Rise Profile", "es": "Perfil de Subida de Leva" },
+        "geometry_type": "spline",
+        "standard": "internal",
+        "parameters": ["base_radius", "lift", "cam_type", "dwell_angle"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Custom motion profiles are locked inside proprietary machinery and impossible to source as spares. A parametric cam lets a repair or an automaton reproduce an exact rise law on demand, from a timer knob to a valve lifter.",
+      "es": "Los perfiles de movimiento personalizados están encerrados en maquinaria propietaria e imposibles de conseguir como repuestos. Una leva paramétrica permite que una reparación o un autómata reproduzca una ley de subida exacta bajo demanda, desde una perilla de temporizador hasta un empujador de válvula."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cam", "eccentric", "motion", "mechanism", "industrial", "hyperobject", "commons"]
+}

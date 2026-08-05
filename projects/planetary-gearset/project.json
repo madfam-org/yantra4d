@@ -1,0 +1,198 @@
+{
+  "project": {
+    "name": "Planetary Gearset",
+    "slug": "planetary-gearset",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A compact planetary reduction stage: a central sun gear, orbiting planets, and a surrounding internal ring gear, all involute and sharing one module (ISO 53 / DIN 867). The defining relation ring = sun + 2 x planet is enforced by computing the ring tooth count, so the train always closes and the planets sit on the carrier circle without interference.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una etapa de reducción planetaria compacta: un engrane solar central, planetas orbitando y un engrane anular interno que los rodea, todos de involuta y compartiendo un módulo (ISO 53 / DIN 867). La relación que la define, anillo = sol + 2 x planeta, se garantiza al calcular el número de dientes del anillo, de modo que el tren siempre cierra y los planetas quedan en el círculo del portasatélites sin interferencia.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/planetary-gearset.webp",
+    "difficulty": "advanced",
+    "tags": ["gear", "planetary", "epicyclic", "sun", "ring", "involute", "reduction", "mechanism", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "sun",
+      "label": { "en": "Sun Gear", "es": "Engrane Solar" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sun"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "planet",
+      "label": { "en": "Planet Gear", "es": "Engrane Planeta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["planet"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "ring",
+      "label": { "en": "Ring Gear", "es": "Engrane Anular" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ring"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "assembly",
+      "label": { "en": "Full Assembly", "es": "Ensamble Completo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sun", "planet", "ring"],
+      "estimate": { "base_time": 20, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "sun", "label": { "en": "Sun", "es": "Sol" }, "render_mode": 0, "color": "#d9a64d" },
+    { "id": "planet", "label": { "en": "Planet", "es": "Planeta" }, "render_mode": 0, "color": "#8cb5cc" },
+    { "id": "ring", "label": { "en": "Ring", "es": "Anillo" }, "render_mode": 0, "color": "#6b8fb0" }
+  ],
+  "parameter_groups": [
+    { "id": "gear", "label": { "en": "Gear Geometry", "es": "Geometría del Engrane" } },
+    { "id": "counts", "label": { "en": "Tooth Counts", "es": "Números de Dientes" } },
+    { "id": "body", "label": { "en": "Body & Bores", "es": "Cuerpo y Barrenos" } }
+  ],
+  "parameters": [
+    {
+      "id": "m", "type": "slider", "default": 2.0, "min": 0.5, "max": 6.0, "step": 0.5,
+      "group": "gear", "modes": ["sun", "planet", "ring", "assembly"],
+      "label": { "en": "Module (mm)", "es": "Módulo (mm)" },
+      "tooltip": { "en": "Shared tooth size for every member of the train.", "es": "Tamaño de diente compartido por todos los miembros del tren." }
+    },
+    {
+      "id": "pressure_angle", "type": "select", "default": 20,
+      "group": "gear", "modes": ["sun", "planet", "ring", "assembly"],
+      "label": { "en": "Pressure Angle", "es": "Ángulo de Presión" },
+      "tooltip": { "en": "Flank inclination standard. 20 deg is the modern default.", "es": "Estándar de inclinación del flanco. 20 grados es el valor moderno." },
+      "options": [
+        { "value": 14.5, "label": { "en": "14.5 deg (legacy)", "es": "14.5 grados (heredado)" } },
+        { "value": 20, "label": { "en": "20 deg (standard)", "es": "20 grados (estándar)" } },
+        { "value": 25, "label": { "en": "25 deg (high load)", "es": "25 grados (alta carga)" } }
+      ]
+    },
+    {
+      "id": "sun_teeth", "type": "slider", "default": 12, "min": 6, "max": 48, "step": 1,
+      "group": "counts", "modes": ["sun", "ring", "assembly"],
+      "label": { "en": "Sun Teeth", "es": "Dientes del Sol" },
+      "tooltip": { "en": "Central sun tooth count. Ring = sun + 2 x planet (auto).", "es": "Número de dientes del sol central. Anillo = sol + 2 x planeta (auto)." }
+    },
+    {
+      "id": "planet_teeth", "type": "slider", "default": 12, "min": 6, "max": 48, "step": 1,
+      "group": "counts", "modes": ["planet", "ring", "assembly"],
+      "label": { "en": "Planet Teeth", "es": "Dientes del Planeta" },
+      "tooltip": { "en": "Planet tooth count. Sets the carrier radius and the ring size.", "es": "Número de dientes del planeta. Fija el radio del portasatélites y el tamaño del anillo." }
+    },
+    {
+      "id": "planets", "type": "slider", "default": 3, "min": 2, "max": 8, "step": 1,
+      "group": "counts", "modes": ["assembly"],
+      "label": { "en": "Planet Count", "es": "Número de Planetas" },
+      "tooltip": { "en": "How many planets orbit the sun in the assembly view.", "es": "Cuántos planetas orbitan el sol en la vista de ensamble." }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 8.0, "min": 2.0, "max": 30.0, "step": 1.0,
+      "group": "body", "modes": ["sun", "planet", "ring", "assembly"],
+      "label": { "en": "Face Width (mm)", "es": "Ancho de Cara (mm)" },
+      "tooltip": { "en": "Gear thickness in Z (shared by all members).", "es": "Grosor del engrane en Z (compartido por todos)." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "sun_bore", "type": "slider", "default": 5.0, "min": 0.0, "max": 16.0, "step": 0.5,
+      "group": "body", "modes": ["sun", "assembly"],
+      "label": { "en": "Sun Bore (mm)", "es": "Barreno del Sol (mm)" },
+      "tooltip": { "en": "Central shaft bore in the sun (0 = solid).", "es": "Barreno central del eje en el sol (0 = sólido)." }
+    },
+    {
+      "id": "planet_bore", "type": "slider", "default": 4.0, "min": 0.0, "max": 16.0, "step": 0.5,
+      "group": "body", "modes": ["planet", "assembly"],
+      "label": { "en": "Planet Bore (mm)", "es": "Barreno del Planeta (mm)" },
+      "tooltip": { "en": "Pin bore in each planet (0 = solid).", "es": "Barreno del pasador en cada planeta (0 = sólido)." }
+    },
+    {
+      "id": "rim_width", "type": "slider", "default": 6.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "body", "modes": ["ring", "assembly"],
+      "label": { "en": "Ring Rim Width (mm)", "es": "Ancho de Corona del Anillo (mm)" },
+      "tooltip": { "en": "Radial wall thickness outside the ring roots.", "es": "Grosor radial de pared fuera de las raíces del anillo." }
+    },
+    {
+      "id": "flank_pts", "type": "slider", "default": 9, "min": 4, "max": 16, "step": 1,
+      "group": "body", "modes": ["sun", "planet", "ring", "assembly"], "advanced": true,
+      "label": { "en": "Flank Samples", "es": "Muestras de Flanco" },
+      "tooltip": { "en": "Involute samples per flank (facet control).", "es": "Muestras de involuta por flanco (control de facetas)." }
+    }
+  ],
+  "presets": [
+    {
+      "id": "compact_4to1", "mode": "assembly",
+      "label": { "en": "Compact ~4:1 Stage", "es": "Etapa Compacta ~4:1" },
+      "values": { "m": 1.5, "sun_teeth": 12, "planet_teeth": 12, "planets": 3, "thickness": 8, "pressure_angle": 20 }
+    },
+    {
+      "id": "high_reduction", "mode": "assembly",
+      "label": { "en": "High Reduction (small sun)", "es": "Alta Reducción (sol pequeño)" },
+      "values": { "m": 1.5, "sun_teeth": 9, "planet_teeth": 18, "planets": 4, "thickness": 10, "pressure_angle": 20 }
+    },
+    {
+      "id": "printable_sun", "mode": "sun",
+      "label": { "en": "Printable Sun (M2)", "es": "Sol Imprimible (M2)" },
+      "values": { "m": 2, "sun_teeth": 16, "thickness": 10, "sun_bore": 5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "sun_bore < sun_teeth * m / 2",
+      "severity": "warning",
+      "message": { "en": "Sun bore is large relative to the sun root circle", "es": "El barreno del sol es grande respecto al círculo de raíz del sol" }
+    },
+    {
+      "expression": "m >= 0.5",
+      "severity": "error",
+      "message": { "en": "Module must be at least 0.5 mm", "es": "El módulo debe ser de al menos 0.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 64, "wasm_multiplier": 5, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "planetary_involute_set",
+        "label": { "en": "Planetary Involute Set", "es": "Conjunto Planetario de Involuta" },
+        "geometry_type": "spline",
+        "standard": "ISO 53",
+        "parameters": ["m", "sun_teeth", "planet_teeth", "pressure_angle"]
+      },
+      {
+        "id": "ring_internal_mesh",
+        "label": { "en": "Internal Ring Mesh", "es": "Engrane Anular Interno" },
+        "geometry_type": "spline",
+        "standard": "ISO 53",
+        "parameters": ["m", "sun_teeth", "planet_teeth", "rim_width"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Coaxial high-ratio reduction in a small envelope powers robotics, actuators, and hand tools. A commons planetary generator that enforces the ring = sun + 2 x planet relation lets makers print matched, correctly-meshing stages instead of sourcing proprietary gearboxes.",
+      "es": "La reducción coaxial de alta relación en un volumen pequeño impulsa robótica, actuadores y herramientas manuales. Un generador planetario del procomún que garantiza la relación anillo = sol + 2 x planeta permite a los creadores imprimir etapas coincidentes y bien engranadas en lugar de comprar cajas reductoras propietarias."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gear", "planetary", "epicyclic", "reduction", "involute", "industrial", "hyperobject", "commons"]
+}

@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Cable Drag Chain",
+    "slug": "drag-chain",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A cable drag chain (e-chain / cable carrier) for motion systems: gantries, 3D-printer axes, and CNC machines. One link pins to identical links to form a flexible carrier with a built-in bend stop. Peg-and-socket ends let the chain pivot; a rigid closed frame protects the cables.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una cadena portacables (e-chain / portacables) para sistemas de movimiento: pórticos, ejes de impresoras 3D y máquinas CNC. Un eslabón se une por pasador a eslabones idénticos formando un portacables flexible con tope de curvatura integrado. Los extremos de espiga y casquillo permiten pivotar; un marco rígido cerrado protege los cables.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/drag-chain.webp",
+    "difficulty": "advanced",
+    "tags": ["drag-chain", "e-chain", "cable-carrier", "cable-management", "motion", "cnc", "gantry", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "link",
+      "label": { "en": "Link", "es": "Eslabón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["link"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "link_open",
+      "label": { "en": "Openable Link", "es": "Eslabón Abrible" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["link_open"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 15 }
+    },
+    {
+      "id": "end_bracket",
+      "label": { "en": "End Bracket", "es": "Soporte de Extremo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["end_bracket"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "link", "label": { "en": "Link", "es": "Eslabón" }, "render_mode": 0, "color": "#4a5a6a" },
+    { "id": "link_open", "label": { "en": "Openable Link", "es": "Eslabón Abrible" }, "render_mode": 0, "color": "#5a6a7a" },
+    { "id": "end_bracket", "label": { "en": "End Bracket", "es": "Soporte de Extremo" }, "render_mode": 0, "color": "#6a7a8a" }
+  ],
+  "parameter_groups": [
+    { "id": "channel", "label": { "en": "Cable Channel", "es": "Canal de Cable" } },
+    { "id": "link", "label": { "en": "Link Geometry", "es": "Geometría del Eslabón" } },
+    { "id": "joint", "label": { "en": "Pin Joint", "es": "Articulación de Pasador" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_w", "type": "slider", "default": 18, "min": 6, "max": 80, "step": 1,
+      "group": "channel", "modes": ["link", "link_open", "end_bracket"],
+      "label": { "en": "Cable Channel Width (mm)", "es": "Ancho del Canal (mm)" },
+      "tooltip": { "en": "Interior Y space for cables/hoses", "es": "Espacio interior Y para cables/mangueras" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_h", "type": "slider", "default": 16, "min": 6, "max": 80, "step": 1,
+      "group": "channel", "modes": ["link", "link_open", "end_bracket"],
+      "label": { "en": "Cable Channel Height (mm)", "es": "Altura del Canal (mm)" },
+      "tooltip": { "en": "Interior Z space for cables/hoses", "es": "Espacio interior Z para cables/mangueras" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 30, "min": 16, "max": 120, "step": 1,
+      "group": "link", "modes": ["link", "link_open", "end_bracket"],
+      "label": { "en": "Link Pitch (mm)", "es": "Paso del Eslabón (mm)" },
+      "tooltip": { "en": "Link length along the travel direction", "es": "Longitud del eslabón en la dirección de recorrido" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "link", "modes": ["link", "link_open", "end_bracket"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Side-plate and cross-bar thickness", "es": "Grosor de placas laterales y barras" }
+    },
+    {
+      "id": "bend_radius", "type": "slider", "default": 40, "min": 13, "max": 400, "step": 1,
+      "group": "joint", "modes": ["link", "link_open"],
+      "label": { "en": "Min Bend Radius (mm)", "es": "Radio Mínimo de Curvatura (mm)" },
+      "tooltip": { "en": "Smallest curve the chain may bend to; sets the pivot-stop angle", "es": "Curva más cerrada a la que puede doblar la cadena; define el ángulo del tope" }
+    },
+    {
+      "id": "pin_dia", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "joint", "modes": ["link", "link_open", "end_bracket"],
+      "label": { "en": "Pin Diameter (mm)", "es": "Diámetro del Pasador (mm)" },
+      "tooltip": { "en": "Nominal peg/socket diameter joining links", "es": "Diámetro nominal de espiga/casquillo que une eslabones" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.35, "min": 0.15, "max": 0.8, "step": 0.05,
+      "group": "joint", "modes": ["link", "link_open"], "advanced": true,
+      "label": { "en": "Pin Clearance (mm)", "es": "Holgura del Pasador (mm)" },
+      "tooltip": { "en": "Per-side gap for a printable pivoting fit", "es": "Espacio por lado para un ajuste pivotante imprimible" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "printer_axis", "mode": "link",
+      "label": { "en": "3D-Printer Axis (15×15)", "es": "Eje de Impresora 3D (15×15)" },
+      "values": { "inner_w": 15, "inner_h": 15, "pitch": 28, "wall": 2.0, "bend_radius": 32, "pin_dia": 3.5 }
+    },
+    {
+      "id": "cnc_gantry", "mode": "link",
+      "label": { "en": "CNC Gantry (40×30)", "es": "Pórtico CNC (40×30)" },
+      "values": { "inner_w": 40, "inner_h": 30, "pitch": 50, "wall": 3.0, "bend_radius": 75, "pin_dia": 5.0 }
+    },
+    {
+      "id": "frame_mount", "mode": "end_bracket",
+      "label": { "en": "Frame Mount Bracket", "es": "Soporte de Montaje" },
+      "values": { "inner_w": 18, "inner_h": 16, "pitch": 30, "wall": 2.4, "pin_dia": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pitch >= pin_dia * 3.5 + 6",
+      "severity": "warning",
+      "message": { "en": "Pitch is short for this pin diameter; pins may crowd the stop lug", "es": "El paso es corto para este diámetro de pasador; los pasadores pueden apretar el tope" }
+    },
+    {
+      "expression": "bend_radius >= pitch * 0.8",
+      "severity": "warning",
+      "message": { "en": "Bend radius is tight relative to pitch", "es": "El radio de curvatura es cerrado respecto al paso" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "drag_chain_link_pin",
+        "label": { "en": "Drag-Chain Link Pin", "es": "Pasador de Eslabón" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["pitch", "bend_radius", "pin_dia", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cable carriers wear out and are rarely sold in the exact size a repair needs. An on-demand, printable e-chain keeps machines running and cables protected without proprietary catalog parts or minimum orders.",
+      "es": "Los portacables se desgastan y rara vez se venden en el tamaño exacto que necesita una reparación. Un e-chain imprimible bajo demanda mantiene las máquinas funcionando y los cables protegidos sin piezas de catálogo propietarias ni pedidos mínimos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drag-chain", "e-chain", "cable-carrier", "motion", "industrial", "hyperobject", "commons"]
+}

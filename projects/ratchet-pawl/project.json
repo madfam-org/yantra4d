@@ -1,0 +1,161 @@
+{
+  "project": {
+    "name": "Ratchet & Pawl",
+    "slug": "ratchet-pawl",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A one-way motion mechanism: a sawtooth ratchet wheel plus a pivoting pawl arm that drops into the teeth so the wheel turns freely one way and locks the other. For winches, tensioners, indexing tables, and hand tools. The tooth flank asymmetry (rake angle) sets how firmly it locks versus how easily it ratchets over.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un mecanismo de movimiento unidireccional: una rueda de trinquete dentada más un brazo de gatillo pivotante que cae en los dientes, de modo que la rueda gira libremente en un sentido y se bloquea en el otro. Para cabrestantes, tensores, mesas de indexación y herramientas manuales. La asimetría del flanco del diente (ángulo de rake) define cuán firmemente bloquea frente a cuán fácil trinquetea.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/ratchet-pawl.webp",
+    "difficulty": "advanced",
+    "tags": ["ratchet", "pawl", "one-way", "sawtooth", "indexing", "winch", "mechanism", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ratchet",
+      "label": { "en": "Ratchet Wheel", "es": "Rueda de Trinquete" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ratchet"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "pawl",
+      "label": { "en": "Pawl Arm", "es": "Brazo de Gatillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pawl"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "assembly",
+      "label": { "en": "Assembly", "es": "Conjunto" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["assembly"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "ratchet", "label": { "en": "Ratchet Wheel", "es": "Rueda de Trinquete" }, "render_mode": 0, "color": "#6a5a7a" },
+    { "id": "pawl", "label": { "en": "Pawl Arm", "es": "Brazo de Gatillo" }, "render_mode": 0, "color": "#8a6a7a" },
+    { "id": "assembly", "label": { "en": "Assembly", "es": "Conjunto" }, "render_mode": 0, "color": "#7a6a8a" }
+  ],
+  "parameter_groups": [
+    { "id": "wheel", "label": { "en": "Ratchet Wheel", "es": "Rueda de Trinquete" } },
+    { "id": "teeth", "label": { "en": "Teeth", "es": "Dientes" } },
+    { "id": "pawl", "label": { "en": "Pawl", "es": "Gatillo" } }
+  ],
+  "parameters": [
+    {
+      "id": "outer_dia", "type": "slider", "default": 50, "min": 16, "max": 200, "step": 1,
+      "group": "wheel", "modes": ["ratchet", "assembly"],
+      "label": { "en": "Outer Diameter (mm)", "es": "Diámetro Exterior (mm)" },
+      "tooltip": { "en": "Diameter at the tooth tips", "es": "Diámetro en las puntas de los dientes" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "teeth", "type": "slider", "default": 16, "min": 6, "max": 72, "step": 1,
+      "group": "teeth", "modes": ["ratchet", "assembly"],
+      "label": { "en": "Tooth Count", "es": "Número de Dientes" },
+      "tooltip": { "en": "Number of sawtooth teeth around the rim", "es": "Número de dientes de sierra alrededor del borde" }
+    },
+    {
+      "id": "rake_angle", "type": "slider", "default": 20, "min": 0, "max": 45, "step": 1,
+      "group": "teeth", "modes": ["ratchet", "assembly"],
+      "label": { "en": "Rake Angle (deg)", "es": "Ángulo de Rake (grados)" },
+      "tooltip": { "en": "Lean of the steep locking face; higher = harder-locking, more aggressive catch", "es": "Inclinación de la cara de bloqueo empinada; mayor = bloqueo más firme y agarre más agresivo" }
+    },
+    {
+      "id": "tooth_depth", "type": "slider", "default": 4.0, "min": 1.0, "max": 20.0, "step": 0.5,
+      "group": "teeth", "modes": ["ratchet", "assembly"], "advanced": true,
+      "label": { "en": "Tooth Depth (mm)", "es": "Profundidad de Diente (mm)" },
+      "tooltip": { "en": "Radial height of each tooth (clamped to 20% of radius)", "es": "Altura radial de cada diente (limitada al 20% del radio)" }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 6.0, "min": 2.0, "max": 30.0, "step": 0.5,
+      "group": "wheel", "modes": ["ratchet", "pawl", "assembly"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Part thickness in Z", "es": "Grosor de la pieza en Z" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 8.0, "min": 2.0, "max": 40.0, "step": 0.5,
+      "group": "wheel", "modes": ["ratchet", "assembly"],
+      "label": { "en": "Bore Diameter (mm)", "es": "Diámetro de Barreno (mm)" },
+      "tooltip": { "en": "Center shaft bore of the wheel", "es": "Barreno central del eje de la rueda" }
+    },
+    {
+      "id": "pawl_length", "type": "slider", "default": 40, "min": 12, "max": 250, "step": 1,
+      "group": "pawl", "modes": ["pawl", "assembly"],
+      "label": { "en": "Pawl Length (mm)", "es": "Longitud del Gatillo (mm)" },
+      "tooltip": { "en": "Length of the pivoting arm", "es": "Longitud del brazo pivotante" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "winch_wheel", "mode": "ratchet",
+      "label": { "en": "Winch Wheel (12T)", "es": "Rueda de Cabrestante (12D)" },
+      "values": { "outer_dia": 70, "teeth": 12, "rake_angle": 28, "thickness": 8, "bore": 10 }
+    },
+    {
+      "id": "fine_index", "mode": "ratchet",
+      "label": { "en": "Fine Indexer (36T)", "es": "Indexador Fino (36D)" },
+      "values": { "outer_dia": 60, "teeth": 36, "rake_angle": 12, "thickness": 5, "bore": 8 }
+    },
+    {
+      "id": "demo_assembly", "mode": "assembly",
+      "label": { "en": "Ratchet + Pawl Demo", "es": "Demo Trinquete + Gatillo" },
+      "values": { "outer_dia": 50, "teeth": 16, "rake_angle": 20, "pawl_length": 40 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tooth_depth <= outer_dia * 0.2",
+      "severity": "warning",
+      "message": { "en": "Tooth depth is large relative to the wheel; it is clamped to 20% of diameter", "es": "La profundidad del diente es grande respecto a la rueda; se limita al 20% del diámetro" }
+    },
+    {
+      "expression": "bore <= outer_dia - 2 * tooth_depth - 4",
+      "severity": "warning",
+      "message": { "en": "Bore is large; leave a rim between the bore and the tooth roots", "es": "El barreno es grande; deje un borde entre el barreno y las raíces de los dientes" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "ratchet_sawtooth",
+        "label": { "en": "Ratchet Sawtooth", "es": "Diente de Sierra de Trinquete" },
+        "geometry_type": "spline",
+        "standard": "internal",
+        "parameters": ["teeth", "rake_angle", "outer_dia", "tooth_depth"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "One-way locking is the core of winches, tie-down tensioners, and indexers, yet the wheel is the part that shears first. Printing wheel and pawl together in the exact tooth count keeps hoists and jigs working without a machine shop.",
+      "es": "El bloqueo unidireccional es el núcleo de cabrestantes, tensores de amarre e indexadores, pero la rueda es la pieza que cede primero. Imprimir rueda y gatillo juntos con el número exacto de dientes mantiene funcionando polipastos y plantillas sin un taller mecánico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["ratchet", "pawl", "one-way", "mechanism", "industrial", "hyperobject", "commons"]
+}

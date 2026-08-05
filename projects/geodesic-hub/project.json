@@ -1,0 +1,197 @@
+{
+  "project": {
+    "name": "Geodesic / Strut Hub Connector",
+    "slug": "geodesic-hub",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A central hub that joins several struts (dowels, tubes, or pipes) at defined angles — the vertex node for domes, shelters, trellises, tensegrity frames, and geodesic structures. Each strut plugs into a cylindrical socket on an arm radiating from a solid core, with optional pin/screw cross-holes to lock it in. Flat, dome (angled), and ground-anchor variants.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un cubo central que une varios puntales (varillas, tubos o caños) en ángulos definidos — el nodo de vértice para domos, refugios, enrejados, estructuras de tensegridad y geodésicas. Cada puntal entra en un casquillo cilíndrico sobre un brazo que irradia de un núcleo sólido, con orificios opcionales para pasador/tornillo. Variantes plana, de domo (angulada) y de anclaje al suelo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/geodesic-hub.webp",
+    "difficulty": "advanced",
+    "tags": ["hub", "strut", "geodesic", "dome", "connector", "node", "shelter", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "flat_hub",
+      "label": { "en": "Flat Hub", "es": "Cubo Plano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flat_hub"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "dome_hub",
+      "label": { "en": "Dome Hub (angled)", "es": "Cubo de Domo (angulado)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dome_hub"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "ground_anchor",
+      "label": { "en": "Ground Anchor", "es": "Anclaje al Suelo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ground_anchor"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    }
+  ],
+  "parts": [
+    { "id": "flat_hub", "label": { "en": "Flat Hub", "es": "Cubo Plano" }, "render_mode": 0, "color": "#6a8d73" },
+    { "id": "dome_hub", "label": { "en": "Dome Hub", "es": "Cubo de Domo" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "ground_anchor", "label": { "en": "Ground Anchor", "es": "Anclaje al Suelo" }, "render_mode": 0, "color": "#8a7d5b" }
+  ],
+  "parameter_groups": [
+    { "id": "struts", "label": { "en": "Struts & Sockets", "es": "Puntales y Casquillos" } },
+    { "id": "geometry", "label": { "en": "Hub Geometry", "es": "Geometría del Cubo" } },
+    { "id": "fixing", "label": { "en": "Fixing", "es": "Fijación" } },
+    { "id": "anchor", "label": { "en": "Ground Anchor", "es": "Anclaje al Suelo" } }
+  ],
+  "parameters": [
+    {
+      "id": "hub_style", "type": "select", "default": "radial_flat",
+      "group": "geometry", "modes": ["flat_hub", "dome_hub", "ground_anchor"],
+      "label": { "en": "Hub Style", "es": "Estilo de Cubo" },
+      "tooltip": { "en": "radial_flat: all struts in one plane. cone: arms tilt up by the cone angle. custom_5v: a preset 5-way geodesic dome vertex.", "es": "radial_flat: todos los puntales en un plano. cone: los brazos se inclinan según el ángulo de cono. custom_5v: un vértice de domo geodésico de 5 vías predefinido." },
+      "options": [
+        { "value": "radial_flat", "label": { "en": "Radial Flat (one plane)", "es": "Radial Plano (un plano)" } },
+        { "value": "cone", "label": { "en": "Cone (arms tilt up)", "es": "Cono (brazos inclinados)" } },
+        { "value": "custom_5v", "label": { "en": "Custom 5V Dome Vertex", "es": "Vértice de Domo 5V" } }
+      ]
+    },
+    {
+      "id": "strut_dia", "type": "slider", "default": 12.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "struts", "modes": ["flat_hub", "dome_hub", "ground_anchor"],
+      "label": { "en": "Strut Diameter (mm)", "es": "Diámetro de Puntal (mm)" },
+      "tooltip": { "en": "Nominal diameter of the dowel/tube; the socket bore is this plus the print clearance", "es": "Diámetro nominal de la varilla/tubo; el casquillo es este valor más la holgura de impresión" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "struts", "type": "slider", "default": 5, "min": 2, "max": 12, "step": 1,
+      "group": "struts", "modes": ["flat_hub", "dome_hub", "ground_anchor"],
+      "label": { "en": "Number of Struts", "es": "Número de Puntales" },
+      "tooltip": { "en": "How many struts meet at this hub (fixed by the Custom 5V preset)", "es": "Cuántos puntales se unen en este cubo (fijado por el preajuste 5V)" }
+    },
+    {
+      "id": "socket_depth", "type": "slider", "default": 22.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "struts", "modes": ["flat_hub", "dome_hub", "ground_anchor"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad de Casquillo (mm)" },
+      "tooltip": { "en": "How deep each strut seats into its socket", "es": "Qué tan profundo se asienta cada puntal en su casquillo" }
+    },
+    {
+      "id": "socket_wall", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "struts", "modes": ["flat_hub", "dome_hub", "ground_anchor"], "advanced": true,
+      "label": { "en": "Socket Wall (mm)", "es": "Pared de Casquillo (mm)" },
+      "tooltip": { "en": "Wall thickness around each socket bore", "es": "Grosor de pared alrededor del casquillo" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "struts", "modes": ["flat_hub", "dome_hub", "ground_anchor"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Added to the strut diameter for a printable slip fit", "es": "Se suma al diámetro del puntal para un ajuste deslizante imprimible" }
+    },
+    {
+      "id": "cone_angle", "type": "slider", "default": 25.0, "min": 0.0, "max": 80.0, "step": 1.0,
+      "group": "geometry", "modes": ["dome_hub", "ground_anchor"],
+      "label": { "en": "Cone / Rise Angle (°)", "es": "Ángulo de Cono / Elevación (°)" },
+      "tooltip": { "en": "How far the strut arms tilt up out of the plane (Cone / Dome styles)", "es": "Cuánto se inclinan los brazos hacia arriba fuera del plano (estilos Cono / Domo)" }
+    },
+    {
+      "id": "pin_holes", "type": "checkbox", "default": true,
+      "group": "fixing", "modes": ["flat_hub", "dome_hub", "ground_anchor"],
+      "label": { "en": "Strut Pin Holes", "es": "Orificios de Pasador" },
+      "tooltip": { "en": "Cross-drill each socket for a pin or screw that locks the strut in", "es": "Perfora cada casquillo para un pasador o tornillo que fija el puntal" }
+    },
+    {
+      "id": "pin_dia", "type": "slider", "default": 3.5, "min": 1.0, "max": 8.0, "step": 0.5,
+      "group": "fixing", "modes": ["flat_hub", "dome_hub", "ground_anchor"], "advanced": true,
+      "label": { "en": "Pin Hole Diameter (mm)", "es": "Diámetro de Orificio de Pasador (mm)" },
+      "tooltip": { "en": "Diameter of the pin/screw cross-holes (auto-clamped below the strut)", "es": "Diámetro de los orificios de pasador/tornillo (limitado bajo el puntal)" }
+    },
+    {
+      "id": "anchor_dia", "type": "slider", "default": 70.0, "min": 30.0, "max": 140.0, "step": 2.0,
+      "group": "anchor", "modes": ["ground_anchor"],
+      "label": { "en": "Base Plate Diameter (mm)", "es": "Diámetro de Placa Base (mm)" },
+      "tooltip": { "en": "Diameter of the stake-able ground base plate", "es": "Diámetro de la placa base anclable al suelo" }
+    },
+    {
+      "id": "anchor_thick", "type": "slider", "default": 5.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "anchor", "modes": ["ground_anchor"],
+      "label": { "en": "Base Plate Thickness (mm)", "es": "Grosor de Placa Base (mm)" },
+      "tooltip": { "en": "Thickness of the ground base plate", "es": "Grosor de la placa base" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "trellis_flat_5", "mode": "flat_hub",
+      "label": { "en": "Trellis Node (5 × 12 mm)", "es": "Nodo de Enrejado (5 × 12 mm)" },
+      "values": { "hub_style": "radial_flat", "struts": 5, "strut_dia": 12, "socket_depth": 22, "pin_holes": true }
+    },
+    {
+      "id": "dome_vertex_5v", "mode": "dome_hub",
+      "label": { "en": "Geodesic 5V Dome Vertex", "es": "Vértice de Domo Geodésico 5V" },
+      "values": { "hub_style": "custom_5v", "strut_dia": 16, "socket_depth": 28, "pin_holes": true }
+    },
+    {
+      "id": "shelter_ground_anchor", "mode": "ground_anchor",
+      "label": { "en": "Shelter Ground Anchor (3-leg)", "es": "Anclaje de Refugio (3 patas)" },
+      "values": { "hub_style": "cone", "struts": 3, "strut_dia": 20, "cone_angle": 60, "anchor_dia": 90, "anchor_thick": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "socket_wall >= 1.5",
+      "severity": "error",
+      "message": { "en": "Socket wall must be at least 1.5 mm", "es": "La pared del casquillo debe ser de al menos 1.5 mm" }
+    },
+    {
+      "expression": "pin_dia <= strut_dia",
+      "severity": "warning",
+      "message": { "en": "Pin hole is large relative to the strut", "es": "El orificio de pasador es grande respecto al puntal" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 210] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -210, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "strut_socket",
+        "label": { "en": "Strut Socket", "es": "Casquillo de Puntal" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["strut_dia", "struts", "socket_depth", "clearance", "pin_holes", "pin_dia"]
+      },
+      {
+        "id": "ground_stake_pattern",
+        "label": { "en": "Ground Stake Pattern", "es": "Patrón de Estacas al Suelo" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["anchor_dia", "anchor_thick"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "One printable node turns cheap dowels, bamboo, or conduit into domes, trellises, and emergency shelters — democratizing large-span structures for makerspaces, community gardens, and disaster relief without proprietary connector kits.",
+      "es": "Un solo nodo imprimible convierte varillas baratas, bambú o tubería en domos, enrejados y refugios de emergencia — democratizando estructuras de gran claro para espacios maker, huertos comunitarios y ayuda en desastres sin kits de conectores propietarios."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hub", "strut", "geodesic", "dome", "connector", "infrastructure", "hyperobject", "commons"]
+}

@@ -1,0 +1,198 @@
+{
+  "project": {
+    "name": "Threaded Insert / Boss",
+    "slug": "threaded-boss",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A mounting boss sized for a heat-set threaded insert (or a self-tapping screw) — a printed cylinder whose bore accepts a brass insert melted flush with a soldering iron, giving a reusable metal thread. Metric sizes M2–M6 with correct heat-set bore diameters. Standalone-flange or in-wall mounts, optional gusset ribs, and a multi-boss strip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un poste de montaje dimensionado para un inserto roscado termofusible (o un tornillo autorroscante) — un cilindro impreso cuyo barreno acepta un inserto de latón fundido al ras con un cautín, dando una rosca metálica reutilizable. Tamaños métricos M2–M6 con diámetros de barreno correctos. Montajes con brida independiente o en pared, nervios opcionales y una tira de varios postes.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/threaded-boss.webp",
+    "difficulty": "intermediate",
+    "tags": ["boss", "threaded-insert", "heat-set", "standoff", "mount", "insert", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "boss",
+      "label": { "en": "Boss", "es": "Poste" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["boss"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "boss_ribbed",
+      "label": { "en": "Ribbed Boss", "es": "Poste con Nervios" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["boss_ribbed"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "boss_strip",
+      "label": { "en": "Boss Strip (row)", "es": "Tira de Postes (fila)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["boss_strip"],
+      "estimate": { "base_time": 10, "per_unit": 4, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "boss", "label": { "en": "Boss", "es": "Poste" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "boss_ribbed", "label": { "en": "Ribbed Boss", "es": "Poste con Nervios" }, "render_mode": 0, "color": "#6a8d73" },
+    { "id": "boss_strip", "label": { "en": "Boss Strip", "es": "Tira de Postes" }, "render_mode": 0, "color": "#b0764b" }
+  ],
+  "parameter_groups": [
+    { "id": "insert", "label": { "en": "Insert & Boss", "es": "Inserto y Poste" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } },
+    { "id": "ribs", "label": { "en": "Ribs", "es": "Nervios" } },
+    { "id": "strip", "label": { "en": "Strip", "es": "Tira" } }
+  ],
+  "parameters": [
+    {
+      "id": "insert_size", "type": "select", "default": "M3",
+      "group": "insert", "modes": ["boss", "boss_ribbed", "boss_strip"],
+      "label": { "en": "Insert Size", "es": "Tamaño de Inserto" },
+      "tooltip": { "en": "Metric heat-set insert size; sets the bore diameter (M3 ≈ 4.0 mm, M4 ≈ 5.6 mm, M5 ≈ 6.4 mm)", "es": "Tamaño métrico del inserto termofusible; fija el diámetro del barreno (M3 ≈ 4.0 mm, M4 ≈ 5.6 mm, M5 ≈ 6.4 mm)" },
+      "options": [
+        { "value": "M2", "label": { "en": "M2 (bore 3.2 mm)", "es": "M2 (barreno 3.2 mm)" } },
+        { "value": "M2.5", "label": { "en": "M2.5 (bore 3.5 mm)", "es": "M2.5 (barreno 3.5 mm)" } },
+        { "value": "M3", "label": { "en": "M3 (bore 4.0 mm)", "es": "M3 (barreno 4.0 mm)" } },
+        { "value": "M4", "label": { "en": "M4 (bore 5.6 mm)", "es": "M4 (barreno 5.6 mm)" } },
+        { "value": "M5", "label": { "en": "M5 (bore 6.4 mm)", "es": "M5 (barreno 6.4 mm)" } },
+        { "value": "M6", "label": { "en": "M6 (bore 8.0 mm)", "es": "M6 (barreno 8.0 mm)" } }
+      ]
+    },
+    {
+      "id": "boss_od", "type": "slider", "default": 0.0, "min": 0.0, "max": 30.0, "step": 0.5,
+      "group": "insert", "modes": ["boss", "boss_ribbed", "boss_strip"],
+      "label": { "en": "Boss Outer Ø (mm, 0 = auto)", "es": "Ø Exterior del Poste (mm, 0 = auto)" },
+      "tooltip": { "en": "Outer diameter of the boss; 0 auto-sizes to ~2.4× the insert bore", "es": "Diámetro exterior del poste; 0 lo dimensiona a ~2.4× el barreno del inserto" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "boss_height", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "insert", "modes": ["boss", "boss_ribbed", "boss_strip"],
+      "label": { "en": "Boss Height (mm)", "es": "Altura del Poste (mm)" },
+      "tooltip": { "en": "Height of the boss above the base", "es": "Altura del poste sobre la base" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "through", "type": "checkbox", "default": false,
+      "group": "insert", "modes": ["boss", "boss_ribbed", "boss_strip"],
+      "label": { "en": "Through Bore", "es": "Barreno Pasante" },
+      "tooltip": { "en": "Bore all the way through (vs a blind bore with a floor)", "es": "Barrena de lado a lado (vs un barreno ciego con piso)" }
+    },
+    {
+      "id": "mount", "type": "select", "default": "standalone",
+      "group": "mount", "modes": ["boss", "boss_ribbed"],
+      "label": { "en": "Mount", "es": "Montaje" },
+      "tooltip": { "en": "standalone: a round flange with fixing holes to glue/screw down. in_wall: a wall/plate segment the boss sits on.", "es": "standalone: brida redonda con orificios para pegar/atornillar. in_wall: segmento de pared/placa sobre el que se apoya el poste." },
+      "options": [
+        { "value": "standalone", "label": { "en": "Standalone (flange)", "es": "Independiente (brida)" } },
+        { "value": "in_wall", "label": { "en": "In-Wall (plate segment)", "es": "En Pared (segmento de placa)" } }
+      ]
+    },
+    {
+      "id": "base_thick", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.5,
+      "group": "mount", "modes": ["boss", "boss_ribbed", "boss_strip"], "advanced": true,
+      "label": { "en": "Base / Wall Thickness (mm)", "es": "Grosor de Base / Pared (mm)" },
+      "tooltip": { "en": "Thickness of the flange or wall segment under the boss", "es": "Grosor de la brida o segmento de pared bajo el poste" }
+    },
+    {
+      "id": "base_margin", "type": "slider", "default": 5.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "mount", "modes": ["boss", "boss_ribbed", "boss_strip"], "advanced": true,
+      "label": { "en": "Base Margin (mm)", "es": "Margen de Base (mm)" },
+      "tooltip": { "en": "Base material beyond the boss outer diameter", "es": "Material de base más allá del diámetro exterior del poste" }
+    },
+    {
+      "id": "ribs", "type": "checkbox", "default": false,
+      "group": "ribs", "modes": ["boss", "boss_strip"],
+      "label": { "en": "Gusset Ribs", "es": "Nervios de Refuerzo" },
+      "tooltip": { "en": "Add triangular ribs from the boss to the base for stiffness", "es": "Añade nervios triangulares del poste a la base para rigidez" }
+    },
+    {
+      "id": "rib_count", "type": "slider", "default": 4, "min": 2, "max": 8, "step": 1,
+      "group": "ribs", "modes": ["boss", "boss_ribbed", "boss_strip"], "advanced": true,
+      "label": { "en": "Rib Count", "es": "Número de Nervios" },
+      "tooltip": { "en": "Number of evenly spaced gusset ribs", "es": "Número de nervios de refuerzo equiespaciados" }
+    },
+    {
+      "id": "strip_count", "type": "slider", "default": 3, "min": 2, "max": 10, "step": 1,
+      "group": "strip", "modes": ["boss_strip"],
+      "label": { "en": "Bosses in Strip", "es": "Postes en la Tira" },
+      "tooltip": { "en": "Number of bosses in the row", "es": "Número de postes en la fila" }
+    },
+    {
+      "id": "strip_pitch", "type": "slider", "default": 25.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "strip", "modes": ["boss_strip"],
+      "label": { "en": "Strip Pitch (mm)", "es": "Paso de la Tira (mm)" },
+      "tooltip": { "en": "Centre-to-centre spacing of the bosses", "es": "Espaciado centro a centro de los postes" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "m3_pcb_standoff", "mode": "boss",
+      "label": { "en": "M3 PCB Standoff", "es": "Separador PCB M3" },
+      "values": { "insert_size": "M3", "boss_height": 8, "mount": "standalone", "through": false }
+    },
+    {
+      "id": "m4_ribbed_mount", "mode": "boss_ribbed",
+      "label": { "en": "M4 Ribbed Mount", "es": "Montaje M4 con Nervios" },
+      "values": { "insert_size": "M4", "boss_height": 14, "mount": "standalone", "rib_count": 4 }
+    },
+    {
+      "id": "m3_boss_strip_4", "mode": "boss_strip",
+      "label": { "en": "M3 Boss Strip ×4", "es": "Tira de Postes M3 ×4" },
+      "values": { "insert_size": "M3", "boss_height": 10, "strip_count": 4, "strip_pitch": 20, "ribs": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "base_thick >= 1.5",
+      "severity": "error",
+      "message": { "en": "Base must be at least 1.5 mm thick", "es": "La base debe tener al menos 1.5 mm de grosor" }
+    },
+    {
+      "expression": "boss_height >= 4",
+      "severity": "warning",
+      "message": { "en": "A very short boss may not fully seat an insert", "es": "Un poste muy corto puede no asentar bien un inserto" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -110, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "heat_set_insert_bore",
+        "label": { "en": "Heat-Set Insert Bore", "es": "Barreno de Inserto Termofusible" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["insert_size", "boss_od", "boss_height", "through"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Heat-set bosses give printed parts reusable metal threads that survive repeated assembly — the difference between a throwaway print and a repairable product. A correct-bore boss library lets anyone add durable fastening points to any design.",
+      "es": "Los postes termofusibles dan a las piezas impresas roscas metálicas reutilizables que resisten montajes repetidos — la diferencia entre una impresión desechable y un producto reparable. Una biblioteca de postes con el barreno correcto permite añadir puntos de fijación duraderos a cualquier diseño."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["boss", "threaded-insert", "heat-set", "standoff", "mount", "industrial", "hyperobject", "commons"]
+}

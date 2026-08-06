@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Pi HAT Case",
+    "slug": "pi-hat-case",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A case sized around a Raspberry Pi plus its HAT or screen stack. The base carries the Pi on standoffs at the official 58 x 49 mm hole pattern; a raised lid clears a HAT sitting on the GPIO header; a bezel frames a screen mounted on top. Stack height sets how much room the lid leaves for the boards above the Pi. Complements the SBC case cartridge.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una carcasa dimensionada alrededor de una Raspberry Pi más su HAT o pantalla apilada. La base sostiene la Pi sobre separadores en el patrón oficial de 58 x 49 mm; una tapa elevada libera un HAT sobre el conector GPIO; un bisel enmarca una pantalla montada arriba. La altura de pila define cuánto espacio deja la tapa para las placas sobre la Pi. Complementa el cartucho de carcasa SBC.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pi-hat-case.webp",
+    "difficulty": "intermediate",
+    "tags": ["raspberry-pi", "hat", "case", "enclosure", "screen", "sbc", "gpio", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "base",
+      "label": { "en": "Base", "es": "Base" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["base"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "hat_lid",
+      "label": { "en": "HAT Lid", "es": "Tapa HAT" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hat_lid"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "screen_bezel",
+      "label": { "en": "Screen Bezel", "es": "Bisel de Pantalla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["screen_bezel"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "base", "label": { "en": "Base", "es": "Base" }, "render_mode": 0, "color": "#7a2d2d" },
+    { "id": "hat_lid", "label": { "en": "HAT Lid", "es": "Tapa HAT" }, "render_mode": 0, "color": "#9a3d3d" },
+    { "id": "screen_bezel", "label": { "en": "Screen Bezel", "es": "Bisel" }, "render_mode": 0, "color": "#ba4d4d" }
+  ],
+  "parameter_groups": [
+    { "id": "stack", "label": { "en": "Stack", "es": "Pila" } },
+    { "id": "shell", "label": { "en": "Shell", "es": "Carcasa" } },
+    { "id": "screen", "label": { "en": "Screen", "es": "Pantalla" } }
+  ],
+  "parameters": [
+    {
+      "id": "stack", "type": "slider", "default": 16.0, "min": 4.0, "max": 60.0, "step": 1.0,
+      "group": "stack", "modes": ["hat_lid", "screen_bezel"],
+      "label": { "en": "Stack Height (mm)", "es": "Altura de Pila (mm)" },
+      "tooltip": { "en": "Clearance above the Pi for a HAT or screen", "es": "Espacio sobre la Pi para un HAT o pantalla" }
+    },
+    {
+      "id": "standoff_h", "type": "slider", "default": 4.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "stack", "modes": ["base"],
+      "label": { "en": "Pi Standoff Height (mm)", "es": "Altura de Separador (mm)" },
+      "tooltip": { "en": "How far the Pi sits above the floor", "es": "Cuánto se eleva la Pi sobre el piso" }
+    },
+    {
+      "id": "boss_d", "type": "slider", "default": 6.0, "min": 4.0, "max": 10.0, "step": 0.5,
+      "group": "stack", "modes": ["base"], "advanced": true,
+      "label": { "en": "Standoff Diameter (mm)", "es": "Diámetro de Separador (mm)" },
+      "tooltip": { "en": "Outer diameter of each Pi standoff", "es": "Diámetro exterior de cada separador" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "shell", "modes": ["base", "hat_lid", "screen_bezel"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Case wall thickness", "es": "Grosor de la pared de la carcasa" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "shell", "modes": ["base", "hat_lid", "screen_bezel"],
+      "label": { "en": "Floor / Plate Thickness (mm)", "es": "Grosor de Piso / Placa (mm)" },
+      "tooltip": { "en": "Base floor and lid-plate thickness", "es": "Grosor del piso y de la placa de tapa" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 3.0, "min": 0.0, "max": 8.0, "step": 0.5,
+      "group": "shell", "modes": ["base", "hat_lid", "screen_bezel"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Outer corner rounding (0 = sharp)", "es": "Redondeo de esquina (0 = recto)" }
+    },
+    {
+      "id": "screen_w", "type": "slider", "default": 56.0, "min": 10.0, "max": 84.0, "step": 1.0,
+      "group": "screen", "modes": ["screen_bezel"],
+      "label": { "en": "Screen Window Width (mm)", "es": "Ancho de Ventana (mm)" },
+      "tooltip": { "en": "Screen viewing-window width", "es": "Ancho de la ventana de la pantalla" }
+    },
+    {
+      "id": "screen_h", "type": "slider", "default": 35.0, "min": 8.0, "max": 55.0, "step": 1.0,
+      "group": "screen", "modes": ["screen_bezel"],
+      "label": { "en": "Screen Window Height (mm)", "es": "Alto de Ventana (mm)" },
+      "tooltip": { "en": "Screen viewing-window height", "es": "Alto de la ventana de la pantalla" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "pi4_base", "mode": "base",
+      "label": { "en": "Pi 4 Base", "es": "Base Pi 4" },
+      "values": { "standoff_h": 4, "wall": 2.4 }
+    },
+    {
+      "id": "poe_hat", "mode": "hat_lid",
+      "label": { "en": "PoE HAT Lid", "es": "Tapa HAT PoE" },
+      "values": { "stack": 20 }
+    },
+    {
+      "id": "touch_screen", "mode": "screen_bezel",
+      "label": { "en": "3.5\" Touch Bezel", "es": "Bisel Táctil 3.5\"" },
+      "values": { "stack": 12, "screen_w": 56, "screen_h": 35 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "boss_d >= 4",
+      "severity": "warning",
+      "message": { "en": "Standoffs under 4 mm are fragile", "es": "Separadores menores a 4 mm son frágiles" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 230] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "pi_hat_stack",
+        "label": { "en": "Pi HAT Stack", "es": "Pila HAT de Pi" },
+        "geometry_type": "bolt_pattern",
+        "standard": "RPi HAT",
+        "parameters": ["stack", "standoff_h", "boss_d"]
+      },
+      {
+        "id": "screen_window",
+        "label": { "en": "Screen Window", "es": "Ventana de Pantalla" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["screen_w", "screen_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Enclosures a Raspberry Pi with whatever it is actually wearing — a HAT or a screen — on the exact official hole pattern, with a lid sized to the stack. A protected, mountable Pi lasts longer and gets reused, turning a bare board into a finished appliance without buying a case per HAT.",
+      "es": "Encierra una Raspberry Pi con lo que realmente lleva puesto — un HAT o una pantalla — en el patrón oficial exacto, con una tapa dimensionada a la pila. Una Pi protegida y montable dura más y se reutiliza, convirtiendo una placa desnuda en un aparato terminado sin comprar una carcasa por cada HAT."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["raspberry-pi", "hat", "case", "enclosure", "screen", "sbc", "industrial", "hyperobject", "commons"]
+}

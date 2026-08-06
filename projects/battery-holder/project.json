@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Battery Cell Holder",
+    "slug": "battery-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Cell holders that keep a set of cells captive in a printed carrier for a battery pack, with open contact slots at each end so bus strips or spring contacts reach the terminals. Pick the cell (18650, 21700, AA, AAA) and the bores land on the real cell diameter, spaced on a pitch that leaves a printable wall between cells. Row holder, thin indexing spacer grid, and a two-row series-pack holder.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Portaceldas que mantienen un conjunto de celdas cautivas en un soporte impreso para un paquete de baterías, con ranuras de contacto abiertas en cada extremo para que tiras de bus o contactos de resorte alcancen las terminales. Elige la celda (18650, 21700, AA, AAA) y los barrenos coinciden con el diámetro real, separados con una pared imprimible entre celdas. Soporte en fila, rejilla espaciadora delgada y soporte de dos filas para paquete en serie.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/battery-holder.webp",
+    "difficulty": "intermediate",
+    "tags": ["battery", "18650", "21700", "cell", "pack", "holder", "power", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "holder",
+      "label": { "en": "Cell Holder", "es": "Portaceldas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["holder"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "spacer",
+      "label": { "en": "Spacer Grid", "es": "Rejilla Espaciadora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spacer"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "series_holder",
+      "label": { "en": "Series Pack Holder", "es": "Soporte en Serie" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["series_holder"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "holder", "label": { "en": "Cell Holder", "es": "Portaceldas" }, "render_mode": 0, "color": "#7d3a44" },
+    { "id": "spacer", "label": { "en": "Spacer Grid", "es": "Rejilla" }, "render_mode": 0, "color": "#9d4a54" },
+    { "id": "series_holder", "label": { "en": "Series Holder", "es": "Soporte Serie" }, "render_mode": 0, "color": "#bd5b64" }
+  ],
+  "parameter_groups": [
+    { "id": "cell", "label": { "en": "Cell", "es": "Celda" } },
+    { "id": "array", "label": { "en": "Array", "es": "Arreglo" } },
+    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } }
+  ],
+  "parameters": [
+    {
+      "id": "cell", "type": "select", "default": "18650",
+      "group": "cell", "modes": ["holder", "spacer", "series_holder"],
+      "label": { "en": "Cell Size", "es": "Tamaño de Celda" },
+      "tooltip": { "en": "Cylindrical cell chemistry/size", "es": "Tamaño de celda cilíndrica" },
+      "options": [
+        { "value": "18650", "label": { "en": "18650 (18.4×65)", "es": "18650 (18.4×65)" } },
+        { "value": "21700", "label": { "en": "21700 (21.2×70)", "es": "21700 (21.2×70)" } },
+        { "value": "AA", "label": { "en": "AA (14.5×50.5)", "es": "AA (14.5×50.5)" } },
+        { "value": "AAA", "label": { "en": "AAA (10.5×44.5)", "es": "AAA (10.5×44.5)" } }
+      ]
+    },
+    {
+      "id": "count", "type": "slider", "default": 4, "min": 1, "max": 12, "step": 1,
+      "group": "array", "modes": ["holder", "spacer", "series_holder"],
+      "label": { "en": "Cells per Row", "es": "Celdas por Fila" },
+      "tooltip": { "en": "Number of cells in a row", "es": "Número de celdas en una fila" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.5, "min": 0.1, "max": 1.5, "step": 0.05,
+      "group": "cell", "modes": ["holder", "spacer", "series_holder"], "advanced": true,
+      "label": { "en": "Bore Clearance (mm)", "es": "Holgura de Barreno (mm)" },
+      "tooltip": { "en": "Per-side gap so the cell slides in", "es": "Espacio por lado para insertar la celda" }
+    },
+    {
+      "id": "bore_depth", "type": "slider", "default": 0.55, "min": 0.3, "max": 0.95, "step": 0.05,
+      "group": "cell", "modes": ["holder", "series_holder"],
+      "label": { "en": "Cradle Fraction", "es": "Fracción de Cuna" },
+      "tooltip": { "en": "How much of the cell length the trough cradles", "es": "Cuánto del largo de la celda se acuna" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "structure", "modes": ["holder", "spacer", "series_holder"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall between and around cells", "es": "Pared entre y alrededor de las celdas" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 1.6, "min": 1.0, "max": 6.0, "step": 0.2,
+      "group": "structure", "modes": ["holder", "series_holder"],
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Material under the cell troughs", "es": "Material bajo las cunas de las celdas" }
+    },
+    {
+      "id": "contact_w", "type": "slider", "default": 8.0, "min": 3.0, "max": 22.0, "step": 0.5,
+      "group": "structure", "modes": ["holder", "series_holder"],
+      "label": { "en": "Contact Slot Width (mm)", "es": "Ancho de Ranura de Contacto (mm)" },
+      "tooltip": { "en": "Window width at each cell end for bus strips", "es": "Ancho de la ventana en cada extremo para tiras de bus" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "quad_18650", "mode": "holder",
+      "label": { "en": "4× 18650 Row", "es": "Fila 4× 18650" },
+      "values": { "cell": "18650", "count": 4 }
+    },
+    {
+      "id": "aa_spacer", "mode": "spacer",
+      "label": { "en": "AA Indexing Spacer", "es": "Espaciador AA" },
+      "values": { "cell": "AA", "count": 4 }
+    },
+    {
+      "id": "series_2x4", "mode": "series_holder",
+      "label": { "en": "2×4 Series 21700", "es": "Serie 2×4 21700" },
+      "values": { "cell": "21700", "count": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    },
+    {
+      "expression": "contact_w <= 22",
+      "severity": "warning",
+      "message": { "en": "Very wide contact slots weaken the end walls", "es": "Ranuras muy anchas debilitan las paredes de los extremos" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "cell_array",
+        "label": { "en": "Cell Array", "es": "Arreglo de Celdas" },
+        "geometry_type": "grid",
+        "standard": "18650/21700/AA",
+        "parameters": ["cell", "count", "clearance"]
+      },
+      {
+        "id": "contact_windows",
+        "label": { "en": "Terminal Contact Windows", "es": "Ventanas de Contacto" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["contact_w", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Lets anyone build a safe, serviceable battery pack from salvaged or new cells without spot-welded proprietary trays. Correct cell diameters and open contact windows mean packs can be repaired and cells replaced, extending the life of tools, lights and power banks and keeping cells out of landfill.",
+      "es": "Permite armar un paquete de baterías seguro y mantenible con celdas nuevas o recuperadas sin bandejas propietarias soldadas por puntos. Los diámetros correctos y las ventanas de contacto abiertas permiten reparar paquetes y reemplazar celdas, alargando la vida de herramientas, luces y baterías portátiles."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["battery", "18650", "21700", "cell", "pack", "power", "industrial", "hyperobject", "commons"]
+}

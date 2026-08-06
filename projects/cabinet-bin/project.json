@@ -1,0 +1,204 @@
+{
+  "project": {
+    "name": "Cabinet Organizer Bin",
+    "slug": "cabinet-bin",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A fits-anything cabinet and drawer organizer bin, sized by interior dimensions. Choose a plain open bin, an angled scoop-front bin, or a divided bin with an interior partition grid. A stacking lip nests bins together.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un contenedor organizador para gabinete y cajón que se adapta a todo, dimensionado por medidas interiores. Elige un contenedor abierto, uno con frente inclinado para tomar el contenido, o uno dividido con rejilla de particiones. Un labio apilable une los contenedores.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cabinet-bin.webp",
+    "difficulty": "beginner",
+    "tags": ["bin", "cabinet", "drawer", "organizer", "kitchen", "pantry", "stacking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bin",
+      "label": { "en": "Bin", "es": "Contenedor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bin"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "angled_bin",
+      "label": { "en": "Angled-Front Bin", "es": "Contenedor Frente Inclinado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["angled_bin"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "divided_bin",
+      "label": { "en": "Divided Bin", "es": "Contenedor Dividido" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["divided_bin"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "bin", "label": { "en": "Bin", "es": "Contenedor" }, "render_mode": 0, "color": "#6a9fb5" },
+    { "id": "angled_bin", "label": { "en": "Angled-Front Bin", "es": "Contenedor Frente Inclinado" }, "render_mode": 0, "color": "#7bb0c4" },
+    { "id": "divided_bin", "label": { "en": "Divided Bin", "es": "Contenedor Dividido" }, "render_mode": 0, "color": "#5b8fb0" }
+  ],
+  "parameter_groups": [
+    { "id": "dimensions", "label": { "en": "Interior Size", "es": "Tamaño Interior" } },
+    { "id": "walls", "label": { "en": "Walls & Style", "es": "Paredes y Estilo" } },
+    { "id": "stacking", "label": { "en": "Stacking & Front", "es": "Apilado y Frente" } },
+    { "id": "dividers", "label": { "en": "Dividers", "es": "Divisores" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_w", "type": "slider", "default": 90, "min": 30, "max": 250, "step": 1,
+      "group": "dimensions", "modes": ["bin", "angled_bin", "divided_bin"],
+      "label": { "en": "Interior Width (mm)", "es": "Ancho Interior (mm)" },
+      "tooltip": { "en": "Usable interior X dimension", "es": "Dimensión interior X utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_d", "type": "slider", "default": 140, "min": 40, "max": 300, "step": 1,
+      "group": "dimensions", "modes": ["bin", "angled_bin", "divided_bin"],
+      "label": { "en": "Interior Depth (mm)", "es": "Profundidad Interior (mm)" },
+      "tooltip": { "en": "Usable interior Y dimension (front to back)", "es": "Dimensión interior Y utilizable (frente a fondo)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_h", "type": "slider", "default": 80, "min": 20, "max": 200, "step": 1,
+      "group": "dimensions", "modes": ["bin", "angled_bin", "divided_bin"],
+      "label": { "en": "Interior Height (mm)", "es": "Altura Interior (mm)" },
+      "tooltip": { "en": "Usable interior Z depth", "es": "Profundidad interior Z utilizable" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 5.0, "step": 0.2,
+      "group": "walls", "modes": ["bin", "angled_bin", "divided_bin"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and floor thickness", "es": "Grosor de pared y piso" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 3.0, "min": 0.0, "max": 20.0, "step": 0.5,
+      "group": "walls", "modes": ["bin", "angled_bin", "divided_bin"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Outer corner rounding (0 = sharp)", "es": "Redondeo de esquina exterior (0 = recto)" }
+    },
+    {
+      "id": "style", "type": "select", "default": "open",
+      "group": "walls", "modes": ["bin"],
+      "label": { "en": "Bin Style", "es": "Estilo de Contenedor" },
+      "tooltip": { "en": "Plain open bin or add a front pull handle", "es": "Contenedor abierto o con tirador frontal" },
+      "options": [
+        { "value": "open", "label": { "en": "Open", "es": "Abierto" } },
+        { "value": "handled", "label": { "en": "Handled", "es": "Con Tirador" } }
+      ]
+    },
+    {
+      "id": "lip", "type": "slider", "default": 4.0, "min": 0.0, "max": 10.0, "step": 0.5,
+      "group": "stacking", "modes": ["bin", "divided_bin"],
+      "label": { "en": "Stacking Lip (mm)", "es": "Labio de Apilado (mm)" },
+      "tooltip": { "en": "Rim upstand so bins nest when stacked (0 = none)", "es": "Reborde para que los contenedores se apilen (0 = ninguno)" }
+    },
+    {
+      "id": "lip_clear", "type": "slider", "default": 0.4, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "stacking", "modes": ["bin", "divided_bin"], "advanced": true,
+      "label": { "en": "Lip Clearance (mm)", "es": "Holgura de Labio (mm)" },
+      "tooltip": { "en": "Per-side gap for a printable stack fit", "es": "Espacio por lado para un apilado imprimible" }
+    },
+    {
+      "id": "front_cut", "type": "slider", "default": 40.0, "min": 5.0, "max": 150.0, "step": 1.0,
+      "group": "stacking", "modes": ["angled_bin"],
+      "label": { "en": "Open-Front Sill (mm)", "es": "Umbral de Frente Abierto (mm)" },
+      "tooltip": { "en": "Height of the front opening sill on the angled bin", "es": "Altura del umbral del frente abierto en el contenedor inclinado" }
+    },
+    {
+      "id": "div_x", "type": "slider", "default": 1, "min": 0, "max": 8, "step": 1,
+      "group": "dividers", "modes": ["divided_bin"],
+      "label": { "en": "Dividers across Width", "es": "Divisores a lo Ancho" },
+      "tooltip": { "en": "Interior partitions along X", "es": "Particiones interiores en X" }
+    },
+    {
+      "id": "div_y", "type": "slider", "default": 0, "min": 0, "max": 8, "step": 1,
+      "group": "dividers", "modes": ["divided_bin"],
+      "label": { "en": "Dividers across Depth", "es": "Divisores a lo Profundo" },
+      "tooltip": { "en": "Interior partitions along Y", "es": "Particiones interiores en Y" }
+    },
+    {
+      "id": "div_thick", "type": "slider", "default": 1.6, "min": 0.8, "max": 4.0, "step": 0.2,
+      "group": "dividers", "modes": ["divided_bin"], "advanced": true,
+      "label": { "en": "Divider Thickness (mm)", "es": "Grosor de Divisor (mm)" },
+      "tooltip": { "en": "Thickness of interior partitions", "es": "Grosor de particiones interiores" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "spice_drawer_bin", "mode": "bin",
+      "label": { "en": "Spice Drawer Bin", "es": "Contenedor de Especias" },
+      "values": { "inner_w": 60, "inner_d": 120, "inner_h": 50, "lip": 4, "corner_r": 2 }
+    },
+    {
+      "id": "pantry_scoop_bin", "mode": "angled_bin",
+      "label": { "en": "Pantry Scoop Bin", "es": "Contenedor de Despensa" },
+      "values": { "inner_w": 120, "inner_d": 180, "inner_h": 110, "front_cut": 45, "corner_r": 4 }
+    },
+    {
+      "id": "junk_drawer_sorter", "mode": "divided_bin",
+      "label": { "en": "Junk-Drawer Sorter (3×1)", "es": "Organizador de Cajón (3×1)" },
+      "values": { "inner_w": 150, "inner_d": 100, "inner_h": 45, "div_x": 2, "div_y": 0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1 mm", "es": "La pared debe ser de al menos 1 mm" }
+    },
+    {
+      "expression": "front_cut <= inner_h",
+      "severity": "warning",
+      "message": { "en": "Front sill taller than the bin has no effect", "es": "Un umbral más alto que el contenedor no tiene efecto" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "adjustable_bin",
+        "label": { "en": "Adjustable Bin", "es": "Contenedor Ajustable" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["inner_w", "inner_d", "inner_h", "wall", "lip", "lip_clear"]
+      },
+      {
+        "id": "interior_divider_grid",
+        "label": { "en": "Interior Divider Grid", "es": "Rejilla Divisoria Interior" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["div_x", "div_y", "div_thick"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "On-demand cabinet and drawer organization sized to the exact space, cutting the waste of ill-fitting store bins and letting households reclaim clutter with a single printable object class.",
+      "es": "Organización de gabinetes y cajones bajo demanda dimensionada al espacio exacto, reduciendo el desperdicio de contenedores comerciales mal ajustados y permitiendo a los hogares ordenar con una sola clase de objeto imprimible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bin", "organizer", "kitchen", "household", "hyperobject", "commons"]
+}

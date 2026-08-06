@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Universal Cup Lid",
+    "slug": "cup-lid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A press-fit lid for mugs and cups, sized by the outer rim diameter. A downward seal skirt with a grip bead hugs the rim so the lid clicks on. Choose a sip opening, a solid splash cover, or a straw hole.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tapa a presión para tazas y vasos, dimensionada por el diámetro exterior del borde. Un faldón sellador con reborde de agarre abraza el borde para que la tapa encaje. Elige apertura para beber, cubierta sólida antisalpicaduras o agujero para popote.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cup-lid.webp",
+    "difficulty": "intermediate",
+    "tags": ["lid", "cup", "mug", "press-fit", "kitchen", "travel", "straw", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "sip_lid",
+      "label": { "en": "Sip Lid", "es": "Tapa para Beber" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sip_lid"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "solid_lid",
+      "label": { "en": "Solid Cover", "es": "Cubierta Sólida" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["solid_lid"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "straw_lid",
+      "label": { "en": "Straw Lid", "es": "Tapa con Popote" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["straw_lid"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "sip_lid", "label": { "en": "Sip Lid", "es": "Tapa para Beber" }, "render_mode": 0, "color": "#b0724f" },
+    { "id": "solid_lid", "label": { "en": "Solid Cover", "es": "Cubierta Sólida" }, "render_mode": 0, "color": "#c98b5b" },
+    { "id": "straw_lid", "label": { "en": "Straw Lid", "es": "Tapa con Popote" }, "render_mode": 0, "color": "#a5643f" }
+  ],
+  "parameter_groups": [
+    { "id": "rim", "label": { "en": "Rim & Seal", "es": "Borde y Sello" } },
+    { "id": "top", "label": { "en": "Top", "es": "Parte Superior" } },
+    { "id": "opening", "label": { "en": "Opening", "es": "Apertura" } }
+  ],
+  "parameters": [
+    {
+      "id": "rim_dia", "type": "slider", "default": 82, "min": 40, "max": 120, "step": 1,
+      "group": "rim", "modes": ["sip_lid", "solid_lid", "straw_lid"],
+      "label": { "en": "Cup Rim Diameter (mm)", "es": "Diámetro del Borde (mm)" },
+      "tooltip": { "en": "OUTER diameter of your cup rim — measure across the top edge", "es": "Diámetro EXTERIOR del borde del vaso — mide de borde a borde" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "rim_wall", "type": "slider", "default": 2.2, "min": 1.6, "max": 4.0, "step": 0.1,
+      "group": "rim", "modes": ["sip_lid", "solid_lid", "straw_lid"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Skirt and top wall thickness", "es": "Grosor del faldón y la tapa" }
+    },
+    {
+      "id": "skirt_h", "type": "slider", "default": 12, "min": 6, "max": 30, "step": 1,
+      "group": "rim", "modes": ["sip_lid", "solid_lid", "straw_lid"],
+      "label": { "en": "Skirt Height (mm)", "es": "Altura del Faldón (mm)" },
+      "tooltip": { "en": "How far the skirt grips down over the rim", "es": "Cuánto baja el faldón sobre el borde" }
+    },
+    {
+      "id": "interference", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "rim", "modes": ["sip_lid", "solid_lid", "straw_lid"], "advanced": true,
+      "label": { "en": "Grip Interference (mm)", "es": "Interferencia de Agarre (mm)" },
+      "tooltip": { "en": "How hard the grip bead pinches the rim (more = tighter)", "es": "Cuánto aprieta el reborde el borde (más = más ajustado)" }
+    },
+    {
+      "id": "top_dome", "type": "slider", "default": 3.0, "min": 0.0, "max": 18.0, "step": 0.5,
+      "group": "top", "modes": ["sip_lid", "solid_lid", "straw_lid"],
+      "label": { "en": "Top Dome (mm)", "es": "Domo Superior (mm)" },
+      "tooltip": { "en": "Slight dome rise (0 = flat)", "es": "Ligera elevación del domo (0 = plano)" }
+    },
+    {
+      "id": "sip_dia", "type": "slider", "default": 16.0, "min": 6.0, "max": 48.0, "step": 1.0,
+      "group": "opening", "modes": ["sip_lid"],
+      "label": { "en": "Sip Opening (mm)", "es": "Apertura para Beber (mm)" },
+      "tooltip": { "en": "Size of the drink opening", "es": "Tamaño de la apertura para beber" }
+    },
+    {
+      "id": "straw_dia", "type": "slider", "default": 8.0, "min": 4.0, "max": 14.0, "step": 0.5,
+      "group": "opening", "modes": ["straw_lid"],
+      "label": { "en": "Straw Hole (mm)", "es": "Agujero de Popote (mm)" },
+      "tooltip": { "en": "Straw hole diameter (with a sealing collar)", "es": "Diámetro del agujero de popote (con collar sellador)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "coffee_mug_sip", "mode": "sip_lid",
+      "label": { "en": "Coffee Mug Sip Lid", "es": "Tapa para Taza de Café" },
+      "values": { "rim_dia": 82, "skirt_h": 12, "sip_dia": 16, "top_dome": 3 }
+    },
+    {
+      "id": "keep_warm_cover", "mode": "solid_lid",
+      "label": { "en": "Keep-Warm Cover", "es": "Cubierta para Mantener Caliente" },
+      "values": { "rim_dia": 90, "skirt_h": 10, "top_dome": 2 }
+    },
+    {
+      "id": "tumbler_straw", "mode": "straw_lid",
+      "label": { "en": "Tumbler Straw Lid", "es": "Tapa de Vaso con Popote" },
+      "values": { "rim_dia": 88, "skirt_h": 14, "straw_dia": 10, "top_dome": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "sip_dia <= rim_dia",
+      "severity": "error",
+      "message": { "en": "Sip opening cannot exceed the rim diameter", "es": "La apertura no puede exceder el diámetro del borde" }
+    },
+    {
+      "expression": "interference <= 0.8",
+      "severity": "warning",
+      "message": { "en": "High interference may make the lid hard to seat", "es": "Una interferencia alta puede dificultar el encaje" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cup_rim_seal",
+        "label": { "en": "Cup Rim Seal", "es": "Sello de Borde de Vaso" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["rim_dia", "rim_wall", "skirt_h", "interference"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "One printable lid fits any cup measured at the rim, replacing lost or single-use lids and letting a household standardize every mug and tumbler on one open rim-seal interface instead of buying matched sets.",
+      "es": "Una tapa imprimible encaja en cualquier vaso medido en el borde, reemplazando tapas perdidas o de un solo uso y permitiendo estandarizar cada taza y vaso en una sola interfaz de sello de borde en lugar de comprar juegos a juego."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["lid", "cup", "mug", "kitchen", "household", "hyperobject", "commons"]
+}

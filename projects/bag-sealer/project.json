@@ -1,0 +1,177 @@
+{
+  "project": {
+    "name": "Bag Reseal & Pour Clip",
+    "slug": "bag-sealer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A slide-on C-channel clip that reseals an open bag by trapping the folded edge, with an optional pour nozzle so you can dispense from the sealed corner. Sized to bag width; a wide variant covers cereal and freezer bags.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un clip de canal en C que resella una bolsa abierta atrapando el borde doblado, con boquilla vertedora opcional para dispensar desde la esquina sellada. Dimensionado al ancho de la bolsa; una variante ancha cubre bolsas de cereal y congelador.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bag-sealer.webp",
+    "difficulty": "beginner",
+    "tags": ["bag", "clip", "seal", "pour", "kitchen", "freezer", "reseal", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": { "en": "Reseal Clip", "es": "Clip de Resellado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "spout_clip",
+      "label": { "en": "Pour-Spout Clip", "es": "Clip con Vertedor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spout_clip"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "wide_clip",
+      "label": { "en": "Wide Clip", "es": "Clip Ancho" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wide_clip"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "clip", "label": { "en": "Reseal Clip", "es": "Clip de Resellado" }, "render_mode": 0, "color": "#c98b5b" },
+    { "id": "spout_clip", "label": { "en": "Pour-Spout Clip", "es": "Clip con Vertedor" }, "render_mode": 0, "color": "#c9a05b" },
+    { "id": "wide_clip", "label": { "en": "Wide Clip", "es": "Clip Ancho" }, "render_mode": 0, "color": "#b5763f" }
+  ],
+  "parameter_groups": [
+    { "id": "clip", "label": { "en": "Clip Size", "es": "Tamaño del Clip" } },
+    { "id": "channel", "label": { "en": "Channel & Grip", "es": "Canal y Agarre" } },
+    { "id": "spout", "label": { "en": "Pour Spout", "es": "Vertedor" } }
+  ],
+  "parameters": [
+    {
+      "id": "clip_width", "type": "slider", "default": 90, "min": 20, "max": 400, "step": 1,
+      "group": "clip", "modes": ["clip", "spout_clip", "wide_clip"],
+      "label": { "en": "Bag Width / Seal Length (mm)", "es": "Ancho de Bolsa / Largo del Sello (mm)" },
+      "tooltip": { "en": "Length of bag edge the clip seals (wide mode multiplies this by 1.8)", "es": "Largo del borde de bolsa que sella el clip (el modo ancho lo multiplica por 1.8)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 18, "min": 8, "max": 80, "step": 1,
+      "group": "clip", "modes": ["clip", "spout_clip", "wide_clip"],
+      "label": { "en": "Clip Height (mm)", "es": "Altura del Clip (mm)" },
+      "tooltip": { "en": "Overall height of the C-section", "es": "Altura total de la sección en C" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "clip", "modes": ["clip", "spout_clip", "wide_clip"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Back wall and lip thickness", "es": "Grosor de la pared trasera y los labios" }
+    },
+    {
+      "id": "channel", "type": "slider", "default": 3.0, "min": 0.6, "max": 12.0, "step": 0.2,
+      "group": "channel", "modes": ["clip", "spout_clip", "wide_clip"],
+      "label": { "en": "Channel Gap (mm)", "es": "Abertura del Canal (mm)" },
+      "tooltip": { "en": "Gap that grips the folded bag edge", "es": "Abertura que sujeta el borde doblado de la bolsa" }
+    },
+    {
+      "id": "lip", "type": "slider", "default": 10.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "channel", "modes": ["clip", "spout_clip", "wide_clip"],
+      "label": { "en": "Lip Reach (mm)", "es": "Alcance del Labio (mm)" },
+      "tooltip": { "en": "How far the lips reach over the bag", "es": "Cuánto alcanzan los labios sobre la bolsa" }
+    },
+    {
+      "id": "grip_ribs", "type": "checkbox", "default": true,
+      "group": "channel", "modes": ["clip", "spout_clip", "wide_clip"],
+      "label": { "en": "Grip Ribs", "es": "Nervaduras de Agarre" },
+      "tooltip": { "en": "Ribs inside the channel that bite the bag", "es": "Nervaduras dentro del canal que sujetan la bolsa" }
+    },
+    {
+      "id": "style", "type": "select", "default": "clamp",
+      "group": "spout", "modes": ["clip"],
+      "label": { "en": "Style", "es": "Estilo" },
+      "tooltip": { "en": "Plain clamp or clamp with a pour spout", "es": "Clip simple o clip con vertedor" },
+      "options": [
+        { "value": "clamp", "label": { "en": "Clamp", "es": "Clip" } },
+        { "value": "clamp_with_spout", "label": { "en": "Clamp + Spout", "es": "Clip + Vertedor" } }
+      ]
+    },
+    {
+      "id": "spout_dia", "type": "slider", "default": 10.0, "min": 3.0, "max": 24.0, "step": 0.5,
+      "group": "spout", "modes": ["spout_clip"],
+      "label": { "en": "Spout Bore (mm)", "es": "Diámetro del Vertedor (mm)" },
+      "tooltip": { "en": "Pour nozzle inner diameter", "es": "Diámetro interior de la boquilla" }
+    },
+    {
+      "id": "spout_len", "type": "slider", "default": 16.0, "min": 6.0, "max": 50.0, "step": 1.0,
+      "group": "spout", "modes": ["spout_clip"],
+      "label": { "en": "Spout Length (mm)", "es": "Largo del Vertedor (mm)" },
+      "tooltip": { "en": "Pour nozzle length", "es": "Largo de la boquilla vertedora" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "snack_bag_clip", "mode": "clip",
+      "label": { "en": "Snack Bag Clip", "es": "Clip de Bolsa de Snack" },
+      "values": { "clip_width": 90, "channel": 2.5, "depth": 16, "lip": 9 }
+    },
+    {
+      "id": "flour_pour_clip", "mode": "spout_clip",
+      "label": { "en": "Flour Pour Clip", "es": "Clip Vertedor de Harina" },
+      "values": { "clip_width": 120, "channel": 3.5, "depth": 22, "spout_dia": 12, "spout_len": 18 }
+    },
+    {
+      "id": "freezer_bag_clip", "mode": "wide_clip",
+      "label": { "en": "Freezer Bag Clip", "es": "Clip de Bolsa de Congelador" },
+      "values": { "clip_width": 150, "channel": 4.0, "depth": 24, "lip": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "channel <= depth",
+      "severity": "error",
+      "message": { "en": "Channel gap cannot exceed the clip height", "es": "La abertura del canal no puede exceder la altura del clip" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "warning",
+      "message": { "en": "Thin walls may flex too much to hold a seal", "es": "Paredes delgadas pueden flexionar demasiado para sostener el sello" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 140, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [120, 0, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "bag_clamp",
+        "label": { "en": "Bag Clamp", "es": "Sujetador de Bolsa" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["clip_width", "channel", "lip", "wall", "depth"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A reusable reseal clip keeps food fresh without single-use bag ties or zip closures, and the pour variant turns any bag into a controllable dispenser — cutting food waste and packaging with one printable object.",
+      "es": "Un clip de resellado reutilizable mantiene los alimentos frescos sin ataduras ni cierres de un solo uso, y la variante con vertedor convierte cualquier bolsa en un dispensador controlable — reduciendo el desperdicio de alimentos y empaques con un solo objeto imprimible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bag", "clip", "seal", "kitchen", "household", "hyperobject", "commons"]
+}

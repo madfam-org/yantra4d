@@ -46,6 +46,26 @@ def _hyperobject(data: dict) -> dict:
     return data.get("hyperobject", {}) or proj.get("hyperobject", {}) or {}
 
 
+def _submodule_dirs() -> set[Path]:
+    """Absolute paths of every git submodule under the repo.
+
+    Submodule-backed projects (gridfinity, din-rail-clip, motor-mount, …) are
+    externally-owned repos; writing into their project.json from the parent leaves
+    the submodule dirty and desyncs checks like manifest-sync. We NEVER backfill
+    them here — their compatible_with belongs in the submodule repo via its own PR.
+    """
+    gm = REPO / ".gitmodules"
+    subs: set[Path] = set()
+    if not gm.exists():
+        return subs
+    for line in gm.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.startswith("path"):
+            _, _, path = line.partition("=")
+            subs.add((REPO / path.strip()).resolve())
+    return subs
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--projects", default="projects")
@@ -53,8 +73,13 @@ def main() -> int:
     args = ap.parse_args()
 
     pdir = REPO / args.projects
+    submodules = _submodule_dirs()
+    skipped_submodules = 0
     manifests: dict[str, tuple[Path, dict]] = {}
     for pj in sorted(pdir.glob("*/project.json")):
+        if pj.parent.resolve() in submodules:
+            skipped_submodules += 1
+            continue
         data = _load(pj)
         if not data:
             continue
@@ -114,7 +139,8 @@ def main() -> int:
 
     verb = "would update" if args.dry_run else "updated"
     print(f"backfill: {verb} {changed} manifests, +{added_total} compatible_with links "
-          f"across {len(family_members)} standard families")
+          f"across {len(family_members)} standard families "
+          f"(skipped {skipped_submodules} submodule-backed projects)")
     return 0
 
 

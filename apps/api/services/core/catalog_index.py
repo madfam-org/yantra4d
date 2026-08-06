@@ -63,8 +63,7 @@ def _dir_signature() -> tuple:
                 except OSError:
                     continue
                 count += 1
-                if st.st_mtime > latest:
-                    latest = st.st_mtime
+                latest = max(latest, st.st_mtime)
         except OSError:
             continue
         sig.append((str(directory), count, round(latest, 3)))

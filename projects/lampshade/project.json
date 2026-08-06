@@ -1,0 +1,182 @@
+{
+  "project": {
+    "name": "Lampshade",
+    "slug": "lampshade",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A patterned lampshade or pendant — a thin shell with a bulb-socket ring at the top (sized to an E26/E27 lamp holder) and a perforated pattern that casts light. Dial top and bottom diameter, height, wall, socket standard, and pattern density. Choose a straight drum, a tapered cone, or a downlight pendant.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una pantalla de lámpara o colgante con patrón — una carcasa delgada con un anillo portalámparas arriba (dimensionado a un casquillo E26/E27) y un patrón perforado que proyecta luz. Ajusta diámetro superior e inferior, altura, pared, estándar de casquillo y densidad de patrón. Elige un tambor recto, un cono cónico o un colgante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/lampshade.webp",
+    "difficulty": "intermediate",
+    "tags": ["lampshade", "pendant", "lighting", "decor", "e27", "e26", "shade", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "drum_shade",
+      "label": { "en": "Drum Shade", "es": "Pantalla Tambor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["drum_shade"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "cone_shade",
+      "label": { "en": "Cone Shade", "es": "Pantalla Cónica" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cone_shade"],
+      "estimate": { "base_time": 18, "per_unit": 5, "per_part": 20 }
+    },
+    {
+      "id": "pendant",
+      "label": { "en": "Pendant", "es": "Colgante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pendant"],
+      "estimate": { "base_time": 18, "per_unit": 5, "per_part": 20 }
+    }
+  ],
+  "parts": [
+    { "id": "drum_shade", "label": { "en": "Drum Shade", "es": "Pantalla Tambor" }, "render_mode": 0, "color": "#b0894f" },
+    { "id": "cone_shade", "label": { "en": "Cone Shade", "es": "Pantalla Cónica" }, "render_mode": 0, "color": "#c49f6a" },
+    { "id": "pendant", "label": { "en": "Pendant", "es": "Colgante" }, "render_mode": 0, "color": "#d6b884" }
+  ],
+  "parameter_groups": [
+    { "id": "shape", "label": { "en": "Shape", "es": "Forma" } },
+    { "id": "socket", "label": { "en": "Socket", "es": "Casquillo" } },
+    { "id": "pattern", "label": { "en": "Pattern", "es": "Patrón" } }
+  ],
+  "parameters": [
+    {
+      "id": "top_dia", "type": "slider", "default": 140.0, "min": 40.0, "max": 300.0, "step": 2.0,
+      "group": "shape", "modes": ["drum_shade", "cone_shade", "pendant"],
+      "label": { "en": "Top Diameter (mm)", "es": "Diámetro Superior (mm)" },
+      "tooltip": { "en": "Top opening diameter (drum uses this for both ends)", "es": "Diámetro de apertura superior (el tambor lo usa en ambos extremos)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bottom_dia", "type": "slider", "default": 180.0, "min": 40.0, "max": 320.0, "step": 2.0,
+      "group": "shape", "modes": ["cone_shade", "pendant"],
+      "label": { "en": "Bottom Diameter (mm)", "es": "Diámetro Inferior (mm)" },
+      "tooltip": { "en": "Bottom opening diameter (taper)", "es": "Diámetro de apertura inferior (conicidad)" }
+    },
+    {
+      "id": "height", "type": "slider", "default": 150.0, "min": 50.0, "max": 300.0, "step": 5.0,
+      "group": "shape", "modes": ["drum_shade", "cone_shade", "pendant"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Shade height", "es": "Altura de la pantalla" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "shape", "modes": ["drum_shade", "cone_shade", "pendant"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shell wall thickness (1.2–2 glows nicely)", "es": "Grosor de la carcasa (1.2–2 luce translúcido)" }
+    },
+    {
+      "id": "socket", "type": "select", "default": "E27",
+      "group": "socket", "modes": ["drum_shade", "cone_shade", "pendant"],
+      "label": { "en": "Lamp Socket", "es": "Casquillo" },
+      "tooltip": { "en": "Bulb holder standard the top ring fits", "es": "Estándar de portalámparas al que se ajusta el anillo" },
+      "options": [
+        { "value": "E27", "label": { "en": "E27 (Europe)", "es": "E27 (Europa)" } },
+        { "value": "E26", "label": { "en": "E26 (US)", "es": "E26 (EE. UU.)" } }
+      ]
+    },
+    {
+      "id": "pattern", "type": "select", "default": "holes",
+      "group": "pattern", "modes": ["drum_shade", "cone_shade", "pendant"],
+      "label": { "en": "Pattern", "es": "Patrón" },
+      "tooltip": { "en": "Perforation style", "es": "Estilo de perforación" },
+      "options": [
+        { "value": "holes", "label": { "en": "Holes", "es": "Agujeros" } },
+        { "value": "slots", "label": { "en": "Slots", "es": "Ranuras" } },
+        { "value": "solid", "label": { "en": "Solid (no pattern)", "es": "Sólido (sin patrón)" } }
+      ]
+    },
+    {
+      "id": "pat_rows", "type": "slider", "default": 3, "min": 0, "max": 8, "step": 1,
+      "group": "pattern", "modes": ["drum_shade", "cone_shade", "pendant"],
+      "label": { "en": "Pattern Rows", "es": "Filas de Patrón" },
+      "tooltip": { "en": "Rows of features up the height", "es": "Filas de elementos a lo alto" }
+    },
+    {
+      "id": "pat_cols", "type": "slider", "default": 14, "min": 4, "max": 36, "step": 1,
+      "group": "pattern", "modes": ["drum_shade", "cone_shade", "pendant"],
+      "label": { "en": "Pattern Columns", "es": "Columnas de Patrón" },
+      "tooltip": { "en": "Features around the shade (auto-capped for speed)", "es": "Elementos alrededor (limitado para velocidad)" }
+    },
+    {
+      "id": "pat_size", "type": "slider", "default": 9.0, "min": 3.0, "max": 24.0, "step": 0.5,
+      "group": "pattern", "modes": ["drum_shade", "cone_shade", "pendant"], "advanced": true,
+      "label": { "en": "Feature Size (mm)", "es": "Tamaño de Elemento (mm)" },
+      "tooltip": { "en": "Diameter/length of each perforation", "es": "Diámetro/largo de cada perforación" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "table_drum", "mode": "drum_shade",
+      "label": { "en": "Table Drum Shade", "es": "Pantalla Tambor de Mesa" },
+      "values": { "top_dia": 150, "height": 140, "pattern": "holes", "pat_rows": 3 }
+    },
+    {
+      "id": "empire_cone", "mode": "cone_shade",
+      "label": { "en": "Empire Cone Shade", "es": "Pantalla Cónica Imperio" },
+      "values": { "top_dia": 120, "bottom_dia": 200, "height": 150 }
+    },
+    {
+      "id": "cord_pendant", "mode": "pendant",
+      "label": { "en": "Cord-Set Pendant", "es": "Colgante con Cable" },
+      "values": { "top_dia": 90, "bottom_dia": 220, "height": 170, "pattern": "slots" }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall under 1.2 mm will not print reliably", "es": "Una pared menor a 1.2 mm no imprimirá de forma confiable" }
+    },
+    {
+      "expression": "pat_size <= top_dia / 4",
+      "severity": "warning",
+      "message": { "en": "Feature size is large relative to the shade", "es": "El tamaño del elemento es grande respecto a la pantalla" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [280, 280, 220] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 380] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -360, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 4, "per_part": 18,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "shade_pattern",
+        "label": { "en": "Shade Pattern", "es": "Patrón de Pantalla" },
+        "geometry_type": "surface",
+        "standard": "E26/E27 socket",
+        "parameters": ["pattern", "pat_rows", "pat_cols", "pat_size", "socket"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A custom lampshade sized to a standard bulb holder and printed to taste, so lighting fixtures become repairable and personal instead of disposable retail goods.",
+      "es": "Una pantalla a medida dimensionada a un portalámparas estándar e impresa al gusto, para que las luminarias sean reparables y personales en vez de productos desechables de tienda."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["lampshade", "pendant", "lighting", "decor", "household", "hyperobject", "commons"]
+}

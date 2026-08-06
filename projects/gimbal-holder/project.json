@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Gimbal Holder",
+    "slug": "gimbal-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A self-leveling drink or bottle holder for a boat or RV. The vessel sits in a cup that pivots inside nested rings, so it stays upright as the vehicle rolls. Print-in-place: rings and cup are separate closed bodies with pivot clearance and pop free straight off the bed. Choose a full 2-axis gimbal, a simpler 1-axis rocker, or a wall-mount version.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un portavasos o portabotellas autonivelante para bote o casa rodante. El recipiente se asienta en una copa que pivota dentro de anillos anidados, manteniéndose vertical mientras el vehículo se balancea. Impresión en sitio: anillos y copa son cuerpos cerrados separados con holgura de pivote que se liberan directo de la cama. Elige un cardán completo de 2 ejes, un balancín de 1 eje o una versión de pared.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gimbal-holder.webp",
+    "difficulty": "advanced",
+    "tags": ["gimbal", "cup-holder", "self-leveling", "marine", "boat", "rv", "print-in-place", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "gimbal_cup",
+      "label": { "en": "2-Axis Gimbal Cup", "es": "Copa Cardán 2 Ejes" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gimbal_cup"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 20 }
+    },
+    {
+      "id": "single_axis",
+      "label": { "en": "Single-Axis Rocker", "es": "Balancín de Un Eje" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_axis"],
+      "estimate": { "base_time": 15, "per_unit": 3, "per_part": 17 }
+    },
+    {
+      "id": "wall_gimbal",
+      "label": { "en": "Wall-Mount Gimbal", "es": "Cardán de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_gimbal"],
+      "estimate": { "base_time": 20, "per_unit": 4, "per_part": 22 }
+    }
+  ],
+  "parts": [
+    { "id": "gimbal_cup", "label": { "en": "2-Axis Gimbal Cup", "es": "Copa Cardán 2 Ejes" }, "render_mode": 0, "color": "#2f7f6f" },
+    { "id": "single_axis", "label": { "en": "Single-Axis Rocker", "es": "Balancín de Un Eje" }, "render_mode": 0, "color": "#3f9f8a" },
+    { "id": "wall_gimbal", "label": { "en": "Wall-Mount Gimbal", "es": "Cardán de Pared" }, "render_mode": 0, "color": "#5bb8a4" }
+  ],
+  "parameter_groups": [
+    { "id": "vessel", "label": { "en": "Vessel", "es": "Recipiente" } },
+    { "id": "pivot", "label": { "en": "Pivot & Fit", "es": "Pivote y Ajuste" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "vessel_dia", "type": "slider", "default": 70.0, "min": 40.0, "max": 100.0, "step": 1.0,
+      "group": "vessel", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"],
+      "label": { "en": "Vessel Diameter (mm)", "es": "Diámetro del Recipiente (mm)" },
+      "tooltip": { "en": "Outer diameter of the cup or bottle to hold", "es": "Diámetro exterior del vaso o botella" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cup_h", "type": "slider", "default": 55.0, "min": 25.0, "max": 90.0, "step": 1.0,
+      "group": "vessel", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"],
+      "label": { "en": "Cup Height (mm)", "es": "Altura de Copa (mm)" },
+      "tooltip": { "en": "How tall the holding cup is", "es": "Qué tan alta es la copa" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "vessel", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Cup and ring wall thickness", "es": "Grosor de pared de copa y anillos" }
+    },
+    {
+      "id": "pivot_gap", "type": "slider", "default": 0.6, "min": 0.3, "max": 1.5, "step": 0.05,
+      "group": "pivot", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"],
+      "label": { "en": "Pivot Clearance (mm)", "es": "Holgura de Pivote (mm)" },
+      "tooltip": { "en": "Gap around each pin — larger frees up print-in-place motion", "es": "Espacio alrededor de cada eje — mayor libera el movimiento impreso en sitio" }
+    },
+    {
+      "id": "ring_gap", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "pivot", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"], "advanced": true,
+      "label": { "en": "Ring Gap (mm)", "es": "Separación de Anillos (mm)" },
+      "tooltip": { "en": "Radial gap between nested bodies", "es": "Espacio radial entre cuerpos anidados" }
+    },
+    {
+      "id": "pin_dia", "type": "slider", "default": 5.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "pivot", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"],
+      "label": { "en": "Pivot Pin Diameter (mm)", "es": "Diámetro del Eje (mm)" },
+      "tooltip": { "en": "Trunnion pin size", "es": "Tamaño del muñón" }
+    },
+    {
+      "id": "base_dia", "type": "slider", "default": 120.0, "min": 80.0, "max": 220.0, "step": 2.0,
+      "group": "mount", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"],
+      "label": { "en": "Base Diameter (mm)", "es": "Diámetro de Base (mm)" },
+      "tooltip": { "en": "Mounting base outer diameter", "es": "Diámetro exterior de la base de montaje" }
+    },
+    {
+      "id": "base_t", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "mount", "modes": ["gimbal_cup", "single_axis", "wall_gimbal"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Base plate thickness", "es": "Grosor de la placa base" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "coffee_mug", "mode": "gimbal_cup",
+      "label": { "en": "Coffee Mug Gimbal", "es": "Cardán para Taza" },
+      "values": { "vessel_dia": 84, "cup_h": 60, "pivot_gap": 0.6 }
+    },
+    {
+      "id": "can_rocker", "mode": "single_axis",
+      "label": { "en": "Soda Can Rocker", "es": "Balancín para Lata" },
+      "values": { "vessel_dia": 66, "cup_h": 45 }
+    },
+    {
+      "id": "galley_wall", "mode": "wall_gimbal",
+      "label": { "en": "Galley Wall Holder", "es": "Portavasos de Pared" },
+      "values": { "vessel_dia": 75, "cup_h": 65, "base_dia": 130 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pivot_gap >= 0.3",
+      "severity": "error",
+      "message": { "en": "Pivot clearance under 0.3 mm will fuse when printed", "es": "Una holgura menor a 0.3 mm se fusionará al imprimir" }
+    },
+    {
+      "expression": "base_dia >= vessel_dia + 40",
+      "severity": "warning",
+      "message": { "en": "Base may be too small for the vessel to swing freely", "es": "La base puede ser pequeña para que el recipiente se balancee" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 150] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 50] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 18, "per_unit": 4, "per_part": 20,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "gimbal_pivot",
+        "label": { "en": "Gimbal Pivot", "es": "Pivote de Cardán" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["pin_dia", "pivot_gap", "ring_gap"]
+      },
+      {
+        "id": "vessel_cup_bore",
+        "label": { "en": "Vessel Cup Bore", "es": "Barreno de Copa" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["vessel_dia", "cup_h", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps a drink upright on rough water or road without spills — a print-in-place self-leveling holder anyone can make to fit their own cup, no proprietary gimbal hardware.",
+      "es": "Mantiene una bebida vertical en agua o camino agitado sin derrames — un portavasos autonivelante impreso en sitio que cualquiera hace a la medida de su vaso, sin hardware de cardán propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gimbal", "cup-holder", "self-leveling", "marine", "rv", "hybrid", "hyperobject", "commons"]
+}

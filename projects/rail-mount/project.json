@@ -1,0 +1,174 @@
+{
+  "project": {
+    "name": "Rail Mount / Clamp",
+    "slug": "rail-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A two-piece clamp that grips a round boat, RV, or bimini rail so accessories ride on standard tube stock. Bolt the split clamp around the rail, then mount a rod holder, cup holder, or bare accessory plate. Sized by rail diameter to fit 1 in / 25 mm and other common rails.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una abrazadera de dos piezas que sujeta un riel redondo de bote, casa rodante o bimini para que los accesorios se monten sobre tubo estándar. Atornilla la abrazadera partida alrededor del riel y luego monta un portacañas, portavasos o placa de accesorio. Se dimensiona por el diámetro del riel para adaptarse a rieles de 1 in / 25 mm y otros comunes.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/rail-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["rail", "clamp", "marine", "boat", "rv", "rod-holder", "cup-holder", "mount", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clamp_base",
+      "label": { "en": "2-Part Rail Clamp", "es": "Abrazadera de Riel (2 Piezas)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clamp_base"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "rod_holder_mount",
+      "label": { "en": "Rod Holder Mount", "es": "Montura Portacañas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rod_holder_mount"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "cup_mount",
+      "label": { "en": "Cup Holder Mount", "es": "Montura Portavasos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cup_mount"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "clamp_base", "label": { "en": "2-Part Rail Clamp", "es": "Abrazadera de Riel" }, "render_mode": 0, "color": "#2a7f8f" },
+    { "id": "rod_holder_mount", "label": { "en": "Rod Holder Mount", "es": "Montura Portacañas" }, "render_mode": 0, "color": "#3a9fb0" },
+    { "id": "cup_mount", "label": { "en": "Cup Holder Mount", "es": "Montura Portavasos" }, "render_mode": 0, "color": "#5bb8c8" }
+  ],
+  "parameter_groups": [
+    { "id": "rail", "label": { "en": "Rail & Grip", "es": "Riel y Sujeción" } },
+    { "id": "clamp", "label": { "en": "Clamp & Bolts", "es": "Abrazadera y Tornillos" } },
+    { "id": "accessory", "label": { "en": "Accessory", "es": "Accesorio" } }
+  ],
+  "parameters": [
+    {
+      "id": "rail_dia", "type": "slider", "default": 25.0, "min": 12.0, "max": 60.0, "step": 0.5,
+      "group": "rail", "modes": ["clamp_base", "rod_holder_mount", "cup_mount"],
+      "label": { "en": "Rail Diameter (mm)", "es": "Diámetro del Riel (mm)" },
+      "tooltip": { "en": "Outer diameter of the tube rail (1 in ≈ 25.4 mm)", "es": "Diámetro exterior del tubo del riel (1 in ≈ 25.4 mm)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip_fit", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "rail", "modes": ["clamp_base", "rod_holder_mount", "cup_mount"], "advanced": true,
+      "label": { "en": "Grip Clearance (mm)", "es": "Holgura de Sujeción (mm)" },
+      "tooltip": { "en": "Bore oversize per side; smaller grips harder", "es": "Sobredimensión del barreno por lado; menor sujeta más" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5,
+      "group": "clamp", "modes": ["clamp_base", "rod_holder_mount", "cup_mount"],
+      "label": { "en": "Clamp Wall (mm)", "es": "Pared de Abrazadera (mm)" },
+      "tooltip": { "en": "Wall thickness around the rail", "es": "Grosor de pared alrededor del riel" }
+    },
+    {
+      "id": "clamp_len", "type": "slider", "default": 40.0, "min": 18.0, "max": 120.0, "step": 1.0,
+      "group": "clamp", "modes": ["clamp_base", "rod_holder_mount", "cup_mount"],
+      "label": { "en": "Clamp Length (mm)", "es": "Largo de Abrazadera (mm)" },
+      "tooltip": { "en": "How far the clamp spans along the rail", "es": "Cuánto abarca la abrazadera a lo largo del riel" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "clamp", "modes": ["clamp_base", "rod_holder_mount", "cup_mount"],
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Clamp bolt hole diameter (M5 ≈ 5.0)", "es": "Diámetro del orificio del tornillo (M5 ≈ 5.0)" }
+    },
+    {
+      "id": "rod_dia", "type": "slider", "default": 35.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "accessory", "modes": ["rod_holder_mount"],
+      "label": { "en": "Rod Tube Bore (mm)", "es": "Barreno del Tubo (mm)" },
+      "tooltip": { "en": "Inner diameter of the rod/flag/antenna tube", "es": "Diámetro interior del tubo de caña/bandera/antena" }
+    },
+    {
+      "id": "rod_angle", "type": "slider", "default": 20.0, "min": 0.0, "max": 45.0, "step": 1.0,
+      "group": "accessory", "modes": ["rod_holder_mount"],
+      "label": { "en": "Rod Tilt (deg)", "es": "Inclinación de Caña (°)" },
+      "tooltip": { "en": "Tube tilt from vertical", "es": "Inclinación del tubo respecto a la vertical" }
+    },
+    {
+      "id": "cup_dia", "type": "slider", "default": 75.0, "min": 50.0, "max": 110.0, "step": 1.0,
+      "group": "accessory", "modes": ["cup_mount"],
+      "label": { "en": "Cup Bore (mm)", "es": "Barreno del Vaso (mm)" },
+      "tooltip": { "en": "Inner diameter of the drink-holder ring", "es": "Diámetro interior del anillo portavasos" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "one_inch_rail", "mode": "clamp_base",
+      "label": { "en": "1 in Rail Clamp", "es": "Abrazadera Riel 1 in" },
+      "values": { "rail_dia": 25.4, "wall": 6.0, "clamp_len": 40 }
+    },
+    {
+      "id": "bimini_rod", "mode": "rod_holder_mount",
+      "label": { "en": "Bimini Rod Holder", "es": "Portacañas Bimini" },
+      "values": { "rail_dia": 25.4, "rod_dia": 40, "rod_angle": 15 }
+    },
+    {
+      "id": "rv_cup", "mode": "cup_mount",
+      "label": { "en": "RV Cup Holder", "es": "Portavasos Casa Rodante" },
+      "values": { "rail_dia": 22, "cup_dia": 80 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 3",
+      "severity": "error",
+      "message": { "en": "Clamp wall must be at least 3 mm to hold torque", "es": "La pared debe ser de al menos 3 mm para resistir el par" }
+    },
+    {
+      "expression": "bolt_dia <= wall",
+      "severity": "warning",
+      "message": { "en": "Bolt is large relative to the clamp wall", "es": "El tornillo es grande respecto a la pared de la abrazadera" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "rail_clamp_bore",
+        "label": { "en": "Rail Clamp Bore", "es": "Barreno de Abrazadera de Riel" },
+        "geometry_type": "socket",
+        "standard": "1 in / 25 mm round rail",
+        "parameters": ["rail_dia", "grip_fit", "clamp_len", "bolt_dia"]
+      },
+      {
+        "id": "accessory_bolt_top",
+        "label": { "en": "Accessory Bolt Face", "es": "Cara de Tornillos de Accesorio" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["bolt_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns any round rail on a boat or RV into a mount for gear, replacing costly proprietary marine hardware with a printable clamp sized to the rail on hand.",
+      "es": "Convierte cualquier riel redondo de un bote o casa rodante en un soporte para equipo, reemplazando costoso hardware marino propietario con una abrazadera imprimible dimensionada al riel disponible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["rail", "clamp", "marine", "rv", "mount", "hybrid", "hyperobject", "commons"]
+}

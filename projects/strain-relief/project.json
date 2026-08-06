@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Strain Relief",
+    "slug": "strain-relief",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Strain reliefs and bend limiters for cable exits: they clamp the cable and spread the bend load where it leaves a plug, enclosure, or panel, so the conductors don't fatigue and snap. Sized by cable diameter and a panel or mount interface. Choose a snap-in panel grommet, a two-screw saddle clamp, or a flexible ribbed bend limiter.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Alivios de tensión y limitadores de curvatura para salidas de cable: sujetan el cable y reparten la carga de flexión donde sale de un conector, gabinete o panel, para que los conductores no se fatiguen y se rompan. Se dimensionan por el diámetro del cable y una interfaz de panel o montaje. Elige un ojal de panel a presión, una abrazadera de dos tornillos o un limitador de curvatura acanalado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/strain-relief.webp",
+    "difficulty": "intermediate",
+    "tags": ["strain-relief", "cable", "bend-limiter", "grommet", "cordgrip", "industrial", "electrical", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "grommet_relief",
+      "label": { "en": "Snap-In Grommet", "es": "Ojal a Presión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grommet_relief"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "clamp_relief",
+      "label": { "en": "Saddle Clamp", "es": "Abrazadera de Silla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clamp_relief"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "bend_limiter",
+      "label": { "en": "Bend Limiter", "es": "Limitador de Curvatura" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bend_limiter"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "grommet_relief", "label": { "en": "Snap-In Grommet", "es": "Ojal a Presión" }, "render_mode": 0, "color": "#8f5f4f" },
+    { "id": "clamp_relief", "label": { "en": "Saddle Clamp", "es": "Abrazadera de Silla" }, "render_mode": 0, "color": "#a87a6a" },
+    { "id": "bend_limiter", "label": { "en": "Bend Limiter", "es": "Limitador de Curvatura" }, "render_mode": 0, "color": "#c09585" }
+  ],
+  "parameter_groups": [
+    { "id": "cable", "label": { "en": "Cable & Grip", "es": "Cable y Sujeción" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } },
+    { "id": "bend", "label": { "en": "Bend Limiter", "es": "Limitador" } }
+  ],
+  "parameters": [
+    {
+      "id": "cable_dia", "type": "slider", "default": 8.0, "min": 2.0, "max": 30.0, "step": 0.5,
+      "group": "cable", "modes": ["grommet_relief", "clamp_relief", "bend_limiter"],
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro del Cable (mm)" },
+      "tooltip": { "en": "Outer diameter of the cable", "es": "Diámetro exterior del cable" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip", "type": "slider", "default": 0.6, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "cable", "modes": ["grommet_relief", "clamp_relief", "bend_limiter"],
+      "label": { "en": "Grip (mm)", "es": "Sujeción (mm)" },
+      "tooltip": { "en": "Bore undersize per side for a soft grip on the jacket", "es": "Reducción del barreno por lado para sujetar la funda" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "cable", "modes": ["grommet_relief", "clamp_relief", "bend_limiter"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body wall thickness", "es": "Grosor de pared del cuerpo" }
+    },
+    {
+      "id": "panel_hole", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "mount", "modes": ["grommet_relief"],
+      "label": { "en": "Panel Hole (mm)", "es": "Orificio del Panel (mm)" },
+      "tooltip": { "en": "Diameter of the panel hole the grommet snaps into", "es": "Diámetro del orificio del panel donde encaja el ojal" }
+    },
+    {
+      "id": "panel_t", "type": "slider", "default": 3.0, "min": 1.0, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["grommet_relief"],
+      "label": { "en": "Panel Thickness (mm)", "es": "Grosor del Panel (mm)" },
+      "tooltip": { "en": "Panel thickness the snap ridge grabs", "es": "Grosor del panel que atrapa el resalte" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["clamp_relief"],
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Clamp screw hole diameter", "es": "Diámetro del orificio del tornillo de la abrazadera" }
+    },
+    {
+      "id": "bend_r", "type": "slider", "default": 28.0, "min": 10.0, "max": 80.0, "step": 1.0,
+      "group": "bend", "modes": ["bend_limiter"],
+      "label": { "en": "Min Bend Radius (mm)", "es": "Radio Mínimo de Curvatura (mm)" },
+      "tooltip": { "en": "Minimum bend radius the sleeve enforces (sets its length)", "es": "Radio mínimo de curvatura que impone la manga (define su largo)" }
+    },
+    {
+      "id": "segments", "type": "slider", "default": 7, "min": 3, "max": 14, "step": 1,
+      "group": "bend", "modes": ["bend_limiter"],
+      "label": { "en": "Rib Count", "es": "Número de Costillas" },
+      "tooltip": { "en": "Number of flex ribs (auto-capped for speed)", "es": "Número de costillas flexibles (limitado para velocidad)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "panel_8mm", "mode": "grommet_relief",
+      "label": { "en": "8 mm Panel Grommet", "es": "Ojal de Panel 8 mm" },
+      "values": { "cable_dia": 8, "panel_hole": 16, "panel_t": 3 }
+    },
+    {
+      "id": "cordgrip", "mode": "clamp_relief",
+      "label": { "en": "Power Cord Grip", "es": "Sujetacable de Poder" },
+      "values": { "cable_dia": 10, "bolt_dia": 4 }
+    },
+    {
+      "id": "usb_bend", "mode": "bend_limiter",
+      "label": { "en": "USB Bend Limiter", "es": "Limitador USB" },
+      "values": { "cable_dia": 5, "bend_r": 22, "segments": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "panel_hole >= cable_dia + 4",
+      "severity": "warning",
+      "message": { "en": "Panel hole is tight relative to the cable", "es": "El orificio del panel es ajustado respecto al cable" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall under 2 mm will not hold the cable load", "es": "Una pared menor a 2 mm no soportará la carga del cable" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "cable_strain_relief",
+        "label": { "en": "Cable Strain Relief", "es": "Alivio de Tensión de Cable" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["cable_dia", "grip", "panel_hole", "panel_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Stops cables from failing at the exit — a printable strain relief and bend limiter sized to the exact cable, keeping tools, chargers, and equipment out of the landfill.",
+      "es": "Evita que los cables fallen en la salida — un alivio de tensión y limitador de curvatura imprimible dimensionado al cable exacto, manteniendo herramientas, cargadores y equipos fuera del vertedero."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["strain-relief", "cable", "bend-limiter", "industrial", "electrical", "hyperobject", "commons"]
+}

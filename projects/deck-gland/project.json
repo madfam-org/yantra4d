@@ -1,0 +1,179 @@
+{
+  "project": {
+    "name": "Deck Cable Gland",
+    "slug": "deck-gland",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A sealed cable pass-through plate for a boat deck, RV roof, or panel. Cables enter through a raised gland boss with a stepped grommet cavity, and the plate bolts down on a gasket. Sized by cable diameter and a rectangular bolt pattern so it drops onto a drilled hole layout.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una placa pasacables sellada para cubierta de bote, techo de casa rodante o panel. Los cables entran por un buje elevado con cavidad escalonada para un ojal, y la placa se atornilla sobre una junta. Se dimensiona por el diámetro del cable y un patrón rectangular de tornillos para adaptarse a un barrenado existente.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/deck-gland.webp",
+    "difficulty": "intermediate",
+    "tags": ["gland", "cable", "deck", "marine", "boat", "rv", "seal", "pass-through", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "gland_plate",
+      "label": { "en": "Single Gland Plate", "es": "Placa de Buje Simple" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gland_plate"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "split_gland",
+      "label": { "en": "Split (Retrofit) Gland", "es": "Buje Partido (Retrofit)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["split_gland"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "multi_gland",
+      "label": { "en": "Multi-Cable Gland", "es": "Buje Multicable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_gland"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "gland_plate", "label": { "en": "Single Gland Plate", "es": "Placa de Buje Simple" }, "render_mode": 0, "color": "#3f6f8f" },
+    { "id": "split_gland", "label": { "en": "Split Gland", "es": "Buje Partido" }, "render_mode": 0, "color": "#5389a8" },
+    { "id": "multi_gland", "label": { "en": "Multi-Cable Gland", "es": "Buje Multicable" }, "render_mode": 0, "color": "#6ba0be" }
+  ],
+  "parameter_groups": [
+    { "id": "cable", "label": { "en": "Cable & Seal", "es": "Cable y Sello" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } },
+    { "id": "bolts", "label": { "en": "Bolt Pattern", "es": "Patrón de Tornillos" } }
+  ],
+  "parameters": [
+    {
+      "id": "cable_dia", "type": "slider", "default": 8.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "cable", "modes": ["gland_plate", "split_gland", "multi_gland"],
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro del Cable (mm)" },
+      "tooltip": { "en": "Outer diameter of the cable to seal", "es": "Diámetro exterior del cable a sellar" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "boss_h", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "cable", "modes": ["gland_plate", "split_gland", "multi_gland"],
+      "label": { "en": "Boss Height (mm)", "es": "Altura del Buje (mm)" },
+      "tooltip": { "en": "How far the sealing boss rises above the plate", "es": "Cuánto sube el buje sellador sobre la placa" }
+    },
+    {
+      "id": "seal_step", "type": "slider", "default": 2.0, "min": 0.5, "max": 6.0, "step": 0.5,
+      "group": "cable", "modes": ["gland_plate", "split_gland", "multi_gland"], "advanced": true,
+      "label": { "en": "Grommet Counterbore (mm)", "es": "Rebaje para Ojal (mm)" },
+      "tooltip": { "en": "Depth of the top step that seats a rubber grommet", "es": "Profundidad del escalón superior que asienta el ojal" }
+    },
+    {
+      "id": "cable_count", "type": "slider", "default": 3, "min": 2, "max": 6, "step": 1,
+      "group": "cable", "modes": ["multi_gland"],
+      "label": { "en": "Cable Count", "es": "Número de Cables" },
+      "tooltip": { "en": "Number of sealed bosses in the row", "es": "Número de bujes sellados en la fila" }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "plate", "modes": ["gland_plate", "split_gland", "multi_gland"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Base plate thickness", "es": "Grosor de la placa base" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 8.0, "min": 4.0, "max": 30.0, "step": 1.0,
+      "group": "plate", "modes": ["gland_plate", "split_gland", "multi_gland"], "advanced": true,
+      "label": { "en": "Edge Margin (mm)", "es": "Margen de Borde (mm)" },
+      "tooltip": { "en": "Plate material past the bolt centres", "es": "Material de placa más allá de los centros de tornillo" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "bolts", "modes": ["gland_plate", "split_gland", "multi_gland"],
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Deck bolt hole diameter (M4 ≈ 4.0)", "es": "Diámetro del orificio del tornillo (M4 ≈ 4.0)" }
+    },
+    {
+      "id": "bolt_dx", "type": "slider", "default": 46.0, "min": 20.0, "max": 160.0, "step": 1.0,
+      "group": "bolts", "modes": ["gland_plate", "split_gland"],
+      "label": { "en": "Bolt Spacing X (mm)", "es": "Separación de Tornillos X (mm)" },
+      "tooltip": { "en": "Corner bolt spacing across X", "es": "Separación de tornillos de esquina en X" }
+    },
+    {
+      "id": "bolt_dy", "type": "slider", "default": 46.0, "min": 20.0, "max": 160.0, "step": 1.0,
+      "group": "bolts", "modes": ["gland_plate", "split_gland", "multi_gland"],
+      "label": { "en": "Bolt Spacing Y (mm)", "es": "Separación de Tornillos Y (mm)" },
+      "tooltip": { "en": "Corner bolt spacing across Y", "es": "Separación de tornillos de esquina en Y" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "single_8mm", "mode": "gland_plate",
+      "label": { "en": "8 mm Antenna Lead", "es": "Cable de Antena 8 mm" },
+      "values": { "cable_dia": 8, "boss_h": 10, "bolt_dx": 46, "bolt_dy": 46 }
+    },
+    {
+      "id": "solar_pair", "mode": "multi_gland",
+      "label": { "en": "Solar MC4 Pair", "es": "Par Solar MC4" },
+      "values": { "cable_dia": 7, "cable_count": 2, "boss_h": 12 }
+    },
+    {
+      "id": "retrofit_12mm", "mode": "split_gland",
+      "label": { "en": "12 mm Retrofit Seal", "es": "Sello Retrofit 12 mm" },
+      "values": { "cable_dia": 12, "boss_h": 14 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_t >= 3",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 3 mm to seal", "es": "La placa debe ser de al menos 3 mm para sellar" }
+    },
+    {
+      "expression": "seal_step <= boss_h - 1",
+      "severity": "warning",
+      "message": { "en": "Counterbore is deep relative to boss height", "es": "El rebaje es profundo respecto a la altura del buje" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "deck_bolt_pattern",
+        "label": { "en": "Deck Bolt Pattern", "es": "Patrón de Tornillos de Cubierta" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["bolt_dia", "bolt_dx", "bolt_dy", "margin"]
+      },
+      {
+        "id": "cable_seal_bore",
+        "label": { "en": "Cable Seal Bore", "es": "Barreno de Sello de Cable" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["cable_dia", "boss_h", "seal_step"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A watertight cable entry anyone can print to fit the exact cable and bolt layout, keeping water out of decks, roofs, and enclosures without buying a fixed-size gland.",
+      "es": "Una entrada de cable estanca que cualquiera imprime para el cable y patrón de tornillos exactos, manteniendo el agua fuera de cubiertas, techos y gabinetes sin comprar un buje de tamaño fijo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gland", "cable", "deck", "marine", "seal", "hybrid", "hyperobject", "commons"]
+}

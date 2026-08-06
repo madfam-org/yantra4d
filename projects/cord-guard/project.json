@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "Cord Guard",
+    "slug": "cord-guard",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Chew-resistant and abrasion sleeves that protect a cable or cord: a straight split sleeve that snaps over an in-place cable, an L-shaped corner guard for where a cord turns a wall corner or table edge, and a flexible spiral wrap that coils around the cable.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Fundas resistentes a mordeduras y abrasión que protegen un cable o cordón: una funda partida recta que se abrocha sobre un cable en su lugar, un protector en L para donde un cordón gira una esquina de pared o borde de mesa, y una espiral flexible que se enrolla alrededor del cable.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cord-guard.webp",
+    "difficulty": "beginner",
+    "tags": ["cord", "cable", "sleeve", "chew-guard", "protector", "pet", "spiral", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "split_sleeve",
+      "label": { "en": "Split Sleeve", "es": "Funda Partida" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["split_sleeve"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "corner_guard",
+      "label": { "en": "Corner Guard", "es": "Protector de Esquina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_guard"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "spiral_wrap",
+      "label": { "en": "Spiral Wrap", "es": "Espiral" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spiral_wrap"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "split_sleeve", "label": { "en": "Split Sleeve", "es": "Funda Partida" }, "render_mode": 0, "color": "#4d7c0f" },
+    { "id": "corner_guard", "label": { "en": "Corner Guard", "es": "Protector de Esquina" }, "render_mode": 0, "color": "#65a30d" },
+    { "id": "spiral_wrap", "label": { "en": "Spiral Wrap", "es": "Espiral" }, "render_mode": 0, "color": "#84cc16" }
+  ],
+  "parameter_groups": [
+    { "id": "cable", "label": { "en": "Cable", "es": "Cable" } },
+    { "id": "body", "label": { "en": "Sleeve Body", "es": "Cuerpo de Funda" } },
+    { "id": "spiral", "label": { "en": "Spiral", "es": "Espiral" } }
+  ],
+  "parameters": [
+    {
+      "id": "cable_dia", "type": "slider", "default": 6.0, "min": 2.0, "max": 30.0, "step": 0.5,
+      "group": "cable", "modes": ["split_sleeve", "corner_guard", "spiral_wrap"],
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro de Cable (mm)" },
+      "tooltip": { "en": "Outer diameter of the cable or cord to protect", "es": "Diámetro exterior del cable o cordón a proteger" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 2.0, "step": 0.05,
+      "group": "cable", "modes": ["split_sleeve", "corner_guard", "spiral_wrap"],
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura (mm)" },
+      "tooltip": { "en": "Per-side gap so the sleeve slides along the cable", "es": "Espacio por lado para que la funda deslice por el cable" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "body", "modes": ["split_sleeve", "corner_guard", "spiral_wrap"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Sleeve wall thickness (thicker = tougher against chewing)", "es": "Grosor de pared de la funda (más grueso = más resistente a mordeduras)" }
+    },
+    {
+      "id": "length", "type": "slider", "default": 80.0, "min": 20.0, "max": 200.0, "step": 2.0,
+      "group": "body", "modes": ["split_sleeve", "corner_guard", "spiral_wrap"],
+      "label": { "en": "Length (mm)", "es": "Longitud (mm)" },
+      "tooltip": { "en": "Length of the sleeve (corner uses this per arm; spiral scales turns)", "es": "Longitud de la funda (la esquina la usa por brazo; la espiral escala las vueltas)" }
+    },
+    {
+      "id": "split", "type": "slider", "default": 0.55, "min": 0.3, "max": 0.9, "step": 0.05,
+      "group": "body", "modes": ["split_sleeve", "corner_guard"],
+      "label": { "en": "Split Opening", "es": "Apertura de Corte" },
+      "tooltip": { "en": "Width of the lengthwise slit as a fraction of the cable diameter (smaller grips more)", "es": "Ancho de la ranura longitudinal como fracción del diámetro del cable (menor = sujeta más)" }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 12.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "spiral", "modes": ["spiral_wrap"],
+      "label": { "en": "Spiral Pitch (mm)", "es": "Paso de Espiral (mm)" },
+      "tooltip": { "en": "Axial distance per coil turn (larger = looser, more flexible wrap)", "es": "Distancia axial por vuelta (mayor = envoltura más suelta y flexible)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "charger_cable", "mode": "split_sleeve",
+      "label": { "en": "Charger-Cable Sleeve (6 mm)", "es": "Funda de Cargador (6 mm)" },
+      "values": { "cable_dia": 6, "wall": 2.4, "length": 90 }
+    },
+    {
+      "id": "desk_corner", "mode": "corner_guard",
+      "label": { "en": "Desk-Edge Corner Guard", "es": "Protector de Borde de Escritorio" },
+      "values": { "cable_dia": 8, "length": 50 }
+    },
+    {
+      "id": "flex_spiral", "mode": "spiral_wrap",
+      "label": { "en": "Flexible Spiral Wrap", "es": "Espiral Flexible" },
+      "values": { "cable_dia": 8, "pitch": 14, "length": 96 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "split <= 0.9",
+      "severity": "warning",
+      "message": { "en": "A very wide split may let the cable pop out", "es": "Un corte muy ancho puede dejar salir el cable" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cord_sleeve",
+        "label": { "en": "Cord Sleeve", "es": "Funda de Cordón" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["cable_dia", "clearance", "wall", "split"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Chewed charger and appliance cords are a fire and shock hazard and a top cause of pet injury. A sleeve sized to the exact cable — printed in tough material — snaps over an in-place cord to protect both the pet and the cable at near-zero cost.",
+      "es": "Los cables de cargador y electrodomésticos mordidos son un peligro de incendio y descarga y una causa principal de lesiones en mascotas. Una funda dimensionada al cable exacto — impresa en material resistente — se abrocha sobre un cordón en su lugar para proteger tanto a la mascota como al cable a costo casi nulo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cord", "cable", "sleeve", "chew-guard", "pet", "household", "hyperobject", "commons"]
+}

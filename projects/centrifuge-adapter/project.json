@@ -1,0 +1,147 @@
+{
+  "project": {
+    "name": "Centrifuge Tube Adapter",
+    "slug": "centrifuge-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Step-down sleeves that let a centrifuge rotor bored for one tube size carry a smaller tube. The outer diameter matches the rotor bore; the inner bore matches the tube (Falcon 15 mL ≈ 17 mm, 50 mL ≈ 29 mm) with a conical seat so the tapered bottom is fully supported for balanced spinning. Printable lab aid, not a certified medical device.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Casquillos reductores que permiten que un rotor de centrífuga perforado para un tamaño de tubo lleve uno más pequeño. El diámetro exterior coincide con el pozo del rotor; el interior coincide con el tubo (Falcon 15 mL ≈ 17 mm, 50 mL ≈ 29 mm) con asiento cónico para que el fondo cónico quede totalmente apoyado y el giro sea equilibrado. Ayuda de laboratorio imprimible, no un dispositivo médico certificado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/centrifuge-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": ["centrifuge", "adapter", "falcon", "tube", "rotor", "lab", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "adapter_15",
+      "label": { "en": "15 mL Adapter", "es": "Adaptador 15 mL" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["adapter_15"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "adapter_50",
+      "label": { "en": "50 mL Adapter", "es": "Adaptador 50 mL" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["adapter_50"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "microtube_adapter",
+      "label": { "en": "Microtube Adapter", "es": "Adaptador de Microtubo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["microtube_adapter"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "adapter_15", "label": { "en": "15 mL Adapter", "es": "Adaptador 15 mL" }, "render_mode": 0, "color": "#065f46" },
+    { "id": "adapter_50", "label": { "en": "50 mL Adapter", "es": "Adaptador 50 mL" }, "render_mode": 0, "color": "#047857" },
+    { "id": "microtube_adapter", "label": { "en": "Microtube Adapter", "es": "Adaptador de Microtubo" }, "render_mode": 0, "color": "#10b981" }
+  ],
+  "parameter_groups": [
+    { "id": "interface", "label": { "en": "Rotor Fit", "es": "Ajuste de Rotor" } },
+    { "id": "body", "label": { "en": "Sleeve Body", "es": "Cuerpo del Casquillo" } }
+  ],
+  "parameters": [
+    {
+      "id": "rotor_bore", "type": "slider", "default": 30.0, "min": 12.0, "max": 60.0, "step": 0.5,
+      "group": "interface", "modes": ["adapter_15", "adapter_50", "microtube_adapter"],
+      "label": { "en": "Rotor Bore (mm)", "es": "Pozo del Rotor (mm)" },
+      "tooltip": { "en": "Diameter of the rotor pocket the sleeve drops into", "es": "Diámetro del pozo del rotor donde entra el casquillo" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "interface", "modes": ["adapter_15", "adapter_50", "microtube_adapter"],
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura (mm)" },
+      "tooltip": { "en": "Per-side gap on both the rotor fit and the tube bore", "es": "Espacio por lado tanto en el ajuste del rotor como en el pozo del tubo" }
+    },
+    {
+      "id": "wall_min", "type": "slider", "default": 2.5, "min": 1.5, "max": 8.0, "step": 0.2,
+      "group": "body", "modes": ["adapter_15", "adapter_50", "microtube_adapter"],
+      "label": { "en": "Minimum Wall (mm)", "es": "Pared Mínima (mm)" },
+      "tooltip": { "en": "Minimum wall kept around the tube bore for strength under g-force", "es": "Pared mínima alrededor del pozo del tubo para resistir la fuerza g" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 70.0, "min": 20.0, "max": 120.0, "step": 1.0,
+      "group": "body", "modes": ["adapter_15", "adapter_50", "microtube_adapter"],
+      "label": { "en": "Sleeve Length (mm)", "es": "Largo del Casquillo (mm)" },
+      "tooltip": { "en": "How far the tube seats into the sleeve", "es": "Qué tan profundo se asienta el tubo en el casquillo" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 3.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "body", "modes": ["adapter_15", "adapter_50", "microtube_adapter"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Closed bottom that carries the tube tip", "es": "Fondo cerrado que sostiene la punta del tubo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "50_holds_15", "mode": "adapter_15",
+      "label": { "en": "50 mL Rotor → 15 mL Tube", "es": "Rotor 50 mL → Tubo 15 mL" },
+      "values": { "rotor_bore": 30, "depth": 90 }
+    },
+    {
+      "id": "big_rotor_50", "mode": "adapter_50",
+      "label": { "en": "Large Rotor → 50 mL Tube", "es": "Rotor Grande → Tubo 50 mL" },
+      "values": { "rotor_bore": 38, "depth": 100 }
+    },
+    {
+      "id": "15_holds_micro", "mode": "microtube_adapter",
+      "label": { "en": "15 mL Rotor → 1.5 mL Microtube", "es": "Rotor 15 mL → Microtubo 1.5 mL" },
+      "values": { "rotor_bore": 17, "depth": 45 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "rotor_bore >= 12",
+      "severity": "error",
+      "message": { "en": "Rotor bore is too small for any tube", "es": "El pozo del rotor es demasiado pequeño para cualquier tubo" }
+    },
+    {
+      "expression": "wall_min >= 1.5",
+      "severity": "warning",
+      "message": { "en": "Thin walls may fail under high g-force", "es": "Paredes delgadas pueden fallar bajo alta fuerza g" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "rotor_tube_adapter",
+        "label": { "en": "Rotor Tube Adapter", "es": "Adaptador de Tubo de Rotor" },
+        "geometry_type": "socket",
+        "standard": "15/50mL Falcon",
+        "parameters": ["rotor_bore", "clearance", "wall_min", "depth"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Rotor adapters are expensive, size-specific consumables that limit which tubes a shared centrifuge can spin. A printed step-down sleeve matched to the rotor bore and Falcon-tube standard lets one rotor serve many protocols at near-zero cost.",
+      "es": "Los adaptadores de rotor son consumibles caros y específicos por tamaño que limitan qué tubos puede girar una centrífuga compartida. Un casquillo reductor impreso ajustado al pozo del rotor y al estándar de tubo Falcon permite que un rotor sirva a muchos protocolos a costo casi nulo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["centrifuge", "adapter", "falcon", "rotor", "lab", "medical", "hyperobject", "commons"]
+}

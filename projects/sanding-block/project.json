@@ -1,0 +1,169 @@
+{
+  "project": {
+    "name": "Sanding Block",
+    "slug": "sanding-block",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A hand sanding block sized to a sheet of abrasive, with paper-clamp slots at each end that pinch a torn sheet so it can't slip. Choose a flat face, a convex face for hollows, or a contour face for mouldings.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un taco de lijado a mano dimensionado a una hoja de lija, con ranuras de sujeción en cada extremo que pinzan una hoja rasgada para que no resbale. Elige una cara plana, una cara convexa para huecos, o una cara de contorno para molduras.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sanding-block.webp",
+    "difficulty": "beginner",
+    "tags": ["sanding", "sanding-block", "abrasive", "finishing", "woodworking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "flat_block",
+      "label": { "en": "Flat Block", "es": "Taco Plano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flat_block"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "round_block",
+      "label": { "en": "Convex Block", "es": "Taco Convexo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["round_block"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "contour_block",
+      "label": { "en": "Contour Block", "es": "Taco de Contorno" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["contour_block"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "flat_block", "label": { "en": "Flat Block", "es": "Taco Plano" }, "render_mode": 0, "color": "#a88b5a" },
+    { "id": "round_block", "label": { "en": "Convex Block", "es": "Taco Convexo" }, "render_mode": 0, "color": "#b89b6a" },
+    { "id": "contour_block", "label": { "en": "Contour Block", "es": "Taco de Contorno" }, "render_mode": 0, "color": "#96794a" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Block Size", "es": "Tamaño del Taco" } },
+    { "id": "face", "label": { "en": "Sanding Face", "es": "Cara de Lijado" } },
+    { "id": "grip", "label": { "en": "Grip & Clamp", "es": "Agarre y Sujeción" } }
+  ],
+  "parameters": [
+    {
+      "id": "block_l", "type": "slider", "default": 120.0, "min": 70.0, "max": 220.0, "step": 1.0,
+      "group": "size", "modes": ["flat_block", "round_block", "contour_block"],
+      "label": { "en": "Block Length (mm)", "es": "Largo del Taco (mm)" },
+      "tooltip": { "en": "Length in the paper-wrap direction", "es": "Largo en la dirección de envoltura del papel" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "block_w", "type": "slider", "default": 65.0, "min": 30.0, "max": 100.0, "step": 1.0,
+      "group": "size", "modes": ["flat_block", "round_block", "contour_block"],
+      "label": { "en": "Block Width (mm)", "es": "Ancho del Taco (mm)" },
+      "tooltip": { "en": "Grip width of the block", "es": "Ancho de agarre del taco" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "block_h", "type": "slider", "default": 35.0, "min": 20.0, "max": 55.0, "step": 1.0,
+      "group": "size", "modes": ["flat_block", "round_block", "contour_block"],
+      "label": { "en": "Block Height (mm)", "es": "Altura del Taco (mm)" },
+      "tooltip": { "en": "Height of the block", "es": "Altura del taco" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "face_r", "type": "slider", "default": 60.0, "min": 25.0, "max": 150.0, "step": 1.0,
+      "group": "face", "modes": ["round_block"],
+      "label": { "en": "Convex Face Radius (mm)", "es": "Radio de Cara Convexa (mm)" },
+      "tooltip": { "en": "Radius of the convex sanding face (smaller = tighter curve)", "es": "Radio de la cara convexa (menor = curva más cerrada)" }
+    },
+    {
+      "id": "contour_d", "type": "slider", "default": 6.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "face", "modes": ["contour_block"],
+      "label": { "en": "Cove Depth (mm)", "es": "Profundidad de la Media Caña (mm)" },
+      "tooltip": { "en": "Depth of the contour cove down the face", "es": "Profundidad de la media caña a lo largo de la cara" }
+    },
+    {
+      "id": "grip_scoop", "type": "checkbox", "default": true,
+      "group": "grip", "modes": ["flat_block", "round_block", "contour_block"],
+      "label": { "en": "Hand Scoop", "es": "Hueco para la Mano" },
+      "tooltip": { "en": "Scoop the top for a comfortable grip", "es": "Ahueca la parte superior para un agarre cómodo" }
+    },
+    {
+      "id": "clamp_slot", "type": "slider", "default": 2.5, "min": 1.0, "max": 5.0, "step": 0.1,
+      "group": "grip", "modes": ["flat_block", "round_block", "contour_block"], "advanced": true,
+      "label": { "en": "Paper-Clamp Slot (mm)", "es": "Ranura de Sujeción de Papel (mm)" },
+      "tooltip": { "en": "Width of the end slots that pinch the abrasive", "es": "Ancho de las ranuras de extremo que pinzan la lija" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "quarter_sheet", "mode": "flat_block",
+      "label": { "en": "Quarter-Sheet Flat", "es": "Cuarto de Hoja Plano" },
+      "values": { "block_l": 120.0, "block_w": 65.0, "block_h": 35.0 }
+    },
+    {
+      "id": "cove_convex", "mode": "round_block",
+      "label": { "en": "Cove Convex (R60)", "es": "Media Caña Convexo (R60)" },
+      "values": { "block_l": 120.0, "block_w": 60.0, "block_h": 35.0, "face_r": 60.0 }
+    },
+    {
+      "id": "moulding_contour", "mode": "contour_block",
+      "label": { "en": "Moulding Contour", "es": "Contorno para Moldura" },
+      "values": { "block_l": 140.0, "block_w": 55.0, "block_h": 35.0, "contour_d": 8.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clamp_slot < block_h / 2",
+      "severity": "warning",
+      "message": { "en": "Clamp slot is deep relative to block height", "es": "La ranura de sujeción es profunda respecto a la altura del taco" }
+    },
+    {
+      "expression": "block_w >= 30",
+      "severity": "error",
+      "message": { "en": "Block must be at least 30 mm wide to grip", "es": "El taco debe tener al menos 30 mm de ancho para agarrarse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "sanding_face",
+        "label": { "en": "Sanding Face", "es": "Cara de Lijado" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["block_l", "block_w", "face_r", "contour_d"]
+      },
+      {
+        "id": "paper_clamp",
+        "label": { "en": "Paper Clamp Slots", "es": "Ranuras de Sujeción de Papel" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["clamp_slot", "block_l"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A comfortable, sized-to-your-paper sanding block — flat, convex or contoured — that holds torn abrasive without adhesive, replacing a drawer of one-shape store blocks.",
+      "es": "Un taco de lijado cómodo y dimensionado a tu papel — plano, convexo o con contorno — que sujeta la lija rasgada sin adhesivo, reemplazando un cajón de tacos de una sola forma."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["sanding", "sanding-block", "finishing", "industrial", "hyperobject", "commons"]
+}

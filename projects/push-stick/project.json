@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Push Stick / Push Block",
+    "slug": "push-stick",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A safety pusher that keeps hands away from a table-saw blade or jointer cutter. A rear heel notch hooks the trailing end of the stock to push it through. Choose a long tapered push stick, a broad push block, or a compact centred gripper. Sized by length, grip and heel depth.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un empujador de seguridad que mantiene las manos lejos de la hoja de la sierra o la cuchilla de la juntadora. Un talón trasero engancha el extremo de la pieza para empujarla. Elige un empujador largo cónico, un bloque ancho, o un empujador central compacto. Se dimensiona por largo, agarre y profundidad del talón.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/push-stick.webp",
+    "difficulty": "beginner",
+    "tags": ["push-stick", "push-block", "safety", "table-saw", "jointer", "woodworking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "push_stick",
+      "label": { "en": "Push Stick", "es": "Empujador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["push_stick"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "push_block",
+      "label": { "en": "Push Block", "es": "Bloque Empujador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["push_block"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "gripper",
+      "label": { "en": "Straddle Gripper", "es": "Empujador Central" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gripper"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "push_stick", "label": { "en": "Push Stick", "es": "Empujador" }, "render_mode": 0, "color": "#c99a3b" },
+    { "id": "push_block", "label": { "en": "Push Block", "es": "Bloque Empujador" }, "render_mode": 0, "color": "#d8ab4a" },
+    { "id": "gripper", "label": { "en": "Straddle Gripper", "es": "Empujador Central" }, "render_mode": 0, "color": "#b0842f" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } },
+    { "id": "grip", "label": { "en": "Grip & Heel", "es": "Agarre y Talón" } }
+  ],
+  "parameters": [
+    {
+      "id": "length", "type": "slider", "default": 260.0, "min": 140.0, "max": 400.0, "step": 5.0,
+      "group": "size", "modes": ["push_stick", "push_block", "gripper"],
+      "label": { "en": "Overall Length (mm)", "es": "Largo Total (mm)" },
+      "tooltip": { "en": "Length of the pusher — longer keeps hands further back", "es": "Largo del empujador — más largo mantiene las manos más atrás" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "body_h", "type": "slider", "default": 90.0, "min": 40.0, "max": 130.0, "step": 1.0,
+      "group": "size", "modes": ["push_stick", "push_block", "gripper"],
+      "label": { "en": "Body / Grip Height (mm)", "es": "Altura del Cuerpo / Agarre (mm)" },
+      "tooltip": { "en": "Height that stands the grip off the table", "es": "Altura que eleva el agarre sobre la mesa" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 18.0, "min": 10.0, "max": 30.0, "step": 1.0,
+      "group": "size", "modes": ["push_stick", "push_block", "gripper"],
+      "label": { "en": "Material Thickness (mm)", "es": "Grosor del Material (mm)" },
+      "tooltip": { "en": "Thickness of the pusher body", "es": "Grosor del cuerpo del empujador" }
+    },
+    {
+      "id": "block_w", "type": "slider", "default": 80.0, "min": 40.0, "max": 140.0, "step": 1.0,
+      "group": "size", "modes": ["push_block", "gripper"],
+      "label": { "en": "Block Width (mm)", "es": "Ancho del Bloque (mm)" },
+      "tooltip": { "en": "Width of the push-block / gripper foot", "es": "Ancho del pie del bloque / empujador" }
+    },
+    {
+      "id": "heel", "type": "slider", "default": 12.0, "min": 6.0, "max": 25.0, "step": 0.5,
+      "group": "grip", "modes": ["push_stick", "push_block", "gripper"],
+      "label": { "en": "Heel Notch Depth (mm)", "es": "Profundidad del Talón (mm)" },
+      "tooltip": { "en": "How much of the stock end the heel catches", "es": "Cuánto del extremo de la pieza engancha el talón" }
+    },
+    {
+      "id": "grip_dia", "type": "slider", "default": 32.0, "min": 20.0, "max": 45.0, "step": 1.0,
+      "group": "grip", "modes": ["push_stick", "push_block", "gripper"],
+      "label": { "en": "Grip Bore (mm)", "es": "Barreno del Agarre (mm)" },
+      "tooltip": { "en": "Finger aperture of the hand grip", "es": "Apertura para los dedos del agarre" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    }
+  ],
+  "presets": [
+    {
+      "id": "table_saw_stick", "mode": "push_stick",
+      "label": { "en": "Table-Saw Push Stick", "es": "Empujador de Sierra de Mesa" },
+      "values": { "length": 300.0, "body_h": 95.0, "heel": 12.0, "grip_dia": 32.0 }
+    },
+    {
+      "id": "jointer_block", "mode": "push_block",
+      "label": { "en": "Jointer Push Block", "es": "Bloque para Juntadora" },
+      "values": { "length": 220.0, "body_h": 80.0, "block_w": 90.0, "heel": 10.0 }
+    },
+    {
+      "id": "narrow_gripper", "mode": "gripper",
+      "label": { "en": "Narrow-Rip Gripper", "es": "Empujador para Corte Estrecho" },
+      "values": { "length": 200.0, "body_h": 85.0, "block_w": 70.0, "heel": 12.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "heel < thick + 8",
+      "severity": "warning",
+      "message": { "en": "Heel is deep relative to material — may be fragile", "es": "El talón es profundo respecto al material — puede ser frágil" }
+    },
+    {
+      "expression": "grip_dia >= 20",
+      "severity": "error",
+      "message": { "en": "Grip bore must be at least 20 mm for fingers", "es": "El barreno del agarre debe ser de al menos 20 mm para los dedos" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 200, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "push_heel",
+        "label": { "en": "Push Heel", "es": "Talón de Empuje" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["heel", "thick", "length"]
+      },
+      {
+        "id": "hand_grip",
+        "label": { "en": "Hand Grip", "es": "Agarre de Mano" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["grip_dia", "body_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A five-minute print that prevents the most common shop injury — a purpose-shaped pusher keeps fingers clear of the blade on every rip cut and jointer pass.",
+      "es": "Una impresión de cinco minutos que previene la lesión de taller más común — un empujador con la forma adecuada mantiene los dedos lejos de la hoja en cada corte y pasada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["push-stick", "push-block", "safety", "industrial", "hyperobject", "commons"]
+}

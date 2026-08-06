@@ -1,0 +1,161 @@
+{
+  "project": {
+    "name": "Angle Gauge / Setup Block",
+    "slug": "angle-gauge",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Precision angle references for setting saw blades, bevels, miters and fences. A setup block stacks several known-angle wedges into one stepped tool; a protractor gauge fans reference edges from a common vertex; a saw gauge is a single-angle reference block. Angle set and size are selectable.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Referencias de ángulo de precisión para ajustar hojas de sierra, biseles, ingletes y topes. Un bloque de ajuste apila varias cuñas de ángulo conocido en una herramienta escalonada; un goniómetro despliega bordes de referencia desde un vértice común; una galga de sierra es un bloque de referencia de un solo ángulo. El conjunto de ángulos y el tamaño son seleccionables.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/angle-gauge.webp",
+    "difficulty": "intermediate",
+    "tags": ["angle-gauge", "setup-block", "protractor", "bevel", "miter", "layout", "woodworking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "setup_block",
+      "label": { "en": "Setup Block", "es": "Bloque de Ajuste" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["setup_block"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "protractor_gauge",
+      "label": { "en": "Protractor Gauge", "es": "Goniómetro" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["protractor_gauge"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "saw_gauge",
+      "label": { "en": "Saw Gauge", "es": "Galga de Sierra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["saw_gauge"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "setup_block", "label": { "en": "Setup Block", "es": "Bloque de Ajuste" }, "render_mode": 0, "color": "#7a5a8a" },
+    { "id": "protractor_gauge", "label": { "en": "Protractor Gauge", "es": "Goniómetro" }, "render_mode": 0, "color": "#8b6a9c" },
+    { "id": "saw_gauge", "label": { "en": "Saw Gauge", "es": "Galga de Sierra" }, "render_mode": 0, "color": "#674a74" }
+  ],
+  "parameter_groups": [
+    { "id": "angles", "label": { "en": "Angle Set", "es": "Conjunto de Ángulos" } },
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } },
+    { "id": "saw", "label": { "en": "Saw Gauge", "es": "Galga de Sierra" } }
+  ],
+  "parameters": [
+    {
+      "id": "angles", "type": "select", "default": "common",
+      "group": "angles", "modes": ["setup_block", "protractor_gauge"],
+      "label": { "en": "Angle Set", "es": "Conjunto de Ángulos" },
+      "tooltip": { "en": "Which set of reference angles to build", "es": "Qué conjunto de ángulos de referencia construir" },
+      "options": [
+        { "value": "common", "label": { "en": "Common (15 / 22.5 / 30 / 45)", "es": "Comunes (15 / 22.5 / 30 / 45)" } },
+        { "value": "fine", "label": { "en": "Fine (5 / 10 / 15 / 20)", "es": "Finos (5 / 10 / 15 / 20)" } },
+        { "value": "roofing", "label": { "en": "Roofing pitches (18.4 / 26.6 / 33.7 / 45)", "es": "Pendientes de techo (18.4 / 26.6 / 33.7 / 45)" } }
+      ]
+    },
+    {
+      "id": "size", "type": "slider", "default": 50.0, "min": 25.0, "max": 90.0, "step": 1.0,
+      "group": "size", "modes": ["setup_block", "protractor_gauge", "saw_gauge"],
+      "label": { "en": "Reference Edge Length (mm)", "es": "Largo del Borde de Referencia (mm)" },
+      "tooltip": { "en": "Length of each angle's reference face", "es": "Largo de la cara de referencia de cada ángulo" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "width", "type": "slider", "default": 30.0, "min": 15.0, "max": 60.0, "step": 1.0,
+      "group": "size", "modes": ["setup_block", "protractor_gauge", "saw_gauge"],
+      "label": { "en": "Tool Width (mm)", "es": "Ancho de la Herramienta (mm)" },
+      "tooltip": { "en": "Width of the gauge (bearing surface)", "es": "Ancho de la galga (superficie de apoyo)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "base_t", "type": "slider", "default": 8.0, "min": 4.0, "max": 15.0, "step": 0.5,
+      "group": "size", "modes": ["setup_block", "saw_gauge"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de la Base (mm)" },
+      "tooltip": { "en": "Thickness of the flat base under the wedges", "es": "Grosor de la base plana bajo las cuñas" }
+    },
+    {
+      "id": "single_ang", "type": "slider", "default": 45.0, "min": 5.0, "max": 75.0, "step": 0.5,
+      "group": "saw", "modes": ["saw_gauge"],
+      "label": { "en": "Saw-Gauge Angle (deg)", "es": "Ángulo de la Galga (°)" },
+      "tooltip": { "en": "The single reference angle of the saw gauge", "es": "El ángulo único de referencia de la galga de sierra" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shop_setup_block", "mode": "setup_block",
+      "label": { "en": "Shop Setup Block (common)", "es": "Bloque de Ajuste (comunes)" },
+      "values": { "angles": "common", "size": 50.0, "width": 30.0, "base_t": 8.0 }
+    },
+    {
+      "id": "bevel_protractor", "mode": "protractor_gauge",
+      "label": { "en": "Bevel Protractor (fine)", "es": "Goniómetro de Bisel (finos)" },
+      "values": { "angles": "fine", "size": 60.0, "width": 30.0 }
+    },
+    {
+      "id": "miter_45_gauge", "mode": "saw_gauge",
+      "label": { "en": "45° Miter Saw Gauge", "es": "Galga de Sierra 45°" },
+      "values": { "size": 55.0, "width": 32.0, "single_ang": 45.0, "base_t": 8.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "width >= 15",
+      "severity": "error",
+      "message": { "en": "Tool must be at least 15 mm wide to register", "es": "La herramienta debe tener al menos 15 mm de ancho para registrar" }
+    },
+    {
+      "expression": "single_ang <= 75",
+      "severity": "warning",
+      "message": { "en": "Very steep angle makes a tall, tippy gauge", "es": "Un ángulo muy pronunciado hace una galga alta e inestable" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 160, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 280] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -280, 50] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "angle_reference",
+        "label": { "en": "Angle Reference", "es": "Referencia de Ángulo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["angles", "size", "single_ang"]
+      },
+      {
+        "id": "register_base",
+        "label": { "en": "Register Base", "es": "Base de Registro" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["width", "base_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A machinist's setup-block set for pennies — repeatable, dead-accurate angles for saw bevels, miters and fences without buying a ground-steel gauge set.",
+      "es": "Un juego de bloques de ajuste de maquinista por centavos — ángulos repetibles y exactos para biseles, ingletes y topes sin comprar un juego de galgas de acero rectificado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["angle-gauge", "setup-block", "protractor", "layout", "industrial", "hyperobject", "commons"]
+}

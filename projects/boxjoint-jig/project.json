@@ -1,0 +1,174 @@
+{
+  "project": {
+    "name": "Box-Joint Indexing Jig",
+    "slug": "boxjoint-jig",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A jig that indexes evenly spaced fingers for box (finger) joints on a router table or table saw. Choose a master index key, a backer fence with a fixed index pin, or an adjustable slotted carrier for fine pitch tuning. Sized by finger width and stock thickness.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una plantilla que indexa dedos igualmente espaciados para juntas de caja (dedos) en mesa de router o sierra de mesa. Elige una llave índice maestra, un tope trasero con pin índice fijo, o un carro ranurado ajustable para afinar el paso. Se dimensiona por ancho de dedo y grosor del material.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/boxjoint-jig.webp",
+    "difficulty": "advanced",
+    "tags": ["box-joint", "finger-joint", "jig", "router", "table-saw", "indexing", "woodworking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "index_key",
+      "label": { "en": "Index Key", "es": "Llave Índice" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["index_key"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "fence_jig",
+      "label": { "en": "Fence + Index Pin", "es": "Tope + Pin Índice" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["fence_jig"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "adjustable",
+      "label": { "en": "Adjustable Carrier", "es": "Carro Ajustable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["adjustable"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "index_key", "label": { "en": "Index Key", "es": "Llave Índice" }, "render_mode": 0, "color": "#7a6a52" },
+    { "id": "fence_jig", "label": { "en": "Fence + Index Pin", "es": "Tope + Pin Índice" }, "render_mode": 0, "color": "#8f7d62" },
+    { "id": "adjustable", "label": { "en": "Adjustable Carrier", "es": "Carro Ajustable" }, "render_mode": 0, "color": "#655741" }
+  ],
+  "parameter_groups": [
+    { "id": "joint", "label": { "en": "Joint Geometry", "es": "Geometría de la Junta" } },
+    { "id": "fence", "label": { "en": "Fence & Base", "es": "Tope y Base" } },
+    { "id": "adjust", "label": { "en": "Adjustment", "es": "Ajuste" } }
+  ],
+  "parameters": [
+    {
+      "id": "finger_w", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "joint", "modes": ["index_key", "fence_jig", "adjustable"],
+      "label": { "en": "Finger Width / Pitch (mm)", "es": "Ancho de Dedo / Paso (mm)" },
+      "tooltip": { "en": "Width of each finger — equals the joint pitch (finger and gap are equal)", "es": "Ancho de cada dedo — igual al paso de la junta (dedo y hueco iguales)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "mat_thick", "type": "slider", "default": 12.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "joint", "modes": ["index_key", "fence_jig", "adjustable"],
+      "label": { "en": "Stock Thickness (mm)", "es": "Grosor del Material (mm)" },
+      "tooltip": { "en": "Workpiece thickness — sets the finger depth", "es": "Grosor de la pieza — define la profundidad del dedo" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "n_fingers", "type": "slider", "default": 7, "min": 2, "max": 15, "step": 1,
+      "group": "joint", "modes": ["index_key"],
+      "label": { "en": "Fingers on Key", "es": "Dedos en la Llave" },
+      "tooltip": { "en": "Number of fingers on the master index key", "es": "Número de dedos en la llave índice maestra" }
+    },
+    {
+      "id": "fence_len", "type": "slider", "default": 160.0, "min": 60.0, "max": 300.0, "step": 5.0,
+      "group": "fence", "modes": ["fence_jig", "adjustable"],
+      "label": { "en": "Fence Length (mm)", "es": "Largo del Tope (mm)" },
+      "tooltip": { "en": "Length of the backer fence", "es": "Largo del tope trasero" }
+    },
+    {
+      "id": "fence_h", "type": "slider", "default": 50.0, "min": 20.0, "max": 100.0, "step": 1.0,
+      "group": "fence", "modes": ["fence_jig", "adjustable"],
+      "label": { "en": "Fence Height (mm)", "es": "Altura del Tope (mm)" },
+      "tooltip": { "en": "Height of the backer fence", "es": "Altura del tope trasero" }
+    },
+    {
+      "id": "base_t", "type": "slider", "default": 10.0, "min": 5.0, "max": 20.0, "step": 0.5,
+      "group": "fence", "modes": ["index_key", "fence_jig", "adjustable"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de la Base (mm)" },
+      "tooltip": { "en": "Thickness of the jig base rail", "es": "Grosor del riel base de la plantilla" }
+    },
+    {
+      "id": "bolt_bore", "type": "slider", "default": 5.5, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "adjust", "modes": ["adjustable"],
+      "label": { "en": "Fixing-Bolt Bore (mm)", "es": "Barreno del Perno de Fijación (mm)" },
+      "tooltip": { "en": "Through-bore for the bolt that locks the adjustment", "es": "Barreno pasante para el perno que fija el ajuste" }
+    },
+    {
+      "id": "slot_len", "type": "slider", "default": 30.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "adjust", "modes": ["adjustable"], "advanced": true,
+      "label": { "en": "Adjustment Slot Length (mm)", "es": "Largo de Ranura de Ajuste (mm)" },
+      "tooltip": { "en": "Travel of the slotted key carrier", "es": "Recorrido del carro ranurado de la llave" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "small_box_6mm", "mode": "index_key",
+      "label": { "en": "Small Box Key (6mm)", "es": "Llave para Caja Pequeña (6mm)" },
+      "values": { "finger_w": 6.0, "mat_thick": 10.0, "n_fingers": 7 }
+    },
+    {
+      "id": "drawer_fence_10mm", "mode": "fence_jig",
+      "label": { "en": "Drawer Fence (10mm)", "es": "Tope para Cajón (10mm)" },
+      "values": { "finger_w": 10.0, "mat_thick": 15.0, "fence_len": 200.0, "fence_h": 60.0 }
+    },
+    {
+      "id": "fine_adjust_8mm", "mode": "adjustable",
+      "label": { "en": "Fine-Adjust Carrier (8mm)", "es": "Carro de Ajuste Fino (8mm)" },
+      "values": { "finger_w": 8.0, "mat_thick": 12.0, "fence_len": 160.0, "bolt_bore": 6.0, "slot_len": 40.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "mat_thick <= finger_w * 4",
+      "severity": "warning",
+      "message": { "en": "Fingers are very deep relative to their width — fragile", "es": "Los dedos son muy profundos respecto a su ancho — frágiles" }
+    },
+    {
+      "expression": "base_t >= 5",
+      "severity": "error",
+      "message": { "en": "Base must be at least 5 mm", "es": "La base debe ser de al menos 5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "finger_joint_index",
+        "label": { "en": "Finger-Joint Index", "es": "Índice de Junta de Dedos" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["finger_w", "mat_thick", "n_fingers"]
+      },
+      {
+        "id": "adjustment_slot",
+        "label": { "en": "Adjustment Slot", "es": "Ranura de Ajuste" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["slot_len", "bolt_bore"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Repeatable, tight box joints — the strongest simple corner joinery — from a shop-made jig instead of a costly dedicated jig or dovetail machine.",
+      "es": "Juntas de caja repetibles y ajustadas — la ensambladura de esquina simple más fuerte — con una plantilla casera en vez de una máquina de colas de milano costosa."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["box-joint", "finger-joint", "jig", "router", "industrial", "hyperobject", "commons"]
+}

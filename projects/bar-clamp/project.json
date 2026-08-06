@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Pipe / Bar Clamp Jaws",
+    "slug": "bar-clamp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Printed jaws and feet that turn a length of black pipe into a bar clamp. A bore sized to the pipe OD (1/2 in or 3/4 in nominal) slides the jaw onto the pipe; a tall pad presses the work. Choose a fixed tail-screw jaw, a sliding set-screw jaw, or a spreader jaw.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Mordazas y pies impresos que convierten un tramo de tubo en una prensa de barra. Un barreno ajustado al diámetro exterior del tubo (1/2 in o 3/4 in nominal) desliza la mordaza sobre el tubo; una zapata alta presiona la pieza. Elige mordaza fija de tornillo, mordaza deslizante de prisionero, o mordaza separadora.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bar-clamp.webp",
+    "difficulty": "intermediate",
+    "tags": ["clamp", "pipe-clamp", "bar-clamp", "jaw", "spreader", "woodworking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "fixed_jaw",
+      "label": { "en": "Fixed Jaw", "es": "Mordaza Fija" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["fixed_jaw"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "sliding_jaw",
+      "label": { "en": "Sliding Jaw", "es": "Mordaza Deslizante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sliding_jaw"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "spreader",
+      "label": { "en": "Spreader Jaw", "es": "Mordaza Separadora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spreader"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "fixed_jaw", "label": { "en": "Fixed Jaw", "es": "Mordaza Fija" }, "render_mode": 0, "color": "#4a6a8a" },
+    { "id": "sliding_jaw", "label": { "en": "Sliding Jaw", "es": "Mordaza Deslizante" }, "render_mode": 0, "color": "#567a9c" },
+    { "id": "spreader", "label": { "en": "Spreader Jaw", "es": "Mordaza Separadora" }, "render_mode": 0, "color": "#405840" }
+  ],
+  "parameter_groups": [
+    { "id": "pipe", "label": { "en": "Pipe", "es": "Tubo" } },
+    { "id": "jaw", "label": { "en": "Jaw", "es": "Mordaza" } },
+    { "id": "screw", "label": { "en": "Screw", "es": "Tornillo" } }
+  ],
+  "parameters": [
+    {
+      "id": "pipe", "type": "select", "default": "3/4in",
+      "group": "pipe", "modes": ["fixed_jaw", "sliding_jaw", "spreader"],
+      "label": { "en": "Pipe Standard", "es": "Estándar de Tubo" },
+      "tooltip": { "en": "Nominal pipe size the jaw bore fits", "es": "Tamaño nominal del tubo al que se ajusta el barreno de la mordaza" },
+      "options": [
+        { "value": "1/2in", "label": { "en": "1/2 in pipe (21.3 mm OD)", "es": "Tubo 1/2 in (21.3 mm DE)" } },
+        { "value": "3/4in", "label": { "en": "3/4 in pipe (26.7 mm OD)", "es": "Tubo 3/4 in (26.7 mm DE)" } }
+      ]
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "pipe", "modes": ["fixed_jaw", "sliding_jaw", "spreader"], "advanced": true,
+      "label": { "en": "Bore Clearance (mm)", "es": "Holgura del Barreno (mm)" },
+      "tooltip": { "en": "Per-side gap so the jaw slides on the pipe", "es": "Espacio por lado para que la mordaza deslice en el tubo" }
+    },
+    {
+      "id": "jaw_w", "type": "slider", "default": 45.0, "min": 25.0, "max": 80.0, "step": 1.0,
+      "group": "jaw", "modes": ["fixed_jaw", "sliding_jaw", "spreader"],
+      "label": { "en": "Jaw Width (mm)", "es": "Ancho de la Mordaza (mm)" },
+      "tooltip": { "en": "Width of the jaw / pad", "es": "Ancho de la mordaza / zapata" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pad_h", "type": "slider", "default": 55.0, "min": 25.0, "max": 100.0, "step": 1.0,
+      "group": "jaw", "modes": ["fixed_jaw", "sliding_jaw", "spreader"],
+      "label": { "en": "Pad Height / Throat (mm)", "es": "Altura de Zapata / Garganta (mm)" },
+      "tooltip": { "en": "How tall the pad reaches above the pipe (clamp throat)", "es": "Cuánto sube la zapata sobre el tubo (garganta de la prensa)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 8.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "jaw", "modes": ["fixed_jaw", "sliding_jaw", "spreader"],
+      "label": { "en": "Wall Around Bore (mm)", "es": "Pared Alrededor del Barreno (mm)" },
+      "tooltip": { "en": "Material wrapping the pipe bore", "es": "Material que envuelve el barreno del tubo" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 40.0, "min": 20.0, "max": 70.0, "step": 1.0,
+      "group": "jaw", "modes": ["fixed_jaw", "sliding_jaw", "spreader"],
+      "label": { "en": "Jaw Depth (mm)", "es": "Profundidad de la Mordaza (mm)" },
+      "tooltip": { "en": "Length of the jaw collar along the pipe", "es": "Largo del collar de la mordaza a lo largo del tubo" }
+    },
+    {
+      "id": "screw_bore", "type": "slider", "default": 8.0, "min": 4.0, "max": 14.0, "step": 0.5,
+      "group": "screw", "modes": ["fixed_jaw", "sliding_jaw", "spreader"],
+      "label": { "en": "Screw Bore (mm)", "es": "Barreno del Tornillo (mm)" },
+      "tooltip": { "en": "Tail-screw (fixed) or set-screw (sliding) bore", "es": "Barreno del tornillo de cola (fija) o prisionero (deslizante)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "long_panel_fixed", "mode": "fixed_jaw",
+      "label": { "en": "Panel Glue-Up Fixed (3/4in)", "es": "Encolado de Panel Fija (3/4in)" },
+      "values": { "pipe": "3/4in", "jaw_w": 50.0, "pad_h": 60.0, "depth": 45.0 }
+    },
+    {
+      "id": "light_sliding", "mode": "sliding_jaw",
+      "label": { "en": "Light Sliding Jaw (1/2in)", "es": "Mordaza Deslizante Ligera (1/2in)" },
+      "values": { "pipe": "1/2in", "jaw_w": 40.0, "pad_h": 45.0, "depth": 40.0 }
+    },
+    {
+      "id": "cabinet_spreader", "mode": "spreader",
+      "label": { "en": "Cabinet Spreader (3/4in)", "es": "Separador de Gabinete (3/4in)" },
+      "values": { "pipe": "3/4in", "jaw_w": 45.0, "pad_h": 50.0, "depth": 40.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 4",
+      "severity": "error",
+      "message": { "en": "Wall around the pipe bore must be at least 4 mm", "es": "La pared alrededor del barreno debe ser de al menos 4 mm" }
+    },
+    {
+      "expression": "pad_h >= 25",
+      "severity": "warning",
+      "message": { "en": "A short pad gives a shallow clamping throat", "es": "Una zapata corta da una garganta de sujeción poco profunda" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "pipe_clamp_bore",
+        "label": { "en": "Pipe Clamp Bore", "es": "Barreno de Prensa de Tubo" },
+        "geometry_type": "socket",
+        "standard": "1/2in & 3/4in pipe",
+        "parameters": ["pipe", "fit", "depth", "wall"]
+      },
+      {
+        "id": "clamp_screw_bore",
+        "label": { "en": "Clamp Screw Bore", "es": "Barreno del Tornillo de Prensa" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["screw_bore"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A pair of printed jaws plus cheap hardware-store pipe makes a bar clamp of any length — the flexible, low-cost alternative to buying long steel clamps for panel glue-ups.",
+      "es": "Un par de mordazas impresas más tubo barato de ferretería hacen una prensa de barra de cualquier largo — la alternativa flexible y económica a comprar prensas largas de acero para encolar paneles."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["clamp", "pipe-clamp", "bar-clamp", "spreader", "industrial", "hyperobject", "commons"]
+}

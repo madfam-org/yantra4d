@@ -1,0 +1,193 @@
+{
+  "project": {
+    "name": "Bike Wall Rack",
+    "slug": "bike-wall-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Wall-mounted bicycle storage. A load-rated wall plate screws to the studs; an arm projects from it to carry the bike horizontally (by the top tube), vertically (by a wheel), or as a pedal shelf. The tube/wheel contact is a half-round cradle pocket so the frame or rim rests without point loads. The wall plate carries a stud-spaced screw pattern (single stud, or 16 in / 24 in spacing) so the load goes into framing, not drywall.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Almacenamiento de bicicleta montado en pared. Una placa de pared con capacidad de carga se atornilla a los montantes; un brazo se proyecta para sostener la bicicleta horizontalmente (por el tubo superior), verticalmente (por una rueda) o como repisa de pedal. El contacto con el tubo/rueda es un bolsillo de cuna semicircular para que el cuadro o la llanta descanse sin cargas puntuales. La placa lleva un patrón de tornillos según la separación de montantes (un montante, o separación de 16 o 24 pulgadas) para que la carga vaya a la estructura, no al panel de yeso.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bike-wall-rack.webp",
+    "difficulty": "intermediate",
+    "tags": ["bike", "bicycle", "rack", "wall-mount", "storage", "hook", "stud", "cradle", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "horizontal_hook",
+      "label": { "en": "Horizontal Hook (top tube)", "es": "Gancho Horizontal (tubo superior)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["horizontal_hook"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "vertical_hook",
+      "label": { "en": "Vertical Hook (wheel)", "es": "Gancho Vertical (rueda)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["vertical_hook"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "pedal_shelf",
+      "label": { "en": "Pedal Shelf", "es": "Repisa de Pedal" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pedal_shelf"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "horizontal_hook", "label": { "en": "Horizontal Hook", "es": "Gancho Horizontal" }, "render_mode": 0, "color": "#2f6f4f" },
+    { "id": "vertical_hook", "label": { "en": "Vertical Hook", "es": "Gancho Vertical" }, "render_mode": 0, "color": "#3f8f66" },
+    { "id": "pedal_shelf", "label": { "en": "Pedal Shelf", "es": "Repisa de Pedal" }, "render_mode": 0, "color": "#6fae8c" }
+  ],
+  "parameter_groups": [
+    { "id": "cradle", "label": { "en": "Cradle & Arm", "es": "Cuna y Brazo" } },
+    { "id": "plate", "label": { "en": "Wall Plate", "es": "Placa de Pared" } },
+    { "id": "mount", "label": { "en": "Stud Mount", "es": "Montaje en Montante" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_w", "type": "slider", "default": 35, "min": 15, "max": 80, "step": 1,
+      "group": "cradle", "modes": ["horizontal_hook", "pedal_shelf"],
+      "label": { "en": "Top Tube Diameter (mm)", "es": "Diámetro del Tubo Superior (mm)" },
+      "tooltip": { "en": "Frame top-tube diameter the cradle wraps (also sizes the pedal slot)", "es": "Diámetro del tubo superior del cuadro que envuelve la cuna (también dimensiona la ranura del pedal)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tire_w", "type": "slider", "default": 40, "min": 20, "max": 80, "step": 1,
+      "group": "cradle", "modes": ["vertical_hook"],
+      "label": { "en": "Tire Width (mm)", "es": "Ancho de Llanta (mm)" },
+      "tooltip": { "en": "Tire / rim width the vertical hook cradle fits", "es": "Ancho de llanta / rin que ajusta la cuna del gancho vertical" }
+    },
+    {
+      "id": "arm_len", "type": "slider", "default": 90, "min": 40, "max": 140, "step": 1,
+      "group": "cradle", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Arm Length (mm)", "es": "Longitud del Brazo (mm)" },
+      "tooltip": { "en": "How far the arm / shelf projects from the wall", "es": "Cuánto se proyecta el brazo / repisa desde la pared" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "arm_w", "type": "slider", "default": 45, "min": 20, "max": 80, "step": 1,
+      "group": "cradle", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Arm Width (mm)", "es": "Ancho del Brazo (mm)" },
+      "tooltip": { "en": "Cradle / shelf width across the bike", "es": "Ancho de la cuna / repisa a lo ancho de la bicicleta" }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 10.0, "min": 6.0, "max": 20.0, "step": 0.5,
+      "group": "cradle", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Material Thickness (mm)", "es": "Grosor del Material (mm)" },
+      "tooltip": { "en": "Structural thickness — keep generous, this carries a bike", "es": "Grosor estructural — mantener generoso, esto soporta una bicicleta" }
+    },
+    {
+      "id": "lip_h", "type": "slider", "default": 20.0, "min": 5.0, "max": 40.0, "step": 1.0,
+      "group": "cradle", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Retaining Lip Height (mm)", "es": "Altura del Labio de Retención (mm)" },
+      "tooltip": { "en": "Up-turned lip / hook at the arm tip that captures the bike", "es": "Labio / gancho hacia arriba en la punta del brazo que retiene la bicicleta" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 60, "min": 30, "max": 120, "step": 1,
+      "group": "plate", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Wall Plate Width (mm)", "es": "Ancho de Placa de Pared (mm)" },
+      "tooltip": { "en": "Plate width (wide enough for two studs enables splayed screws)", "es": "Ancho de la placa (suficiente para dos montantes habilita tornillos separados)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 120, "min": 50, "max": 220, "step": 1,
+      "group": "plate", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Wall Plate Height (mm)", "es": "Alto de Placa de Pared (mm)" },
+      "tooltip": { "en": "Plate height — taller resists the tip-out moment better", "es": "Alto de la placa — más alto resiste mejor el momento de vuelco" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "stud", "type": "select", "default": "single",
+      "group": "mount", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Stud Spacing", "es": "Separación de Montantes" },
+      "tooltip": { "en": "Single stud stacks two screws vertically; 16 in / 24 in splay to two studs if the plate is wide enough.", "es": "Un montante apila dos tornillos verticalmente; 16 o 24 pulgadas los separa a dos montantes si la placa es suficientemente ancha." },
+      "options": [
+        { "value": "single", "label": { "en": "Single stud (stacked)", "es": "Un montante (apilado)" } },
+        { "value": "406", "label": { "en": "16 in / 406 mm", "es": "16 pulg / 406 mm" } },
+        { "value": "610", "label": { "en": "24 in / 610 mm", "es": "24 pulg / 610 mm" } }
+      ]
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 6.5, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "mount", "modes": ["horizontal_hook", "vertical_hook", "pedal_shelf"],
+      "label": { "en": "Wall Screw Diameter (mm)", "es": "Diámetro de Tornillo de Pared (mm)" },
+      "tooltip": { "en": "Clearance for the lag / wood screws into the studs (M6 lag ≈ 6.5)", "es": "Holgura para los tornillos de fijación a los montantes (tirafondo M6 ≈ 6.5)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "road_horizontal", "mode": "horizontal_hook",
+      "label": { "en": "Road Bike Horizontal", "es": "Bici de Ruta Horizontal" },
+      "values": { "tube_w": 32, "arm_len": 90, "arm_w": 40, "thickness": 10, "plate_w": 60, "plate_h": 120, "stud": "single", "screw_dia": 6.5, "lip_h": 20 }
+    },
+    {
+      "id": "mtb_vertical", "mode": "vertical_hook",
+      "label": { "en": "MTB Vertical (wheel)", "es": "MTB Vertical (rueda)" },
+      "values": { "tire_w": 60, "arm_len": 110, "arm_w": 70, "thickness": 12, "plate_w": 70, "plate_h": 160, "stud": "single", "screw_dia": 8, "lip_h": 35 }
+    },
+    {
+      "id": "pedal_16in", "mode": "pedal_shelf",
+      "label": { "en": "Pedal Shelf (16 in studs)", "es": "Repisa de Pedal (montantes 16 pulg)" },
+      "values": { "tube_w": 40, "arm_len": 90, "arm_w": 55, "thickness": 12, "plate_w": 90, "plate_h": 120, "stud": "406", "screw_dia": 6.5, "lip_h": 20 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness >= 6",
+      "severity": "error",
+      "message": { "en": "Load-bearing thickness must be at least 6 mm", "es": "El grosor portante debe ser de al menos 6 mm" }
+    },
+    {
+      "expression": "plate_h >= arm_len",
+      "severity": "warning",
+      "message": { "en": "A short plate relative to arm length resists tip-out poorly", "es": "Una placa corta respecto al largo del brazo resiste mal el vuelco" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 200, 180] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -300, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "wall_stud_mount",
+        "label": { "en": "Wall Stud Mount", "es": "Montaje en Montante de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "Wall Stud Mount",
+        "parameters": ["stud", "screw_dia", "plate_w", "plate_h"]
+      },
+      {
+        "id": "tube_cradle",
+        "label": { "en": "Tube / Wheel Cradle", "es": "Cuna de Tubo / Rueda" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["tube_w", "tire_w", "arm_w", "lip_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Commercial bike hooks come in one size and one hanging style; a printable rack sized to the bike's own tube or tire and to the wall's real stud spacing puts a bicycle safely on the wall — horizontally, vertically, or by a pedal — reclaiming floor space in small homes without buying a fixed-fit hook per bike.",
+      "es": "Los ganchos de bicicleta comerciales vienen en un tamaño y un estilo de colgado; un soporte imprimible dimensionado al tubo o llanta de la bicicleta y a la separación real de montantes de la pared coloca una bicicleta de forma segura en la pared — horizontal, vertical o por un pedal — recuperando espacio de piso en casas pequeñas sin comprar un gancho de ajuste fijo por bicicleta."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bike", "bicycle", "rack", "wall-mount", "household", "hyperobject", "commons"]
+}

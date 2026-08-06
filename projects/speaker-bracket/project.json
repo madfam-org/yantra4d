@@ -1,0 +1,213 @@
+{
+  "project": {
+    "name": "Speaker Wall Bracket",
+    "slug": "speaker-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A wall bracket for bookshelf / satellite speakers and small soundbars. Every mode mounts to the wall through the same keyhole-slot interface (drops onto two screw heads, then settles down to lock) and cradles the speaker on the other side. Shelf Bracket is an L shelf with a front retaining lip and braces; Strap Mount wraps a satellite body in an open band; Keyhole Plate carries a speaker-screw bolt pattern for a speaker with its own bracket boss. Optional downward tilt.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de pared para altavoces de estantería / satélite y barras de sonido pequeñas. Cada modo se fija a la pared mediante la misma interfaz de ranura tipo cerradura (se cuelga sobre dos cabezas de tornillo y baja para quedar fijo) y sostiene el altavoz del otro lado. El Soporte de Repisa es una repisa en L con labio de retención frontal y refuerzos; el Montaje con Banda envuelve un cuerpo satélite en una banda abierta; la Placa con Cerradura lleva un patrón de tornillos para un altavoz con su propio inserto. Inclinación descendente opcional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/speaker-bracket.webp",
+    "difficulty": "beginner",
+    "tags": ["speaker", "bracket", "wall-mount", "keyhole", "satellite", "soundbar", "audio", "shelf", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "shelf_bracket",
+      "label": { "en": "Shelf Bracket", "es": "Soporte de Repisa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shelf_bracket"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "strap_mount",
+      "label": { "en": "Strap Mount", "es": "Montaje con Banda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strap_mount"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 13 }
+    },
+    {
+      "id": "keyhole_plate",
+      "label": { "en": "Keyhole Plate", "es": "Placa con Cerradura" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["keyhole_plate"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "shelf_bracket", "label": { "en": "Shelf Bracket", "es": "Soporte de Repisa" }, "render_mode": 0, "color": "#8b6f47" },
+    { "id": "strap_mount", "label": { "en": "Strap Mount", "es": "Montaje con Banda" }, "render_mode": 0, "color": "#b08d57" },
+    { "id": "keyhole_plate", "label": { "en": "Keyhole Plate", "es": "Placa con Cerradura" }, "render_mode": 0, "color": "#c9a876" }
+  ],
+  "parameter_groups": [
+    { "id": "wall", "label": { "en": "Wall Plate", "es": "Placa de Pared" } },
+    { "id": "speaker", "label": { "en": "Speaker Fit", "es": "Ajuste del Altavoz" } },
+    { "id": "keyhole", "label": { "en": "Keyhole Mount", "es": "Montaje tipo Cerradura" } },
+    { "id": "screws", "label": { "en": "Speaker Screws", "es": "Tornillos del Altavoz" } }
+  ],
+  "parameters": [
+    {
+      "id": "wall_w", "type": "slider", "default": 70, "min": 30, "max": 160, "step": 1,
+      "group": "wall", "modes": ["shelf_bracket", "strap_mount", "keyhole_plate"],
+      "label": { "en": "Wall Plate Width (mm)", "es": "Ancho de Placa de Pared (mm)" },
+      "tooltip": { "en": "Width of the plate that screws to the wall", "es": "Ancho de la placa que se atornilla a la pared" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall_h", "type": "slider", "default": 70, "min": 30, "max": 160, "step": 1,
+      "group": "wall", "modes": ["shelf_bracket", "strap_mount", "keyhole_plate"],
+      "label": { "en": "Wall Plate Height (mm)", "es": "Alto de Placa de Pared (mm)" },
+      "tooltip": { "en": "Height of the wall plate", "es": "Alto de la placa de pared" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 5.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "wall", "modes": ["shelf_bracket", "strap_mount", "keyhole_plate"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Plate / shelf / band material thickness", "es": "Grosor del material de placa / repisa / banda" }
+    },
+    {
+      "id": "speaker_w", "type": "slider", "default": 90, "min": 20, "max": 200, "step": 1,
+      "group": "speaker", "modes": ["shelf_bracket", "strap_mount"],
+      "label": { "en": "Speaker Width (mm)", "es": "Ancho del Altavoz (mm)" },
+      "tooltip": { "en": "Speaker body width — sets shelf width and the strap band diameter", "es": "Ancho del cuerpo del altavoz — define el ancho de la repisa y el diámetro de la banda" }
+    },
+    {
+      "id": "speaker_d", "type": "slider", "default": 90, "min": 20, "max": 200, "step": 1,
+      "group": "speaker", "modes": ["shelf_bracket", "strap_mount"],
+      "label": { "en": "Speaker Depth (mm)", "es": "Profundidad del Altavoz (mm)" },
+      "tooltip": { "en": "Speaker depth — the band height in Strap mode", "es": "Profundidad del altavoz — la altura de la banda en modo Banda" }
+    },
+    {
+      "id": "shelf_depth", "type": "slider", "default": 80, "min": 20, "max": 160, "step": 1,
+      "group": "speaker", "modes": ["shelf_bracket"],
+      "label": { "en": "Shelf Depth (mm)", "es": "Profundidad de Repisa (mm)" },
+      "tooltip": { "en": "How far the shelf sticks out from the wall", "es": "Cuánto sobresale la repisa de la pared" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "lip_h", "type": "slider", "default": 10.0, "min": 0.0, "max": 25.0, "step": 0.5,
+      "group": "speaker", "modes": ["shelf_bracket"],
+      "label": { "en": "Front Lip Height (mm)", "es": "Alto del Labio Frontal (mm)" },
+      "tooltip": { "en": "Retaining lip at the shelf's front edge (0 = none)", "es": "Labio de retención en el borde frontal de la repisa (0 = ninguno)" }
+    },
+    {
+      "id": "tilt", "type": "slider", "default": 0.0, "min": 0.0, "max": 20.0, "step": 1.0,
+      "group": "speaker", "modes": ["shelf_bracket"],
+      "label": { "en": "Downward Tilt (deg)", "es": "Inclinación Descendente (grados)" },
+      "tooltip": { "en": "Tilt the shelf back toward the wall so the speaker leans in", "es": "Inclina la repisa hacia la pared para que el altavoz se apoye" }
+    },
+    {
+      "id": "keyhole_dia", "type": "slider", "default": 9.0, "min": 5.0, "max": 16.0, "step": 0.5,
+      "group": "keyhole", "modes": ["shelf_bracket", "strap_mount", "keyhole_plate"],
+      "label": { "en": "Keyhole Head Diameter (mm)", "es": "Diámetro de Cabeza de Cerradura (mm)" },
+      "tooltip": { "en": "Big-hole diameter the screw head passes through", "es": "Diámetro del orificio grande por el que pasa la cabeza del tornillo" }
+    },
+    {
+      "id": "keyhole_slot", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "keyhole", "modes": ["shelf_bracket", "strap_mount", "keyhole_plate"], "advanced": true,
+      "label": { "en": "Keyhole Slot Width (mm)", "es": "Ancho de Ranura de Cerradura (mm)" },
+      "tooltip": { "en": "Narrow slot width the screw shank slides into", "es": "Ancho de la ranura estrecha por la que se desliza el vástago del tornillo" }
+    },
+    {
+      "id": "keyhole_drop", "type": "slider", "default": 12.0, "min": 4.0, "max": 25.0, "step": 1.0,
+      "group": "keyhole", "modes": ["shelf_bracket", "strap_mount", "keyhole_plate"], "advanced": true,
+      "label": { "en": "Keyhole Slot Travel (mm)", "es": "Recorrido de Ranura de Cerradura (mm)" },
+      "tooltip": { "en": "How far the bracket drops to lock onto the screws", "es": "Cuánto baja el soporte para engancharse en los tornillos" }
+    },
+    {
+      "id": "speaker_screw", "type": "slider", "default": 4.5, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "screws", "modes": ["keyhole_plate"],
+      "label": { "en": "Speaker Screw Diameter (mm)", "es": "Diámetro de Tornillo del Altavoz (mm)" },
+      "tooltip": { "en": "Clearance hole for the speaker's mounting screws", "es": "Orificio de holgura para los tornillos de montaje del altavoz" }
+    },
+    {
+      "id": "speaker_bolt_span", "type": "slider", "default": 50.0, "min": 10.0, "max": 120.0, "step": 1.0,
+      "group": "screws", "modes": ["keyhole_plate"],
+      "label": { "en": "Speaker Bolt Spacing (mm)", "es": "Separación de Tornillos del Altavoz (mm)" },
+      "tooltip": { "en": "Side of the square speaker-screw pattern", "es": "Lado del patrón cuadrado de tornillos del altavoz" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "bookshelf_shelf", "mode": "shelf_bracket",
+      "label": { "en": "Bookshelf Shelf", "es": "Repisa de Estantería" },
+      "values": { "wall_w": 80, "wall_h": 70, "thickness": 5, "speaker_w": 100, "shelf_depth": 90, "lip_h": 12, "tilt": 5 }
+    },
+    {
+      "id": "satellite_strap", "mode": "strap_mount",
+      "label": { "en": "Satellite Strap", "es": "Banda para Satélite" },
+      "values": { "wall_w": 60, "wall_h": 60, "thickness": 4, "speaker_w": 70, "speaker_d": 60 }
+    },
+    {
+      "id": "screw_plate_50", "mode": "keyhole_plate",
+      "label": { "en": "Screw Plate (50 mm)", "es": "Placa de Tornillos (50 mm)" },
+      "values": { "wall_w": 80, "wall_h": 80, "thickness": 5, "speaker_screw": 4.5, "speaker_bolt_span": 50 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness >= 2.5",
+      "severity": "error",
+      "message": { "en": "Thickness must be at least 2.5 mm", "es": "El grosor debe ser de al menos 2.5 mm" }
+    },
+    {
+      "expression": "keyhole_slot <= keyhole_dia - 1",
+      "severity": "warning",
+      "message": { "en": "Keyhole slot is wide relative to the head hole", "es": "La ranura de cerradura es ancha respecto al orificio de cabeza" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "wall_keyhole_pattern",
+        "label": { "en": "Wall Keyhole Pattern", "es": "Patrón de Cerradura de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "Wall Keyhole",
+        "parameters": ["keyhole_dia", "keyhole_slot", "keyhole_drop", "wall_w", "wall_h"]
+      },
+      {
+        "id": "speaker_cradle",
+        "label": { "en": "Speaker Cradle Profile", "es": "Perfil de Cuna del Altavoz" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["speaker_w", "speaker_d", "shelf_depth", "lip_h", "tilt"]
+      },
+      {
+        "id": "speaker_screw_pattern",
+        "label": { "en": "Speaker Screw Pattern", "es": "Patrón de Tornillos del Altavoz" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["speaker_screw", "speaker_bolt_span"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Speakers ship without wall mounts, and third-party brackets rarely fit an odd satellite or soundbar; a printable bracket sized to the exact body and the wall's own screw spacing keeps audio off the desk and clutter off the floor with no proprietary hardware.",
+      "es": "Los altavoces se venden sin soportes de pared, y los soportes de terceros rara vez encajan en un satélite o barra de sonido peculiar; un soporte imprimible dimensionado al cuerpo exacto y a la separación de tornillos de la pared mantiene el audio fuera del escritorio y el desorden fuera del piso sin hardware propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["speaker", "bracket", "wall-mount", "keyhole", "audio", "household", "hyperobject", "commons"]
+}

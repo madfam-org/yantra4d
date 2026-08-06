@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "lint": "eslint src/",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "gen:projects": "node ../../scripts/dev/generate-landing-projects.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.0",

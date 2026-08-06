@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Cable Grommet / Desk Port placeholder">
+  <defs>
+    <linearGradient id="bg161ee26d" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="hsl(200,58%,42%)"/>
+      <stop offset="1" stop-color="hsl(175,64%,32%)"/>
+    </linearGradient>
+    <radialGradient id="vig161ee26d" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.28"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg161ee26d)"/>
+  <g transform="rotate(237 200 150)" opacity="0.9"><circle cx="204" cy="131" r="5" fill="#fff" opacity="0.06"/><circle cx="259" cy="194" r="8" fill="#fff" opacity="0.06"/><circle cx="178" cy="45" r="7" fill="#fff" opacity="0.06"/><circle cx="313" cy="168" r="4" fill="#fff" opacity="0.06"/><circle cx="368" cy="139" r="7" fill="#fff" opacity="0.06"/></g>
+  <g opacity="0.95">
+            <path d="M 120 232 L 120 152 L 170 152 L 170 112
+                     L 230 112 L 230 152 L 280 152 L 280 232 Z"
+                  fill="none" stroke="#ffffff" stroke-width="7" stroke-linejoin="round"/></g>
+  <rect width="400" height="300" fill="url(#vig161ee26d)"/>
+  <text x="24" y="272" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+        font-size="20" font-weight="700" fill="#fff" opacity="0.92">Cable Grommet / Desk Port</text>
+  <text x="376" y="40" text-anchor="end" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+        font-size="15" fill="#fff" opacity="0.6">profile</text>
+  <text x="24" y="44" font-family="ui-sans-serif,system-ui,sans-serif" font-size="30" font-weight="800"
+        fill="#fff" opacity="0.85">C</text>
+</svg>

@@ -1,0 +1,177 @@
+{
+  "project": {
+    "name": "License Plate Frame",
+    "slug": "plate-frame",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric license-plate frame plus trim fillers for the two dominant formats: US (12 x 6 in) and EU (520 x 110 mm). Choose a full border frame, a low-profile slim frame, or a blank filler panel that plugs an oversized factory recess. Every mode carries the standard mounting-slot pattern so it bolts to the same studs as the OEM plate.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un marco de placa paramétrico más rellenos de moldura para los dos formatos dominantes: EU.UU (12 x 6 pulg) y UE (520 x 110 mm). Elige un marco de borde completo, un marco delgado de bajo perfil, o un panel de relleno que tapa un rebaje de fábrica sobredimensionado. Cada modo lleva el patrón estándar de ranuras de montaje para que se atornille a los mismos pernos que la placa original.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/plate-frame.webp",
+    "difficulty": "beginner",
+    "tags": ["license-plate", "frame", "car", "trim", "filler", "automotive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "frame",
+      "label": { "en": "Frame", "es": "Marco" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["frame"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "tag_frame_slim",
+      "label": { "en": "Slim Frame", "es": "Marco Delgado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tag_frame_slim"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "panel_filler",
+      "label": { "en": "Panel Filler", "es": "Panel de Relleno" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["panel_filler"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "frame", "label": { "en": "Frame", "es": "Marco" }, "render_mode": 0, "color": "#4b5f74" },
+    { "id": "tag_frame_slim", "label": { "en": "Slim Frame", "es": "Marco Delgado" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "panel_filler", "label": { "en": "Panel Filler", "es": "Panel de Relleno" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "format", "label": { "en": "Plate Format", "es": "Formato de Placa" } },
+    { "id": "frame", "label": { "en": "Frame", "es": "Marco" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "plate", "type": "select", "default": "US",
+      "group": "format", "modes": ["frame", "tag_frame_slim", "panel_filler"],
+      "label": { "en": "Plate Format", "es": "Formato de Placa" },
+      "tooltip": { "en": "US (12x6 in, 4-bolt) or EU (520x110 mm, 2-bolt)", "es": "EU.UU (12x6 pulg, 4 pernos) o UE (520x110 mm, 2 pernos)" },
+      "options": [
+        { "value": "US", "label": { "en": "US — 12 x 6 in (4-bolt)", "es": "EU.UU — 12 x 6 pulg (4 pernos)" } },
+        { "value": "EU", "label": { "en": "EU — 520 x 110 mm (2-bolt)", "es": "UE — 520 x 110 mm (2 pernos)" } }
+      ]
+    },
+    {
+      "id": "frame_thick", "type": "slider", "default": 5.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "frame", "modes": ["frame", "tag_frame_slim", "panel_filler"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Overall frame / panel thickness", "es": "Grosor total del marco / panel" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "border", "type": "slider", "default": 14.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "frame", "modes": ["frame"],
+      "label": { "en": "Border Width (mm)", "es": "Ancho del Borde (mm)" },
+      "tooltip": { "en": "Frame border beyond the plate edge (full frame)", "es": "Borde del marco más allá del borde de la placa (marco completo)" }
+    },
+    {
+      "id": "slim_border", "type": "slider", "default": 7.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "frame", "modes": ["tag_frame_slim"],
+      "label": { "en": "Slim Border Width (mm)", "es": "Ancho del Borde Delgado (mm)" },
+      "tooltip": { "en": "Border width for the low-profile slim frame", "es": "Ancho del borde para el marco delgado de bajo perfil" }
+    },
+    {
+      "id": "lip", "type": "slider", "default": 2.5, "min": 0.0, "max": 6.0, "step": 0.5,
+      "group": "frame", "modes": ["frame", "tag_frame_slim"],
+      "label": { "en": "Retaining Lip (mm)", "es": "Labio de Retención (mm)" },
+      "tooltip": { "en": "Front lip overlapping the plate edge to hold it", "es": "Labio frontal que solapa el borde de la placa para sujetarla" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 6.0, "min": 0.0, "max": 25.0, "step": 0.5,
+      "group": "frame", "modes": ["frame", "tag_frame_slim", "panel_filler"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Outer corner rounding (0 = sharp)", "es": "Redondeo de esquina exterior (0 = recto)" }
+    },
+    {
+      "id": "slot_len", "type": "slider", "default": 10.0, "min": 0.0, "max": 24.0, "step": 1.0,
+      "group": "mount", "modes": ["frame", "tag_frame_slim", "panel_filler"],
+      "label": { "en": "Slot Travel (mm)", "es": "Recorrido de Ranura (mm)" },
+      "tooltip": { "en": "Vertical slack in the mounting slots for alignment", "es": "Holgura vertical en las ranuras de montaje para alinear" }
+    },
+    {
+      "id": "filler_inset", "type": "slider", "default": 0.0, "min": 0.0, "max": 10.0, "step": 0.5,
+      "group": "mount", "modes": ["panel_filler"], "advanced": true,
+      "label": { "en": "Filler Inset (mm)", "es": "Reducción del Relleno (mm)" },
+      "tooltip": { "en": "Shrink the filler panel per side vs the plate size", "es": "Reduce el panel de relleno por lado respecto al tamaño de la placa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "us_standard_frame", "mode": "frame",
+      "label": { "en": "US Standard Frame", "es": "Marco Estándar EU.UU" },
+      "values": { "plate": "US", "border": 14, "frame_thick": 5, "corner_r": 6 }
+    },
+    {
+      "id": "eu_slim_frame", "mode": "tag_frame_slim",
+      "label": { "en": "EU Slim Frame", "es": "Marco Delgado UE" },
+      "values": { "plate": "EU", "slim_border": 6, "frame_thick": 4, "corner_r": 4 }
+    },
+    {
+      "id": "us_filler_panel", "mode": "panel_filler",
+      "label": { "en": "US Filler Panel", "es": "Panel de Relleno EU.UU" },
+      "values": { "plate": "US", "frame_thick": 5, "filler_inset": 1 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "lip <= frame_thick - 1",
+      "severity": "warning",
+      "message": { "en": "Retaining lip is close to the frame thickness", "es": "El labio de retención se acerca al grosor del marco" }
+    },
+    {
+      "expression": "frame_thick >= 2",
+      "severity": "error",
+      "message": { "en": "Frame must be at least 2 mm thick", "es": "El marco debe tener al menos 2 mm de grosor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [260, 200, 200] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 420] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -420, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "plate_bolt_pattern",
+        "label": { "en": "Plate Bolt Pattern", "es": "Patrón de Pernos de Placa" },
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO/US plate",
+        "parameters": ["plate", "slot_len"]
+      },
+      {
+        "id": "plate_window",
+        "label": { "en": "Plate Retaining Window", "es": "Ventana de Retención de Placa" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["plate", "border", "slim_border", "lip"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "License plates share two global formats and a handful of bolt patterns; a printable frame or filler adapts any plate to any mounting recess and covers dealer branding, so a cracked or ill-fitting factory frame is a five-gram reprint, not a dealership part.",
+      "es": "Las placas comparten dos formatos globales y unos pocos patrones de pernos; un marco o relleno imprimible adapta cualquier placa a cualquier rebaje de montaje y cubre la publicidad del concesionario, de modo que un marco de fábrica roto o mal ajustado es una reimpresión de cinco gramos, no una pieza de concesionario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["license-plate", "frame", "car", "automotive", "commercial", "hyperobject", "commons"]
+}

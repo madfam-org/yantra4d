@@ -1,0 +1,184 @@
+{
+  "project": {
+    "name": "Gauge Pod",
+    "slug": "gauge-pod",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Mounts a round aftermarket gauge (boost, oil, AFR, voltage) in the cabin. The gauge drops into a standard 52 mm or 60 mm bore; choose a vent-clip pod, an angled A-pillar pod, or a low adhesive surface pod. Every style presents the identical gauge socket so any standard gauge fits any mount.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Monta un manómetro redondo de accesorio (presión, aceite, mezcla, voltaje) en la cabina. El manómetro entra en un hueco estándar de 52 mm o 60 mm; elige un soporte de rejilla, un soporte angulado para el pilar A, o un soporte adhesivo bajo. Cada estilo presenta el mismo casquillo de manómetro para que cualquier manómetro estándar encaje en cualquier montaje.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gauge-pod.webp",
+    "difficulty": "intermediate",
+    "tags": ["gauge", "pod", "car", "boost", "pillar", "vent", "automotive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "vent_pod",
+      "label": { "en": "Vent Pod", "es": "Soporte de Rejilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["vent_pod"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "pillar_pod",
+      "label": { "en": "Pillar Pod", "es": "Soporte de Pilar" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pillar_pod"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "surface_pod",
+      "label": { "en": "Surface Pod", "es": "Soporte de Superficie" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["surface_pod"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "vent_pod", "label": { "en": "Vent Pod", "es": "Soporte de Rejilla" }, "render_mode": 0, "color": "#4b5f74" },
+    { "id": "pillar_pod", "label": { "en": "Pillar Pod", "es": "Soporte de Pilar" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "surface_pod", "label": { "en": "Surface Pod", "es": "Soporte de Superficie" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "gauge", "label": { "en": "Gauge Socket", "es": "Casquillo del Manómetro" } },
+    { "id": "body", "label": { "en": "Pod Body", "es": "Cuerpo del Soporte" } },
+    { "id": "vent", "label": { "en": "Vent Clip", "es": "Clip de Rejilla" } },
+    { "id": "pillar", "label": { "en": "Pillar", "es": "Pilar" } }
+  ],
+  "parameters": [
+    {
+      "id": "gauge_dia", "type": "select", "default": "52mm",
+      "group": "gauge", "modes": ["vent_pod", "pillar_pod", "surface_pod"],
+      "label": { "en": "Gauge Size", "es": "Tamaño del Manómetro" },
+      "tooltip": { "en": "Standard aftermarket gauge diameter (52 or 60 mm)", "es": "Diámetro estándar de manómetro de accesorio (52 o 60 mm)" },
+      "options": [
+        { "value": "52mm", "label": { "en": "52 mm", "es": "52 mm" } },
+        { "value": "60mm", "label": { "en": "60 mm", "es": "60 mm" } }
+      ]
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "gauge", "modes": ["vent_pod", "pillar_pod", "surface_pod"],
+      "label": { "en": "Pod Wall (mm)", "es": "Pared del Soporte (mm)" },
+      "tooltip": { "en": "Wall thickness around the gauge socket", "es": "Grosor de pared alrededor del casquillo" }
+    },
+    {
+      "id": "face_ring", "type": "slider", "default": 4.0, "min": 1.5, "max": 10.0, "step": 0.5,
+      "group": "gauge", "modes": ["vent_pod", "pillar_pod", "surface_pod"],
+      "label": { "en": "Bezel Ring Width (mm)", "es": "Ancho del Bisel (mm)" },
+      "tooltip": { "en": "Front lip that captures the gauge face", "es": "Labio frontal que retiene la cara del manómetro" }
+    },
+    {
+      "id": "back_depth", "type": "slider", "default": 34.0, "min": 18.0, "max": 55.0, "step": 1.0,
+      "group": "body", "modes": ["vent_pod", "pillar_pod", "surface_pod"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad del Casquillo (mm)" },
+      "tooltip": { "en": "How deep the pod cups the gauge body", "es": "Qué tan profundo el soporte cubre el cuerpo del manómetro" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "vent_tab_w", "type": "slider", "default": 18.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "vent", "modes": ["vent_pod"],
+      "label": { "en": "Clip Tab Width (mm)", "es": "Ancho de Clip (mm)" },
+      "tooltip": { "en": "Width of each sprung vent clip tab", "es": "Ancho de cada lengüeta de clip de rejilla" }
+    },
+    {
+      "id": "vent_tab_len", "type": "slider", "default": 26.0, "min": 12.0, "max": 45.0, "step": 1.0,
+      "group": "vent", "modes": ["vent_pod"],
+      "label": { "en": "Clip Tab Reach (mm)", "es": "Alcance de Clip (mm)" },
+      "tooltip": { "en": "How far the clip tabs reach behind the pod", "es": "Qué tanto alcanzan las lengüetas detrás del soporte" }
+    },
+    {
+      "id": "rake_deg", "type": "slider", "default": 22.0, "min": 0.0, "max": 45.0, "step": 1.0,
+      "group": "pillar", "modes": ["pillar_pod"],
+      "label": { "en": "Face Rake (deg)", "es": "Inclinación de Cara (grados)" },
+      "tooltip": { "en": "Tilt of the gauge face toward the driver", "es": "Inclinación de la cara del manómetro hacia el conductor" }
+    },
+    {
+      "id": "pillar_h", "type": "slider", "default": 70.0, "min": 40.0, "max": 120.0, "step": 1.0,
+      "group": "pillar", "modes": ["pillar_pod"],
+      "label": { "en": "Pillar Body Height (mm)", "es": "Altura del Cuerpo del Pilar (mm)" },
+      "tooltip": { "en": "Height of the A-pillar mounting body", "es": "Altura del cuerpo de montaje del pilar A" }
+    },
+    {
+      "id": "base_pad", "type": "slider", "default": 10.0, "min": 4.0, "max": 25.0, "step": 1.0,
+      "group": "body", "modes": ["surface_pod"],
+      "label": { "en": "Adhesive Flange Width (mm)", "es": "Ancho de Brida Adhesiva (mm)" },
+      "tooltip": { "en": "Flat flange width for the adhesive surface mount", "es": "Ancho de la brida plana para el montaje adhesivo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "boost_52_vent", "mode": "vent_pod",
+      "label": { "en": "52 mm Boost — Vent", "es": "Presión 52 mm — Rejilla" },
+      "values": { "gauge_dia": "52mm", "back_depth": 34, "vent_tab_w": 18, "vent_tab_len": 26 }
+    },
+    {
+      "id": "afr_60_pillar", "mode": "pillar_pod",
+      "label": { "en": "60 mm AFR — Pillar", "es": "Mezcla 60 mm — Pilar" },
+      "values": { "gauge_dia": "60mm", "rake_deg": 25, "pillar_h": 78, "back_depth": 36 }
+    },
+    {
+      "id": "volt_52_surface", "mode": "surface_pod",
+      "label": { "en": "52 mm Volt — Surface", "es": "Voltios 52 mm — Superficie" },
+      "values": { "gauge_dia": "52mm", "base_pad": 12, "back_depth": 30 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "face_ring <= back_depth / 2",
+      "severity": "warning",
+      "message": { "en": "Bezel ring is large relative to socket depth", "es": "El bisel es grande respecto a la profundidad del casquillo" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Pod wall must be at least 1.6 mm", "es": "La pared del soporte debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "gauge_bore",
+        "label": { "en": "Gauge Bore", "es": "Casquillo del Manómetro" },
+        "geometry_type": "socket",
+        "standard": "52mm/60mm gauge",
+        "parameters": ["gauge_dia", "back_depth", "face_ring", "wall"]
+      },
+      {
+        "id": "vent_clip",
+        "label": { "en": "Air-Vent Clip", "es": "Clip de Rejilla de Aire" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["vent_tab_w", "vent_tab_len", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Aftermarket gauges converge on two socket sizes (52 and 60 mm); a printable pod adapts that universal gauge to whatever cabin surface a given car offers, so a working gauge need not be scrapped when a proprietary pod is unavailable or discontinued.",
+      "es": "Los manómetros de accesorio convergen en dos tamaños de casquillo (52 y 60 mm); un soporte imprimible adapta ese manómetro universal a cualquier superficie de cabina que ofrezca un auto, para que un manómetro útil no se deseche cuando un soporte propietario no esté disponible o descontinuado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gauge", "pod", "car", "automotive", "commercial", "hyperobject", "commons"]
+}

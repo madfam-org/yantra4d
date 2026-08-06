@@ -1,0 +1,171 @@
+{
+  "project": {
+    "name": "Hitch Plug Holder",
+    "slug": "hitch-plug-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Stows a trailer wiring connector when it isn't plugged in, so it doesn't drag on the ground or corrode. Supports the flat 4-pin and round 7-pin connectors (SAE J1128 family). Choose a bolt-on plug holder that cradles the plug nose-down, a dust cap that seals the pins, or a socket mount that fixes the vehicle-side socket. Every mode presents the same plug-body envelope.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Guarda el conector de cableado del remolque cuando no está conectado, para que no arrastre por el suelo ni se corroa. Compatible con los conectores planos de 4 pines y redondos de 7 pines (familia SAE J1128). Elige un soporte atornillable que sostiene el enchufe con la punta hacia abajo, una tapa antipolvo que sella los pines, o un montaje de toma que fija la toma del vehículo. Cada modo presenta el mismo envolvente del cuerpo del enchufe.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hitch-plug-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["hitch", "trailer", "plug", "connector", "holder", "automotive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "plug_holder",
+      "label": { "en": "Plug Holder", "es": "Soporte de Enchufe" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["plug_holder"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 13 }
+    },
+    {
+      "id": "dust_cap",
+      "label": { "en": "Dust Cap", "es": "Tapa Antipolvo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dust_cap"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "socket_mount",
+      "label": { "en": "Socket Mount", "es": "Montaje de Toma" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["socket_mount"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "plug_holder", "label": { "en": "Plug Holder", "es": "Soporte de Enchufe" }, "render_mode": 0, "color": "#4b5f74" },
+    { "id": "dust_cap", "label": { "en": "Dust Cap", "es": "Tapa Antipolvo" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "socket_mount", "label": { "en": "Socket Mount", "es": "Montaje de Toma" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "plug", "label": { "en": "Plug Type", "es": "Tipo de Enchufe" } },
+    { "id": "fit", "label": { "en": "Fit & Walls", "es": "Ajuste y Paredes" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "plug", "type": "select", "default": "4-pin flat",
+      "group": "plug", "modes": ["plug_holder", "dust_cap", "socket_mount"],
+      "label": { "en": "Plug Type", "es": "Tipo de Enchufe" },
+      "tooltip": { "en": "SAE J1128 flat 4-pin or round 7-pin trailer connector", "es": "Conector de remolque SAE J1128 plano de 4 pines o redondo de 7 pines" },
+      "options": [
+        { "value": "4-pin flat", "label": { "en": "4-Pin Flat", "es": "4 Pines Plano" } },
+        { "value": "7-pin round", "label": { "en": "7-Pin Round", "es": "7 Pines Redondo" } }
+      ]
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "fit", "modes": ["plug_holder", "dust_cap", "socket_mount"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Holder / cap wall thickness", "es": "Grosor de pared del soporte / tapa" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.0, "max": 2.0, "step": 0.1,
+      "group": "fit", "modes": ["plug_holder", "dust_cap", "socket_mount"],
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap around the plug body for a printable fit", "es": "Espacio por lado alrededor del cuerpo del enchufe para un ajuste imprimible" }
+    },
+    {
+      "id": "socket_depth", "type": "slider", "default": 0.0, "min": 0.0, "max": 45.0, "step": 1.0,
+      "group": "fit", "modes": ["plug_holder", "dust_cap", "socket_mount"],
+      "label": { "en": "Cup Depth (mm, 0=auto)", "es": "Profundidad del Casquillo (mm, 0=auto)" },
+      "tooltip": { "en": "How deep the plug body is cupped; 0 auto-sizes to the plug", "es": "Qué tan profundo se cubre el cuerpo del enchufe; 0 se autoajusta al enchufe" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bracket_h", "type": "slider", "default": 34.0, "min": 15.0, "max": 70.0, "step": 1.0,
+      "group": "mount", "modes": ["plug_holder"],
+      "label": { "en": "Bracket Height (mm)", "es": "Altura del Soporte (mm)" },
+      "tooltip": { "en": "Height of the bolt-on mounting bracket", "es": "Altura del soporte de montaje atornillable" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 6.5, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "mount", "modes": ["plug_holder", "socket_mount"],
+      "label": { "en": "Bolt Hole Diameter (mm)", "es": "Diámetro de Perno (mm)" },
+      "tooltip": { "en": "Mounting bolt clearance hole (e.g. M6 = 6.5 mm)", "es": "Orificio de paso del perno de montaje (p. ej. M6 = 6.5 mm)" }
+    },
+    {
+      "id": "tether_hole", "type": "checkbox", "default": true,
+      "group": "mount", "modes": ["dust_cap"],
+      "label": { "en": "Tether Hole", "es": "Orificio de Amarre" },
+      "tooltip": { "en": "Add a lanyard/tether hole on a side tab", "es": "Agrega un orificio de amarre en una pestaña lateral" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "flat4_holder", "mode": "plug_holder",
+      "label": { "en": "4-Pin Flat — Holder", "es": "4 Pines Plano — Soporte" },
+      "values": { "plug": "4-pin flat", "bracket_h": 34, "clearance": 0.6, "bolt_dia": 6.5 }
+    },
+    {
+      "id": "round7_cap", "mode": "dust_cap",
+      "label": { "en": "7-Pin Round — Dust Cap", "es": "7 Pines Redondo — Tapa" },
+      "values": { "plug": "7-pin round", "clearance": 0.6, "tether_hole": true }
+    },
+    {
+      "id": "round7_socket_mount", "mode": "socket_mount",
+      "label": { "en": "7-Pin Round — Socket Mount", "es": "7 Pines Redondo — Montaje" },
+      "values": { "plug": "7-pin round", "wall": 3.0, "bolt_dia": 6.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 2",
+      "severity": "warning",
+      "message": { "en": "Large clearance may let the plug rattle", "es": "Una holgura grande puede dejar que el enchufe vibre" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 2, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "trailer_plug_body",
+        "label": { "en": "Trailer Plug Body", "es": "Cuerpo del Enchufe de Remolque" },
+        "geometry_type": "socket",
+        "standard": "SAE J1128 4/7-pin",
+        "parameters": ["plug", "clearance", "socket_depth", "wall"]
+      },
+      {
+        "id": "hitch_bolt_mount",
+        "label": { "en": "Hitch Bolt Mount", "es": "Montaje de Perno al Enganche" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["bolt_dia", "bracket_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A trailer plug left dangling drags, fills with road grime, and corrodes its pins; a printable holder, cap, and socket mount sized to the two standard SAE connectors keep the connection clean and off the ground with a few grams of filament instead of a proprietary bracket kit.",
+      "es": "Un enchufe de remolque colgando arrastra, se llena de suciedad y corroe sus pines; un soporte, tapa y montaje de toma imprimibles dimensionados a los dos conectores SAE estándar mantienen la conexión limpia y fuera del suelo con unos gramos de filamento en lugar de un kit de soporte propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hitch", "trailer", "plug", "connector", "automotive", "commercial", "hyperobject", "commons"]
+}

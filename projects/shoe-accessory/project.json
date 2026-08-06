@@ -1,0 +1,176 @@
+{
+  "project": {
+    "name": "Shoe Accessories",
+    "slug": "shoe-accessory",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Footwear add-ons sized to lace width and sole geometry. A spring lace lock (cord-lock for shoelaces), a heel clip that grips the heel counter, and a boot shaper that keeps a boot shaft upright.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Accesorios para calzado dimensionados al ancho de agujeta y la geometría de la suela. Un fijador de agujetas con resorte, un clip de talón que sujeta el contrafuerte y una horma que mantiene erguida la caña de la bota.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shoe-accessory.webp",
+    "difficulty": "intermediate",
+    "tags": ["shoe", "lace", "lace-lock", "heel", "boot-tree", "footwear", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "lace_lock",
+      "label": { "en": "Lace Lock", "es": "Fijador de Agujetas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lace_lock"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "heel_clip",
+      "label": { "en": "Heel Clip", "es": "Clip de Talón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["heel_clip"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "boot_shaper",
+      "label": { "en": "Boot Shaper", "es": "Horma de Bota" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["boot_shaper"],
+      "estimate": { "base_time": 14, "per_unit": 5, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "lace_lock", "label": { "en": "Lace Lock", "es": "Fijador de Agujetas" }, "render_mode": 0, "color": "#5a7d64" },
+    { "id": "heel_clip", "label": { "en": "Heel Clip", "es": "Clip de Talón" }, "render_mode": 0, "color": "#7aa088" },
+    { "id": "boot_shaper", "label": { "en": "Boot Shaper", "es": "Horma de Bota" }, "render_mode": 0, "color": "#9bc0a6" }
+  ],
+  "parameter_groups": [
+    { "id": "lace", "label": { "en": "Lace", "es": "Agujeta" } },
+    { "id": "heel", "label": { "en": "Heel", "es": "Talón" } },
+    { "id": "boot", "label": { "en": "Boot", "es": "Bota" } },
+    { "id": "build", "label": { "en": "Build", "es": "Construcción" } }
+  ],
+  "parameters": [
+    {
+      "id": "lace_w", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5,
+      "group": "lace", "modes": ["lace_lock"],
+      "label": { "en": "Lace Width (mm)", "es": "Ancho de Agujeta (mm)" },
+      "tooltip": { "en": "Flat lace width", "es": "Ancho de la agujeta plana" }
+    },
+    {
+      "id": "lace_t", "type": "slider", "default": 2.5, "min": 1.0, "max": 4.0, "step": 0.1,
+      "group": "lace", "modes": ["lace_lock"],
+      "label": { "en": "Lace Thickness (mm)", "es": "Grosor de Agujeta (mm)" },
+      "tooltip": { "en": "Lace thickness", "es": "Grosor de la agujeta" }
+    },
+    {
+      "id": "heel_w", "type": "slider", "default": 62, "min": 30, "max": 120, "step": 1,
+      "group": "heel", "modes": ["heel_clip"],
+      "label": { "en": "Heel Width (mm)", "es": "Ancho de Talón (mm)" },
+      "tooltip": { "en": "Width of the heel counter the clip grips", "es": "Ancho del contrafuerte que sujeta el clip" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "heel_h", "type": "slider", "default": 34, "min": 15, "max": 70, "step": 1,
+      "group": "heel", "modes": ["heel_clip"],
+      "label": { "en": "Heel Grip Height (mm)", "es": "Altura de Agarre (mm)" },
+      "tooltip": { "en": "How tall a section of the heel the clip wraps", "es": "Qué tan alto es el tramo del talón que abraza el clip" }
+    },
+    {
+      "id": "sole_t", "type": "slider", "default": 16, "min": 6, "max": 40, "step": 1,
+      "group": "heel", "modes": ["heel_clip"],
+      "label": { "en": "Counter Thickness (mm)", "es": "Grosor de Contrafuerte (mm)" },
+      "tooltip": { "en": "Thickness of the heel/sole edge gripped between the hooks", "es": "Grosor del borde de talón/suela sujeto entre los ganchos" }
+    },
+    {
+      "id": "shaft_h", "type": "slider", "default": 150, "min": 60, "max": 300, "step": 5,
+      "group": "boot", "modes": ["boot_shaper"],
+      "label": { "en": "Shaft Height (mm)", "es": "Altura de Caña (mm)" },
+      "tooltip": { "en": "Height of the boot shaft to hold upright", "es": "Altura de la caña de la bota a mantener erguida" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "shaft_w", "type": "slider", "default": 90, "min": 40, "max": 160, "step": 1,
+      "group": "boot", "modes": ["boot_shaper"],
+      "label": { "en": "Shaft Width (mm)", "es": "Ancho de Caña (mm)" },
+      "tooltip": { "en": "Interior width of the boot shaft the spreader pushes apart", "es": "Ancho interior de la caña que separa el ensanchador" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "build", "modes": ["lace_lock", "heel_clip", "boot_shaper"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall / rib thickness", "es": "Grosor de pared / nervadura" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sneaker_lace_lock", "mode": "lace_lock",
+      "label": { "en": "Sneaker Lace Lock", "es": "Fijador para Tenis" },
+      "values": { "lace_w": 7, "lace_t": 2.5, "wall": 2.4 }
+    },
+    {
+      "id": "runner_heel_clip", "mode": "heel_clip",
+      "label": { "en": "Running-Shoe Heel Clip", "es": "Clip de Talón para Correr" },
+      "values": { "heel_w": 60, "heel_h": 32, "sole_t": 14 }
+    },
+    {
+      "id": "tall_boot_tree", "mode": "boot_shaper",
+      "label": { "en": "Tall Boot Tree", "es": "Horma de Bota Alta" },
+      "values": { "shaft_h": 220, "shaft_w": 100, "wall": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    },
+    {
+      "expression": "lace_t <= lace_w",
+      "severity": "warning",
+      "message": { "en": "Lace thickness should not exceed its width", "es": "El grosor de la agujeta no debe superar su ancho" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "lace_lock",
+        "label": { "en": "Lace Lock", "es": "Fijador de Agujetas" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["lace_w", "lace_t", "wall"]
+      },
+      {
+        "id": "heel_counter_grip",
+        "label": { "en": "Heel Counter Grip", "es": "Agarre de Contrafuerte" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["heel_w", "heel_h", "sole_t", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Small footwear fixes — locking laces, gripping a worn heel, keeping boots in shape — that extend the wearable life of shoes and reduce fast-fashion footwear churn.",
+      "es": "Pequeños arreglos de calzado — fijar agujetas, sujetar un talón gastado, mantener la forma de las botas — que extienden la vida útil de los zapatos y reducen el recambio de calzado desechable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["shoe", "lace", "heel", "boot", "footwear", "wearable", "hyperobject", "commons"]
+}

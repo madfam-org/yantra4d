@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Glasses Holders",
+    "slug": "glasses-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holders for glasses and sunglasses, all built around one sprung temple cradle. A visor clip for the car sun visor, a wall hook, and a desk stand. Size the cradle to your eyewear temple arm.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Soportes para lentes y gafas de sol, todos construidos alrededor de una cuna de patilla con resorte. Un clip para el parasol del auto, un gancho de pared y un soporte de escritorio. Dimensiona la cuna a la patilla de tus lentes.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/glasses-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["glasses", "sunglasses", "eyewear", "visor", "holder", "stand", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "visor_clip",
+      "label": { "en": "Visor Clip", "es": "Clip de Parasol" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["visor_clip"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "wall_hook",
+      "label": { "en": "Wall Hook", "es": "Gancho de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_hook"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "desk_stand",
+      "label": { "en": "Desk Stand", "es": "Soporte de Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["desk_stand"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "visor_clip", "label": { "en": "Visor Clip", "es": "Clip de Parasol" }, "render_mode": 0, "color": "#586a86" },
+    { "id": "wall_hook", "label": { "en": "Wall Hook", "es": "Gancho de Pared" }, "render_mode": 0, "color": "#7889a6" },
+    { "id": "desk_stand", "label": { "en": "Desk Stand", "es": "Soporte de Escritorio" }, "render_mode": 0, "color": "#98a9c6" }
+  ],
+  "parameter_groups": [
+    { "id": "temple", "label": { "en": "Temple Cradle", "es": "Cuna de Patilla" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } },
+    { "id": "build", "label": { "en": "Build", "es": "Construcción" } }
+  ],
+  "parameters": [
+    {
+      "id": "temple_w", "type": "slider", "default": 5.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "temple", "modes": ["visor_clip", "wall_hook", "desk_stand"],
+      "label": { "en": "Temple Width (mm)", "es": "Ancho de Patilla (mm)" },
+      "tooltip": { "en": "Width of the eyewear temple arm the cradle grips", "es": "Ancho de la patilla de los lentes que sujeta la cuna" }
+    },
+    {
+      "id": "temple_t", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "temple", "modes": ["visor_clip", "wall_hook", "desk_stand"],
+      "label": { "en": "Temple Thickness (mm)", "es": "Grosor de Patilla (mm)" },
+      "tooltip": { "en": "Thickness of the temple arm", "es": "Grosor de la patilla" }
+    },
+    {
+      "id": "cradle_w", "type": "slider", "default": 16.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "temple", "modes": ["visor_clip", "wall_hook", "desk_stand"],
+      "label": { "en": "Cradle Width (mm)", "es": "Ancho de Cuna (mm)" },
+      "tooltip": { "en": "Length of the cradle along the temple arm", "es": "Largo de la cuna a lo largo de la patilla" }
+    },
+    {
+      "id": "mount", "type": "select", "default": "visor-clip",
+      "group": "mount", "modes": ["visor_clip", "wall_hook", "desk_stand"],
+      "label": { "en": "Mount Type", "es": "Tipo de Montaje" },
+      "tooltip": { "en": "Where the holder mounts (mirrors the mode; the mode's part is authoritative)", "es": "Dónde se monta el soporte (refleja el modo; la pieza del modo es la autoridad)" },
+      "options": [
+        { "value": "visor-clip", "label": { "en": "Visor Clip", "es": "Clip de Parasol" } },
+        { "value": "wall", "label": { "en": "Wall", "es": "Pared" } },
+        { "value": "desk-stand", "label": { "en": "Desk Stand", "es": "Soporte de Escritorio" } }
+      ]
+    },
+    {
+      "id": "visor_t", "type": "slider", "default": 18.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "mount", "modes": ["visor_clip"],
+      "label": { "en": "Visor Thickness (mm)", "es": "Grosor de Parasol (mm)" },
+      "tooltip": { "en": "Thickness of the car sun visor the clip grips", "es": "Grosor del parasol del auto que sujeta el clip" }
+    },
+    {
+      "id": "stand_h", "type": "slider", "default": 70.0, "min": 35.0, "max": 140.0, "step": 5.0,
+      "group": "mount", "modes": ["desk_stand"],
+      "label": { "en": "Stand Height (mm)", "es": "Altura de Soporte (mm)" },
+      "tooltip": { "en": "Height of the desk-stand upright post", "es": "Altura del poste vertical del soporte" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "build", "modes": ["visor_clip", "wall_hook", "desk_stand"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall thickness", "es": "Grosor de la pared" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "car_visor_clip", "mode": "visor_clip",
+      "label": { "en": "Car Visor Clip", "es": "Clip de Parasol de Auto" },
+      "values": { "temple_w": 5, "temple_t": 4, "visor_t": 18, "cradle_w": 16 }
+    },
+    {
+      "id": "entryway_hook", "mode": "wall_hook",
+      "label": { "en": "Entryway Wall Hook", "es": "Gancho de Entrada" },
+      "values": { "temple_w": 6, "temple_t": 4, "cradle_w": 18, "wall": 3 }
+    },
+    {
+      "id": "bedside_stand", "mode": "desk_stand",
+      "label": { "en": "Bedside Stand", "es": "Soporte de Buró" },
+      "values": { "temple_w": 5, "temple_t": 4, "stand_h": 70, "cradle_w": 16 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    },
+    {
+      "expression": "cradle_w >= temple_w",
+      "severity": "warning",
+      "message": { "en": "Cradle should be at least as wide as the temple", "es": "La cuna debe ser al menos tan ancha como la patilla" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "temple_cradle",
+        "label": { "en": "Temple Cradle", "es": "Cuna de Patilla" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["temple_w", "temple_t", "cradle_w", "wall"]
+      },
+      {
+        "id": "visor_grip",
+        "label": { "en": "Visor Grip", "es": "Agarre de Parasol" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["visor_t", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps eyewear off dashboards and floors where it gets scratched or crushed — one printed cradle sized to the temple arm mounts on a visor, wall, or desk, extending the life of glasses.",
+      "es": "Mantiene los lentes fuera del tablero y el piso donde se rayan o aplastan — una cuna impresa dimensionada a la patilla se monta en parasol, pared o escritorio, extendiendo la vida de los lentes."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["glasses", "sunglasses", "eyewear", "holder", "wearable", "hyperobject", "commons"]
+}

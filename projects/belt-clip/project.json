@@ -1,0 +1,182 @@
+{
+  "project": {
+    "name": "Belt Clip & Holster",
+    "slug": "belt-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Belt-worn carry hardware sized to your belt width. A sprung belt clip that snaps over the belt, a device pocket holster with an integral belt loop, and a bare belt loop to graft onto anything.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de porte para cinturón dimensionados al ancho de tu cinturón. Un clip con resorte que se ajusta al cinturón, una funda con presilla integrada y una presilla suelta para injertar en cualquier cosa.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/belt-clip.webp",
+    "difficulty": "intermediate",
+    "tags": ["belt", "clip", "holster", "edc", "carry", "loop", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": { "en": "Belt Clip", "es": "Clip de Cinturón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "holster",
+      "label": { "en": "Holster", "es": "Funda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["holster"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "belt_loop",
+      "label": { "en": "Belt Loop", "es": "Presilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["belt_loop"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "clip", "label": { "en": "Belt Clip", "es": "Clip de Cinturón" }, "render_mode": 0, "color": "#4a6f8a" },
+    { "id": "holster", "label": { "en": "Holster", "es": "Funda" }, "render_mode": 0, "color": "#6b8fa8" },
+    { "id": "belt_loop", "label": { "en": "Belt Loop", "es": "Presilla" }, "render_mode": 0, "color": "#8bb0c6" }
+  ],
+  "parameter_groups": [
+    { "id": "belt", "label": { "en": "Belt Fit", "es": "Ajuste de Cinturón" } },
+    { "id": "clip", "label": { "en": "Clip", "es": "Clip" } },
+    { "id": "pocket", "label": { "en": "Pocket", "es": "Bolsillo" } },
+    { "id": "build", "label": { "en": "Build", "es": "Construcción" } }
+  ],
+  "parameters": [
+    {
+      "id": "belt_w", "type": "slider", "default": 38, "min": 15, "max": 75, "step": 1,
+      "group": "belt", "modes": ["clip", "holster", "belt_loop"],
+      "label": { "en": "Belt Width (mm)", "es": "Ancho de Cinturón (mm)" },
+      "tooltip": { "en": "Width of the belt the clip or loop rides on", "es": "Ancho del cinturón sobre el que va el clip o la presilla" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "belt_t", "type": "slider", "default": 4.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "belt", "modes": ["clip", "holster", "belt_loop"],
+      "label": { "en": "Belt Thickness (mm)", "es": "Grosor de Cinturón (mm)" },
+      "tooltip": { "en": "Thickness of the belt (leather is typically 3-5 mm)", "es": "Grosor del cinturón (el cuero suele ser 3-5 mm)" }
+    },
+    {
+      "id": "loop_clear", "type": "slider", "default": 1.5, "min": 0.5, "max": 4.0, "step": 0.1,
+      "group": "belt", "modes": ["holster", "belt_loop"], "advanced": true,
+      "label": { "en": "Loop Clearance (mm)", "es": "Holgura de Presilla (mm)" },
+      "tooltip": { "en": "Extra room inside the loop so the belt slides through", "es": "Espacio extra dentro de la presilla para que el cinturón pase" }
+    },
+    {
+      "id": "clip_reach", "type": "slider", "default": 46, "min": 20, "max": 80, "step": 1,
+      "group": "clip", "modes": ["clip"],
+      "label": { "en": "Clip Reach (mm)", "es": "Alcance del Clip (mm)" },
+      "tooltip": { "en": "How far the sprung tongue reaches down the belt", "es": "Qué tan abajo llega la lengüeta con resorte por el cinturón" }
+    },
+    {
+      "id": "clip_clear", "type": "slider", "default": 0.6, "min": 0.2, "max": 1.5, "step": 0.1,
+      "group": "clip", "modes": ["clip"], "advanced": true,
+      "label": { "en": "Clip Bite Clearance (mm)", "es": "Holgura de Mordida (mm)" },
+      "tooltip": { "en": "Gap between tongue and plate that sets the belt bite", "es": "Separación entre lengüeta y placa que fija la mordida del cinturón" }
+    },
+    {
+      "id": "pocket_w", "type": "slider", "default": 62, "min": 20, "max": 140, "step": 1,
+      "group": "pocket", "modes": ["holster"],
+      "label": { "en": "Pocket Width (mm)", "es": "Ancho de Bolsillo (mm)" },
+      "tooltip": { "en": "Interior width of the device pocket", "es": "Ancho interior del bolsillo del dispositivo" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pocket_d", "type": "slider", "default": 16, "min": 6, "max": 60, "step": 1,
+      "group": "pocket", "modes": ["holster"],
+      "label": { "en": "Pocket Depth (mm)", "es": "Profundidad de Bolsillo (mm)" },
+      "tooltip": { "en": "Interior depth of the device pocket", "es": "Profundidad interior del bolsillo" }
+    },
+    {
+      "id": "pocket_h", "type": "slider", "default": 90, "min": 25, "max": 200, "step": 1,
+      "group": "pocket", "modes": ["holster"],
+      "label": { "en": "Pocket Height (mm)", "es": "Altura de Bolsillo (mm)" },
+      "tooltip": { "en": "Interior height of the device pocket", "es": "Altura interior del bolsillo" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "build", "modes": ["clip", "holster", "belt_loop"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Structural wall thickness", "es": "Grosor de la pared estructural" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_belt_clip", "mode": "clip",
+      "label": { "en": "Standard 38 mm Clip", "es": "Clip Estándar 38 mm" },
+      "values": { "belt_w": 38, "belt_t": 4, "clip_reach": 46 }
+    },
+    {
+      "id": "phone_holster", "mode": "holster",
+      "label": { "en": "Phone Holster", "es": "Funda de Teléfono" },
+      "values": { "belt_w": 40, "pocket_w": 76, "pocket_d": 12, "pocket_h": 158, "wall": 3 }
+    },
+    {
+      "id": "wide_work_loop", "mode": "belt_loop",
+      "label": { "en": "Wide Work-Belt Loop", "es": "Presilla de Cinturón Ancho" },
+      "values": { "belt_w": 50, "belt_t": 5, "loop_clear": 2.0, "wall": 3.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm for a belt-load part", "es": "La pared debe ser de al menos 2 mm para una pieza que soporta cinturón" }
+    },
+    {
+      "expression": "belt_t <= belt_w / 3",
+      "severity": "warning",
+      "message": { "en": "Belt thickness is large relative to width", "es": "El grosor del cinturón es grande respecto al ancho" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "belt_clip",
+        "label": { "en": "Belt Clip", "es": "Clip de Cinturón" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["belt_w", "belt_t", "clip_reach", "clip_clear", "wall"]
+      },
+      {
+        "id": "belt_loop_slot",
+        "label": { "en": "Belt Loop Slot", "es": "Ranura de Presilla" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["belt_w", "belt_t", "loop_clear", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "On-demand belt carry sized to the exact belt, extending the life of tools, phones, and gear instead of buying single-fit accessories that rarely match a given belt.",
+      "es": "Porte de cinturón bajo demanda dimensionado al cinturón exacto, extendiendo la vida de herramientas, teléfonos y equipo en vez de comprar accesorios de ajuste único que rara vez coinciden con un cinturón dado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["belt", "clip", "holster", "edc", "wearable", "hyperobject", "commons"]
+}

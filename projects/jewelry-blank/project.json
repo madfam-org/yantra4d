@@ -1,0 +1,186 @@
+{
+  "project": {
+    "name": "Jewelry Blanks",
+    "slug": "jewelry-blank",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Parametric ring and bracelet blanks sized by standard ring size. A plain band, a signet blank with a flat top face for engraving or setting, and an open bangle bracelet. Ring inner diameter is derived from US ring size.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Blanks paramétricos de anillo y pulsera dimensionados por talla estándar. Una banda simple, un blank de sello con cara plana para grabar o engastar, y un brazalete abierto. El diámetro interior del anillo se deriva de la talla US.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/jewelry-blank.webp",
+    "difficulty": "beginner",
+    "tags": ["ring", "band", "signet", "bracelet", "jewelry", "blank", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ring_band",
+      "label": { "en": "Ring Band", "es": "Banda de Anillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ring_band"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "signet_blank",
+      "label": { "en": "Signet Blank", "es": "Blank de Sello" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["signet_blank"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "bracelet",
+      "label": { "en": "Bracelet", "es": "Pulsera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bracelet"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "ring_band", "label": { "en": "Ring Band", "es": "Banda de Anillo" }, "render_mode": 0, "color": "#b08d57" },
+    { "id": "signet_blank", "label": { "en": "Signet Blank", "es": "Blank de Sello" }, "render_mode": 0, "color": "#c6a878" },
+    { "id": "bracelet", "label": { "en": "Bracelet", "es": "Pulsera" }, "render_mode": 0, "color": "#d6c29b" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Ring Size", "es": "Talla" } },
+    { "id": "band", "label": { "en": "Band", "es": "Banda" } },
+    { "id": "signet", "label": { "en": "Signet Face", "es": "Cara de Sello" } },
+    { "id": "bracelet", "label": { "en": "Bracelet", "es": "Pulsera" } }
+  ],
+  "parameters": [
+    {
+      "id": "ring_size", "type": "slider", "default": 7.0, "min": 3.0, "max": 14.0, "step": 0.25,
+      "group": "size", "modes": ["ring_band", "signet_blank"],
+      "label": { "en": "US Ring Size", "es": "Talla US" },
+      "tooltip": { "en": "US ring size (3-14). Inner diameter = 11.63 + 0.8128 x size mm", "es": "Talla de anillo US (3-14). Diámetro interior = 11.63 + 0.8128 x talla mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.81 }
+    },
+    {
+      "id": "band_w", "type": "slider", "default": 6.0, "min": 2.0, "max": 16.0, "step": 0.5,
+      "group": "band", "modes": ["ring_band", "signet_blank", "bracelet"],
+      "label": { "en": "Band Width (mm)", "es": "Ancho de Banda (mm)" },
+      "tooltip": { "en": "Width of the band along the finger axis", "es": "Ancho de la banda a lo largo del eje del dedo" }
+    },
+    {
+      "id": "band_t", "type": "slider", "default": 2.0, "min": 1.2, "max": 5.0, "step": 0.1,
+      "group": "band", "modes": ["ring_band", "signet_blank", "bracelet"],
+      "label": { "en": "Band Thickness (mm)", "es": "Grosor de Banda (mm)" },
+      "tooltip": { "en": "Radial wall thickness of the band", "es": "Grosor radial de la banda" }
+    },
+    {
+      "id": "profile", "type": "select", "default": "domed",
+      "group": "band", "modes": ["ring_band"],
+      "label": { "en": "Band Profile", "es": "Perfil de Banda" },
+      "tooltip": { "en": "Cross-section shape of the band", "es": "Forma de la sección transversal de la banda" },
+      "options": [
+        { "value": "flat", "label": { "en": "Flat", "es": "Plano" } },
+        { "value": "domed", "label": { "en": "Domed", "es": "Abombado" } },
+        { "value": "comfort", "label": { "en": "Comfort Fit", "es": "Ajuste Confort" } }
+      ]
+    },
+    {
+      "id": "signet_w", "type": "slider", "default": 12.0, "min": 6.0, "max": 24.0, "step": 0.5,
+      "group": "signet", "modes": ["signet_blank"],
+      "label": { "en": "Signet Face Width (mm)", "es": "Ancho de Cara (mm)" },
+      "tooltip": { "en": "Width of the flat signet face", "es": "Ancho de la cara plana del sello" }
+    },
+    {
+      "id": "signet_l", "type": "slider", "default": 14.0, "min": 6.0, "max": 26.0, "step": 0.5,
+      "group": "signet", "modes": ["signet_blank"],
+      "label": { "en": "Signet Face Length (mm)", "es": "Largo de Cara (mm)" },
+      "tooltip": { "en": "Length of the flat signet face along the finger", "es": "Largo de la cara plana a lo largo del dedo" }
+    },
+    {
+      "id": "signet_h", "type": "slider", "default": 2.5, "min": 1.0, "max": 6.0, "step": 0.1,
+      "group": "signet", "modes": ["signet_blank"],
+      "label": { "en": "Signet Height (mm)", "es": "Altura de Sello (mm)" },
+      "tooltip": { "en": "How far the signet plateau rises above the band", "es": "Cuánto se eleva la meseta del sello sobre la banda" }
+    },
+    {
+      "id": "wrist_dia", "type": "slider", "default": 60.0, "min": 45.0, "max": 75.0, "step": 1.0,
+      "group": "bracelet", "modes": ["bracelet"],
+      "label": { "en": "Wrist Diameter (mm)", "es": "Diámetro de Muñeca (mm)" },
+      "tooltip": { "en": "Interior diameter of the bangle", "es": "Diámetro interior del brazalete" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "gap_deg", "type": "slider", "default": 70.0, "min": 20.0, "max": 140.0, "step": 5.0,
+      "group": "bracelet", "modes": ["bracelet"],
+      "label": { "en": "Opening (degrees)", "es": "Abertura (grados)" },
+      "tooltip": { "en": "Angular gap so the bangle slips over the wrist", "es": "Abertura angular para que el brazalete pase por la muñeca" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "us7_domed_band", "mode": "ring_band",
+      "label": { "en": "US 7 Domed Band", "es": "Banda Abombada US 7" },
+      "values": { "ring_size": 7, "band_w": 6, "band_t": 2, "profile": "domed" }
+    },
+    {
+      "id": "us10_signet", "mode": "signet_blank",
+      "label": { "en": "US 10 Signet Blank", "es": "Blank de Sello US 10" },
+      "values": { "ring_size": 10, "band_w": 7, "signet_w": 13, "signet_l": 15, "signet_h": 2.5 }
+    },
+    {
+      "id": "open_bangle", "mode": "bracelet",
+      "label": { "en": "Open Bangle (60 mm)", "es": "Brazalete Abierto (60 mm)" },
+      "values": { "wrist_dia": 60, "gap_deg": 70, "band_w": 8, "band_t": 2.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "band_t >= 1.2",
+      "severity": "error",
+      "message": { "en": "Band thickness must be at least 1.2 mm", "es": "El grosor de banda debe ser de al menos 1.2 mm" }
+    },
+    {
+      "expression": "signet_w <= band_w * 3",
+      "severity": "warning",
+      "message": { "en": "Signet face is wide relative to the band", "es": "La cara del sello es ancha respecto a la banda" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [50, 50, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 10] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "ring_band",
+        "label": { "en": "Ring Band", "es": "Banda de Anillo" },
+        "geometry_type": "profile",
+        "standard": "US/EU ring sizing",
+        "parameters": ["ring_size", "band_w", "band_t", "profile"]
+      },
+      {
+        "id": "signet_face",
+        "label": { "en": "Signet Face", "es": "Cara de Sello" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["signet_w", "signet_l", "signet_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Made-to-size ring and bracelet blanks for makers — a fitted starting point for casting patterns, resin jewelry, or direct-print pieces, at any finger size without a jeweler's mandrel.",
+      "es": "Blanks de anillo y pulsera a la medida para creadores — un punto de partida ajustado para patrones de fundición, joyería en resina o piezas impresas, en cualquier talla sin mandril de joyero."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["ring", "signet", "bracelet", "jewelry", "wearable", "hyperobject", "commons"]
+}

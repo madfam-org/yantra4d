@@ -1,0 +1,527 @@
+{
+  "project": {
+    "name": "Ball-Socket / Articulated Arm",
+    "slug": "ball-socket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A ball-and-socket joint for adjustable arms — phone, mic, camera, and light mounts. A ball stud snaps into a socket cup whose opening is smaller than the ball, so friction holds any angle. Parts chain into arms of any length.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una articulación de rótula para brazos ajustables — soportes de teléfono, micrófono, cámara y luz. Un perno esférico encaja a presión en una copa cuya apertura es menor que la bola, así la fricción sostiene cualquier ángulo. Las piezas se encadenan en brazos de cualquier longitud.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/ball-socket.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "ball-socket",
+      "joint",
+      "articulated",
+      "arm",
+      "mount",
+      "gooseneck",
+      "camera",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ball_stud",
+      "label": {
+        "en": "Ball Stud",
+        "es": "Perno Esférico"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "ball_stud"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "socket_cup",
+      "label": {
+        "en": "Socket Cup",
+        "es": "Copa de Rótula"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "socket_cup"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "double_ball",
+      "label": {
+        "en": "Double Ball Link",
+        "es": "Enlace de Doble Bola"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "double_ball"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "arm_segment",
+      "label": {
+        "en": "Arm Segment",
+        "es": "Segmento de Brazo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "arm_segment"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "ball_stud",
+      "label": {
+        "en": "Ball Stud",
+        "es": "Perno Esférico"
+      },
+      "render_mode": 0,
+      "color": "#6ea8fe"
+    },
+    {
+      "id": "socket_cup",
+      "label": {
+        "en": "Socket Cup",
+        "es": "Copa de Rótula"
+      },
+      "render_mode": 0,
+      "color": "#f59e0b"
+    },
+    {
+      "id": "double_ball",
+      "label": {
+        "en": "Double Ball Link",
+        "es": "Enlace de Doble Bola"
+      },
+      "render_mode": 0,
+      "color": "#34d399"
+    },
+    {
+      "id": "arm_segment",
+      "label": {
+        "en": "Arm Segment",
+        "es": "Segmento de Brazo"
+      },
+      "render_mode": 0,
+      "color": "#f472b6"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "ball",
+      "label": {
+        "en": "Ball & Socket",
+        "es": "Bola y Copa"
+      }
+    },
+    {
+      "id": "stem",
+      "label": {
+        "en": "Stem & Base",
+        "es": "Vástago y Base"
+      }
+    },
+    {
+      "id": "ends",
+      "label": {
+        "en": "Ends",
+        "es": "Extremos"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "end_type",
+      "type": "select",
+      "default": "ball",
+      "group": "ends",
+      "modes": [
+        "ball_stud",
+        "socket_cup",
+        "arm_segment"
+      ],
+      "label": {
+        "en": "Stem End",
+        "es": "Extremo del Vástago"
+      },
+      "tooltip": {
+        "en": "What sits on the far end of the stem",
+        "es": "Qué va en el extremo lejano del vástago"
+      },
+      "options": [
+        {
+          "value": "ball",
+          "label": {
+            "en": "Ball Stud",
+            "es": "Perno Esférico"
+          }
+        },
+        {
+          "value": "socket",
+          "label": {
+            "en": "Socket Cup",
+            "es": "Copa de Rótula"
+          }
+        },
+        {
+          "value": "1/4-20",
+          "label": {
+            "en": "1/4-20 Camera",
+            "es": "Cámara 1/4-20"
+          }
+        },
+        {
+          "value": "flat_mount",
+          "label": {
+            "en": "Flat Screw Plate",
+            "es": "Placa con Tornillos"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ball_dia",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "ball",
+      "modes": [
+        "ball_stud",
+        "socket_cup",
+        "double_ball",
+        "arm_segment"
+      ],
+      "label": {
+        "en": "Ball Diameter (mm)",
+        "es": "Diámetro de Bola (mm)"
+      },
+      "tooltip": {
+        "en": "The ball diameter — the socket is sized to match this",
+        "es": "El diámetro de la bola — la copa se dimensiona para coincidir"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "socket_grip",
+      "type": "slider",
+      "default": 0.85,
+      "min": 0.55,
+      "max": 0.95,
+      "step": 0.01,
+      "group": "ball",
+      "modes": [
+        "socket_cup",
+        "arm_segment"
+      ],
+      "label": {
+        "en": "Socket Grip",
+        "es": "Agarre de Copa"
+      },
+      "tooltip": {
+        "en": "Opening as a fraction of ball diameter. Below 1 the mouth is smaller than the ball, so it snaps in and holds. Lower = grips harder",
+        "es": "Apertura como fracción del diámetro de la bola. Por debajo de 1 la boca es menor que la bola, así encaja y sostiene. Menor = agarra más"
+      }
+    },
+    {
+      "id": "socket_clear",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.1,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "ball",
+      "modes": [
+        "socket_cup",
+        "arm_segment"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Socket Clearance (mm)",
+        "es": "Holgura de Copa (mm)"
+      },
+      "tooltip": {
+        "en": "Radial gap between the socket cavity and the ball so it pivots freely",
+        "es": "Espacio radial entre la cavidad de la copa y la bola para que pivote libremente"
+      }
+    },
+    {
+      "id": "stem_len",
+      "type": "slider",
+      "default": 30.0,
+      "min": 10.0,
+      "max": 90.0,
+      "step": 1.0,
+      "group": "stem",
+      "modes": [
+        "ball_stud",
+        "socket_cup",
+        "double_ball",
+        "arm_segment"
+      ],
+      "label": {
+        "en": "Stem Length (mm)",
+        "es": "Longitud del Vástago (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the stem / arm between the joint and the base or far end",
+        "es": "Longitud del vástago / brazo entre la articulación y la base o el extremo"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "stem_dia",
+      "type": "slider",
+      "default": 9.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "stem",
+      "modes": [
+        "ball_stud",
+        "socket_cup",
+        "double_ball",
+        "arm_segment"
+      ],
+      "label": {
+        "en": "Stem Diameter (mm)",
+        "es": "Diámetro del Vástago (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the stem / arm",
+        "es": "Grosor del vástago / brazo"
+      }
+    },
+    {
+      "id": "base_dia",
+      "type": "slider",
+      "default": 22.0,
+      "min": 12.0,
+      "max": 50.0,
+      "step": 1.0,
+      "group": "stem",
+      "modes": [
+        "ball_stud",
+        "socket_cup"
+      ],
+      "label": {
+        "en": "Base Diameter (mm)",
+        "es": "Diámetro de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the base plate / socket cup body",
+        "es": "Diámetro de la placa base / cuerpo de la copa"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "phone_ball",
+      "mode": "ball_stud",
+      "label": {
+        "en": "Phone-Mount Ball (16 mm)",
+        "es": "Bola para Teléfono (16 mm)"
+      },
+      "values": {
+        "ball_dia": 16,
+        "stem_len": 25,
+        "stem_dia": 9,
+        "base_dia": 24,
+        "end_type": "ball"
+      }
+    },
+    {
+      "id": "phone_socket",
+      "mode": "socket_cup",
+      "label": {
+        "en": "Matching Socket (16 mm)",
+        "es": "Copa Compatible (16 mm)"
+      },
+      "values": {
+        "ball_dia": 16,
+        "socket_grip": 0.85,
+        "socket_clear": 0.3,
+        "stem_len": 20,
+        "base_dia": 24
+      }
+    },
+    {
+      "id": "gooseneck_link",
+      "mode": "double_ball",
+      "label": {
+        "en": "Gooseneck Link",
+        "es": "Enlace de Cuello de Ganso"
+      },
+      "values": {
+        "ball_dia": 14,
+        "stem_len": 40,
+        "stem_dia": 8
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "socket_grip < 1",
+      "severity": "error",
+      "message": {
+        "en": "Socket grip must be below 1 so the opening captures the ball",
+        "es": "El agarre debe ser menor que 1 para que la apertura capture la bola"
+      }
+    },
+    {
+      "expression": "stem_dia <= ball_dia - 1",
+      "severity": "warning",
+      "message": {
+        "en": "Stem should be thinner than the ball",
+        "es": "El vástago debe ser más delgado que la bola"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        90
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "ball_joint",
+        "label": {
+          "en": "Ball Joint",
+          "es": "Rótula"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "ball_dia",
+          "socket_grip",
+          "socket_clear"
+        ]
+      },
+      {
+        "id": "camera_thread",
+        "label": {
+          "en": "1/4-20 Camera Interface",
+          "es": "Interfaz de Cámara 1/4-20"
+        },
+        "geometry_type": "thread",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "end_type"
+        ],
+        "compatible_with": [
+          "camera-quarter-twenty",
+          "gopro-mount",
+          "sensor-mount-plate",
+          "spigot-adapter"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "One friction ball joint replaces a drawer of proprietary phone, camera, and light mounts — any stud fits any cup at the same ball size, so a broken arm is reprinted, not rebought.",
+      "es": "Una rótula por fricción reemplaza un cajón de soportes propietarios de teléfono, cámara y luz — cualquier perno encaja en cualquier copa del mismo tamaño de bola, así un brazo roto se reimprime, no se recompra."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "ball-socket",
+    "joint",
+    "arm",
+    "mount",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

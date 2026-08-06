@@ -1,3 +1,23 @@
+[tool.ruff]
+# Codifies the backend's actual lint standard so `ruff check .` is deterministic
+# across ruff versions (CI installs latest; without this it drifts and flags
+# pre-existing code on every version bump).
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+# Keep ruff's DEFAULT rule set (what CI runs), plus explicit import-sorting.
+# Only ignore the rules that conflict with deliberate, pervasive patterns here,
+# so `ruff check .` is green and stable without imposing a new stricter standard.
+extend-select = ["I"]  # isort — already applied across the tree
+ignore = [
+  # The API deliberately uses defensive boundaries (`except Exception: ...`) at
+  # startup/capability probes, auth, analytics and IO edges — 38+ intentional
+  # sites. Blind-except and try-except-pass are the intended style here.
+  "BLE001",  # blind except Exception
+  "S110",    # try-except-pass
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]

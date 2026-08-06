@@ -1,0 +1,492 @@
+{
+  "project": {
+    "name": "Bevel / Miter Gear",
+    "slug": "bevel-gear",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A conical bevel gear for right-angle drives. The involute tooth profile is generated at the large (back) end and lofted toward the cone apex so the teeth taper along the pitch cone like a real bevel gear. Equal tooth counts at a 90 deg shaft angle give a miter pair. Uses the Tredgold planar-involute approximation (not spherical octoid flanks) for a printable, watertight bevel.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un engrane cónico para transmisiones en ángulo recto. El perfil de diente de involuta se genera en el extremo grande (trasero) y se transiciona hacia el vértice del cono, de modo que los dientes se estrechan a lo largo del cono de paso como un engrane cónico real. Números de dientes iguales con un ángulo de ejes de 90 grados dan un par de inglete. Usa la aproximación de involuta plana de Tredgold (no flancos octoides esféricos) para un engrane cónico imprimible y hermético.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bevel-gear.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "gear",
+      "bevel",
+      "miter",
+      "conical",
+      "right-angle",
+      "involute",
+      "mechanism",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bevel",
+      "label": {
+        "en": "Bevel Gear",
+        "es": "Engrane Cónico"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bevel"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "miter_pair",
+      "label": {
+        "en": "Miter Pair",
+        "es": "Par de Inglete"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "miter_pair"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 4,
+        "per_part": 18
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "bevel",
+      "label": {
+        "en": "Bevel Gear",
+        "es": "Engrane Cónico"
+      },
+      "render_mode": 0,
+      "color": "#6ea8fe"
+    },
+    {
+      "id": "miter_pair",
+      "label": {
+        "en": "Miter Pair",
+        "es": "Par de Inglete"
+      },
+      "render_mode": 0,
+      "color": "#f59e0b"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "gear",
+      "label": {
+        "en": "Gear Geometry",
+        "es": "Geometría del Engrane"
+      }
+    },
+    {
+      "id": "cone",
+      "label": {
+        "en": "Cone & Body",
+        "es": "Cono y Cuerpo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "m",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.5,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "gear",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "label": {
+        "en": "Module at Large End (mm)",
+        "es": "Módulo en Extremo Grande (mm)"
+      },
+      "tooltip": {
+        "en": "Tooth size measured at the back (large) end of the cone.",
+        "es": "Tamaño del diente medido en el extremo trasero (grande) del cono."
+      }
+    },
+    {
+      "id": "teeth",
+      "type": "slider",
+      "default": 20,
+      "min": 8,
+      "max": 80,
+      "step": 1,
+      "group": "gear",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "label": {
+        "en": "Teeth",
+        "es": "Dientes"
+      },
+      "tooltip": {
+        "en": "Tooth count. Equal counts + 90 deg shaft angle = miter pair.",
+        "es": "Número de dientes. Iguales + ángulo de ejes de 90 grados = par de inglete."
+      }
+    },
+    {
+      "id": "pressure_angle",
+      "type": "select",
+      "default": 20,
+      "group": "gear",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "label": {
+        "en": "Pressure Angle",
+        "es": "Ángulo de Presión"
+      },
+      "tooltip": {
+        "en": "Flank inclination standard. 20 deg is the modern default.",
+        "es": "Estándar de inclinación del flanco. 20 grados es el valor moderno."
+      },
+      "options": [
+        {
+          "value": 14.5,
+          "label": {
+            "en": "14.5 deg (legacy)",
+            "es": "14.5 grados (heredado)"
+          }
+        },
+        {
+          "value": 20,
+          "label": {
+            "en": "20 deg (standard)",
+            "es": "20 grados (estándar)"
+          }
+        },
+        {
+          "value": 25,
+          "label": {
+            "en": "25 deg (high load)",
+            "es": "25 grados (alta carga)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "shaft_angle",
+      "type": "select",
+      "default": 90,
+      "group": "gear",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "label": {
+        "en": "Shaft Angle",
+        "es": "Ángulo de Ejes"
+      },
+      "tooltip": {
+        "en": "Angle between the two shafts. 90 deg with equal teeth is a miter.",
+        "es": "Ángulo entre los dos ejes. 90 grados con dientes iguales es un inglete."
+      },
+      "options": [
+        {
+          "value": 60,
+          "label": {
+            "en": "60 deg",
+            "es": "60 grados"
+          }
+        },
+        {
+          "value": 90,
+          "label": {
+            "en": "90 deg (miter)",
+            "es": "90 grados (inglete)"
+          }
+        },
+        {
+          "value": 120,
+          "label": {
+            "en": "120 deg",
+            "es": "120 grados"
+          }
+        }
+      ]
+    },
+    {
+      "id": "face_width",
+      "type": "slider",
+      "default": 12.0,
+      "min": 2.0,
+      "max": 24.0,
+      "step": 1.0,
+      "group": "cone",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "label": {
+        "en": "Face Width (mm)",
+        "es": "Ancho de Cara (mm)"
+      },
+      "tooltip": {
+        "en": "Tooth length measured along the pitch cone.",
+        "es": "Longitud del diente medida a lo largo del cono de paso."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 0.7
+      }
+    },
+    {
+      "id": "back_height",
+      "type": "slider",
+      "default": 6.0,
+      "min": 1.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "cone",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "label": {
+        "en": "Backing Height (mm)",
+        "es": "Altura de Respaldo (mm)"
+      },
+      "tooltip": {
+        "en": "Solid material behind the large end for the hub and mounting face.",
+        "es": "Material sólido detrás del extremo grande para el cubo y la cara de montaje."
+      }
+    },
+    {
+      "id": "bore",
+      "type": "slider",
+      "default": 6.0,
+      "min": 0.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "cone",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "label": {
+        "en": "Bore (mm)",
+        "es": "Barreno (mm)"
+      },
+      "tooltip": {
+        "en": "Central shaft bore through the axis (0 = solid).",
+        "es": "Barreno central del eje a lo largo del axis (0 = sólido)."
+      }
+    },
+    {
+      "id": "flank_pts",
+      "type": "slider",
+      "default": 7,
+      "min": 4,
+      "max": 14,
+      "step": 1,
+      "group": "cone",
+      "modes": [
+        "bevel",
+        "miter_pair"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Flank Samples",
+        "es": "Muestras de Flanco"
+      },
+      "tooltip": {
+        "en": "Involute samples per flank (facet control).",
+        "es": "Muestras de involuta por flanco (control de facetas)."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "miter_1to1",
+      "mode": "miter_pair",
+      "label": {
+        "en": "1:1 Miter Set (M2)",
+        "es": "Conjunto Inglete 1:1 (M2)"
+      },
+      "values": {
+        "m": 2,
+        "teeth": 20,
+        "pressure_angle": 20,
+        "shaft_angle": 90,
+        "face_width": 10,
+        "bore": 5
+      }
+    },
+    {
+      "id": "single_bevel",
+      "mode": "bevel",
+      "label": {
+        "en": "Single Bevel (M3)",
+        "es": "Cónico Sencillo (M3)"
+      },
+      "values": {
+        "m": 3,
+        "teeth": 24,
+        "pressure_angle": 20,
+        "shaft_angle": 90,
+        "face_width": 14,
+        "bore": 6
+      }
+    },
+    {
+      "id": "shallow_bevel",
+      "mode": "bevel",
+      "label": {
+        "en": "Shallow-Cone Bevel (60 deg)",
+        "es": "Cónico de Cono Bajo (60 grados)"
+      },
+      "values": {
+        "m": 2,
+        "teeth": 18,
+        "pressure_angle": 20,
+        "shaft_angle": 60,
+        "face_width": 10,
+        "bore": 5
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bore < teeth * m / 2",
+      "severity": "warning",
+      "message": {
+        "en": "Bore is large relative to the small-end root circle",
+        "es": "El barreno es grande respecto al círculo de raíz del extremo pequeño"
+      }
+    },
+    {
+      "expression": "m >= 0.5",
+      "severity": "error",
+      "message": {
+        "en": "Module must be at least 0.5 mm",
+        "es": "El módulo debe ser de al menos 0.5 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        110
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        220
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -220,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 16,
+    "fn_factor": 64,
+    "wasm_multiplier": 5,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "bevel_gear_tooth",
+        "label": {
+          "en": "Bevel Gear Tooth",
+          "es": "Diente de Engrane Cónico"
+        },
+        "geometry_type": "spline",
+        "standard": "ISO 23509",
+        "parameters": [
+          "m",
+          "teeth",
+          "shaft_angle",
+          "pressure_angle"
+        ]
+      },
+      {
+        "id": "hub_bore_mount",
+        "label": {
+          "en": "Hub Bore Mount",
+          "es": "Montaje de Barreno del Cubo"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "bore",
+          "back_height"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Right-angle power transfer without a commercial gearbox: hand-cranked mechanisms, differentials, and rotary tools. A commons bevel generator lets makers print matched miter pairs at any module for repairs and new builds.",
+      "es": "Transferencia de potencia en ángulo recto sin una caja reductora comercial: mecanismos de manivela, diferenciales y herramientas rotativas. Un generador de engranes cónicos del procomún permite imprimir pares de inglete coincidentes en cualquier módulo para reparaciones y nuevos proyectos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "gear",
+    "bevel",
+    "miter",
+    "right-angle",
+    "involute",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

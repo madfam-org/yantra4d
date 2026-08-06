@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Reagent Bottle Clip",
+    "slug": "reagent-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Snap-on identification hardware for reagent and solution bottles: a C-clip that grips the bottle body and presents a flat label window, a keyhole neck tag, and a cap marker disc that colour-codes a screw cap.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de identificación a presión para botellas de reactivos y soluciones: un clip en C que sujeta el cuerpo de la botella y presenta una ventana de etiqueta plana, una etiqueta de cuello tipo cerradura y un disco marcador de tapa que codifica por color una tapa roscada.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/reagent-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["reagent", "bottle", "label", "clip", "tag", "lab", "identification", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "label_clip",
+      "label": { "en": "Label Clip", "es": "Clip de Etiqueta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["label_clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "neck_tag",
+      "label": { "en": "Neck Tag", "es": "Etiqueta de Cuello" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["neck_tag"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "cap_marker",
+      "label": { "en": "Cap Marker", "es": "Marcador de Tapa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cap_marker"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "label_clip", "label": { "en": "Label Clip", "es": "Clip de Etiqueta" }, "render_mode": 0, "color": "#9d174d" },
+    { "id": "neck_tag", "label": { "en": "Neck Tag", "es": "Etiqueta de Cuello" }, "render_mode": 0, "color": "#be185d" },
+    { "id": "cap_marker", "label": { "en": "Cap Marker", "es": "Marcador de Tapa" }, "render_mode": 0, "color": "#db2777" }
+  ],
+  "parameter_groups": [
+    { "id": "bottle", "label": { "en": "Bottle", "es": "Botella" } },
+    { "id": "label", "label": { "en": "Label Window", "es": "Ventana de Etiqueta" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "bottle_dia", "type": "slider", "default": 54.0, "min": 15.0, "max": 120.0, "step": 1.0,
+      "group": "bottle", "modes": ["label_clip"],
+      "label": { "en": "Bottle Diameter (mm)", "es": "Diámetro de Botella (mm)" },
+      "tooltip": { "en": "Outer diameter of the bottle body the clip grips", "es": "Diámetro exterior del cuerpo de la botella que sujeta el clip" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "neck_dia", "type": "slider", "default": 28.0, "min": 10.0, "max": 80.0, "step": 0.5,
+      "group": "bottle", "modes": ["neck_tag", "cap_marker"],
+      "label": { "en": "Neck / Cap Diameter (mm)", "es": "Diámetro de Cuello / Tapa (mm)" },
+      "tooltip": { "en": "Neck diameter for the tag collar and the cap-marker size", "es": "Diámetro de cuello para el collar de la etiqueta y el tamaño del marcador de tapa" }
+    },
+    {
+      "id": "label_w", "type": "slider", "default": 40.0, "min": 15.0, "max": 90.0, "step": 1.0,
+      "group": "label", "modes": ["label_clip", "neck_tag"],
+      "label": { "en": "Label Width (mm)", "es": "Ancho de Etiqueta (mm)" },
+      "tooltip": { "en": "Width of the write-on label window", "es": "Ancho de la ventana de etiqueta para escribir" }
+    },
+    {
+      "id": "label_h", "type": "slider", "default": 24.0, "min": 10.0, "max": 70.0, "step": 1.0,
+      "group": "label", "modes": ["label_clip", "neck_tag"],
+      "label": { "en": "Label Height (mm)", "es": "Alto de Etiqueta (mm)" },
+      "tooltip": { "en": "Height of the write-on label window", "es": "Alto de la ventana de etiqueta para escribir" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "body", "modes": ["label_clip", "neck_tag", "cap_marker"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Clip band / plate thickness", "es": "Grosor de la banda del clip / placa" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.5, "min": 0.0, "max": 2.0, "step": 0.05,
+      "group": "body", "modes": ["label_clip", "neck_tag"],
+      "label": { "en": "Grip Clearance (mm)", "es": "Holgura de Agarre (mm)" },
+      "tooltip": { "en": "Per-side gap so the clip snaps on and grips", "es": "Espacio por lado para que el clip encaje y sujete" }
+    },
+    {
+      "id": "clip_h", "type": "slider", "default": 18.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "body", "modes": ["label_clip"],
+      "label": { "en": "Clip Band Height (mm)", "es": "Alto de Banda del Clip (mm)" },
+      "tooltip": { "en": "How tall the gripping band is around the bottle", "es": "Qué tan alta es la banda de agarre alrededor de la botella" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "wash_bottle", "mode": "label_clip",
+      "label": { "en": "Wash-Bottle Clip (54 mm)", "es": "Clip de Piseta (54 mm)" },
+      "values": { "bottle_dia": 54, "label_w": 40, "label_h": 24 }
+    },
+    {
+      "id": "reagent_neck_tag", "mode": "neck_tag",
+      "label": { "en": "Reagent Neck Tag", "es": "Etiqueta de Cuello" },
+      "values": { "neck_dia": 28, "label_w": 45, "label_h": 20 }
+    },
+    {
+      "id": "cap_colorcode", "mode": "cap_marker",
+      "label": { "en": "Cap Colour-Code Marker", "es": "Marcador de Color de Tapa" },
+      "values": { "neck_dia": 28, "wall": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 1.5",
+      "severity": "warning",
+      "message": { "en": "Large clearance loosens the clip grip", "es": "Una holgura grande afloja el agarre del clip" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Thickness must be at least 2 mm", "es": "El grosor debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "bottle_label_clip",
+        "label": { "en": "Bottle Label Clip", "es": "Clip de Etiqueta de Botella" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["bottle_dia", "neck_dia", "wall", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Mislabelled reagents are a real safety hazard, and adhesive labels fail on solvent bottles. A reusable snap-on clip with a write-on window gives durable, relabelable identification without adhesive residue.",
+      "es": "Los reactivos mal etiquetados son un peligro real de seguridad, y las etiquetas adhesivas fallan en botellas con solventes. Un clip reutilizable a presión con ventana para escribir da identificación duradera y reetiquetable sin residuo de adhesivo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["reagent", "bottle", "label", "clip", "lab", "medical", "hyperobject", "commons"]
+}

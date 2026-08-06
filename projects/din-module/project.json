@@ -1,0 +1,472 @@
+{
+  "project": {
+    "name": "DIN Module Carrier",
+    "slug": "din-module",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Snaps a bare PCB or electronics module onto standard top-hat DIN rail (TS35, DIN EN 60715) — the backbone of control panels and consumer units. The carrier holds the board in a walled bay and grabs the two rolled rail lips from behind: one hook is a rigid reference face, the opposite hook rides a cantilever spring beam (a compliant mechanism), so a printed clip grips through geometry rather than permanently strained plastic, avoiding creep and fatigue. Terminal-block and double-width variants included.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Fija una PCB o módulo electrónico en riel DIN de sombrero estándar (TS35, DIN EN 60715) — la columna vertebral de tableros de control. El portador sostiene la placa en una bahía con paredes y agarra los dos labios enrollados del riel por detrás: un gancho es una cara rígida de referencia, el opuesto va sobre una viga resorte en voladizo (un mecanismo flexible), así un clip impreso agarra por geometría y no por plástico permanentemente tensado, evitando la fluencia y la fatiga. Incluye variantes de bloque de terminales y doble ancho.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/din-module.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "din-rail",
+      "ts35",
+      "pcb",
+      "module",
+      "compliant",
+      "snap-fit",
+      "control-panel",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "module_carrier",
+      "label": {
+        "en": "Module Carrier",
+        "es": "Portamódulo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "module_carrier"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "terminal_block",
+      "label": {
+        "en": "Terminal Block",
+        "es": "Bloque de Terminales"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "terminal_block"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "wide_carrier",
+      "label": {
+        "en": "Wide Carrier",
+        "es": "Portador Ancho"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "wide_carrier"
+      ],
+      "estimate": {
+        "base_time": 13,
+        "per_unit": 3,
+        "per_part": 15
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "module_carrier",
+      "label": {
+        "en": "Module Carrier",
+        "es": "Portamódulo"
+      },
+      "render_mode": 0,
+      "color": "#8a6d3b"
+    },
+    {
+      "id": "terminal_block",
+      "label": {
+        "en": "Terminal Block",
+        "es": "Bloque de Terminales"
+      },
+      "render_mode": 0,
+      "color": "#a5824a"
+    },
+    {
+      "id": "wide_carrier",
+      "label": {
+        "en": "Wide Carrier",
+        "es": "Portador Ancho"
+      },
+      "render_mode": 0,
+      "color": "#c19a5b"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bay",
+      "label": {
+        "en": "PCB Bay",
+        "es": "Bahía de PCB"
+      }
+    },
+    {
+      "id": "structure",
+      "label": {
+        "en": "Structure",
+        "es": "Estructura"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Rail Grip",
+        "es": "Agarre al Riel"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bay_w",
+      "type": "slider",
+      "default": 45.0,
+      "min": 30.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "bay",
+      "modes": [
+        "module_carrier",
+        "wide_carrier"
+      ],
+      "label": {
+        "en": "Bay Width (mm)",
+        "es": "Ancho de Bahía (mm)"
+      },
+      "tooltip": {
+        "en": "Interior width across the PCB bay",
+        "es": "Ancho interior de la bahía"
+      }
+    },
+    {
+      "id": "bay_h",
+      "type": "slider",
+      "default": 30.0,
+      "min": 8.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "bay",
+      "modes": [
+        "module_carrier",
+        "terminal_block",
+        "wide_carrier"
+      ],
+      "label": {
+        "en": "Bay Height (mm)",
+        "es": "Altura de Bahía (mm)"
+      },
+      "tooltip": {
+        "en": "How tall the bay walls stand",
+        "es": "Altura de las paredes de la bahía"
+      }
+    },
+    {
+      "id": "pcb_w",
+      "type": "slider",
+      "default": 40.0,
+      "min": 8.0,
+      "max": 110.0,
+      "step": 1.0,
+      "group": "bay",
+      "modes": [
+        "module_carrier",
+        "wide_carrier"
+      ],
+      "label": {
+        "en": "PCB Width (mm)",
+        "es": "Ancho de PCB (mm)"
+      },
+      "tooltip": {
+        "en": "Board width held by the retention ribs",
+        "es": "Ancho de la placa retenida por las costillas"
+      }
+    },
+    {
+      "id": "pcb_th",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "bay",
+      "modes": [
+        "module_carrier",
+        "wide_carrier"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "PCB Thickness (mm)",
+        "es": "Grosor de PCB (mm)"
+      },
+      "tooltip": {
+        "en": "Board thickness (retention-slot width)",
+        "es": "Grosor de la placa (ancho de la ranura)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "structure",
+      "modes": [
+        "module_carrier",
+        "terminal_block",
+        "wide_carrier"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Bay wall thickness",
+        "es": "Grosor de la pared de la bahía"
+      }
+    },
+    {
+      "id": "plate_th",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.2,
+      "group": "structure",
+      "modes": [
+        "module_carrier",
+        "terminal_block",
+        "wide_carrier"
+      ],
+      "label": {
+        "en": "Base Plate Thickness (mm)",
+        "es": "Grosor de Placa Base (mm)"
+      },
+      "tooltip": {
+        "en": "Mount-plate thickness over the rail",
+        "es": "Grosor de la placa sobre el riel"
+      }
+    },
+    {
+      "id": "spring_thick",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "grip",
+      "modes": [
+        "module_carrier",
+        "terminal_block",
+        "wide_carrier"
+      ],
+      "label": {
+        "en": "Spring Beam Thickness (mm)",
+        "es": "Grosor de Viga Resorte (mm)"
+      },
+      "tooltip": {
+        "en": "Compliant hook stiffness: thinner = easier snap, thicker = firmer hold",
+        "es": "Rigidez del gancho flexible: más delgado = más fácil, más grueso = más firme"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "small_pcb",
+      "mode": "module_carrier",
+      "label": {
+        "en": "Small Module (45 mm)",
+        "es": "Módulo Pequeño (45 mm)"
+      },
+      "values": {
+        "bay_w": 45,
+        "bay_h": 30,
+        "pcb_w": 40
+      }
+    },
+    {
+      "id": "terminals",
+      "mode": "terminal_block",
+      "label": {
+        "en": "Terminal Strip",
+        "es": "Regleta de Terminales"
+      },
+      "values": {
+        "bay_h": 24,
+        "plate_th": 4
+      }
+    },
+    {
+      "id": "big_module",
+      "mode": "wide_carrier",
+      "label": {
+        "en": "Wide Module (80 mm)",
+        "es": "Módulo Ancho (80 mm)"
+      },
+      "values": {
+        "bay_w": 80,
+        "bay_h": 40,
+        "pcb_w": 72
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pcb_w <= bay_w",
+      "severity": "warning",
+      "message": {
+        "en": "PCB wider than the bay will not fit",
+        "es": "Una PCB más ancha que la bahía no cabe"
+      }
+    },
+    {
+      "expression": "plate_th >= 2.5",
+      "severity": "error",
+      "message": {
+        "en": "Base plate must be at least 2.5 mm",
+        "es": "La placa base debe ser de al menos 2.5 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        90
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "din_ts35_rail",
+        "label": {
+          "en": "DIN TS35 Rail Profile",
+          "es": "Perfil de Riel DIN TS35"
+        },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715",
+        "parameters": [
+          "plate_th"
+        ],
+        "compatible_with": [
+          "busbar-support",
+          "devboard-tray",
+          "din-rail-clip",
+          "terminal-cover"
+        ]
+      },
+      {
+        "id": "compliant_spring_hook",
+        "label": {
+          "en": "Compliant Spring Hook",
+          "es": "Gancho Resorte Flexible"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "spring_thick",
+          "plate_th"
+        ]
+      },
+      {
+        "id": "pcb_bay",
+        "label": {
+          "en": "PCB Retention Bay",
+          "es": "Bahía de Retención de PCB"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "bay_w",
+          "bay_h",
+          "pcb_w",
+          "pcb_th"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Puts any bare PCB onto the universal DIN rail without a proprietary carrier, so hobbyists and technicians can mount, adapt and repair control-panel hardware. The compliant spring hook makes a printed clip that survives creep, so the mount lasts and enclosures get repaired instead of scrapped.",
+      "es": "Coloca cualquier PCB en el riel DIN universal sin un portador propietario, para que aficionados y técnicos monten, adapten y reparen equipo de tableros. El gancho resorte flexible hace un clip impreso que resiste la fluencia, así el montaje dura y los gabinetes se reparan en vez de desecharse."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "din-rail",
+    "ts35",
+    "pcb",
+    "module",
+    "compliant",
+    "control-panel",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

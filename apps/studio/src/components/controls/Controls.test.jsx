@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import Controls from './Controls'
@@ -7,6 +7,27 @@ import { renderWithProviders } from '../../test/render-with-providers'
 import fallbackManifest from '../../config/fallback-manifest.json'
 
 expect.extend(toHaveNoViolations)
+
+// Partial mock of the manifest context: keeps the REAL provider/hook behavior for
+// every test, but lets a single test force an empty parameter set so we can exercise
+// Controls' "no parameters" empty-state branch. The dual-kernel Gridfinity fallback
+// manifest has base params with no `visible_in_modes`, so they render for every mode
+// (even unknown ones) — there is no genuinely param-less mode to select otherwise.
+const { manifestOverride } = vi.hoisted(() => ({ manifestOverride: { emptyParams: false } }))
+
+vi.mock('../../contexts/project/ManifestProvider', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useManifest: () => {
+      const real = actual.useManifest()
+      if (manifestOverride.emptyParams) {
+        return { ...real, getParametersForMode: () => [] }
+      }
+      return real
+    },
+  }
+})
 
 // Wrap with required providers
 function renderControls(props = {}) {
@@ -31,12 +52,19 @@ function renderControls(props = {}) {
   return renderWithProviders(<Controls {...defaultProps} {...props} />)
 }
 
+afterEach(() => {
+  manifestOverride.emptyParams = false
+})
+
 describe('Controls', () => {
   it('renders slider labels for cup mode parameters', () => {
     renderControls()
-    expect(screen.getByText('Width (units)')).toBeInTheDocument()
-    expect(screen.getByText('Depth (units)')).toBeInTheDocument()
-    expect(screen.getByText('Height (units)')).toBeInTheDocument()
+    // In cup mode both the CadQuery dimension params (grid_x/grid_y/grid_z) and the
+    // OpenSCAD dimension params (width_units/depth_units/height_units) render, so each
+    // dimension label appears more than once — assert at least one of each is present.
+    expect(screen.getAllByText('Width (units)').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Depth (units)').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Height (units)').length).toBeGreaterThan(0)
   })
 
 
@@ -53,20 +81,27 @@ describe('Controls', () => {
     })
     expect(screen.getByText('Width (units)')).toBeInTheDocument()
     expect(screen.getByText('Depth (units)')).toBeInTheDocument()
-    expect(screen.getByText('Corner Radius (mm)')).toBeInTheDocument()
+    // The baseplate mode's own baseplate-scoped slider is Baseplate Thickness
+    // (bp_thickness); Corner Radius (bp_corner_radius) is scoped to baseplate_scad.
+    expect(screen.getByText('Baseplate Thickness (mm)')).toBeInTheDocument()
   })
 
 
   it('sliders are labelled via aria-labelledby pointing to the parameter label', () => {
     renderControls()
-    expect(screen.getByLabelText('Width (units)')).toBeInTheDocument()
-    expect(screen.getByLabelText('Depth (units)')).toBeInTheDocument()
-    expect(screen.getByLabelText('Height (units)')).toBeInTheDocument()
+    // cup mode renders duplicate dimension labels (CadQuery + OpenSCAD), so use the
+    // *All* variant — every matching slider must be reachable by its accessible name.
+    expect(screen.getAllByLabelText('Width (units)').length).toBeGreaterThan(0)
+    expect(screen.getAllByLabelText('Depth (units)').length).toBeGreaterThan(0)
+    expect(screen.getAllByLabelText('Height (units)').length).toBeGreaterThan(0)
   })
 
   it('value displays have descriptive aria-label', () => {
     renderControls()
-    const valueDisplay = screen.getByLabelText(/Width \(units\): 2\. (Click to edit|Clic para editar)/)
+    // Width (units) renders twice in cup mode (grid_x + width_units), both default 2.
+    const valueDisplays = screen.getAllByLabelText(/Width \(units\): 2\. (Click to edit|Clic para editar)/)
+    expect(valueDisplays.length).toBeGreaterThan(0)
+    const valueDisplay = valueDisplays[0]
     expect(valueDisplay).toBeInTheDocument()
     expect(valueDisplay).toHaveAttribute('role', 'button')
     expect(valueDisplay).toHaveAttribute('tabIndex', '0')
@@ -124,7 +159,9 @@ describe('Controls', () => {
 
 
   it('renders no parameters message when mode has no params', () => {
-    // Use a mode that has no params by providing an unknown mode
+    // Force an empty parameter set for this mode via the manifest override so the
+    // empty-state branch (hasNoParameters && no presets) actually renders.
+    manifestOverride.emptyParams = true
     renderControls({
       mode: 'nonexistent_mode',
       params: {},

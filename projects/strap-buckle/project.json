@@ -1,0 +1,461 @@
+{
+  "project": {
+    "name": "Webbing Buckle & Adjusters",
+    "slug": "strap-buckle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Standard side-release buckle and strap adjusters for 20 / 25 / 38 mm webbing. A two-part buckle whose male prongs snap into the female housing, a ladder-lock slider, and a tri-glide. All parts share one webbing-slot geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Hebilla de liberación lateral y ajustadores estándar para cincha de 20 / 25 / 38 mm. Una hebilla de dos piezas cuyas lengüetas macho encajan a presión en la carcasa hembra, un ajustador tipo escalera y un tri-glide. Todas las piezas comparten una misma geometría de ranura de cincha.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/strap-buckle.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "buckle",
+      "webbing",
+      "strap",
+      "side-release",
+      "slider",
+      "tri-glide",
+      "edc",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "side_release",
+      "label": {
+        "en": "Side-Release Buckle",
+        "es": "Hebilla de Liberación Lateral"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "side_release"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "slider",
+      "label": {
+        "en": "Strap Slider",
+        "es": "Ajustador de Cincha"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "slider"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "tri_glide",
+      "label": {
+        "en": "Tri-Glide",
+        "es": "Tri-Glide"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tri_glide"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "side_release",
+      "label": {
+        "en": "Side-Release Buckle",
+        "es": "Hebilla de Liberación Lateral"
+      },
+      "render_mode": 0,
+      "color": "#4a6f8a"
+    },
+    {
+      "id": "slider",
+      "label": {
+        "en": "Strap Slider",
+        "es": "Ajustador de Cincha"
+      },
+      "render_mode": 0,
+      "color": "#6b8fa8"
+    },
+    {
+      "id": "tri_glide",
+      "label": {
+        "en": "Tri-Glide",
+        "es": "Tri-Glide"
+      },
+      "render_mode": 0,
+      "color": "#8bb0c6"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "webbing",
+      "label": {
+        "en": "Webbing",
+        "es": "Cincha"
+      }
+    },
+    {
+      "id": "snap",
+      "label": {
+        "en": "Snap Fit",
+        "es": "Ajuste a Presión"
+      }
+    },
+    {
+      "id": "build",
+      "label": {
+        "en": "Build",
+        "es": "Construcción"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing",
+      "type": "select",
+      "default": "25mm",
+      "group": "webbing",
+      "modes": [
+        "side_release",
+        "slider",
+        "tri_glide"
+      ],
+      "label": {
+        "en": "Webbing Width",
+        "es": "Ancho de Cincha"
+      },
+      "tooltip": {
+        "en": "Nominal webbing width the buckle fits",
+        "es": "Ancho nominal de cincha para la hebilla"
+      },
+      "options": [
+        {
+          "value": "20mm",
+          "label": {
+            "en": "20 mm",
+            "es": "20 mm"
+          }
+        },
+        {
+          "value": "25mm",
+          "label": {
+            "en": "25 mm (1 in)",
+            "es": "25 mm (1 pulg)"
+          }
+        },
+        {
+          "value": "38mm",
+          "label": {
+            "en": "38 mm (1.5 in)",
+            "es": "38 mm (1.5 pulg)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "web_t",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "webbing",
+      "modes": [
+        "side_release",
+        "slider",
+        "tri_glide"
+      ],
+      "label": {
+        "en": "Webbing Thickness (mm)",
+        "es": "Grosor de Cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the webbing strap",
+        "es": "Grosor de la cincha"
+      }
+    },
+    {
+      "id": "snap_clear",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.2,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "snap",
+      "modes": [
+        "side_release"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Snap Clearance (mm)",
+        "es": "Holgura de Ajuste (mm)"
+      },
+      "tooltip": {
+        "en": "Per-face gap between the male and female halves for a printable snap fit",
+        "es": "Espacio por cara entre las piezas macho y hembra para un ajuste imprimible"
+      }
+    },
+    {
+      "id": "snap_ledge",
+      "type": "slider",
+      "default": 1.4,
+      "min": 0.8,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "snap",
+      "modes": [
+        "side_release"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Barb Ledge (mm)",
+        "es": "Reborde de Enganche (mm)"
+      },
+      "tooltip": {
+        "en": "How far the prong barbs stand proud to catch the housing windows",
+        "es": "Cuánto sobresalen los enganches de las lengüetas para atrapar las ventanas de la carcasa"
+      }
+    },
+    {
+      "id": "show_gap",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "snap",
+      "modes": [
+        "side_release"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Explode Gap (mm)",
+        "es": "Separación de Vista (mm)"
+      },
+      "tooltip": {
+        "en": "Slide the male half out for an exploded assembly view (cosmetic)",
+        "es": "Desliza la pieza macho para una vista explosionada (cosmético)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 4.0,
+      "step": 0.2,
+      "group": "build",
+      "modes": [
+        "side_release",
+        "slider",
+        "tri_glide"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Structural wall / bar thickness",
+        "es": "Grosor de la pared / barra estructural"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "buckle_25mm",
+      "mode": "side_release",
+      "label": {
+        "en": "25 mm Side-Release Buckle",
+        "es": "Hebilla 25 mm"
+      },
+      "values": {
+        "webbing": "25mm",
+        "web_t": 2.0,
+        "wall": 2.4
+      }
+    },
+    {
+      "id": "buckle_38mm_pack",
+      "mode": "side_release",
+      "label": {
+        "en": "38 mm Pack Buckle",
+        "es": "Hebilla 38 mm para Mochila"
+      },
+      "values": {
+        "webbing": "38mm",
+        "web_t": 2.5,
+        "wall": 3.0
+      }
+    },
+    {
+      "id": "slider_20mm",
+      "mode": "slider",
+      "label": {
+        "en": "20 mm Strap Slider",
+        "es": "Ajustador 20 mm"
+      },
+      "values": {
+        "webbing": "20mm",
+        "web_t": 1.5,
+        "wall": 2.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.6 mm",
+        "es": "La pared debe ser de al menos 1.6 mm"
+      }
+    },
+    {
+      "expression": "snap_ledge > snap_clear",
+      "severity": "warning",
+      "message": {
+        "en": "Barb ledge should exceed the snap clearance to latch",
+        "es": "El reborde debe superar la holgura para enganchar"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        70
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "side_release_snap",
+        "label": {
+          "en": "Side-Release Snap",
+          "es": "Enganche de Liberación Lateral"
+        },
+        "geometry_type": "snap",
+        "standard": "20/25/38mm webbing",
+        "parameters": [
+          "webbing",
+          "snap_clear",
+          "snap_ledge",
+          "wall"
+        ],
+        "compatible_with": [
+          "molle-clip",
+          "paracord-jig",
+          "pet-hardware"
+        ]
+      },
+      {
+        "id": "webbing_slot",
+        "label": {
+          "en": "Webbing Slot",
+          "es": "Ranura de Cincha"
+        },
+        "geometry_type": "rail",
+        "standard": "20/25/38mm webbing",
+        "parameters": [
+          "webbing",
+          "web_t"
+        ],
+        "compatible_with": [
+          "molle-clip",
+          "paracord-jig",
+          "pet-hardware"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Field-replaceable buckle hardware for the standard webbing widths — repair a pack, sling, or strap on the spot instead of discarding gear over a single broken buckle.",
+      "es": "Herrajes de hebilla reemplazables en campo para los anchos de cincha estándar — repara una mochila, correa o cincha al momento en vez de desechar equipo por una hebilla rota."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "buckle",
+    "webbing",
+    "strap",
+    "edc",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,414 @@
+{
+  "project": {
+    "name": "Pet Collar Hardware",
+    "slug": "pet-hardware",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Printable webbing hardware for pet collars and leashes, all sized to a standard webbing width (20 mm or 25 mm): a side-release buckle housing, a D-ring anchor plate for a leash or tag, and a soft tag silencer that stops the ID tag jingling.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de cincha imprimibles para collares y correas de mascotas, todos dimensionados a un ancho de cincha estándar (20 mm o 25 mm): una carcasa de hebilla de liberación lateral, una placa con anilla D para correa o placa de identificación, y un silenciador suave que evita que la placa suene.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pet-hardware.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "pet",
+      "collar",
+      "leash",
+      "buckle",
+      "d-ring",
+      "webbing",
+      "hardware",
+      "household",
+      "hyperobject",
+      "commons",
+      "cdg"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "side_buckle",
+      "label": {
+        "en": "Side-Release Buckle",
+        "es": "Hebilla de Liberación Lateral"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "side_buckle"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    },
+    {
+      "id": "d_ring",
+      "label": {
+        "en": "D-Ring Plate",
+        "es": "Placa con Anilla D"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "d_ring"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "tag_silencer",
+      "label": {
+        "en": "Tag Silencer",
+        "es": "Silenciador de Placa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tag_silencer"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "side_buckle",
+      "label": {
+        "en": "Side-Release Buckle",
+        "es": "Hebilla de Liberación Lateral"
+      },
+      "render_mode": 0,
+      "color": "#7e22ce"
+    },
+    {
+      "id": "d_ring",
+      "label": {
+        "en": "D-Ring Plate",
+        "es": "Placa con Anilla D"
+      },
+      "render_mode": 0,
+      "color": "#9333ea"
+    },
+    {
+      "id": "tag_silencer",
+      "label": {
+        "en": "Tag Silencer",
+        "es": "Silenciador de Placa"
+      },
+      "render_mode": 0,
+      "color": "#a855f7"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "webbing",
+      "label": {
+        "en": "Webbing",
+        "es": "Cincha"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    },
+    {
+      "id": "ring",
+      "label": {
+        "en": "Ring / Tag",
+        "es": "Anilla / Placa"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing",
+      "type": "select",
+      "default": "25mm",
+      "group": "webbing",
+      "modes": [
+        "side_buckle",
+        "d_ring",
+        "tag_silencer"
+      ],
+      "label": {
+        "en": "Webbing Width",
+        "es": "Ancho de Cincha"
+      },
+      "tooltip": {
+        "en": "Standard collar webbing width this hardware threads",
+        "es": "Ancho de cincha de collar estándar que enhebra este herraje"
+      },
+      "options": [
+        {
+          "value": "20mm",
+          "label": {
+            "en": "20 mm webbing",
+            "es": "Cincha 20 mm"
+          }
+        },
+        {
+          "value": "25mm",
+          "label": {
+            "en": "25 mm webbing",
+            "es": "Cincha 25 mm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "web_th",
+      "type": "slider",
+      "default": 2.5,
+      "min": 1.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "webbing",
+      "modes": [
+        "side_buckle",
+        "d_ring",
+        "tag_silencer"
+      ],
+      "label": {
+        "en": "Webbing Thickness (mm)",
+        "es": "Grosor de Cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the webbing (sets the slot height)",
+        "es": "Grosor de la cincha (define la altura de la ranura)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "body",
+      "modes": [
+        "side_buckle",
+        "d_ring",
+        "tag_silencer"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Housing / plate wall thickness",
+        "es": "Grosor de pared de la carcasa / placa"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.0,
+      "max": 1.2,
+      "step": 0.05,
+      "group": "body",
+      "modes": [
+        "side_buckle",
+        "d_ring"
+      ],
+      "label": {
+        "en": "Slot Clearance (mm)",
+        "es": "Holgura de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap so webbing threads and the latch clicks",
+        "es": "Espacio por lado para que la cincha pase y la hebilla cierre"
+      }
+    },
+    {
+      "id": "ring_dia",
+      "type": "slider",
+      "default": 22.0,
+      "min": 12.0,
+      "max": 45.0,
+      "step": 1.0,
+      "group": "ring",
+      "modes": [
+        "d_ring",
+        "tag_silencer"
+      ],
+      "label": {
+        "en": "Ring / Tag Size (mm)",
+        "es": "Tamaño de Anilla / Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Inner size of the D-ring, or the tag diameter for the silencer",
+        "es": "Tamaño interior de la anilla D, o diámetro de la placa para el silenciador"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "buckle_25",
+      "mode": "side_buckle",
+      "label": {
+        "en": "25 mm Side Buckle",
+        "es": "Hebilla Lateral 25 mm"
+      },
+      "values": {
+        "webbing": "25mm",
+        "web_th": 2.5
+      }
+    },
+    {
+      "id": "leash_dring",
+      "mode": "d_ring",
+      "label": {
+        "en": "Leash D-Ring (25 mm)",
+        "es": "Anilla D para Correa (25 mm)"
+      },
+      "values": {
+        "webbing": "25mm",
+        "ring_dia": 25
+      }
+    },
+    {
+      "id": "quiet_tag",
+      "mode": "tag_silencer",
+      "label": {
+        "en": "Quiet Tag Cover",
+        "es": "Cubierta Silenciadora"
+      },
+      "values": {
+        "ring_dia": 25,
+        "web_th": 2.5
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 0.9",
+      "severity": "warning",
+      "message": {
+        "en": "Large clearance loosens the buckle latch",
+        "es": "Una holgura grande afloja el cierre de la hebilla"
+      }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 2 mm to hold load",
+        "es": "La pared debe ser de al menos 2 mm para soportar carga"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        110
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -110,
+        25
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 11,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "collar_webbing",
+        "label": {
+          "en": "Collar Webbing",
+          "es": "Cincha de Collar"
+        },
+        "geometry_type": "snap",
+        "standard": "20/25mm webbing",
+        "parameters": [
+          "webbing",
+          "web_th",
+          "wall",
+          "clearance"
+        ],
+        "compatible_with": [
+          "molle-clip",
+          "paracord-jig",
+          "strap-buckle"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A broken collar buckle strands an owner without a walk. Hardware sized to the universal 20/25 mm webbing standard means a replacement buckle, D-ring, or tag silencer prints in minutes from common filament, extending the life of a collar instead of discarding it.",
+      "es": "Una hebilla de collar rota deja al dueño sin paseo. Herrajes dimensionados al estándar universal de cincha de 20/25 mm significan que una hebilla, anilla D o silenciador de repuesto se imprime en minutos con filamento común, alargando la vida del collar en vez de desecharlo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "pet",
+    "collar",
+    "leash",
+    "buckle",
+    "webbing",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

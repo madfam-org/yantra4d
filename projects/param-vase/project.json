@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Parametric Vase",
+    "slug": "param-vase",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A generative vase whose silhouette is a polar radius function extruded, optionally twisting as it rises. Pick a profile family — round, faceted N-gon, lobed/twisted, or superformula — and dial base diameter, height, wall, twist, and lobe count. The result is a hollow watertight vessel with a closed floor.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un jarrón generativo cuya silueta es una función de radio polar extruida, que opcionalmente gira al elevarse. Elige una familia de perfil — redondo, facetado (polígono), lobulado/torcido o superfórmula — y ajusta diámetro base, altura, pared, torsión y número de lóbulos. El resultado es un recipiente hueco estanco con piso cerrado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/param-vase.webp",
+    "difficulty": "intermediate",
+    "tags": ["vase", "generative", "decor", "superformula", "twisted", "parametric", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "vase",
+      "label": { "en": "Vase", "es": "Jarrón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["vase"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "twisted_vase",
+      "label": { "en": "Twisted Vase", "es": "Jarrón Torcido" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["twisted_vase"],
+      "estimate": { "base_time": 16, "per_unit": 5, "per_part": 18 }
+    },
+    {
+      "id": "faceted_vase",
+      "label": { "en": "Faceted Vase", "es": "Jarrón Facetado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["faceted_vase"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "vase", "label": { "en": "Vase", "es": "Jarrón" }, "render_mode": 0, "color": "#6a8f4f" },
+    { "id": "twisted_vase", "label": { "en": "Twisted Vase", "es": "Jarrón Torcido" }, "render_mode": 0, "color": "#84a86a" },
+    { "id": "faceted_vase", "label": { "en": "Faceted Vase", "es": "Jarrón Facetado" }, "render_mode": 0, "color": "#9fc084" }
+  ],
+  "parameter_groups": [
+    { "id": "form", "label": { "en": "Form", "es": "Forma" } },
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } },
+    { "id": "detail", "label": { "en": "Detail", "es": "Detalle" } }
+  ],
+  "parameters": [
+    {
+      "id": "profile", "type": "select", "default": "round",
+      "group": "form", "modes": ["vase", "twisted_vase", "faceted_vase"],
+      "label": { "en": "Profile Family", "es": "Familia de Perfil" },
+      "tooltip": { "en": "Silhouette generator", "es": "Generador de silueta" },
+      "options": [
+        { "value": "round", "label": { "en": "Round / Lobed", "es": "Redondo / Lobulado" } },
+        { "value": "faceted", "label": { "en": "Faceted (N-gon)", "es": "Facetado (Polígono)" } },
+        { "value": "twisted", "label": { "en": "Twisted", "es": "Torcido" } },
+        { "value": "superformula", "label": { "en": "Superformula", "es": "Superfórmula" } }
+      ]
+    },
+    {
+      "id": "base_dia", "type": "slider", "default": 90.0, "min": 40.0, "max": 220.0, "step": 2.0,
+      "group": "size", "modes": ["vase", "twisted_vase", "faceted_vase"],
+      "label": { "en": "Base Diameter (mm)", "es": "Diámetro Base (mm)" },
+      "tooltip": { "en": "Nominal outer diameter", "es": "Diámetro exterior nominal" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 150.0, "min": 50.0, "max": 320.0, "step": 5.0,
+      "group": "size", "modes": ["vase", "twisted_vase", "faceted_vase"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Vase height", "es": "Altura del jarrón" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "size", "modes": ["vase", "twisted_vase", "faceted_vase"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Vessel wall thickness (spiralize-friendly at 1.6–2)", "es": "Grosor de pared (apto espiralizar a 1.6–2)" }
+    },
+    {
+      "id": "floor_t", "type": "slider", "default": 4.0, "min": 1.6, "max": 12.0, "step": 0.2,
+      "group": "size", "modes": ["vase", "twisted_vase", "faceted_vase"], "advanced": true,
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Closed floor thickness (holds water)", "es": "Grosor del piso cerrado (retiene agua)" }
+    },
+    {
+      "id": "twist", "type": "slider", "default": 60.0, "min": 0.0, "max": 360.0, "step": 5.0,
+      "group": "detail", "modes": ["vase", "twisted_vase"],
+      "label": { "en": "Twist (deg)", "es": "Torsión (°)" },
+      "tooltip": { "en": "Total spin from base to rim", "es": "Giro total de la base al borde" }
+    },
+    {
+      "id": "lobes", "type": "slider", "default": 6, "min": 3, "max": 16, "step": 1,
+      "group": "detail", "modes": ["vase", "twisted_vase", "faceted_vase"],
+      "label": { "en": "Lobes / Facets", "es": "Lóbulos / Facetas" },
+      "tooltip": { "en": "Number of lobes (round) or sides (faceted)", "es": "Número de lóbulos (redondo) o lados (facetado)" }
+    },
+    {
+      "id": "lobe_amp", "type": "slider", "default": 0.14, "min": 0.0, "max": 0.4, "step": 0.02,
+      "group": "detail", "modes": ["vase", "twisted_vase"], "advanced": true,
+      "label": { "en": "Lobe Amplitude", "es": "Amplitud de Lóbulo" },
+      "tooltip": { "en": "How pronounced the lobes are (fraction of radius)", "es": "Qué tan marcados son los lóbulos (fracción del radio)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "lobed_round", "mode": "vase",
+      "label": { "en": "Lobed Table Vase", "es": "Jarrón Lobulado de Mesa" },
+      "values": { "profile": "round", "base_dia": 90, "height": 150, "lobes": 6, "twist": 0 }
+    },
+    {
+      "id": "spiral_tall", "mode": "twisted_vase",
+      "label": { "en": "Tall Spiral Vase", "es": "Jarrón Espiral Alto" },
+      "values": { "profile": "round", "base_dia": 80, "height": 220, "twist": 180, "lobes": 8 }
+    },
+    {
+      "id": "hex_planter", "mode": "faceted_vase",
+      "label": { "en": "Hex Planter", "es": "Macetero Hexagonal" },
+      "values": { "profile": "faceted", "base_dia": 110, "height": 120, "lobes": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall under 1.6 mm will not print reliably", "es": "Una pared menor a 1.6 mm no imprimirá de forma confiable" }
+    },
+    {
+      "expression": "wall <= base_dia / 5",
+      "severity": "warning",
+      "message": { "en": "Wall is thick relative to the vase width", "es": "La pared es gruesa respecto al ancho del jarrón" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 220, 200] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 340] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 120] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "parametric_profile",
+        "label": { "en": "Parametric Profile", "es": "Perfil Paramétrico" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["profile", "base_dia", "lobes", "lobe_amp", "twist"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "On-demand décor made to fit a space and taste, spiralize-printable in one wall with no supports — endless unique vessels from one generative model instead of mass-produced ceramics.",
+      "es": "Decoración bajo demanda a la medida del espacio y el gusto, imprimible en espiral de una sola pared sin soportes — recipientes únicos infinitos desde un modelo generativo en vez de cerámica producida en masa."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["vase", "generative", "decor", "parametric", "household", "hyperobject", "commons"]
+}

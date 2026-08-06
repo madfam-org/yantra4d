@@ -1,0 +1,168 @@
+{
+  "project": {
+    "name": "Bike Accessory Mount",
+    "slug": "bike-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A two-piece bolt clamp that grips a bicycle handlebar and carries an accessory on top. The saddle is sized to the standard bar diameters (22.2 / 25.4 / 31.8 mm); the accessory side is a GoPro-style finger clevis, a 1/4-20 camera pad, or a strap/tab bracket. Clamps and cap print as a pair.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una abrazadera de dos piezas que sujeta el manubrio de una bicicleta y lleva un accesorio arriba. El asiento se dimensiona a los diámetros de barra estándar (22.2 / 25.4 / 31.8 mm); el lado del accesorio es un clevis de dedos estilo GoPro, una base de cámara 1/4-20 o un soporte de correa/lengüeta. La abrazadera y la tapa se imprimen como par.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bike-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["bike", "handlebar", "clamp", "gopro", "mount", "camera", "accessory", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "gopro_mount",
+      "label": { "en": "GoPro Mount", "es": "Montura GoPro" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gopro_mount"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "quarter20_mount",
+      "label": { "en": "1/4-20 Camera Mount", "es": "Montura Cámara 1/4-20" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["quarter20_mount"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "strap_mount",
+      "label": { "en": "Strap / Tab Mount", "es": "Montura de Correa / Lengüeta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strap_mount"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "gopro_mount", "label": { "en": "GoPro Mount", "es": "Montura GoPro" }, "render_mode": 0, "color": "#2f855a" },
+    { "id": "quarter20_mount", "label": { "en": "1/4-20 Camera Mount", "es": "Montura Cámara 1/4-20" }, "render_mode": 0, "color": "#38a169" },
+    { "id": "strap_mount", "label": { "en": "Strap / Tab Mount", "es": "Montura de Correa" }, "render_mode": 0, "color": "#48bb78" }
+  ],
+  "parameter_groups": [
+    { "id": "bar", "label": { "en": "Handlebar", "es": "Manubrio" } },
+    { "id": "accessory", "label": { "en": "Accessory Interface", "es": "Interfaz de Accesorio" } },
+    { "id": "clamp", "label": { "en": "Clamp", "es": "Abrazadera" } }
+  ],
+  "parameters": [
+    {
+      "id": "bar_dia", "type": "select", "default": "22.2",
+      "group": "bar", "modes": ["gopro_mount", "quarter20_mount", "strap_mount"],
+      "label": { "en": "Handlebar Diameter", "es": "Diámetro de Manubrio" },
+      "tooltip": { "en": "Bar diameter the clamp saddle grips", "es": "Diámetro de barra que sujeta el asiento de la abrazadera" },
+      "options": [
+        { "value": "22.2", "label": { "en": "22.2 mm — standard grip", "es": "22.2 mm — puño estándar" } },
+        { "value": "25.4", "label": { "en": "25.4 mm — 1 inch", "es": "25.4 mm — 1 pulgada" } },
+        { "value": "31.8", "label": { "en": "31.8 mm — oversized", "es": "31.8 mm — sobredimensionado" } }
+      ]
+    },
+    {
+      "id": "interface", "type": "select", "default": "light",
+      "group": "accessory", "modes": ["strap_mount"],
+      "label": { "en": "Strap Interface", "es": "Interfaz de Correa" },
+      "tooltip": { "en": "Bracket style for the Strap / Tab mount", "es": "Estilo de soporte para la montura de correa / lengüeta" },
+      "options": [
+        { "value": "light", "label": { "en": "Strap loop (light)", "es": "Lazo de correa (luz)" } },
+        { "value": "phone_tab", "label": { "en": "Flat tab", "es": "Lengüeta plana" } }
+      ]
+    },
+    {
+      "id": "phone_w", "type": "slider", "default": 70.0, "min": 40.0, "max": 100.0, "step": 1.0,
+      "group": "accessory", "modes": ["strap_mount"], "advanced": true,
+      "label": { "en": "Tab Width (mm)", "es": "Ancho de Lengüeta (mm)" },
+      "tooltip": { "en": "Width of the flat tab (Flat tab interface only)", "es": "Ancho de la lengüeta plana (solo interfaz de lengüeta plana)" }
+    },
+    {
+      "id": "clamp_w", "type": "slider", "default": 16.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "clamp", "modes": ["gopro_mount", "quarter20_mount", "strap_mount"],
+      "label": { "en": "Clamp Width (mm)", "es": "Ancho de Abrazadera (mm)" },
+      "tooltip": { "en": "How wide the clamp grips along the bar", "es": "Qué tan ancha sujeta la abrazadera a lo largo de la barra" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "clamp", "modes": ["gopro_mount", "quarter20_mount", "strap_mount"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Material around the handlebar saddle", "es": "Material alrededor del asiento del manubrio" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 4.3, "min": 2.0, "max": 8.0, "step": 0.1,
+      "group": "clamp", "modes": ["gopro_mount", "quarter20_mount", "strap_mount"],
+      "label": { "en": "Clamp Bolt Diameter (mm)", "es": "Diámetro de Perno (mm)" },
+      "tooltip": { "en": "Clearance-hole diameter for the two clamp bolts (4.3 ≈ M4)", "es": "Diámetro de holgura para los dos pernos de la abrazadera (4.3 ≈ M4)" }
+    },
+    {
+      "id": "grip_pad", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "clamp", "modes": ["gopro_mount", "quarter20_mount", "strap_mount"], "advanced": true,
+      "label": { "en": "Grip Squeeze (mm)", "es": "Apriete de Agarre (mm)" },
+      "tooltip": { "en": "How much smaller than the bar the saddle is, for a firm clamp", "es": "Cuánto más pequeño que la barra es el asiento, para un agarre firme" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "action_cam_bar", "mode": "gopro_mount",
+      "label": { "en": "Action-Cam on Grip Bar (22.2)", "es": "Cámara de Acción en Puño (22.2)" },
+      "values": { "bar_dia": "22.2", "clamp_w": 16, "wall": 4 }
+    },
+    {
+      "id": "camera_oversized", "mode": "quarter20_mount",
+      "label": { "en": "Camera on Oversized Bar (31.8)", "es": "Cámara en Barra Grande (31.8)" },
+      "values": { "bar_dia": "31.8", "clamp_w": 18, "wall": 5 }
+    },
+    {
+      "id": "light_strap", "mode": "strap_mount",
+      "label": { "en": "Light Strap Loop (25.4)", "es": "Lazo de Correa para Luz (25.4)" },
+      "values": { "bar_dia": "25.4", "interface": "light", "clamp_w": 16 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.5",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.5 mm around the bar", "es": "La pared debe ser de al menos 2.5 mm alrededor de la barra" }
+    },
+    {
+      "expression": "grip_pad <= 1.0",
+      "severity": "warning",
+      "message": { "en": "Large grip squeeze may prevent the clamp closing", "es": "Un apriete grande puede impedir que la abrazadera cierre" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "handlebar_clamp",
+        "label": { "en": "Handlebar Clamp", "es": "Abrazadera de Manubrio" },
+        "geometry_type": "socket",
+        "standard": "ISO handlebar Ø 22.2/25.4/31.8",
+        "parameters": ["bar_dia", "interface"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Handlebar diameters and action-cam / camera interfaces are de-facto open standards. A parametric clamp lets anyone mount a camera, light, phone, or gadget to any bike on demand — no proprietary bracket per device.",
+      "es": "Los diámetros de manubrio y las interfaces de cámara de acción son estándares abiertos de facto. Una abrazadera paramétrica permite montar una cámara, luz, teléfono o gadget en cualquier bicicleta bajo demanda — sin soporte propietario por dispositivo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bike", "handlebar", "clamp", "gopro", "mount", "commercial", "hyperobject", "commons"]
+}

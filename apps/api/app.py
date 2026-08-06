@@ -26,43 +26,46 @@ from flask import Flask, g, jsonify, send_from_directory
 from flask_cors import CORS
 
 from config import Config
-from extensions import limiter, db, migrate
-from routes.engine.render import render_bp
-from routes.core.health import health_bp
-from routes.engine.verify import verify_bp
+from extensions import db, limiter, migrate
+from routes.core.client_config import client_config_bp
 from routes.core.config_route import config_bp
+from routes.core.health import health_bp
 from routes.core.manifest_route import manifest_bp
 from routes.core.materials import materials_bp
-from routes.projects.projects import projects_bp
-from routes.users.onboard import onboard_bp
-from routes.users.admin import admin_bp
-from routes.engine.download import download_bp
-from routes.projects.bom import bom_bp
-from routes.projects.cart import cart_bp
-from routes.projects.datasheet import datasheet_bp
-from routes.integrations.analytics import analytics_bp
-from routes.users.user import user_bp
-from routes.editor.github import github_bp
+from routes.core.websocket import init_websocket, ws_bp
 from routes.editor.editor import editor_bp
 from routes.editor.git_ops import git_ops_bp
-from routes.integrations.ai import ai_bp
-from routes.projects.assembly import assembly_bp
-from routes.integrations.storefront import storefront_bp
-from routes.integrations.pricing import pricing_bp
-from routes.projects.catalog import catalog_bp
-from routes.core.client_config import client_config_bp
-from routes.projects.animations import animations_bp
-from routes.integrations.printer import printer_bp
+from routes.editor.github import github_bp
 from routes.engine.analysis import analysis_bp
+from routes.engine.download import download_bp
+from routes.engine.render import render_bp
 from routes.engine.simulate import simulate_bp
+from routes.engine.verify import verify_bp
+from routes.integrations.ai import ai_bp
+from routes.integrations.analytics import analytics_bp
 from routes.integrations.cotiza_export import cotiza_export_bp
 from routes.integrations.cotiza_webhook import cotiza_webhook_bp
 from routes.integrations.forgesight_webhook import forgesight_webhook_bp
-from routes.core.websocket import ws_bp, init_websocket
+from routes.integrations.pricing import pricing_bp
+from routes.integrations.printer import printer_bp
+from routes.integrations.storefront import storefront_bp
+from routes.projects.animations import animations_bp
+from routes.projects.assembly import assembly_bp
+from routes.projects.bom import bom_bp
+from routes.projects.cart import cart_bp
+from routes.projects.catalog import catalog_bp
+from routes.projects.catalog_search import catalog_search_bp
+from routes.projects.compatibility import compatibility_bp
+from routes.projects.datasheet import datasheet_bp
+from routes.projects.projects import projects_bp
+from routes.users.admin import admin_bp
+from routes.users.onboard import onboard_bp
+from routes.users.user import user_bp
 from services.core.mqtt_telemetry import telemetry_service
 
 # Configure logging
 from utils.logging_config import setup_logging
+
 setup_logging(Config.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -144,7 +147,8 @@ def _check_capabilities():
 
 def create_app():
     """Application factory for Flask app."""
-    from posthog_analytics import init_posthog, shutdown as posthog_shutdown
+    from posthog_analytics import init_posthog
+    from posthog_analytics import shutdown as posthog_shutdown
     init_posthog()
     atexit.register(posthog_shutdown)
 
@@ -183,7 +187,6 @@ def create_app():
 
     # Import models so Alembic can detect them
     import models  # noqa: F401
-
     from middleware.request_id import init_request_id
     init_request_id(app)
 
@@ -197,6 +200,8 @@ def create_app():
     app.register_blueprint(config_bp)
     app.register_blueprint(manifest_bp)
     app.register_blueprint(projects_bp)
+    app.register_blueprint(catalog_search_bp)
+    app.register_blueprint(compatibility_bp)
     app.register_blueprint(materials_bp)
     app.register_blueprint(onboard_bp)
     app.register_blueprint(admin_bp)

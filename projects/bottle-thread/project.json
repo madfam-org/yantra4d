@@ -1,0 +1,626 @@
+{
+  "project": {
+    "name": "Bottle-Thread Cap & Coupler",
+    "slug": "bottle-thread",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Turns any discarded PET bottle into infrastructure. Generates screw caps, bottle-to-bottle couplers, and spout adapters whose real single-start helical thread mates with standard bottle-neck finishes (PCO-1881, PCO-1810, 28-410, 38-400). The input side of the Faircap water-filter ecosystem — water sovereignty from plastic waste.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Convierte cualquier botella PET desechada en infraestructura. Genera tapas roscadas, acopladores botella-a-botella y adaptadores de boquilla cuya rosca helicoidal real de un solo inicio encaja con acabados de cuello de botella estándar (PCO-1881, PCO-1810, 28-410, 38-400). El lado de entrada del ecosistema de filtros de agua Faircap — soberanía del agua a partir de residuos plásticos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bottle-thread.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bottle",
+      "thread",
+      "cap",
+      "coupler",
+      "adapter",
+      "pet",
+      "upcycling",
+      "water",
+      "hyperobject",
+      "commons",
+      "cdg"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cap",
+      "label": {
+        "en": "Screw Cap",
+        "es": "Tapa Roscada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cap"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "coupler",
+      "label": {
+        "en": "Bottle Coupler",
+        "es": "Acoplador de Botellas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "coupler"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "spout_adapter",
+      "label": {
+        "en": "Spout Adapter",
+        "es": "Adaptador de Boquilla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "spout_adapter"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "cap",
+      "label": {
+        "en": "Screw Cap",
+        "es": "Tapa Roscada"
+      },
+      "render_mode": 0,
+      "color": "#0ea5a4"
+    },
+    {
+      "id": "coupler",
+      "label": {
+        "en": "Bottle Coupler",
+        "es": "Acoplador de Botellas"
+      },
+      "render_mode": 0,
+      "color": "#0891b2"
+    },
+    {
+      "id": "spout_adapter",
+      "label": {
+        "en": "Spout Adapter",
+        "es": "Adaptador de Boquilla"
+      },
+      "render_mode": 0,
+      "color": "#22b8cf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "interface",
+      "label": {
+        "en": "Neck Standard",
+        "es": "Estándar de Cuello"
+      }
+    },
+    {
+      "id": "fit",
+      "label": {
+        "en": "Thread Fit & Walls",
+        "es": "Ajuste de Rosca y Paredes"
+      }
+    },
+    {
+      "id": "cap_opts",
+      "label": {
+        "en": "Cap Options",
+        "es": "Opciones de Tapa"
+      }
+    },
+    {
+      "id": "spout_opts",
+      "label": {
+        "en": "Spout",
+        "es": "Boquilla"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "neck_standard",
+      "type": "select",
+      "default": "PCO-1881",
+      "group": "interface",
+      "modes": [
+        "cap",
+        "coupler",
+        "spout_adapter"
+      ],
+      "label": {
+        "en": "Neck Standard",
+        "es": "Estándar de Cuello"
+      },
+      "tooltip": {
+        "en": "Bottle-neck finish this part threads onto (sets thread diameter + pitch)",
+        "es": "Acabado de cuello de botella al que se enrosca esta pieza (define diámetro y paso de rosca)"
+      },
+      "options": [
+        {
+          "value": "PCO-1881",
+          "label": {
+            "en": "PCO-1881 — soda/water (27.4 mm, 2.7 mm pitch)",
+            "es": "PCO-1881 — refresco/agua (27.4 mm, paso 2.7 mm)"
+          }
+        },
+        {
+          "value": "PCO-1810",
+          "label": {
+            "en": "PCO-1810 — taller thread (27.4 mm, 2.7 mm pitch)",
+            "es": "PCO-1810 — rosca más alta (27.4 mm, paso 2.7 mm)"
+          }
+        },
+        {
+          "value": "28-410",
+          "label": {
+            "en": "28-410 — spray/personal care (28 mm, 3.18 mm pitch)",
+            "es": "28-410 — spray/cuidado personal (28 mm, paso 3.18 mm)"
+          }
+        },
+        {
+          "value": "38-400",
+          "label": {
+            "en": "38-400 — wide mouth (38 mm, 4.2 mm pitch)",
+            "es": "38-400 — boca ancha (38 mm, paso 4.2 mm)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "neck_standard_b",
+      "type": "select",
+      "default": "PCO-1881",
+      "group": "interface",
+      "modes": [
+        "coupler"
+      ],
+      "label": {
+        "en": "Second-End Neck Standard",
+        "es": "Estándar de Cuello (2º Extremo)"
+      },
+      "tooltip": {
+        "en": "Neck finish for the coupler's other end — set different from the first for a dissimilar (adapter) coupler",
+        "es": "Acabado de cuello para el otro extremo del acoplador — distinto al primero para un acoplador adaptador"
+      },
+      "options": [
+        {
+          "value": "PCO-1881",
+          "label": {
+            "en": "PCO-1881 — soda/water",
+            "es": "PCO-1881 — refresco/agua"
+          }
+        },
+        {
+          "value": "PCO-1810",
+          "label": {
+            "en": "PCO-1810 — taller thread",
+            "es": "PCO-1810 — rosca más alta"
+          }
+        },
+        {
+          "value": "28-410",
+          "label": {
+            "en": "28-410 — spray/personal care",
+            "es": "28-410 — spray/cuidado personal"
+          }
+        },
+        {
+          "value": "38-400",
+          "label": {
+            "en": "38-400 — wide mouth",
+            "es": "38-400 — boca ancha"
+          }
+        }
+      ]
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "fit",
+      "modes": [
+        "cap",
+        "coupler",
+        "spout_adapter"
+      ],
+      "label": {
+        "en": "Thread Clearance (mm)",
+        "es": "Holgura de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap added to the female thread so it screws on despite print tolerances (0.3-0.5 typical)",
+        "es": "Espacio por lado añadido a la rosca hembra para que enrosque pese a las tolerancias de impresión (0.3-0.5 típico)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.6,
+      "min": 1.6,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "fit",
+      "modes": [
+        "cap",
+        "coupler",
+        "spout_adapter"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Radial wall around the thread",
+        "es": "Pared radial alrededor de la rosca"
+      }
+    },
+    {
+      "id": "top_th",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "fit",
+      "modes": [
+        "cap",
+        "coupler",
+        "spout_adapter"
+      ],
+      "label": {
+        "en": "Top / Web Thickness (mm)",
+        "es": "Grosor de Tapa / Alma (mm)"
+      },
+      "tooltip": {
+        "en": "Cap top thickness; also the central web of the coupler",
+        "es": "Grosor de la parte superior de la tapa; también el alma central del acoplador"
+      }
+    },
+    {
+      "id": "extra_turns",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.25,
+      "group": "fit",
+      "modes": [
+        "cap",
+        "coupler",
+        "spout_adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Extra Engagement Turns",
+        "es": "Vueltas de Enrosque Extra"
+      },
+      "tooltip": {
+        "en": "Add thread turns beyond the neck's nominal engagement for a deeper, more secure grip (slower render)",
+        "es": "Añade vueltas de rosca más allá del enrosque nominal del cuello para un agarre más profundo y seguro (render más lento)"
+      }
+    },
+    {
+      "id": "grip_knurl",
+      "type": "checkbox",
+      "default": true,
+      "group": "cap_opts",
+      "modes": [
+        "cap"
+      ],
+      "label": {
+        "en": "Grip Knurl",
+        "es": "Moleteado de Agarre"
+      },
+      "tooltip": {
+        "en": "Vertical flutes around the cap for a better hand grip",
+        "es": "Estrías verticales alrededor de la tapa para mejor agarre"
+      }
+    },
+    {
+      "id": "domed_top",
+      "type": "checkbox",
+      "default": false,
+      "group": "cap_opts",
+      "modes": [
+        "cap"
+      ],
+      "label": {
+        "en": "Domed Top",
+        "es": "Tapa Abovedada"
+      },
+      "tooltip": {
+        "en": "Round the cap top instead of a flat face",
+        "es": "Redondea la parte superior de la tapa en vez de una cara plana"
+      }
+    },
+    {
+      "id": "vent_hole",
+      "type": "checkbox",
+      "default": false,
+      "group": "cap_opts",
+      "modes": [
+        "cap"
+      ],
+      "label": {
+        "en": "Vent Hole",
+        "es": "Orificio de Ventilación"
+      },
+      "tooltip": {
+        "en": "Punch a small hole through the cap top (e.g. for a straw or to relieve pressure)",
+        "es": "Perfora un pequeño orificio en la tapa (p. ej. para popote o aliviar presión)"
+      }
+    },
+    {
+      "id": "vent_dia",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "cap_opts",
+      "modes": [
+        "cap"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Vent Hole Diameter (mm)",
+        "es": "Diámetro del Orificio (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the vent hole (only used when Vent Hole is on)",
+        "es": "Diámetro del orificio de ventilación (solo si está activado)"
+      }
+    },
+    {
+      "id": "spout_dia",
+      "type": "slider",
+      "default": 9.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "spout_opts",
+      "modes": [
+        "spout_adapter"
+      ],
+      "label": {
+        "en": "Spout Bore (mm)",
+        "es": "Boquilla Interior (mm)"
+      },
+      "tooltip": {
+        "en": "Inner diameter of the pour/squeeze nozzle",
+        "es": "Diámetro interior de la boquilla de vertido/exprimido"
+      }
+    },
+    {
+      "id": "spout_len",
+      "type": "slider",
+      "default": 22.0,
+      "min": 6.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "spout_opts",
+      "modes": [
+        "spout_adapter"
+      ],
+      "label": {
+        "en": "Spout Length (mm)",
+        "es": "Largo de Boquilla (mm)"
+      },
+      "tooltip": {
+        "en": "How far the nozzle rises above the bottle neck",
+        "es": "Cuánto sobresale la boquilla por encima del cuello de la botella"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "soda_cap",
+      "mode": "cap",
+      "label": {
+        "en": "Soda-Bottle Cap (PCO-1881)",
+        "es": "Tapa de Refresco (PCO-1881)"
+      },
+      "values": {
+        "neck_standard": "PCO-1881",
+        "grip_knurl": true,
+        "clearance": 0.4
+      }
+    },
+    {
+      "id": "widemouth_vented_cap",
+      "mode": "cap",
+      "label": {
+        "en": "Wide-Mouth Vented Cap (38-400)",
+        "es": "Tapa Ventilada Boca Ancha (38-400)"
+      },
+      "values": {
+        "neck_standard": "38-400",
+        "vent_hole": true,
+        "vent_dia": 8,
+        "domed_top": true
+      }
+    },
+    {
+      "id": "bottle_joiner",
+      "mode": "coupler",
+      "label": {
+        "en": "Bottle-to-Bottle Joiner (same neck)",
+        "es": "Unión Botella-a-Botella (mismo cuello)"
+      },
+      "values": {
+        "neck_standard": "PCO-1881",
+        "neck_standard_b": "PCO-1881"
+      }
+    },
+    {
+      "id": "size_adapter_coupler",
+      "mode": "coupler",
+      "label": {
+        "en": "Size Adapter (PCO-1881 ↔ 38-400)",
+        "es": "Adaptador de Tamaño (PCO-1881 ↔ 38-400)"
+      },
+      "values": {
+        "neck_standard": "PCO-1881",
+        "neck_standard_b": "38-400"
+      }
+    },
+    {
+      "id": "squeeze_spout",
+      "mode": "spout_adapter",
+      "label": {
+        "en": "Squeeze/Pour Spout (PCO-1881)",
+        "es": "Boquilla de Vertido (PCO-1881)"
+      },
+      "values": {
+        "neck_standard": "PCO-1881",
+        "spout_dia": 9,
+        "spout_len": 22
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 1.0",
+      "severity": "warning",
+      "message": {
+        "en": "Large clearance may make the thread loose",
+        "es": "Una holgura grande puede aflojar la rosca"
+      }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.6 mm around the thread",
+        "es": "La pared debe ser de al menos 1.6 mm alrededor de la rosca"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        110
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -110,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "pet_bottle_neck_thread",
+        "label": {
+          "en": "PET Bottle Neck Thread",
+          "es": "Rosca de Cuello de Botella PET"
+        },
+        "geometry_type": "thread",
+        "standard": "PCO 1881 / SP-400 finish series",
+        "parameters": [
+          "neck_standard",
+          "neck_standard_b",
+          "clearance",
+          "wall"
+        ],
+        "compatible_with": [
+          "bird-feeder",
+          "faircap-filter",
+          "pet-dispenser"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The discarded PET bottle is the world's most abundant standardized vessel. By printing to its neck thread, anyone can re-cap, join, or re-spout a bottle — the input interface for on-demand water filtration and storage without commercial dependency.",
+      "es": "La botella PET desechada es el recipiente estandarizado más abundante del mundo. Al imprimir según la rosca de su cuello, cualquiera puede volver a tapar, unir o dar boquilla a una botella — la interfaz de entrada para filtración y almacenamiento de agua bajo demanda sin dependencia comercial."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bottle",
+    "thread",
+    "cap",
+    "coupler",
+    "adapter",
+    "pet",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

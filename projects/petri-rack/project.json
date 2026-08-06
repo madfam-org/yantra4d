@@ -1,0 +1,164 @@
+{
+  "project": {
+    "name": "Petri / Sample Storage Rack",
+    "slug": "petri-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Racks that store or stack petri dishes and round sample containers. Set the dish diameter (90 mm standard) and slot count, then choose how the dishes are held: standing on edge in slots like records, a ring frame holding a vertical stack, or a drying rack of ring pedestals for inverted dishes.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Gradillas que almacenan o apilan placas de Petri y contenedores de muestra redondos. Ajuste el diámetro de la placa (90 mm estándar) y el número de ranuras, luego elija cómo se sostienen: de canto en ranuras como discos, un marco de anillo que sostiene una pila vertical, o una gradilla de secado con pedestales de anillo para placas invertidas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/petri-rack.webp",
+    "difficulty": "beginner",
+    "tags": ["petri", "rack", "storage", "laboratory", "sample", "dish", "lab", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "edge_rack",
+      "label": { "en": "Edge Rack (slots)", "es": "Gradilla de Canto (ranuras)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["edge_rack"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "stack_holder",
+      "label": { "en": "Stack Holder", "es": "Soporte de Pila" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stack_holder"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "drying_rack",
+      "label": { "en": "Drying Rack", "es": "Gradilla de Secado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["drying_rack"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "edge_rack", "label": { "en": "Edge Rack", "es": "Gradilla de Canto" }, "render_mode": 0, "color": "#7a6fb0" },
+    { "id": "stack_holder", "label": { "en": "Stack Holder", "es": "Soporte de Pila" }, "render_mode": 0, "color": "#8f84c4" },
+    { "id": "drying_rack", "label": { "en": "Drying Rack", "es": "Gradilla de Secado" }, "render_mode": 0, "color": "#a399d9" }
+  ],
+  "parameter_groups": [
+    { "id": "dish", "label": { "en": "Dish", "es": "Placa" } },
+    { "id": "rack", "label": { "en": "Rack", "es": "Gradilla" } }
+  ],
+  "parameters": [
+    {
+      "id": "orientation", "type": "select", "default": "vertical",
+      "group": "rack", "modes": ["edge_rack", "stack_holder", "drying_rack"],
+      "label": { "en": "Orientation", "es": "Orientación" },
+      "tooltip": { "en": "How dishes are held (also selectable via mode)", "es": "Cómo se sostienen las placas (también seleccionable por modo)" },
+      "options": [
+        { "value": "vertical", "label": { "en": "Vertical (on edge)", "es": "Vertical (de canto)" } },
+        { "value": "stacked", "label": { "en": "Stacked (tower)", "es": "Apilado (torre)" } }
+      ]
+    },
+    {
+      "id": "dish_dia", "type": "slider", "default": 90.0, "min": 30.0, "max": 150.0, "step": 1.0,
+      "group": "dish", "modes": ["edge_rack", "stack_holder", "drying_rack"],
+      "label": { "en": "Dish Diameter (mm)", "es": "Diámetro de la Placa (mm)" },
+      "tooltip": { "en": "Petri dish / container outer diameter (90 mm standard)", "es": "Diámetro exterior de la placa / contenedor (90 mm estándar)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "dish_h", "type": "slider", "default": 15.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "dish", "modes": ["stack_holder"],
+      "label": { "en": "Dish Height (mm)", "es": "Altura de la Placa (mm)" },
+      "tooltip": { "en": "Stacked height of one dish (sets stack tower height)", "es": "Altura apilada de una placa (define la altura de la torre)" }
+    },
+    {
+      "id": "stacks", "type": "slider", "default": 6, "min": 1, "max": 20, "step": 1,
+      "group": "rack", "modes": ["edge_rack", "stack_holder", "drying_rack"],
+      "label": { "en": "Slots / Stack Count", "es": "Ranuras / Capacidad de Pila" },
+      "tooltip": { "en": "Number of edge slots, or dishes in the stack", "es": "Número de ranuras de canto, o placas en la pila" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 10.0 }
+    },
+    {
+      "id": "slot_gap", "type": "slider", "default": 4.0, "min": 2.5, "max": 20.0, "step": 0.5,
+      "group": "rack", "modes": ["edge_rack"],
+      "label": { "en": "Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Channel width for a dish (or dish + lid) on edge", "es": "Ancho del canal para una placa (o placa + tapa) de canto" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "rack", "modes": ["edge_rack", "stack_holder", "drying_rack"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Comb / ring wall thickness", "es": "Grosor de la pared del peine / anillo" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 1.5, "min": 0.5, "max": 4.0, "step": 0.1,
+      "group": "rack", "modes": ["stack_holder", "drying_rack"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Radial gap around the dish", "es": "Espacio radial alrededor de la placa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "edge_90", "mode": "edge_rack",
+      "label": { "en": "90 mm Edge Rack (x6)", "es": "Gradilla de Canto 90 mm (x6)" },
+      "values": { "dish_dia": 90, "stacks": 6, "slot_gap": 4 }
+    },
+    {
+      "id": "stack_tower", "mode": "stack_holder",
+      "label": { "en": "Stack Tower (x8)", "es": "Torre de Pila (x8)" },
+      "values": { "dish_dia": 90, "dish_h": 15, "stacks": 8 }
+    },
+    {
+      "id": "dry_4", "mode": "drying_rack",
+      "label": { "en": "Drying Rack (x4)", "es": "Gradilla de Secado (x4)" },
+      "values": { "dish_dia": 90, "stacks": 4, "clearance": 2.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_gap >= 2.5",
+      "severity": "warning",
+      "message": { "en": "Very narrow slots may not fit a dish plus lid", "es": "Ranuras muy estrechas pueden no aceptar una placa con tapa" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "dish_slot_array",
+        "label": { "en": "Dish Slot Array", "es": "Arreglo de Ranuras de Placa" },
+        "geometry_type": "grid",
+        "standard": "90mm petri",
+        "parameters": ["dish_dia", "stacks", "slot_gap", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Organized, ventilated dish storage keeps cultures and samples separated and labelled. Sizing to the exact dish on hand lets clinics, teaching labs, and makerspaces store consumables without buying format-locked racks.",
+      "es": "El almacenamiento organizado y ventilado de placas mantiene cultivos y muestras separados y etiquetados. Dimensionar a la placa exacta disponible permite que clínicas, laboratorios de enseñanza y espacios maker almacenen consumibles sin comprar gradillas de formato fijo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["petri", "rack", "storage", "laboratory", "medical", "hyperobject", "commons"]
+}

@@ -1,0 +1,532 @@
+{
+  "project": {
+    "name": "Universal Threaded Adapter Kit",
+    "slug": "thread-adapter-kit",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "advanced",
+    "description": {
+      "en": "A parametric any-to-any threaded adapter — the universal 'translator' for threads. Pick a standard for each end (Garden Hose GHT 3/4\", NPT 1/2\", BSP/G 1/2\", ISO metric M20 / M24) and get a printable adapter that mates the two. Every thread is a real single-start helical rib sized to nominal standard geometry. Build a male-to-female translator, a double-male joiner, or a garden-hose hose-bib adapter.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Un adaptador roscado paramétrico de cualquiera-a-cualquiera — el 'traductor' universal de roscas. Elige un estándar para cada extremo (Manguera GHT 3/4\", NPT 1/2\", BSP/G 1/2\", métrica ISO M20 / M24) y obtén un adaptador imprimible que une ambos. Cada rosca es un nervio helicoidal real dimensionado a la geometría nominal del estándar. Genera un traductor macho-a-hembra, un unión doble-macho, o un adaptador de grifo de manguera.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/thread-adapter-kit.webp",
+    "tags": [
+      "thread",
+      "adapter",
+      "plumbing",
+      "hose",
+      "npt",
+      "bsp",
+      "ght",
+      "metric",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "male_to_female",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Male → Female",
+        "es": "Macho → Hembra"
+      },
+      "parts": [
+        "male_to_female"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 5,
+        "per_part": 22
+      }
+    },
+    {
+      "id": "double_male",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Double Male",
+        "es": "Doble Macho"
+      },
+      "parts": [
+        "double_male"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 5,
+        "per_part": 22
+      }
+    },
+    {
+      "id": "hose_bib",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Hose Bib Adapter",
+        "es": "Adaptador de Grifo"
+      },
+      "parts": [
+        "hose_bib"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 5,
+        "per_part": 22
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "male_to_female",
+      "render_mode": 0,
+      "label": {
+        "en": "Male → Female",
+        "es": "Macho → Hembra"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "double_male",
+      "render_mode": 0,
+      "label": {
+        "en": "Double Male",
+        "es": "Doble Macho"
+      },
+      "default_color": "#6fa3bf"
+    },
+    {
+      "id": "hose_bib",
+      "render_mode": 0,
+      "label": {
+        "en": "Hose Bib Adapter",
+        "es": "Adaptador de Grifo"
+      },
+      "default_color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "ends",
+      "label": {
+        "en": "Thread Ends",
+        "es": "Extremos de Rosca"
+      }
+    },
+    {
+      "id": "fit",
+      "label": {
+        "en": "Fit & Body",
+        "es": "Ajuste y Cuerpo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "thread_a",
+      "type": "select",
+      "default": "GHT34",
+      "options": [
+        {
+          "value": "GHT34",
+          "label": {
+            "en": "Garden Hose 3/4\" (GHT)",
+            "es": "Manguera 3/4\" (GHT)"
+          }
+        },
+        {
+          "value": "NPT12",
+          "label": {
+            "en": "NPT 1/2\"",
+            "es": "NPT 1/2\""
+          }
+        },
+        {
+          "value": "BSP12",
+          "label": {
+            "en": "BSP/G 1/2\"",
+            "es": "BSP/G 1/2\""
+          }
+        },
+        {
+          "value": "M20",
+          "label": {
+            "en": "ISO M20 x 2.5",
+            "es": "ISO M20 x 2.5"
+          }
+        },
+        {
+          "value": "M24",
+          "label": {
+            "en": "ISO M24 x 3.0",
+            "es": "ISO M24 x 3.0"
+          }
+        }
+      ],
+      "group": "ends",
+      "modes": [
+        "male_to_female",
+        "double_male",
+        "hose_bib"
+      ],
+      "label": {
+        "en": "End A Thread",
+        "es": "Rosca Extremo A"
+      },
+      "tooltip": {
+        "en": "Standard for end A (male / female per mode)",
+        "es": "Estándar del extremo A (macho / hembra según el modo)"
+      }
+    },
+    {
+      "id": "thread_b",
+      "type": "select",
+      "default": "NPT12",
+      "options": [
+        {
+          "value": "GHT34",
+          "label": {
+            "en": "Garden Hose 3/4\" (GHT)",
+            "es": "Manguera 3/4\" (GHT)"
+          }
+        },
+        {
+          "value": "NPT12",
+          "label": {
+            "en": "NPT 1/2\"",
+            "es": "NPT 1/2\""
+          }
+        },
+        {
+          "value": "BSP12",
+          "label": {
+            "en": "BSP/G 1/2\"",
+            "es": "BSP/G 1/2\""
+          }
+        },
+        {
+          "value": "M20",
+          "label": {
+            "en": "ISO M20 x 2.5",
+            "es": "ISO M20 x 2.5"
+          }
+        },
+        {
+          "value": "M24",
+          "label": {
+            "en": "ISO M24 x 3.0",
+            "es": "ISO M24 x 3.0"
+          }
+        }
+      ],
+      "group": "ends",
+      "modes": [
+        "male_to_female",
+        "double_male",
+        "hose_bib"
+      ],
+      "label": {
+        "en": "End B Thread",
+        "es": "Rosca Extremo B"
+      },
+      "tooltip": {
+        "en": "Standard for end B (female / male per mode)",
+        "es": "Estándar del extremo B (hembra / macho según el modo)"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "fit",
+      "modes": [
+        "male_to_female",
+        "double_male",
+        "hose_bib"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Thread Fit Clearance (mm)",
+        "es": "Holgura de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side printed-thread gap (0.3-0.5 typical)",
+        "es": "Espacio de rosca impresa por lado (0.3-0.5 típico)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.6,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "fit",
+      "modes": [
+        "male_to_female",
+        "double_male",
+        "hose_bib"
+      ],
+      "label": {
+        "en": "Wall (mm)",
+        "es": "Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Radial wall around the thread",
+        "es": "Pared radial alrededor de la rosca"
+      }
+    },
+    {
+      "id": "turns",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 4.0,
+      "step": 0.5,
+      "group": "fit",
+      "modes": [
+        "male_to_female",
+        "double_male",
+        "hose_bib"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Thread Engagement (turns)",
+        "es": "Enroscado (vueltas)"
+      },
+      "tooltip": {
+        "en": "Snapped to a half-integer and capped at 3.5 for a fast, well-conditioned helical sweep",
+        "es": "Ajustado a medio entero y limitado a 3.5 para un barrido helicoidal rápido y estable"
+      }
+    },
+    {
+      "id": "bore",
+      "type": "slider",
+      "default": 10.0,
+      "min": 3.0,
+      "max": 24.0,
+      "step": 0.5,
+      "group": "fit",
+      "modes": [
+        "male_to_female",
+        "double_male",
+        "hose_bib"
+      ],
+      "label": {
+        "en": "Through Bore Ø (mm)",
+        "es": "Ø del Conducto (mm)"
+      },
+      "tooltip": {
+        "en": "Fluid path bore through the adapter",
+        "es": "Conducto de paso de fluido a través del adaptador"
+      }
+    },
+    {
+      "id": "hex_grip",
+      "type": "checkbox",
+      "default": true,
+      "group": "fit",
+      "modes": [
+        "male_to_female",
+        "double_male",
+        "hose_bib"
+      ],
+      "label": {
+        "en": "Hex Wrench Flats",
+        "es": "Caras Hexagonales"
+      },
+      "tooltip": {
+        "en": "Hex flats on the middle body for a wrench",
+        "es": "Caras hexagonales en el cuerpo central para llave"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "ght_to_npt",
+      "mode": "male_to_female",
+      "label": {
+        "en": "GHT → NPT (hose to pipe)",
+        "es": "GHT → NPT (manguera a tubo)"
+      },
+      "values": {
+        "thread_a": "GHT34",
+        "thread_b": "NPT12"
+      }
+    },
+    {
+      "id": "npt_bsp_joiner",
+      "mode": "double_male",
+      "label": {
+        "en": "NPT ↔ BSP Joiner",
+        "es": "Unión NPT ↔ BSP"
+      },
+      "values": {
+        "thread_a": "NPT12",
+        "thread_b": "BSP12"
+      }
+    },
+    {
+      "id": "bib_ght_npt",
+      "mode": "hose_bib",
+      "label": {
+        "en": "Hose-Bib GHT → NPT",
+        "es": "Grifo GHT → NPT"
+      },
+      "values": {
+        "thread_a": "GHT34",
+        "thread_b": "NPT12"
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": {
+        "en": "Large clearance loosens the thread fit",
+        "es": "Una holgura grande afloja el ajuste de la rosca"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front (Section)",
+        "es": "Frontal (Sección)"
+      },
+      "position": [
+        0,
+        -140,
+        30
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 22,
+    "per_unit": 5,
+    "per_part": 22,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "thread_end_a",
+        "label": {
+          "en": "Thread End A",
+          "es": "Rosca Extremo A"
+        },
+        "geometry_type": "thread",
+        "standard": "GHT 3/4 / NPT 1/2 / BSP 1/2 / ISO M20 / M24",
+        "parameters": [
+          "thread_a",
+          "clearance",
+          "turns"
+        ],
+        "compatible_with": [
+          "hose-adapter",
+          "sprinkler-adapter"
+        ]
+      },
+      {
+        "id": "thread_end_b",
+        "label": {
+          "en": "Thread End B",
+          "es": "Rosca Extremo B"
+        },
+        "geometry_type": "thread",
+        "standard": "GHT 3/4 / NPT 1/2 / BSP 1/2 / ISO M20 / M24",
+        "parameters": [
+          "thread_b",
+          "clearance",
+          "turns"
+        ],
+        "compatible_with": [
+          "hose-adapter",
+          "sprinkler-adapter"
+        ]
+      },
+      {
+        "id": "fluid_bore",
+        "label": {
+          "en": "Fluid Bore",
+          "es": "Conducto de Fluido"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "bore"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Thread standards are a tower of Babel — a garden hose (GHT) will not meet a pipe (NPT), and NPT will not meet BSP or a metric fitting. The retail answer is a wall of single-purpose brass adapters, one per pair, most of which you will never find in stock. A parametric any-to-any thread translator lets anyone print exactly the adapter they need, on demand, from open geometry — the universal fitting that connects incompatible plumbing, hose, lab, and pneumatic threads. (Printed threads are for low-pressure / non-potable use unless validated.)",
+      "es": "Los estándares de rosca son una torre de Babel — una manguera (GHT) no encuentra un tubo (NPT), y NPT no encuentra BSP ni una conexión métrica. La respuesta comercial es una pared de adaptadores de latón de un solo uso, uno por par, la mayoría nunca en existencia. Un traductor de rosca paramétrico de cualquiera-a-cualquiera permite imprimir exactamente el adaptador necesario, bajo demanda, desde geometría abierta. (Las roscas impresas son para uso de baja presión / no potable salvo validación.)"
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "thread",
+    "adapter",
+    "plumbing",
+    "hose",
+    "npt",
+    "bsp",
+    "ght",
+    "metric",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

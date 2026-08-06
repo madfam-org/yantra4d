@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Ratchet &amp; Pawl placeholder">
+  <defs>
+    <linearGradient id="bge0a4f3be" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="hsl(24,58%,42%)"/>
+      <stop offset="1" stop-color="hsl(40,64%,32%)"/>
+    </linearGradient>
+    <radialGradient id="vige0a4f3be" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.28"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bge0a4f3be)"/>
+  <g transform="rotate(86 200 150)" opacity="0.9"><circle cx="269" cy="108" r="6" fill="#fff" opacity="0.06"/><circle cx="244" cy="211" r="7" fill="#fff" opacity="0.06"/><circle cx="323" cy="230" r="6" fill="#fff" opacity="0.06"/><circle cx="342" cy="193" r="3" fill="#fff" opacity="0.06"/><circle cx="133" cy="56" r="4" fill="#fff" opacity="0.06"/></g>
+  <g opacity="0.95">
+            <path d="M 120 222 C 170 102, 230 242, 280 122"
+                  fill="none" stroke="#ffffff" stroke-width="7"/></g>
+  <rect width="400" height="300" fill="url(#vige0a4f3be)"/>
+  <text x="24" y="272" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+        font-size="20" font-weight="700" fill="#fff" opacity="0.92">Ratchet &amp; Pawl</text>
+  <text x="376" y="40" text-anchor="end" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+        font-size="15" fill="#fff" opacity="0.6">spline</text>
+  <text x="24" y="44" font-family="ui-sans-serif,system-ui,sans-serif" font-size="30" font-weight="800"
+        fill="#fff" opacity="0.85">R</text>
+</svg>

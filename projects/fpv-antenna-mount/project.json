@@ -1,0 +1,195 @@
+{
+  "project": {
+    "name": "FPV Antenna Mount",
+    "slug": "fpv-antenna-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holds a VTX antenna clear of the propellers and routes it up or back. Sized to the antenna connector standard (SMA bulkhead or the tiny U.FL coax). Choose a tube mount that captures a rigid tube antenna, an SMA bulkhead bracket, or a lightweight frame clip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sostiene una antena VTX lejos de las helices y la enruta hacia arriba o atras. Dimensionada al estandar del conector de antena (SMA bulkhead o el pequeno coaxial U.FL). Elige una montura de tubo que captura una antena rigida, un soporte SMA bulkhead o un clip ligero para el cuadro.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/fpv-antenna-mount.webp",
+    "difficulty": "beginner",
+    "tags": ["drone", "fpv", "antenna", "vtx", "sma", "ufl", "mount", "rc", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tube_mount",
+      "label": { "en": "Tube Mount", "es": "Montura de Tubo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tube_mount"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "sma_bracket",
+      "label": { "en": "SMA Bulkhead Bracket", "es": "Soporte SMA Bulkhead" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sma_bracket"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "clip",
+      "label": { "en": "Frame Clip", "es": "Clip de Cuadro" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "tube_mount", "label": { "en": "Tube Mount", "es": "Montura de Tubo" }, "render_mode": 0, "color": "#7a5bb0" },
+    { "id": "sma_bracket", "label": { "en": "SMA Bracket", "es": "Soporte SMA" }, "render_mode": 0, "color": "#5f3f95" },
+    { "id": "clip", "label": { "en": "Frame Clip", "es": "Clip de Cuadro" }, "render_mode": 0, "color": "#9a7bd0" }
+  ],
+  "parameter_groups": [
+    { "id": "connector", "label": { "en": "Connector", "es": "Conector" } },
+    { "id": "stalk", "label": { "en": "Stalk", "es": "Tallo" } },
+    { "id": "base", "label": { "en": "Base & Fixing", "es": "Base y Fijacion" } },
+    { "id": "tube", "label": { "en": "Tube / Clip", "es": "Tubo / Clip" } }
+  ],
+  "parameters": [
+    {
+      "id": "connector", "type": "select", "default": "SMA",
+      "group": "connector", "modes": ["tube_mount", "sma_bracket", "clip"],
+      "label": { "en": "Connector", "es": "Conector" },
+      "tooltip": { "en": "Antenna connector standard (SMA bulkhead or U.FL coax)", "es": "Estandar del conector de antena (SMA bulkhead o coaxial U.FL)" },
+      "options": [
+        { "value": "SMA", "label": { "en": "SMA (6.5 mm exit)", "es": "SMA (salida 6.5 mm)" } },
+        { "value": "U.FL", "label": { "en": "U.FL (2.6 mm exit)", "es": "U.FL (salida 2.6 mm)" } }
+      ]
+    },
+    {
+      "id": "stalk_h", "type": "slider", "default": 35.0, "min": 10.0, "max": 60.0, "step": 1,
+      "group": "stalk", "modes": ["tube_mount", "sma_bracket", "clip"],
+      "label": { "en": "Stalk Height (mm)", "es": "Altura del Tallo (mm)" },
+      "tooltip": { "en": "How high the stalk lifts the antenna above the props", "es": "Cuanto sube el tallo la antena sobre las helices" }
+    },
+    {
+      "id": "stalk_d", "type": "slider", "default": 8.0, "min": 4.0, "max": 12.0, "step": 0.5,
+      "group": "stalk", "modes": ["tube_mount", "sma_bracket", "clip"],
+      "label": { "en": "Stalk Diameter (mm)", "es": "Diametro del Tallo (mm)" },
+      "tooltip": { "en": "Stalk outer diameter", "es": "Diametro exterior del tallo" }
+    },
+    {
+      "id": "back_angle", "type": "slider", "default": 25.0, "min": 0.0, "max": 45.0, "step": 1,
+      "group": "stalk", "modes": ["tube_mount", "sma_bracket"],
+      "label": { "en": "Rearward Lean (deg)", "es": "Inclinacion Trasera (grados)" },
+      "tooltip": { "en": "Lean the stalk back so the antenna clears the props", "es": "Inclina el tallo atras para que la antena libre las helices" }
+    },
+    {
+      "id": "base_w", "type": "slider", "default": 18.0, "min": 10.0, "max": 30.0, "step": 1,
+      "group": "base", "modes": ["tube_mount", "sma_bracket", "clip"],
+      "label": { "en": "Base Width (mm)", "es": "Ancho de Base (mm)" },
+      "tooltip": { "en": "Foot base width", "es": "Ancho de la base" }
+    },
+    {
+      "id": "base_l", "type": "slider", "default": 18.0, "min": 10.0, "max": 30.0, "step": 1,
+      "group": "base", "modes": ["tube_mount", "sma_bracket"],
+      "label": { "en": "Base Length (mm)", "es": "Largo de Base (mm)" },
+      "tooltip": { "en": "Foot base length", "es": "Largo de la base" }
+    },
+    {
+      "id": "bolt_d", "type": "slider", "default": 2.2, "min": 1.6, "max": 4.0, "step": 0.1,
+      "group": "base", "modes": ["tube_mount", "sma_bracket"], "advanced": true,
+      "label": { "en": "Bolt Hole (mm)", "es": "Agujero de Tornillo (mm)" },
+      "tooltip": { "en": "Base bolt hole diameter (M2 = 2.2)", "es": "Diametro del agujero de la base (M2 = 2.2)" }
+    },
+    {
+      "id": "bolt_span", "type": "slider", "default": 12.0, "min": 6.0, "max": 24.0, "step": 0.5,
+      "group": "base", "modes": ["tube_mount", "sma_bracket"], "advanced": true,
+      "label": { "en": "Bolt Spacing (mm)", "es": "Separacion de Tornillos (mm)" },
+      "tooltip": { "en": "Distance between the two base bolt holes", "es": "Distancia entre los dos agujeros de la base" }
+    },
+    {
+      "id": "tube_d", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "tube", "modes": ["tube_mount"],
+      "label": { "en": "Tube Diameter (mm)", "es": "Diametro del Tubo (mm)" },
+      "tooltip": { "en": "Rigid tube-antenna diameter the socket captures", "es": "Diametro de la antena de tubo que captura el enchufe" }
+    },
+    {
+      "id": "tube_len", "type": "slider", "default": 28.0, "min": 8.0, "max": 40.0, "step": 1,
+      "group": "tube", "modes": ["tube_mount"],
+      "label": { "en": "Tube Capture (mm)", "es": "Captura del Tubo (mm)" },
+      "tooltip": { "en": "How deep the tube socket grips the antenna", "es": "Que tan profundo sujeta el enchufe la antena" }
+    },
+    {
+      "id": "clip_gap", "type": "slider", "default": 4.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "tube", "modes": ["clip"],
+      "label": { "en": "Clip Gap (mm)", "es": "Separacion del Clip (mm)" },
+      "tooltip": { "en": "Frame-plate thickness the clip grips", "es": "Grosor de la placa que sujeta el clip" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sma_stalk_25", "mode": "sma_bracket",
+      "label": { "en": "SMA Stalk 25 deg", "es": "Tallo SMA 25 grados" },
+      "values": { "connector": "SMA", "stalk_h": 35, "back_angle": 25, "base_w": 18 }
+    },
+    {
+      "id": "pagoda_tube", "mode": "tube_mount",
+      "label": { "en": "Pagoda Tube Mount", "es": "Montura de Tubo Pagoda" },
+      "values": { "connector": "SMA", "stalk_h": 30, "tube_d": 4, "tube_len": 28, "back_angle": 20 }
+    },
+    {
+      "id": "ufl_clip", "mode": "clip",
+      "label": { "en": "U.FL Frame Clip", "es": "Clip de Cuadro U.FL" },
+      "values": { "connector": "U.FL", "stalk_h": 24, "stalk_d": 6, "clip_gap": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "stalk_d >= 4",
+      "severity": "warning",
+      "message": { "en": "A very thin stalk may snap in a crash", "es": "Un tallo muy delgado puede romperse en un choque" }
+    },
+    {
+      "expression": "back_angle <= 45",
+      "severity": "error",
+      "message": { "en": "Lean angle must be 45 deg or less", "es": "El angulo de inclinacion debe ser 45 grados o menos" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [55, 55, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "antenna_exit",
+        "label": { "en": "Antenna Exit", "es": "Salida de Antena" },
+        "geometry_type": "socket",
+        "standard": "SMA / U.FL",
+        "parameters": ["connector", "tube_d"]
+      },
+      {
+        "id": "frame_fixing",
+        "label": { "en": "Frame Fixing", "es": "Fijacion al Cuadro" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["bolt_span", "bolt_d", "clip_gap"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A VTX antenna that dips into the prop wash tears itself apart and kills the video link. On-demand mounts sized to the exact connector lift and lean the antenna clear, keeping the feed alive and the antenna reusable.",
+      "es": "Una antena VTX que entra al flujo de las helices se destruye y corta el enlace de video. Las monturas bajo demanda dimensionadas al conector exacto elevan e inclinan la antena, manteniendo la senal viva y la antena reutilizable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drone", "fpv", "antenna", "vtx", "rc", "commercial", "hyperobject", "commons"]
+}

@@ -1,6 +1,6 @@
 """Tests for AI session store."""
-import time
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -8,7 +8,12 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.ai.ai_session import (
-    create_session, get_session, append_message, get_messages, cleanup_expired, _sessions,
+    _sessions,
+    append_message,
+    cleanup_expired,
+    create_session,
+    get_messages,
+    get_session,
 )
 
 
@@ -61,8 +66,8 @@ class TestAiSession:
 
     def test_redis_create_and_get(self):
         """Test Redis path when redis_client is active."""
-        from unittest.mock import MagicMock, patch
         import json
+        from unittest.mock import MagicMock, patch
         
         mock_redis = MagicMock()
         # Mock get to return None first (cache miss) then data
@@ -96,6 +101,7 @@ class TestAiSession:
     def test_redis_fallback(self):
         """Test fallback to memory on Redis error."""
         from unittest.mock import MagicMock, patch
+
         import redis
         
         mock_redis = MagicMock()

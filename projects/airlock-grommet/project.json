@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Fermentation Airlock Grommet & Fitting",
+    "slug": "airlock-grommet",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The gas-management interface of a fermenter: a snap-in grommet that seals an airlock stem into a carboy or bucket bore, a simple printable bubbler airlock body, and a blow-off adapter for vigorous fermentation. All share one carboy/bucket bore interface.\n\nFood-contact note: this touches fermenting must and CO2. Geometry only — food-safe filament, sanitation, and a proper liquid seal are the maker's responsibility.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La interfaz de manejo de gases de un fermentador: un ojal a presión que sella el vástago de un airlock en la perforación de un garrafón o cubeta, un cuerpo de airlock burbujeador imprimible, y un adaptador de blow-off para fermentación vigorosa. Todos comparten una interfaz de perforación de garrafón/cubeta.\n\nNota de contacto con alimentos: esto toca el mosto en fermentación y CO2. Solo geometría — el filamento apto para alimentos, la sanitización y un sello líquido adecuado son responsabilidad del fabricante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/airlock-grommet.webp",
+    "difficulty": "intermediate",
+    "tags": ["fermentation", "airlock", "grommet", "brewing", "carboy", "homebrew", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "grommet",
+      "label": { "en": "Grommet", "es": "Ojal" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grommet"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "airlock_body",
+      "label": { "en": "Airlock Body", "es": "Cuerpo del Airlock" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["airlock_body"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "blowoff_adapter",
+      "label": { "en": "Blow-off Adapter", "es": "Adaptador Blow-off" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["blowoff_adapter"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "grommet", "label": { "en": "Grommet", "es": "Ojal" }, "render_mode": 0, "color": "#6faf7a" },
+    { "id": "airlock_body", "label": { "en": "Airlock Body", "es": "Cuerpo del Airlock" }, "render_mode": 0, "color": "#8bc79a" },
+    { "id": "blowoff_adapter", "label": { "en": "Blow-off Adapter", "es": "Adaptador Blow-off" }, "render_mode": 0, "color": "#5b9e68" }
+  ],
+  "parameter_groups": [
+    { "id": "bore", "label": { "en": "Bore & Stem", "es": "Perforación y Vástago" } },
+    { "id": "grommet", "label": { "en": "Grommet", "es": "Ojal" } },
+    { "id": "blowoff", "label": { "en": "Blow-off", "es": "Blow-off" } }
+  ],
+  "parameters": [
+    {
+      "id": "bore_dia", "type": "slider", "default": 12.5, "min": 8, "max": 40, "step": 0.5,
+      "group": "bore", "modes": ["grommet"],
+      "label": { "en": "Bucket / Carboy Bore (mm)", "es": "Perforación Cubeta/Garrafón (mm)" },
+      "tooltip": { "en": "Diameter of the drilled hole in the lid or carboy", "es": "Diámetro del agujero perforado en la tapa o garrafón" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "stem_dia", "type": "slider", "default": 9.5, "min": 4, "max": 30, "step": 0.5,
+      "group": "bore", "modes": ["grommet", "airlock_body", "blowoff_adapter"],
+      "label": { "en": "Airlock Stem OD (mm)", "es": "Diámetro del Vástago (mm)" },
+      "tooltip": { "en": "Outer diameter of the airlock stem the grommet grips", "es": "Diámetro exterior del vástago que agarra el ojal" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "bore", "modes": ["grommet", "airlock_body", "blowoff_adapter"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body wall thickness", "es": "Grosor de pared del cuerpo" }
+    },
+    {
+      "id": "flange_dia", "type": "slider", "default": 20.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "grommet", "modes": ["grommet"],
+      "label": { "en": "Flange Diameter (mm)", "es": "Diámetro de Brida (mm)" },
+      "tooltip": { "en": "Top flange that rests on the lid", "es": "Brida superior que descansa sobre la tapa" }
+    },
+    {
+      "id": "groove_w", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "grommet", "modes": ["grommet"],
+      "label": { "en": "Lid Thickness (mm)", "es": "Grosor de Tapa (mm)" },
+      "tooltip": { "en": "Snap-groove width = thickness of the lid it clips into", "es": "Ancho de la ranura = grosor de la tapa donde encaja" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "grommet", "modes": ["grommet"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side printed-fit slop", "es": "Holgura de impresión por lado" }
+    },
+    {
+      "id": "barb_dia", "type": "slider", "default": 9.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "blowoff", "modes": ["blowoff_adapter"],
+      "label": { "en": "Hose Barb OD (mm)", "es": "Diámetro de Espiga (mm)" },
+      "tooltip": { "en": "Outer diameter of the blow-off hose barb", "es": "Diámetro exterior de la espiga para manguera blow-off" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_bucket_grommet", "mode": "grommet",
+      "label": { "en": "Standard Bucket Grommet", "es": "Ojal de Cubeta Estándar" },
+      "values": { "bore_dia": 12.5, "stem_dia": 9.5, "flange_dia": 20, "groove_w": 3 }
+    },
+    {
+      "id": "printable_bubbler", "mode": "airlock_body",
+      "label": { "en": "Printable Bubbler", "es": "Burbujeador Imprimible" },
+      "values": { "stem_dia": 9.5, "wall": 3.0 }
+    },
+    {
+      "id": "blowoff_tube_adapter", "mode": "blowoff_adapter",
+      "label": { "en": "Blow-off Tube Adapter", "es": "Adaptador de Tubo Blow-off" },
+      "values": { "stem_dia": 9.5, "barb_dia": 9.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "stem_dia < bore_dia",
+      "severity": "error",
+      "message": { "en": "Stem OD must be smaller than the bore", "es": "El vástago debe ser menor que la perforación" }
+    },
+    {
+      "expression": "flange_dia > bore_dia",
+      "severity": "warning",
+      "message": { "en": "Flange should be wider than the bore to seat", "es": "La brida debe ser más ancha que la perforación para asentar" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 64, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "airlock_bore",
+        "label": { "en": "Airlock Bore", "es": "Perforación de Airlock" },
+        "geometry_type": "socket",
+        "standard": "carboy/bucket bore",
+        "parameters": ["bore_dia", "stem_dia", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Lets any fermenter — a repurposed food bucket or a carboy — vent CO2 safely without buying proprietary fittings, standardizing home fermentation of beer, cider, kraut, and yogurt on one printable bore-seal interface.",
+      "es": "Permite que cualquier fermentador — una cubeta de alimentos reutilizada o un garrafón — libere CO2 de forma segura sin comprar accesorios propietarios, estandarizando la fermentación casera de cerveza, sidra, chucrut y yogur en una sola interfaz de sello imprimible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["fermentation", "airlock", "grommet", "brewing", "carboy", "household", "hyperobject", "commons"]
+}

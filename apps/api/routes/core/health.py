@@ -40,8 +40,9 @@ def _check_redis() -> tuple[bool, str]:
 def _check_analytics_db() -> tuple[bool, str]:
     """Check analytics DB connectivity via SQLAlchemy."""
     try:
-        from extensions import db
         from sqlalchemy import text
+
+        from extensions import db
         db.session.execute(text("SELECT 1"))
         db.session.rollback()  # don't hold open transactions
         uri = Config.SQLALCHEMY_DATABASE_URI
@@ -137,44 +138,38 @@ def readiness():
     # Optional: OpenSCAD (platform supports WASM fallback)
     ok, detail = _check_openscad()
     checks["openscad"] = {"ok": ok, "detail": detail}
-    if not ok:
-        if overall != "unhealthy":
-            overall = "degraded"
+    if not ok and overall != "unhealthy":
+        overall = "degraded"
 
     # Optional: Redis
     ok, detail = _check_redis()
     checks["redis"] = {"ok": ok, "detail": detail}
-    if not ok and "not configured" not in detail:
-        if overall != "unhealthy":
-            overall = "degraded"
+    if not ok and "not configured" not in detail and overall != "unhealthy":
+        overall = "degraded"
 
     # Optional: Analytics DB
     ok, detail = _check_analytics_db()
     checks["analytics_db"] = {"ok": ok, "detail": detail}
-    if not ok:
-        if overall != "unhealthy":
-            overall = "degraded"
+    if not ok and overall != "unhealthy":
+        overall = "degraded"
 
     # Optional: Disk space
     ok, detail = _check_disk_space()
     checks["disk"] = {"ok": ok, "detail": detail}
-    if not ok:
-        if overall != "unhealthy":
-            overall = "degraded"
+    if not ok and overall != "unhealthy":
+        overall = "degraded"
 
     # Optional: Memory
     ok, detail = _check_memory()
     checks["memory"] = {"ok": ok, "detail": detail}
-    if not ok:
-        if overall != "unhealthy":
-            overall = "degraded"
+    if not ok and overall != "unhealthy":
+        overall = "degraded"
 
     # Optional: MQTT
     ok, detail = _check_mqtt()
     checks["mqtt"] = {"ok": ok, "detail": detail}
-    if not ok and "not enabled" not in detail:
-        if overall != "unhealthy":
-            overall = "degraded"
+    if not ok and "not enabled" not in detail and overall != "unhealthy":
+        overall = "degraded"
 
     ok, detail = _check_render_worker()
     checks["render_worker"] = {"ok": ok, "detail": detail}

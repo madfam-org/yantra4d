@@ -1,0 +1,451 @@
+{
+  "project": {
+    "name": "Modular Grid Interoperability Hub",
+    "slug": "grid-hub",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "advanced",
+    "description": {
+      "en": "The Commons interoperability keystone: one hub bridging the major shop / desk organization grids so a bin, tool, or accessory built for one system mounts on another. Real standard geometry — Gridfinity (42 mm baseplate socket with the standard chamfer stack), Multiboard (25 mm), French cleat (45° rail), and pegboard (1 in / 6.35 mm holes). Build a Gridfinity-on-cleat mount, a Gridfinity-on-pegboard mount, or a Multiboard↔Gridfinity bridge tile.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "La piedra angular de interoperabilidad del Commons: un hub que une las principales cuadrículas de organización para que un contenedor, herramienta o accesorio de un sistema se monte en otro. Geometría real de estándares — Gridfinity (alojamiento de 42 mm con la pila de chaflanes estándar), Multiboard (25 mm), cuña francesa (riel 45°) y panel perforado (1 pulg / orificios 6.35 mm). Genera un montaje Gridfinity-en-cuña, Gridfinity-en-panel, o una baldosa puente Multiboard↔Gridfinity.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/grid-hub.webp",
+    "tags": [
+      "gridfinity",
+      "multiboard",
+      "pegboard",
+      "french-cleat",
+      "organization",
+      "grid",
+      "interoperability",
+      "household",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "gridfinity_cleat",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Gridfinity → Cleat",
+        "es": "Gridfinity → Cuña"
+      },
+      "parts": [
+        "gridfinity_cleat"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 6,
+        "per_part": 22
+      }
+    },
+    {
+      "id": "pegboard_grid",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Pegboard → Gridfinity",
+        "es": "Panel → Gridfinity"
+      },
+      "parts": [
+        "pegboard_grid"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 6,
+        "per_part": 22
+      }
+    },
+    {
+      "id": "multiboard_tile",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Multiboard ↔ Gridfinity",
+        "es": "Multiboard ↔ Gridfinity"
+      },
+      "parts": [
+        "multiboard_tile"
+      ],
+      "estimate": {
+        "base_time": 24,
+        "per_unit": 6,
+        "per_part": 24
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "gridfinity_cleat",
+      "render_mode": 0,
+      "label": {
+        "en": "Gridfinity → Cleat",
+        "es": "Gridfinity → Cuña"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "pegboard_grid",
+      "render_mode": 0,
+      "label": {
+        "en": "Pegboard → Gridfinity",
+        "es": "Panel → Gridfinity"
+      },
+      "default_color": "#6fa3bf"
+    },
+    {
+      "id": "multiboard_tile",
+      "render_mode": 0,
+      "label": {
+        "en": "Multiboard ↔ Gridfinity",
+        "es": "Multiboard ↔ Gridfinity"
+      },
+      "default_color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "gridfinity",
+      "label": {
+        "en": "Gridfinity Cells",
+        "es": "Celdas Gridfinity"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body & Mount",
+        "es": "Cuerpo y Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "gx",
+      "type": "slider",
+      "default": 1,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "group": "gridfinity",
+      "modes": [
+        "gridfinity_cleat",
+        "pegboard_grid",
+        "multiboard_tile"
+      ],
+      "label": {
+        "en": "Gridfinity Cells X",
+        "es": "Celdas Gridfinity X"
+      },
+      "tooltip": {
+        "en": "Number of 42 mm Gridfinity cells across X",
+        "es": "Número de celdas Gridfinity de 42 mm en X"
+      }
+    },
+    {
+      "id": "gy",
+      "type": "slider",
+      "default": 1,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "group": "gridfinity",
+      "modes": [
+        "gridfinity_cleat",
+        "pegboard_grid",
+        "multiboard_tile"
+      ],
+      "label": {
+        "en": "Gridfinity Cells Y",
+        "es": "Celdas Gridfinity Y"
+      },
+      "tooltip": {
+        "en": "Number of 42 mm Gridfinity cells across Y",
+        "es": "Número de celdas Gridfinity de 42 mm en Y"
+      }
+    },
+    {
+      "id": "base_th",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "gridfinity",
+      "modes": [
+        "gridfinity_cleat",
+        "pegboard_grid",
+        "multiboard_tile"
+      ],
+      "label": {
+        "en": "Baseplate Floor (mm)",
+        "es": "Piso del Alojamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Solid floor below the Gridfinity sockets",
+        "es": "Piso sólido bajo los alojamientos Gridfinity"
+      }
+    },
+    {
+      "id": "back_th",
+      "type": "slider",
+      "default": 6.0,
+      "min": 4.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "gridfinity_cleat",
+        "pegboard_grid",
+        "multiboard_tile"
+      ],
+      "label": {
+        "en": "Back Plate (mm)",
+        "es": "Placa Trasera (mm)"
+      },
+      "tooltip": {
+        "en": "Back plate / tile thickness",
+        "es": "Grosor de placa trasera / baldosa"
+      }
+    },
+    {
+      "id": "cleat_ang",
+      "type": "slider",
+      "default": 45.0,
+      "min": 30.0,
+      "max": 60.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "gridfinity_cleat"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "French-Cleat Angle (deg)",
+        "es": "Ángulo de Cuña (grados)"
+      },
+      "tooltip": {
+        "en": "Bevel angle of the French-cleat rail (45° standard)",
+        "es": "Ángulo del bisel del riel de cuña (45° estándar)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "body",
+      "modes": [
+        "gridfinity_cleat",
+        "pegboard_grid",
+        "multiboard_tile"
+      ],
+      "label": {
+        "en": "Wall (mm)",
+        "es": "Pared (mm)"
+      },
+      "tooltip": {
+        "en": "General wall thickness",
+        "es": "Grosor de pared general"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "gf1_cleat",
+      "mode": "gridfinity_cleat",
+      "label": {
+        "en": "1×1 Gridfinity Cleat Mount",
+        "es": "Montaje Cuña Gridfinity 1×1"
+      },
+      "values": {
+        "gx": 1,
+        "gy": 1,
+        "cleat_ang": 45.0
+      }
+    },
+    {
+      "id": "gf2_peg",
+      "mode": "pegboard_grid",
+      "label": {
+        "en": "2×1 Gridfinity Pegboard Mount",
+        "es": "Montaje Panel Gridfinity 2×1"
+      },
+      "values": {
+        "gx": 2,
+        "gy": 1
+      }
+    },
+    {
+      "id": "mb_bridge",
+      "mode": "multiboard_tile",
+      "label": {
+        "en": "Multiboard ↔ Gridfinity Tile",
+        "es": "Baldosa Multiboard ↔ Gridfinity"
+      },
+      "values": {
+        "gx": 1,
+        "gy": 1
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "back_th >= 4",
+      "severity": "warning",
+      "message": {
+        "en": "A thin back plate weakens the wall mount",
+        "es": "Una placa trasera delgada debilita el montaje"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        130
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -220,
+        40
+      ]
+    },
+    {
+      "id": "side",
+      "label": {
+        "en": "Side",
+        "es": "Lateral"
+      },
+      "position": [
+        220,
+        0,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 22,
+    "per_unit": 6,
+    "per_part": 22,
+    "wasm_multiplier": 5,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "gridfinity_baseplate",
+        "label": {
+          "en": "Gridfinity 42 mm Baseplate",
+          "es": "Alojamiento Gridfinity 42 mm"
+        },
+        "geometry_type": "grid",
+        "standard": "Gridfinity 42 mm",
+        "parameters": [
+          "gx",
+          "gy",
+          "base_th"
+        ],
+        "compatible_with": [
+          "cabinet-bin",
+          "cutlery-tray",
+          "gridfinity",
+          "locking-mechanism-hyperobject"
+        ]
+      },
+      {
+        "id": "multiboard_grid",
+        "label": {
+          "en": "Multiboard 25 mm Grid",
+          "es": "Cuadrícula Multiboard 25 mm"
+        },
+        "geometry_type": "grid",
+        "standard": "Multiboard 25 mm",
+        "parameters": [
+          "gx",
+          "gy"
+        ]
+      },
+      {
+        "id": "french_cleat_rail",
+        "label": {
+          "en": "French-Cleat Rail",
+          "es": "Riel de Cuña Francesa"
+        },
+        "geometry_type": "rail",
+        "standard": "French cleat 45 deg",
+        "parameters": [
+          "cleat_ang",
+          "back_th"
+        ]
+      },
+      {
+        "id": "pegboard_hooks",
+        "label": {
+          "en": "Pegboard Hooks (1 in)",
+          "es": "Ganchos de Panel (1 pulg)"
+        },
+        "geometry_type": "snap",
+        "standard": "Pegboard 1 in / 6.35 mm",
+        "parameters": [
+          "back_th"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The maker world has fractured into rival organization grids — Gridfinity for drawers, Multiboard and pegboard for walls, French cleats for tools — and a bin or holder built for one will not mount on another, forcing a rebuild per system. As the Commons' #300 keystone, this hub is the single adapter that bridges them: it lets a Gridfinity bin hang on a cleat wall, a pegboard carry a Gridfinity cell, or a Multiboard meet Gridfinity — so the whole catalog of parts becomes mountable anywhere, and no one is locked into a single grid.",
+      "es": "El mundo maker se ha fracturado en cuadrículas rivales — Gridfinity para cajones, Multiboard y panel perforado para paredes, cuñas francesas para herramientas — y un contenedor hecho para una no se monta en otra, obligando a rehacerlo por sistema. Como piedra angular #300 del Commons, este hub es el adaptador único que las une: permite colgar un contenedor Gridfinity en una pared de cuña, que un panel lleve una celda Gridfinity, o que Multiboard encuentre Gridfinity — para que todo el catálogo sea montable en cualquier lugar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "gridfinity",
+    "multiboard",
+    "pegboard",
+    "french-cleat",
+    "organization",
+    "grid",
+    "interoperability",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

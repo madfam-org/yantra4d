@@ -6,16 +6,16 @@ import glob
 import logging
 import os
 
-from flask import Blueprint, g, request, jsonify
+from flask import Blueprint, g, jsonify, request
 
+import rate_limits
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
-from services.geometry.thickness_analyzer import compute_wall_thickness
 from services.geometry.overhang_analyzer import compute_overhang_angles
+from services.geometry.thickness_analyzer import compute_wall_thickness
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
-import rate_limits
 
 logger = logging.getLogger(__name__)
 
@@ -84,10 +84,10 @@ def analyze_thickness(slug: str):
         return error_response("Render file disappeared during analysis", 404)
     except Exception as e:
         logger.exception(
-            "Thickness analysis failed for %s [request_id=%s]: %s",
-            slug, getattr(g, "request_id", None), e,
+            "Thickness analysis failed for %s [request_id=%s]",
+            slug, getattr(g, "request_id", None),
         )
-        return error_response(f"Analysis failed: {str(e)}", 500)
+        return error_response(f"Analysis failed: {e!s}", 500)
 
     return jsonify({
         "status": "success",
@@ -138,10 +138,10 @@ def analyze_overhang(slug: str):
         return error_response("Render file disappeared during analysis", 404)
     except Exception as e:
         logger.exception(
-            "Overhang analysis failed for %s [request_id=%s]: %s",
-            slug, getattr(g, "request_id", None), e,
+            "Overhang analysis failed for %s [request_id=%s]",
+            slug, getattr(g, "request_id", None),
         )
-        return error_response(f"Analysis failed: {str(e)}", 500)
+        return error_response(f"Analysis failed: {e!s}", 500)
 
     return jsonify({
         "status": "success",

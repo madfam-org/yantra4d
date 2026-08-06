@@ -1,0 +1,231 @@
+{
+  "project": {
+    "name": "Magnetic Stir Bar Rack",
+    "slug": "stirrbar-rack",
+    "version": "1.0.0",
+    "description": {
+      "en": "Storage and retrieval hyperobject for PTFE magnetic stir bars: a linear length-graded slot rack, a radial carousel rack, and a magnetic retriever wand that holds a cylinder magnet at its tip. Slots are sized to the standard 12/20/25/38 mm stir-bar set.",
+      "es": "Hiperobjeto de almacenamiento y recuperación para barras agitadoras magnéticas de PTFE: una gradilla lineal con ranuras graduadas por longitud, una gradilla en carrusel radial, y una varilla recuperadora que sostiene un imán cilíndrico en la punta. Las ranuras se dimensionan al conjunto estándar de 12/20/25/38 mm."
+    },
+    "thumbnail": "/projects/stirrbar-rack.webp",
+    "tags": ["stir-bar", "magnetic-stirrer", "ptfe", "rack", "lab", "medical", "hyperobject", "commons"],
+    "difficulty": "beginner",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Slots use +1.6 mm width clearance around the PTFE body; keep the magnet wand in PLA/PETG (non-magnetic) so only the tip magnet does the work.",
+        "es": "Las ranuras usan +1.6 mm de holgura alrededor del cuerpo de PTFE; mantén la varilla en PLA/PETG (no magnético) para que solo el imán de la punta actúe."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "bar_slots",
+        "label": {
+          "en": "Stir-Bar Length Slots",
+          "es": "Ranuras por Longitud de Barra"
+        },
+        "geometry_type": "grid",
+        "standard": "PTFE stir bars 12/20/25/38/50 mm",
+        "parameters": ["bar_diameter", "slot_count", "max_bar_length"]
+      },
+      {
+        "id": "magnet_pocket",
+        "label": {
+          "en": "Retrieval Magnet Pocket",
+          "es": "Alojamiento del Imán de Recuperación"
+        },
+        "geometry_type": "socket",
+        "standard": "cylindrical NdFeB magnet Ø8-16 mm",
+        "parameters": ["magnet_diameter"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Keeps expensive PTFE stir bars sorted and retrievable, reducing loss and cross-contamination in shared teaching and clinical labs at near-zero cost.",
+      "es": "Mantiene las costosas barras de PTFE ordenadas y recuperables, reduciendo pérdidas y contaminación cruzada en laboratorios compartidos a costo casi nulo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "slot_rack",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Linear Slot Rack",
+        "es": "Gradilla Lineal"
+      },
+      "description": {
+        "en": "A block of parallel open-top troughs, each length-matched to a standard stir bar, with a finger scoop across the front."
+      },
+      "parts": ["slot_rack"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "carousel_rack",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Radial Carousel Rack",
+        "es": "Gradilla en Carrusel"
+      },
+      "description": {
+        "en": "A round rack with radial open-top slots of graded lengths around a solid central grip knob."
+      },
+      "parts": ["carousel_rack"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "magnet_wand",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Magnetic Retriever Wand",
+        "es": "Varilla Recuperadora Magnética"
+      },
+      "description": {
+        "en": "A fluted hand wand with a tip pocket for a cylinder magnet to fish stir bars out of vessels."
+      },
+      "parts": ["magnet_wand"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "slot_rack",
+      "render_mode": 0,
+      "label": {
+        "en": "Linear Slot Rack",
+        "es": "Gradilla Lineal"
+      },
+      "default_color": "#2b6cb0"
+    },
+    {
+      "id": "carousel_rack",
+      "render_mode": 0,
+      "label": {
+        "en": "Radial Carousel Rack",
+        "es": "Gradilla en Carrusel"
+      },
+      "default_color": "#3182ce"
+    },
+    {
+      "id": "magnet_wand",
+      "render_mode": 0,
+      "label": {
+        "en": "Magnetic Retriever Wand",
+        "es": "Varilla Recuperadora"
+      },
+      "default_color": "#2c5282"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bar_diameter",
+      "type": "slider",
+      "default": 8,
+      "min": 3,
+      "max": 10.5,
+      "step": 0.5,
+      "label": {
+        "en": "Stir-Bar Diameter (mm)",
+        "es": "Diámetro de la Barra (mm)"
+      },
+      "tooltip": {
+        "en": "PTFE octagonal stir bars are typically ~8 mm; the range spans 3-10.5 mm.",
+        "es": "Las barras octagonales de PTFE suelen ser ~8 mm; el rango va de 3 a 10.5 mm."
+      },
+      "group": "rack"
+    },
+    {
+      "id": "slot_count",
+      "type": "slider",
+      "default": 5,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": {
+        "en": "Slot Count",
+        "es": "Número de Ranuras"
+      },
+      "group": "rack"
+    },
+    {
+      "id": "max_bar_length",
+      "type": "slider",
+      "default": 40,
+      "min": 15,
+      "max": 50,
+      "step": 1,
+      "label": {
+        "en": "Longest Bar (mm)",
+        "es": "Barra Más Larga (mm)"
+      },
+      "tooltip": {
+        "en": "Caps the slot lengths; standard set tops out at 38-50 mm.",
+        "es": "Limita la longitud de las ranuras; el conjunto estándar llega a 38-50 mm."
+      },
+      "group": "rack"
+    },
+    {
+      "id": "magnet_diameter",
+      "type": "slider",
+      "default": 10,
+      "min": 6,
+      "max": 16,
+      "step": 0.5,
+      "label": {
+        "en": "Retriever Magnet Ø (mm)",
+        "es": "Diámetro del Imán (mm)"
+      },
+      "group": "wand"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "rack",
+      "label": {
+        "en": "Stir-Bar Racks",
+        "es": "Gradillas"
+      }
+    },
+    {
+      "id": "wand",
+      "label": {
+        "en": "Retriever Wand",
+        "es": "Varilla Recuperadora"
+      }
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

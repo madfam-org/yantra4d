@@ -1,0 +1,185 @@
+{
+  "project": {
+    "name": "Math Manipulatives / Solids",
+    "slug": "math-solids",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Geometric manipulatives for the maths classroom: the five Platonic solids, a regular N-gon prism for surface-area and volume lessons, and pie-slice fraction tiles that snap into a whole circle. All pieces share a 40 mm nominal size so a set is comparable and stackable.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Manipulativos geométricos para el aula de matemáticas: los cinco sólidos platónicos, un prisma regular de N lados para lecciones de área y volumen, y fichas de fracciones en forma de porción que se unen en un círculo completo. Todas las piezas comparten un tamaño nominal de 40 mm para que un conjunto sea comparable y apilable.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/math-solids.webp",
+    "difficulty": "beginner",
+    "tags": ["math", "geometry", "platonic", "fractions", "manipulatives", "education", "stem", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "platonic",
+      "label": { "en": "Platonic Solid", "es": "Sólido Platónico" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["platonic"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "prism",
+      "label": { "en": "N-gon Prism", "es": "Prisma de N Lados" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["prism"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "fraction_tile",
+      "label": { "en": "Fraction Tile", "es": "Ficha de Fracción" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["fraction_tile"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "platonic", "label": { "en": "Platonic Solid", "es": "Sólido Platónico" }, "render_mode": 0, "color": "#2e7d5b" },
+    { "id": "prism", "label": { "en": "N-gon Prism", "es": "Prisma de N Lados" }, "render_mode": 0, "color": "#3a8f6b" },
+    { "id": "fraction_tile", "label": { "en": "Fraction Tile", "es": "Ficha de Fracción" }, "render_mode": 0, "color": "#46a17b" }
+  ],
+  "parameter_groups": [
+    { "id": "platonicgrp", "label": { "en": "Platonic Solid", "es": "Sólido Platónico" } },
+    { "id": "prismgrp", "label": { "en": "Prism", "es": "Prisma" } },
+    { "id": "fractiongrp", "label": { "en": "Fraction Tile", "es": "Ficha de Fracción" } }
+  ],
+  "parameters": [
+    {
+      "id": "solid", "type": "select", "default": "cube",
+      "group": "platonicgrp", "modes": ["platonic"],
+      "options": [
+        { "value": "tetrahedron", "label": { "en": "Tetrahedron (4 faces)", "es": "Tetraedro (4 caras)" } },
+        { "value": "cube", "label": { "en": "Cube (6 faces)", "es": "Cubo (6 caras)" } },
+        { "value": "octahedron", "label": { "en": "Octahedron (8 faces)", "es": "Octaedro (8 caras)" } },
+        { "value": "dodecahedron", "label": { "en": "Dodecahedron (12 faces)", "es": "Dodecaedro (12 caras)" } },
+        { "value": "icosahedron", "label": { "en": "Icosahedron (20 faces)", "es": "Icosaedro (20 caras)" } }
+      ],
+      "label": { "en": "Platonic Solid", "es": "Sólido Platónico" },
+      "tooltip": { "en": "Which of the five regular polyhedra to generate", "es": "Cuál de los cinco poliedros regulares generar" }
+    },
+    {
+      "id": "size", "type": "slider", "default": 40.0, "min": 10.0, "max": 120.0, "step": 1,
+      "group": "platonicgrp", "modes": ["platonic"],
+      "label": { "en": "Circumscribed Size (mm)", "es": "Tamaño Circunscrito (mm)" },
+      "tooltip": { "en": "Diameter of the sphere through the vertices (nominal 40 mm)", "es": "Diámetro de la esfera que pasa por los vértices (nominal 40 mm)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "sides", "type": "slider", "default": 6, "min": 3, "max": 12, "step": 1,
+      "group": "prismgrp", "modes": ["prism"],
+      "label": { "en": "Polygon Sides", "es": "Lados del Polígono" },
+      "tooltip": { "en": "Number of sides of the prism base (3 = triangle, 6 = hexagon)", "es": "Número de lados de la base del prisma (3 = triángulo, 6 = hexágono)" }
+    },
+    {
+      "id": "prism_dia", "type": "slider", "default": 40.0, "min": 10.0, "max": 120.0, "step": 1,
+      "group": "prismgrp", "modes": ["prism"],
+      "label": { "en": "Across-Corners (mm)", "es": "Entre Vértices (mm)" },
+      "tooltip": { "en": "Diameter across the polygon corners (nominal 40 mm)", "es": "Diámetro entre las esquinas del polígono (nominal 40 mm)" }
+    },
+    {
+      "id": "prism_h", "type": "slider", "default": 30.0, "min": 3.0, "max": 120.0, "step": 1,
+      "group": "prismgrp", "modes": ["prism"],
+      "label": { "en": "Prism Height (mm)", "es": "Altura del Prisma (mm)" },
+      "tooltip": { "en": "Height of the prism — volume = base area x height", "es": "Altura del prisma — volumen = área de base x altura" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "denominator", "type": "slider", "default": 4, "min": 2, "max": 12, "step": 1,
+      "group": "fractiongrp", "modes": ["fraction_tile"],
+      "label": { "en": "Fraction Denominator", "es": "Denominador de la Fracción" },
+      "tooltip": { "en": "The tile is 1/denominator of a whole circle — print `denominator` to make a whole", "es": "La ficha es 1/denominador de un círculo completo — imprime `denominador` para formar un entero" }
+    },
+    {
+      "id": "tile_dia", "type": "slider", "default": 40.0, "min": 10.0, "max": 120.0, "step": 1,
+      "group": "fractiongrp", "modes": ["fraction_tile"],
+      "label": { "en": "Tile Diameter (mm)", "es": "Diámetro de Ficha (mm)" },
+      "tooltip": { "en": "Outer diameter of the whole circle the tiles form (nominal 40 mm)", "es": "Diámetro exterior del círculo completo que forman las fichas (nominal 40 mm)" }
+    },
+    {
+      "id": "tile_h", "type": "slider", "default": 8.0, "min": 2.0, "max": 30.0, "step": 0.5,
+      "group": "fractiongrp", "modes": ["fraction_tile"],
+      "label": { "en": "Tile Thickness (mm)", "es": "Grosor de Ficha (mm)" },
+      "tooltip": { "en": "Thickness of the fraction tile", "es": "Grosor de la ficha de fracción" }
+    },
+    {
+      "id": "tile_hole", "type": "slider", "default": 0.0, "min": 0.0, "max": 100.0, "step": 1,
+      "group": "fractiongrp", "modes": ["fraction_tile"], "advanced": true,
+      "label": { "en": "Centre Hole (mm)", "es": "Orificio Central (mm)" },
+      "tooltip": { "en": "Optional central hole diameter — makes each tile an annular sector (0 = full pie slice)", "es": "Diámetro opcional del orificio central — convierte cada ficha en un sector anular (0 = porción completa)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "d20", "mode": "platonic",
+      "label": { "en": "Icosahedron (d20)", "es": "Icosaedro (d20)" },
+      "values": { "solid": "icosahedron", "size": 40.0 }
+    },
+    {
+      "id": "hex_prism", "mode": "prism",
+      "label": { "en": "Hexagonal Prism", "es": "Prisma Hexagonal" },
+      "values": { "sides": 6, "prism_dia": 40.0, "prism_h": 30.0 }
+    },
+    {
+      "id": "quarters", "mode": "fraction_tile",
+      "label": { "en": "Quarter Tiles (1/4)", "es": "Fichas de Cuarto (1/4)" },
+      "values": { "denominator": 4, "tile_dia": 40.0, "tile_h": 8.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tile_hole < tile_dia",
+      "severity": "error",
+      "message": { "en": "Centre hole must be smaller than the tile diameter", "es": "El orificio central debe ser menor que el diámetro de la ficha" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -170, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 170] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "nominal_size",
+        "label": { "en": "40 mm Nominal Size", "es": "Tamaño Nominal 40 mm" },
+        "geometry_type": "surface",
+        "standard": "internal solids 40mm",
+        "parameters": ["size", "prism_dia", "tile_dia"]
+      },
+      {
+        "id": "fraction_sector",
+        "label": { "en": "Whole-Circle Fraction Sector", "es": "Sector de Fracción de Círculo Completo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["denominator", "tile_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "Hands-on solids and fraction tiles make geometry and number sense concrete: learners count faces, edges and vertices to discover Euler's formula, measure prisms to derive volume, and assemble denominator tiles into a whole to feel equivalent fractions. Printing a full comparable set from open files costs a few grams of filament instead of a commercial manipulatives kit, so any classroom — anywhere — can equip every student.",
+      "es": "Los sólidos manipulables y las fichas de fracciones hacen concretos la geometría y el sentido numérico: quien aprende cuenta caras, aristas y vértices para descubrir la fórmula de Euler, mide prismas para deducir el volumen y ensambla fichas del denominador en un entero para sentir las fracciones equivalentes. Imprimir un conjunto comparable completo desde archivos abiertos cuesta unos gramos de filamento en vez de un kit comercial de manipulativos, para que cualquier aula — en cualquier lugar — pueda equipar a cada estudiante."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["math", "geometry", "platonic", "fractions", "manipulatives", "education", "stem", "commercial", "hyperobject", "commons"]
+}

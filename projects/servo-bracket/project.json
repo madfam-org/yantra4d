@@ -1,0 +1,170 @@
+{
+  "project": {
+    "name": "Hobby Servo Bracket",
+    "slug": "servo-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Cradles a hobby servo by its body. The cradle is a pocket sized to the servo (SG90 micro = 23 x 12.2 mm, MG996R standard = 40.7 x 19.7 mm) with a floor window clearing the output shaft and mounting tabs matching the servo's flange screws. Choose a single servo mount, a two-servo pan/tilt bracket, or a U output arm.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Aloja un servo de aeromodelismo por su cuerpo. La cuna es un bolsillo dimensionado al servo (SG90 micro = 23 x 12.2 mm, MG996R estandar = 40.7 x 19.7 mm) con una ventana en el piso que libera el eje de salida y pestanas de montaje que coinciden con los tornillos de brida del servo. Elige un montaje simple, un soporte pan/tilt de dos servos o un brazo en U de salida.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/servo-bracket.webp",
+    "difficulty": "intermediate",
+    "tags": ["servo", "sg90", "mg996r", "bracket", "pan-tilt", "rc", "robotics", "3d-printer", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "servo_mount",
+      "label": { "en": "Servo Mount", "es": "Montaje de Servo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["servo_mount"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 15 }
+    },
+    {
+      "id": "pan_tilt_bracket",
+      "label": { "en": "Pan/Tilt Bracket", "es": "Soporte Pan/Tilt" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pan_tilt_bracket"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "u_bracket",
+      "label": { "en": "U Bracket", "es": "Brazo en U" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["u_bracket"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "servo_mount", "label": { "en": "Servo Mount", "es": "Montaje de Servo" }, "render_mode": 0, "color": "#8f5c7a" },
+    { "id": "pan_tilt_bracket", "label": { "en": "Pan/Tilt Bracket", "es": "Soporte Pan/Tilt" }, "render_mode": 0, "color": "#7a4a69" },
+    { "id": "u_bracket", "label": { "en": "U Bracket", "es": "Brazo en U" }, "render_mode": 0, "color": "#a06b8f" }
+  ],
+  "parameter_groups": [
+    { "id": "servo", "label": { "en": "Servo", "es": "Servo" } },
+    { "id": "cradle", "label": { "en": "Cradle", "es": "Cuna" } },
+    { "id": "arm", "label": { "en": "Arm", "es": "Brazo" } }
+  ],
+  "parameters": [
+    {
+      "id": "servo", "type": "select", "default": "SG90",
+      "group": "servo", "modes": ["servo_mount", "pan_tilt_bracket", "u_bracket"],
+      "label": { "en": "Servo", "es": "Servo" },
+      "tooltip": { "en": "Servo model — sets the body pocket and flange screw spacing", "es": "Modelo de servo — define el bolsillo del cuerpo y la separacion de tornillos de brida" },
+      "options": [
+        { "value": "SG90", "label": { "en": "SG90 micro (23 x 12.2 mm, 9 g)", "es": "SG90 micro (23 x 12.2 mm, 9 g)" } },
+        { "value": "MG996R", "label": { "en": "MG996R standard (40.7 x 19.7 mm)", "es": "MG996R estandar (40.7 x 19.7 mm)" } }
+      ]
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "cradle", "modes": ["servo_mount", "pan_tilt_bracket", "u_bracket"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Cradle / arm wall thickness", "es": "Grosor de pared de la cuna / brazo" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.5, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "cradle", "modes": ["servo_mount", "pan_tilt_bracket", "u_bracket"],
+      "label": { "en": "Floor / Web (mm)", "es": "Piso / Alma (mm)" },
+      "tooltip": { "en": "Cradle floor / U-bracket web thickness", "es": "Grosor del piso de la cuna / alma del brazo en U" }
+    },
+    {
+      "id": "clear", "type": "slider", "default": 0.4, "min": 0.15, "max": 1.0, "step": 0.05,
+      "group": "cradle", "modes": ["servo_mount", "pan_tilt_bracket"], "advanced": true,
+      "label": { "en": "Body Clearance (mm)", "es": "Holgura del Cuerpo (mm)" },
+      "tooltip": { "en": "Servo body-to-wall clearance (print fit)", "es": "Holgura cuerpo-pared del servo (ajuste de impresion)" }
+    },
+    {
+      "id": "tab_len", "type": "slider", "default": 7.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "cradle", "modes": ["servo_mount"],
+      "label": { "en": "Flange Tab (mm)", "es": "Pestana de Brida (mm)" },
+      "tooltip": { "en": "Mounting tab length beyond the body", "es": "Largo de la pestana de montaje mas alla del cuerpo" }
+    },
+    {
+      "id": "arm_len", "type": "slider", "default": 22.0, "min": 10.0, "max": 45.0, "step": 1,
+      "group": "arm", "modes": ["u_bracket"],
+      "label": { "en": "Arm Length (mm)", "es": "Largo del Brazo (mm)" },
+      "tooltip": { "en": "U-bracket side-arm length", "es": "Largo del brazo lateral del brazo en U" }
+    },
+    {
+      "id": "boss_d", "type": "slider", "default": 6.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "arm", "modes": ["u_bracket"],
+      "label": { "en": "Pivot Boss (mm)", "es": "Buje de Pivote (mm)" },
+      "tooltip": { "en": "Pivot boss hole diameter through the arms", "es": "Diametro del agujero del buje de pivote a traves de los brazos" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sg90_mount", "mode": "servo_mount",
+      "label": { "en": "SG90 Mount", "es": "Montaje SG90" },
+      "values": { "servo": "SG90", "wall": 2.4, "tab_len": 7 }
+    },
+    {
+      "id": "sg90_pantilt", "mode": "pan_tilt_bracket",
+      "label": { "en": "SG90 Pan/Tilt", "es": "SG90 Pan/Tilt" },
+      "values": { "servo": "SG90", "wall": 2.4, "floor": 2.5 }
+    },
+    {
+      "id": "mg996r_u", "mode": "u_bracket",
+      "label": { "en": "MG996R U-Arm", "es": "Brazo en U MG996R" },
+      "values": { "servo": "MG996R", "arm_len": 30, "boss_d": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Walls must be at least 1.6 mm to hold the servo", "es": "Las paredes deben tener al menos 1.6 mm para sujetar el servo" }
+    },
+    {
+      "expression": "clear >= 0.15",
+      "severity": "warning",
+      "message": { "en": "Clearance under 0.15 mm may make the servo hard to seat", "es": "Una holgura menor a 0.15 mm puede dificultar asentar el servo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [55, 55, 50] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "servo_mount",
+        "label": { "en": "Servo Mount", "es": "Montaje de Servo" },
+        "geometry_type": "bolt_pattern",
+        "standard": "SG90/MG996R",
+        "parameters": ["servo", "clear"]
+      },
+      {
+        "id": "servo_pocket",
+        "label": { "en": "Servo Body Pocket", "es": "Bolsillo del Cuerpo del Servo" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["servo", "wall", "floor"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Hobby servos are the cheapest actuators in robotics, but the mounting hardware to point them is rarely in the box. A printed bracket cut to the SG90/MG996R body and flange lets any of these interchangeable servos build a pan/tilt head, a gripper joint or a robot limb from parts on hand.",
+      "es": "Los servos de aeromodelismo son los actuadores mas baratos en robotica, pero la ferreteria para orientarlos rara vez viene incluida. Un soporte impreso cortado al cuerpo y brida SG90/MG996R permite que cualquiera de estos servos intercambiables arme una cabeza pan/tilt, una articulacion de pinza o un miembro robotico con piezas a la mano."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["servo", "sg90", "mg996r", "bracket", "pan-tilt", "robotics", "industrial", "hyperobject", "commons"]
+}

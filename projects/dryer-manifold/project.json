@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Boot / Glove Dryer Manifold",
+    "slug": "dryer-manifold",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Splits airflow from a fan, vent, or hair-dryer into several branches that push warm air down into wet boots and gloves. One inlet leads into a plenum that fans out to N branch tubes; the ends can be plain open tubes, flattened boot-shaped outlets, or the whole thing can carry a wall-mount plate. Dry outdoor gear overnight without a commercial rack.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Divide el flujo de aire de un ventilador, ventila o secadora en varias ramas que empujan aire tibio hacia botas y guantes mojados. Una entrada lleva a un pleno que se abre en N tubos de rama; los extremos pueden ser tubos abiertos, salidas aplanadas en forma de bota, o todo puede llevar una placa de montaje en pared. Seca equipo de exterior de noche sin un rack comercial.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dryer-manifold.webp",
+    "difficulty": "intermediate",
+    "tags": ["dryer", "manifold", "boot", "glove", "airflow", "duct", "outdoor", "plenum", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "manifold",
+      "label": { "en": "Manifold", "es": "Colector" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["manifold"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "boot_tree",
+      "label": { "en": "Boot Tree (flat outlets)", "es": "Árbol de Botas (salidas planas)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["boot_tree"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "wall_mount",
+      "label": { "en": "Wall-Mount Manifold", "es": "Colector de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_mount"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "manifold", "label": { "en": "Manifold", "es": "Colector" }, "render_mode": 0, "color": "#4a6d9a" },
+    { "id": "boot_tree", "label": { "en": "Boot Tree", "es": "Árbol de Botas" }, "render_mode": 0, "color": "#5a7daa" },
+    { "id": "wall_mount", "label": { "en": "Wall-Mount", "es": "Montaje en Pared" }, "render_mode": 0, "color": "#3a5d8a" }
+  ],
+  "parameter_groups": [
+    { "id": "inlet", "label": { "en": "Inlet", "es": "Entrada" } },
+    { "id": "branches", "label": { "en": "Branches", "es": "Ramas" } },
+    { "id": "shell", "label": { "en": "Shell", "es": "Casco" } }
+  ],
+  "parameters": [
+    {
+      "id": "inlet_dia", "type": "slider", "default": 60.0, "min": 20, "max": 150, "step": 1,
+      "group": "inlet", "modes": ["manifold", "boot_tree", "wall_mount"],
+      "label": { "en": "Inlet Diameter (mm)", "es": "Diámetro de Entrada (mm)" },
+      "tooltip": { "en": "Diameter of the fan / duct the inlet slips over", "es": "Diámetro del ventilador / ducto sobre el que se ajusta la entrada" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "inlet_depth", "type": "slider", "default": 20.0, "min": 8, "max": 60, "step": 1,
+      "group": "inlet", "modes": ["manifold", "boot_tree", "wall_mount"], "advanced": true,
+      "label": { "en": "Inlet Socket Depth (mm)", "es": "Profundidad de Entrada (mm)" },
+      "tooltip": { "en": "How far the inlet slips over the duct", "es": "Cuánto se desliza la entrada sobre el ducto" }
+    },
+    {
+      "id": "branches", "type": "slider", "default": 2, "min": 2, "max": 6, "step": 1,
+      "group": "branches", "modes": ["manifold", "boot_tree", "wall_mount"],
+      "label": { "en": "Branch Count", "es": "Número de Ramas" },
+      "tooltip": { "en": "Number of outlet tubes (2 = one pair of boots)", "es": "Número de tubos de salida (2 = un par de botas)" }
+    },
+    {
+      "id": "branch_dia", "type": "slider", "default": 38.0, "min": 12, "max": 90, "step": 1,
+      "group": "branches", "modes": ["manifold", "boot_tree", "wall_mount"],
+      "label": { "en": "Branch Diameter (mm)", "es": "Diámetro de Rama (mm)" },
+      "tooltip": { "en": "Outlet tube diameter", "es": "Diámetro del tubo de salida" }
+    },
+    {
+      "id": "branch_len", "type": "slider", "default": 70.0, "min": 20, "max": 200, "step": 2,
+      "group": "branches", "modes": ["manifold", "boot_tree", "wall_mount"],
+      "label": { "en": "Branch Length (mm)", "es": "Longitud de Rama (mm)" },
+      "tooltip": { "en": "Length of each outlet tube", "es": "Longitud de cada tubo de salida" }
+    },
+    {
+      "id": "branch_ang", "type": "slider", "default": 35.0, "min": 0, "max": 70, "step": 1,
+      "group": "branches", "modes": ["manifold", "boot_tree", "wall_mount"],
+      "label": { "en": "Branch Splay Angle (deg)", "es": "Ángulo de Apertura de Rama (grados)" },
+      "tooltip": { "en": "How far the branches lean out from vertical", "es": "Cuánto se inclinan las ramas desde la vertical" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "shell", "modes": ["manifold", "boot_tree", "wall_mount"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Manifold shell wall thickness", "es": "Grosor de pared del casco del colector" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "one_pair_boots", "mode": "manifold",
+      "label": { "en": "One Pair of Boots", "es": "Un Par de Botas" },
+      "values": { "inlet_dia": 60, "branches": 2, "branch_dia": 40, "branch_len": 80 }
+    },
+    {
+      "id": "boot_tree_pair", "mode": "boot_tree",
+      "label": { "en": "Boot Tree (flat)", "es": "Árbol de Botas (plano)" },
+      "values": { "inlet_dia": 60, "branches": 2, "branch_dia": 44, "branch_ang": 30 }
+    },
+    {
+      "id": "four_glove_wall", "mode": "wall_mount",
+      "label": { "en": "4-Glove Wall Rack", "es": "Rack de Pared 4 Guantes" },
+      "values": { "inlet_dia": 70, "branches": 4, "branch_dia": 30, "branch_len": 90, "branch_ang": 40 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "branch_dia < inlet_dia",
+      "severity": "warning",
+      "message": { "en": "Branches wider than the inlet may starve airflow", "es": "Ramas más anchas que la entrada pueden reducir el flujo" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 150] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 280] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -280, 50] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "duct_branch_manifold",
+        "label": { "en": "Duct Branch Manifold", "es": "Colector de Ramas de Ducto" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["inlet_dia", "branches", "branch_dia", "inlet_depth"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Dry gear, warm hands: a printed manifold turns any small fan or vent into a boot-and-glove dryer, preventing trench foot, blisters, and mildew for hikers, workers, and families in wet and cold climates without buying a powered rack.",
+      "es": "Equipo seco, manos calientes: un colector impreso convierte cualquier ventilador o ventila pequeña en un secador de botas y guantes, previniendo pie de trinchera, ampollas y moho para excursionistas, trabajadores y familias en climas húmedos y fríos sin comprar un rack eléctrico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["dryer", "manifold", "boot", "household", "hyperobject", "commons"]
+}

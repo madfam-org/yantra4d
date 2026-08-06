@@ -1,0 +1,481 @@
+{
+  "project": {
+    "name": "Dev-Board Tray",
+    "slug": "devboard-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A mounting tray that carries a microcontroller or SBC dev board on printed standoffs placed on the board's real mounting-hole pattern. Pick the board (Uno, Mega, Nano, ESP32-DevKitC, Pi Pico) and the standoffs land on the correct hole coordinates. Mount the plate to a wall with keyhole slots, bolt it down at the corners, or hang it on DIN rail with a clip foot.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bandeja de montaje que sostiene una placa de desarrollo sobre separadores impresos ubicados según el patrón real de orificios de la placa. Elige la placa (Uno, Mega, Nano, ESP32-DevKitC, Pi Pico) y los separadores caen en las coordenadas correctas. Monta la placa en una pared con ranuras de bocallave, atorníllala en las esquinas o cuélgala en riel DIN con un pie de clip.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/devboard-tray.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "arduino",
+      "esp32",
+      "raspberry-pi",
+      "dev-board",
+      "tray",
+      "standoff",
+      "din-rail",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "label": {
+        "en": "Bench Tray",
+        "es": "Bandeja de Mesa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tray"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "din_tray",
+      "label": {
+        "en": "DIN-Rail Tray",
+        "es": "Bandeja para Riel DIN"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "din_tray"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "wall_tray",
+      "label": {
+        "en": "Wall Tray",
+        "es": "Bandeja de Pared"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "wall_tray"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 2,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "tray",
+      "label": {
+        "en": "Bench Tray",
+        "es": "Bandeja de Mesa"
+      },
+      "render_mode": 0,
+      "color": "#2f6f8f"
+    },
+    {
+      "id": "din_tray",
+      "label": {
+        "en": "DIN Tray",
+        "es": "Bandeja DIN"
+      },
+      "render_mode": 0,
+      "color": "#3a86a8"
+    },
+    {
+      "id": "wall_tray",
+      "label": {
+        "en": "Wall Tray",
+        "es": "Bandeja de Pared"
+      },
+      "render_mode": 0,
+      "color": "#4a9dbf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "board",
+      "label": {
+        "en": "Board",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "standoffs",
+      "label": {
+        "en": "Standoffs",
+        "es": "Separadores"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa Base"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "board",
+      "type": "select",
+      "default": "uno",
+      "group": "board",
+      "modes": [
+        "tray",
+        "din_tray",
+        "wall_tray"
+      ],
+      "label": {
+        "en": "Dev Board",
+        "es": "Placa de Desarrollo"
+      },
+      "tooltip": {
+        "en": "Board whose hole pattern drives the standoffs",
+        "es": "Placa cuyo patrón de orificios ubica los separadores"
+      },
+      "options": [
+        {
+          "value": "uno",
+          "label": {
+            "en": "Arduino Uno / Leonardo",
+            "es": "Arduino Uno / Leonardo"
+          }
+        },
+        {
+          "value": "mega",
+          "label": {
+            "en": "Arduino Mega / Due",
+            "es": "Arduino Mega / Due"
+          }
+        },
+        {
+          "value": "nano",
+          "label": {
+            "en": "Arduino Nano",
+            "es": "Arduino Nano"
+          }
+        },
+        {
+          "value": "esp32-devkit",
+          "label": {
+            "en": "ESP32-DevKitC",
+            "es": "ESP32-DevKitC"
+          }
+        },
+        {
+          "value": "pi-pico",
+          "label": {
+            "en": "Raspberry Pi Pico",
+            "es": "Raspberry Pi Pico"
+          }
+        }
+      ]
+    },
+    {
+      "id": "standoff_h",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "standoffs",
+      "modes": [
+        "tray",
+        "din_tray",
+        "wall_tray"
+      ],
+      "label": {
+        "en": "Standoff Height (mm)",
+        "es": "Altura de Separador (mm)"
+      },
+      "tooltip": {
+        "en": "How far the board sits above the plate",
+        "es": "Cuánto se eleva la placa sobre la base"
+      }
+    },
+    {
+      "id": "boss_d",
+      "type": "slider",
+      "default": 6.0,
+      "min": 4.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "standoffs",
+      "modes": [
+        "tray",
+        "din_tray",
+        "wall_tray"
+      ],
+      "label": {
+        "en": "Standoff Diameter (mm)",
+        "es": "Diámetro de Separador (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of each standoff pillar",
+        "es": "Diámetro exterior de cada separador"
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "plate",
+      "modes": [
+        "tray",
+        "din_tray",
+        "wall_tray"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Tray plate thickness",
+        "es": "Grosor de la placa base"
+      }
+    },
+    {
+      "id": "margin",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "tray",
+        "din_tray",
+        "wall_tray"
+      ],
+      "label": {
+        "en": "Plate Border (mm)",
+        "es": "Borde de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Material past the board outline",
+        "es": "Material más allá del contorno de la placa"
+      }
+    },
+    {
+      "id": "mount_bore",
+      "type": "slider",
+      "default": 4.3,
+      "min": 2.7,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "tray"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Corner Mount Bore (mm)",
+        "es": "Barreno de Montaje (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance bore in the plate corners (M4=4.3)",
+        "es": "Barreno en las esquinas (M4=4.3)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "uno_bench",
+      "mode": "tray",
+      "label": {
+        "en": "Uno on the Bench",
+        "es": "Uno en la Mesa"
+      },
+      "values": {
+        "board": "uno",
+        "standoff_h": 6
+      }
+    },
+    {
+      "id": "esp32_din",
+      "mode": "din_tray",
+      "label": {
+        "en": "ESP32 on DIN Rail",
+        "es": "ESP32 en Riel DIN"
+      },
+      "values": {
+        "board": "esp32-devkit",
+        "standoff_h": 8
+      }
+    },
+    {
+      "id": "pico_wall",
+      "mode": "wall_tray",
+      "label": {
+        "en": "Pico Wall Mount",
+        "es": "Pico en Pared"
+      },
+      "values": {
+        "board": "pi-pico",
+        "standoff_h": 5
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "boss_d >= 4",
+      "severity": "warning",
+      "message": {
+        "en": "Standoffs under 4 mm are fragile",
+        "es": "Separadores menores a 4 mm son frágiles"
+      }
+    },
+    {
+      "expression": "plate_t >= 2",
+      "severity": "error",
+      "message": {
+        "en": "Plate must be at least 2 mm",
+        "es": "La placa debe ser de al menos 2 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        110
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        220
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "devboard_holes",
+        "label": {
+          "en": "Dev-Board Holes",
+          "es": "Orificios de Placa"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "Arduino form factors",
+        "parameters": [
+          "board",
+          "boss_d"
+        ]
+      },
+      {
+        "id": "din_rail_foot",
+        "label": {
+          "en": "DIN TS35 Foot",
+          "es": "Pie DIN TS35"
+        },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715",
+        "parameters": [
+          "plate_t"
+        ],
+        "compatible_with": [
+          "busbar-support",
+          "din-module",
+          "din-rail-clip",
+          "terminal-cover"
+        ]
+      },
+      {
+        "id": "keyhole_wall_mount",
+        "label": {
+          "en": "Keyhole Wall Mount",
+          "es": "Montaje de Bocallave"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "margin",
+          "plate_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns a loose dev board into a mounted, serviceable part. One tray fits a named board's exact hole pattern and mounts three ways (bench, DIN, wall), so makers can build tidy, repeatable installations and reuse the same board across projects instead of hot-gluing it in place.",
+      "es": "Convierte una placa suelta en una pieza montada y mantenible. Una bandeja coincide con el patrón exacto de orificios de una placa y se monta de tres formas (mesa, DIN, pared), para que los makers hagan instalaciones ordenadas y reutilicen la placa en vez de pegarla con silicón."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "arduino",
+    "esp32",
+    "raspberry-pi",
+    "dev-board",
+    "tray",
+    "din-rail",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

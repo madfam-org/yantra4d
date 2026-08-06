@@ -1,0 +1,268 @@
+{
+    "project": {
+        "name": "Pipe Insulation Clip / Standoff",
+        "slug": "pipe-clip",
+        "version": "1.0.0",
+        "description": {
+            "en": "Pipe supports for copper and PEX runs: a C-shaped snap clip that clicks onto the pipe, a saddle standoff that holds the pipe off the wall on a screw post, and a two-ear band clamp that fully surrounds the pipe. Bores are sized to real copper and PEX outside diameters (1/2\" = 15.875 mm, 3/4\" = 22.225 mm, 1\" = 28.575 mm) so the grip matches the pipe you have.",
+            "es": "Soportes de tuberia para lineas de cobre y PEX: un clip de presion en C que se encaja en la tuberia, un separador de silla que sostiene la tuberia lejos de la pared sobre un poste con tornillos y una abrazadera de banda de dos orejas que rodea por completo la tuberia. Los barrenos se dimensionan a diametros exteriores reales de cobre y PEX (1/2\" = 15.875 mm, 3/4\" = 22.225 mm, 1\" = 28.575 mm) para que el agarre coincida con tu tuberia."
+        },
+        "thumbnail": "/projects/pipe-clip.webp",
+        "tags": [
+            "plumbing",
+            "pipe",
+            "clip",
+            "standoff",
+            "copper",
+            "pex",
+            "clamp",
+            "hyperobject",
+            "commons"
+        ],
+        "difficulty": "beginner",
+        "hyperobject": {
+            "is_hyperobject": true
+        },
+        "attribution": {
+            "author": "Yantra4D",
+            "license": "CERN-OHL-W-2.0"
+        },
+        "force_backend": true,
+        "engine": "cadquery"
+    },
+    "modes": [
+        {
+            "id": "snap_clip",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "C-Snap Clip",
+                "es": "Clip de Presion en C"
+            },
+            "description": {
+                "en": "A C-shaped snap clip on a flat screw base. The mouth is opened narrower than the pipe diameter so the pipe clicks in and is retained."
+            },
+            "parts": ["snap_clip"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "saddle_standoff",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Saddle Standoff",
+                "es": "Separador de Silla"
+            },
+            "description": {
+                "en": "A half-round saddle cradle raised on a screw post so the pipe stands off the wall by an adjustable distance, for clearance and to reduce sweating contact."
+            },
+            "parts": ["saddle_standoff"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "band_clamp",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Two-Ear Band Clamp",
+                "es": "Abrazadera de Banda de Dos Orejas"
+            },
+            "description": {
+                "en": "A full ring that surrounds the pipe with a screw ear on each side, for a firm anchored clamp where a snap clip is not enough."
+            },
+            "parts": ["band_clamp"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "snap_clip",
+            "label": {
+                "en": "C-Snap Clip",
+                "es": "Clip de Presion en C"
+            },
+            "default_color": "#a3a3a3"
+        },
+        {
+            "id": "saddle_standoff",
+            "label": {
+                "en": "Saddle Standoff",
+                "es": "Separador de Silla"
+            },
+            "default_color": "#a3a3a3"
+        },
+        {
+            "id": "band_clamp",
+            "label": {
+                "en": "Band Clamp",
+                "es": "Abrazadera de Banda"
+            },
+            "default_color": "#a3a3a3"
+        }
+    ],
+    "parameters": [
+        {
+            "id": "pipe",
+            "type": "select",
+            "default": "cu_1/2",
+            "options": [
+                { "value": "cu_1/2", "label": "Copper 1/2 in (15.875 mm OD)" },
+                { "value": "cu_3/4", "label": "Copper 3/4 in (22.225 mm OD)" },
+                { "value": "cu_1", "label": "Copper 1 in (28.575 mm OD)" },
+                { "value": "pex_1/2", "label": "PEX 1/2 in (15.875 mm OD)" },
+                { "value": "pex_3/4", "label": "PEX 3/4 in (22.225 mm OD)" }
+            ],
+            "label": {
+                "en": "Pipe Size",
+                "es": "Tamano de Tuberia"
+            },
+            "group": "pipe"
+        },
+        {
+            "id": "clearance",
+            "type": "slider",
+            "default": 0.3,
+            "min": 0.1,
+            "max": 0.7,
+            "step": 0.05,
+            "label": {
+                "en": "Bore Clearance (mm)",
+                "es": "Holgura del Barreno (mm)"
+            },
+            "tooltip": {
+                "en": "Radial gap added over the pipe OD. Smaller for a firm grip, larger for insulated or out-of-round pipe.",
+                "es": "Espacio radial anadido sobre el OD de la tuberia. Menor para agarre firme, mayor para tuberia aislada o fuera de redondez."
+            },
+            "group": "pipe"
+        },
+        {
+            "id": "mouth",
+            "type": "slider",
+            "default": 0.72,
+            "min": 0.5,
+            "max": 0.9,
+            "step": 0.02,
+            "label": {
+                "en": "Snap Mouth Opening (fraction of OD)",
+                "es": "Apertura de la Boca de Presion (fraccion del OD)"
+            },
+            "tooltip": {
+                "en": "How wide the snap mouth is relative to the pipe diameter. Below 1.0 the pipe must click past the jaw and is retained; lower values grip harder. Only affects the C-snap clip.",
+                "es": "Que tan ancha es la boca respecto al diametro de la tuberia. Por debajo de 1.0 la tuberia debe pasar a presion y queda retenida; valores menores agarran mas fuerte. Solo afecta el clip en C."
+            },
+            "group": "pipe"
+        },
+        {
+            "id": "wall",
+            "type": "slider",
+            "default": 3.0,
+            "min": 2.0,
+            "max": 6.0,
+            "step": 0.2,
+            "label": {
+                "en": "Wall Thickness (mm)",
+                "es": "Espesor de Pared (mm)"
+            },
+            "tooltip": {
+                "en": "Clip wall around the pipe bore. 2.5-3.5 mm balances spring and strength for a snap clip.",
+                "es": "Pared del clip alrededor del barreno. 2.5-3.5 mm equilibra resorte y resistencia para un clip de presion."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "depth",
+            "type": "slider",
+            "default": 16,
+            "min": 8,
+            "max": 40,
+            "step": 1,
+            "label": {
+                "en": "Clip Length Along Pipe (mm)",
+                "es": "Largo del Clip a lo Largo de la Tuberia (mm)"
+            },
+            "tooltip": {
+                "en": "How much of the pipe the clip wraps along its length. Longer clips hold more firmly.",
+                "es": "Cuanto abarca el clip a lo largo de la tuberia. Clips mas largos sujetan mas firmemente."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "standoff",
+            "type": "slider",
+            "default": 18,
+            "min": 6,
+            "max": 50,
+            "step": 1,
+            "label": {
+                "en": "Standoff Height (mm)",
+                "es": "Altura del Separador (mm)"
+            },
+            "tooltip": {
+                "en": "How far the saddle standoff holds the pipe off the wall. Only affects the saddle standoff.",
+                "es": "Que tan lejos sostiene el separador la tuberia de la pared. Solo afecta el separador de silla."
+            },
+            "group": "geometry"
+        }
+    ],
+    "parameter_groups": [
+        {
+            "id": "pipe",
+            "label": {
+                "en": "Pipe & Fit",
+                "es": "Tuberia y Ajuste"
+            }
+        },
+        {
+            "id": "geometry",
+            "label": {
+                "en": "Geometry",
+                "es": "Geometria"
+            }
+        }
+    ],
+    "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+    "estimate_constants": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 6,
+        "wasm_multiplier": 2,
+        "warning_threshold_seconds": 40
+    },
+    "hyperobject": {
+        "domain": "infrastructure",
+        "cdg_interfaces": [
+            {
+                "id": "pipe_od_saddle",
+                "label": {
+                    "en": "Pipe OD Saddle",
+                    "es": "Silla de OD de Tuberia"
+                },
+                "geometry_type": "socket",
+                "standard": "Copper / PEX OD 1/2-1 in",
+                "parameters": ["pipe", "clearance", "mouth"]
+            }
+        ],
+        "material_awareness": {
+            "shrinkage_compensation": false,
+            "recycled_material_toggle": false,
+            "tolerance_by_material": true
+        },
+        "societal_benefit": {
+            "en": "Lets anyone support and route copper or PEX runs cleanly with printed clips sized to their exact pipe, instead of buying bags of one-size hardware, and standardizes the saddle bore on real tube ODs shared across the plumbing commons.",
+            "es": "Permite sostener y guiar lineas de cobre o PEX de forma limpia con clips impresos a la medida exacta de su tuberia, en lugar de comprar bolsas de herrajes de talla unica, y estandariza el barreno de la silla en ODs de tubo reales compartidos en el procomun de plomeria."
+        },
+        "commons_license": "CERN-OHL-W-2.0"
+    }
+}

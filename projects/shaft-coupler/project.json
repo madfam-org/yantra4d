@@ -1,0 +1,199 @@
+{
+  "project": {
+    "name": "Universal / D-Shaft Coupler",
+    "slug": "shaft-coupler",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric shaft coupler that joins two shafts end-to-end. Each end has its own bore — a round hole or a D-flat for a flatted shaft — and is locked by radial set screws or a pinch clamp. Build a rigid coupler, a reducing (stepped) coupler with two different bore diameters, or a flexible coupler with an interleaved beam-slot section that absorbs small shaft misalignment.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un acoplamiento de ejes paramétrico que une dos ejes extremo con extremo. Cada extremo tiene su propio barreno — un agujero redondo o una D-plana para un eje con plano — y se fija con prisioneros radiales o una abrazadera de pinza. Construye un acoplamiento rígido, un acoplamiento reductor (escalonado) con dos diámetros de barreno distintos, o un acoplamiento flexible con una sección de ranuras tipo viga que absorbe pequeñas desalineaciones.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shaft-coupler.webp",
+    "difficulty": "intermediate",
+    "tags": ["shaft-coupler", "coupler", "d-shaft", "flexible-coupler", "motor", "setscrew", "clamp", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rigid",
+      "label": { "en": "Rigid", "es": "Rígido" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rigid"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "flexible",
+      "label": { "en": "Flexible", "es": "Flexible" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flexible"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "stepped",
+      "label": { "en": "Stepped / Reducing", "es": "Escalonado / Reductor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stepped"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "rigid", "label": { "en": "Rigid Coupler", "es": "Acople Rígido" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "flexible", "label": { "en": "Flexible Coupler", "es": "Acople Flexible" }, "render_mode": 0, "color": "#4b7f9c" },
+    { "id": "stepped", "label": { "en": "Stepped Coupler", "es": "Acople Escalonado" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "boreA", "label": { "en": "Bore A", "es": "Barreno A" } },
+    { "id": "boreB", "label": { "en": "Bore B", "es": "Barreno B" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } },
+    { "id": "locking", "label": { "en": "Locking & Flex", "es": "Fijación y Flexión" } }
+  ],
+  "parameters": [
+    {
+      "id": "bore_a", "type": "slider", "default": 6.35, "min": 2.0, "max": 25.0, "step": 0.05,
+      "group": "boreA", "modes": ["rigid", "flexible", "stepped"],
+      "label": { "en": "Bore A Diameter (mm)", "es": "Diámetro Barreno A (mm)" },
+      "tooltip": { "en": "Shaft A diameter (6.35 mm = 1/4\"; in rigid/flexible modes both bores match A)", "es": "Diámetro del eje A (6.35 mm = 1/4\"; en modos rígido/flexible ambos barrenos igualan A)" }
+    },
+    {
+      "id": "bore_a_type", "type": "select", "default": "round",
+      "group": "boreA", "modes": ["rigid", "flexible", "stepped"],
+      "label": { "en": "Bore A Type", "es": "Tipo de Barreno A" },
+      "tooltip": { "en": "Round hole, or a D-flat for a shaft with a machined flat", "es": "Agujero redondo, o una D-plana para un eje con un plano maquinado" },
+      "options": [
+        { "value": "round", "label": { "en": "Round", "es": "Redondo" } },
+        { "value": "D-flat", "label": { "en": "D-Flat", "es": "D-Plana" } }
+      ]
+    },
+    {
+      "id": "bore_b", "type": "slider", "default": 5.0, "min": 2.0, "max": 25.0, "step": 0.05,
+      "group": "boreB", "modes": ["stepped"],
+      "label": { "en": "Bore B Diameter (mm)", "es": "Diámetro Barreno B (mm)" },
+      "tooltip": { "en": "Shaft B diameter (only independent in Stepped mode)", "es": "Diámetro del eje B (solo independiente en modo Escalonado)" }
+    },
+    {
+      "id": "bore_b_type", "type": "select", "default": "round",
+      "group": "boreB", "modes": ["stepped"],
+      "label": { "en": "Bore B Type", "es": "Tipo de Barreno B" },
+      "tooltip": { "en": "Round hole, or a D-flat for a shaft with a machined flat", "es": "Agujero redondo, o una D-plana para un eje con un plano maquinado" },
+      "options": [
+        { "value": "round", "label": { "en": "Round", "es": "Redondo" } },
+        { "value": "D-flat", "label": { "en": "D-Flat", "es": "D-Plana" } }
+      ]
+    },
+    {
+      "id": "outer_dia", "type": "slider", "default": 19.0, "min": 8.0, "max": 40.0, "step": 0.5,
+      "group": "body", "modes": ["rigid", "flexible", "stepped"],
+      "label": { "en": "Outer Diameter (mm)", "es": "Diámetro Exterior (mm)" },
+      "tooltip": { "en": "Coupler body outer diameter", "es": "Diámetro exterior del cuerpo del acople" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "length", "type": "slider", "default": 25.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "body", "modes": ["rigid", "flexible", "stepped"],
+      "label": { "en": "Length (mm)", "es": "Longitud (mm)" },
+      "tooltip": { "en": "Overall coupler length", "es": "Longitud total del acople" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "flat_depth", "type": "slider", "default": 0.5, "min": 0.0, "max": 3.0, "step": 0.1,
+      "group": "body", "modes": ["rigid", "flexible", "stepped"], "advanced": true,
+      "label": { "en": "D-Flat Depth (mm)", "es": "Profundidad D-Plana (mm)" },
+      "tooltip": { "en": "How far the D-flat cuts in from the bore wall", "es": "Cuánto entra el plano de la D desde la pared del barreno" }
+    },
+    {
+      "id": "clamp_style", "type": "select", "default": "setscrew",
+      "group": "locking", "modes": ["rigid", "flexible", "stepped"],
+      "label": { "en": "Locking Style", "es": "Estilo de Fijación" },
+      "tooltip": { "en": "Radial set/grub screws into each bore, or a pinch clamp (slit + cross bolt).", "es": "Prisioneros radiales en cada barreno, o abrazadera de pinza (ranura + tornillo cruzado)." },
+      "options": [
+        { "value": "setscrew", "label": { "en": "Set Screws", "es": "Prisioneros" } },
+        { "value": "clamp", "label": { "en": "Pinch Clamp", "es": "Abrazadera de Pinza" } }
+      ]
+    },
+    {
+      "id": "setscrew_dia", "type": "slider", "default": 3.2, "min": 1.5, "max": 8.0, "step": 0.1,
+      "group": "locking", "modes": ["rigid", "flexible", "stepped"], "advanced": true,
+      "label": { "en": "Screw / Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Set-screw or clamp-bolt through-hole diameter (3.2 mm ≈ M3)", "es": "Diámetro del agujero del prisionero o tornillo de abrazadera (3.2 mm ≈ M3)" }
+    },
+    {
+      "id": "flexible", "type": "checkbox", "default": false,
+      "group": "locking", "modes": ["rigid", "stepped"],
+      "label": { "en": "Flexible Section", "es": "Sección Flexible" },
+      "tooltip": { "en": "Add interleaved beam slots in the middle to absorb misalignment", "es": "Agrega ranuras tipo viga intercaladas en el centro para absorber desalineación" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "rigid_quarter", "mode": "rigid",
+      "label": { "en": "Rigid 1/4\" (6.35 mm)", "es": "Rígido 1/4\" (6.35 mm)" },
+      "values": { "bore_a": 6.35, "bore_a_type": "round", "outer_dia": 19, "length": 25, "clamp_style": "setscrew" }
+    },
+    {
+      "id": "flex_5mm_dflat", "mode": "flexible",
+      "label": { "en": "Flexible 5 mm D-Shaft", "es": "Flexible D-Eje 5 mm" },
+      "values": { "bore_a": 5, "bore_a_type": "D-flat", "outer_dia": 20, "length": 25, "flat_depth": 0.5, "clamp_style": "setscrew" }
+    },
+    {
+      "id": "stepped_8_to_5", "mode": "stepped",
+      "label": { "en": "Reducing 8 → 5 mm", "es": "Reductor 8 → 5 mm" },
+      "values": { "bore_a": 8, "bore_a_type": "round", "bore_b": 5, "bore_b_type": "round", "outer_dia": 22, "length": 30, "clamp_style": "clamp" }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bore_a <= outer_dia - 3",
+      "severity": "error",
+      "message": { "en": "Bore A must leave a wall around it", "es": "El barreno A debe dejar una pared alrededor" }
+    },
+    {
+      "expression": "length >= 10",
+      "severity": "warning",
+      "message": { "en": "A very short coupler grips the shafts poorly", "es": "Un acople muy corto sujeta mal los ejes" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [50, 50, 45] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 12] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 12,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "shaft_bore",
+        "label": { "en": "Shaft Bore (A & B)", "es": "Barreno de Eje (A y B)" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["bore_a", "bore_a_type", "bore_b", "bore_b_type", "flat_depth"]
+      },
+      {
+        "id": "locking_interface",
+        "label": { "en": "Set-Screw / Clamp Locking", "es": "Fijación por Prisionero / Abrazadera" },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": ["clamp_style", "setscrew_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Shaft couplers connect motors to leadscrews, encoders, and drivetrains. A printable coupler with the exact two bore sizes lets a maker join mismatched shafts or add a flexible link without hunting for a specific metal part.",
+      "es": "Los acoplamientos conectan motores a husillos, encoders y transmisiones. Un acople imprimible con los dos tamaños de barreno exactos permite unir ejes dispares o añadir un enlace flexible sin buscar una pieza metálica específica."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["shaft-coupler", "coupler", "d-shaft", "flexible-coupler", "industrial", "hyperobject", "commons"]
+}

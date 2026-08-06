@@ -1,0 +1,193 @@
+{
+  "project": {
+    "name": "Magnetic Tool Strip",
+    "slug": "magnetic-tool-strip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A wall-mounted magnetic strip that holds screwdrivers, pliers, knives, and other steel tools on a row of embedded disc magnets. The magnets drop into blind pockets on the front face; wall screws pass through countersunk holes near the ends. Strip is a flat magnetic bar; Shelf Strip adds a bottom ledge so heavier tools rest on a shelf too; Corner Strip wraps an inside wall corner. Magnet size is parametric — 6×2 mm and 8×3 mm disc magnets are presets.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tira magnética de pared que sostiene destornilladores, pinzas, cuchillos y otras herramientas de acero en una fila de imanes de disco embebidos. Los imanes se insertan en bolsillos ciegos en la cara frontal; los tornillos de pared pasan por orificios avellanados cerca de los extremos. La Tira es una barra magnética plana; la Tira con Repisa añade una repisa inferior para que herramientas pesadas descansen también en un estante; la Tira de Esquina envuelve una esquina interior de pared. El tamaño del imán es paramétrico — imanes de disco de 6×2 mm y 8×3 mm son preajustes.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/magnetic-tool-strip.webp",
+    "difficulty": "beginner",
+    "tags": ["magnetic", "tool", "strip", "wall-mount", "organizer", "magnet", "workshop", "storage", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "strip",
+      "label": { "en": "Flat Strip", "es": "Tira Plana" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strip"],
+      "estimate": { "base_time": 7, "per_unit": 1, "per_part": 8 }
+    },
+    {
+      "id": "shelf_strip",
+      "label": { "en": "Shelf Strip", "es": "Tira con Repisa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shelf_strip"],
+      "estimate": { "base_time": 9, "per_unit": 1, "per_part": 10 }
+    },
+    {
+      "id": "corner_strip",
+      "label": { "en": "Corner Strip", "es": "Tira de Esquina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_strip"],
+      "estimate": { "base_time": 9, "per_unit": 1, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "strip", "label": { "en": "Flat Strip", "es": "Tira Plana" }, "render_mode": 0, "color": "#455a64" },
+    { "id": "shelf_strip", "label": { "en": "Shelf Strip", "es": "Tira con Repisa" }, "render_mode": 0, "color": "#607d8b" },
+    { "id": "corner_strip", "label": { "en": "Corner Strip", "es": "Tira de Esquina" }, "render_mode": 0, "color": "#90a4ae" }
+  ],
+  "parameter_groups": [
+    { "id": "strip", "label": { "en": "Strip Body", "es": "Cuerpo de la Tira" } },
+    { "id": "magnets", "label": { "en": "Magnets", "es": "Imanes" } },
+    { "id": "mount", "label": { "en": "Wall Mount", "es": "Montaje en Pared" } },
+    { "id": "extras", "label": { "en": "Shelf / Corner", "es": "Repisa / Esquina" } }
+  ],
+  "parameters": [
+    {
+      "id": "length", "type": "slider", "default": 200, "min": 40, "max": 400, "step": 5,
+      "group": "strip", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Strip Length (mm)", "es": "Longitud de la Tira (mm)" },
+      "tooltip": { "en": "Overall length of the strip", "es": "Longitud total de la tira" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 25, "min": 12, "max": 60, "step": 1,
+      "group": "strip", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Strip Height (mm)", "es": "Alto de la Tira (mm)" },
+      "tooltip": { "en": "Height of the strip face", "es": "Alto de la cara de la tira" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 8.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "strip", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Strip Thickness (mm)", "es": "Grosor de la Tira (mm)" },
+      "tooltip": { "en": "Body thickness (must exceed magnet depth + backing)", "es": "Grosor del cuerpo (debe superar la profundidad del imán + respaldo)" }
+    },
+    {
+      "id": "magnet_dia", "type": "slider", "default": 6.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "magnets", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Magnet Diameter (mm)", "es": "Diámetro del Imán (mm)" },
+      "tooltip": { "en": "Disc magnet diameter (6 or 8 mm are common)", "es": "Diámetro del imán de disco (6 u 8 mm son comunes)" }
+    },
+    {
+      "id": "magnet_th", "type": "slider", "default": 2.0, "min": 1.0, "max": 8.0, "step": 0.5,
+      "group": "magnets", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Magnet Thickness (mm)", "es": "Grosor del Imán (mm)" },
+      "tooltip": { "en": "Disc magnet thickness = pocket depth (2 or 3 mm common)", "es": "Grosor del imán de disco = profundidad del bolsillo (2 o 3 mm comunes)" }
+    },
+    {
+      "id": "magnet_count", "type": "slider", "default": 6, "min": 1, "max": 40, "step": 1,
+      "group": "magnets", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Magnet Count", "es": "Cantidad de Imanes" },
+      "tooltip": { "en": "Number of magnet pockets, evenly spaced along the strip", "es": "Número de bolsillos de imán, espaciados uniformemente a lo largo de la tira" }
+    },
+    {
+      "id": "magnet_wall", "type": "slider", "default": 1.2, "min": 0.6, "max": 4.0, "step": 0.2,
+      "group": "magnets", "modes": ["strip", "shelf_strip", "corner_strip"], "advanced": true,
+      "label": { "en": "Magnet Backing (mm)", "es": "Respaldo del Imán (mm)" },
+      "tooltip": { "en": "Material left behind each pocket (keeps the back solid)", "es": "Material dejado detrás de cada bolsillo (mantiene el respaldo sólido)" }
+    },
+    {
+      "id": "wall_screw", "type": "slider", "default": 4.5, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Wall Screw Diameter (mm)", "es": "Diámetro de Tornillo de Pared (mm)" },
+      "tooltip": { "en": "Clearance hole for the wall-mounting screws", "es": "Orificio de holgura para los tornillos de montaje en pared" }
+    },
+    {
+      "id": "countersink", "type": "checkbox", "default": true,
+      "group": "mount", "modes": ["strip", "shelf_strip", "corner_strip"],
+      "label": { "en": "Countersink Screws", "es": "Avellanar Tornillos" },
+      "tooltip": { "en": "Cone the wall-screw holes so heads sit flush", "es": "Achaflanar los orificios de tornillo de pared para que las cabezas queden al ras" }
+    },
+    {
+      "id": "ledge_depth", "type": "slider", "default": 15.0, "min": 5.0, "max": 40.0, "step": 1.0,
+      "group": "extras", "modes": ["shelf_strip"],
+      "label": { "en": "Shelf Depth (mm)", "es": "Profundidad de Repisa (mm)" },
+      "tooltip": { "en": "How far the bottom shelf sticks out (Shelf Strip)", "es": "Cuánto sobresale la repisa inferior (Tira con Repisa)" }
+    },
+    {
+      "id": "leg_b", "type": "slider", "default": 25.0, "min": 10.0, "max": 80.0, "step": 1.0,
+      "group": "extras", "modes": ["corner_strip"],
+      "label": { "en": "Return Leg Depth (mm)", "es": "Profundidad de Pata de Retorno (mm)" },
+      "tooltip": { "en": "Depth of the second leg that wraps the corner (Corner Strip)", "es": "Profundidad de la segunda pata que envuelve la esquina (Tira de Esquina)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "screwdriver_6x2", "mode": "strip",
+      "label": { "en": "Screwdriver Strip (6×2 magnets)", "es": "Tira de Destornilladores (imanes 6×2)" },
+      "values": { "length": 200, "height": 25, "thickness": 8, "magnet_dia": 6, "magnet_th": 2, "magnet_count": 6, "countersink": true }
+    },
+    {
+      "id": "heavy_shelf_8x3", "mode": "shelf_strip",
+      "label": { "en": "Heavy Tool Shelf (8×3 magnets)", "es": "Repisa de Herramientas Pesadas (imanes 8×3)" },
+      "values": { "length": 250, "height": 30, "thickness": 10, "magnet_dia": 8, "magnet_th": 3, "magnet_count": 8, "ledge_depth": 18 }
+    },
+    {
+      "id": "corner_knife", "mode": "corner_strip",
+      "label": { "en": "Corner Knife Strip", "es": "Tira de Cuchillos de Esquina" },
+      "values": { "length": 150, "height": 25, "thickness": 8, "magnet_dia": 6, "magnet_th": 2, "magnet_count": 5, "leg_b": 25 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness >= magnet_th + magnet_wall",
+      "severity": "error",
+      "message": { "en": "Strip must be thicker than magnet depth plus backing", "es": "La tira debe ser más gruesa que la profundidad del imán más el respaldo" }
+    },
+    {
+      "expression": "magnet_dia <= height - 4",
+      "severity": "warning",
+      "message": { "en": "Magnets are large relative to the strip height", "es": "Los imanes son grandes respecto al alto de la tira" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 220, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -300, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 1, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "magnet_pocket_array",
+        "label": { "en": "Magnet Pocket Array", "es": "Arreglo de Bolsillos de Imán" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["magnet_dia", "magnet_th", "magnet_count", "magnet_wall"]
+      },
+      {
+        "id": "wall_screw_pattern",
+        "label": { "en": "Wall Screw Pattern", "es": "Patrón de Tornillos de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["wall_screw", "countersink", "length"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Magnetic tool bars are sold in fixed lengths with fixed magnet spacing; a printable strip sized to the wall, the tools, and the exact disc magnets on hand turns a handful of cheap magnets into a workshop organizer, keeping tools visible and off the bench.",
+      "es": "Las barras magnéticas para herramientas se venden en longitudes fijas con espaciado de imanes fijo; una tira imprimible dimensionada a la pared, las herramientas y los imanes de disco exactos disponibles convierte un puñado de imanes baratos en un organizador de taller, manteniendo las herramientas visibles y fuera del banco."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["magnetic", "tool", "strip", "wall-mount", "household", "hyperobject", "commons"]
+}

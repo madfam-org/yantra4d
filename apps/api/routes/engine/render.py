@@ -7,22 +7,27 @@ formatting. All render logic is delegated to the render orchestrator service.
 """
 import logging
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, Response, jsonify, request
 
+import rate_limits
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.core.tier_service import resolve_tier, get_render_limit, get_render_limit_for_project, check_feature
+from services.core.tier_service import (
+    check_feature,
+    get_render_limit,
+    get_render_limit_for_project,
+    resolve_tier,
+)
 from services.engine.render_orchestrator import (
-    extract_render_payload,
-    resolve_engine_config,
-    render_parts_sync,
-    render_parts_stream,
-    cancel_all_renders,
     RenderPayloadError,
+    cancel_all_renders,
+    extract_render_payload,
+    render_parts_stream,
+    render_parts_sync,
+    resolve_engine_config,
 )
 from utils.route_helpers import error_response, handle_exceptions, require_json_body
-import rate_limits
 
 logger = logging.getLogger(__name__)
 

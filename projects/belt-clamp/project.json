@@ -1,0 +1,176 @@
+{
+  "project": {
+    "name": "Timing Belt Clamp",
+    "slug": "belt-clamp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Terminates or tensions a timing belt by gripping its teeth. The gripping face is a comb of ridges cut to the belt's tooth pitch (GT2 = 2 mm, HTD-3M = 3 mm) so the belt's valleys seat into the ridges and cannot pull out. Choose a belt clamp, a slotted tensioner, or a two-ended belt joiner.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Termina o tensa una banda de distribucion sujetando sus dientes. La cara de agarre es un peine de crestas cortado al paso de diente de la banda (GT2 = 2 mm, HTD-3M = 3 mm) para que los valles de la banda se asienten en las crestas y no puedan salirse. Elige una abrazadera, un tensor ranurado o un empalmador de dos extremos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/belt-clamp.webp",
+    "difficulty": "intermediate",
+    "tags": ["belt", "timing-belt", "gt2", "htd", "clamp", "tensioner", "cnc", "3d-printer", "robotics", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "belt_clamp",
+      "label": { "en": "Belt Clamp", "es": "Abrazadera de Banda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["belt_clamp"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "tensioner",
+      "label": { "en": "Tensioner", "es": "Tensor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tensioner"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "belt_joiner",
+      "label": { "en": "Belt Joiner", "es": "Empalmador de Banda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["belt_joiner"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "belt_clamp", "label": { "en": "Belt Clamp", "es": "Abrazadera de Banda" }, "render_mode": 0, "color": "#7a5c3f" },
+    { "id": "tensioner", "label": { "en": "Tensioner", "es": "Tensor" }, "render_mode": 0, "color": "#8f6b4a" },
+    { "id": "belt_joiner", "label": { "en": "Belt Joiner", "es": "Empalmador de Banda" }, "render_mode": 0, "color": "#69502f" }
+  ],
+  "parameter_groups": [
+    { "id": "belt", "label": { "en": "Belt", "es": "Banda" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } },
+    { "id": "mount", "label": { "en": "Mount & Slot", "es": "Montaje y Ranura" } }
+  ],
+  "parameters": [
+    {
+      "id": "belt", "type": "select", "default": "GT2-2mm",
+      "group": "belt", "modes": ["belt_clamp", "tensioner", "belt_joiner"],
+      "label": { "en": "Belt Profile", "es": "Perfil de Banda" },
+      "tooltip": { "en": "Belt tooth profile — sets the ridge pitch and depth", "es": "Perfil de diente de la banda — define el paso y profundidad de las crestas" },
+      "options": [
+        { "value": "GT2-2mm", "label": { "en": "GT2 2 mm pitch", "es": "GT2 paso 2 mm" } },
+        { "value": "HTD-3M", "label": { "en": "HTD 3M (3 mm pitch)", "es": "HTD 3M (paso 3 mm)" } }
+      ]
+    },
+    {
+      "id": "teeth", "type": "slider", "default": 6, "min": 2, "max": 40, "step": 1,
+      "group": "belt", "modes": ["belt_clamp", "tensioner", "belt_joiner"],
+      "label": { "en": "Grip Teeth", "es": "Dientes de Agarre" },
+      "tooltip": { "en": "Number of gripping ridges per jaw", "es": "Numero de crestas de agarre por mordaza" }
+    },
+    {
+      "id": "belt_w", "type": "slider", "default": 7.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "belt", "modes": ["belt_clamp", "tensioner", "belt_joiner"],
+      "label": { "en": "Belt Width (mm)", "es": "Ancho de Banda (mm)" },
+      "tooltip": { "en": "Channel width for the belt (6 mm GT2, 9 mm HTD typical)", "es": "Ancho del canal para la banda (6 mm GT2, 9 mm HTD tipico)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "body", "modes": ["belt_clamp", "tensioner", "belt_joiner"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Side-wall and body wall thickness", "es": "Grosor de pared lateral y del cuerpo" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 3.0, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "body", "modes": ["belt_clamp", "tensioner", "belt_joiner"], "advanced": true,
+      "label": { "en": "Floor (mm)", "es": "Piso (mm)" },
+      "tooltip": { "en": "Material under the tooth ridges", "es": "Material bajo las crestas de diente" }
+    },
+    {
+      "id": "bolt_d", "type": "slider", "default": 3.4, "min": 2.0, "max": 6.0, "step": 0.1,
+      "group": "mount", "modes": ["belt_clamp", "tensioner", "belt_joiner"],
+      "label": { "en": "Clamp Bolt (mm)", "es": "Tornillo de Abrazadera (mm)" },
+      "tooltip": { "en": "Clamp bolt clearance (3.4 = M3)", "es": "Holgura del tornillo de abrazadera (3.4 = M3)" }
+    },
+    {
+      "id": "slot_len", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 1,
+      "group": "mount", "modes": ["tensioner"],
+      "label": { "en": "Slot Length (mm)", "es": "Largo de Ranura (mm)" },
+      "tooltip": { "en": "Adjustment slot travel (tensioner)", "es": "Recorrido de la ranura de ajuste (tensor)" }
+    },
+    {
+      "id": "mount_d", "type": "slider", "default": 4.5, "min": 2.5, "max": 6.5, "step": 0.1,
+      "group": "mount", "modes": ["tensioner"], "advanced": true,
+      "label": { "en": "Mount Hole (mm)", "es": "Agujero de Montaje (mm)" },
+      "tooltip": { "en": "Slot / mounting bolt width (4.5 = M4)", "es": "Ancho del tornillo de ranura / montaje (4.5 = M4)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "gt2_clamp", "mode": "belt_clamp",
+      "label": { "en": "GT2 6 mm Clamp", "es": "Abrazadera GT2 6 mm" },
+      "values": { "belt": "GT2-2mm", "teeth": 6, "belt_w": 7 }
+    },
+    {
+      "id": "gt2_tensioner", "mode": "tensioner",
+      "label": { "en": "GT2 Tensioner", "es": "Tensor GT2" },
+      "values": { "belt": "GT2-2mm", "teeth": 5, "slot_len": 18 }
+    },
+    {
+      "id": "htd_joiner", "mode": "belt_joiner",
+      "label": { "en": "HTD 3M Joiner", "es": "Empalmador HTD 3M" },
+      "values": { "belt": "HTD-3M", "teeth": 8, "belt_w": 9 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "teeth >= 2",
+      "severity": "error",
+      "message": { "en": "A grip needs at least 2 teeth to hold the belt", "es": "Un agarre necesita al menos 2 dientes para sujetar la banda" }
+    },
+    {
+      "expression": "floor >= 1.6",
+      "severity": "warning",
+      "message": { "en": "A floor under 1.6 mm may be too thin beneath the ridges", "es": "Un piso menor a 1.6 mm puede ser demasiado delgado bajo las crestas" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [45, 45, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 70] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -70, 12] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 4, "per_part": 15,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "belt_tooth_grip",
+        "label": { "en": "Belt Tooth Grip", "es": "Agarre de Diente de Banda" },
+        "geometry_type": "profile",
+        "standard": "GT2 2mm / HTD 3M",
+        "parameters": ["belt", "teeth", "belt_w"]
+      },
+      {
+        "id": "clamp_bolts",
+        "label": { "en": "Clamp Bolts", "es": "Tornillos de Abrazadera" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["bolt_d", "mount_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A snapped timing belt or a loose one usually means buying a whole new closed-loop belt. A printed tooth-matched clamp terminates open belt stock to any length, splices a broken loop, or tensions a slack run — keeping printers, plotters and CoreXY robots moving from a reel of raw belt.",
+      "es": "Una banda de distribucion rota o floja suele significar comprar una banda cerrada nueva. Una abrazadera impresa que coincide con los dientes termina banda abierta a cualquier largo, empalma un lazo roto o tensa un tramo flojo — manteniendo impresoras, plotters y robots CoreXY en marcha desde un rollo de banda."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["belt", "timing-belt", "gt2", "htd", "clamp", "robotics", "industrial", "hyperobject", "commons"]
+}

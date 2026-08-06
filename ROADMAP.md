@@ -239,3 +239,30 @@ Transition the current mock simulation pipeline to full GPU-accelerated producti
     - Implement Three.js PLY binary parser in the Studio viewer.
     - Build `MorphTarget` animation engine to interpolate between 100+ physics frames.
     - Add Kinematic Timeline UI to allow users to scrub through the physics simulation sequence.
+
+---
+
+### Sprint 18 — CadQuery-First Commons Expansion to 200 (Completed)
+
+Grew the Commons from the original catalog to **200 CadQuery-first hyperobjects**,
+authored dual-engine-ready, and added platform support for mixed-engine cartridges.
+
+- [x] **Per-mode engine resolution:** `ManifestService.mode_engine(mode_id)` resolves the
+  render engine per mode (explicit mode `engine` → `.py`/`.cq` inference → project engine;
+  implicit projects stay implicit). Wired through `render_orchestrator`, animations, and
+  git render-head. Optional `engine` field added to the mode schema. Covered by
+  `tests/unit/test_manifest.py::TestModeEngine`.
+- [x] **Dual-engine flagship re-authors:** the 9 highest-leverage OpenSCAD flagships
+  (gridfinity, gears, fasteners, din-rail-clip, soft-jaw, faircap-filter,
+  parametric-connector, microscope-slide-holder, prosthetic-socket) each gained exact
+  CadQuery B-Rep modes alongside their original OpenSCAD modes, shipped to their
+  `madfam-org` repos with submodule pointers bumped.
+- [x] **First 100 (CDG-leverage order):** universal interfaces → household → mechanical →
+  fastening → electronics → jigs → medical → water/garden → mobility/EDC.
+- [x] **Second 100 (deeper + wider):** mounting systems, drone/FPV, automotive, kitchen,
+  garden, workshop, electronics/maker, wearable/EDC, musical/studio, sports, marine/RV,
+  pet, generative art, safety.
+- [x] **Verification discipline:** every cartridge is self-contained (sandbox-safe `PARAM`
+  idiom), watertight on every mode through the real render sandbox, and geometrically
+  distinct per mode (mode/part-id alignment). A body-count check additionally rejects
+  negative-volume / severed-body defects that watertightness alone misses.

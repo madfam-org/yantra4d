@@ -1,6 +1,9 @@
+from unittest.mock import MagicMock, patch
+
 import numpy as np
+
 from services.core.implicit_engine import evaluate_tpms_field, run_render, stream_render
-from unittest.mock import patch, MagicMock
+
 
 def test_evaluate_tpms_field():
     X, Y, Z = np.array([1]), np.array([1]), np.array([1])
@@ -25,7 +28,7 @@ def test_run_render_stl(mock_trimesh, mock_marching_cubes):
     # Simulate high energy for branches checking glass transition logic
     params = {"tda_euler_characteristic": -50, "simulated_energy": 2000, "thermo_glass_transition_temp": 1000}
     
-    success, err = run_render("out.stl", config, params)
+    success, _err = run_render("out.stl", config, params)
     assert success is True
     mock_mesh.export.assert_called_with("out.stl")
 
@@ -37,7 +40,7 @@ def test_run_render_glb(mock_trimesh, mock_marching_cubes):
     mock_trimesh.return_value = mock_mesh
     
     # Using params topology_type 1 (diamond)
-    success, err = run_render("out.glb", {}, {"topology_type": 1})
+    success, _err = run_render("out.glb", {}, {"topology_type": 1})
     assert success is True
     mock_mesh.export.assert_called_with("out.glb", file_type='glb')
 

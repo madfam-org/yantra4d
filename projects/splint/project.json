@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Finger / Wrist Splint",
+    "slug": "splint",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An adjustable immobilization splint that wraps a limb, sized by the diameter it wraps. The body is an open-back contoured shell so it slips on and is secured with straps; a ventilation pattern keeps it breathable. Choose a finger trough, a longer wrist brace, or a mallet-finger tip splint.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una férula de inmovilización ajustable que envuelve una extremidad, dimensionada por el diámetro que envuelve. El cuerpo es una carcasa contorneada de espalda abierta para colocarse fácilmente y sujetarse con correas; un patrón de ventilación la mantiene transpirable. Elija un canal para dedo, una férula de muñeca más larga, o una férula de punta para dedo en martillo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/splint.webp",
+    "difficulty": "intermediate",
+    "tags": ["splint", "brace", "immobilization", "finger", "wrist", "orthosis", "medical", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "finger_splint",
+      "label": { "en": "Finger Splint", "es": "Férula de Dedo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["finger_splint"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 14 }
+    },
+    {
+      "id": "wrist_brace",
+      "label": { "en": "Wrist Brace", "es": "Férula de Muñeca" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wrist_brace"],
+      "estimate": { "base_time": 14, "per_unit": 2, "per_part": 16 }
+    },
+    {
+      "id": "mallet_splint",
+      "label": { "en": "Mallet Splint", "es": "Férula de Dedo en Martillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["mallet_splint"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "finger_splint", "label": { "en": "Finger Splint", "es": "Férula de Dedo" }, "render_mode": 0, "color": "#5a90b0" },
+    { "id": "wrist_brace", "label": { "en": "Wrist Brace", "es": "Férula de Muñeca" }, "render_mode": 0, "color": "#6fa3c4" },
+    { "id": "mallet_splint", "label": { "en": "Mallet Splint", "es": "Férula en Martillo" }, "render_mode": 0, "color": "#84b5d9" }
+  ],
+  "parameter_groups": [
+    { "id": "type", "label": { "en": "Splint Type", "es": "Tipo de Férula" } },
+    { "id": "limb", "label": { "en": "Limb Fit", "es": "Ajuste de Extremidad" } },
+    { "id": "shell", "label": { "en": "Shell", "es": "Carcasa" } },
+    { "id": "features", "label": { "en": "Ventilation & Straps", "es": "Ventilación y Correas" } }
+  ],
+  "parameters": [
+    {
+      "id": "splint_type", "type": "select", "default": "finger",
+      "group": "type", "modes": ["finger_splint", "wrist_brace", "mallet_splint"],
+      "label": { "en": "Splint Type", "es": "Tipo de Férula" },
+      "tooltip": { "en": "Which splint to build (also selectable via mode)", "es": "Qué férula construir (también seleccionable por modo)" },
+      "options": [
+        { "value": "finger", "label": { "en": "Finger Splint", "es": "Férula de Dedo" } },
+        { "value": "wrist", "label": { "en": "Wrist Brace", "es": "Férula de Muñeca" } },
+        { "value": "mallet", "label": { "en": "Mallet Splint", "es": "Férula en Martillo" } }
+      ]
+    },
+    {
+      "id": "limb_dia", "type": "slider", "default": 18.0, "min": 8.0, "max": 90.0, "step": 0.5,
+      "group": "limb", "modes": ["finger_splint", "wrist_brace", "mallet_splint"],
+      "label": { "en": "Limb Diameter (mm)", "es": "Diámetro de la Extremidad (mm)" },
+      "tooltip": { "en": "Diameter of the finger or wrist the splint wraps", "es": "Diámetro del dedo o muñeca que la férula envuelve" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 1.0, "min": 0.3, "max": 3.0, "step": 0.1,
+      "group": "limb", "modes": ["finger_splint", "wrist_brace", "mallet_splint"], "advanced": true,
+      "label": { "en": "Skin Clearance (mm)", "es": "Holgura sobre la Piel (mm)" },
+      "tooltip": { "en": "Gap between the shell and the skin", "es": "Espacio entre la carcasa y la piel" }
+    },
+    {
+      "id": "length", "type": "slider", "default": 70.0, "min": 20.0, "max": 220.0, "step": 1.0,
+      "group": "shell", "modes": ["finger_splint", "wrist_brace", "mallet_splint"],
+      "label": { "en": "Length (mm)", "es": "Longitud (mm)" },
+      "tooltip": { "en": "Splint length along the limb", "es": "Longitud de la férula a lo largo de la extremidad" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wrap", "type": "slider", "default": 240.0, "min": 160.0, "max": 320.0, "step": 5.0,
+      "group": "shell", "modes": ["finger_splint", "wrist_brace", "mallet_splint"],
+      "label": { "en": "Wrap Angle (deg)", "es": "Ángulo de Envoltura (grados)" },
+      "tooltip": { "en": "How far the shell wraps around (larger = more enclosed)", "es": "Cuánto envuelve la carcasa (mayor = más cerrado)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "shell", "modes": ["finger_splint", "wrist_brace", "mallet_splint"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shell wall thickness (stiffness)", "es": "Grosor de la pared de la carcasa (rigidez)" }
+    },
+    {
+      "id": "vents", "type": "checkbox", "default": true,
+      "group": "features", "modes": ["finger_splint", "mallet_splint"],
+      "label": { "en": "Ventilation Holes", "es": "Orificios de Ventilación" },
+      "tooltip": { "en": "Add a breathable hole pattern (always on for the wrist brace)", "es": "Agregar un patrón de orificios transpirable (siempre activo en la férula de muñeca)" }
+    },
+    {
+      "id": "straps", "type": "slider", "default": 2, "min": 0, "max": 6, "step": 1,
+      "group": "features", "modes": ["finger_splint", "wrist_brace"],
+      "label": { "en": "Strap Slot Pairs", "es": "Pares de Ranuras para Correa" },
+      "tooltip": { "en": "Number of strap slot pairs along the edges", "es": "Número de pares de ranuras para correa a lo largo de los bordes" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "finger_18", "mode": "finger_splint",
+      "label": { "en": "Finger Splint (18 mm)", "es": "Férula de Dedo (18 mm)" },
+      "values": { "limb_dia": 18, "length": 70, "wrap": 250, "straps": 2 }
+    },
+    {
+      "id": "wrist_60", "mode": "wrist_brace",
+      "label": { "en": "Wrist Brace (60 mm)", "es": "Férula de Muñeca (60 mm)" },
+      "values": { "limb_dia": 60, "length": 150, "wrap": 210, "wall": 4, "straps": 3 }
+    },
+    {
+      "id": "mallet_16", "mode": "mallet_splint",
+      "label": { "en": "Mallet Finger (16 mm)", "es": "Dedo en Martillo (16 mm)" },
+      "values": { "limb_dia": 16, "length": 45, "wrap": 270 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wrap <= 320",
+      "severity": "warning",
+      "message": { "en": "Very high wrap makes the splint hard to slip on", "es": "Un ángulo de envoltura muy alto dificulta colocar la férula" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm for rigidity", "es": "La pared debe ser de al menos 2 mm para rigidez" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 2, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "limb_contour_shell",
+        "label": { "en": "Limb Contour Shell", "es": "Carcasa de Contorno de Extremidad" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["limb_dia", "clearance", "wrap", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A custom-fit splint printed to the patient's own limb diameter immobilizes an injury more comfortably than a generic one, at a fraction of the cost, where clinical orthoses are unavailable or unaffordable.",
+      "es": "Una férula a medida impresa al diámetro de la extremidad del propio paciente inmoviliza una lesión más cómodamente que una genérica, a una fracción del costo, donde las órtesis clínicas no están disponibles o son inasequibles."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["splint", "brace", "immobilization", "orthosis", "medical", "hyperobject", "commons"]
+}

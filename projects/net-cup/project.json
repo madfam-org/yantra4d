@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Net Cup / Hydroponic Collar",
+    "slug": "net-cup",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A tapered mesh net cup for hydroponics — Kratky, DWC and NFT. Its wide rim lip rests on a hole in a lid, bucket or PVC pipe; slots in the tapered wall pass roots and water while retaining clay pebbles or rockwool. Build a full net basket, a short seating collar, or a plain lid grommet, sized by the 2\" (50 mm) and 3\" (76 mm) net-cup standards.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una canasta de malla cónica para hidroponía — Kratky, DWC y NFT. Su borde ancho descansa sobre un agujero en una tapa, cubeta o tubo de PVC; las ranuras de la pared cónica dejan pasar raíces y agua mientras retienen arcilla expandida o lana de roca. Genera una canasta completa, un collar de asiento corto o un ojal de tapa, dimensionado por los estándares de canasta de 2\" (50 mm) y 3\" (76 mm).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/net-cup.webp",
+    "difficulty": "intermediate",
+    "tags": ["net-cup", "hydroponics", "kratky", "dwc", "nft", "collar", "grommet", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "net_cup",
+      "label": { "en": "Net Cup", "es": "Canasta de Malla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["net_cup"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "collar",
+      "label": { "en": "Seating Collar", "es": "Collar de Asiento" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["collar"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "lid_grommet",
+      "label": { "en": "Lid Grommet", "es": "Ojal de Tapa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lid_grommet"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "net_cup", "label": { "en": "Net Cup", "es": "Canasta de Malla" }, "render_mode": 0, "color": "#16a34a" },
+    { "id": "collar", "label": { "en": "Seating Collar", "es": "Collar de Asiento" }, "render_mode": 0, "color": "#22c55e" },
+    { "id": "lid_grommet", "label": { "en": "Lid Grommet", "es": "Ojal de Tapa" }, "render_mode": 0, "color": "#4ade80" }
+  ],
+  "parameter_groups": [
+    { "id": "body", "label": { "en": "Cup Body", "es": "Cuerpo" } },
+    { "id": "rim", "label": { "en": "Rim & Lip", "es": "Borde y Labio" } },
+    { "id": "mesh", "label": { "en": "Mesh Openings", "es": "Aberturas de Malla" } }
+  ],
+  "parameters": [
+    {
+      "id": "top_od", "type": "slider", "default": 44.0, "min": 20.0, "max": 120.0, "step": 1.0,
+      "group": "body", "modes": ["net_cup", "collar", "lid_grommet"],
+      "label": { "en": "Body Top Diameter (mm)", "es": "Diámetro Superior (mm)" },
+      "tooltip": { "en": "Outer diameter of the cup at the rim. A 2\" net cup body is ~44 mm; a 3\" is ~68 mm", "es": "Diámetro exterior de la canasta en el borde. Un cuerpo de 2\" mide ~44 mm; uno de 3\" ~68 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "base_od", "type": "slider", "default": 35.0, "min": 12.0, "max": 100.0, "step": 1.0,
+      "group": "body", "modes": ["net_cup", "collar", "lid_grommet"],
+      "label": { "en": "Base Diameter (mm)", "es": "Diámetro de Base (mm)" },
+      "tooltip": { "en": "Outer diameter at the narrow base — the taper that stops medium falling through. A 2\" cup base is ~35 mm; a 3\" is ~60 mm", "es": "Diámetro exterior en la base estrecha — la conicidad que evita que el medio caiga. La base de una canasta de 2\" mide ~35 mm; una de 3\" ~60 mm" }
+    },
+    {
+      "id": "cup_h", "type": "slider", "default": 48.0, "min": 15.0, "max": 120.0, "step": 1.0,
+      "group": "body", "modes": ["net_cup", "collar", "lid_grommet"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Overall basket height. A 2\" net cup is ~48 mm tall; a 3\" is ~66 mm", "es": "Altura total. Una canasta de 2\" mide ~48 mm; una de 3\" ~66 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "body", "modes": ["net_cup", "collar", "lid_grommet"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Basket wall thickness", "es": "Grosor de la pared de la canasta" }
+    },
+    {
+      "id": "lip_w", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.5,
+      "group": "rim", "modes": ["net_cup", "collar", "lid_grommet"],
+      "label": { "en": "Rim Lip Overhang (mm)", "es": "Voladizo del Labio (mm)" },
+      "tooltip": { "en": "How far the rim lip overhangs the hole edge to rest on the lid", "es": "Cuánto sobresale el labio del borde del agujero para descansar en la tapa" }
+    },
+    {
+      "id": "lip_h", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "rim", "modes": ["net_cup", "collar", "lid_grommet"],
+      "label": { "en": "Rim Lip Thickness (mm)", "es": "Grosor del Labio (mm)" },
+      "tooltip": { "en": "Thickness of the rim lip disc", "es": "Grosor del disco del labio" }
+    },
+    {
+      "id": "slot_w", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "mesh", "modes": ["net_cup", "collar"],
+      "label": { "en": "Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Width of each mesh slot. Narrow enough to retain clay pebbles", "es": "Ancho de cada ranura de malla. Estrecha para retener la arcilla expandida" }
+    },
+    {
+      "id": "slot_rows", "type": "slider", "default": 3.0, "min": 1.0, "max": 8.0, "step": 1.0,
+      "group": "mesh", "modes": ["net_cup"],
+      "label": { "en": "Slot Rows", "es": "Filas de Ranuras" },
+      "tooltip": { "en": "Number of vertical rows of mesh slots", "es": "Número de filas verticales de ranuras" }
+    },
+    {
+      "id": "slot_cols", "type": "slider", "default": 8.0, "min": 3.0, "max": 16.0, "step": 1.0,
+      "group": "mesh", "modes": ["net_cup", "collar"],
+      "label": { "en": "Slots Around", "es": "Ranuras Alrededor" },
+      "tooltip": { "en": "Number of mesh slots around the circumference", "es": "Número de ranuras alrededor de la circunferencia" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "two_inch", "mode": "net_cup",
+      "label": { "en": "2\" Net Cup (50 mm rim)", "es": "Canasta 2\" (borde 50 mm)" },
+      "values": { "top_od": 44, "base_od": 35, "cup_h": 50, "slot_rows": 3, "slot_cols": 8 }
+    },
+    {
+      "id": "three_inch", "mode": "net_cup",
+      "label": { "en": "3\" Net Cup (85 mm rim)", "es": "Canasta 3\" (borde 85 mm)" },
+      "values": { "top_od": 79, "base_od": 60, "cup_h": 70, "slot_rows": 4, "slot_cols": 10 }
+    },
+    {
+      "id": "cube_collar", "mode": "collar",
+      "label": { "en": "Rockwool-Cube Collar", "es": "Collar para Cubo de Lana" },
+      "values": { "top_od": 44, "base_od": 40, "cup_h": 40, "slot_cols": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "base_od < top_od",
+      "severity": "error",
+      "message": { "en": "Base diameter must be smaller than the top (the cup tapers inward)", "es": "El diámetro de base debe ser menor que el superior (la canasta se estrecha)" }
+    },
+    {
+      "expression": "slot_w >= 1.5",
+      "severity": "warning",
+      "message": { "en": "Very fine slots may fuse or clog when printed", "es": "Ranuras muy finas pueden fusionarse o taparse al imprimir" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "net_cup_taper",
+        "label": { "en": "Net-Cup Taper", "es": "Conicidad de Canasta" },
+        "geometry_type": "socket",
+        "standard": "2/3in net cup",
+        "parameters": ["top_od", "base_od", "cup_h", "lip_w"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Net cups are a hydroponics consumable bought by the hundred, yet the 2\" and 3\" hole sizes are a de-facto standard shared across lids, buckets and NFT channels. Printing them on demand — in food-safe, opaque filament sized to the exact hole a grower drilled — lets a home or community garden expand a Kratky or DWC system for pennies and replace algae-fouled cups without a supply run.",
+      "es": "Las canastas de malla son un consumible de hidroponía que se compra por cientos, pero los tamaños de agujero de 2\" y 3\" son un estándar de facto compartido entre tapas, cubetas y canales NFT. Imprimirlas bajo demanda — en filamento opaco apto para alimentos, dimensionado al agujero exacto que perforó el cultivador — permite a un huerto casero o comunitario ampliar un sistema Kratky o DWC por centavos y reemplazar canastas con algas sin ir a comprar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["net-cup", "hydroponics", "kratky", "dwc", "nft", "collar", "grommet", "household", "hyperobject", "commons"]
+}

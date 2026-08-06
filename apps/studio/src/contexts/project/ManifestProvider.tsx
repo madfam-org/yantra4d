@@ -64,7 +64,10 @@ export interface Manifest {
   parameter_groups?: ParameterGroup[]
   viewer?: Record<string, unknown>
   estimate_constants?: Record<string, unknown>
-  constraints?: Array<{ rule: string; message: string | Record<string, string>; severity: string; applies_to?: string[] }>
+  // Constraints declare parameter interdependencies. Authored manifests use `expression`
+  // (e.g. "grid_x * grid_y <= 24"); a legacy shape used `rule`. Both are optional so the
+  // fallback manifest and the 555 authored constraints across the commons both type-check.
+  constraints?: Array<{ expression?: string; rule?: string; message: string | Record<string, string>; severity: string; applies_to?: string[] }>
   grid_presets?: Record<string, unknown>
   presets?: Preset[]
   [key: string]: unknown

@@ -1,0 +1,149 @@
+{
+  "project": {
+    "name": "Dial Indicator Base",
+    "slug": "indicator-base",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "Parametric bench bases and holders for dial indicators, test indicators and gauges. The stem bore is sized to the industry-standard 8 mm indicator stem (Mitutoyo Series 2 and equivalents), with a lug-back mount variant and a 60° dovetail holder for lever/finger indicators. Bolt one to a surface plate, a magnetic base or a machine table and hold a gauge exactly where the measurement is.",
+      "es": "Bases y soportes de banco paramétricos para comparadores, palpadores y galgas. El alojamiento de la tija está dimensionado para la tija estándar de 8 mm (Mitutoyo Serie 2 y equivalentes), con variante de montaje por lengüeta y un soporte de cola de milano a 60° para comparadores de palanca. Atorníllala a un mármol, una base magnética o una mesa de máquina."
+    },
+    "thumbnail": "/projects/indicator-base.webp",
+    "difficulty": "intermediate",
+    "tags": ["metrology", "dial-indicator", "gauge", "workshop", "mitutoyo", "socket", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "modes": [
+    {
+      "id": "stem_base",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Stem Clamp Column Base", "es": "Base de Columna con Tija" },
+      "description": {
+        "en": "A column base gripping the 8 mm indicator stem in a horizontal cross-bore, closed by a saw-cut clamp slot and a cross clamp screw.",
+        "es": "Una base de columna que sujeta la tija de 8 mm en un barreno transversal, cerrado por una ranura de apriete y un tornillo transversal."
+      },
+      "parts": ["stem_base"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "lug_base",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Lug-Back Mount Base", "es": "Base de Montaje por Lengüeta" },
+      "description": {
+        "en": "A low base with a flat-faced post and a lug pad: the indicator's lug back bolts flat to the pad through a manifold hole.",
+        "es": "Una base baja con un poste de cara plana y una almohadilla: la lengüeta trasera del comparador se atornilla plana a la almohadilla."
+      },
+      "parts": ["lug_base"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "dovetail_holder",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Dovetail Test-Indicator Holder", "es": "Soporte de Cola de Milano" },
+      "description": {
+        "en": "A tower carrying a 60° dovetail slot for lever/finger test indicators, pinched by a cross clamp screw. Through-slot, open at both ends.",
+        "es": "Una torre con una ranura de cola de milano a 60° para palpadores de palanca, apretada por un tornillo transversal."
+      },
+      "parts": ["dovetail_holder"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "stem_base",       "render_mode": 0, "label": { "en": "Stem Column Base", "es": "Base de Columna" }, "default_color": "#2f3e46" },
+    { "id": "lug_base",        "render_mode": 0, "label": { "en": "Lug-Back Base",    "es": "Base por Lengüeta" }, "default_color": "#52796f" },
+    { "id": "dovetail_holder", "render_mode": 0, "label": { "en": "Dovetail Holder",  "es": "Soporte Cola de Milano" }, "default_color": "#84a98c" }
+  ],
+  "parameters": [
+    {
+      "id": "stem_dia", "type": "slider", "default": 8.0, "min": 6.0, "max": 10.0, "step": 0.1,
+      "label": { "en": "Indicator Stem Diameter (mm)", "es": "Diámetro de la Tija (mm)" },
+      "tooltip": {
+        "en": "Standard dial-indicator stem = 8 mm (Mitutoyo Series 2 and equivalents). 3/8 in = 9.525 mm for imperial-stem indicators. 0.1 mm clearance is added.",
+        "es": "Tija estándar de comparador = 8 mm (Mitutoyo Serie 2). 3/8 in = 9.525 mm para comparadores imperiales. Se añade 0.1 mm de holgura."
+      },
+      "group": "gauge"
+    },
+    {
+      "id": "post_height", "type": "slider", "default": 60.0, "min": 30.0, "max": 120.0, "step": 1.0,
+      "label": { "en": "Post / Column Height (mm)", "es": "Altura del Poste (mm)" },
+      "tooltip": { "en": "Height of the column above the base plate.", "es": "Altura de la columna sobre la placa base." },
+      "group": "post"
+    },
+    {
+      "id": "base_width", "type": "slider", "default": 60.0, "min": 40.0, "max": 100.0, "step": 1.0,
+      "label": { "en": "Base Width (mm)", "es": "Ancho de la Base (mm)" },
+      "tooltip": { "en": "Footprint width. Wider = more tip-over stability.", "es": "Ancho de la huella. Más ancho = más estabilidad." },
+      "group": "base"
+    },
+    {
+      "id": "base_depth", "type": "slider", "default": 45.0, "min": 30.0, "max": 90.0, "step": 1.0,
+      "label": { "en": "Base Depth (mm)", "es": "Fondo de la Base (mm)" },
+      "tooltip": { "en": "Footprint depth toward the work.", "es": "Fondo de la huella hacia la pieza." },
+      "group": "base"
+    },
+    {
+      "id": "base_thick", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "label": { "en": "Base Thickness (mm)", "es": "Espesor de la Base (mm)" },
+      "tooltip": { "en": "Base plate thickness; more mass = steadier readings.", "es": "Espesor de la placa base; más masa = lecturas más estables." },
+      "group": "base"
+    },
+    {
+      "id": "column_dia", "type": "slider", "default": 16.0, "min": 10.0, "max": 30.0, "step": 0.5,
+      "label": { "en": "Column Diameter (mm)", "es": "Diámetro de la Columna (mm)" },
+      "tooltip": { "en": "Diameter of the vertical column / width of the flat post.", "es": "Diámetro de la columna vertical / ancho del poste plano." },
+      "group": "post"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "gauge", "label": { "en": "Gauge Interface", "es": "Interfaz de Galga" } },
+    { "id": "post",  "label": { "en": "Post / Column",   "es": "Poste / Columna" } },
+    { "id": "base",  "label": { "en": "Base Plate",       "es": "Placa Base" } }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "indicator_stem_socket",
+        "label": { "en": "8 mm Indicator Stem Socket", "es": "Alojamiento de Tija de 8 mm" },
+        "geometry_type": "socket",
+        "standard": "8 mm indicator stem (Mitutoyo Series 2)",
+        "parameters": ["stem_dia"]
+      },
+      {
+        "id": "dovetail_mount",
+        "label": { "en": "Test-Indicator Dovetail", "es": "Cola de Milano de Palpador" },
+        "geometry_type": "socket",
+        "standard": "60° lever-indicator dovetail",
+        "parameters": ["post_height"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The clamp slot relies on print stiffness to grip: print in PETG or PLA at ≥40% infill so the saw-cut clamp actually pinches the stem. A too-flexible TPU column will not hold a reading. Print the stem bore at the nominal 8 mm + the built-in 0.1 mm clearance and open it up with an 8 mm reamer if needed.",
+        "es": "La ranura de apriete depende de la rigidez de impresión: imprime en PETG o PLA con ≥40% de relleno. Una columna de TPU demasiado flexible no mantendrá la lectura."
+      }
+    },
+    "societal_benefit": {
+      "en": "A comparator stand and articulating arm cost $40–$200; a printed base plus a scrap-metal weight puts a rigid gauge holder on any hobbyist bench for pennies, and the parametric footprint tunes stability to the job.",
+      "es": "Un soporte de comparador cuesta $40–$200; una base impresa pone un soporte rígido en cualquier banco por céntimos, y la huella paramétrica ajusta la estabilidad al trabajo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0"
+}

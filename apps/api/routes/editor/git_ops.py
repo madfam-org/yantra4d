@@ -3,27 +3,44 @@ Git Operations API — status, diff, commit, push, pull for GitHub-imported proj
 """
 import json
 import logging
+import os
+import re
+import tempfile
 from pathlib import Path
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
+import rate_limits
 from config import Config
 from extensions import limiter
-import rate_limits
-from middleware.auth import require_tier
-from utils.route_helpers import error_response, handle_exceptions, require_json_body, cleanup_old_stl_files
-from utils.validators import require_valid_slug
-from services.editor.git_operations import git_status, git_diff, git_log, git_commit, git_push, git_pull, git_archive_head
-from services.editor.github_token import get_github_token
-import tempfile
-import os
-
-from services.engine.render_orchestrator import extract_render_payload, RenderPayloadError, STATIC_FOLDER
-from services.engine.openscad import build_openscad_command, run_render as run_openscad_render
-from services.engine.cadquery_engine import build_cadquery_command, run_render as run_cadquery_render
 from manifest import get_manifest
-
-import re
+from middleware.auth import require_tier
+from services.editor.git_operations import (
+    git_archive_head,
+    git_commit,
+    git_diff,
+    git_log,
+    git_pull,
+    git_push,
+    git_status,
+)
+from services.editor.github_token import get_github_token
+from services.engine.cadquery_engine import build_cadquery_command
+from services.engine.cadquery_engine import run_render as run_cadquery_render
+from services.engine.openscad import build_openscad_command
+from services.engine.openscad import run_render as run_openscad_render
+from services.engine.render_orchestrator import (
+    STATIC_FOLDER,
+    RenderPayloadError,
+    extract_render_payload,
+)
+from utils.route_helpers import (
+    cleanup_old_stl_files,
+    error_response,
+    handle_exceptions,
+    require_json_body,
+)
+from utils.validators import require_valid_slug
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +112,7 @@ def connect_remote(slug):
         return error_response("Invalid GitHub repository URL", 400)
 
     # Add or set origin remote
-    from services.editor.git_operations import _run_git, _get_remote_url
+    from services.editor.git_operations import _get_remote_url, _run_git
     existing = _get_remote_url(project_dir)
     if existing:
         result = _run_git(project_dir, ["remote", "set-url", "origin", remote_url], timeout=10)
@@ -283,8 +300,8 @@ def render_head(slug):
     cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
     
     manifest = get_manifest(slug)
-    engine = manifest.engine
-    
+    engine = manifest.mode_engine(payload.get('mode'))
+
     # Extract HEAD to a temp dir
     with tempfile.TemporaryDirectory(prefix="yantra_head_") as tmpdir_name:
         target_dir = Path(tmpdir_name)

@@ -1,0 +1,222 @@
+{
+  "project": {
+    "name": "Microscope Objective Case",
+    "slug": "objective-case",
+    "version": "1.0.0",
+    "description": {
+      "en": "Protective threaded storage hyperobject for microscope objectives: a single case with a real female objective thread, a multi-nest storage block, and a threaded dust cap. Threads are modeled as true fused helical ribs on the RMS (0.800 in x 36 TPI) or M25 x 0.75 standards, so objectives screw in exactly as on a nosepiece.",
+      "es": "Hiperobjeto de almacenamiento roscado protector para objetivos de microscopio: un estuche individual con rosca hembra real, un bloque de almacenamiento de múltiples nidos y una tapa antipolvo roscada. Las roscas se modelan como nervaduras helicoidales fusionadas reales en los estándares RMS (0.800 in x 36 TPI) o M25 x 0.75, de modo que los objetivos se enroscan igual que en un revólver."
+    },
+    "thumbnail": "/projects/objective-case.webp",
+    "tags": ["microscope", "objective", "rms-thread", "m25", "case", "lab", "medical", "hyperobject", "commons"],
+    "difficulty": "intermediate",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Female threads add the user 'clearance' per side on top of the nominal major diameter; start at 0.25 mm and tune to your printer. Print in PETG for chemical resistance around immersion oils.",
+        "es": "Las roscas hembra suman la 'holgura' del usuario por lado sobre el diámetro mayor nominal; empieza en 0.25 mm y ajústalo a tu impresora. Imprime en PETG para resistencia química cerca de aceites de inmersión."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "objective_thread",
+        "label": {
+          "en": "RMS / M25 Objective Thread Nest",
+          "es": "Nido de Rosca de Objetivo RMS / M25"
+        },
+        "geometry_type": "thread",
+        "standard": "RMS W0.800in x 36 TPI (20.32 mm, DIN 58888) / M25 x 0.75",
+        "parameters": ["thread_standard", "clearance"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Gives labs and repair techs safe, standards-true storage for costly objectives (often hundreds to thousands of dollars each) at the cost of filament, cutting damage and loss.",
+      "es": "Ofrece a laboratorios y técnicos almacenamiento seguro y fiel al estándar para objetivos costosos (a menudo cientos o miles de dólares cada uno) al costo del filamento, reduciendo daños y pérdidas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "threaded_nest",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Single Threaded Case",
+        "es": "Estuche Roscado Individual"
+      },
+      "description": {
+        "en": "A knurled case body with a female objective thread and a lens-clearance well; the objective screws in and hangs free above the sealed base."
+      },
+      "parts": ["threaded_nest"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "multi_nest_block",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Multi-Nest Storage Block",
+        "es": "Bloque de Múltiples Nidos"
+      },
+      "description": {
+        "en": "A tray block holding N female-threaded objective nests in a row for benchtop storage of a full objective set."
+      },
+      "parts": ["multi_nest_block"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "dust_cap",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Threaded Dust Cap",
+        "es": "Tapa Antipolvo Roscada"
+      },
+      "description": {
+        "en": "A male-threaded plug with a knurled head that screws into a nest to seal the stored objective against dust."
+      },
+      "parts": ["dust_cap"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "threaded_nest",
+      "render_mode": 0,
+      "label": {
+        "en": "Single Threaded Case",
+        "es": "Estuche Roscado Individual"
+      },
+      "default_color": "#4a5568"
+    },
+    {
+      "id": "multi_nest_block",
+      "render_mode": 0,
+      "label": {
+        "en": "Multi-Nest Storage Block",
+        "es": "Bloque de Múltiples Nidos"
+      },
+      "default_color": "#2d3748"
+    },
+    {
+      "id": "dust_cap",
+      "render_mode": 0,
+      "label": {
+        "en": "Threaded Dust Cap",
+        "es": "Tapa Antipolvo Roscada"
+      },
+      "default_color": "#1a202c"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "thread_standard",
+      "type": "select",
+      "default": "RMS",
+      "options": [
+        { "value": "RMS", "label": "RMS (0.800 in x 36 TPI, 20.32 mm)" },
+        { "value": "M25", "label": "M25 x 0.75 (25.0 mm)" }
+      ],
+      "label": {
+        "en": "Objective Thread Standard",
+        "es": "Estándar de Rosca del Objetivo"
+      },
+      "group": "thread"
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.25,
+      "min": 0.1,
+      "max": 0.5,
+      "step": 0.05,
+      "label": {
+        "en": "Thread Clearance (mm/side)",
+        "es": "Holgura de Rosca (mm/lado)"
+      },
+      "tooltip": {
+        "en": "Printed-thread fit slop added per side; increase if the objective binds.",
+        "es": "Holgura de ajuste de rosca impresa por lado; auméntala si el objetivo se atasca."
+      },
+      "group": "thread"
+    },
+    {
+      "id": "nest_count",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": {
+        "en": "Nests in Block",
+        "es": "Nidos en el Bloque"
+      },
+      "group": "storage"
+    },
+    {
+      "id": "well_depth",
+      "type": "slider",
+      "default": 10,
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": {
+        "en": "Lens Clearance Well (mm)",
+        "es": "Pozo de Holgura de Lente (mm)"
+      },
+      "tooltip": {
+        "en": "Depth below the thread so the objective's front lens hangs free.",
+        "es": "Profundidad bajo la rosca para que la lente frontal del objetivo quede libre."
+      },
+      "group": "storage"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "thread",
+      "label": {
+        "en": "Objective Thread",
+        "es": "Rosca del Objetivo"
+      }
+    },
+    {
+      "id": "storage",
+      "label": {
+        "en": "Case & Storage",
+        "es": "Estuche y Almacenamiento"
+      }
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

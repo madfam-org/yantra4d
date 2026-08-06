@@ -5,7 +5,7 @@ Serves cached ForgeSight data or hardcoded fallback defaults.
 """
 import logging
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
 from extensions import limiter
 from services.integrations.forgesight import forgesight_client

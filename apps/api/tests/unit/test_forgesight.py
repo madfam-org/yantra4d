@@ -1,9 +1,13 @@
 """Tests for ForgeSight Data Intelligence Platform integration client."""
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from services.integrations.forgesight import (
-    ForgeSightClient, MaterialBenchmark, Quote, QuoteItem,
-    MATERIAL_CATEGORY_MAP, DEFAULT_PRICING,
+    DEFAULT_PRICING,
+    MATERIAL_CATEGORY_MAP,
+    ForgeSightClient,
+    MaterialBenchmark,
+    Quote,
+    QuoteItem,
 )
 
 

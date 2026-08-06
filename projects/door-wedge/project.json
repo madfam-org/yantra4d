@@ -1,0 +1,147 @@
+{
+  "project": {
+    "name": "Door / Window Wedge & Stop",
+    "slug": "door-wedge",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A classic ramp doorstop. Length, width, and height set the ramp angle; an optional grip texture on the underside keeps it from sliding on hard floors, and an optional finger hole lets it hang on a hook. Wedge mode is the plain ramp; Hook Stop mode adds a raised heel so a door can't ride up and over it.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un tope de puerta clásico en rampa. Longitud, ancho y altura definen el ángulo de la rampa; una textura antideslizante opcional en la parte inferior evita que resbale en pisos duros, y un orificio para dedo opcional permite colgarlo de un gancho. El modo Cuña es la rampa simple; el modo Tope con Talón añade un talón elevado para que la puerta no lo pase por encima.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/door-wedge.webp",
+    "difficulty": "beginner",
+    "tags": ["doorstop", "wedge", "door", "window", "stop", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "wedge",
+      "label": { "en": "Wedge", "es": "Cuña" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wedge"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "hook_stop",
+      "label": { "en": "Hook Stop", "es": "Tope con Talón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_stop"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "wedge", "label": { "en": "Wedge", "es": "Cuña" }, "render_mode": 0, "color": "#9c6b4f" },
+    { "id": "hook_stop", "label": { "en": "Hook Stop", "es": "Tope con Talón" }, "render_mode": 0, "color": "#c08b6c" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Wedge Size", "es": "Tamaño de la Cuña" } },
+    { "id": "grip", "label": { "en": "Grip & Hanging", "es": "Agarre y Colgado" } },
+    { "id": "heel", "label": { "en": "Heel", "es": "Talón" } }
+  ],
+  "parameters": [
+    {
+      "id": "length", "type": "slider", "default": 120, "min": 50, "max": 250, "step": 1,
+      "group": "size", "modes": ["wedge", "hook_stop"],
+      "label": { "en": "Length / Ramp Run (mm)", "es": "Longitud / Rampa (mm)" },
+      "tooltip": { "en": "Longer + lower = a shallower ramp angle", "es": "Más largo + más bajo = ángulo de rampa más suave" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "width", "type": "slider", "default": 45, "min": 25, "max": 120, "step": 1,
+      "group": "size", "modes": ["wedge", "hook_stop"],
+      "label": { "en": "Width (mm)", "es": "Ancho (mm)" },
+      "tooltip": { "en": "How wide the wedge is across the door", "es": "Qué tan ancha es la cuña bajo la puerta" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 35, "min": 15, "max": 90, "step": 1,
+      "group": "size", "modes": ["wedge", "hook_stop"],
+      "label": { "en": "Height at Tall End (mm)", "es": "Altura en el Extremo Alto (mm)" },
+      "tooltip": { "en": "Tall-end height; sets the ramp angle with length", "es": "Altura del extremo alto; define el ángulo con la longitud" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip", "type": "checkbox", "default": true,
+      "group": "grip", "modes": ["wedge", "hook_stop"],
+      "label": { "en": "Grip Ridges", "es": "Ranuras Antideslizantes" },
+      "tooltip": { "en": "Shallow ridges on the underside so it grips hard floors", "es": "Ranuras poco profundas en la base para agarrar pisos duros" }
+    },
+    {
+      "id": "finger_hole", "type": "checkbox", "default": false,
+      "group": "grip", "modes": ["wedge", "hook_stop"],
+      "label": { "en": "Finger / Hang Hole", "es": "Orificio para Dedo / Colgar" },
+      "tooltip": { "en": "A through-hole near the tall end so it hangs on a hook", "es": "Un orificio pasante cerca del extremo alto para colgar de un gancho" }
+    },
+    {
+      "id": "heel_height", "type": "slider", "default": 22, "min": 8, "max": 60, "step": 1,
+      "group": "heel", "modes": ["hook_stop"],
+      "label": { "en": "Heel Height (mm)", "es": "Altura del Talón (mm)" },
+      "tooltip": { "en": "How far the raised heel stands above the tall end", "es": "Cuánto se eleva el talón sobre el extremo alto" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_doorstop", "mode": "wedge",
+      "label": { "en": "Standard Doorstop", "es": "Tope de Puerta Estándar" },
+      "values": { "length": 120, "width": 45, "height": 35, "grip": true, "finger_hole": false }
+    },
+    {
+      "id": "low_gap_wedge", "mode": "wedge",
+      "label": { "en": "Low-Gap Wedge", "es": "Cuña para Hueco Bajo" },
+      "values": { "length": 140, "width": 50, "height": 22, "grip": true, "finger_hole": true }
+    },
+    {
+      "id": "heavy_door_hook_stop", "mode": "hook_stop",
+      "label": { "en": "Heavy-Door Hook Stop", "es": "Tope con Talón para Puerta Pesada" },
+      "values": { "length": 150, "width": 60, "height": 45, "heel_height": 30, "grip": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "height <= length",
+      "severity": "warning",
+      "message": { "en": "A tall, short wedge makes a steep ramp that may not slide under a door", "es": "Una cuña alta y corta forma una rampa empinada que puede no entrar bajo la puerta" }
+    },
+    {
+      "expression": "width >= 25",
+      "severity": "error",
+      "message": { "en": "Width must be at least 25 mm for stability", "es": "El ancho debe ser de al menos 25 mm por estabilidad" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 140, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [60, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [60, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "wedge_ramp",
+        "label": { "en": "Wedge Ramp", "es": "Rampa de Cuña" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["length", "width", "height"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A doorstop is the definitive first print — free, fast, and immediately useful. Tuning the ramp angle to the actual floor gap and door weight beats a one-size store wedge, and grip ridges keep it in place without adhesive.",
+      "es": "Un tope de puerta es la primera impresión por excelencia — gratis, rápida y útil de inmediato. Ajustar el ángulo de la rampa al hueco real del piso y al peso de la puerta supera a una cuña de tienda de talla única, y las ranuras la mantienen en su lugar sin adhesivo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["doorstop", "wedge", "door", "household", "hyperobject", "commons"]
+}

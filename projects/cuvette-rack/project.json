@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Cuvette & Vial Rack",
+    "slug": "cuvette-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A benchtop rack that holds spectrophotometer cuvettes (the standard 10 mm square footprint) and round sample vials in a configurable grid of pockets. Choose a cuvette rack, a vial rack, or a combo block with both.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una gradilla de mesa que sostiene cubetas de espectrofotómetro (el formato estándar cuadrado de 10 mm) y viales de muestra redondos en una rejilla configurable de huecos. Elige gradilla de cubetas, gradilla de viales o un bloque combinado con ambos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cuvette-rack.webp",
+    "difficulty": "beginner",
+    "tags": ["cuvette", "vial", "rack", "lab", "spectrophotometer", "organizer", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rack",
+      "label": { "en": "Cuvette Rack", "es": "Gradilla de Cubetas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rack"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "vial_rack",
+      "label": { "en": "Vial Rack", "es": "Gradilla de Viales" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["vial_rack"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "combo_rack",
+      "label": { "en": "Combo Rack", "es": "Gradilla Combinada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["combo_rack"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "rack", "label": { "en": "Cuvette Rack", "es": "Gradilla de Cubetas" }, "render_mode": 0, "color": "#0e7490" },
+    { "id": "vial_rack", "label": { "en": "Vial Rack", "es": "Gradilla de Viales" }, "render_mode": 0, "color": "#0891b2" },
+    { "id": "combo_rack", "label": { "en": "Combo Rack", "es": "Gradilla Combinada" }, "render_mode": 0, "color": "#06b6d4" }
+  ],
+  "parameter_groups": [
+    { "id": "vessel", "label": { "en": "Vessels", "es": "Recipientes" } },
+    { "id": "grid", "label": { "en": "Grid", "es": "Rejilla" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "cuvette", "type": "slider", "default": 10.0, "min": 6.0, "max": 20.0, "step": 0.5,
+      "group": "vessel", "modes": ["rack", "combo_rack"],
+      "label": { "en": "Cuvette Footprint (mm)", "es": "Formato de Cubeta (mm)" },
+      "tooltip": { "en": "Outer square footprint of the cuvette (10 mm is the spectrophotometry standard)", "es": "Formato cuadrado exterior de la cubeta (10 mm es el estándar de espectrofotometría)" }
+    },
+    {
+      "id": "vial_dia", "type": "slider", "default": 12.0, "min": 5.0, "max": 40.0, "step": 0.5,
+      "group": "vessel", "modes": ["vial_rack", "combo_rack"],
+      "label": { "en": "Vial Diameter (mm)", "es": "Diámetro de Vial (mm)" },
+      "tooltip": { "en": "Outer diameter of the round vials", "es": "Diámetro exterior de los viales redondos" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 6, "min": 1, "max": 16, "step": 1,
+      "group": "grid", "modes": ["rack", "vial_rack", "combo_rack"],
+      "label": { "en": "Columns", "es": "Columnas" },
+      "tooltip": { "en": "Number of pockets across (X)", "es": "Número de huecos a lo ancho (X)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 14.0 }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 4, "min": 1, "max": 12, "step": 1,
+      "group": "grid", "modes": ["rack", "vial_rack", "combo_rack"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Number of pockets deep (Y)", "es": "Número de huecos de profundidad (Y)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 14.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 2.0, "step": 0.05,
+      "group": "body", "modes": ["rack", "vial_rack", "combo_rack"],
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura (mm)" },
+      "tooltip": { "en": "Per-side gap so vessels drop in and out easily", "es": "Espacio por lado para que los recipientes entren y salgan con facilidad" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 10.0, "step": 0.2,
+      "group": "body", "modes": ["rack", "vial_rack", "combo_rack"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Material between and around the pockets", "es": "Material entre y alrededor de los huecos" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 22.0, "min": 6.0, "max": 80.0, "step": 1.0,
+      "group": "body", "modes": ["rack", "vial_rack", "combo_rack"],
+      "label": { "en": "Pocket Depth (mm)", "es": "Profundidad de Hueco (mm)" },
+      "tooltip": { "en": "How deep the vessels seat", "es": "Qué tan profundo se asientan los recipientes" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 3.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "body", "modes": ["rack", "vial_rack", "combo_rack"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Solid floor beneath the pockets", "es": "Piso sólido bajo los huecos" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cuvette_2x6", "mode": "rack",
+      "label": { "en": "Cuvette Rack 6×4", "es": "Gradilla de Cubetas 6×4" },
+      "values": { "cuvette": 10, "cols": 6, "rows": 4, "depth": 22 }
+    },
+    {
+      "id": "hplc_vials", "mode": "vial_rack",
+      "label": { "en": "HPLC Vials (12 mm)", "es": "Viales HPLC (12 mm)" },
+      "values": { "vial_dia": 12, "cols": 8, "rows": 5, "depth": 30 }
+    },
+    {
+      "id": "combo_bench", "mode": "combo_rack",
+      "label": { "en": "Combo Bench Rack", "es": "Gradilla Combinada" },
+      "values": { "cuvette": 10, "vial_dia": 12, "cols": 6, "rows": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 1.5",
+      "severity": "warning",
+      "message": { "en": "Large clearance lets vessels rattle", "es": "Una holgura grande deja que los recipientes se muevan" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "cuvette_array",
+        "label": { "en": "Cuvette Array", "es": "Arreglo de Cubetas" },
+        "geometry_type": "grid",
+        "standard": "10mm cuvette",
+        "parameters": ["cuvette", "vial_dia", "cols", "rows", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Small teaching and field labs lose costly cuvettes to tip-overs and spills. A rack sized to the universal 10 mm cuvette (and any vial) is printable on demand, standardising sample handling without a catalogue order.",
+      "es": "Los laboratorios pequeños de enseñanza y de campo pierden cubetas costosas por vuelcos y derrames. Una gradilla dimensionada a la cubeta universal de 10 mm (y a cualquier vial) es imprimible bajo demanda, estandarizando el manejo de muestras sin un pedido de catálogo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cuvette", "vial", "rack", "lab", "medical", "hyperobject", "commons"]
+}

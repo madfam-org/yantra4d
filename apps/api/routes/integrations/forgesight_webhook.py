@@ -18,7 +18,7 @@ import hmac
 import logging
 import os
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
 logger = logging.getLogger(__name__)
 

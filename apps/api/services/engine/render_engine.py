@@ -4,15 +4,14 @@ Provides common process management for OpenSCAD and CadQuery render engines.
 Both engines share: RENDER_TIMEOUT_S, active-process tracking, and cancel logic.
 """
 import logging
+import os
 import subprocess
 import threading
 from dataclasses import dataclass
 
-import os
-
 logger = logging.getLogger(__name__)
 
-RENDER_TIMEOUT_S = int(os.getenv("RENDER_TIMEOUT_S", 300))
+RENDER_TIMEOUT_S = int(os.getenv("RENDER_TIMEOUT_S", "300"))
 
 
 @dataclass

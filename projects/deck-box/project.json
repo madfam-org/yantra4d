@@ -1,0 +1,576 @@
+{
+  "project": {
+    "name": "Deck Box",
+    "slug": "deck-box",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A card-game deck box sized to a sleeved deck, with a friction-fit lid. Footprints follow the common card standards — standard (63x88), mini (41x63) and tarot (70x120) mm. Also builds a matching token tray and a two-deck box with a central divider.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una caja para mazos de cartas dimensionada a un mazo enfundado, con tapa de ajuste por fricción. Los tamaños siguen los estándares comunes de carta — estándar (63x88), mini (41x63) y tarot (70x120) mm. También genera una bandeja de fichas a juego y una caja de dos mazos con divisor central.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/deck-box.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "deck-box",
+      "card-game",
+      "tcg",
+      "tabletop",
+      "tarot",
+      "token-tray",
+      "lid",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "deck_box",
+      "label": {
+        "en": "Deck Box",
+        "es": "Caja de Mazo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "deck_box"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 4,
+        "per_part": 26
+      }
+    },
+    {
+      "id": "token_tray",
+      "label": {
+        "en": "Token Tray",
+        "es": "Bandeja de Fichas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "token_tray"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "dual_deck",
+      "label": {
+        "en": "Dual Deck",
+        "es": "Mazo Doble"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "dual_deck"
+      ],
+      "estimate": {
+        "base_time": 26,
+        "per_unit": 5,
+        "per_part": 32
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "deck_box",
+      "label": {
+        "en": "Deck Box",
+        "es": "Caja de Mazo"
+      },
+      "render_mode": 0,
+      "color": "#4c8b7c"
+    },
+    {
+      "id": "token_tray",
+      "label": {
+        "en": "Token Tray",
+        "es": "Bandeja de Fichas"
+      },
+      "render_mode": 0,
+      "color": "#5c9b8c"
+    },
+    {
+      "id": "dual_deck",
+      "label": {
+        "en": "Dual Deck",
+        "es": "Mazo Doble"
+      },
+      "render_mode": 0,
+      "color": "#3c7b6c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "card",
+      "label": {
+        "en": "Card Format",
+        "es": "Formato de Carta"
+      }
+    },
+    {
+      "id": "capacity",
+      "label": {
+        "en": "Capacity & Fit",
+        "es": "Capacidad y Ajuste"
+      }
+    },
+    {
+      "id": "walls",
+      "label": {
+        "en": "Walls & Corners",
+        "es": "Paredes y Esquinas"
+      }
+    },
+    {
+      "id": "lid",
+      "label": {
+        "en": "Lid",
+        "es": "Tapa"
+      }
+    },
+    {
+      "id": "tray",
+      "label": {
+        "en": "Token Tray",
+        "es": "Bandeja"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "card",
+      "type": "select",
+      "default": "standard",
+      "group": "card",
+      "modes": [
+        "deck_box",
+        "token_tray",
+        "dual_deck"
+      ],
+      "label": {
+        "en": "Card Format",
+        "es": "Formato de Carta"
+      },
+      "tooltip": {
+        "en": "Card footprint standard",
+        "es": "Tamaño estándar de la carta"
+      },
+      "options": [
+        {
+          "value": "standard",
+          "label": {
+            "en": "Standard (63x88)",
+            "es": "Estándar (63x88)"
+          }
+        },
+        {
+          "value": "mini",
+          "label": {
+            "en": "Mini (41x63)",
+            "es": "Mini (41x63)"
+          }
+        },
+        {
+          "value": "tarot",
+          "label": {
+            "en": "Tarot (70x120)",
+            "es": "Tarot (70x120)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "deck_count",
+      "type": "slider",
+      "default": 80,
+      "min": 10,
+      "max": 400,
+      "step": 5,
+      "group": "capacity",
+      "modes": [
+        "deck_box",
+        "dual_deck"
+      ],
+      "label": {
+        "en": "Card Count",
+        "es": "Número de Cartas"
+      },
+      "tooltip": {
+        "en": "Cards to fit — sets the interior height",
+        "es": "Cartas a alojar — define la altura interior"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 0.55
+      }
+    },
+    {
+      "id": "per_card",
+      "type": "slider",
+      "default": 0.55,
+      "min": 0.3,
+      "max": 1.2,
+      "step": 0.05,
+      "group": "capacity",
+      "modes": [
+        "deck_box",
+        "dual_deck"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "mm per Card",
+        "es": "mm por Carta"
+      },
+      "tooltip": {
+        "en": "Thickness budget per sleeved card",
+        "es": "Grosor asignado por carta enfundada"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 1.5,
+      "min": 0.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "capacity",
+      "modes": [
+        "deck_box",
+        "token_tray",
+        "dual_deck"
+      ],
+      "label": {
+        "en": "Card Clearance (mm)",
+        "es": "Holgura de Carta (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap around the cards",
+        "es": "Espacio por lado alrededor de las cartas"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "walls",
+      "modes": [
+        "deck_box",
+        "token_tray",
+        "dual_deck"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Side wall thickness",
+        "es": "Grosor de la pared lateral"
+      }
+    },
+    {
+      "id": "floor",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "walls",
+      "modes": [
+        "deck_box",
+        "token_tray",
+        "dual_deck"
+      ],
+      "label": {
+        "en": "Floor Thickness (mm)",
+        "es": "Grosor de Piso (mm)"
+      },
+      "tooltip": {
+        "en": "Bottom thickness",
+        "es": "Grosor del fondo"
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "walls",
+      "modes": [
+        "deck_box",
+        "token_tray",
+        "dual_deck"
+      ],
+      "label": {
+        "en": "Corner Radius (mm)",
+        "es": "Radio de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Outer corner rounding (0 = sharp)",
+        "es": "Redondeo de esquina exterior (0 = recto)"
+      }
+    },
+    {
+      "id": "lid_h",
+      "type": "slider",
+      "default": 18.0,
+      "min": 6.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "lid",
+      "modes": [
+        "deck_box"
+      ],
+      "label": {
+        "en": "Lid Skirt Height (mm)",
+        "es": "Altura de Faldón (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the lid grips the box",
+        "es": "Qué tan profundo agarra la tapa la caja"
+      }
+    },
+    {
+      "id": "lid_clear",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.15,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "lid",
+      "modes": [
+        "deck_box"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Lid Clearance (mm)",
+        "es": "Holgura de Tapa (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap for a printable friction fit",
+        "es": "Espacio por lado para un ajuste imprimible"
+      }
+    },
+    {
+      "id": "tray_h",
+      "type": "slider",
+      "default": 22.0,
+      "min": 8.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "tray",
+      "modes": [
+        "token_tray"
+      ],
+      "label": {
+        "en": "Tray Height (mm)",
+        "es": "Altura de Bandeja (mm)"
+      },
+      "tooltip": {
+        "en": "Interior height of the token tray",
+        "es": "Altura interior de la bandeja"
+      }
+    },
+    {
+      "id": "tray_div",
+      "type": "slider",
+      "default": 1,
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "group": "tray",
+      "modes": [
+        "token_tray"
+      ],
+      "label": {
+        "en": "Tray Dividers",
+        "es": "Divisores de Bandeja"
+      },
+      "tooltip": {
+        "en": "Number of interior dividers",
+        "es": "Número de divisores interiores"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "commander",
+      "mode": "deck_box",
+      "label": {
+        "en": "Commander (100 sleeved)",
+        "es": "Commander (100 enfundadas)"
+      },
+      "values": {
+        "card": "standard",
+        "deck_count": 110,
+        "lid_h": 22
+      }
+    },
+    {
+      "id": "tarot_reader",
+      "mode": "deck_box",
+      "label": {
+        "en": "Tarot Deck",
+        "es": "Mazo de Tarot"
+      },
+      "values": {
+        "card": "tarot",
+        "deck_count": 80,
+        "corner_r": 4
+      }
+    },
+    {
+      "id": "counters",
+      "mode": "token_tray",
+      "label": {
+        "en": "Counter Tray (3 bays)",
+        "es": "Bandeja de Marcadores (3 huecos)"
+      },
+      "values": {
+        "card": "standard",
+        "tray_div": 2,
+        "tray_h": 20
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.2 mm",
+        "es": "La pared debe ser de al menos 1.2 mm"
+      }
+    },
+    {
+      "expression": "corner_r <= 70 / 2 + wall",
+      "severity": "warning",
+      "message": {
+        "en": "Corner radius is large relative to the card",
+        "es": "El radio de esquina es grande respecto a la carta"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        150,
+        150,
+        120
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        220
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -220,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 22,
+    "per_unit": 4,
+    "per_part": 26,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "card_footprint",
+        "label": {
+          "en": "Card Footprint",
+          "es": "Huella de Carta"
+        },
+        "geometry_type": "pocket",
+        "standard": "standard/mini/tarot card",
+        "parameters": [
+          "card",
+          "clearance"
+        ],
+        "compatible_with": [
+          "card-holder"
+        ]
+      },
+      {
+        "id": "friction_lid_seam",
+        "label": {
+          "en": "Friction Lid Seam",
+          "es": "Junta de Tapa por Fricción"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "lid_h",
+          "lid_clear",
+          "wall"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A deck box printed to the exact card standard protects a game collection at zero packaging cost and lets small publishers and players store any format without buying a proprietary case.",
+      "es": "Una caja impresa al estándar exacto de carta protege una colección de juego sin costo de empaque y permite a pequeñas editoriales y jugadores guardar cualquier formato sin comprar un estuche propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "deck-box",
+    "card-game",
+    "tcg",
+    "tabletop",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

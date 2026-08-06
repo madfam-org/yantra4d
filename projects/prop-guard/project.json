@@ -1,0 +1,562 @@
+{
+  "project": {
+    "name": "Prop Guard",
+    "slug": "prop-guard",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An impact and finger guard for FPV / RC propellers. A ring or ducted shroud sized to the propeller diameter, carried on arms that bolt to the standard square motor mount pattern (9x9 M2, 16x16 or 19x19 M3). Protects fingers and props on bump-ins; the ducted variant boosts static thrust.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un protector de impactos y dedos para helices FPV / RC. Un anillo o carcasa entubada dimensionada al diametro de la helice, sobre brazos que se atornillan al patron cuadrado estandar del motor (9x9 M2, 16x16 o 19x19 M3). Protege dedos y helices en golpes; la variante entubada aumenta el empuje.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/prop-guard.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "drone",
+      "fpv",
+      "prop-guard",
+      "propeller",
+      "duct",
+      "safety",
+      "rc",
+      "motor",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ring_guard",
+      "label": {
+        "en": "Ring Guard",
+        "es": "Anillo Protector"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "ring_guard"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "ducted_shroud",
+      "label": {
+        "en": "Ducted Shroud",
+        "es": "Carcasa Entubada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "ducted_shroud"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 5,
+        "per_part": 18
+      }
+    },
+    {
+      "id": "half_guard",
+      "label": {
+        "en": "Half Guard (bumper)",
+        "es": "Medio Protector (parachoques)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "half_guard"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "ring_guard",
+      "label": {
+        "en": "Ring Guard",
+        "es": "Anillo Protector"
+      },
+      "render_mode": 0,
+      "color": "#3f7fb0"
+    },
+    {
+      "id": "ducted_shroud",
+      "label": {
+        "en": "Ducted Shroud",
+        "es": "Carcasa Entubada"
+      },
+      "render_mode": 0,
+      "color": "#2a5f88"
+    },
+    {
+      "id": "half_guard",
+      "label": {
+        "en": "Half Guard",
+        "es": "Medio Protector"
+      },
+      "render_mode": 0,
+      "color": "#5c9dd0"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "prop",
+      "label": {
+        "en": "Propeller & Ring",
+        "es": "Helice y Anillo"
+      }
+    },
+    {
+      "id": "motor",
+      "label": {
+        "en": "Motor Pattern",
+        "es": "Patron de Motor"
+      }
+    },
+    {
+      "id": "arms",
+      "label": {
+        "en": "Arms & Hub",
+        "es": "Brazos y Cubo"
+      }
+    },
+    {
+      "id": "duct",
+      "label": {
+        "en": "Duct",
+        "es": "Tubo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "prop_dia",
+      "type": "slider",
+      "default": 127.0,
+      "min": 40.0,
+      "max": 260.0,
+      "step": 1,
+      "group": "prop",
+      "modes": [
+        "ring_guard",
+        "ducted_shroud",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Propeller Diameter (mm)",
+        "es": "Diametro de Helice (mm)"
+      },
+      "tooltip": {
+        "en": "Prop diameter (5in = 127 mm, 3in = 76 mm)",
+        "es": "Diametro de helice (5in = 127 mm, 3in = 76 mm)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 0.5
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 6.0,
+      "min": 1.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "prop",
+      "modes": [
+        "ring_guard",
+        "ducted_shroud",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Tip Clearance (mm)",
+        "es": "Holgura de Punta (mm)"
+      },
+      "tooltip": {
+        "en": "Radial gap from prop tip to the ring inner wall",
+        "es": "Espacio radial de la punta de la helice a la pared interna del anillo"
+      }
+    },
+    {
+      "id": "ring_wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.2,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "prop",
+      "modes": [
+        "ring_guard",
+        "ducted_shroud",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Ring Wall (mm)",
+        "es": "Pared del Anillo (mm)"
+      },
+      "tooltip": {
+        "en": "Radial ring wall thickness",
+        "es": "Grosor radial de la pared del anillo"
+      }
+    },
+    {
+      "id": "ring_height",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 1,
+      "group": "prop",
+      "modes": [
+        "ring_guard",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Ring Height (mm)",
+        "es": "Altura del Anillo (mm)"
+      },
+      "tooltip": {
+        "en": "Ring height along Z",
+        "es": "Altura del anillo en Z"
+      }
+    },
+    {
+      "id": "motor_pattern",
+      "type": "select",
+      "default": "16x16",
+      "group": "motor",
+      "modes": [
+        "ring_guard",
+        "ducted_shroud",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Motor Bolt Pattern",
+        "es": "Patron de Tornillos del Motor"
+      },
+      "tooltip": {
+        "en": "Square motor mounting hole pattern (9x9 M2, 16x16/19x19 M3)",
+        "es": "Patron cuadrado de agujeros del motor (9x9 M2, 16x16/19x19 M3)"
+      },
+      "options": [
+        {
+          "value": "9x9",
+          "label": {
+            "en": "9x9 mm (M2)",
+            "es": "9x9 mm (M2)"
+          }
+        },
+        {
+          "value": "16x16",
+          "label": {
+            "en": "16x16 mm (M3)",
+            "es": "16x16 mm (M3)"
+          }
+        },
+        {
+          "value": "19x19",
+          "label": {
+            "en": "19x19 mm (M3)",
+            "es": "19x19 mm (M3)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hub_bore",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 24.0,
+      "step": 0.5,
+      "group": "motor",
+      "modes": [
+        "ring_guard",
+        "ducted_shroud",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Hub Bore (mm)",
+        "es": "Barreno del Cubo (mm)"
+      },
+      "tooltip": {
+        "en": "Central bore for the motor bell / shaft",
+        "es": "Barreno central para la campana / eje del motor"
+      }
+    },
+    {
+      "id": "arm_count",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "group": "arms",
+      "modes": [
+        "ring_guard",
+        "ducted_shroud",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Arm Count",
+        "es": "Numero de Brazos"
+      },
+      "tooltip": {
+        "en": "Spokes from hub to ring",
+        "es": "Radios del cubo al anillo"
+      }
+    },
+    {
+      "id": "arm_width",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "arms",
+      "modes": [
+        "ring_guard",
+        "ducted_shroud",
+        "half_guard"
+      ],
+      "label": {
+        "en": "Arm Width (mm)",
+        "es": "Ancho de Brazo (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each spoke arm",
+        "es": "Ancho de cada brazo radial"
+      }
+    },
+    {
+      "id": "duct_depth",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "duct",
+      "modes": [
+        "ducted_shroud"
+      ],
+      "label": {
+        "en": "Duct Depth (mm)",
+        "es": "Profundidad del Tubo (mm)"
+      },
+      "tooltip": {
+        "en": "Ducted shroud height",
+        "es": "Altura de la carcasa entubada"
+      }
+    },
+    {
+      "id": "duct_lip",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.5,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "duct",
+      "modes": [
+        "ducted_shroud"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Intake Lip (mm)",
+        "es": "Labio de Entrada (mm)"
+      },
+      "tooltip": {
+        "en": "Chamfered intake lip radius",
+        "es": "Radio del labio de entrada achaflanado"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "5inch_ring",
+      "mode": "ring_guard",
+      "label": {
+        "en": "5-inch Ring (16x16)",
+        "es": "Anillo 5-pulg (16x16)"
+      },
+      "values": {
+        "prop_dia": 127,
+        "motor_pattern": "16x16",
+        "clearance": 6,
+        "ring_height": 10,
+        "arm_count": 3
+      }
+    },
+    {
+      "id": "3inch_duct",
+      "mode": "ducted_shroud",
+      "label": {
+        "en": "3-inch Ducted (16x16)",
+        "es": "Entubado 3-pulg (16x16)"
+      },
+      "values": {
+        "prop_dia": 76,
+        "motor_pattern": "16x16",
+        "clearance": 3,
+        "duct_depth": 20,
+        "arm_count": 4
+      }
+    },
+    {
+      "id": "toothpick_bumper",
+      "mode": "half_guard",
+      "label": {
+        "en": "Toothpick Bumper (9x9)",
+        "es": "Parachoques Toothpick (9x9)"
+      },
+      "values": {
+        "prop_dia": 65,
+        "motor_pattern": "9x9",
+        "clearance": 2,
+        "ring_height": 6,
+        "arm_count": 2,
+        "hub_bore": 7
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance >= 1",
+      "severity": "warning",
+      "message": {
+        "en": "Very small tip clearance risks prop strike",
+        "es": "Una holgura muy pequena arriesga golpe de helice"
+      }
+    },
+    {
+      "expression": "ring_wall >= 1.2",
+      "severity": "error",
+      "message": {
+        "en": "Ring wall must be at least 1.2 mm",
+        "es": "La pared del anillo debe ser de al menos 1.2 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isometrico"
+      },
+      "position": [
+        180,
+        180,
+        120
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        300
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -300,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 4,
+    "per_part": 16,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "motor_mount",
+        "label": {
+          "en": "Motor Mount",
+          "es": "Montura de Motor"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "16x16 / 19x19 / 9x9 brushless motor mount",
+        "parameters": [
+          "motor_pattern",
+          "prop_dia",
+          "hub_bore"
+        ],
+        "compatible_with": [
+          "landing-skid",
+          "motor-soft-mount"
+        ]
+      },
+      {
+        "id": "prop_disc_envelope",
+        "label": {
+          "en": "Propeller Disc Envelope",
+          "es": "Envolvente del Disco de Helice"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "prop_dia",
+          "clearance",
+          "ring_wall"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Prop guards prevent injuries and prop damage indoors and around people. On-demand guards sized to the exact prop and motor pattern make any craft safer to fly near others, and a ducted shroud recovers thrust lost to the added weight.",
+      "es": "Los protectores de helice evitan lesiones y danos de helice en interiores y cerca de personas. Los protectores bajo demanda dimensionados a la helice y patron exactos hacen mas seguro volar cualquier equipo cerca de otros, y la carcasa entubada recupera empuje."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "drone",
+    "fpv",
+    "prop-guard",
+    "safety",
+    "rc",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

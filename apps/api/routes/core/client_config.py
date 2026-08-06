@@ -5,9 +5,10 @@ import time
 from pathlib import Path
 
 from flask import Blueprint, jsonify
+
 from config import Config
 from middleware.auth import decode_token
-from services.core.tier_service import resolve_tier, has_tier
+from services.core.tier_service import has_tier, resolve_tier
 from utils.route_helpers import handle_exceptions
 
 logger = logging.getLogger(__name__)

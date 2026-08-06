@@ -1,0 +1,157 @@
+{
+  "project": {
+    "name": "Volumetric Measuring Scoop",
+    "slug": "measuring-scoop",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Enter a target volume in millilitres and the geometry solves the bowl to hold it. Choose a hemispherical, cylindrical, or conical bowl — each dimension is derived in closed form from the target so the carved interior matches the volume you asked for (verified to within a few percent). Includes a handle with a hanging hole, and a flat-bottom variant that stands on a surface.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Ingresa un volumen objetivo en mililitros y la geometría resuelve el cuenco para contenerlo. Elige un cuenco hemisférico, cilíndrico o cónico — cada dimensión se deriva en forma cerrada del objetivo, de modo que el interior tallado coincide con el volumen solicitado (verificado con pocos por ciento de error). Incluye un mango con orificio para colgar y una variante de base plana que se apoya en una superficie.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/measuring-scoop.webp",
+    "difficulty": "intermediate",
+    "tags": ["scoop", "measuring", "kitchen", "volume", "baking", "coffee", "portion", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "scoop",
+      "label": { "en": "Scoop", "es": "Cuchara" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["scoop"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "scoop_flat_bottom",
+      "label": { "en": "Flat-Bottom Scoop", "es": "Cuchara de Base Plana" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["scoop_flat_bottom"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "scoop", "label": { "en": "Scoop", "es": "Cuchara" }, "render_mode": 0, "color": "#6a8f5b" },
+    { "id": "scoop_flat_bottom", "label": { "en": "Flat-Bottom Scoop", "es": "Cuchara de Base Plana" }, "render_mode": 0, "color": "#89ab7c" }
+  ],
+  "parameter_groups": [
+    { "id": "volume", "label": { "en": "Target Volume", "es": "Volumen Objetivo" } },
+    { "id": "bowl", "label": { "en": "Bowl", "es": "Cuenco" } },
+    { "id": "handle", "label": { "en": "Handle", "es": "Mango" } }
+  ],
+  "parameters": [
+    {
+      "id": "target_ml", "type": "slider", "default": 15, "min": 1, "max": 500, "step": 1,
+      "group": "volume", "modes": ["scoop", "scoop_flat_bottom"],
+      "label": { "en": "Target Volume (mL)", "es": "Volumen Objetivo (mL)" },
+      "tooltip": { "en": "The interior is solved to hold exactly this volume (1 mL = 1 cm³)", "es": "El interior se resuelve para contener exactamente este volumen (1 mL = 1 cm³)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.3 }
+    },
+    {
+      "id": "shape", "type": "select", "default": "hemispherical",
+      "group": "bowl", "modes": ["scoop", "scoop_flat_bottom"],
+      "label": { "en": "Bowl Shape", "es": "Forma del Cuenco" },
+      "tooltip": { "en": "How the volume is solved: hemispherical (round), cylindrical (straight walls), or conical (tapered)", "es": "Cómo se resuelve el volumen: hemisférico (redondo), cilíndrico (paredes rectas) o cónico (cónico)" },
+      "options": [
+        { "value": "hemispherical", "label": { "en": "Hemispherical", "es": "Hemisférico" } },
+        { "value": "cylindrical", "label": { "en": "Cylindrical", "es": "Cilíndrico" } },
+        { "value": "conical", "label": { "en": "Conical", "es": "Cónico" } }
+      ]
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 4.0, "step": 0.1,
+      "group": "bowl", "modes": ["scoop", "scoop_flat_bottom"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Bowl and handle wall thickness (does not affect interior volume)", "es": "Grosor de pared del cuenco y mango (no afecta el volumen interior)" }
+    },
+    {
+      "id": "handle_length", "type": "slider", "default": 60, "min": 0, "max": 120, "step": 1,
+      "group": "handle", "modes": ["scoop", "scoop_flat_bottom"],
+      "label": { "en": "Handle Length (mm)", "es": "Largo del Mango (mm)" },
+      "tooltip": { "en": "Length of the handle past the rim (0 = no handle)", "es": "Largo del mango más allá del borde (0 = sin mango)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "handle_width", "type": "slider", "default": 14, "min": 6, "max": 30, "step": 1,
+      "group": "handle", "modes": ["scoop", "scoop_flat_bottom"], "advanced": true,
+      "label": { "en": "Handle Width (mm)", "es": "Ancho del Mango (mm)" },
+      "tooltip": { "en": "Width of the handle", "es": "Ancho del mango" }
+    },
+    {
+      "id": "handle_thick", "type": "slider", "default": 5.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "handle", "modes": ["scoop", "scoop_flat_bottom"], "advanced": true,
+      "label": { "en": "Handle Thickness (mm)", "es": "Grosor del Mango (mm)" },
+      "tooltip": { "en": "Thickness of the handle", "es": "Grosor del mango" }
+    },
+    {
+      "id": "hang_hole", "type": "checkbox", "default": true,
+      "group": "handle", "modes": ["scoop", "scoop_flat_bottom"],
+      "label": { "en": "Hanging Hole", "es": "Orificio para Colgar" },
+      "tooltip": { "en": "Add a hole at the handle end to hang the scoop", "es": "Agrega un orificio al final del mango para colgar la cuchara" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "coffee_scoop", "mode": "scoop",
+      "label": { "en": "Coffee Scoop (15 mL / 1 tbsp)", "es": "Cuchara de Café (15 mL / 1 cda)" },
+      "values": { "target_ml": 15, "shape": "hemispherical", "handle_length": 60 }
+    },
+    {
+      "id": "protein_scoop", "mode": "scoop_flat_bottom",
+      "label": { "en": "Protein / Detergent 30 mL", "es": "Proteína / Detergente 30 mL" },
+      "values": { "target_ml": 30, "shape": "cylindrical", "handle_length": 40, "target_part": "scoop_flat_bottom" }
+    },
+    {
+      "id": "quarter_cup", "mode": "scoop",
+      "label": { "en": "Quarter Cup (60 mL)", "es": "Cuarto de Taza (60 mL)" },
+      "values": { "target_ml": 60, "shape": "conical", "handle_length": 70, "wall": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall <= 4",
+      "severity": "warning",
+      "message": { "en": "Thick walls make a small scoop heavy and bulky", "es": "Las paredes gruesas hacen pesada y voluminosa una cuchara pequeña" }
+    },
+    {
+      "expression": "target_ml >= 1",
+      "severity": "error",
+      "message": { "en": "Target volume must be at least 1 mL", "es": "El volumen objetivo debe ser de al menos 1 mL" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [40, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [40, -180, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "volumetric_bowl",
+        "label": { "en": "Volumetric Bowl", "es": "Cuenco Volumétrico" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["target_ml", "shape", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns an abstract measurement into a printed object: any recipe, dose, or portion in millilitres becomes a scoop that holds exactly that amount, replacing a drawer of single-size measuring cups with one solved-to-order tool.",
+      "es": "Convierte una medida abstracta en un objeto impreso: cualquier receta, dosis o porción en mililitros se vuelve una cuchara que contiene exactamente esa cantidad, reemplazando un cajón de tazas medidoras de tamaño fijo con una sola herramienta resuelta a medida."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["scoop", "measuring", "kitchen", "household", "hyperobject", "commons"]
+}

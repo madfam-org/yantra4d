@@ -1,0 +1,449 @@
+{
+  "project": {
+    "name": "Firestarter / Ferro Handle",
+    "slug": "ferro-handle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Ergonomic handles and striker holders for bare ferrocerium fire rods. Bare ferro rods ship as plain metal in two common diameters — 6 mm and 8 mm — with no grip. One rod-diameter interface sockets the rod into a comfortable ribbed handle, a flat scraper/striker holder that stores rod and striker as one tool, or a compact keychain toggle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Mangos ergonómicos y portarrascadores para varillas de ferrocerio desnudas. Las varillas de ferro se venden como metal simple en dos diámetros comunes — 6 mm y 8 mm — sin agarre. Una sola interfaz de diámetro de varilla encaja la varilla en un mango acanalado cómodo, un portarrascador plano que guarda varilla y rascador como una sola herramienta, o un llavero compacto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/ferro-handle.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "ferro",
+      "ferrocerium",
+      "firestarter",
+      "handle",
+      "survival",
+      "edc",
+      "outdoor",
+      "bushcraft",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rod_handle",
+      "label": {
+        "en": "Ferro Rod Handle",
+        "es": "Mango de Varilla Ferro"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "rod_handle"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "striker_holder",
+      "label": {
+        "en": "Striker / Scraper Holder",
+        "es": "Portarrascador"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "striker_holder"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "combo_toggle",
+      "label": {
+        "en": "Keychain Fire Toggle",
+        "es": "Llavero de Fuego"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "combo_toggle"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "rod_handle",
+      "label": {
+        "en": "Ferro Rod Handle",
+        "es": "Mango de Varilla Ferro"
+      },
+      "render_mode": 0,
+      "color": "#8a5a2b"
+    },
+    {
+      "id": "striker_holder",
+      "label": {
+        "en": "Striker / Scraper Holder",
+        "es": "Portarrascador"
+      },
+      "render_mode": 0,
+      "color": "#9c6b34"
+    },
+    {
+      "id": "combo_toggle",
+      "label": {
+        "en": "Keychain Fire Toggle",
+        "es": "Llavero de Fuego"
+      },
+      "render_mode": 0,
+      "color": "#a87a3d"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "rod",
+      "label": {
+        "en": "Ferro Rod & Fit",
+        "es": "Varilla y Ajuste"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Agarre"
+      }
+    },
+    {
+      "id": "features",
+      "label": {
+        "en": "Holes & Locks",
+        "es": "Orificios y Fijaciones"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "rod_d",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "rod",
+      "modes": [
+        "rod_handle",
+        "striker_holder",
+        "combo_toggle"
+      ],
+      "label": {
+        "en": "Ferro Rod Diameter (mm)",
+        "es": "Diámetro de Varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the bare ferro rod. Common sizes are 6 mm and 8 mm",
+        "es": "Diámetro de la varilla de ferro. Los tamaños comunes son 6 mm y 8 mm"
+      }
+    },
+    {
+      "id": "fit",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "rod",
+      "modes": [
+        "rod_handle",
+        "striker_holder",
+        "combo_toggle"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Socket Clearance (mm)",
+        "es": "Holgura del Zócalo (mm)"
+      },
+      "tooltip": {
+        "en": "Added to the rod diameter for a press or grub-screw fit",
+        "es": "Se suma al diámetro de la varilla para un ajuste a presión o con tornillo"
+      }
+    },
+    {
+      "id": "socket_depth",
+      "type": "slider",
+      "default": 20.0,
+      "min": 10.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "rod",
+      "modes": [
+        "rod_handle",
+        "striker_holder",
+        "combo_toggle"
+      ],
+      "label": {
+        "en": "Rod Insertion Depth (mm)",
+        "es": "Profundidad de Inserción (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the ferro rod seats into the socket",
+        "es": "Qué tan profundo se asienta la varilla en el zócalo"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "grip",
+      "modes": [
+        "rod_handle",
+        "striker_holder",
+        "combo_toggle"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Wall around the rod socket",
+        "es": "Pared alrededor del zócalo de la varilla"
+      }
+    },
+    {
+      "id": "grip_len",
+      "type": "slider",
+      "default": 75.0,
+      "min": 45.0,
+      "max": 140.0,
+      "step": 1,
+      "group": "grip",
+      "modes": [
+        "rod_handle",
+        "striker_holder"
+      ],
+      "label": {
+        "en": "Grip Length (mm)",
+        "es": "Longitud del Agarre (mm)"
+      },
+      "tooltip": {
+        "en": "Overall handle length",
+        "es": "Longitud total del mango"
+      }
+    },
+    {
+      "id": "grub_d",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.0,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "features",
+      "modes": [
+        "rod_handle",
+        "striker_holder",
+        "combo_toggle"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Grub-Screw Hole (mm)",
+        "es": "Orificio de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Cross hole to lock the rod / striker (M3 ~3.2 mm)",
+        "es": "Orificio transversal para fijar la varilla / rascador (M3 ~3.2 mm)"
+      }
+    },
+    {
+      "id": "lanyard_d",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "features",
+      "modes": [
+        "rod_handle",
+        "striker_holder",
+        "combo_toggle"
+      ],
+      "label": {
+        "en": "Lanyard Hole (mm)",
+        "es": "Orificio de Cordón (mm)"
+      },
+      "tooltip": {
+        "en": "Through hole for a lanyard or cord",
+        "es": "Orificio pasante para un cordón"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "eight_mm_handle",
+      "mode": "rod_handle",
+      "label": {
+        "en": "8 mm Rod Handle",
+        "es": "Mango de Varilla 8 mm"
+      },
+      "values": {
+        "rod_d": 8.0,
+        "grip_len": 75.0,
+        "socket_depth": 20.0,
+        "wall": 4.0
+      }
+    },
+    {
+      "id": "six_mm_striker",
+      "mode": "striker_holder",
+      "label": {
+        "en": "6 mm Striker Holder",
+        "es": "Portarrascador 6 mm"
+      },
+      "values": {
+        "rod_d": 6.0,
+        "grip_len": 80.0,
+        "socket_depth": 18.0,
+        "wall": 3.5
+      }
+    },
+    {
+      "id": "keychain_toggle",
+      "mode": "combo_toggle",
+      "label": {
+        "en": "Keychain Fire Toggle",
+        "es": "Llavero de Fuego"
+      },
+      "values": {
+        "rod_d": 6.0,
+        "socket_depth": 16.0,
+        "wall": 3.5,
+        "lanyard_d": 5.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "socket_depth < grip_len",
+      "severity": "error",
+      "message": {
+        "en": "Socket depth must be shorter than the grip length",
+        "es": "La profundidad del zócalo debe ser menor que la longitud del agarre"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        110,
+        110,
+        120
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -180,
+        60
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "ferro_rod_socket",
+        "label": {
+          "en": "Ferro Rod Socket",
+          "es": "Zócalo de Varilla Ferro"
+        },
+        "geometry_type": "socket",
+        "standard": "6/8mm ferro rod",
+        "parameters": [
+          "rod_d",
+          "fit",
+          "socket_depth"
+        ]
+      },
+      {
+        "id": "grub_lock",
+        "label": {
+          "en": "Grub-Screw Lock",
+          "es": "Fijación de Tornillo"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO 4026 M3 set screw",
+        "parameters": [
+          "grub_d"
+        ],
+        "compatible_with": [
+          "din-rail-clip",
+          "enclosure-vent",
+          "matrix-frame"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A ferro rod is the most reliable open-flame-free fire source, but bare rods have no grip and are dropped or lost with cold hands. A printable handle sized to the 6 mm or 8 mm rod standard restores control and stores the rod with its striker, so a fire kit stays usable and repairable anywhere without buying a proprietary handle.",
+      "es": "Una varilla de ferro es la fuente de fuego más fiable sin llama abierta, pero las varillas desnudas no tienen agarre y se caen o se pierden con las manos frías. Un mango imprimible ajustado al estándar de varilla de 6 mm u 8 mm restaura el control y guarda la varilla con su rascador, manteniendo un kit de fuego utilizable y reparable en cualquier lugar sin comprar un mango propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "ferro",
+    "ferrocerium",
+    "firestarter",
+    "handle",
+    "survival",
+    "edc",
+    "outdoor",
+    "bushcraft",
+    "hyperobject",
+    "commons"
+  ]
+}

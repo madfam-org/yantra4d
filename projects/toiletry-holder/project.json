@@ -1,0 +1,450 @@
+{
+  "project": {
+    "name": "Toothbrush / Razor Holder",
+    "slug": "toiletry-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "A bathroom organizer sized to real handle diameters — manual toothbrushes (~13-16 mm), electric toothbrush bodies (~25-32 mm), and disposable razors (~10-14 mm). Build a counter caddy with a row of upright bores and a drain slot, a wall rail whose keyhole slots grip handles from the side, or a single razor cradle hook.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Un organizador de baño dimensionado a diámetros reales de mango — cepillos manuales (~13-16 mm), cuerpos de cepillo eléctrico (~25-32 mm) y rastrillos desechables (~10-14 mm). Genera un soporte de encimera con orificios verticales y ranura de drenaje, un riel de pared cuyas ranuras sujetan mangos por el costado, o un gancho individual para rastrillo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/toiletry-holder.webp",
+    "tags": [
+      "bathroom",
+      "toothbrush",
+      "razor",
+      "holder",
+      "organizer",
+      "household",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "counter_caddy",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Counter Caddy",
+        "es": "Soporte de Encimera"
+      },
+      "parts": [
+        "counter_caddy"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "wall_rail",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Wall Rail",
+        "es": "Riel de Pared"
+      },
+      "parts": [
+        "wall_rail"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "razor_cradle",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Razor Cradle",
+        "es": "Cuna para Rastrillo"
+      },
+      "parts": [
+        "razor_cradle"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "counter_caddy",
+      "render_mode": 0,
+      "label": {
+        "en": "Counter Caddy",
+        "es": "Soporte de Encimera"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "wall_rail",
+      "render_mode": 0,
+      "label": {
+        "en": "Wall Rail",
+        "es": "Riel de Pared"
+      },
+      "default_color": "#6fa3bf"
+    },
+    {
+      "id": "razor_cradle",
+      "render_mode": 0,
+      "label": {
+        "en": "Razor Cradle",
+        "es": "Cuna para Rastrillo"
+      },
+      "default_color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "handles",
+      "label": {
+        "en": "Handles",
+        "es": "Mangos"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Wall Mount",
+        "es": "Montaje en Pared"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "hole_d",
+      "type": "slider",
+      "default": 16.0,
+      "min": 6.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "handles",
+      "modes": [
+        "counter_caddy",
+        "wall_rail",
+        "razor_cradle"
+      ],
+      "label": {
+        "en": "Handle Bore Ø (mm)",
+        "es": "Ø de Orificio del Mango (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each handle bore. Manual brush ~16, electric ~28, razor ~12",
+        "es": "Diámetro de cada orificio. Cepillo manual ~16, eléctrico ~28, rastrillo ~12"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "hole_count",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "group": "handles",
+      "modes": [
+        "counter_caddy",
+        "wall_rail"
+      ],
+      "label": {
+        "en": "Number of Bores",
+        "es": "Número de Orificios"
+      },
+      "tooltip": {
+        "en": "How many handles the caddy or rail holds",
+        "es": "Cuántos mangos sostiene el soporte o riel"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "counter_caddy",
+        "wall_rail",
+        "razor_cradle"
+      ],
+      "label": {
+        "en": "Wall / Web (mm)",
+        "es": "Pared / Tabique (mm)"
+      },
+      "tooltip": {
+        "en": "Material between bores and around the outside",
+        "es": "Material entre orificios y en el exterior"
+      }
+    },
+    {
+      "id": "height",
+      "type": "slider",
+      "default": 45.0,
+      "min": 20.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "counter_caddy",
+        "wall_rail",
+        "razor_cradle"
+      ],
+      "label": {
+        "en": "Height (mm)",
+        "es": "Altura (mm)"
+      },
+      "tooltip": {
+        "en": "Body height (caddy) or plate height (rail / cradle)",
+        "es": "Altura del cuerpo (soporte) o de la placa (riel / cuna)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 30.0,
+      "min": 18.0,
+      "max": 60.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "counter_caddy",
+        "wall_rail",
+        "razor_cradle"
+      ],
+      "label": {
+        "en": "Depth (mm)",
+        "es": "Profundidad (mm)"
+      },
+      "tooltip": {
+        "en": "Front-to-back depth of the body / cradle arm reach",
+        "es": "Profundidad frontal-posterior del cuerpo / alcance del brazo"
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "mount",
+      "modes": [
+        "wall_rail",
+        "razor_cradle"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Screw Hole Ø (mm)",
+        "es": "Ø de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Wall-mount screw clearance (M4 ~4.2 mm)",
+        "es": "Holgura del tornillo de pared (M4 ~4.2 mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "family_caddy",
+      "mode": "counter_caddy",
+      "label": {
+        "en": "Family Caddy (4 brushes)",
+        "es": "Soporte Familiar (4 cepillos)"
+      },
+      "values": {
+        "hole_d": 16.0,
+        "hole_count": 4,
+        "height": 45.0
+      }
+    },
+    {
+      "id": "electric_caddy",
+      "mode": "counter_caddy",
+      "label": {
+        "en": "Electric Brush Caddy",
+        "es": "Soporte de Cepillo Eléctrico"
+      },
+      "values": {
+        "hole_d": 28.0,
+        "hole_count": 2,
+        "height": 55.0
+      }
+    },
+    {
+      "id": "wall_strip",
+      "mode": "wall_rail",
+      "label": {
+        "en": "Wall Strip (3-up)",
+        "es": "Tira de Pared (3)"
+      },
+      "values": {
+        "hole_d": 16.0,
+        "hole_count": 3,
+        "height": 40.0
+      }
+    },
+    {
+      "id": "single_razor",
+      "mode": "razor_cradle",
+      "label": {
+        "en": "Single Razor Hook",
+        "es": "Gancho de Rastrillo"
+      },
+      "values": {
+        "hole_d": 12.0,
+        "height": 45.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall < hole_d",
+      "severity": "warning",
+      "message": {
+        "en": "A wall thicker than the bore leaves little grip material",
+        "es": "Una pared más gruesa que el orificio deja poco material de sujeción"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        100
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        200
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 12,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "handle_socket",
+        "label": {
+          "en": "Handle Socket",
+          "es": "Orificio de Mango"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "hole_d",
+          "hole_count"
+        ]
+      },
+      {
+        "id": "wall_screw_mount",
+        "label": {
+          "en": "Wall Screw Mount",
+          "es": "Montaje con Tornillo"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO 7045 M4",
+        "parameters": [
+          "screw_d"
+        ],
+        "compatible_with": [
+          "bottle-bracket",
+          "dryer-holster",
+          "hasp"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Bathroom clutter is universal, yet a holder that fits your exact toothbrush or razor is a proprietary purchase. Sizing the socket to real handle diameters lets anyone print a caddy, wall rail, or razor hook that fits what they already own — repairable, replaceable, and free of a per-product accessory tax.",
+      "es": "El desorden en el baño es universal, pero un soporte que se ajuste a tu cepillo o rastrillo exacto es una compra propietaria. Ajustar el orificio a diámetros reales de mango permite imprimir un soporte, riel o gancho que encaje con lo que ya tienes — reparable, reemplazable y libre de un impuesto de accesorios por producto."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bathroom",
+    "toothbrush",
+    "razor",
+    "holder",
+    "organizer",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

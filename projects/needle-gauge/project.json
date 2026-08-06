@@ -1,0 +1,141 @@
+{
+  "project": {
+    "name": "Crochet / Knitting Needle Gauge",
+    "slug": "needle-gauge",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "A needle and hook sizing gauge: a plate with precisely-sized through-holes. Push a needle or crochet hook through; the smallest snug hole is its size. The holes ARE the interface — each diameter is a real US/metric knitting size (2.0 mm/US0 up to 12.0 mm/US17), so a gauge printed anywhere sizes any needle to the same standard. Build a ruler stick, a round disc, or a stitch-gauge swatch window.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un medidor de agujas y ganchos: una placa con orificios pasantes de tamaño preciso. Empuja una aguja o gancho a través; el orificio más pequeño que ajuste es su tamaño. Los orificios SON la interfaz — cada diámetro es un tamaño real US/métrico de tejido (2.0 mm/US0 hasta 12.0 mm/US17), así que un medidor impreso en cualquier lugar mide cualquier aguja al mismo estándar. Genera una regla, un disco redondo, o una ventana medidora de puntadas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/needle-gauge.webp",
+    "tags": ["needle", "gauge", "knitting", "crochet", "hook", "sizing", "textile", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "ruler_gauge",
+      "label": { "en": "Ruler Gauge", "es": "Regla Medidora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ruler_gauge"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "disc_gauge",
+      "label": { "en": "Disc Gauge", "es": "Disco Medidor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["disc_gauge"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "gauge_swatch",
+      "label": { "en": "Gauge Swatch", "es": "Ventana Medidora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gauge_swatch"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "ruler_gauge", "label": { "en": "Ruler Gauge", "es": "Regla Medidora" }, "render_mode": 0, "color": "#8f6f4a" },
+    { "id": "disc_gauge", "label": { "en": "Disc Gauge", "es": "Disco Medidor" }, "render_mode": 0, "color": "#a3855b" },
+    { "id": "gauge_swatch", "label": { "en": "Gauge Swatch", "es": "Ventana Medidora" }, "render_mode": 0, "color": "#bf9f6f" }
+  ],
+  "parameter_groups": [
+    { "id": "sizes", "label": { "en": "Size Range", "es": "Rango de Tamaños" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } }
+  ],
+  "parameters": [
+    {
+      "id": "size_min", "type": "slider", "default": 2.0, "min": 1.5, "max": 8.0, "step": 0.25,
+      "group": "sizes", "modes": ["ruler_gauge", "disc_gauge", "gauge_swatch"],
+      "label": { "en": "Smallest Size (mm)", "es": "Tamaño Mínimo (mm)" },
+      "tooltip": { "en": "Smallest needle hole to include — 2.0 mm is US0", "es": "Orificio de aguja más pequeño — 2.0 mm es US0" }
+    },
+    {
+      "id": "size_max", "type": "slider", "default": 10.0, "min": 3.0, "max": 14.0, "step": 0.25,
+      "group": "sizes", "modes": ["ruler_gauge", "disc_gauge", "gauge_swatch"],
+      "label": { "en": "Largest Size (mm)", "es": "Tamaño Máximo (mm)" },
+      "tooltip": { "en": "Largest needle hole to include — 12.0 mm is US17", "es": "Orificio de aguja más grande — 12.0 mm es US17" }
+    },
+    {
+      "id": "clear", "type": "slider", "default": 0.15, "min": 0.0, "max": 0.6, "step": 0.05,
+      "group": "sizes", "modes": ["ruler_gauge", "disc_gauge", "gauge_swatch"], "advanced": true,
+      "label": { "en": "Hole Oversize (mm)", "es": "Sobredimensión de Orificio (mm)" },
+      "tooltip": { "en": "Per-side oversize so holes measure true after printing — tune per printer", "es": "Sobredimensión por lado para que los orificios midan exacto tras imprimir — ajustar por impresora" }
+    },
+    {
+      "id": "plate_th", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.5,
+      "group": "plate", "modes": ["ruler_gauge", "disc_gauge", "gauge_swatch"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Gauge plate thickness — thicker reads size more sharply", "es": "Grosor de la placa — más grueso mide el tamaño con más precisión" }
+    },
+    {
+      "id": "window", "type": "slider", "default": 25.0, "min": 12.0, "max": 60.0, "step": 1,
+      "group": "plate", "modes": ["gauge_swatch"],
+      "label": { "en": "Swatch Window (mm)", "es": "Ventana de Muestra (mm)" },
+      "tooltip": { "en": "Side of the square gauge window you lay over knitting", "es": "Lado de la ventana cuadrada que se coloca sobre el tejido" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "full_range_ruler", "mode": "ruler_gauge",
+      "label": { "en": "Full-Range Ruler (2-12 mm)", "es": "Regla Completa (2-12 mm)" },
+      "values": { "size_min": 2.0, "size_max": 12.0, "clear": 0.15, "plate_th": 3.0 }
+    },
+    {
+      "id": "bag_disc", "mode": "disc_gauge",
+      "label": { "en": "Project-Bag Disc", "es": "Disco de Bolsa" },
+      "values": { "size_min": 2.0, "size_max": 10.0, "clear": 0.15, "plate_th": 3.0 }
+    },
+    {
+      "id": "stitch_swatch", "mode": "gauge_swatch",
+      "label": { "en": "Stitch-Gauge Swatch", "es": "Muestra de Puntada" },
+      "values": { "size_min": 3.0, "size_max": 6.0, "clear": 0.15, "plate_th": 3.0, "window": 25.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "size_max > size_min",
+      "severity": "error",
+      "message": { "en": "Largest size must exceed smallest size", "es": "El tamaño máximo debe ser mayor que el mínimo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "needle_size_holes",
+        "label": { "en": "Needle Size Holes", "es": "Orificios de Tamaño de Aguja" },
+        "geometry_type": "profile",
+        "standard": "US / metric knitting needle sizes (2.0-12.0 mm)",
+        "parameters": ["size_min", "size_max", "clear"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Knitting needles and crochet hooks lose their printed size the moment they leave the packet, and US/metric labelling is inconsistent across brands. A sizing gauge whose holes are the real metric ladder (2.0 mm/US0 through 12.0 mm/US17) restores the size of any orphan needle to one shared standard. Printed on demand, it replaces a bought metal gauge and can be tuned so holes measure true on the maker's own printer.",
+      "es": "Las agujas de tejido y ganchos de crochet pierden su tamaño impreso apenas salen del paquete, y el etiquetado US/métrico es inconsistente entre marcas. Un medidor cuyos orificios son la escala métrica real (2.0 mm/US0 a 12.0 mm/US17) restaura el tamaño de cualquier aguja huérfana a un estándar compartido. Impreso bajo demanda, reemplaza un medidor metálico comprado y se ajusta para que los orificios midan exacto en la impresora del fabricante."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["needle", "gauge", "knitting", "crochet", "hook", "sizing", "textile", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,175 @@
+{
+  "project": {
+    "name": "Cutlery Drawer Tray",
+    "slug": "cutlery-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A drawer-filling cutlery tray sized by interior dimensions with a configurable compartment grid. Straight compartments, raked compartments so cutlery lies angled, or a modular segment that tiles to fill any drawer width.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bandeja de cubiertos que llena el cajón, dimensionada por medidas interiores con una rejilla de compartimentos configurable. Compartimentos rectos, compartimentos inclinados para que los cubiertos queden en ángulo, o un segmento modular que se une para llenar cualquier ancho de cajón.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cutlery-tray.webp",
+    "difficulty": "beginner",
+    "tags": ["tray", "cutlery", "drawer", "organizer", "kitchen", "compartments", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "label": { "en": "Straight Tray", "es": "Bandeja Recta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "angled_tray",
+      "label": { "en": "Angled Tray", "es": "Bandeja Inclinada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["angled_tray"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 15 }
+    },
+    {
+      "id": "expandable",
+      "label": { "en": "Expandable Segment", "es": "Segmento Expandible" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["expandable"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "tray", "label": { "en": "Straight Tray", "es": "Bandeja Recta" }, "render_mode": 0, "color": "#8a8f9a" },
+    { "id": "angled_tray", "label": { "en": "Angled Tray", "es": "Bandeja Inclinada" }, "render_mode": 0, "color": "#9aa0ab" },
+    { "id": "expandable", "label": { "en": "Expandable Segment", "es": "Segmento Expandible" }, "render_mode": 0, "color": "#7a7f8a" }
+  ],
+  "parameter_groups": [
+    { "id": "dimensions", "label": { "en": "Drawer Size", "es": "Tamaño del Cajón" } },
+    { "id": "layout", "label": { "en": "Compartments", "es": "Compartimentos" } },
+    { "id": "walls", "label": { "en": "Walls", "es": "Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_w", "type": "slider", "default": 360, "min": 60, "max": 500, "step": 1,
+      "group": "dimensions", "modes": ["tray", "angled_tray"],
+      "label": { "en": "Drawer Width (mm)", "es": "Ancho del Cajón (mm)" },
+      "tooltip": { "en": "Interior X width to fill", "es": "Ancho interior X a llenar" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_d", "type": "slider", "default": 240, "min": 60, "max": 500, "step": 1,
+      "group": "dimensions", "modes": ["tray", "angled_tray", "expandable"],
+      "label": { "en": "Drawer Depth (mm)", "es": "Profundidad del Cajón (mm)" },
+      "tooltip": { "en": "Interior Y depth to fill", "es": "Profundidad interior Y a llenar" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_h", "type": "slider", "default": 50, "min": 20, "max": 120, "step": 1,
+      "group": "dimensions", "modes": ["tray", "angled_tray", "expandable"],
+      "label": { "en": "Tray Height (mm)", "es": "Altura de la Bandeja (mm)" },
+      "tooltip": { "en": "Interior Z depth of the compartments", "es": "Profundidad interior Z de los compartimentos" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 5, "min": 1, "max": 12, "step": 1,
+      "group": "layout", "modes": ["tray", "angled_tray", "expandable"],
+      "label": { "en": "Columns", "es": "Columnas" },
+      "tooltip": { "en": "Compartments across the width", "es": "Compartimentos a lo ancho" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 1, "min": 1, "max": 6, "step": 1,
+      "group": "layout", "modes": ["tray"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Compartments across the depth", "es": "Compartimentos a lo profundo" }
+    },
+    {
+      "id": "rake_deg", "type": "slider", "default": 20.0, "min": 0.0, "max": 45.0, "step": 1.0,
+      "group": "layout", "modes": ["angled_tray"],
+      "label": { "en": "Compartment Angle (deg)", "es": "Ángulo de Compartimento (grados)" },
+      "tooltip": { "en": "Rake angle so cutlery lies at a slant", "es": "Ángulo de inclinación para que los cubiertos queden ladeados" }
+    },
+    {
+      "id": "seg_w", "type": "slider", "default": 80.0, "min": 30.0, "max": 200.0, "step": 1.0,
+      "group": "layout", "modes": ["expandable"],
+      "label": { "en": "Segment Width (mm)", "es": "Ancho del Segmento (mm)" },
+      "tooltip": { "en": "Width of one modular segment (tiles with side tabs)", "es": "Ancho de un segmento modular (se une con pestañas laterales)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 4.0, "step": 0.2,
+      "group": "walls", "modes": ["tray", "angled_tray", "expandable"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall, floor, and divider thickness", "es": "Grosor de pared, piso y divisores" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 2.0, "min": 0.0, "max": 15.0, "step": 0.5,
+      "group": "walls", "modes": ["tray", "angled_tray", "expandable"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Outer corner rounding (0 = sharp)", "es": "Redondeo de esquina exterior (0 = recto)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_cutlery", "mode": "tray",
+      "label": { "en": "Standard 5-Slot Cutlery", "es": "Cubiertos Estándar 5 Ranuras" },
+      "values": { "inner_w": 360, "inner_d": 240, "inner_h": 50, "cols": 5, "rows": 1 }
+    },
+    {
+      "id": "angled_flatware", "mode": "angled_tray",
+      "label": { "en": "Angled Flatware", "es": "Cubertería Inclinada" },
+      "values": { "inner_w": 380, "inner_d": 260, "inner_h": 55, "cols": 5, "rake_deg": 22 }
+    },
+    {
+      "id": "modular_segment", "mode": "expandable",
+      "label": { "en": "Modular Segment", "es": "Segmento Modular" },
+      "values": { "seg_w": 90, "inner_d": 240, "inner_h": 50, "cols": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cols <= inner_w / 15",
+      "severity": "warning",
+      "message": { "en": "Many columns in a narrow tray leave slots too thin", "es": "Muchas columnas en una bandeja angosta dejan ranuras muy delgadas" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [300, 300, 220] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 400] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -400, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cutlery_compartments",
+        "label": { "en": "Cutlery Compartments", "es": "Compartimentos de Cubiertos" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["inner_w", "inner_d", "inner_h", "cols", "rows", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A cutlery tray sized to the exact drawer eliminates the wasted gaps of one-size store trays, and the expandable segment lets any drawer be filled from a small set of tiling parts instead of buying a whole new organizer.",
+      "es": "Una bandeja de cubiertos dimensionada al cajón exacto elimina los huecos desperdiciados de las bandejas comerciales de talla única, y el segmento expandible permite llenar cualquier cajón con un pequeño conjunto de piezas que se unen en lugar de comprar un organizador nuevo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["tray", "cutlery", "drawer", "kitchen", "household", "hyperobject", "commons"]
+}

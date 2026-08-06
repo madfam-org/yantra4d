@@ -1,0 +1,180 @@
+{
+  "project": {
+    "name": "Wheelchair / Walker Accessory",
+    "slug": "mobility-accessory",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Accessories that clamp to the round tube of a wheelchair, walker, rollator, or mobility frame and carry the small things a user needs within reach: a cup, a phone, or a cane/crutch. The shared interface is a C-shaped snap clamp sized to standard mobility tube (3/4-1 in / 19-25 mm OD) that opens on one side to snap over the tube and pinches shut with a strap or zip tie. Fit is user-specific — measure your tube and consult an OT on placement and load.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Accesorios que se sujetan al tubo redondo de una silla de ruedas, andador, andador con ruedas o marco de movilidad y llevan las cosas pequeñas que el usuario necesita a su alcance: una taza, un teléfono o un bastón/muleta. La interfaz compartida es una abrazadera en C dimensionada al tubo de movilidad estándar (3/4-1 pulg / 19-25 mm de diámetro exterior) que se abre por un lado para encajar sobre el tubo y se aprieta con una correa o brida. El ajuste es específico del usuario — mida su tubo y consulte a un terapeuta ocupacional sobre la colocación y la carga.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mobility-accessory.webp",
+    "difficulty": "intermediate",
+    "tags": ["wheelchair", "walker", "mobility", "clamp", "accessibility", "assistive", "adaptive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cup_holder",
+      "label": { "en": "Cup Holder", "es": "Portavasos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["cup_holder"],
+      "estimate": { "base_time": 16, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "phone_cradle",
+      "label": { "en": "Phone Cradle", "es": "Soporte de Teléfono" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["phone_cradle"],
+      "estimate": { "base_time": 16, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "cane_holder",
+      "label": { "en": "Cane Holder", "es": "Portabastones" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["cane_holder"],
+      "estimate": { "base_time": 16, "per_unit": 3, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "cup_holder", "label": { "en": "Cup Holder", "es": "Portavasos" }, "render_mode": 0, "color": "#4a8f8a" },
+    { "id": "phone_cradle", "label": { "en": "Phone Cradle", "es": "Soporte de Teléfono" }, "render_mode": 0, "color": "#5fa09b" },
+    { "id": "cane_holder", "label": { "en": "Cane Holder", "es": "Portabastones" }, "render_mode": 0, "color": "#73b1ac" }
+  ],
+  "parameter_groups": [
+    { "id": "clamp", "label": { "en": "Tube Clamp", "es": "Abrazadera de Tubo" } },
+    { "id": "carry", "label": { "en": "Carrier", "es": "Portador" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_dia", "type": "slider", "default": 25.0, "min": 12.0, "max": 40.0, "step": 0.5,
+      "group": "clamp", "modes": ["cup_holder", "phone_cradle", "cane_holder"],
+      "label": { "en": "Tube Diameter (mm)", "es": "Diámetro del Tubo (mm)" },
+      "tooltip": { "en": "Mobility-frame tube OD (3/4-1 in = 19-25 mm)", "es": "Diámetro exterior del tubo del marco (3/4-1 pulg = 19-25 mm)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clamp_wall", "type": "slider", "default": 5.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "clamp", "modes": ["cup_holder", "phone_cradle", "cane_holder"],
+      "label": { "en": "Clamp Wall (mm)", "es": "Pared de Abrazadera (mm)" },
+      "tooltip": { "en": "Wall thickness of the C-clamp", "es": "Grosor de pared de la abrazadera en C" }
+    },
+    {
+      "id": "clamp_w", "type": "slider", "default": 22.0, "min": 10.0, "max": 50.0, "step": 1.0,
+      "group": "clamp", "modes": ["cup_holder", "phone_cradle", "cane_holder"],
+      "label": { "en": "Clamp Width (mm)", "es": "Ancho de Abrazadera (mm)" },
+      "tooltip": { "en": "Length of the clamp along the tube", "es": "Longitud de la abrazadera a lo largo del tubo" }
+    },
+    {
+      "id": "opening", "type": "slider", "default": 120.0, "min": 60.0, "max": 170.0, "step": 5.0,
+      "group": "clamp", "modes": ["cup_holder", "phone_cradle", "cane_holder"], "advanced": true,
+      "label": { "en": "Mouth Opening (deg)", "es": "Apertura de la Boca (grados)" },
+      "tooltip": { "en": "Arc of the C opening — larger snaps on easier, smaller grips tighter", "es": "Arco de la abertura en C — mayor encaja más fácil, menor sujeta más firme" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 2.0, "step": 0.1,
+      "group": "clamp", "modes": ["cup_holder", "phone_cradle", "cane_holder"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Radial gap over the tube (larger = looser)", "es": "Espacio radial sobre el tubo (mayor = más suelto)" }
+    },
+    {
+      "id": "cup_dia", "type": "slider", "default": 74.0, "min": 40.0, "max": 110.0, "step": 1.0,
+      "group": "carry", "modes": ["cup_holder"],
+      "label": { "en": "Cup Diameter (mm)", "es": "Diámetro del Vaso (mm)" },
+      "tooltip": { "en": "Inner diameter of the cup ring (a soda can is ~66 mm)", "es": "Diámetro interior del anillo del vaso (una lata de refresco es ~66 mm)" }
+    },
+    {
+      "id": "cup_h", "type": "slider", "default": 55.0, "min": 25.0, "max": 100.0, "step": 1.0,
+      "group": "carry", "modes": ["cup_holder"],
+      "label": { "en": "Cup Ring Height (mm)", "es": "Altura del Anillo (mm)" },
+      "tooltip": { "en": "How tall the cup ring stands", "es": "Qué tan alto queda el anillo del vaso" }
+    },
+    {
+      "id": "tray_w", "type": "slider", "default": 78.0, "min": 50.0, "max": 120.0, "step": 1.0,
+      "group": "carry", "modes": ["phone_cradle"],
+      "label": { "en": "Tray Width (mm)", "es": "Ancho de la Bandeja (mm)" },
+      "tooltip": { "en": "Width of the phone tray", "es": "Ancho de la bandeja del teléfono" }
+    },
+    {
+      "id": "tray_d", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "carry", "modes": ["phone_cradle"],
+      "label": { "en": "Tray Lip Height (mm)", "es": "Altura del Reborde (mm)" },
+      "tooltip": { "en": "Height of the tray front and side lips", "es": "Altura de los rebordes frontal y laterales de la bandeja" }
+    },
+    {
+      "id": "cane_dia", "type": "slider", "default": 26.0, "min": 12.0, "max": 45.0, "step": 1.0,
+      "group": "carry", "modes": ["cane_holder"],
+      "label": { "en": "Cane Shaft Diameter (mm)", "es": "Diámetro del Bastón (mm)" },
+      "tooltip": { "en": "Diameter of the cane or crutch shaft", "es": "Diámetro del eje del bastón o la muleta" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "can_holder", "mode": "cup_holder",
+      "label": { "en": "Can / Cup Holder (25mm tube)", "es": "Portalatas / Portavasos (tubo 25mm)" },
+      "values": { "tube_dia": 25.0, "clamp_wall": 5.0, "clamp_w": 22.0, "cup_dia": 74.0, "cup_h": 55.0 }
+    },
+    {
+      "id": "phone_tray", "mode": "phone_cradle",
+      "label": { "en": "Phone Tray (25mm tube)", "es": "Bandeja de Teléfono (tubo 25mm)" },
+      "values": { "tube_dia": 25.0, "clamp_wall": 5.0, "clamp_w": 22.0, "tray_w": 78.0, "tray_d": 14.0 }
+    },
+    {
+      "id": "cane_cradle", "mode": "cane_holder",
+      "label": { "en": "Cane / Crutch Cradle", "es": "Cuna de Bastón / Muleta" },
+      "values": { "tube_dia": 25.0, "clamp_wall": 5.0, "clamp_w": 22.0, "cane_dia": 26.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "opening <= 170",
+      "severity": "warning",
+      "message": { "en": "A very wide mouth may not retain the tube; add a strap", "es": "Una boca muy ancha puede no retener el tubo; añada una correa" }
+    },
+    {
+      "expression": "clamp_wall >= 3",
+      "severity": "warning",
+      "message": { "en": "Thin clamp walls flex and may not hold load", "es": "Las paredes delgadas de la abrazadera se flexionan y pueden no sostener la carga" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 150] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 280] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 3, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "mobility_tube_clamp",
+        "label": { "en": "Mobility Tube Clamp", "es": "Abrazadera de Tubo de Movilidad" },
+        "geometry_type": "socket",
+        "standard": "3/4-1in tube",
+        "parameters": ["tube_dia", "clamp_wall", "opening", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A wheelchair or walker user often cannot carry a drink, keep a phone reachable, or stow a cane while moving — small losses of independence that add up. A clamp-on accessory sized to the frame's tube puts these within reach without a costly proprietary bracket, mounts without tools via a strap, and can be reprinted for a different tube, cup, or device as needs change.",
+      "es": "Un usuario de silla de ruedas o andador a menudo no puede llevar una bebida, mantener un teléfono a su alcance o guardar un bastón mientras se mueve — pequeñas pérdidas de independencia que se acumulan. Un accesorio de abrazadera dimensionado al tubo del marco pone esto a su alcance sin un soporte propietario costoso, se monta sin herramientas con una correa, y puede reimprimirse para un tubo, vaso o dispositivo diferente conforme cambian las necesidades."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["wheelchair", "walker", "mobility", "clamp", "accessibility", "assistive", "adaptive", "medical", "hyperobject", "commons"]
+}

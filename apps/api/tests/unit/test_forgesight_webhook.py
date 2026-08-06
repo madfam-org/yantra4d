@@ -2,10 +2,9 @@
 import hashlib
 import hmac
 import json
+from unittest.mock import MagicMock, patch
 
 import pytest
-from unittest.mock import patch, MagicMock
-
 
 # ---------------------------------------------------------------------------
 # Shared helpers

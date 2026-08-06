@@ -1,0 +1,156 @@
+{
+  "project": {
+    "name": "Zipper Pull & Cord Ends",
+    "slug": "zipper-pull",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Replacement zipper pulls and cord ends. A flat grip tab with a slider loop, a barrel cord-end aglet for paracord, and a teardrop loop pull for cord zippers. Size the loop and grip to your zipper.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Tiradores de cremallera y terminales de cordón de repuesto. Una pestaña plana con lazo para el deslizador, un terminal tipo barril para paracord y un tirador de gota para cremalleras de cordón. Dimensiona el lazo y la empuñadura a tu cremallera.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/zipper-pull.webp",
+    "difficulty": "beginner",
+    "tags": ["zipper", "pull", "aglet", "cord", "repair", "edc", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pull_tab",
+      "label": { "en": "Pull Tab", "es": "Pestaña" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pull_tab"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "cord_end",
+      "label": { "en": "Cord End", "es": "Terminal de Cordón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cord_end"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "loop_pull",
+      "label": { "en": "Loop Pull", "es": "Tirador de Lazo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["loop_pull"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "pull_tab", "label": { "en": "Pull Tab", "es": "Pestaña" }, "render_mode": 0, "color": "#5a7d94" },
+    { "id": "cord_end", "label": { "en": "Cord End", "es": "Terminal de Cordón" }, "render_mode": 0, "color": "#7aa0b8" },
+    { "id": "loop_pull", "label": { "en": "Loop Pull", "es": "Tirador de Lazo" }, "render_mode": 0, "color": "#9bc0d6" }
+  ],
+  "parameter_groups": [
+    { "id": "loop", "label": { "en": "Slider Loop", "es": "Lazo del Deslizador" } },
+    { "id": "grip", "label": { "en": "Grip", "es": "Empuñadura" } },
+    { "id": "cord", "label": { "en": "Cord", "es": "Cordón" } }
+  ],
+  "parameters": [
+    {
+      "id": "loop_dia", "type": "slider", "default": 5.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "loop", "modes": ["pull_tab", "cord_end", "loop_pull"],
+      "label": { "en": "Slider Loop Size (mm)", "es": "Tamaño del Lazo (mm)" },
+      "tooltip": { "en": "Inner diameter of the loop that threads onto the zipper slider", "es": "Diámetro interior del lazo que se ensarta en el deslizador de la cremallera" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip_len", "type": "slider", "default": 26, "min": 10, "max": 60, "step": 1,
+      "group": "grip", "modes": ["pull_tab", "cord_end", "loop_pull"],
+      "label": { "en": "Grip Length (mm)", "es": "Longitud de Empuñadura (mm)" },
+      "tooltip": { "en": "Length of the grip / tab", "es": "Longitud de la empuñadura / pestaña" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip_w", "type": "slider", "default": 9.0, "min": 5.0, "max": 20.0, "step": 0.5,
+      "group": "grip", "modes": ["pull_tab", "cord_end", "loop_pull"],
+      "label": { "en": "Grip Width (mm)", "es": "Ancho de Empuñadura (mm)" },
+      "tooltip": { "en": "Width of the grip / tab", "es": "Ancho de la empuñadura / pestaña" }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "grip", "modes": ["pull_tab", "cord_end", "loop_pull"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Part thickness", "es": "Grosor de la pieza" }
+    },
+    {
+      "id": "cord_dia", "type": "slider", "default": 4.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "cord", "modes": ["cord_end", "loop_pull"],
+      "label": { "en": "Cord Diameter (mm)", "es": "Diámetro de Cordón (mm)" },
+      "tooltip": { "en": "Cord diameter for the cord bore / loop hole (paracord ≈ 4 mm)", "es": "Diámetro del cordón para el orificio (paracord ≈ 4 mm)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "jacket_pull", "mode": "pull_tab",
+      "label": { "en": "Jacket Zipper Pull", "es": "Tirador de Chamarra" },
+      "values": { "loop_dia": 5, "grip_len": 26, "grip_w": 9, "thick": 3 }
+    },
+    {
+      "id": "paracord_aglet", "mode": "cord_end",
+      "label": { "en": "Paracord Aglet", "es": "Terminal Paracord" },
+      "values": { "cord_dia": 4, "grip_len": 24, "grip_w": 9 }
+    },
+    {
+      "id": "big_glove_pull", "mode": "loop_pull",
+      "label": { "en": "Glove-Friendly Loop", "es": "Lazo para Guantes" },
+      "values": { "grip_len": 40, "grip_w": 14, "cord_dia": 4, "thick": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thick >= 2",
+      "severity": "error",
+      "message": { "en": "Thickness must be at least 2 mm to be durable", "es": "El grosor debe ser de al menos 2 mm para ser duradero" }
+    },
+    {
+      "expression": "loop_dia <= grip_w + 2",
+      "severity": "warning",
+      "message": { "en": "Loop is large relative to the grip width", "es": "El lazo es grande respecto al ancho de la empuñadura" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 15] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "slider_loop",
+        "label": { "en": "Zipper Slider Loop", "es": "Lazo del Deslizador" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["loop_dia", "thick"]
+      },
+      {
+        "id": "cord_bore",
+        "label": { "en": "Cord Bore", "es": "Orificio de Cordón" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["cord_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A broken zipper pull ends the useful life of jackets, bags, and tents; a printed replacement sized to the slider restores the garment in minutes and keeps it out of the landfill.",
+      "es": "Un tirador de cremallera roto termina la vida útil de chamarras, bolsas y tiendas; un repuesto impreso dimensionado al deslizador restaura la prenda en minutos y la mantiene fuera del vertedero."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["zipper", "pull", "cord", "repair", "wearable", "hyperobject", "commons"]
+}

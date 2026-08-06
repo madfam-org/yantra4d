@@ -1,0 +1,608 @@
+{
+  "project": {
+    "name": "Conveyor / Roller Bracket",
+    "slug": "roller-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A line-side bracket that holds a roller axle or shaft for conveyors and material handling. An upright web carries the shaft seat — an open-top U-slot for a plain axle or a round pocket sized for a 608 bearing (OD 22 mm) — above a mounting foot that bolts down, clips to 2020 extrusion, or mounts to a wall.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de línea que sujeta un eje de rodillo para transportadores y manejo de materiales. Un alma vertical lleva el asiento del eje — una ranura en U abierta para un eje simple o una cavidad redonda para un rodamiento 608 (DE 22 mm) — sobre un pie de montaje que se atornilla, se acopla a perfil 2020 o se monta en pared.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/roller-bracket.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "conveyor",
+      "roller",
+      "bracket",
+      "bearing",
+      "608",
+      "material-handling",
+      "2020-extrusion",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bracket",
+      "label": {
+        "en": "Roller Bracket",
+        "es": "Soporte de Rodillo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bracket"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    },
+    {
+      "id": "bearing_bracket",
+      "label": {
+        "en": "Bearing Bracket (608)",
+        "es": "Soporte con Rodamiento (608)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bearing_bracket"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "bracket_pair",
+      "label": {
+        "en": "Bracket Pair",
+        "es": "Par de Soportes"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bracket_pair"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "bracket",
+      "label": {
+        "en": "Roller Bracket",
+        "es": "Soporte de Rodillo"
+      },
+      "render_mode": 0,
+      "color": "#4a7a8c"
+    },
+    {
+      "id": "bearing_bracket",
+      "label": {
+        "en": "Bearing Bracket",
+        "es": "Soporte con Rodamiento"
+      },
+      "render_mode": 0,
+      "color": "#5a8a9c"
+    },
+    {
+      "id": "bracket_pair",
+      "label": {
+        "en": "Bracket Pair",
+        "es": "Par de Soportes"
+      },
+      "render_mode": 0,
+      "color": "#6a9aac"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "shaft",
+      "label": {
+        "en": "Shaft Seat",
+        "es": "Asiento del Eje"
+      }
+    },
+    {
+      "id": "structure",
+      "label": {
+        "en": "Web & Foot",
+        "es": "Alma y Pie"
+      }
+    },
+    {
+      "id": "mounting",
+      "label": {
+        "en": "Mounting",
+        "es": "Montaje"
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Pair",
+        "es": "Par"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "shaft_dia",
+      "type": "slider",
+      "default": 8.0,
+      "min": 2.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "shaft",
+      "modes": [
+        "bracket",
+        "bearing_bracket",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Shaft Diameter (mm)",
+        "es": "Diámetro del Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the roller axle / shaft the bracket seats",
+        "es": "Diámetro del eje del rodillo que asienta el soporte"
+      }
+    },
+    {
+      "id": "open_slot",
+      "type": "checkbox",
+      "default": true,
+      "group": "shaft",
+      "modes": [
+        "bracket",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Open-Top Slot",
+        "es": "Ranura Abierta Superior"
+      },
+      "tooltip": {
+        "en": "Open the shaft bore to the top for a drop-in axle (off = closed bore)",
+        "es": "Abrir el orificio del eje por arriba para un eje desmontable (apagado = orificio cerrado)"
+      }
+    },
+    {
+      "id": "bearing_seat",
+      "type": "checkbox",
+      "default": false,
+      "group": "shaft",
+      "modes": [
+        "bracket",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "608 Bearing Seat",
+        "es": "Asiento de Rodamiento 608"
+      },
+      "tooltip": {
+        "en": "Cut a 22 mm pocket for a 608 bearing instead of a plain bore",
+        "es": "Cortar una cavidad de 22 mm para un rodamiento 608 en vez de un orificio simple"
+      }
+    },
+    {
+      "id": "mount_height",
+      "type": "slider",
+      "default": 40.0,
+      "min": 12.0,
+      "max": 200.0,
+      "step": 1.0,
+      "group": "structure",
+      "modes": [
+        "bracket",
+        "bearing_bracket",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Shaft Centre Height (mm)",
+        "es": "Altura del Centro del Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the shaft axis above the foot",
+        "es": "Altura del eje del rodillo sobre el pie"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "web_thick",
+      "type": "slider",
+      "default": 8.0,
+      "min": 3.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "structure",
+      "modes": [
+        "bracket",
+        "bearing_bracket",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Web Thickness (mm)",
+        "es": "Grosor del Alma (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the upright supporting web",
+        "es": "Grosor del alma vertical de soporte"
+      }
+    },
+    {
+      "id": "web_width",
+      "type": "slider",
+      "default": 30.0,
+      "min": 12.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "structure",
+      "modes": [
+        "bracket",
+        "bearing_bracket",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Web Width (mm)",
+        "es": "Ancho del Alma (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the upright web (across the shaft axis)",
+        "es": "Ancho del alma vertical (a lo largo del eje)"
+      }
+    },
+    {
+      "id": "foot_len",
+      "type": "slider",
+      "default": 45.0,
+      "min": 20.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "structure",
+      "modes": [
+        "bracket",
+        "bearing_bracket",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Foot Length (mm)",
+        "es": "Longitud del Pie (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the mounting foot",
+        "es": "Longitud del pie de montaje"
+      }
+    },
+    {
+      "id": "foot_thick",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "structure",
+      "modes": [
+        "bracket",
+        "bearing_bracket",
+        "bracket_pair"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Foot Thickness (mm)",
+        "es": "Grosor del Pie (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the mounting foot / base",
+        "es": "Grosor del pie / base de montaje"
+      }
+    },
+    {
+      "id": "mount",
+      "type": "select",
+      "default": "bolt_down",
+      "group": "mounting",
+      "modes": [
+        "bracket",
+        "bearing_bracket"
+      ],
+      "label": {
+        "en": "Mount Style",
+        "es": "Estilo de Montaje"
+      },
+      "tooltip": {
+        "en": "How the bracket attaches to the machine",
+        "es": "Cómo se fija el soporte a la máquina"
+      },
+      "options": [
+        {
+          "value": "bolt_down",
+          "label": {
+            "en": "Bolt Down (foot)",
+            "es": "Atornillado (pie)"
+          }
+        },
+        {
+          "value": "extrusion",
+          "label": {
+            "en": "2020 Extrusion Tab",
+            "es": "Lengüeta para Perfil 2020"
+          }
+        },
+        {
+          "value": "wall",
+          "label": {
+            "en": "Wall Mount",
+            "es": "Montaje en Pared"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mount_dia",
+      "type": "slider",
+      "default": 5.5,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "mounting",
+      "modes": [
+        "bracket",
+        "bearing_bracket",
+        "bracket_pair"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Mounting Hole Diameter (mm)",
+        "es": "Diámetro de Agujero de Montaje (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance diameter for the mounting screws",
+        "es": "Diámetro de holgura para los tornillos de montaje"
+      }
+    },
+    {
+      "id": "pair_gap",
+      "type": "slider",
+      "default": 100.0,
+      "min": 20.0,
+      "max": 300.0,
+      "step": 1.0,
+      "group": "pair",
+      "modes": [
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Roller Gap (mm)",
+        "es": "Separación del Rodillo (mm)"
+      },
+      "tooltip": {
+        "en": "Inner clear span between the two uprights (the roller length)",
+        "es": "Distancia libre interior entre las dos almas (la longitud del rodillo)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "roller_8mm",
+      "mode": "bracket",
+      "label": {
+        "en": "8 mm Axle Bracket",
+        "es": "Soporte de Eje 8 mm"
+      },
+      "values": {
+        "shaft_dia": 8,
+        "mount_height": 40,
+        "web_width": 30,
+        "open_slot": true,
+        "mount": "bolt_down"
+      }
+    },
+    {
+      "id": "idler_608",
+      "mode": "bearing_bracket",
+      "label": {
+        "en": "608 Idler Bracket",
+        "es": "Soporte Tensor 608"
+      },
+      "values": {
+        "shaft_dia": 8,
+        "mount_height": 45,
+        "web_thick": 10,
+        "web_width": 34
+      }
+    },
+    {
+      "id": "extrusion_roller",
+      "mode": "bracket",
+      "label": {
+        "en": "2020 Extrusion Roller",
+        "es": "Rodillo para Perfil 2020"
+      },
+      "values": {
+        "shaft_dia": 8,
+        "mount_height": 35,
+        "mount": "extrusion",
+        "web_width": 20
+      }
+    },
+    {
+      "id": "conveyor_pair",
+      "mode": "bracket_pair",
+      "label": {
+        "en": "Conveyor Roller Pair (Ø10, 150)",
+        "es": "Par de Rodillos (Ø10, 150)"
+      },
+      "values": {
+        "shaft_dia": 10,
+        "mount_height": 50,
+        "pair_gap": 150,
+        "bearing_seat": true
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "mount_height >= shaft_dia + 8",
+      "severity": "warning",
+      "message": {
+        "en": "Shaft centre is low relative to its diameter",
+        "es": "El centro del eje está bajo respecto a su diámetro"
+      }
+    },
+    {
+      "expression": "web_thick >= 3",
+      "severity": "error",
+      "message": {
+        "en": "Web must be at least 3 mm thick",
+        "es": "El alma debe tener al menos 3 mm de grosor"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        100
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        200
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 48,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "roller_shaft_seat",
+        "label": {
+          "en": "Roller Shaft Seat",
+          "es": "Asiento del Eje del Rodillo"
+        },
+        "geometry_type": "socket",
+        "standard": "608 bearing OD 22 mm / plain shaft bore",
+        "parameters": [
+          "shaft_dia",
+          "open_slot",
+          "bearing_seat"
+        ],
+        "compatible_with": [
+          "bearing-housing",
+          "linear-wheel",
+          "timing-pulley"
+        ]
+      },
+      {
+        "id": "mounting_foot",
+        "label": {
+          "en": "Mounting Foot Bolt Pattern",
+          "es": "Patrón de Tornillos del Pie"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "mount",
+          "mount_dia",
+          "foot_len"
+        ]
+      },
+      {
+        "id": "extrusion_tab",
+        "label": {
+          "en": "2020 Extrusion Tab",
+          "es": "Lengüeta para Perfil 2020"
+        },
+        "geometry_type": "rail",
+        "standard": "2020 T-slot (6 mm slot)",
+        "parameters": [
+          "mount"
+        ],
+        "compatible_with": [
+          "featherboard",
+          "linear-wheel",
+          "tslot-2020"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Line-side roller support for DIY conveyors and material handling — one bracket family seats a plain axle or a standard 608 bearing and mounts to a bench, 2020 framing, or a wall, so small shops build moving lines without proprietary hardware.",
+      "es": "Soporte de rodillos de línea para transportadores caseros y manejo de materiales — una familia de soportes asienta un eje simple o un rodamiento 608 estándar y se monta a un banco, perfil 2020 o pared, para que talleres pequeños construyan líneas móviles sin hardware propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "conveyor",
+    "roller",
+    "bracket",
+    "bearing",
+    "material-handling",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

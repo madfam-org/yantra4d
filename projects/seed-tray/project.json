@@ -1,0 +1,469 @@
+{
+  "project": {
+    "name": "Seed Tray / Cell Insert",
+    "slug": "seed-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A seed-starting tray: an array of tapered cells (wide at the top, narrower at the bottom so the plug pops out) each with a drainage hole. Drop it into a standard 1020 propagation tray, or use it free-standing. A single-row cell strip and a vented humidity dome complete the germination set.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una charola para germinar semillas: un arreglo de celdas cónicas (anchas arriba, más angostas abajo para que el cepellón salga fácil) cada una con orificio de drenaje. Colócala en una charola de propagación 1020 estándar, o úsala sola. Una tira de una fila y una cúpula de humedad ventilada completan el set de germinación.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/seed-tray.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "seed",
+      "tray",
+      "propagation",
+      "cells",
+      "germination",
+      "seedling",
+      "garden",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "label": {
+        "en": "Cell Tray",
+        "es": "Charola de Celdas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tray"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 4,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "cell_strip",
+      "label": {
+        "en": "Cell Strip (1 row)",
+        "es": "Tira de Celdas (1 fila)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cell_strip"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 3,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "humidity_dome",
+      "label": {
+        "en": "Humidity Dome",
+        "es": "Cúpula de Humedad"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "humidity_dome"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "tray",
+      "label": {
+        "en": "Cell Tray",
+        "es": "Charola de Celdas"
+      },
+      "render_mode": 0,
+      "color": "#5b8a5b"
+    },
+    {
+      "id": "cell_strip",
+      "label": {
+        "en": "Cell Strip",
+        "es": "Tira de Celdas"
+      },
+      "render_mode": 0,
+      "color": "#6b9a6b"
+    },
+    {
+      "id": "humidity_dome",
+      "label": {
+        "en": "Humidity Dome",
+        "es": "Cúpula de Humedad"
+      },
+      "render_mode": 0,
+      "color": "#a8c8d8"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "grid",
+      "label": {
+        "en": "Cell Grid",
+        "es": "Rejilla de Celdas"
+      }
+    },
+    {
+      "id": "cell",
+      "label": {
+        "en": "Cell Shape",
+        "es": "Forma de Celda"
+      }
+    },
+    {
+      "id": "opts",
+      "label": {
+        "en": "Options",
+        "es": "Opciones"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cols",
+      "type": "slider",
+      "default": 6,
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "group": "grid",
+      "modes": [
+        "tray",
+        "cell_strip"
+      ],
+      "label": {
+        "en": "Columns",
+        "es": "Columnas"
+      },
+      "tooltip": {
+        "en": "Cells across (X)",
+        "es": "Celdas a lo ancho (X)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 32
+      }
+    },
+    {
+      "id": "rows",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "group": "grid",
+      "modes": [
+        "tray"
+      ],
+      "label": {
+        "en": "Rows",
+        "es": "Filas"
+      },
+      "tooltip": {
+        "en": "Cells down (Y)",
+        "es": "Celdas a lo largo (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 32
+      }
+    },
+    {
+      "id": "cell_top",
+      "type": "slider",
+      "default": 30.0,
+      "min": 12,
+      "max": 80,
+      "step": 1,
+      "group": "cell",
+      "modes": [
+        "tray",
+        "cell_strip",
+        "humidity_dome"
+      ],
+      "label": {
+        "en": "Cell Top Width (mm)",
+        "es": "Ancho Superior de Celda (mm)"
+      },
+      "tooltip": {
+        "en": "Opening width at the top of each cell",
+        "es": "Ancho de la boca en la parte superior de cada celda"
+      }
+    },
+    {
+      "id": "cell_taper",
+      "type": "slider",
+      "default": 6.0,
+      "min": 0,
+      "max": 30,
+      "step": 0.5,
+      "group": "cell",
+      "modes": [
+        "tray",
+        "cell_strip"
+      ],
+      "label": {
+        "en": "Cell Taper (mm)",
+        "es": "Conicidad de Celda (mm)"
+      },
+      "tooltip": {
+        "en": "How much narrower each cell is at the bottom (eases plug removal)",
+        "es": "Cuánto más angosta es cada celda abajo (facilita sacar el cepellón)"
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 45.0,
+      "min": 15,
+      "max": 120,
+      "step": 1,
+      "group": "cell",
+      "modes": [
+        "tray",
+        "cell_strip",
+        "humidity_dome"
+      ],
+      "label": {
+        "en": "Cell Depth (mm)",
+        "es": "Profundidad de Celda (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of each cell (root run)",
+        "es": "Profundidad de cada celda (espacio para raíz)"
+      }
+    },
+    {
+      "id": "drainage",
+      "type": "checkbox",
+      "default": true,
+      "group": "opts",
+      "modes": [
+        "tray",
+        "cell_strip"
+      ],
+      "label": {
+        "en": "Drainage Holes",
+        "es": "Orificios de Drenaje"
+      },
+      "tooltip": {
+        "en": "One hole per cell bottom",
+        "es": "Un orificio por fondo de celda"
+      }
+    },
+    {
+      "id": "fit_1020",
+      "type": "checkbox",
+      "default": false,
+      "group": "opts",
+      "modes": [
+        "tray"
+      ],
+      "label": {
+        "en": "1020 Tray Lip",
+        "es": "Reborde para Charola 1020"
+      },
+      "tooltip": {
+        "en": "Add a rim lip to seat in a standard 1020 flat",
+        "es": "Agregar un reborde para asentar en una charola 1020 estándar"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "opts",
+      "modes": [
+        "tray",
+        "cell_strip",
+        "humidity_dome"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Wall between cells and outer wall",
+        "es": "Pared entre celdas y pared exterior"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_24",
+      "mode": "tray",
+      "label": {
+        "en": "24-Cell Tray (6×4)",
+        "es": "Charola de 24 Celdas (6×4)"
+      },
+      "values": {
+        "cols": 6,
+        "rows": 4,
+        "cell_top": 30,
+        "depth": 45
+      }
+    },
+    {
+      "id": "deep_9",
+      "mode": "tray",
+      "label": {
+        "en": "Deep 9-Cell (3×3)",
+        "es": "9 Celdas Profundas (3×3)"
+      },
+      "values": {
+        "cols": 3,
+        "rows": 3,
+        "cell_top": 45,
+        "depth": 70,
+        "cell_taper": 8
+      }
+    },
+    {
+      "id": "strip_6",
+      "mode": "cell_strip",
+      "label": {
+        "en": "6-Cell Strip",
+        "es": "Tira de 6 Celdas"
+      },
+      "values": {
+        "cols": 6,
+        "cell_top": 30,
+        "depth": 45
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cell_taper < cell_top",
+      "severity": "error",
+      "message": {
+        "en": "Taper cannot exceed the cell top width",
+        "es": "La conicidad no puede exceder el ancho superior de la celda"
+      }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "warning",
+      "message": {
+        "en": "Very thin walls between cells may be fragile",
+        "es": "Paredes muy delgadas entre celdas pueden ser frágiles"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        220,
+        220,
+        180
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        340
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -340,
+        60
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 4,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "seed_cell_array",
+        "label": {
+          "en": "Seed Cell Array",
+          "es": "Arreglo de Celdas de Semilla"
+        },
+        "geometry_type": "grid",
+        "standard": "1020 tray",
+        "parameters": [
+          "cols",
+          "rows",
+          "cell_top",
+          "depth"
+        ],
+        "compatible_with": [
+          "featherboard",
+          "linear-wheel",
+          "tslot-2020"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Grow-your-own from seed: reusable printed cell trays replace flimsy single-use plastic six-packs, letting households and community gardens start dozens of seedlings cheaply and sow food security a tray at a time.",
+      "es": "Cultiva desde semilla: charolas de celdas impresas reutilizables reemplazan los frágiles paquetes de plástico desechable, permitiendo a hogares y huertos comunitarios germinar decenas de plántulas de forma económica y sembrar seguridad alimentaria charola por charola."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "seed",
+    "tray",
+    "propagation",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,460 @@
+{
+  "project": {
+    "name": "Sprinkler & Nozzle Adapter",
+    "slug": "sprinkler-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Puts a real Garden-Hose-Thread (GHT 3/4\") interface on a hose so any sprinkler, spray nozzle, or drip line screws on. Straight GHT coupler, GHT-to-spout nozzle adapter, or a two-outlet Y-splitter. The thread is a genuine helical rib, dimensionally matched to the NH garden-hose finish.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Coloca una interfaz real de rosca de manguera de jardín (GHT 3/4\") para que cualquier aspersor, boquilla o línea de goteo se enrosque. Acoplador GHT recto, adaptador GHT a boquilla, o un divisor Y de dos salidas. La rosca es una costilla helicoidal real, dimensionada al acabado NH de manguera de jardín.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sprinkler-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "sprinkler",
+      "hose",
+      "ght",
+      "adapter",
+      "thread",
+      "garden",
+      "irrigation",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ght_coupler",
+      "label": {
+        "en": "GHT Coupler",
+        "es": "Acoplador GHT"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "ght_coupler"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 3,
+        "per_part": 18
+      }
+    },
+    {
+      "id": "nozzle_adapter",
+      "label": {
+        "en": "Nozzle Adapter",
+        "es": "Adaptador de Boquilla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "nozzle_adapter"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "y_splitter",
+      "label": {
+        "en": "Y-Splitter",
+        "es": "Divisor en Y"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "y_splitter"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "ght_coupler",
+      "label": {
+        "en": "GHT Coupler",
+        "es": "Acoplador GHT"
+      },
+      "render_mode": 0,
+      "color": "#2f7fb0"
+    },
+    {
+      "id": "nozzle_adapter",
+      "label": {
+        "en": "Nozzle Adapter",
+        "es": "Adaptador de Boquilla"
+      },
+      "render_mode": 0,
+      "color": "#3f8fc0"
+    },
+    {
+      "id": "y_splitter",
+      "label": {
+        "en": "Y-Splitter",
+        "es": "Divisor en Y"
+      },
+      "render_mode": 0,
+      "color": "#4f9fd0"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "thread",
+      "label": {
+        "en": "Thread & Fit",
+        "es": "Rosca y Ajuste"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body & Bore",
+        "es": "Cuerpo y Barreno"
+      }
+    },
+    {
+      "id": "outlet",
+      "label": {
+        "en": "Outlet",
+        "es": "Salida"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "turns",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.25,
+      "group": "thread",
+      "modes": [
+        "ght_coupler",
+        "nozzle_adapter",
+        "y_splitter"
+      ],
+      "label": {
+        "en": "Thread Turns",
+        "es": "Vueltas de Rosca"
+      },
+      "tooltip": {
+        "en": "Engagement turns — more grip vs slower print/render",
+        "es": "Vueltas de agarre — más sujeción vs impresión/render más lento"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "thread",
+      "modes": [
+        "ght_coupler",
+        "nozzle_adapter",
+        "y_splitter"
+      ],
+      "label": {
+        "en": "Thread Clearance (mm)",
+        "es": "Holgura de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side slop for a printable thread fit",
+        "es": "Holgura por lado para un ajuste imprimible"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "body",
+      "modes": [
+        "ght_coupler",
+        "nozzle_adapter",
+        "y_splitter"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Body wall around the thread",
+        "es": "Pared del cuerpo alrededor de la rosca"
+      }
+    },
+    {
+      "id": "bore_dia",
+      "type": "slider",
+      "default": 14.0,
+      "min": 4.0,
+      "max": 22.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "ght_coupler",
+        "nozzle_adapter",
+        "y_splitter"
+      ],
+      "label": {
+        "en": "Through Bore (mm)",
+        "es": "Barreno Pasante (mm)"
+      },
+      "tooltip": {
+        "en": "Fluid channel diameter",
+        "es": "Diámetro del canal de fluido"
+      }
+    },
+    {
+      "id": "grip_knurl",
+      "type": "checkbox",
+      "default": true,
+      "group": "body",
+      "modes": [
+        "ght_coupler",
+        "nozzle_adapter",
+        "y_splitter"
+      ],
+      "label": {
+        "en": "Grip Flutes",
+        "es": "Estrías de Agarre"
+      },
+      "tooltip": {
+        "en": "Knurl the hub for a hand grip",
+        "es": "Estrías en el cubo para agarre manual"
+      }
+    },
+    {
+      "id": "spout_dia",
+      "type": "slider",
+      "default": 13.0,
+      "min": 6.0,
+      "max": 24.0,
+      "step": 0.5,
+      "group": "outlet",
+      "modes": [
+        "nozzle_adapter"
+      ],
+      "label": {
+        "en": "Spout OD (mm)",
+        "es": "Diámetro de Boquilla (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the barbed push spout",
+        "es": "Diámetro exterior de la boquilla dentada"
+      }
+    },
+    {
+      "id": "barb_count",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "outlet",
+      "modes": [
+        "nozzle_adapter"
+      ],
+      "label": {
+        "en": "Barb Ridges",
+        "es": "Anillos Dentados"
+      },
+      "tooltip": {
+        "en": "Number of grip ridges on the spout",
+        "es": "Número de anillos de agarre en la boquilla"
+      }
+    },
+    {
+      "id": "split_ang",
+      "type": "slider",
+      "default": 35.0,
+      "min": 15.0,
+      "max": 55.0,
+      "step": 1.0,
+      "group": "outlet",
+      "modes": [
+        "y_splitter"
+      ],
+      "label": {
+        "en": "Split Angle (deg)",
+        "es": "Ángulo de División (°)"
+      },
+      "tooltip": {
+        "en": "Half-angle each Y outlet fans out",
+        "es": "Semiángulo de apertura de cada salida en Y"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "hose_join",
+      "mode": "ght_coupler",
+      "label": {
+        "en": "Hose Join (GHT×GHT)",
+        "es": "Unión de Manguera (GHT×GHT)"
+      },
+      "values": {
+        "turns": 2.0,
+        "bore_dia": 14,
+        "wall": 3.0
+      }
+    },
+    {
+      "id": "drip_feed",
+      "mode": "nozzle_adapter",
+      "label": {
+        "en": "Drip Tube Feed",
+        "es": "Alimentación de Goteo"
+      },
+      "values": {
+        "spout_dia": 10,
+        "barb_count": 4,
+        "bore_dia": 8
+      }
+    },
+    {
+      "id": "two_way",
+      "mode": "y_splitter",
+      "label": {
+        "en": "Two-Way Splitter",
+        "es": "Divisor de Dos Vías"
+      },
+      "values": {
+        "split_ang": 35,
+        "turns": 2.0,
+        "bore_dia": 12
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bore_dia <= 24 - 2 * wall",
+      "severity": "warning",
+      "message": {
+        "en": "Bore is large relative to the thread envelope",
+        "es": "El barreno es grande respecto a la rosca"
+      }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 2 mm around a pressurized thread",
+        "es": "La pared debe ser de al menos 2 mm en una rosca a presión"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        70
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        120
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -120,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 16,
+    "per_unit": 3,
+    "per_part": 16,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "garden_hose_thread",
+        "label": {
+          "en": "Garden Hose Thread",
+          "es": "Rosca de Manguera de Jardín"
+        },
+        "geometry_type": "thread",
+        "standard": "GHT 3/4",
+        "parameters": [
+          "turns",
+          "clearance",
+          "wall",
+          "bore_dia"
+        ],
+        "compatible_with": [
+          "hose-adapter",
+          "thread-adapter-kit"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Sprinkler and nozzle fittings crack and get lost constantly, and replacements are sold only in fixed bundles. An on-demand GHT adapter reconnects a hose to whatever head is on hand and enables cheap drip irrigation from tap water.",
+      "es": "Las conexiones de aspersores y boquillas se rompen y se pierden constantemente, y los repuestos solo se venden en paquetes fijos. Un adaptador GHT bajo demanda reconecta una manguera a cualquier cabezal y habilita riego por goteo económico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "sprinkler",
+    "hose",
+    "ght",
+    "adapter",
+    "irrigation",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

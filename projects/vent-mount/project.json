@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "Car Vent / Dash Phone Mount",
+    "slug": "vent-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A phone / accessory mount that clips onto a car A/C vent blade. The J-hook clip hangs over a vent fin of thickness blade_t with a sprung back leg for a friction hold. Choose an adjustable phone cradle, a magnetic disc with magnet pockets, or just the bare vent clip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de teléfono / accesorio que se sujeta a la rejilla del A/C del coche. El gancho en J cuelga sobre una aleta de ventilación de grosor blade_t con una pata trasera con resorte para agarre por fricción. Elige una cuna de teléfono ajustable, un disco magnético con alojamientos de imán, o solo el clip de ventilación.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vent-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["car", "vent", "phone", "mount", "cradle", "magnetic", "clip", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cradle_mount",
+      "label": { "en": "Cradle Mount", "es": "Montura con Cuna" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cradle_mount"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "magnetic_mount",
+      "label": { "en": "Magnetic Mount", "es": "Montura Magnética" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["magnetic_mount"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "clip_only",
+      "label": { "en": "Vent Clip Only", "es": "Solo Clip de Ventilación" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip_only"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "cradle_mount", "label": { "en": "Cradle Mount", "es": "Montura con Cuna" }, "render_mode": 0, "color": "#b7791f" },
+    { "id": "magnetic_mount", "label": { "en": "Magnetic Mount", "es": "Montura Magnética" }, "render_mode": 0, "color": "#d69e2e" },
+    { "id": "clip_only", "label": { "en": "Vent Clip Only", "es": "Solo Clip" }, "render_mode": 0, "color": "#ecc94b" }
+  ],
+  "parameter_groups": [
+    { "id": "clip", "label": { "en": "Vent Clip", "es": "Clip de Ventilación" } },
+    { "id": "cradle", "label": { "en": "Cradle", "es": "Cuna" } },
+    { "id": "magnetic", "label": { "en": "Magnet Pockets", "es": "Alojamientos de Imán" } }
+  ],
+  "parameters": [
+    {
+      "id": "blade_t", "type": "slider", "default": 2.0, "min": 0.8, "max": 8.0, "step": 0.1,
+      "group": "clip", "modes": ["cradle_mount", "magnetic_mount", "clip_only"],
+      "label": { "en": "Vent Blade Thickness (mm)", "es": "Grosor de Aleta (mm)" },
+      "tooltip": { "en": "Thickness of the A/C vent fin the clip grips (measure your vent)", "es": "Grosor de la aleta de ventilación que sujeta el clip (mide tu rejilla)" }
+    },
+    {
+      "id": "clip_w", "type": "slider", "default": 22.0, "min": 10.0, "max": 45.0, "step": 1.0,
+      "group": "clip", "modes": ["cradle_mount", "magnetic_mount", "clip_only"],
+      "label": { "en": "Clip Width (mm)", "es": "Ancho de Clip (mm)" },
+      "tooltip": { "en": "How wide the clip spans across the vent blade", "es": "Qué tan ancho abarca el clip la aleta" }
+    },
+    {
+      "id": "clip_drop", "type": "slider", "default": 18.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "clip", "modes": ["cradle_mount", "magnetic_mount", "clip_only"],
+      "label": { "en": "Clip Drop (mm)", "es": "Caída del Clip (mm)" },
+      "tooltip": { "en": "How far the hook hangs down the front of the blade", "es": "Cuánto baja el gancho por el frente de la aleta" }
+    },
+    {
+      "id": "clip_clear", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "clip", "modes": ["cradle_mount", "magnetic_mount", "clip_only"], "advanced": true,
+      "label": { "en": "Throat Clearance (mm)", "es": "Holgura de Garganta (mm)" },
+      "tooltip": { "en": "Extra gap so the clip slides onto the blade", "es": "Espacio extra para que el clip entre en la aleta" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "clip", "modes": ["cradle_mount", "magnetic_mount", "clip_only"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Clip and body wall thickness", "es": "Grosor de pared del clip y cuerpo" }
+    },
+    {
+      "id": "phone_w", "type": "slider", "default": 72.0, "min": 50.0, "max": 95.0, "step": 1.0,
+      "group": "cradle", "modes": ["cradle_mount"],
+      "label": { "en": "Phone Width (mm)", "es": "Ancho de Teléfono (mm)" },
+      "tooltip": { "en": "Width of the phone the cradle arms hug", "es": "Ancho del teléfono que abrazan los brazos de la cuna" }
+    },
+    {
+      "id": "magnet_d", "type": "slider", "default": 8.1, "min": 4.0, "max": 20.0, "step": 0.1,
+      "group": "magnetic", "modes": ["magnetic_mount"],
+      "label": { "en": "Magnet Pocket Diameter (mm)", "es": "Diámetro de Alojamiento (mm)" },
+      "tooltip": { "en": "Diameter of the magnet pockets (magnet dia + fit slop, 8.1 ≈ 8 mm magnet)", "es": "Diámetro de los alojamientos de imán (diámetro del imán + holgura, 8.1 ≈ imán de 8 mm)" }
+    },
+    {
+      "id": "magnet_h", "type": "slider", "default": 2.1, "min": 1.0, "max": 6.0, "step": 0.1,
+      "group": "magnetic", "modes": ["magnetic_mount"], "advanced": true,
+      "label": { "en": "Magnet Pocket Depth (mm)", "es": "Profundidad de Alojamiento (mm)" },
+      "tooltip": { "en": "Depth of the magnet pockets (magnet thickness + slop)", "es": "Profundidad de los alojamientos (grosor del imán + holgura)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "thin_blade_cradle", "mode": "cradle_mount",
+      "label": { "en": "Thin-Blade Cradle", "es": "Cuna para Aleta Delgada" },
+      "values": { "blade_t": 1.5, "phone_w": 72, "clip_drop": 18 }
+    },
+    {
+      "id": "thick_blade_magnetic", "mode": "magnetic_mount",
+      "label": { "en": "Thick-Blade Magnetic", "es": "Magnética para Aleta Gruesa" },
+      "values": { "blade_t": 3.0, "magnet_d": 8.1, "magnet_h": 2.1 }
+    },
+    {
+      "id": "spare_clip", "mode": "clip_only",
+      "label": { "en": "Spare Vent Clip", "es": "Clip de Ventilación de Repuesto" },
+      "values": { "blade_t": 2.0, "clip_w": 22, "clip_drop": 18 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm to print the clip strong enough", "es": "La pared debe ser de al menos 2 mm para que el clip resista" }
+    },
+    {
+      "expression": "blade_t <= 6",
+      "severity": "warning",
+      "message": { "en": "Very thick blades are unusual for car vents", "es": "Aletas muy gruesas son inusuales en rejillas de coche" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 130] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -130, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "vent_blade_clip",
+        "label": { "en": "Vent Blade Clip", "es": "Clip de Aleta de Ventilación" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["blade_t", "clip_clear", "clip_drop"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Car phone mounts are consumable plastic that break and get discarded. A vent clip parameterised to the driver's actual blade thickness — with swappable cradle, magnetic, or bare-clip tops — is a repairable, right-sized alternative printed on demand.",
+      "es": "Los soportes de teléfono para coche son plástico consumible que se rompe y se desecha. Un clip de ventilación parametrizado al grosor real de la aleta del conductor — con tapas intercambiables de cuna, magnética o clip simple — es una alternativa reparable y a medida impresa bajo demanda."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["car", "vent", "phone", "mount", "commercial", "hyperobject", "commons"]
+}

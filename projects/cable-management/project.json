@@ -1,0 +1,207 @@
+{
+  "project": {
+    "name": "Cable Comb / Clip / Raceway",
+    "slug": "cable-management",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Desk and wall cable management in three parts that share one internal cable-channel profile. Build a snap-on C-clip (screw, adhesive, or t-slot mount), a comb that separates a ribbon of cables into parallel lanes, or a U-channel raceway duct with an optional snap-on lid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Gestión de cables de escritorio y pared en tres piezas que comparten un mismo perfil de canal de cable. Crea un clip en C a presión (montaje con tornillo, adhesivo o ranura en T), un peine que separa una cinta de cables en carriles paralelos, o un ducto tipo canal en U con tapa a presión opcional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cable-management.webp",
+    "difficulty": "beginner",
+    "tags": ["cable", "clip", "comb", "raceway", "duct", "cable management", "desk", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": { "en": "Cable Clip", "es": "Clip de Cable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 8 }
+    },
+    {
+      "id": "comb",
+      "label": { "en": "Cable Comb", "es": "Peine de Cables" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["comb"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "raceway",
+      "label": { "en": "Raceway", "es": "Canaleta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["raceway"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "clip", "label": { "en": "Cable Clip", "es": "Clip de Cable" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "comb", "label": { "en": "Cable Comb", "es": "Peine de Cables" }, "render_mode": 0, "color": "#7a5bb0" },
+    { "id": "raceway", "label": { "en": "Raceway", "es": "Canaleta" }, "render_mode": 0, "color": "#4b9f7a" }
+  ],
+  "parameter_groups": [
+    { "id": "cable", "label": { "en": "Cable & Wall", "es": "Cable y Pared" } },
+    { "id": "clip", "label": { "en": "Clip", "es": "Clip" } },
+    { "id": "comb", "label": { "en": "Comb", "es": "Peine" } },
+    { "id": "raceway", "label": { "en": "Raceway", "es": "Canaleta" } }
+  ],
+  "parameters": [
+    {
+      "id": "cable_dia", "type": "slider", "default": 6.0, "min": 1.5, "max": 20.0, "step": 0.5,
+      "group": "cable", "modes": ["clip", "comb", "raceway"],
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro de Cable (mm)" },
+      "tooltip": { "en": "Nominal diameter of the cable the profile is sized for", "es": "Diámetro nominal del cable para el que se dimensiona el perfil" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "cable", "modes": ["clip", "comb", "raceway"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Structural wall thickness shared by all parts", "es": "Grosor de pared estructural compartido por todas las piezas" }
+    },
+    {
+      "id": "mount_type", "type": "select", "default": "screw",
+      "group": "clip", "modes": ["clip"],
+      "label": { "en": "Clip Mount", "es": "Montaje del Clip" },
+      "tooltip": { "en": "How the clip fixes to a surface: screw flange, adhesive pad, or t-slot tab", "es": "Cómo se fija el clip a una superficie: brida atornillada, base adhesiva o pestaña de ranura en T" },
+      "options": [
+        { "value": "screw", "label": { "en": "Screw flange", "es": "Brida atornillada" } },
+        { "value": "adhesive", "label": { "en": "Adhesive pad", "es": "Base adhesiva" } },
+        { "value": "tslot", "label": { "en": "T-slot tab", "es": "Pestaña de ranura en T" } }
+      ]
+    },
+    {
+      "id": "clip_gap", "type": "slider", "default": 0.75, "min": 0.4, "max": 0.95, "step": 0.05,
+      "group": "clip", "modes": ["clip"], "advanced": true,
+      "label": { "en": "Mouth Opening (× cable)", "es": "Abertura de Boca (× cable)" },
+      "tooltip": { "en": "Clip mouth width as a fraction of the cable diameter; smaller grips harder", "es": "Ancho de la boca del clip como fracción del diámetro del cable; menor agarra más fuerte" }
+    },
+    {
+      "id": "clip_len", "type": "slider", "default": 10.0, "min": 5.0, "max": 25.0, "step": 1.0,
+      "group": "clip", "modes": ["clip"],
+      "label": { "en": "Clip Length (mm)", "es": "Longitud del Clip (mm)" },
+      "tooltip": { "en": "Length of the clip along the cable", "es": "Longitud del clip a lo largo del cable" }
+    },
+    {
+      "id": "slot_count", "type": "slider", "default": 5, "min": 1, "max": 24, "step": 1,
+      "group": "comb", "modes": ["comb"],
+      "label": { "en": "Cable Lanes", "es": "Carriles de Cable" },
+      "tooltip": { "en": "Number of open-top slots that separate cables", "es": "Número de ranuras abiertas que separan los cables" }
+    },
+    {
+      "id": "comb_h", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "comb", "modes": ["comb"],
+      "label": { "en": "Comb Height (mm)", "es": "Altura del Peine (mm)" },
+      "tooltip": { "en": "Overall height of the comb bar", "es": "Altura total de la barra del peine" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "comb_t", "type": "slider", "default": 6.0, "min": 3.0, "max": 15.0, "step": 0.5,
+      "group": "comb", "modes": ["comb"], "advanced": true,
+      "label": { "en": "Comb Thickness (mm)", "es": "Grosor del Peine (mm)" },
+      "tooltip": { "en": "Bar thickness along the cable direction", "es": "Grosor de la barra en la dirección del cable" }
+    },
+    {
+      "id": "channel_w", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "raceway", "modes": ["raceway"],
+      "label": { "en": "Channel Width (mm)", "es": "Ancho del Canal (mm)" },
+      "tooltip": { "en": "Internal width of the raceway", "es": "Ancho interno de la canaleta" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "channel_h", "type": "slider", "default": 12.0, "min": 5.0, "max": 30.0, "step": 1.0,
+      "group": "raceway", "modes": ["raceway"],
+      "label": { "en": "Channel Height (mm)", "es": "Altura del Canal (mm)" },
+      "tooltip": { "en": "Internal height of the raceway", "es": "Altura interna de la canaleta" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "raceway_len", "type": "slider", "default": 80.0, "min": 30.0, "max": 150.0, "step": 5.0,
+      "group": "raceway", "modes": ["raceway"],
+      "label": { "en": "Raceway Length (mm)", "es": "Longitud de Canaleta (mm)" },
+      "tooltip": { "en": "Length of the raceway segment", "es": "Longitud del segmento de canaleta" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "raceway_lid", "type": "checkbox", "default": true,
+      "group": "raceway", "modes": ["raceway"],
+      "label": { "en": "Snap-on Lid", "es": "Tapa a Presión" },
+      "tooltip": { "en": "Also generate a lid that snaps onto the channel (printed alongside)", "es": "Genera también una tapa que encaja a presión en el canal (impresa al lado)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "usb_clip", "mode": "clip",
+      "label": { "en": "USB / Charger Clip", "es": "Clip USB / Cargador" },
+      "values": { "cable_dia": 4.0, "mount_type": "adhesive", "clip_len": 10, "clip_gap": 0.7 }
+    },
+    {
+      "id": "desk_comb_6", "mode": "comb",
+      "label": { "en": "Desk Comb (6 lanes)", "es": "Peine de Escritorio (6 carriles)" },
+      "values": { "cable_dia": 6.0, "slot_count": 6, "comb_h": 16 }
+    },
+    {
+      "id": "wall_raceway", "mode": "raceway",
+      "label": { "en": "Wall Raceway 16×12", "es": "Canaleta de Pared 16×12" },
+      "values": { "channel_w": 16, "channel_h": 12, "raceway_len": 120, "raceway_lid": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    },
+    {
+      "expression": "channel_w >= cable_dia",
+      "severity": "warning",
+      "message": { "en": "Channel width should exceed the cable diameter", "es": "El ancho del canal debería superar el diámetro del cable" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cable_channel",
+        "label": { "en": "Cable Channel", "es": "Canal de Cable" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["cable_dia", "wall", "channel_w", "channel_h"]
+      },
+      {
+        "id": "clip_snap_mouth",
+        "label": { "en": "Clip Snap Mouth", "es": "Boca de Clip a Presión" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["cable_dia", "clip_gap", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Tangled and pinched cables are a universal, avoidable failure. A shared cable-channel profile lets a clip, comb, and raceway route the same cable consistently, printed to the exact bundle instead of buying fixed-size plastic that rarely fits.",
+      "es": "Los cables enredados y pellizcados son una falla universal y evitable. Un perfil de canal compartido permite que un clip, un peine y una canaleta enruten el mismo cable de forma consistente, impresos a la medida exacta del haz en lugar de comprar plástico de tamaño fijo que casi nunca ajusta."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cable", "clip", "comb", "raceway", "household", "hyperobject", "commons"]
+}

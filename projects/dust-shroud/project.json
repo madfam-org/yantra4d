@@ -1,0 +1,518 @@
+{
+  "project": {
+    "name": "Fan Dust Shroud",
+    "slug": "dust-shroud",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A snap-on dust filter frame for a PC or equipment fan. It clips a mesh or foam filter over the fan intake on the standard fan screw square, keeping dust out of enclosures and 3D-printer electronics bays. Pick the fan size and the frame lands on the correct corner-hole spacing; variants add an integral printed grille (no separate mesh needed) or corner magnet pockets for tool-free removal. Complements the fan adapter cartridge.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un marco de filtro de polvo a presión para un ventilador de PC o equipo. Sujeta un filtro de malla o espuma sobre la entrada del ventilador en el cuadrado de tornillos estándar, manteniendo el polvo fuera de gabinetes y bahías de electrónica de impresoras 3D. Elige el tamaño del ventilador y el marco cae en la separación correcta de orificios; las variantes agregan una rejilla impresa integral (sin malla aparte) o bolsillos de imán en las esquinas para retiro sin herramientas. Complementa el cartucho de adaptador de ventilador.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dust-shroud.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "fan",
+      "dust",
+      "filter",
+      "shroud",
+      "pc-fan",
+      "cooling",
+      "grille",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "filter_frame",
+      "label": {
+        "en": "Filter Frame",
+        "es": "Marco de Filtro"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "filter_frame"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    },
+    {
+      "id": "grille_filter",
+      "label": {
+        "en": "Grille Filter",
+        "es": "Filtro con Rejilla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "grille_filter"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "magnetic_frame",
+      "label": {
+        "en": "Magnetic Frame",
+        "es": "Marco Magnético"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "magnetic_frame"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "filter_frame",
+      "label": {
+        "en": "Filter Frame",
+        "es": "Marco de Filtro"
+      },
+      "render_mode": 0,
+      "color": "#2d6a4f"
+    },
+    {
+      "id": "grille_filter",
+      "label": {
+        "en": "Grille Filter",
+        "es": "Filtro con Rejilla"
+      },
+      "render_mode": 0,
+      "color": "#3d8a63"
+    },
+    {
+      "id": "magnetic_frame",
+      "label": {
+        "en": "Magnetic Frame",
+        "es": "Marco Magnético"
+      },
+      "render_mode": 0,
+      "color": "#4daa77"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "fan",
+      "label": {
+        "en": "Fan",
+        "es": "Ventilador"
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame",
+        "es": "Marco"
+      }
+    },
+    {
+      "id": "grille",
+      "label": {
+        "en": "Grille",
+        "es": "Rejilla"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "fan_size",
+      "type": "select",
+      "default": "120",
+      "group": "fan",
+      "modes": [
+        "filter_frame",
+        "grille_filter",
+        "magnetic_frame"
+      ],
+      "label": {
+        "en": "Fan Size",
+        "es": "Tamaño de Ventilador"
+      },
+      "tooltip": {
+        "en": "Standard PC fan size (drives the screw square)",
+        "es": "Tamaño estándar de ventilador (define el cuadrado de tornillos)"
+      },
+      "options": [
+        {
+          "value": "40",
+          "label": {
+            "en": "40 mm",
+            "es": "40 mm"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "60 mm",
+            "es": "60 mm"
+          }
+        },
+        {
+          "value": "80",
+          "label": {
+            "en": "80 mm",
+            "es": "80 mm"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "120 mm",
+            "es": "120 mm"
+          }
+        },
+        {
+          "value": "140",
+          "label": {
+            "en": "140 mm",
+            "es": "140 mm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "frame",
+      "modes": [
+        "filter_frame",
+        "grille_filter",
+        "magnetic_frame"
+      ],
+      "label": {
+        "en": "Frame Thickness (mm)",
+        "es": "Grosor de Marco (mm)"
+      },
+      "tooltip": {
+        "en": "Frame plate thickness",
+        "es": "Grosor de la placa del marco"
+      }
+    },
+    {
+      "id": "rim",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 15.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": [
+        "filter_frame",
+        "grille_filter",
+        "magnetic_frame"
+      ],
+      "label": {
+        "en": "Rim Width (mm)",
+        "es": "Ancho de Borde (mm)"
+      },
+      "tooltip": {
+        "en": "Frame material past the airflow bore",
+        "es": "Material del marco más allá del paso de aire"
+      }
+    },
+    {
+      "id": "snap_depth",
+      "type": "slider",
+      "default": 4.0,
+      "min": 0.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": [
+        "filter_frame",
+        "grille_filter",
+        "magnetic_frame"
+      ],
+      "label": {
+        "en": "Snap Skirt Depth (mm)",
+        "es": "Profundidad de Faldón (mm)"
+      },
+      "tooltip": {
+        "en": "How far the locating skirt tucks into the bore (0 = none)",
+        "es": "Cuánto entra el faldón en el paso (0 = ninguno)"
+      }
+    },
+    {
+      "id": "ring_count",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "group": "grille",
+      "modes": [
+        "grille_filter"
+      ],
+      "label": {
+        "en": "Grille Rings",
+        "es": "Anillos de Rejilla"
+      },
+      "tooltip": {
+        "en": "Concentric rings in the printed grille",
+        "es": "Anillos concéntricos en la rejilla impresa"
+      }
+    },
+    {
+      "id": "spoke_count",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "group": "grille",
+      "modes": [
+        "grille_filter"
+      ],
+      "label": {
+        "en": "Grille Spokes",
+        "es": "Radios de Rejilla"
+      },
+      "tooltip": {
+        "en": "Radial spokes in the printed grille",
+        "es": "Radios en la rejilla impresa"
+      }
+    },
+    {
+      "id": "bar_w",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "grille",
+      "modes": [
+        "grille_filter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Grille Bar Width (mm)",
+        "es": "Ancho de Barra (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each ring / spoke bar",
+        "es": "Ancho de cada anillo / radio"
+      }
+    },
+    {
+      "id": "magnet_d",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": [
+        "magnetic_frame"
+      ],
+      "label": {
+        "en": "Magnet Pocket Diameter (mm)",
+        "es": "Diámetro de Bolsillo de Imán (mm)"
+      },
+      "tooltip": {
+        "en": "Corner magnet pocket diameter",
+        "es": "Diámetro del bolsillo de imán en la esquina"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "case_120",
+      "mode": "filter_frame",
+      "label": {
+        "en": "120 mm Case Filter",
+        "es": "Filtro de Caja 120 mm"
+      },
+      "values": {
+        "fan_size": "120",
+        "snap_depth": 4
+      }
+    },
+    {
+      "id": "printed_grille",
+      "mode": "grille_filter",
+      "label": {
+        "en": "80 mm Printed Grille",
+        "es": "Rejilla Impresa 80 mm"
+      },
+      "values": {
+        "fan_size": "80",
+        "ring_count": 4,
+        "spoke_count": 8
+      }
+    },
+    {
+      "id": "magnetic_140",
+      "mode": "magnetic_frame",
+      "label": {
+        "en": "140 mm Magnetic",
+        "es": "Magnético 140 mm"
+      },
+      "values": {
+        "fan_size": "140",
+        "magnet_d": 8
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bar_w <= rim",
+      "severity": "warning",
+      "message": {
+        "en": "Very wide grille bars block airflow",
+        "es": "Barras de rejilla muy anchas bloquean el aire"
+      }
+    },
+    {
+      "expression": "thickness >= 2",
+      "severity": "error",
+      "message": {
+        "en": "Frame must be at least 2 mm",
+        "es": "El marco debe ser de al menos 2 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        150,
+        150,
+        130
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        260
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -260,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 11,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "fan_pattern",
+        "label": {
+          "en": "Fan Pattern",
+          "es": "Patrón de Ventilador"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "PC fan 40-140mm",
+        "parameters": [
+          "fan_size",
+          "thickness"
+        ],
+        "compatible_with": [
+          "fan-adapter"
+        ]
+      },
+      {
+        "id": "printed_grille",
+        "label": {
+          "en": "Printed Grille",
+          "es": "Rejilla Impresa"
+        },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": [
+          "ring_count",
+          "spoke_count",
+          "bar_w"
+        ]
+      },
+      {
+        "id": "locating_skirt",
+        "label": {
+          "en": "Bore Locating Skirt",
+          "es": "Faldón de Localización"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "snap_depth"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps dust out of the machines that overheat when clogged — PCs, 3D printers, amplifiers — on the universal fan screw square. A printed filter frame (or integral grille) is washable and reusable, so a few grams of filament replace disposable filters and extend equipment life.",
+      "es": "Mantiene el polvo fuera de las máquinas que se sobrecalientan cuando se obstruyen — PCs, impresoras 3D, amplificadores — sobre el cuadrado de tornillos universal. Un marco de filtro impreso (o rejilla integral) es lavable y reutilizable, así unos gramos de filamento reemplazan filtros desechables y alargan la vida del equipo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "fan",
+    "dust",
+    "filter",
+    "shroud",
+    "pc-fan",
+    "cooling",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

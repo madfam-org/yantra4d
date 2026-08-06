@@ -1,0 +1,629 @@
+{
+  "project": {
+    "name": "GT2 / HTD Timing Pulley",
+    "slug": "timing-pulley",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric synchronous-belt timing pulley — the canonical drive pulley for 3D printers, CNC gantries, and small robotics. Pick a belt standard (GT2-2mm, GT2-3mm, HTD-3M, HTD-5M) and a tooth count; the pulley pitch diameter (PD = teeth × pitch ÷ π) and outside diameter are derived from the standard so the printed pulley meshes a real belt. Optional retaining flanges, a set-screw hub, or a smooth bearing-bored idler.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una polea dentada paramétrica para banda de sincronización — la polea motriz canónica para impresoras 3D, pórticos CNC y robótica pequeña. Elige un estándar de banda (GT2-2mm, GT2-3mm, HTD-3M, HTD-5M) y un número de dientes; el diámetro de paso (PD = dientes × paso ÷ π) y el diámetro exterior se derivan del estándar para que la polea impresa engrane con una banda real. Bridas de retención, cubo con prisionero o polea tensora lisa con alojamiento para rodamiento, opcionales.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/timing-pulley.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "timing-pulley",
+      "gt2",
+      "htd",
+      "belt",
+      "3d-printer",
+      "cnc",
+      "robotics",
+      "synchronous",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pulley",
+      "label": {
+        "en": "Pulley",
+        "es": "Polea"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pulley"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "pulley_flanged",
+      "label": {
+        "en": "Flanged Pulley",
+        "es": "Polea con Bridas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pulley_flanged"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "idler",
+      "label": {
+        "en": "Idler",
+        "es": "Polea Tensora"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "idler"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "pulley",
+      "label": {
+        "en": "Pulley",
+        "es": "Polea"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "pulley_flanged",
+      "label": {
+        "en": "Flanged Pulley",
+        "es": "Polea con Bridas"
+      },
+      "render_mode": 0,
+      "color": "#4b7f9c"
+    },
+    {
+      "id": "idler",
+      "label": {
+        "en": "Idler",
+        "es": "Polea Tensora"
+      },
+      "render_mode": 0,
+      "color": "#8bb5cc"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "belt",
+      "label": {
+        "en": "Belt & Teeth",
+        "es": "Banda y Dientes"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body & Bore",
+        "es": "Cuerpo y Barreno"
+      }
+    },
+    {
+      "id": "flanges",
+      "label": {
+        "en": "Flanges",
+        "es": "Bridas"
+      }
+    },
+    {
+      "id": "hub",
+      "label": {
+        "en": "Hub & Set Screw",
+        "es": "Cubo y Prisionero"
+      }
+    },
+    {
+      "id": "idler",
+      "label": {
+        "en": "Idler",
+        "es": "Polea Tensora"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "belt_type",
+      "type": "select",
+      "default": "GT2-2mm",
+      "group": "belt",
+      "modes": [
+        "pulley",
+        "pulley_flanged",
+        "idler"
+      ],
+      "label": {
+        "en": "Belt Standard",
+        "es": "Estándar de Banda"
+      },
+      "tooltip": {
+        "en": "Synchronous belt profile. Pitch drives the pitch diameter (PD = teeth × pitch ÷ π).",
+        "es": "Perfil de banda de sincronización. El paso determina el diámetro de paso (PD = dientes × paso ÷ π)."
+      },
+      "options": [
+        {
+          "value": "GT2-2mm",
+          "label": {
+            "en": "GT2 · 2 mm pitch",
+            "es": "GT2 · paso 2 mm"
+          }
+        },
+        {
+          "value": "GT2-3mm",
+          "label": {
+            "en": "GT2 · 3 mm pitch",
+            "es": "GT2 · paso 3 mm"
+          }
+        },
+        {
+          "value": "HTD-3M",
+          "label": {
+            "en": "HTD 3M · 3 mm pitch",
+            "es": "HTD 3M · paso 3 mm"
+          }
+        },
+        {
+          "value": "HTD-5M",
+          "label": {
+            "en": "HTD 5M · 5 mm pitch",
+            "es": "HTD 5M · paso 5 mm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "teeth",
+      "type": "slider",
+      "default": 20,
+      "min": 8,
+      "max": 120,
+      "step": 1,
+      "group": "belt",
+      "modes": [
+        "pulley",
+        "pulley_flanged",
+        "idler"
+      ],
+      "label": {
+        "en": "Tooth Count",
+        "es": "Número de Dientes"
+      },
+      "tooltip": {
+        "en": "Number of pulley teeth. Sets the pitch diameter and outside diameter.",
+        "es": "Número de dientes de la polea. Fija el diámetro de paso y el exterior."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 0.32
+      }
+    },
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "belt",
+      "modes": [
+        "pulley",
+        "pulley_flanged",
+        "idler"
+      ],
+      "label": {
+        "en": "Belt Width (mm)",
+        "es": "Ancho de Banda (mm)"
+      },
+      "tooltip": {
+        "en": "Rim width — use 6 mm for the common 6 mm GT2 belt",
+        "es": "Ancho del aro — usa 6 mm para la banda GT2 de 6 mm común"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "bore",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "pulley",
+        "pulley_flanged"
+      ],
+      "label": {
+        "en": "Shaft Bore (mm)",
+        "es": "Barreno de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Shaft hole diameter (5 mm for a NEMA-17 stepper; auto-clamped below the tooth roots)",
+        "es": "Diámetro del agujero del eje (5 mm para motor NEMA-17; limitado bajo la raíz de los dientes)"
+      }
+    },
+    {
+      "id": "flanges",
+      "type": "checkbox",
+      "default": false,
+      "group": "flanges",
+      "modes": [
+        "pulley"
+      ],
+      "label": {
+        "en": "Retaining Flanges",
+        "es": "Bridas de Retención"
+      },
+      "tooltip": {
+        "en": "Add discs above and below the belt to keep it tracking",
+        "es": "Agrega discos arriba y abajo de la banda para que no se salga"
+      }
+    },
+    {
+      "id": "flange_h",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.6,
+      "max": 4.0,
+      "step": 0.2,
+      "group": "flanges",
+      "modes": [
+        "pulley",
+        "pulley_flanged",
+        "idler"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Flange Thickness (mm)",
+        "es": "Grosor de Brida (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of each retaining flange disc",
+        "es": "Grosor de cada disco de brida"
+      }
+    },
+    {
+      "id": "hub",
+      "type": "checkbox",
+      "default": true,
+      "group": "hub",
+      "modes": [
+        "pulley",
+        "pulley_flanged"
+      ],
+      "label": {
+        "en": "Set-Screw Hub",
+        "es": "Cubo con Prisionero"
+      },
+      "tooltip": {
+        "en": "Add a cylindrical hub below the rim to carry a radial set screw",
+        "es": "Agrega un cubo cilíndrico bajo el aro para alojar un prisionero radial"
+      }
+    },
+    {
+      "id": "hub_dia",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "hub",
+      "modes": [
+        "pulley",
+        "pulley_flanged"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Hub Diameter (mm)",
+        "es": "Diámetro de Cubo (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the set-screw hub",
+        "es": "Diámetro exterior del cubo del prisionero"
+      }
+    },
+    {
+      "id": "hub_height",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "hub",
+      "modes": [
+        "pulley",
+        "pulley_flanged"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Hub Height (mm)",
+        "es": "Altura de Cubo (mm)"
+      },
+      "tooltip": {
+        "en": "How far the hub extends below the rim",
+        "es": "Cuánto se extiende el cubo bajo el aro"
+      }
+    },
+    {
+      "id": "setscrew",
+      "type": "checkbox",
+      "default": true,
+      "group": "hub",
+      "modes": [
+        "pulley",
+        "pulley_flanged"
+      ],
+      "label": {
+        "en": "Set-Screw Hole",
+        "es": "Agujero de Prisionero"
+      },
+      "tooltip": {
+        "en": "Radial hole through the hub wall to lock the pulley to the shaft",
+        "es": "Agujero radial por la pared del cubo para fijar la polea al eje"
+      }
+    },
+    {
+      "id": "setscrew_dia",
+      "type": "slider",
+      "default": 3.2,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "hub",
+      "modes": [
+        "pulley",
+        "pulley_flanged"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Set-Screw Clearance (mm)",
+        "es": "Holgura de Prisionero (mm)"
+      },
+      "tooltip": {
+        "en": "Set-screw through-hole diameter (3.2 mm ≈ M3)",
+        "es": "Diámetro del agujero del prisionero (3.2 mm ≈ M3)"
+      }
+    },
+    {
+      "id": "bearing_od",
+      "type": "slider",
+      "default": 13.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "idler",
+      "modes": [
+        "idler"
+      ],
+      "label": {
+        "en": "Bearing OD (mm)",
+        "es": "Diámetro Ext. de Rodamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Press-fit seat for the idler bearing (623 = 10, 625 = 16, 6900 = 22)",
+        "es": "Alojamiento a presión para el rodamiento tensor (623 = 10, 625 = 16, 6900 = 22)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "gt2_20t_nema17",
+      "mode": "pulley",
+      "label": {
+        "en": "GT2 20T · NEMA-17 (5 mm)",
+        "es": "GT2 20T · NEMA-17 (5 mm)"
+      },
+      "values": {
+        "belt_type": "GT2-2mm",
+        "teeth": 20,
+        "width": 6,
+        "bore": 5,
+        "hub": true,
+        "setscrew": true
+      }
+    },
+    {
+      "id": "gt2_16t_flanged",
+      "mode": "pulley_flanged",
+      "label": {
+        "en": "GT2 16T Flanged (5 mm)",
+        "es": "GT2 16T con Bridas (5 mm)"
+      },
+      "values": {
+        "belt_type": "GT2-2mm",
+        "teeth": 16,
+        "width": 6,
+        "bore": 5,
+        "flange_h": 1.2
+      }
+    },
+    {
+      "id": "htd5m_30t_bore8",
+      "mode": "pulley",
+      "label": {
+        "en": "HTD-5M 30T · 8 mm bore",
+        "es": "HTD-5M 30T · barreno 8 mm"
+      },
+      "values": {
+        "belt_type": "HTD-5M",
+        "teeth": 30,
+        "width": 15,
+        "bore": 8,
+        "hub": true,
+        "hub_dia": 20,
+        "setscrew": true
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "teeth >= 8",
+      "severity": "error",
+      "message": {
+        "en": "A pulley needs at least 8 teeth",
+        "es": "Una polea necesita al menos 8 dientes"
+      }
+    },
+    {
+      "expression": "bore <= teeth * 2",
+      "severity": "warning",
+      "message": {
+        "en": "Bore is large relative to the pulley size",
+        "es": "El barreno es grande respecto al tamaño de la polea"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        34
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        60
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -60,
+        8
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 48,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "timing_belt_tooth",
+        "label": {
+          "en": "Timing Belt Tooth",
+          "es": "Diente de Banda de Sincronización"
+        },
+        "geometry_type": "profile",
+        "standard": "GT2 (2mm) / HTD 3M/5M",
+        "parameters": [
+          "belt_type",
+          "teeth",
+          "width"
+        ]
+      },
+      {
+        "id": "shaft_bore",
+        "label": {
+          "en": "Shaft Bore & Set Screw",
+          "es": "Barreno de Eje y Prisionero"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "bore",
+          "setscrew",
+          "setscrew_dia"
+        ]
+      },
+      {
+        "id": "idler_bearing_seat",
+        "label": {
+          "en": "Idler Bearing Seat",
+          "es": "Alojamiento de Rodamiento Tensor"
+        },
+        "geometry_type": "socket",
+        "standard": "ISO 15 (623/625/6900)",
+        "parameters": [
+          "bearing_od",
+          "width"
+        ],
+        "compatible_with": [
+          "bearing-housing",
+          "linear-wheel",
+          "roller-bracket"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "GT2 and HTD timing pulleys are the motion backbone of desktop 3D printers, CNC machines, and hobby robotics. Printing a pitch-correct pulley on demand replaces a proprietary or out-of-stock part and keeps machines running without a shipment.",
+      "es": "Las poleas GT2 y HTD son la columna del movimiento en impresoras 3D de escritorio, máquinas CNC y robótica de afición. Imprimir una polea con paso correcto bajo demanda reemplaza una pieza propietaria o agotada y mantiene las máquinas funcionando sin esperar un envío."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "timing-pulley",
+    "gt2",
+    "htd",
+    "belt",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

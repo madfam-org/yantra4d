@@ -1,0 +1,148 @@
+{
+  "project": {
+    "name": "Finger Guard & Blister Popper",
+    "slug": "finger-guard",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Small hand-protection and dexterity aids: a blister-pack popper that presses a pill through foil without hurting the thumb, a cut-resistant finger shield worn while chopping, and a shorter thumb guard. Printable everyday-living aids, not certified medical or safety-rated PPE.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Pequeñas ayudas de protección de manos y destreza: un extractor de blísteres que empuja una pastilla a través del foil sin lastimar el pulgar, un protector de dedo resistente a cortes para picar y un protector de pulgar más corto. Ayudas imprimibles para la vida diaria, no EPP certificado ni de seguridad.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/finger-guard.webp",
+    "difficulty": "beginner",
+    "tags": ["finger", "guard", "blister", "pill", "kitchen", "assistive", "protection", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pill_popper",
+      "label": { "en": "Blister Popper", "es": "Extractor de Blíster" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pill_popper"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "finger_guard",
+      "label": { "en": "Finger Guard", "es": "Protector de Dedo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["finger_guard"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "thumb_guard",
+      "label": { "en": "Thumb Guard", "es": "Protector de Pulgar" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["thumb_guard"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "pill_popper", "label": { "en": "Blister Popper", "es": "Extractor de Blíster" }, "render_mode": 0, "color": "#1e40af" },
+    { "id": "finger_guard", "label": { "en": "Finger Guard", "es": "Protector de Dedo" }, "render_mode": 0, "color": "#2563eb" },
+    { "id": "thumb_guard", "label": { "en": "Thumb Guard", "es": "Protector de Pulgar" }, "render_mode": 0, "color": "#3b82f6" }
+  ],
+  "parameter_groups": [
+    { "id": "finger", "label": { "en": "Finger", "es": "Dedo" } },
+    { "id": "blister", "label": { "en": "Blister", "es": "Blíster" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "finger_dia", "type": "slider", "default": 17.0, "min": 10.0, "max": 28.0, "step": 0.5,
+      "group": "finger", "modes": ["finger_guard", "thumb_guard"],
+      "label": { "en": "Fingertip Diameter (mm)", "es": "Diámetro de Yema (mm)" },
+      "tooltip": { "en": "Diameter of the fingertip the guard slips over", "es": "Diámetro de la yema del dedo sobre la que entra el protector" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "finger_len", "type": "slider", "default": 30.0, "min": 15.0, "max": 55.0, "step": 1.0,
+      "group": "finger", "modes": ["finger_guard", "thumb_guard"],
+      "label": { "en": "Guard Length (mm)", "es": "Largo del Protector (mm)" },
+      "tooltip": { "en": "How far the guard reaches down the finger", "es": "Qué tanto baja el protector por el dedo" }
+    },
+    {
+      "id": "blister", "type": "slider", "default": 9.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "blister", "modes": ["pill_popper"],
+      "label": { "en": "Blister Pocket (mm)", "es": "Bolsa del Blíster (mm)" },
+      "tooltip": { "en": "Diameter of the blister-pack pocket (sets the pressing nub size)", "es": "Diámetro de la bolsa del blíster (define el tamaño del émbolo)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "body", "modes": ["pill_popper", "finger_guard", "thumb_guard"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shield / barrel wall thickness", "es": "Grosor de pared del protector / mango" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.0, "max": 2.0, "step": 0.05,
+      "group": "body", "modes": ["finger_guard", "thumb_guard"],
+      "label": { "en": "Finger Clearance (mm)", "es": "Holgura de Dedo (mm)" },
+      "tooltip": { "en": "Per-side slip gap so the guard is comfortable", "es": "Espacio por lado para que el protector sea cómodo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_popper", "mode": "pill_popper",
+      "label": { "en": "Standard Blister Popper", "es": "Extractor de Blíster Estándar" },
+      "values": { "blister": 9 }
+    },
+    {
+      "id": "index_guard", "mode": "finger_guard",
+      "label": { "en": "Index-Finger Guard", "es": "Protector de Índice" },
+      "values": { "finger_dia": 17, "finger_len": 32 }
+    },
+    {
+      "id": "thumb", "mode": "thumb_guard",
+      "label": { "en": "Thumb Guard", "es": "Protector de Pulgar" },
+      "values": { "finger_dia": 20, "finger_len": 26 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 1.5",
+      "severity": "warning",
+      "message": { "en": "Large clearance makes the guard loose", "es": "Una holgura grande deja flojo el protector" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [55, 55, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "blister_popper",
+        "label": { "en": "Blister Popper", "es": "Extractor de Blíster" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["blister", "finger_dia", "clearance", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Pushing tablets through stiff blister foil is painful for arthritic thumbs, and cut injuries while chopping are common. Simple printable aids — a popper sized to the blister and a shield sized to the finger — reduce daily pain and kitchen injuries at near-zero cost.",
+      "es": "Empujar tabletas a través del foil rígido del blíster es doloroso para pulgares con artritis, y las cortadas al picar son comunes. Ayudas imprimibles simples — un extractor dimensionado al blíster y un protector dimensionado al dedo — reducen el dolor diario y las lesiones de cocina a costo casi nulo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["finger", "guard", "blister", "kitchen", "assistive", "medical", "hyperobject", "commons"]
+}

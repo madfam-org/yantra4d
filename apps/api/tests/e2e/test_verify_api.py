@@ -52,7 +52,8 @@ class TestVerifyAPI:
 
     def test_verify_with_stl(self, client, tmp_path, monkeypatch):
         """Verify with actual STL file runs verification script."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         import routes.engine.verify as verify_mod
 
         static_dir = tmp_path / "static"
@@ -76,7 +77,8 @@ class TestVerifyAPI:
 
     def test_verify_script_failure(self, client, tmp_path, monkeypatch):
         """Verify with failing script returns failure status."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         import routes.engine.verify as verify_mod
 
         static_dir = tmp_path / "static"
@@ -99,8 +101,9 @@ class TestVerifyAPI:
 
     def test_verify_script_timeout(self, client, tmp_path, monkeypatch):
         """Verify with timeout returns error."""
-        from unittest.mock import patch
         import subprocess
+        from unittest.mock import patch
+
         import routes.engine.verify as verify_mod
 
         static_dir = tmp_path / "static"
@@ -119,7 +122,8 @@ class TestVerifyAPI:
 
     def test_verify_invalid_json_output(self, client, tmp_path, monkeypatch):
         """Verify with malformed JSON output falls back gracefully."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         import routes.engine.verify as verify_mod
 
         static_dir = tmp_path / "static"

@@ -1,0 +1,304 @@
+{
+  "project": {
+    "name": "Optical Post & Breadboard Mount",
+    "slug": "optical-post",
+    "version": "1.0.0",
+    "description": {
+      "en": "Parametric optics-bench hyperobject: a Thorlabs-compatible cylindrical optical post, a bolt-down base clamp, and a mini breadboard tile — all sharing the real 25 mm metric / 1 in imperial hole grid with M6 and 1/4-20 fasteners. Build posts to any height, seat them in the base clamp, and tile a custom breadboard for benchtop optics.",
+      "es": "Hiperobjeto para banco óptico paramétrico: un poste óptico cilíndrico compatible con Thorlabs, una base de sujeción atornillable y una placa breadboard en miniatura, todos compartiendo la rejilla real de 25 mm métrica / 1 in imperial con tornillos M6 y 1/4-20. Fabrica postes de cualquier altura, colócalos en la base y crea un breadboard a medida para óptica de mesa."
+    },
+    "thumbnail": "/projects/optical-post.webp",
+    "tags": [
+      "optics",
+      "breadboard",
+      "thorlabs",
+      "optical-post",
+      "photonics",
+      "lab",
+      "hyperobject",
+      "commons"
+    ],
+    "difficulty": "advanced",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Post-to-clamp fit assumes ~0.3 mm slip clearance; stiffen posts >100 mm with 100% infill or PETG to reduce beam-height drift under load.",
+        "es": "El ajuste poste-abrazadera asume ~0.3 mm de holgura; refuerza postes >100 mm con relleno 100% o PETG para reducir la deriva de altura del haz bajo carga."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "breadboard_grid",
+        "label": {
+          "en": "Optical Breadboard Hole Grid",
+          "es": "Rejilla de Agujeros de Breadboard Óptico"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+        "parameters": [
+          "grid_pitch",
+          "mount_thread",
+          "grid_cols",
+          "grid_rows"
+        ],
+        "compatible_with": [
+          "arca-plate",
+          "nato-rail",
+          "rod-rig-clamp",
+          "sensor-mount-plate",
+          "shoe-mount"
+        ]
+      },
+      {
+        "id": "post_seat",
+        "label": {
+          "en": "Optical Post Seat (Ø12.7 mm)",
+          "es": "Asiento de Poste Óptico (Ø12.7 mm)"
+        },
+        "geometry_type": "socket",
+        "standard": "Ø1/2 in (12.7 mm) optical post",
+        "parameters": [
+          "post_diameter"
+        ]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Cuts the per-unit cost of optics-bench hardware from tens of dollars to pennies of filament, letting classrooms and community labs build standards-compatible breadboards on demand.",
+      "es": "Reduce el costo del hardware de banco óptico de decenas de dólares a centavos de filamento, permitiendo a aulas y laboratorios comunitarios construir breadboards compatibles con estándares bajo demanda."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "post",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Optical Post",
+        "es": "Poste Óptico"
+      },
+      "description": {
+        "en": "Ø12.7 mm cylindrical post with a tapped-head mounting socket, base fastener bore, and a milled setscrew flat. Set any beam height."
+      },
+      "parts": [
+        "post"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "base_clamp",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Breadboard Base Clamp",
+        "es": "Base de Sujeción para Breadboard"
+      },
+      "description": {
+        "en": "Footed plate that seats an optical post and bolts to the breadboard with two counterbored grid fasteners spanning one 25 mm pitch."
+      },
+      "parts": [
+        "base_clamp"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "grid_plate",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Mini Breadboard Tile",
+        "es": "Placa Breadboard Miniatura"
+      },
+      "description": {
+        "en": "A plate drilled with a rectangular array of counterbored fastener holes on the true 25 mm metric grid with a 12.5 mm edge border."
+      },
+      "parts": [
+        "grid_plate"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "post",
+      "render_mode": 0,
+      "label": {
+        "en": "Optical Post",
+        "es": "Poste Óptico"
+      },
+      "default_color": "#3a4149"
+    },
+    {
+      "id": "base_clamp",
+      "render_mode": 0,
+      "label": {
+        "en": "Breadboard Base Clamp",
+        "es": "Base de Sujeción para Breadboard"
+      },
+      "default_color": "#4a5568"
+    },
+    {
+      "id": "grid_plate",
+      "render_mode": 0,
+      "label": {
+        "en": "Mini Breadboard Tile",
+        "es": "Placa Breadboard Miniatura"
+      },
+      "default_color": "#2d3748"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "post_height",
+      "type": "slider",
+      "default": 75,
+      "min": 20,
+      "max": 200,
+      "step": 1,
+      "label": {
+        "en": "Post Height (mm)",
+        "es": "Altura del Poste (mm)"
+      },
+      "tooltip": {
+        "en": "Beam height from the post base to its top face.",
+        "es": "Altura del haz desde la base del poste hasta su cara superior."
+      },
+      "group": "geometry"
+    },
+    {
+      "id": "post_diameter",
+      "type": "slider",
+      "default": 12.7,
+      "min": 10,
+      "max": 25.4,
+      "step": 0.1,
+      "label": {
+        "en": "Post Diameter (mm)",
+        "es": "Diámetro del Poste (mm)"
+      },
+      "tooltip": {
+        "en": "Ø12.7 mm matches the Thorlabs 1/2 in TR-series; Ø25.4 mm matches the 1 in P-series.",
+        "es": "Ø12.7 mm corresponde a la serie TR de 1/2 in de Thorlabs; Ø25.4 mm a la serie P de 1 in."
+      },
+      "group": "geometry"
+    },
+    {
+      "id": "grid_pitch",
+      "type": "slider",
+      "default": 25,
+      "min": 20,
+      "max": 30,
+      "step": 0.4,
+      "label": {
+        "en": "Grid Pitch (mm)",
+        "es": "Paso de Rejilla (mm)"
+      },
+      "tooltip": {
+        "en": "25 mm = Thorlabs metric grid; 25.4 mm = 1 in imperial grid.",
+        "es": "25 mm = rejilla métrica Thorlabs; 25.4 mm = rejilla imperial de 1 in."
+      },
+      "group": "grid"
+    },
+    {
+      "id": "mount_thread",
+      "type": "select",
+      "default": "M6",
+      "options": [
+        {
+          "value": "M6",
+          "label": "M6 (metric breadboard)"
+        },
+        {
+          "value": "1/4-20",
+          "label": "1/4-20 (imperial breadboard)"
+        }
+      ],
+      "label": {
+        "en": "Fastener Standard",
+        "es": "Estándar de Tornillo"
+      },
+      "group": "grid"
+    },
+    {
+      "id": "grid_cols",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": {
+        "en": "Tile Columns",
+        "es": "Columnas de la Placa"
+      },
+      "group": "grid"
+    },
+    {
+      "id": "grid_rows",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": {
+        "en": "Tile Rows",
+        "es": "Filas de la Placa"
+      },
+      "group": "grid"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "geometry",
+      "label": {
+        "en": "Post Geometry",
+        "es": "Geometría del Poste"
+      }
+    },
+    {
+      "id": "grid",
+      "label": {
+        "en": "Breadboard Grid",
+        "es": "Rejilla del Breadboard"
+      }
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

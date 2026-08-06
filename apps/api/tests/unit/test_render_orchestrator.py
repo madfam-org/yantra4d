@@ -5,9 +5,9 @@ Focuses on the _post_render_convert helper which was fixed to return
 separate url (download) and viewer_url (GLB) fields rather than replacing
 the STL path with the GLB path unconditionally.
 """
-import pytest
 from unittest.mock import patch
 
+import pytest
 
 # ---------------------------------------------------------------------------
 # _post_render_convert
@@ -42,17 +42,25 @@ class TestPostRenderConvert:
         stl_prefix = "pfx_"
         part = "body"
 
+        def fake_stl_to_glb(src, dst):
+            if not stl_to_glb_succeeds:
+                return False
+            with open(dst, "w") as f:
+                f.write("GLB")
+            return True
+
+        def fake_convert_mesh(src, dst):
+            if not convert_mesh_succeeds:
+                return False
+            with open(dst, "w") as f:
+                f.write("CONV")
+            return True
+
         with patch("services.engine.render_orchestrator.stl_to_glb") as mock_glb, \
              patch("services.engine.render_orchestrator.convert_mesh") as mock_conv:
 
-            mock_glb.side_effect = lambda src, dst: (
-                (open(dst, "w").write("GLB"), True)[1]
-                if stl_to_glb_succeeds else False
-            )
-            mock_conv.side_effect = lambda src, dst: (
-                (open(dst, "w").write("CONV"), True)[1]
-                if convert_mesh_succeeds else False
-            )
+            mock_glb.side_effect = fake_stl_to_glb
+            mock_conv.side_effect = fake_convert_mesh
 
             result = _post_render_convert(
                 output_path, output_filename, part, stl_prefix,
@@ -63,7 +71,7 @@ class TestPostRenderConvert:
 
     def test_stl_request_returns_stl_url_not_glb(self, tmp_path):
         """Core fix: when export_format='stl', url must point to the .stl file."""
-        serve_path, serve_filename, viewer_filename = self._call(
+        _serve_path, serve_filename, _viewer_filename = self._call(
             tmp_path,
             output_filename="pfx_body.stl",
             actual_format="stl",
@@ -109,7 +117,7 @@ class TestPostRenderConvert:
             mock_glb.return_value = True
 
             from services.engine.render_orchestrator import _post_render_convert
-            serve_path, serve_filename, viewer_filename = _post_render_convert(
+            _serve_path, _serve_filename, viewer_filename = _post_render_convert(
                 str(tmp_path / output_filename), output_filename, "body",
                 "pfx_", "3mf", "3mf",
             )
@@ -149,7 +157,7 @@ class TestPostRenderConvert:
 
 def test_render_worker_unavailable_when_heartbeat_missing(monkeypatch):
     """Render worker is unavailable when no heartbeat key exists in Redis."""
-    import services.engine.render_orchestrator as render_orchestrator
+    from services.engine import render_orchestrator
 
     class _FakeRedis:
         def get(self, _key):
@@ -162,7 +170,8 @@ def test_render_worker_unavailable_when_heartbeat_missing(monkeypatch):
 def test_render_worker_available_with_recent_heartbeat(monkeypatch):
     """Render worker becomes available when heartbeat timestamp is fresh."""
     import time
-    import services.engine.render_orchestrator as render_orchestrator
+
+    from services.engine import render_orchestrator
 
     class _FakeRedis:
         def get(self, _key):
@@ -176,7 +185,8 @@ def test_render_worker_available_with_recent_heartbeat(monkeypatch):
 def test_render_worker_status_includes_queue_and_active_jobs(monkeypatch):
     """Render worker status includes operational queue depth and active job count."""
     import time
-    import services.engine.render_orchestrator as render_orchestrator
+
+    from services.engine import render_orchestrator
 
     class _FakeRedis:
         def get(self, _key):
@@ -200,7 +210,7 @@ def test_render_worker_status_includes_queue_and_active_jobs(monkeypatch):
 
 def test_render_parts_sync_rejects_when_worker_unavailable(monkeypatch):
     """Sync rendering should reject quickly if no worker heartbeat is available."""
-    import services.engine.render_orchestrator as render_orchestrator
+    from services.engine import render_orchestrator
 
     monkeypatch.setattr(render_orchestrator, "is_render_worker_available", lambda: False)
     generated_parts, message, cache_stats = render_orchestrator.render_parts_sync(
@@ -227,7 +237,8 @@ def test_render_parts_sync_rejects_when_worker_unavailable(monkeypatch):
 def test_render_parts_stream_emits_unavailable_error_when_worker_unavailable(monkeypatch):
     """Stream rendering should emit explicit unavailable error and complete events."""
     import json
-    import services.engine.render_orchestrator as render_orchestrator
+
+    from services.engine import render_orchestrator
 
     monkeypatch.setattr(render_orchestrator, "is_render_worker_available", lambda: False)
     stream = render_orchestrator.render_parts_stream(

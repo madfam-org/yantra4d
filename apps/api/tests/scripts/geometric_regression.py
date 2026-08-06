@@ -1,19 +1,22 @@
+import argparse
 import logging
 import os
 import re
 import sys
 import tempfile
 from pathlib import Path
+
 import trimesh
-import argparse
 
 # Add api directory to sys.path to allow imports like 'from config import Config'
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from config import Config
 from manifest import get_manifest
-from services.engine.openscad import build_openscad_command, run_render as run_scad_render
-from services.engine.cadquery_engine import build_cadquery_command, run_render as run_cq_render
+from services.engine.cadquery_engine import build_cadquery_command
+from services.engine.cadquery_engine import run_render as run_cq_render
+from services.engine.openscad import build_openscad_command
+from services.engine.openscad import run_render as run_scad_render
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -164,8 +167,8 @@ def main():
             passed = geometric_regression(proj, rtol=args.tolerance)
             if not passed:
                 overall_pass = False
-        except Exception as e:
-            logger.exception(f"Exception during testing {proj}: {e}")
+        except Exception:
+            logger.exception(f"Exception during testing {proj}")
             overall_pass = False
 
     if not overall_pass:

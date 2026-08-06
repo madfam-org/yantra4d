@@ -1,0 +1,152 @@
+{
+  "project": {
+    "name": "SBS/SLAS Microplate Tray",
+    "slug": "microplate-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Labware built on the ANSI/SLAS microplate footprint (127.76 x 85.48 mm) so it drops into standard lab automation, stackers, and readers. Print a holder tray that a commercial plate sits in, a simple 96-well plate (9 mm pitch), or a 24-well plate.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Material de laboratorio construido sobre el formato de microplaca ANSI/SLAS (127.76 x 85.48 mm) para que encaje en automatización, apiladores y lectores estándar. Imprima una bandeja porta-placa donde se coloca una placa comercial, una placa simple de 96 pozos (paso de 9 mm), o una placa de 24 pozos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/microplate-tray.webp",
+    "difficulty": "intermediate",
+    "tags": ["microplate", "sbs", "slas", "labware", "96-well", "automation", "laboratory", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "holder",
+      "label": { "en": "Holder Tray", "es": "Bandeja Porta-placa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["holder"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "plate_96",
+      "label": { "en": "96-Well Plate", "es": "Placa de 96 Pozos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["plate_96"],
+      "estimate": { "base_time": 14, "per_unit": 2, "per_part": 16 }
+    },
+    {
+      "id": "plate_24",
+      "label": { "en": "24-Well Plate", "es": "Placa de 24 Pozos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["plate_24"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "holder", "label": { "en": "Holder Tray", "es": "Bandeja" }, "render_mode": 0, "color": "#4a9e97" },
+    { "id": "plate_96", "label": { "en": "96-Well Plate", "es": "Placa 96" }, "render_mode": 0, "color": "#5fb1a9" },
+    { "id": "plate_24", "label": { "en": "24-Well Plate", "es": "Placa 24" }, "render_mode": 0, "color": "#73c4bb" }
+  ],
+  "parameter_groups": [
+    { "id": "format", "label": { "en": "Format", "es": "Formato" } },
+    { "id": "wells", "label": { "en": "Wells & Body", "es": "Pozos y Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "plate_format", "type": "select", "default": "holder",
+      "group": "format", "modes": ["holder", "plate_96", "plate_24"],
+      "label": { "en": "Format", "es": "Formato" },
+      "tooltip": { "en": "Which SLAS-footprint part to build (also selectable via mode)", "es": "Qué pieza con formato SLAS construir (también seleccionable por modo)" },
+      "options": [
+        { "value": "holder", "label": { "en": "Holder Tray", "es": "Bandeja Porta-placa" } },
+        { "value": "plate_96", "label": { "en": "96-Well Plate", "es": "Placa de 96 Pozos" } },
+        { "value": "plate_24", "label": { "en": "24-Well Plate", "es": "Placa de 24 Pozos" } }
+      ]
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 14.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "wells", "modes": ["holder", "plate_96", "plate_24"],
+      "label": { "en": "Overall Height (mm)", "es": "Altura Total (mm)" },
+      "tooltip": { "en": "Total height of the plate or tray", "es": "Altura total de la placa o bandeja" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "well_depth", "type": "slider", "default": 10.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "wells", "modes": ["plate_96", "plate_24"],
+      "label": { "en": "Well Depth (mm)", "es": "Profundidad de Pozo (mm)" },
+      "tooltip": { "en": "Depth of each well (a solid floor remains beneath)", "es": "Profundidad de cada pozo (queda un piso sólido debajo)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "wells", "modes": ["holder", "plate_96", "plate_24"],
+      "label": { "en": "Rim / Floor Thickness (mm)", "es": "Grosor de Borde / Piso (mm)" },
+      "tooltip": { "en": "Wall around the wells / floor beneath them", "es": "Pared alrededor de los pozos / piso debajo de ellos" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.2, "max": 2.0, "step": 0.1,
+      "group": "wells", "modes": ["holder"], "advanced": true,
+      "label": { "en": "Recess Clearance (mm)", "es": "Holgura del Rebaje (mm)" },
+      "tooltip": { "en": "Gap around a plate seated in the holder", "es": "Espacio alrededor de una placa asentada en el porta-placa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_holder", "mode": "holder",
+      "label": { "en": "Standard Plate Holder", "es": "Porta-placa Estándar" },
+      "values": { "plate_h": 14, "wall": 2.0, "clearance": 0.6 }
+    },
+    {
+      "id": "shallow_96", "mode": "plate_96",
+      "label": { "en": "Shallow 96-Well", "es": "96 Pozos Poco Profunda" },
+      "values": { "plate_h": 14, "well_depth": 10 }
+    },
+    {
+      "id": "deep_24", "mode": "plate_24",
+      "label": { "en": "Deep 24-Well", "es": "24 Pozos Profunda" },
+      "values": { "plate_h": 22, "well_depth": 17 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "well_depth <= plate_h - wall",
+      "severity": "warning",
+      "message": { "en": "Well depth leaves little floor; increase overall height", "es": "La profundidad del pozo deja poco piso; aumente la altura total" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 150, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 2, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "slas_microplate_footprint",
+        "label": { "en": "SLAS Microplate Footprint", "es": "Formato de Microplaca SLAS" },
+        "geometry_type": "grid",
+        "standard": "ANSI/SLAS 1-2004 & 4-2004 (9mm pitch)",
+        "parameters": ["plate_format", "well_depth", "plate_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The SLAS footprint is the universal interface of lab automation. Printing trays and plates to that exact standard lets low-resource and teaching labs integrate custom, single-use, or disposable-cost labware into equipment they already own.",
+      "es": "El formato SLAS es la interfaz universal de la automatización de laboratorio. Imprimir bandejas y placas a ese estándar exacto permite que laboratorios de bajos recursos y de enseñanza integren material personalizado, de un solo uso o de costo desechable en equipos que ya poseen."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["microplate", "slas", "labware", "96-well", "medical", "hyperobject", "commons"]
+}

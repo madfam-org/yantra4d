@@ -2,7 +2,7 @@
 User service: upsert user records from JWT claims and manage user-project associations.
 """
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from extensions import db
 from models.user import User, UserProject
@@ -25,7 +25,7 @@ def upsert_user_from_claims(claims: dict) -> User | None:
     email = claims.get("email")
     display_name = claims.get("name")
     tier = resolve_tier(claims)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     user = User.query.filter_by(janua_sub=sub).first()
 
@@ -65,7 +65,7 @@ def touch_user_project(user: User, project_slug: str, role: str = "editor") -> U
     if not user or not project_slug:
         return None
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     assoc = UserProject.query.filter_by(
         user_id=user.id, project_slug=project_slug,

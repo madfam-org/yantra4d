@@ -1,0 +1,182 @@
+{
+  "project": {
+    "name": "Keychain / Tag",
+    "slug": "keytag",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A flat keychain tag with an embossed or debossed name/number and a ring hole. Pick a shape (rounded rectangle, circle, dog tag, bone), type a label, and print. A one-line tag, a two-line tag, or a larger luggage tag with a strap slot.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una etiqueta plana de llavero con un nombre/número en relieve o hueco y un orificio para anilla. Elige una forma (rectángulo redondeado, círculo, placa militar, hueso), escribe un texto e imprime. Una etiqueta de una línea, de dos líneas, o una etiqueta de equipaje más grande con ranura para correa.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/keytag.webp",
+    "difficulty": "beginner",
+    "tags": ["keychain", "tag", "label", "text", "personalization", "dogtag", "luggage", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tag",
+      "label": { "en": "Tag", "es": "Etiqueta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tag"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "tag_2line",
+      "label": { "en": "Two-Line Tag", "es": "Etiqueta de Dos Líneas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tag_2line"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "luggage_tag",
+      "label": { "en": "Luggage Tag", "es": "Etiqueta de Equipaje" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["luggage_tag"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "tag", "label": { "en": "Tag", "es": "Etiqueta" }, "render_mode": 0, "color": "#805ad5" },
+    { "id": "tag_2line", "label": { "en": "Two-Line Tag", "es": "Etiqueta de Dos Líneas" }, "render_mode": 0, "color": "#9f7aea" },
+    { "id": "luggage_tag", "label": { "en": "Luggage Tag", "es": "Etiqueta de Equipaje" }, "render_mode": 0, "color": "#b794f4" }
+  ],
+  "parameter_groups": [
+    { "id": "shape", "label": { "en": "Shape & Size", "es": "Forma y Tamaño" } },
+    { "id": "text", "label": { "en": "Text", "es": "Texto" } },
+    { "id": "hole", "label": { "en": "Ring Hole", "es": "Orificio de Anilla" } }
+  ],
+  "parameters": [
+    {
+      "id": "shape", "type": "select", "default": "rounded_rect",
+      "group": "shape", "modes": ["tag", "tag_2line", "luggage_tag"],
+      "label": { "en": "Tag Shape", "es": "Forma de Etiqueta" },
+      "tooltip": { "en": "Outline of the tag", "es": "Contorno de la etiqueta" },
+      "options": [
+        { "value": "rounded_rect", "label": { "en": "Rounded Rectangle", "es": "Rectángulo Redondeado" } },
+        { "value": "circle", "label": { "en": "Circle", "es": "Círculo" } },
+        { "value": "dogtag", "label": { "en": "Dog Tag", "es": "Placa Militar" } },
+        { "value": "bone", "label": { "en": "Bone", "es": "Hueso" } }
+      ]
+    },
+    {
+      "id": "size", "type": "slider", "default": 45.0, "min": 20.0, "max": 100.0, "step": 1.0,
+      "group": "shape", "modes": ["tag", "tag_2line", "luggage_tag"],
+      "label": { "en": "Tag Size (mm)", "es": "Tamaño de Etiqueta (mm)" },
+      "tooltip": { "en": "Nominal length of the tag", "es": "Longitud nominal de la etiqueta" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "shape", "modes": ["tag", "tag_2line", "luggage_tag"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Tag plate thickness", "es": "Grosor de la placa" }
+    },
+    {
+      "id": "text", "type": "text", "default": "KEY-01", "maxlength": 18,
+      "group": "text", "modes": ["tag", "tag_2line", "luggage_tag"],
+      "label": { "en": "Text", "es": "Texto" },
+      "tooltip": { "en": "The label (primary line)", "es": "El texto (línea principal)" }
+    },
+    {
+      "id": "text2", "type": "text", "default": "", "maxlength": 18,
+      "group": "text", "modes": ["tag_2line", "luggage_tag"],
+      "label": { "en": "Second Line", "es": "Segunda Línea" },
+      "tooltip": { "en": "Optional second line of text", "es": "Segunda línea de texto opcional" }
+    },
+    {
+      "id": "text_mode", "type": "select", "default": "deboss",
+      "group": "text", "modes": ["tag", "tag_2line", "luggage_tag"],
+      "label": { "en": "Text Style", "es": "Estilo de Texto" },
+      "tooltip": { "en": "Debossed (recessed) or embossed (raised). Falls back automatically if a glyph breaks one mode.", "es": "Hueco (rebajado) o en relieve (elevado). Cambia automáticamente si un carácter rompe un modo." },
+      "options": [
+        { "value": "deboss", "label": { "en": "Debossed (recessed)", "es": "Hueco (rebajado)" } },
+        { "value": "emboss", "label": { "en": "Embossed (raised)", "es": "En relieve (elevado)" } }
+      ]
+    },
+    {
+      "id": "text_depth", "type": "slider", "default": 0.8, "min": 0.3, "max": 1.5, "step": 0.1,
+      "group": "text", "modes": ["tag", "tag_2line", "luggage_tag"], "advanced": true,
+      "label": { "en": "Text Depth (mm)", "es": "Profundidad de Texto (mm)" },
+      "tooltip": { "en": "How deep the deboss cuts / how high the emboss rises", "es": "Qué tan profundo corta el hueco / qué tan alto sube el relieve" }
+    },
+    {
+      "id": "hole_dia", "type": "slider", "default": 5.0, "min": 2.0, "max": 14.0, "step": 0.5,
+      "group": "hole", "modes": ["tag", "tag_2line", "luggage_tag"],
+      "label": { "en": "Ring Hole / Slot (mm)", "es": "Orificio / Ranura (mm)" },
+      "tooltip": { "en": "Ring hole diameter (or strap slot width on the luggage tag)", "es": "Diámetro del orificio de anilla (o ancho de ranura en la etiqueta de equipaje)" }
+    },
+    {
+      "id": "hole_pos", "type": "slider", "default": 6.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "hole", "modes": ["tag", "tag_2line", "luggage_tag"], "advanced": true,
+      "label": { "en": "Hole Inset (mm)", "es": "Retiro del Orificio (mm)" },
+      "tooltip": { "en": "How far the hole sits in from the leading edge", "es": "Qué tan adentro del borde queda el orificio" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "key_number", "mode": "tag",
+      "label": { "en": "Numbered Key Tag", "es": "Etiqueta de Llave Numerada" },
+      "values": { "shape": "rounded_rect", "text": "KEY-07", "text_mode": "deboss" }
+    },
+    {
+      "id": "pet_bone", "mode": "tag",
+      "label": { "en": "Pet Bone Tag", "es": "Etiqueta de Hueso para Mascota" },
+      "values": { "shape": "bone", "text": "REX", "text_mode": "emboss", "size": 40 }
+    },
+    {
+      "id": "address_luggage", "mode": "luggage_tag",
+      "label": { "en": "Address Luggage Tag", "es": "Etiqueta de Equipaje con Dirección" },
+      "values": { "shape": "rounded_rect", "text": "A. RUIZ", "text2": "555-1234", "size": 70 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thick >= 2",
+      "severity": "error",
+      "message": { "en": "Tag must be at least 2 mm thick", "es": "La etiqueta debe tener al menos 2 mm de grosor" }
+    },
+    {
+      "expression": "text_depth <= thick - 1",
+      "severity": "warning",
+      "message": { "en": "Deep text on a thin tag may perforate it", "es": "Texto profundo en una etiqueta delgada puede perforarla" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "tag_outline_text",
+        "label": { "en": "Tag Outline + Text", "es": "Contorno de Etiqueta + Texto" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["shape", "size", "text", "text_mode"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The gateway print for personalization: a named, numbered, or labelled tag anyone can make in seconds. Labels keys, luggage, pets, cables, and gear without buying pre-printed hardware.",
+      "es": "La impresión de entrada a la personalización: una etiqueta con nombre, número o texto que cualquiera hace en segundos. Etiqueta llaves, equipaje, mascotas, cables y equipo sin comprar hardware preimpreso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["keychain", "tag", "label", "personalization", "household", "hyperobject", "commons"]
+}

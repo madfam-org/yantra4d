@@ -1,0 +1,483 @@
+{
+  "project": {
+    "name": "Bench Dog / Hold-Down",
+    "slug": "bench-dog",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Workholding that drops into a workbench dog hole. A round shank sized to the hole (19 mm, 20 mm or 3/4 in) registers the tool; a head above the bench pushes, pins or clamps the work. Choose a round stop dog, a cam hold-down, or a wide planing stop.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sujeción que se inserta en un agujero de perro del banco. Un vástago redondo ajustado al agujero (19 mm, 20 mm o 3/4 in) registra la herramienta; una cabeza sobre el banco empuja, fija o sujeta la pieza. Elige un perro de tope redondo, una sujeción de leva, o un tope ancho para cepillar.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bench-dog.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bench-dog",
+      "hold-down",
+      "holdfast",
+      "workbench",
+      "dog-hole",
+      "workholding",
+      "woodworking",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "round_dog",
+      "label": {
+        "en": "Round Stop Dog",
+        "es": "Perro de Tope Redondo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "round_dog"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "holdfast",
+      "label": {
+        "en": "Cam Hold-Down",
+        "es": "Sujeción de Leva"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "holdfast"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "planing_stop",
+      "label": {
+        "en": "Planing Stop",
+        "es": "Tope para Cepillar"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "planing_stop"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "round_dog",
+      "label": {
+        "en": "Round Stop Dog",
+        "es": "Perro de Tope Redondo"
+      },
+      "render_mode": 0,
+      "color": "#8a6a4a"
+    },
+    {
+      "id": "holdfast",
+      "label": {
+        "en": "Cam Hold-Down",
+        "es": "Sujeción de Leva"
+      },
+      "render_mode": 0,
+      "color": "#9c7a56"
+    },
+    {
+      "id": "planing_stop",
+      "label": {
+        "en": "Planing Stop",
+        "es": "Tope para Cepillar"
+      },
+      "render_mode": 0,
+      "color": "#755840"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "hole",
+      "label": {
+        "en": "Dog Hole",
+        "es": "Agujero de Perro"
+      }
+    },
+    {
+      "id": "head",
+      "label": {
+        "en": "Head",
+        "es": "Cabeza"
+      }
+    },
+    {
+      "id": "shape",
+      "label": {
+        "en": "Reach & Face",
+        "es": "Alcance y Cara"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "hole",
+      "type": "select",
+      "default": "19mm",
+      "group": "hole",
+      "modes": [
+        "round_dog",
+        "holdfast",
+        "planing_stop"
+      ],
+      "label": {
+        "en": "Dog-Hole Standard",
+        "es": "Estándar de Agujero de Perro"
+      },
+      "tooltip": {
+        "en": "Nominal dog-hole size the shank fits",
+        "es": "Tamaño nominal del agujero de perro al que se ajusta el vástago"
+      },
+      "options": [
+        {
+          "value": "19mm",
+          "label": {
+            "en": "19 mm (metric bench)",
+            "es": "19 mm (banco métrico)"
+          }
+        },
+        {
+          "value": "20mm",
+          "label": {
+            "en": "20 mm (metric bench)",
+            "es": "20 mm (banco métrico)"
+          }
+        },
+        {
+          "value": "3/4in",
+          "label": {
+            "en": "3/4 in (19.05 mm)",
+            "es": "3/4 in (19.05 mm)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fit",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.0,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "hole",
+      "modes": [
+        "round_dog",
+        "holdfast",
+        "planing_stop"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Shank Clearance (mm)",
+        "es": "Holgura del Vástago (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap so the printed shank slides in the hole",
+        "es": "Espacio por lado para que el vástago impreso deslice en el agujero"
+      }
+    },
+    {
+      "id": "shank_len",
+      "type": "slider",
+      "default": 40.0,
+      "min": 20.0,
+      "max": 70.0,
+      "step": 1.0,
+      "group": "hole",
+      "modes": [
+        "round_dog",
+        "holdfast",
+        "planing_stop"
+      ],
+      "label": {
+        "en": "Shank Length (mm)",
+        "es": "Largo del Vástago (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of shank below the bench top",
+        "es": "Profundidad del vástago bajo la superficie del banco"
+      }
+    },
+    {
+      "id": "head_h",
+      "type": "slider",
+      "default": 16.0,
+      "min": 6.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "head",
+      "modes": [
+        "round_dog",
+        "holdfast"
+      ],
+      "label": {
+        "en": "Head Height (mm)",
+        "es": "Altura de la Cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the head above the bench",
+        "es": "Altura de la cabeza sobre el banco"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "head_w",
+      "type": "slider",
+      "default": 30.0,
+      "min": 18.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "head",
+      "modes": [
+        "round_dog",
+        "holdfast",
+        "planing_stop"
+      ],
+      "label": {
+        "en": "Head Width (mm)",
+        "es": "Ancho de la Cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Footprint / push-face width of the head",
+        "es": "Ancho de la huella / cara de empuje de la cabeza"
+      }
+    },
+    {
+      "id": "reach",
+      "type": "slider",
+      "default": 55.0,
+      "min": 30.0,
+      "max": 100.0,
+      "step": 1.0,
+      "group": "shape",
+      "modes": [
+        "holdfast"
+      ],
+      "label": {
+        "en": "Hold-Down Reach (mm)",
+        "es": "Alcance de la Sujeción (mm)"
+      },
+      "tooltip": {
+        "en": "How far the hold-down arm reaches over the work",
+        "es": "Cuánto alcanza el brazo de sujeción sobre la pieza"
+      }
+    },
+    {
+      "id": "face_h",
+      "type": "slider",
+      "default": 24.0,
+      "min": 10.0,
+      "max": 45.0,
+      "step": 1.0,
+      "group": "shape",
+      "modes": [
+        "planing_stop"
+      ],
+      "label": {
+        "en": "Stop Face Height (mm)",
+        "es": "Altura de la Cara del Tope (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the planing stop face",
+        "es": "Altura de la cara del tope para cepillar"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "metric_stop_dog",
+      "mode": "round_dog",
+      "label": {
+        "en": "20mm Stop Dog",
+        "es": "Perro de Tope 20mm"
+      },
+      "values": {
+        "hole": "20mm",
+        "shank_len": 45.0,
+        "head_h": 18.0,
+        "head_w": 32.0
+      }
+    },
+    {
+      "id": "printed_holdfast",
+      "mode": "holdfast",
+      "label": {
+        "en": "3/4in Cam Hold-Down",
+        "es": "Sujeción de Leva 3/4in"
+      },
+      "values": {
+        "hole": "3/4in",
+        "shank_len": 55.0,
+        "reach": 60.0,
+        "head_w": 34.0
+      }
+    },
+    {
+      "id": "hand_plane_stop",
+      "mode": "planing_stop",
+      "label": {
+        "en": "19mm Planing Stop",
+        "es": "Tope para Cepillar 19mm"
+      },
+      "values": {
+        "hole": "19mm",
+        "shank_len": 45.0,
+        "head_w": 40.0,
+        "face_h": 28.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "fit <= 0.8",
+      "severity": "warning",
+      "message": {
+        "en": "Large clearance may let the dog rock in the hole",
+        "es": "Una holgura grande puede dejar que el perro se mueva en el agujero"
+      }
+    },
+    {
+      "expression": "shank_len >= 20",
+      "severity": "error",
+      "message": {
+        "en": "Shank must be at least 20 mm to grip the hole",
+        "es": "El vástago debe ser de al menos 20 mm para sujetar en el agujero"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        100
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        200
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 3,
+    "per_part": 11,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "dog_hole",
+        "label": {
+          "en": "Dog Hole",
+          "es": "Agujero de Perro"
+        },
+        "geometry_type": "socket",
+        "standard": "19mm/20mm dog hole",
+        "parameters": [
+          "hole",
+          "fit",
+          "shank_len"
+        ],
+        "compatible_with": [
+          "lock-cam"
+        ]
+      },
+      {
+        "id": "work_face",
+        "label": {
+          "en": "Work Contact Face",
+          "es": "Cara de Contacto con la Pieza"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "head_w",
+          "head_h",
+          "reach",
+          "face_h"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns any bench with dog holes into a full workholding station — dogs, hold-downs and stops that would cost a set of steel accessories, printed to fit the exact hole size.",
+      "es": "Convierte cualquier banco con agujeros de perro en una estación completa de sujeción — perros, sujeciones y topes que costarían un juego de accesorios de acero, impresos al tamaño exacto del agujero."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bench-dog",
+    "hold-down",
+    "workbench",
+    "workholding",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

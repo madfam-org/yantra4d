@@ -1,0 +1,208 @@
+{
+  "project": {
+    "name": "Paint Rack",
+    "slug": "paint-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A hobby paint rack with cradle holes sized to the chosen bottle — Citadel pots (34 mm), Vallejo droppers (30 mm) or Army Painter droppers (29 mm). Flat, tiered (stepped so back rows stay visible) and wall-mounted variants.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un organizador de pinturas de modelismo con orificios dimensionados al bote elegido — botes Citadel (34 mm), goteros Vallejo (30 mm) o goteros Army Painter (29 mm). Variantes plana, escalonada (para que las filas traseras sigan visibles) y de pared.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/paint-rack.webp",
+    "difficulty": "beginner",
+    "tags": ["paint-rack", "hobby", "miniatures", "organizer", "citadel", "vallejo", "workshop", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "flat_rack",
+      "label": { "en": "Flat Rack", "es": "Organizador Plano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flat_rack"],
+      "estimate": { "base_time": 16, "per_unit": 3, "per_part": 18 }
+    },
+    {
+      "id": "tiered_rack",
+      "label": { "en": "Tiered Rack", "es": "Organizador Escalonado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tiered_rack"],
+      "estimate": { "base_time": 26, "per_unit": 5, "per_part": 30 }
+    },
+    {
+      "id": "wall_rack",
+      "label": { "en": "Wall Rack", "es": "Organizador de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_rack"],
+      "estimate": { "base_time": 18, "per_unit": 3, "per_part": 20 }
+    }
+  ],
+  "parts": [
+    { "id": "flat_rack", "label": { "en": "Flat Rack", "es": "Organizador Plano" }, "render_mode": 0, "color": "#5c7c8c" },
+    { "id": "tiered_rack", "label": { "en": "Tiered Rack", "es": "Organizador Escalonado" }, "render_mode": 0, "color": "#6c8c9c" },
+    { "id": "wall_rack", "label": { "en": "Wall Rack", "es": "Organizador de Pared" }, "render_mode": 0, "color": "#4c6c7c" }
+  ],
+  "parameter_groups": [
+    { "id": "bottle", "label": { "en": "Bottle Type", "es": "Tipo de Bote" } },
+    { "id": "grid", "label": { "en": "Grid & Cradles", "es": "Cuadrícula y Alojamientos" } },
+    { "id": "tier", "label": { "en": "Tiering", "es": "Escalonado" } },
+    { "id": "wall", "label": { "en": "Wall Mount", "es": "Montaje en Pared" } }
+  ],
+  "parameters": [
+    {
+      "id": "bottle", "type": "select", "default": "citadel",
+      "group": "bottle", "modes": ["flat_rack", "tiered_rack", "wall_rack"],
+      "label": { "en": "Bottle Type", "es": "Tipo de Bote" },
+      "tooltip": { "en": "Paint bottle the cradles are sized to", "es": "Bote de pintura al que se ajustan los alojamientos" },
+      "options": [
+        { "value": "citadel", "label": { "en": "Citadel pot (34 mm)", "es": "Bote Citadel (34 mm)" } },
+        { "value": "vallejo", "label": { "en": "Vallejo dropper (30 mm)", "es": "Gotero Vallejo (30 mm)" } },
+        { "value": "army-painter", "label": { "en": "Army Painter (29 mm)", "es": "Army Painter (29 mm)" } }
+      ]
+    },
+    {
+      "id": "cols", "type": "slider", "default": 5, "min": 1, "max": 10, "step": 1,
+      "group": "grid", "modes": ["flat_rack", "tiered_rack", "wall_rack"],
+      "label": { "en": "Bottles per Row", "es": "Botes por Fila" },
+      "tooltip": { "en": "Cradles across each row", "es": "Alojamientos por fila" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 3, "min": 1, "max": 8, "step": 1,
+      "group": "grid", "modes": ["flat_rack", "tiered_rack"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Number of rows", "es": "Número de filas" }
+    },
+    {
+      "id": "hole_clear", "type": "slider", "default": 1.5, "min": 0.4, "max": 4.0, "step": 0.1,
+      "group": "grid", "modes": ["flat_rack", "tiered_rack", "wall_rack"],
+      "label": { "en": "Cradle Clearance (mm)", "es": "Holgura de Alojamiento (mm)" },
+      "tooltip": { "en": "Per-side gap around each bottle", "es": "Espacio por lado alrededor de cada bote" }
+    },
+    {
+      "id": "recess", "type": "slider", "default": 8.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "grid", "modes": ["flat_rack", "tiered_rack", "wall_rack"],
+      "label": { "en": "Cradle Depth (mm)", "es": "Profundidad del Alojamiento (mm)" },
+      "tooltip": { "en": "How deep bottles sit into the rack", "es": "Qué tan profundo se asientan los botes" }
+    },
+    {
+      "id": "gap", "type": "slider", "default": 4.0, "min": 1.5, "max": 12.0, "step": 0.5,
+      "group": "grid", "modes": ["flat_rack", "tiered_rack", "wall_rack"], "advanced": true,
+      "label": { "en": "Wall Between Cradles (mm)", "es": "Pared entre Alojamientos (mm)" },
+      "tooltip": { "en": "Material between adjacent cradles", "es": "Material entre alojamientos adyacentes" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "grid", "modes": ["flat_rack", "tiered_rack", "wall_rack"], "advanced": true,
+      "label": { "en": "Rack Margin (mm)", "es": "Margen del Organizador (mm)" },
+      "tooltip": { "en": "Border around the cradle grid", "es": "Borde alrededor de la cuadrícula" }
+    },
+    {
+      "id": "base_th", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "grid", "modes": ["flat_rack", "tiered_rack", "wall_rack"], "advanced": true,
+      "label": { "en": "Floor Under Cradle (mm)", "es": "Piso bajo el Alojamiento (mm)" },
+      "tooltip": { "en": "Solid floor thickness under each cradle", "es": "Grosor del piso macizo bajo cada alojamiento" }
+    },
+    {
+      "id": "step_rise", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "tier", "modes": ["tiered_rack"],
+      "label": { "en": "Step Rise (mm)", "es": "Altura de Escalón (mm)" },
+      "tooltip": { "en": "Extra height added per row toward the back", "es": "Altura adicional por fila hacia atrás" }
+    },
+    {
+      "id": "step_run", "type": "slider", "default": 0.0, "min": 0.0, "max": 80.0, "step": 1.0,
+      "group": "tier", "modes": ["tiered_rack"], "advanced": true,
+      "label": { "en": "Step Depth (mm, 0 = auto)", "es": "Profundidad de Escalón (mm, 0 = auto)" },
+      "tooltip": { "en": "Depth of each tread (0 fits the bottle)", "es": "Profundidad de cada escalón (0 se ajusta al bote)" }
+    },
+    {
+      "id": "wall_h", "type": "slider", "default": 60.0, "min": 30.0, "max": 160.0, "step": 2.0,
+      "group": "wall", "modes": ["wall_rack"],
+      "label": { "en": "Back Plate Height (mm)", "es": "Altura de Placa Trasera (mm)" },
+      "tooltip": { "en": "Height of the wall-mount back plate", "es": "Altura de la placa de montaje" }
+    },
+    {
+      "id": "wall_th", "type": "slider", "default": 5.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "wall", "modes": ["wall_rack"], "advanced": true,
+      "label": { "en": "Back Plate Thickness (mm)", "es": "Grosor de Placa Trasera (mm)" },
+      "tooltip": { "en": "Back plate thickness", "es": "Grosor de la placa trasera" }
+    },
+    {
+      "id": "screw_d", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "wall", "modes": ["wall_rack"], "advanced": true,
+      "label": { "en": "Screw Hole (mm)", "es": "Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Wall screw hole diameter", "es": "Diámetro del orificio para tornillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "citadel_desk", "mode": "flat_rack",
+      "label": { "en": "Citadel Desk Rack (5x4)", "es": "Organizador Citadel (5x4)" },
+      "values": { "bottle": "citadel", "cols": 5, "rows": 4 }
+    },
+    {
+      "id": "vallejo_stadium", "mode": "tiered_rack",
+      "label": { "en": "Vallejo Stadium (6x5)", "es": "Grada Vallejo (6x5)" },
+      "values": { "bottle": "vallejo", "cols": 6, "rows": 5, "step_rise": 18 }
+    },
+    {
+      "id": "wall_strip", "mode": "wall_rack",
+      "label": { "en": "Wall Strip (8 pots)", "es": "Tira de Pared (8 botes)" },
+      "values": { "bottle": "citadel", "cols": 8, "wall_h": 50 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "recess >= 3",
+      "severity": "error",
+      "message": { "en": "Cradle depth must be at least 3 mm", "es": "La profundidad del alojamiento debe ser de al menos 3 mm" }
+    },
+    {
+      "expression": "gap >= 1.5",
+      "severity": "warning",
+      "message": { "en": "Thin walls between cradles may be fragile", "es": "Las paredes delgadas entre alojamientos pueden ser frágiles" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 200, 170] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 3, "per_part": 18,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "paint_bottle_array",
+        "label": { "en": "Paint Bottle Array", "es": "Matriz de Botes de Pintura" },
+        "geometry_type": "grid",
+        "standard": "Citadel/Vallejo/dropper",
+        "parameters": ["bottle", "cols", "rows", "hole_clear"]
+      },
+      {
+        "id": "wall_mount",
+        "label": { "en": "Wall Mount", "es": "Montaje en Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["wall_h", "wall_th", "screw_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A paint rack printed to the exact bottle a hobbyist owns keeps a workspace tidy and paints visible, with no wasted desk space — reducing spills and dried-out, forgotten paints.",
+      "es": "Un organizador impreso al bote exacto que posee el modelista mantiene ordenado el espacio y las pinturas visibles, sin desperdiciar escritorio — reduciendo derrames y pinturas secas y olvidadas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["paint-rack", "hobby", "organizer", "workshop", "household", "hyperobject", "commons"]
+}

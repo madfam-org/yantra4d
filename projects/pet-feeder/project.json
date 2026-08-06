@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Slow-Feed Pet Bowl",
+    "slug": "pet-feeder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A food bowl whose floor carries a maze of concentric rings and radial spokes so a fast-eating dog or cat has to work the kibble out of the channels, slowing gulping and easing digestion. Also a raised bowl stand and a drop-in maze insert for an existing bowl.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un plato cuyo fondo lleva un laberinto de anillos concéntricos y radios para que un perro o gato que come rápido tenga que sacar la croqueta de los canales, frenando la ingesta y ayudando la digestión. También un pedestal elevado y un inserto laberinto para un plato existente.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pet-feeder.webp",
+    "difficulty": "beginner",
+    "tags": ["pet", "dog", "cat", "bowl", "slow-feeder", "feeder", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "slow_bowl",
+      "label": { "en": "Slow-Feed Bowl", "es": "Plato Antivoracidad" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["slow_bowl"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "bowl_stand",
+      "label": { "en": "Bowl Stand", "es": "Pedestal" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bowl_stand"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "maze_insert",
+      "label": { "en": "Maze Insert", "es": "Inserto Laberinto" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["maze_insert"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "slow_bowl", "label": { "en": "Slow-Feed Bowl", "es": "Plato Antivoracidad" }, "render_mode": 0, "color": "#c2410c" },
+    { "id": "bowl_stand", "label": { "en": "Bowl Stand", "es": "Pedestal" }, "render_mode": 0, "color": "#ea580c" },
+    { "id": "maze_insert", "label": { "en": "Maze Insert", "es": "Inserto Laberinto" }, "render_mode": 0, "color": "#f97316" }
+  ],
+  "parameter_groups": [
+    { "id": "bowl", "label": { "en": "Bowl", "es": "Plato" } },
+    { "id": "maze", "label": { "en": "Maze", "es": "Laberinto" } },
+    { "id": "stand", "label": { "en": "Stand", "es": "Pedestal" } }
+  ],
+  "parameters": [
+    {
+      "id": "bowl_dia", "type": "slider", "default": 180.0, "min": 80.0, "max": 300.0, "step": 2.0,
+      "group": "bowl", "modes": ["slow_bowl", "bowl_stand", "maze_insert"],
+      "label": { "en": "Bowl Diameter (mm)", "es": "Diámetro del Plato (mm)" },
+      "tooltip": { "en": "Top inner diameter of the bowl (or the target bowl for insert/stand)", "es": "Diámetro interior superior del plato (o el plato objetivo para inserto/pedestal)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bowl_depth", "type": "slider", "default": 55.0, "min": 25.0, "max": 120.0, "step": 1.0,
+      "group": "bowl", "modes": ["slow_bowl"],
+      "label": { "en": "Bowl Depth (mm)", "es": "Profundidad del Plato (mm)" },
+      "tooltip": { "en": "Inner depth of the bowl", "es": "Profundidad interior del plato" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.2,
+      "group": "bowl", "modes": ["slow_bowl", "bowl_stand", "maze_insert"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Bowl wall / floor / stand wall thickness", "es": "Grosor de pared / fondo del plato / pedestal" }
+    },
+    {
+      "id": "maze_rings", "type": "slider", "default": 3, "min": 1, "max": 6, "step": 1,
+      "group": "maze", "modes": ["slow_bowl", "maze_insert"],
+      "label": { "en": "Maze Rings", "es": "Anillos del Laberinto" },
+      "tooltip": { "en": "Number of concentric ridge rings (more = slower eating)", "es": "Número de anillos concéntricos (más = comer más lento)" }
+    },
+    {
+      "id": "maze_spokes", "type": "slider", "default": 6, "min": 0, "max": 16, "step": 1,
+      "group": "maze", "modes": ["slow_bowl", "maze_insert"],
+      "label": { "en": "Maze Spokes", "es": "Radios del Laberinto" },
+      "tooltip": { "en": "Number of radial ridges crossing the rings (0 = rings only)", "es": "Número de crestas radiales que cruzan los anillos (0 = solo anillos)" }
+    },
+    {
+      "id": "ridge_h", "type": "slider", "default": 22.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "maze", "modes": ["slow_bowl", "maze_insert"],
+      "label": { "en": "Ridge Height (mm)", "es": "Altura de Cresta (mm)" },
+      "tooltip": { "en": "How tall the maze ridges stand (kept below the rim)", "es": "Qué tan altas son las crestas del laberinto (por debajo del borde)" }
+    },
+    {
+      "id": "ridge_t", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5,
+      "group": "maze", "modes": ["slow_bowl", "maze_insert"],
+      "label": { "en": "Ridge Thickness (mm)", "es": "Grosor de Cresta (mm)" },
+      "tooltip": { "en": "Thickness of the maze ridges", "es": "Grosor de las crestas del laberinto" }
+    },
+    {
+      "id": "stand_h", "type": "slider", "default": 70.0, "min": 25.0, "max": 160.0, "step": 2.0,
+      "group": "stand", "modes": ["bowl_stand"],
+      "label": { "en": "Stand Height (mm)", "es": "Altura del Pedestal (mm)" },
+      "tooltip": { "en": "Raised height of the bowl stand", "es": "Altura elevada del pedestal del plato" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "dog_slow", "mode": "slow_bowl",
+      "label": { "en": "Large-Dog Slow Bowl", "es": "Plato Antivoracidad Perro Grande" },
+      "values": { "bowl_dia": 200, "bowl_depth": 60, "maze_rings": 3, "maze_spokes": 8 }
+    },
+    {
+      "id": "cat_slow", "mode": "slow_bowl",
+      "label": { "en": "Cat Slow Bowl", "es": "Plato Antivoracidad Gato" },
+      "values": { "bowl_dia": 120, "bowl_depth": 35, "maze_rings": 2, "maze_spokes": 6, "ridge_h": 14 }
+    },
+    {
+      "id": "raise_bowl", "mode": "bowl_stand",
+      "label": { "en": "Raised Bowl Stand", "es": "Pedestal Elevado" },
+      "values": { "bowl_dia": 180, "stand_h": 90 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "ridge_h < bowl_depth",
+      "severity": "warning",
+      "message": { "en": "Ridges taller than the bowl are trimmed to the rim", "es": "Las crestas más altas que el plato se recortan al borde" }
+    },
+    {
+      "expression": "wall >= 2.5",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.5 mm", "es": "La pared debe ser de al menos 2.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [260, 260, 200] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 420] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -420, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 4, "per_part": 18,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "slow_feed_maze",
+        "label": { "en": "Slow-Feed Maze", "es": "Laberinto Antivoracidad" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["maze_rings", "maze_spokes", "ridge_h", "ridge_t", "bowl_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Commercial slow-feed bowls are one-size and often too shallow or too aggressive for a given pet. A maze tuned to the animal's size and eating speed reduces bloat and vomiting from gulping, printable in food-safe filament at any diameter.",
+      "es": "Los platos antivoracidad comerciales son de talla única y a menudo demasiado bajos o agresivos para una mascota. Un laberinto ajustado al tamaño y velocidad del animal reduce la torsión y el vómito por tragar rápido, imprimible en filamento apto para alimentos en cualquier diámetro."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pet", "dog", "cat", "bowl", "slow-feeder", "household", "hyperobject", "commons"]
+}

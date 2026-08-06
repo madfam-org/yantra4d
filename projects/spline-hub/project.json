@@ -1,0 +1,577 @@
+{
+  "project": {
+    "name": "Keyed / Spline Hub Adapter",
+    "slug": "spline-hub",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A hub with an internal torque-transmitting bore that couples a printed part to a motor shaft, gearbox, or actuator. Three bore types: a keyway (round bore + rectangular key slot), an approximate involute spline (a toothed bore with N teeth sharing the load), and a hex bore for hex shafts. Optional outer mounting flange with a bolt-hole circle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un cubo con un barreno interno transmisor de par que acopla una pieza impresa a un eje de motor, caja reductora o actuador. Tres tipos de barreno: un chavetero (barreno redondo + ranura rectangular), un estriado de involuta aproximado (barreno dentado con N dientes que reparten la carga) y un barreno hexagonal para ejes hexagonales. Brida de montaje exterior opcional con círculo de pernos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/spline-hub.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "spline",
+      "keyway",
+      "hub",
+      "coupling",
+      "shaft",
+      "torque",
+      "hex",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "keyed_hub",
+      "label": {
+        "en": "Keyed Hub (keyway)",
+        "es": "Cubo con Chavetero"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "keyed_hub"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "spline_hub",
+      "label": {
+        "en": "Spline Hub (involute)",
+        "es": "Cubo Estriado (involuta)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "spline_hub"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "hex_hub",
+      "label": {
+        "en": "Hex Hub",
+        "es": "Cubo Hexagonal"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "hex_hub"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "keyed_hub",
+      "label": {
+        "en": "Keyed Hub",
+        "es": "Cubo con Chavetero"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "spline_hub",
+      "label": {
+        "en": "Spline Hub",
+        "es": "Cubo Estriado"
+      },
+      "render_mode": 0,
+      "color": "#6a8d73"
+    },
+    {
+      "id": "hex_hub",
+      "label": {
+        "en": "Hex Hub",
+        "es": "Cubo Hexagonal"
+      },
+      "render_mode": 0,
+      "color": "#b0764b"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bore",
+      "label": {
+        "en": "Bore",
+        "es": "Barreno"
+      }
+    },
+    {
+      "id": "hub",
+      "label": {
+        "en": "Hub Body",
+        "es": "Cuerpo del Cubo"
+      }
+    },
+    {
+      "id": "flange",
+      "label": {
+        "en": "Mounting Flange",
+        "es": "Brida de Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bore_type",
+      "type": "select",
+      "default": "keyway",
+      "group": "bore",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "label": {
+        "en": "Bore Type",
+        "es": "Tipo de Barreno"
+      },
+      "tooltip": {
+        "en": "keyway: round bore + key slot. involute_spline: a toothed bore. hex: a hexagonal bore. (Each part forces its matching type.)",
+        "es": "keyway: barreno redondo + ranura de chaveta. involute_spline: barreno dentado. hex: barreno hexagonal. (Cada pieza fuerza su tipo.)"
+      },
+      "options": [
+        {
+          "value": "keyway",
+          "label": {
+            "en": "Keyway (bore + key slot)",
+            "es": "Chavetero (barreno + ranura)"
+          }
+        },
+        {
+          "value": "involute_spline",
+          "label": {
+            "en": "Involute Spline (toothed)",
+            "es": "Estriado de Involuta (dentado)"
+          }
+        },
+        {
+          "value": "hex",
+          "label": {
+            "en": "Hex (hexagonal bore)",
+            "es": "Hexagonal (barreno hexagonal)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "shaft_dia",
+      "type": "slider",
+      "default": 8.0,
+      "min": 3.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "bore",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "label": {
+        "en": "Shaft Diameter (mm)",
+        "es": "Diámetro de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal shaft size: bore diameter (keyway/spline) or across-flats (hex)",
+        "es": "Tamaño nominal del eje: diámetro de barreno (chavetero/estría) o entre caras (hex)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.2,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "bore",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "label": {
+        "en": "Fit Clearance (mm)",
+        "es": "Holgura de Ajuste (mm)"
+      },
+      "tooltip": {
+        "en": "Added to the bore so the printed hub slides onto the shaft",
+        "es": "Se suma al barreno para que el cubo impreso deslice sobre el eje"
+      }
+    },
+    {
+      "id": "spline_teeth",
+      "type": "slider",
+      "default": 6,
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "group": "bore",
+      "modes": [
+        "spline_hub"
+      ],
+      "label": {
+        "en": "Spline Teeth",
+        "es": "Dientes de Estría"
+      },
+      "tooltip": {
+        "en": "Number of teeth around the involute-spline bore (more = smoother load sharing)",
+        "es": "Número de dientes alrededor del barreno estriado (más = reparto de carga más suave)"
+      }
+    },
+    {
+      "id": "key_width",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "bore",
+      "modes": [
+        "keyed_hub"
+      ],
+      "label": {
+        "en": "Key Width (mm)",
+        "es": "Ancho de Chaveta (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the key slot (auto-clamped to the shaft)",
+        "es": "Ancho de la ranura de chaveta (limitado al eje)"
+      }
+    },
+    {
+      "id": "key_depth",
+      "type": "slider",
+      "default": 1.8,
+      "min": 0.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "bore",
+      "modes": [
+        "keyed_hub"
+      ],
+      "label": {
+        "en": "Key Depth (mm)",
+        "es": "Profundidad de Chaveta (mm)"
+      },
+      "tooltip": {
+        "en": "How far the key slot cuts into the hub wall past the bore",
+        "es": "Cuánto penetra la ranura en la pared del cubo más allá del barreno"
+      }
+    },
+    {
+      "id": "hub_od",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "hub",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "label": {
+        "en": "Hub Outer Ø (mm, 0 = auto)",
+        "es": "Ø Exterior del Cubo (mm, 0 = auto)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the hub; 0 auto-sizes to 2.2× shaft + 4 mm",
+        "es": "Diámetro exterior del cubo; 0 lo dimensiona a 2.2× eje + 4 mm"
+      }
+    },
+    {
+      "id": "length",
+      "type": "slider",
+      "default": 16.0,
+      "min": 5.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "hub",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "label": {
+        "en": "Hub Length (mm)",
+        "es": "Longitud del Cubo (mm)"
+      },
+      "tooltip": {
+        "en": "Axial length of the hub (longer = more torque grip)",
+        "es": "Longitud axial del cubo (más largo = más agarre de par)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "flange",
+      "type": "checkbox",
+      "default": false,
+      "group": "flange",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "label": {
+        "en": "Mounting Flange",
+        "es": "Brida de Montaje"
+      },
+      "tooltip": {
+        "en": "Add an outer flange with a bolt-hole circle to bolt the hub to a face",
+        "es": "Añade una brida exterior con círculo de pernos para atornillar el cubo a una cara"
+      }
+    },
+    {
+      "id": "flange_bolts",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "group": "flange",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Flange Bolt Holes",
+        "es": "Orificios de Perno de Brida"
+      },
+      "tooltip": {
+        "en": "Number of bolt holes in the flange circle",
+        "es": "Número de orificios de perno en el círculo de la brida"
+      }
+    },
+    {
+      "id": "flange_bolt_dia",
+      "type": "slider",
+      "default": 4.5,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "flange",
+      "modes": [
+        "keyed_hub",
+        "spline_hub",
+        "hex_hub"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Flange Bolt Ø (mm)",
+        "es": "Ø de Perno de Brida (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the flange bolt holes",
+        "es": "Diámetro de los orificios de perno de la brida"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "nema_keyed_8mm",
+      "mode": "keyed_hub",
+      "label": {
+        "en": "Keyed Hub 8 mm Shaft",
+        "es": "Cubo con Chavetero Eje 8 mm"
+      },
+      "values": {
+        "bore_type": "keyway",
+        "shaft_dia": 8,
+        "key_width": 3,
+        "key_depth": 1.8,
+        "length": 16
+      }
+    },
+    {
+      "id": "spline_coupler_12t",
+      "mode": "spline_hub",
+      "label": {
+        "en": "Spline Coupler 12-tooth",
+        "es": "Acoplador Estriado 12 dientes"
+      },
+      "values": {
+        "bore_type": "involute_spline",
+        "shaft_dia": 12,
+        "spline_teeth": 12,
+        "length": 20,
+        "flange": true
+      }
+    },
+    {
+      "id": "hex_hub_6mm",
+      "mode": "hex_hub",
+      "label": {
+        "en": "Hex Hub 6 mm",
+        "es": "Cubo Hexagonal 6 mm"
+      },
+      "values": {
+        "bore_type": "hex",
+        "shaft_dia": 6,
+        "length": 14
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "key_width <= shaft_dia",
+      "severity": "warning",
+      "message": {
+        "en": "Key width is large relative to the shaft",
+        "es": "El ancho de chaveta es grande respecto al eje"
+      }
+    },
+    {
+      "expression": "length >= 5",
+      "severity": "error",
+      "message": {
+        "en": "Hub must be at least 5 mm long",
+        "es": "El cubo debe tener al menos 5 mm de largo"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        120
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -120,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "torque_spline_keyway",
+        "label": {
+          "en": "Torque Spline / Keyway",
+          "es": "Estría / Chavetero de Par"
+        },
+        "geometry_type": "socket",
+        "standard": "DIN 5480 (spline) / keyway",
+        "parameters": [
+          "bore_type",
+          "shaft_dia",
+          "spline_teeth",
+          "key_width",
+          "key_depth",
+          "clearance"
+        ],
+        "compatible_with": [
+          "knob-dshaft"
+        ]
+      },
+      {
+        "id": "flange_bolt_circle",
+        "label": {
+          "en": "Flange Bolt Circle",
+          "es": "Círculo de Pernos de Brida"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "flange",
+          "flange_bolts",
+          "flange_bolt_dia"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A keyed or splined hub is how printed pulleys, arms, gears, and knobs actually transmit torque from a motor without slipping. A parametric coupler adapts any printed part to any shaft — repairing tools and building robots and machines without machined metal couplers.",
+      "es": "Un cubo con chaveta o estría es la forma en que poleas, brazos, engranajes y perillas impresas transmiten par de un motor sin deslizar. Un acoplador paramétrico adapta cualquier pieza impresa a cualquier eje — reparando herramientas y construyendo robots y máquinas sin acopladores metálicos mecanizados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "spline",
+    "keyway",
+    "hub",
+    "coupling",
+    "torque",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

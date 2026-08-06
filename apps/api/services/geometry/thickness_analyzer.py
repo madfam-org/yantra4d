@@ -76,7 +76,7 @@ def compute_wall_thickness(
     ray_directions = -normals  # cast inward
 
     # Perform batch ray-mesh intersection.
-    locations, index_ray, index_tri = mesh.ray.intersects_location(
+    locations, index_ray, _index_tri = mesh.ray.intersects_location(
         ray_origins=ray_origins,
         ray_directions=ray_directions,
         multiple_hits=False,

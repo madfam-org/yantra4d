@@ -1,0 +1,186 @@
+{
+  "project": {
+    "name": "Battery Pad",
+    "slug": "battery-pad",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An anti-slip LiPo tray / pad for FPV & RC craft, with strap channels so the battery strap seats flush and does not creep. Sized to the pack footprint. Choose a flat grippy pad with strap slots, a walled tray that captures the pack, or a wedge that tilts the pack to shift the centre of gravity.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bandeja / pad antideslizante para LiPo en equipos FPV y RC, con canales para la correa de modo que asiente al ras y no se deslice. Dimensionada a la huella del pack. Elige un pad plano con ranuras, una bandeja con paredes que captura el pack o una cuna que inclina el pack para ajustar el centro de gravedad.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/battery-pad.webp",
+    "difficulty": "beginner",
+    "tags": ["drone", "fpv", "battery", "lipo", "tray", "pad", "strap", "rc", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "flat_pad",
+      "label": { "en": "Flat Pad", "es": "Pad Plano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flat_pad"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "tray",
+      "label": { "en": "Walled Tray", "es": "Bandeja con Paredes" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "wedge",
+      "label": { "en": "CG Wedge", "es": "Cuna de CG" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wedge"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "flat_pad", "label": { "en": "Flat Pad", "es": "Pad Plano" }, "render_mode": 0, "color": "#5aa06a" },
+    { "id": "tray", "label": { "en": "Walled Tray", "es": "Bandeja" }, "render_mode": 0, "color": "#3f8850" },
+    { "id": "wedge", "label": { "en": "CG Wedge", "es": "Cuna de CG" }, "render_mode": 0, "color": "#7bbb8a" }
+  ],
+  "parameter_groups": [
+    { "id": "pack", "label": { "en": "Battery Pack", "es": "Pack de Bateria" } },
+    { "id": "grip", "label": { "en": "Grip & Pad", "es": "Agarre y Pad" } },
+    { "id": "shape", "label": { "en": "Tray / Wedge", "es": "Bandeja / Cuna" } }
+  ],
+  "parameters": [
+    {
+      "id": "pack_w", "type": "slider", "default": 35.0, "min": 15.0, "max": 70.0, "step": 1,
+      "group": "pack", "modes": ["flat_pad", "tray", "wedge"],
+      "label": { "en": "Pack Width (mm)", "es": "Ancho del Pack (mm)" },
+      "tooltip": { "en": "Battery pack width", "es": "Ancho del pack de bateria" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pack_l", "type": "slider", "default": 70.0, "min": 25.0, "max": 150.0, "step": 1,
+      "group": "pack", "modes": ["flat_pad", "tray", "wedge"],
+      "label": { "en": "Pack Length (mm)", "es": "Largo del Pack (mm)" },
+      "tooltip": { "en": "Battery pack length", "es": "Largo del pack de bateria" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "strap_w", "type": "slider", "default": 20.0, "min": 6.0, "max": 40.0, "step": 1,
+      "group": "pack", "modes": ["flat_pad", "tray", "wedge"],
+      "label": { "en": "Strap Width (mm)", "es": "Ancho de Correa (mm)" },
+      "tooltip": { "en": "Battery strap width the channel accepts", "es": "Ancho de la correa que acepta el canal" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 4.0, "min": 1.0, "max": 12.0, "step": 0.5,
+      "group": "pack", "modes": ["flat_pad", "tray", "wedge"],
+      "label": { "en": "Overhang (mm)", "es": "Voladizo (mm)" },
+      "tooltip": { "en": "Pad overhang beyond the pack footprint", "es": "Voladizo del pad mas alla de la huella del pack" }
+    },
+    {
+      "id": "pad_thick", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.5,
+      "group": "grip", "modes": ["flat_pad", "tray", "wedge"],
+      "label": { "en": "Pad Thickness (mm)", "es": "Grosor del Pad (mm)" },
+      "tooltip": { "en": "Base pad thickness", "es": "Grosor de la base del pad" }
+    },
+    {
+      "id": "grip_depth", "type": "slider", "default": 1.2, "min": 0.4, "max": 3.0, "step": 0.2,
+      "group": "grip", "modes": ["flat_pad", "tray"],
+      "label": { "en": "Grip Rib Depth (mm)", "es": "Profundidad de Nervadura (mm)" },
+      "tooltip": { "en": "Height of the anti-slip ribs", "es": "Altura de las nervaduras antideslizantes" }
+    },
+    {
+      "id": "grip_pitch", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "grip", "modes": ["flat_pad", "tray"], "advanced": true,
+      "label": { "en": "Grip Rib Pitch (mm)", "es": "Paso de Nervadura (mm)" },
+      "tooltip": { "en": "Spacing between anti-slip ribs", "es": "Separacion entre nervaduras antideslizantes" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.5, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "shape", "modes": ["tray"],
+      "label": { "en": "Tray Wall (mm)", "es": "Pared de Bandeja (mm)" },
+      "tooltip": { "en": "Perimeter wall thickness", "es": "Grosor de la pared perimetral" }
+    },
+    {
+      "id": "wall_h", "type": "slider", "default": 10.0, "min": 4.0, "max": 25.0, "step": 1,
+      "group": "shape", "modes": ["tray"],
+      "label": { "en": "Tray Wall Height (mm)", "es": "Altura de Pared (mm)" },
+      "tooltip": { "en": "How high the walls capture the pack", "es": "Que tan alto capturan las paredes el pack" }
+    },
+    {
+      "id": "wedge_rise", "type": "slider", "default": 12.0, "min": 3.0, "max": 30.0, "step": 1,
+      "group": "shape", "modes": ["wedge"],
+      "label": { "en": "Wedge Rise (mm)", "es": "Elevacion de Cuna (mm)" },
+      "tooltip": { "en": "Rear rise that tilts the pack for CG", "es": "Elevacion trasera que inclina el pack para el CG" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "four_s_pad", "mode": "flat_pad",
+      "label": { "en": "4S Pad (35x70)", "es": "Pad 4S (35x70)" },
+      "values": { "pack_w": 35, "pack_l": 70, "strap_w": 20, "grip_depth": 1.2 }
+    },
+    {
+      "id": "six_s_tray", "mode": "tray",
+      "label": { "en": "6S Tray (45x105)", "es": "Bandeja 6S (45x105)" },
+      "values": { "pack_w": 45, "pack_l": 105, "strap_w": 25, "wall": 3, "wall_h": 14 }
+    },
+    {
+      "id": "cg_wedge", "mode": "wedge",
+      "label": { "en": "CG Wedge (35x70)", "es": "Cuna CG (35x70)" },
+      "values": { "pack_w": 35, "pack_l": 70, "wedge_rise": 14, "strap_w": 20 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "strap_w <= pack_l",
+      "severity": "warning",
+      "message": { "en": "Strap wider than the pack length is unusual", "es": "Una correa mas ancha que el largo del pack es inusual" }
+    },
+    {
+      "expression": "pad_thick >= 1.5",
+      "severity": "error",
+      "message": { "en": "Pad must be at least 1.5 mm thick", "es": "El pad debe tener al menos 1.5 mm de grosor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "battery_strap_channel",
+        "label": { "en": "Battery Strap Channel", "es": "Canal de Correa de Bateria" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["strap_w", "pack_l"]
+      },
+      {
+        "id": "pack_footprint",
+        "label": { "en": "Pack Footprint", "es": "Huella del Pack" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["pack_w", "pack_l", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A LiPo that shifts in flight ruins handling and can eject in a crash. On-demand anti-slip pads and trays sized to the exact pack hold the battery put, and the CG wedge lets a builder tune balance without buying tune parts.",
+      "es": "Un LiPo que se mueve en vuelo arruina el manejo y puede salir despedido en un choque. Los pads y bandejas antideslizantes bajo demanda dimensionados al pack exacto mantienen la bateria en su lugar, y la cuna de CG permite ajustar el balance sin comprar piezas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drone", "fpv", "battery", "lipo", "rc", "commercial", "hyperobject", "commons"]
+}

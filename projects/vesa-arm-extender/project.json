@@ -1,0 +1,556 @@
+{
+  "project": {
+    "name": "VESA Arm Extender",
+    "slug": "vesa-arm-extender",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Extends or offsets a VESA display mount for extra reach, wall clearance, or to bridge two pattern sizes. Every part carries a real VESA MIS-D bolt square (75×75 or 100×100, M4) on both a mount-side face and a display-side face, so it drops transparently into a VESA screw chain. Spacer mode is a straight standoff; Offset Arm is an L/Z crank that brings the pattern out and over an obstruction; Combo Adapter offsets while converting 75 ↔ 100. Optional cable-management slot.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Extiende o desplaza un soporte VESA para ganar alcance, separación de la pared o para unir dos tamaños de patrón. Cada pieza lleva un cuadrado de tornillos VESA MIS-D real (75×75 o 100×100, M4) en la cara de montaje y en la cara de pantalla, integrándose de forma transparente en una cadena de tornillos VESA. El modo Separador es un espaciador recto; el Brazo Desplazado es una manivela en L/Z que lleva el patrón hacia afuera y por encima de un obstáculo; el Adaptador Combo desplaza mientras convierte 75 ↔ 100. Ranura de gestión de cables opcional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vesa-arm-extender.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "vesa",
+      "mount",
+      "extender",
+      "arm",
+      "offset",
+      "spacer",
+      "monitor",
+      "fdmi",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "spacer",
+      "label": {
+        "en": "Spacer (straight standoff)",
+        "es": "Separador (espaciador recto)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "spacer"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 9
+      }
+    },
+    {
+      "id": "offset_arm",
+      "label": {
+        "en": "Offset Arm (L/Z crank)",
+        "es": "Brazo Desplazado (manivela L/Z)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "offset_arm"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "combo_adapter",
+      "label": {
+        "en": "Combo Adapter (75 ↔ 100 + offset)",
+        "es": "Adaptador Combo (75 ↔ 100 + desplazamiento)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "combo_adapter"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "spacer",
+      "label": {
+        "en": "Spacer",
+        "es": "Separador"
+      },
+      "render_mode": 0,
+      "color": "#4b5f74"
+    },
+    {
+      "id": "offset_arm",
+      "label": {
+        "en": "Offset Arm",
+        "es": "Brazo Desplazado"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "combo_adapter",
+      "label": {
+        "en": "Combo Adapter",
+        "es": "Adaptador Combo"
+      },
+      "render_mode": 0,
+      "color": "#8bb5cc"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "pattern",
+      "label": {
+        "en": "VESA Pattern",
+        "es": "Patrón VESA"
+      }
+    },
+    {
+      "id": "geometry",
+      "label": {
+        "en": "Extension Geometry",
+        "es": "Geometría de Extensión"
+      }
+    },
+    {
+      "id": "cable",
+      "label": {
+        "en": "Cable Management",
+        "es": "Gestión de Cables"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "vesa",
+      "type": "select",
+      "default": "100",
+      "group": "pattern",
+      "modes": [
+        "spacer",
+        "offset_arm",
+        "combo_adapter"
+      ],
+      "label": {
+        "en": "VESA Size (mount side)",
+        "es": "Tamaño VESA (lado de montaje)"
+      },
+      "tooltip": {
+        "en": "VESA MIS-D bolt square that bolts to the arm / wall bracket. 75 & 100 both use M4.",
+        "es": "Cuadrado de tornillos VESA MIS-D que se atornilla al brazo / soporte de pared. 75 y 100 usan M4."
+      },
+      "options": [
+        {
+          "value": "75",
+          "label": {
+            "en": "75 × 75 (M4)",
+            "es": "75 × 75 (M4)"
+          }
+        },
+        {
+          "value": "100",
+          "label": {
+            "en": "100 × 100 (M4)",
+            "es": "100 × 100 (M4)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dest_vesa",
+      "type": "select",
+      "default": "75",
+      "group": "pattern",
+      "modes": [
+        "combo_adapter"
+      ],
+      "label": {
+        "en": "VESA Size (display side)",
+        "es": "Tamaño VESA (lado de pantalla)"
+      },
+      "tooltip": {
+        "en": "Display-side square — only used by the Combo Adapter to convert 75 ↔ 100.",
+        "es": "Cuadrado del lado de pantalla — solo lo usa el Adaptador Combo para convertir 75 ↔ 100."
+      },
+      "options": [
+        {
+          "value": "75",
+          "label": {
+            "en": "75 × 75 (M4)",
+            "es": "75 × 75 (M4)"
+          }
+        },
+        {
+          "value": "100",
+          "label": {
+            "en": "100 × 100 (M4)",
+            "es": "100 × 100 (M4)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "offset",
+      "type": "slider",
+      "default": 40,
+      "min": 12,
+      "max": 120,
+      "step": 1,
+      "group": "geometry",
+      "modes": [
+        "spacer",
+        "offset_arm",
+        "combo_adapter"
+      ],
+      "label": {
+        "en": "Offset / Reach (mm)",
+        "es": "Desplazamiento / Alcance (mm)"
+      },
+      "tooltip": {
+        "en": "Standoff distance (Spacer/Combo) or how far the pattern reaches out and up (Offset Arm).",
+        "es": "Distancia del espaciador (Separador/Combo) o cuánto se extiende el patrón hacia afuera y arriba (Brazo Desplazado)."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "plate_thick",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "geometry",
+      "modes": [
+        "spacer",
+        "offset_arm",
+        "combo_adapter"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of each VESA face plate",
+        "es": "Grosor de cada placa de cara VESA"
+      }
+    },
+    {
+      "id": "web_thick",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "geometry",
+      "modes": [
+        "offset_arm"
+      ],
+      "label": {
+        "en": "Web / Column Thickness (mm)",
+        "es": "Grosor de Alma / Columna (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the crank's connecting web that carries the load (Offset Arm)",
+        "es": "Grosor del alma de conexión de la manivela que soporta la carga (Brazo Desplazado)"
+      }
+    },
+    {
+      "id": "plate_margin",
+      "type": "slider",
+      "default": 11.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 1.0,
+      "group": "geometry",
+      "modes": [
+        "spacer",
+        "offset_arm",
+        "combo_adapter"
+      ],
+      "label": {
+        "en": "Plate Margin (mm)",
+        "es": "Margen de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Material beyond the bolt square, on every side",
+        "es": "Material más allá del cuadrado de tornillos, en cada lado"
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 6.0,
+      "min": 0.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "geometry",
+      "modes": [
+        "spacer",
+        "offset_arm",
+        "combo_adapter"
+      ],
+      "label": {
+        "en": "Corner Radius (mm)",
+        "es": "Radio de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Rounding of the plate corners (0 = sharp)",
+        "es": "Redondeo de las esquinas de la placa (0 = recto)"
+      }
+    },
+    {
+      "id": "cable_slot",
+      "type": "checkbox",
+      "default": true,
+      "group": "cable",
+      "modes": [
+        "spacer",
+        "offset_arm",
+        "combo_adapter"
+      ],
+      "label": {
+        "en": "Cable Slot",
+        "es": "Ranura de Cable"
+      },
+      "tooltip": {
+        "en": "Add a rounded pass-through channel for routing display cables",
+        "es": "Agrega un canal de paso redondeado para enrutar cables de la pantalla"
+      }
+    },
+    {
+      "id": "slot_w",
+      "type": "slider",
+      "default": 16.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 1.0,
+      "group": "cable",
+      "modes": [
+        "spacer",
+        "offset_arm",
+        "combo_adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Cable Slot Width (mm)",
+        "es": "Ancho de Ranura de Cable (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the cable pass-through channel",
+        "es": "Ancho del canal de paso de cables"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "reach_50_100",
+      "mode": "spacer",
+      "label": {
+        "en": "50 mm Standoff (100×100)",
+        "es": "Separador 50 mm (100×100)"
+      },
+      "values": {
+        "vesa": "100",
+        "offset": 50,
+        "plate_thick": 6,
+        "plate_margin": 12,
+        "corner_r": 6,
+        "cable_slot": true
+      }
+    },
+    {
+      "id": "crank_clearance",
+      "mode": "offset_arm",
+      "label": {
+        "en": "Clearance Crank (100×100)",
+        "es": "Manivela de Separación (100×100)"
+      },
+      "values": {
+        "vesa": "100",
+        "offset": 60,
+        "plate_thick": 6,
+        "web_thick": 8,
+        "plate_margin": 12,
+        "corner_r": 5
+      }
+    },
+    {
+      "id": "combo_75_to_100",
+      "mode": "combo_adapter",
+      "label": {
+        "en": "Combo 75 → 100 + 40 mm",
+        "es": "Combo 75 → 100 + 40 mm"
+      },
+      "values": {
+        "vesa": "75",
+        "dest_vesa": "100",
+        "offset": 40,
+        "plate_thick": 6,
+        "plate_margin": 12,
+        "cable_slot": true
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_thick >= 2.5",
+      "severity": "error",
+      "message": {
+        "en": "Plate must be at least 2.5 mm thick",
+        "es": "La placa debe tener al menos 2.5 mm de grosor"
+      }
+    },
+    {
+      "expression": "offset >= plate_thick * 2",
+      "severity": "warning",
+      "message": {
+        "en": "Offset is small relative to the plate thickness",
+        "es": "El desplazamiento es pequeño respecto al grosor de la placa"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        180,
+        180,
+        160
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        280
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -280,
+        60
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 11,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "vesa_mount_face",
+        "label": {
+          "en": "VESA MIS-D (mount face)",
+          "es": "VESA MIS-D (cara de montaje)"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "VESA MIS-D",
+        "parameters": [
+          "vesa",
+          "plate_thick",
+          "plate_margin"
+        ],
+        "compatible_with": [
+          "framing-hyperobject",
+          "vesa-mount"
+        ]
+      },
+      {
+        "id": "vesa_display_face",
+        "label": {
+          "en": "VESA MIS-D (display face)",
+          "es": "VESA MIS-D (cara de pantalla)"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "VESA MIS-D",
+        "parameters": [
+          "vesa",
+          "dest_vesa",
+          "plate_thick",
+          "offset"
+        ],
+        "compatible_with": [
+          "framing-hyperobject",
+          "vesa-mount"
+        ]
+      },
+      {
+        "id": "cable_pass_slot",
+        "label": {
+          "en": "Cable Pass-Through Slot",
+          "es": "Ranura de Paso de Cables"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "cable_slot",
+          "slot_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Commercial monitor arms and wall mounts ship in a single reach and a single pattern; this extender adds standoff, crank reach, or a 75 ↔ 100 conversion so an existing arm keeps serving a new display or a tighter workspace, instead of buying a whole new mount.",
+      "es": "Los brazos y soportes de monitor comerciales se venden con un solo alcance y un solo patrón; este extensor añade separación, alcance en manivela o conversión 75 ↔ 100 para que un brazo existente siga sirviendo a una nueva pantalla o a un espacio más ajustado, en lugar de comprar un soporte nuevo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "vesa",
+    "mount",
+    "extender",
+    "offset",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

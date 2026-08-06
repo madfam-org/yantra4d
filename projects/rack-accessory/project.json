@@ -1,0 +1,168 @@
+{
+  "project": {
+    "name": "Roof-Rack / Crossbar Accessory",
+    "slug": "rack-accessory",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Accessory saddles that seat on a roof-rack crossbar and carry a mount. The bar profile is channelled into the underside so the saddle straddles the bar; a clamp plate pinches it from below via side bolts, and a T-slot platform on top takes an accessory. Built for the three profile families — square, round and aero — using Thule / Yakima crossbar dimensions.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sillines accesorios que se asientan en una barra transversal de rack de techo y llevan un montaje. El perfil de la barra se canaliza en la parte inferior para que el sillín abrace la barra; una placa de sujeción la aprieta desde abajo con pernos laterales, y una plataforma con ranura en T arriba recibe un accesorio. Construido para las tres familias de perfil — cuadrado, redondo y aero — con dimensiones de barras Thule / Yakima.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/rack-accessory.webp",
+    "difficulty": "intermediate",
+    "tags": ["roof-rack", "crossbar", "thule", "yakima", "clamp", "aero", "automotive", "commercial", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "square_clamp",
+      "label": { "en": "Square-Bar Saddle", "es": "Sillín Barra Cuadrada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["square_clamp"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "round_clamp",
+      "label": { "en": "Round-Bar Saddle", "es": "Sillín Barra Redonda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["round_clamp"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 15 }
+    },
+    {
+      "id": "aero_saddle",
+      "label": { "en": "Aero-Bar Saddle", "es": "Sillín Barra Aero" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["aero_saddle"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "square_clamp", "label": { "en": "Square-Bar Saddle", "es": "Sillín Barra Cuadrada" }, "render_mode": 0, "color": "#c2410c" },
+    { "id": "round_clamp", "label": { "en": "Round-Bar Saddle", "es": "Sillín Barra Redonda" }, "render_mode": 0, "color": "#ea580c" },
+    { "id": "aero_saddle", "label": { "en": "Aero-Bar Saddle", "es": "Sillín Barra Aero" }, "render_mode": 0, "color": "#f97316" }
+  ],
+  "parameter_groups": [
+    { "id": "bar", "label": { "en": "Crossbar", "es": "Barra Transversal" } },
+    { "id": "saddle", "label": { "en": "Saddle", "es": "Sillín" } },
+    { "id": "platform", "label": { "en": "Platform", "es": "Plataforma" } }
+  ],
+  "parameters": [
+    {
+      "id": "bar_w", "type": "slider", "default": 31.75, "min": 15.0, "max": 95.0, "step": 0.25,
+      "group": "bar", "modes": ["square_clamp", "round_clamp", "aero_saddle"],
+      "label": { "en": "Bar Width (mm)", "es": "Ancho de Barra (mm)" },
+      "tooltip": { "en": "Crossbar width. Thule SquareBar 31.75, Yakima RoundBar 28.6, Thule WingBar ~79 mm", "es": "Ancho de barra. Thule SquareBar 31.75, Yakima RoundBar 28.6, Thule WingBar ~79 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bar_h", "type": "slider", "default": 22.2, "min": 12.0, "max": 45.0, "step": 0.2,
+      "group": "bar", "modes": ["square_clamp", "aero_saddle"],
+      "label": { "en": "Bar Height (mm)", "es": "Altura de Barra (mm)" },
+      "tooltip": { "en": "Crossbar height. Thule SquareBar 22.2 mm; WingBar aero ~25 mm", "es": "Altura de barra. Thule SquareBar 22.2 mm; WingBar aero ~25 mm" }
+    },
+    {
+      "id": "saddle_w", "type": "slider", "default": 50.0, "min": 25.0, "max": 90.0, "step": 1.0,
+      "group": "saddle", "modes": ["square_clamp", "round_clamp", "aero_saddle"],
+      "label": { "en": "Saddle Width (mm)", "es": "Ancho del Sillín (mm)" },
+      "tooltip": { "en": "Width of the saddle along the bar", "es": "Ancho del sillín a lo largo de la barra" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "saddle", "modes": ["square_clamp", "round_clamp", "aero_saddle"],
+      "label": { "en": "Wall / Body (mm)", "es": "Pared / Cuerpo (mm)" },
+      "tooltip": { "en": "Saddle wall and body thickness", "es": "Grosor de pared y cuerpo del sillín" }
+    },
+    {
+      "id": "bolt_d", "type": "slider", "default": 6.4, "min": 3.0, "max": 10.0, "step": 0.1,
+      "group": "saddle", "modes": ["square_clamp", "round_clamp", "aero_saddle"], "advanced": true,
+      "label": { "en": "Clamp Bolt (mm)", "es": "Perno de Sujeción (mm)" },
+      "tooltip": { "en": "Clamp bolt clearance (M6 ~6.4 mm)", "es": "Holgura del perno de sujeción (M6 ~6.4 mm)" }
+    },
+    {
+      "id": "acc_slot_w", "type": "slider", "default": 8.0, "min": 4.0, "max": 14.0, "step": 0.5,
+      "group": "platform", "modes": ["square_clamp", "round_clamp", "aero_saddle"],
+      "label": { "en": "Accessory Slot (mm)", "es": "Ranura de Accesorio (mm)" },
+      "tooltip": { "en": "Width of the top T-slot for the accessory bolt", "es": "Ancho de la ranura en T superior para el perno del accesorio" }
+    },
+    {
+      "id": "plat_h", "type": "slider", "default": 8.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "platform", "modes": ["square_clamp", "round_clamp", "aero_saddle"],
+      "label": { "en": "Platform Height (mm)", "es": "Altura de Plataforma (mm)" },
+      "tooltip": { "en": "Height of the accessory platform above the bar", "es": "Altura de la plataforma de accesorio sobre la barra" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "saddle", "modes": ["square_clamp", "round_clamp", "aero_saddle"], "advanced": true,
+      "label": { "en": "Bar Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap between the channel and the bar", "es": "Espacio por lado entre el canal y la barra" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "thule_square", "mode": "square_clamp",
+      "label": { "en": "Thule SquareBar (31.75 × 22.2)", "es": "Thule SquareBar (31.75 × 22.2)" },
+      "values": { "bar_w": 31.75, "bar_h": 22.2, "saddle_w": 50 }
+    },
+    {
+      "id": "yakima_round", "mode": "round_clamp",
+      "label": { "en": "Yakima RoundBar (28.6 mm)", "es": "Yakima RoundBar (28.6 mm)" },
+      "values": { "bar_w": 28.6, "bar_h": 28.6, "saddle_w": 50 }
+    },
+    {
+      "id": "thule_wing", "mode": "aero_saddle",
+      "label": { "en": "Thule WingBar (79 × 25)", "es": "Thule WingBar (79 × 25)" },
+      "values": { "bar_w": 79, "bar_h": 25, "saddle_w": 60 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bar_w >= bar_h",
+      "severity": "warning",
+      "message": { "en": "Most crossbars are wider than they are tall", "es": "La mayoría de las barras son más anchas que altas" }
+    },
+    {
+      "expression": "wall >= 3",
+      "severity": "warning",
+      "message": { "en": "A roof-rack saddle carries load — keep walls at 3 mm or more", "es": "Un sillín de rack lleva carga — mantén paredes de 3 mm o más" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 100] },
+    { "id": "front", "label": { "en": "Front (Cross-Section)", "es": "Frontal (Sección)" }, "position": [0, -180, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 40, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "crossbar_profile",
+        "label": { "en": "Crossbar Profile Clamp", "es": "Sujeción de Perfil de Barra" },
+        "geometry_type": "socket",
+        "standard": "aero/square crossbar",
+        "parameters": ["bar_w", "bar_h", "saddle_w", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Roof-rack accessories are locked to a maker's proprietary bar and priced accordingly, yet crossbars fall into a few profile families — square, round and aero — with well-known sections. A saddle channelled to the exact bar lets an owner mount a light bar, bike tray or cargo tie-down to any rack from printed parts, keep an aging or discontinued rack useful, and standardise every accessory to one T-slot instead of a per-brand adapter.",
+      "es": "Los accesorios de rack de techo están atados a la barra propietaria de un fabricante y se cobran en consecuencia, pero las barras transversales caen en unas pocas familias de perfil — cuadrada, redonda y aero — con secciones bien conocidas. Un sillín canalizado a la barra exacta permite a un dueño montar una barra de luces, bandeja de bici o amarre de carga en cualquier rack con piezas impresas, mantener útil un rack viejo o descontinuado, y estandarizar cada accesorio a una sola ranura en T en vez de un adaptador por marca."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["roof-rack", "crossbar", "thule", "yakima", "clamp", "aero", "automotive", "commercial", "hyperobject", "commons"]
+}

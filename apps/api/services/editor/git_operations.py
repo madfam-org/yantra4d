@@ -32,6 +32,7 @@ def _run_git(project_dir: Path, args: list[str], timeout: int = GIT_TIMEOUT, env
             text=True,
             timeout=timeout,
             env=env,
+            check=False,
         )
     except subprocess.TimeoutExpired:
         logger.warning("Git command timed out after %ds: %s", timeout, " ".join(args[:2]))

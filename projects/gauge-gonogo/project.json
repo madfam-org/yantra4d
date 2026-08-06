@@ -1,0 +1,179 @@
+{
+  "project": {
+    "name": "Go/No-Go Gauge",
+    "slug": "gauge-gonogo",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An attribute inspection gauge that checks a dimension against its limits — GO is made to the lower limit and must pass, NO-GO to the upper limit and must not. Plug (hole), slot (width), and snap (shaft OD) types.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un calibrador de inspección por atributos que verifica una dimensión contra sus límites — PASA se fabrica al límite inferior y debe entrar, NO-PASA al límite superior y no debe. Tipos tapón (agujero), ranura (ancho) y herradura (diámetro de eje).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gauge-gonogo.webp",
+    "difficulty": "intermediate",
+    "tags": ["gauge", "go-no-go", "inspection", "metrology", "tolerance", "quality", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "plug_gauge",
+      "label": { "en": "Plug Gauge (Hole)", "es": "Calibre Tapón (Agujero)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["plug_gauge"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "slot_gauge",
+      "label": { "en": "Slot Gauge (Width)", "es": "Calibre de Ranura (Ancho)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["slot_gauge"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "snap_gauge",
+      "label": { "en": "Snap Gauge (Shaft)", "es": "Calibre de Herradura (Eje)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["snap_gauge"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "plug_gauge", "label": { "en": "Plug Gauge", "es": "Calibre Tapón" }, "render_mode": 0, "color": "#4f7a8c" },
+    { "id": "slot_gauge", "label": { "en": "Slot Gauge", "es": "Calibre de Ranura" }, "render_mode": 0, "color": "#5f93a8" },
+    { "id": "snap_gauge", "label": { "en": "Snap Gauge", "es": "Calibre de Herradura" }, "render_mode": 0, "color": "#3e5f6d" }
+  ],
+  "parameter_groups": [
+    { "id": "dimension", "label": { "en": "Nominal & Tolerance", "es": "Nominal y Tolerancia" } },
+    { "id": "gauging", "label": { "en": "Gauging Feature", "es": "Elemento de Medición" } },
+    { "id": "handle", "label": { "en": "Handle & Frame", "es": "Mango y Marco" } }
+  ],
+  "parameters": [
+    {
+      "id": "nominal", "type": "slider", "default": 10.0, "min": 2.0, "max": 60.0, "step": 0.1,
+      "group": "dimension", "modes": ["plug_gauge", "slot_gauge", "snap_gauge"],
+      "label": { "en": "Nominal Dimension (mm)", "es": "Dimensión Nominal (mm)" },
+      "tooltip": { "en": "The target size being inspected", "es": "El tamaño objetivo que se inspecciona" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tol_plus", "type": "slider", "default": 0.05, "min": 0.0, "max": 1.0, "step": 0.01,
+      "group": "dimension", "modes": ["plug_gauge", "slot_gauge", "snap_gauge"],
+      "label": { "en": "Upper Tolerance +(mm)", "es": "Tolerancia Superior +(mm)" },
+      "tooltip": { "en": "Upper deviation — sets the NO-GO limit (nominal + this)", "es": "Desviación superior — fija el límite NO-PASA (nominal + esto)" }
+    },
+    {
+      "id": "tol_minus", "type": "slider", "default": 0.0, "min": -1.0, "max": 0.5, "step": 0.01,
+      "group": "dimension", "modes": ["plug_gauge", "slot_gauge", "snap_gauge"],
+      "label": { "en": "Lower Tolerance ±(mm)", "es": "Tolerancia Inferior ±(mm)" },
+      "tooltip": { "en": "Lower deviation (may be negative) — sets the GO limit (nominal + this)", "es": "Desviación inferior (puede ser negativa) — fija el límite PASA (nominal + esto)" }
+    },
+    {
+      "id": "pin_len", "type": "slider", "default": 22.0, "min": 8.0, "max": 50.0, "step": 1.0,
+      "group": "gauging", "modes": ["plug_gauge", "slot_gauge"],
+      "label": { "en": "Gauging Length (mm)", "es": "Longitud de Medición (mm)" },
+      "tooltip": { "en": "Length of the GO pin/step (NO-GO end is shorter by design)", "es": "Longitud del perno/escalón PASA (el extremo NO-PASA es más corto por diseño)" }
+    },
+    {
+      "id": "blade_h", "type": "slider", "default": 20.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "gauging", "modes": ["slot_gauge"],
+      "label": { "en": "Blade Height (mm)", "es": "Altura de la Hoja (mm)" },
+      "tooltip": { "en": "Height of the slot-gauge blade", "es": "Altura de la hoja del calibre de ranura" }
+    },
+    {
+      "id": "frame", "type": "slider", "default": 8.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "handle", "modes": ["snap_gauge"],
+      "label": { "en": "Frame Thickness (mm)", "es": "Grosor del Marco (mm)" },
+      "tooltip": { "en": "Thickness of the C-frame snap gauge", "es": "Grosor del marco en C del calibre de herradura" }
+    },
+    {
+      "id": "handle_dia", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 0.5,
+      "group": "handle", "modes": ["plug_gauge", "slot_gauge"],
+      "label": { "en": "Handle Diameter (mm)", "es": "Diámetro del Mango (mm)" },
+      "tooltip": { "en": "Grip diameter of the handle", "es": "Diámetro de agarre del mango" }
+    },
+    {
+      "id": "handle_len", "type": "slider", "default": 45.0, "min": 20.0, "max": 90.0, "step": 1.0,
+      "group": "handle", "modes": ["plug_gauge", "slot_gauge", "snap_gauge"],
+      "label": { "en": "Handle Length (mm)", "es": "Longitud del Mango (mm)" },
+      "tooltip": { "en": "Length of the handle / grip body", "es": "Longitud del mango / cuerpo de agarre" }
+    },
+    {
+      "id": "knurl_flat", "type": "checkbox", "default": true,
+      "group": "handle", "modes": ["plug_gauge", "slot_gauge"], "advanced": true,
+      "label": { "en": "Grip Flats", "es": "Caras de Agarre" },
+      "tooltip": { "en": "Flatten two sides so the handle can't roll and shows orientation", "es": "Aplana dos caras para que el mango no ruede y muestre su orientación" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "h7_bore_plug", "mode": "plug_gauge",
+      "label": { "en": "10 H7 Bore Plug", "es": "Tapón Agujero 10 H7" },
+      "values": { "nominal": 10.0, "tol_plus": 0.15, "tol_minus": 0.0, "pin_len": 22.0, "handle_dia": 16.0 }
+    },
+    {
+      "id": "keyway_slot", "mode": "slot_gauge",
+      "label": { "en": "6 mm Keyway Slot", "es": "Ranura Chavetero 6 mm" },
+      "values": { "nominal": 6.0, "tol_plus": 0.03, "tol_minus": 0.0, "pin_len": 20.0, "blade_h": 18.0 }
+    },
+    {
+      "id": "shaft_snap", "mode": "snap_gauge",
+      "label": { "en": "20 g6 Shaft Snap", "es": "Herradura Eje 20 g6" },
+      "values": { "nominal": 20.0, "tol_plus": -0.007, "tol_minus": -0.02, "frame": 9.0, "handle_len": 55.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tol_plus >= tol_minus",
+      "severity": "warning",
+      "message": { "en": "Upper tolerance should be at least the lower tolerance", "es": "La tolerancia superior debe ser al menos la inferior" }
+    },
+    {
+      "expression": "nominal >= 2",
+      "severity": "error",
+      "message": { "en": "Nominal must be at least 2 mm", "es": "El nominal debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "tolerance_gauge",
+        "label": { "en": "Tolerance Gauge", "es": "Calibre de Tolerancia" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["nominal", "tol_plus", "tol_minus"]
+      },
+      {
+        "id": "gauge_handle",
+        "label": { "en": "Gauge Handle", "es": "Mango de Calibre" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["handle_dia", "handle_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Puts attribute inspection in every workshop — a printable GO/NO-GO gauge encodes a fit decision as geometry, so parts can be checked at the bench with no calipers or measuring skill.",
+      "es": "Lleva la inspección por atributos a cada taller — un calibre PASA/NO-PASA imprimible codifica una decisión de ajuste como geometría, para verificar piezas en el banco sin calibrador ni habilidad de medición."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gauge", "go-no-go", "inspection", "metrology", "industrial", "hyperobject", "commons"]
+}

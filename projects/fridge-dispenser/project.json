@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Fridge Can Dispenser",
+    "slug": "fridge-dispenser",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A gravity-fed can dispenser for the fridge: load cans on top, they roll down an inclined lane, and you take the front one from the bottom. Sized to the can diameter (66 mm soda can by default). Single lane, double lane, or a compact short lane.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un dispensador de latas por gravedad para el refrigerador: carga las latas arriba, ruedan por un carril inclinado y tomas la del frente desde abajo. Dimensionado al diámetro de la lata (lata de refresco de 66 mm por defecto). Un carril, doble carril, o un carril corto compacto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/fridge-dispenser.webp",
+    "difficulty": "intermediate",
+    "tags": ["dispenser", "can", "fridge", "gravity", "kitchen", "soda", "rail", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "single_lane",
+      "label": { "en": "Single Lane", "es": "Un Carril" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_lane"],
+      "estimate": { "base_time": 16, "per_unit": 6, "per_part": 18 }
+    },
+    {
+      "id": "double_lane",
+      "label": { "en": "Double Lane", "es": "Doble Carril" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["double_lane"],
+      "estimate": { "base_time": 20, "per_unit": 8, "per_part": 22 }
+    },
+    {
+      "id": "compact",
+      "label": { "en": "Compact", "es": "Compacto" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["compact"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "single_lane", "label": { "en": "Single Lane", "es": "Un Carril" }, "render_mode": 0, "color": "#4f7a9a" },
+    { "id": "double_lane", "label": { "en": "Double Lane", "es": "Doble Carril" }, "render_mode": 0, "color": "#5f8aaa" },
+    { "id": "compact", "label": { "en": "Compact", "es": "Compacto" }, "render_mode": 0, "color": "#3f6a8a" }
+  ],
+  "parameter_groups": [
+    { "id": "can", "label": { "en": "Can Size", "es": "Tamaño de Lata" } },
+    { "id": "rail", "label": { "en": "Gravity Rail", "es": "Carril de Gravedad" } },
+    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } }
+  ],
+  "parameters": [
+    {
+      "id": "can_dia", "type": "slider", "default": 66, "min": 30, "max": 100, "step": 1,
+      "group": "can", "modes": ["single_lane", "double_lane", "compact"],
+      "label": { "en": "Can Diameter (mm)", "es": "Diámetro de Lata (mm)" },
+      "tooltip": { "en": "Diameter of your can (66 mm = standard soda can, 53 mm = slim)", "es": "Diámetro de tu lata (66 mm = lata estándar, 53 mm = delgada)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "can_len", "type": "slider", "default": 123, "min": 50, "max": 200, "step": 1,
+      "group": "can", "modes": ["single_lane", "double_lane", "compact"],
+      "label": { "en": "Can Length (mm)", "es": "Largo de Lata (mm)" },
+      "tooltip": { "en": "Length of the can lying across the lane (123 mm typical)", "es": "Largo de la lata a lo ancho del carril (123 mm típico)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "capacity", "type": "slider", "default": 5, "min": 2, "max": 12, "step": 1,
+      "group": "can", "modes": ["single_lane", "double_lane", "compact"],
+      "label": { "en": "Cans per Lane", "es": "Latas por Carril" },
+      "tooltip": { "en": "How many cans queue in each lane (compact caps at 3)", "es": "Cuántas latas hacen fila en cada carril (compacto limita a 3)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 68.0 }
+    },
+    {
+      "id": "incline", "type": "slider", "default": 6.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "rail", "modes": ["single_lane", "double_lane", "compact"],
+      "label": { "en": "Ramp Incline (deg)", "es": "Inclinación del Carril (grados)" },
+      "tooltip": { "en": "Slope so cans roll forward under gravity", "es": "Pendiente para que las latas rueden hacia adelante por gravedad" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 2.0, "min": 0.5, "max": 6.0, "step": 0.5,
+      "group": "rail", "modes": ["single_lane", "double_lane", "compact"], "advanced": true,
+      "label": { "en": "Side Clearance (mm)", "es": "Holgura Lateral (mm)" },
+      "tooltip": { "en": "Per-side gap so cans roll freely", "es": "Espacio por lado para que las latas rueden libres" }
+    },
+    {
+      "id": "front_lip", "type": "slider", "default": 12.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "rail", "modes": ["single_lane", "double_lane", "compact"],
+      "label": { "en": "Front Stop Lip (mm)", "es": "Labio de Tope Frontal (mm)" },
+      "tooltip": { "en": "Curb height that holds the lead can until taken", "es": "Altura del tope que retiene la lata delantera hasta tomarla" }
+    },
+    {
+      "id": "feed", "type": "select", "default": "single-lane",
+      "group": "rail", "modes": ["single_lane"],
+      "label": { "en": "Feed Layout", "es": "Disposición de Alimentación" },
+      "tooltip": { "en": "Reference feed style for this dispenser", "es": "Estilo de alimentación de referencia para este dispensador" },
+      "options": [
+        { "value": "single-lane", "label": { "en": "Single Lane", "es": "Un Carril" } },
+        { "value": "double-lane", "label": { "en": "Double Lane", "es": "Doble Carril" } },
+        { "value": "stacked", "label": { "en": "Stacked", "es": "Apilado" } }
+      ]
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "structure", "modes": ["single_lane", "double_lane", "compact"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and floor thickness", "es": "Grosor de pared y piso" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "soda_can_5", "mode": "single_lane",
+      "label": { "en": "Soda Can Lane (5)", "es": "Carril de Refresco (5)" },
+      "values": { "can_dia": 66, "can_len": 123, "capacity": 5, "incline": 6 }
+    },
+    {
+      "id": "double_soda", "mode": "double_lane",
+      "label": { "en": "Double Soda Rack", "es": "Rack Doble de Refresco" },
+      "values": { "can_dia": 66, "can_len": 123, "capacity": 5, "incline": 6 }
+    },
+    {
+      "id": "slim_can_compact", "mode": "compact",
+      "label": { "en": "Slim Can (Door Shelf)", "es": "Lata Delgada (Puerta)" },
+      "values": { "can_dia": 53, "can_len": 133, "capacity": 3, "incline": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "incline >= 2",
+      "severity": "warning",
+      "message": { "en": "A very shallow incline may not feed reliably", "es": "Una inclinación muy baja puede no alimentar de forma confiable" }
+    },
+    {
+      "expression": "front_lip <= can_dia",
+      "severity": "warning",
+      "message": { "en": "Front lip taller than the can blocks removal", "es": "Un labio más alto que la lata bloquea la extracción" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 260, 200] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 420] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -420, 90] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 6, "per_part": 18,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "can_gravity_rail",
+        "label": { "en": "Can Gravity Rail", "es": "Carril de Gravedad de Latas" },
+        "geometry_type": "rail",
+        "standard": "standard can Ø",
+        "parameters": ["can_dia", "can_len", "incline", "clearance", "front_lip"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A gravity dispenser turns loose fridge cans into a first-in-first-out queue that keeps the coldest cans forward and reclaims shelf space, and one rail parameter (can diameter) adapts it to soda, slim, or seltzer cans without a new product.",
+      "es": "Un dispensador por gravedad convierte las latas sueltas del refrigerador en una fila primero-en-entrar-primero-en-salir que mantiene las más frías al frente y recupera espacio, y un solo parámetro del carril (diámetro de lata) lo adapta a latas de refresco, delgadas o de agua sin un producto nuevo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["dispenser", "can", "fridge", "kitchen", "household", "hyperobject", "commons"]
+}

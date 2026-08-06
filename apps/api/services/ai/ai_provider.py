@@ -9,7 +9,7 @@ or OpenAI. The gateway URL comes from ``SELVA_BASE_URL`` (or an explicit
 ``AI_BASE_URL`` override); if neither is set the call fails closed.
 """
 import logging
-from typing import Iterator
+from collections.abc import Iterator
 
 from config import Config
 
@@ -73,8 +73,7 @@ def _stream_anthropic(messages: list[dict], system: str, max_tokens: int) -> Ite
         system=system,
         messages=messages,
     ) as stream:
-        for text in stream.text_stream:
-            yield text
+        yield from stream.text_stream
 
 
 def _stream_openai(messages: list[dict], system: str, max_tokens: int) -> Iterator[str]:

@@ -1,0 +1,185 @@
+{
+  "project": {
+    "name": "Dice Tower",
+    "slug": "dice-tower",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A dice tower with internal angled baffles that tumble the dice for a fair, un-scoopable roll, plus a matching catch tray. Dice drop in the open top, ricochet down an alternating stack of ramps, and roll out a front window into the tray.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una torre de dados con deflectores internos inclinados que hacen rodar los dados para una tirada justa e inescamoteable, más una bandeja receptora a juego. Los dados caen por la parte superior abierta, rebotan por una pila alterna de rampas y salen por una ventana frontal a la bandeja.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dice-tower.webp",
+    "difficulty": "beginner",
+    "tags": ["dice-tower", "dice", "tabletop", "rpg", "board-game", "tray", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tower",
+      "label": { "en": "Tower", "es": "Torre" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tower"],
+      "estimate": { "base_time": 30, "per_unit": 5, "per_part": 40 }
+    },
+    {
+      "id": "tray",
+      "label": { "en": "Rolling Tray", "es": "Bandeja de Tirada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "compact_tower",
+      "label": { "en": "Compact Tower", "es": "Torre Compacta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["compact_tower"],
+      "estimate": { "base_time": 20, "per_unit": 4, "per_part": 24 }
+    }
+  ],
+  "parts": [
+    { "id": "tower", "label": { "en": "Tower", "es": "Torre" }, "render_mode": 0, "color": "#7a5c8c" },
+    { "id": "tray", "label": { "en": "Rolling Tray", "es": "Bandeja" }, "render_mode": 0, "color": "#8b6c9c" },
+    { "id": "compact_tower", "label": { "en": "Compact Tower", "es": "Torre Compacta" }, "render_mode": 0, "color": "#6a4c7c" }
+  ],
+  "parameter_groups": [
+    { "id": "tower", "label": { "en": "Tower", "es": "Torre" } },
+    { "id": "baffles", "label": { "en": "Baffles", "es": "Deflectores" } },
+    { "id": "tray", "label": { "en": "Tray", "es": "Bandeja" } }
+  ],
+  "parameters": [
+    {
+      "id": "tower_h", "type": "slider", "default": 150, "min": 70, "max": 260, "step": 5,
+      "group": "tower", "modes": ["tower", "compact_tower"],
+      "label": { "en": "Tower Height (mm)", "es": "Altura de Torre (mm)" },
+      "tooltip": { "en": "Overall height of the tower", "es": "Altura total de la torre" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 55, "min": 30, "max": 110, "step": 1,
+      "group": "tower", "modes": ["tower", "compact_tower"],
+      "label": { "en": "Interior Width (mm)", "es": "Ancho Interior (mm)" },
+      "tooltip": { "en": "Clear interior width/depth of the chimney", "es": "Ancho/profundidad interior libre de la chimenea" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "tower", "modes": ["tower", "compact_tower"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Tower wall thickness", "es": "Grosor de la pared de la torre" }
+    },
+    {
+      "id": "baffles", "type": "slider", "default": 4, "min": 2, "max": 8, "step": 1,
+      "group": "baffles", "modes": ["tower", "compact_tower"],
+      "label": { "en": "Baffle Count", "es": "Número de Deflectores" },
+      "tooltip": { "en": "Number of internal angled ramps", "es": "Número de rampas internas inclinadas" }
+    },
+    {
+      "id": "baffle_slope", "type": "slider", "default": 35.0, "min": 20.0, "max": 55.0, "step": 1.0,
+      "group": "baffles", "modes": ["tower", "compact_tower"], "advanced": true,
+      "label": { "en": "Baffle Slope (deg)", "es": "Pendiente del Deflector (°)" },
+      "tooltip": { "en": "Ramp angle from horizontal", "es": "Ángulo de la rampa desde la horizontal" }
+    },
+    {
+      "id": "tray_w", "type": "slider", "default": 120, "min": 60, "max": 220, "step": 2,
+      "group": "tray", "modes": ["tray"],
+      "label": { "en": "Tray Width (mm)", "es": "Ancho de Bandeja (mm)" },
+      "tooltip": { "en": "Outer width of the tray", "es": "Ancho exterior de la bandeja" }
+    },
+    {
+      "id": "tray_d", "type": "slider", "default": 90, "min": 50, "max": 200, "step": 2,
+      "group": "tray", "modes": ["tray"],
+      "label": { "en": "Tray Depth (mm)", "es": "Profundidad de Bandeja (mm)" },
+      "tooltip": { "en": "Outer depth of the tray", "es": "Profundidad exterior de la bandeja" }
+    },
+    {
+      "id": "tray_rim", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "tray", "modes": ["tray"],
+      "label": { "en": "Rim Height (mm)", "es": "Altura del Borde (mm)" },
+      "tooltip": { "en": "Height of the tray rim wall", "es": "Altura de la pared del borde" }
+    },
+    {
+      "id": "tray_wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "tray", "modes": ["tray"], "advanced": true,
+      "label": { "en": "Tray Wall (mm)", "es": "Pared de Bandeja (mm)" },
+      "tooltip": { "en": "Tray wall thickness", "es": "Grosor de la pared de la bandeja" }
+    },
+    {
+      "id": "tray_floor", "type": "slider", "default": 2.5, "min": 1.5, "max": 6.0, "step": 0.2,
+      "group": "tray", "modes": ["tray"], "advanced": true,
+      "label": { "en": "Tray Floor (mm)", "es": "Piso de Bandeja (mm)" },
+      "tooltip": { "en": "Tray floor thickness", "es": "Grosor del piso de la bandeja" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "classic", "mode": "tower",
+      "label": { "en": "Classic Tower", "es": "Torre Clásica" },
+      "values": { "tower_h": 150, "bore": 55, "baffles": 4 }
+    },
+    {
+      "id": "big_bore", "mode": "tower",
+      "label": { "en": "Big-Bore (handfuls of d6)", "es": "Boca Ancha (puñados de d6)" },
+      "values": { "tower_h": 190, "bore": 80, "baffles": 5 }
+    },
+    {
+      "id": "travel", "mode": "compact_tower",
+      "label": { "en": "Travel Tower", "es": "Torre de Viaje" },
+      "values": { "tower_h": 90, "bore": 42, "baffles": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bore >= 30",
+      "severity": "error",
+      "message": { "en": "Interior width must be at least 30 mm", "es": "El ancho interior debe ser de al menos 30 mm" }
+    },
+    {
+      "expression": "tower_h >= bore * 1.5",
+      "severity": "warning",
+      "message": { "en": "Short towers tumble dice less", "es": "Las torres cortas hacen rodar menos los dados" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 30, "per_unit": 5, "per_part": 40,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "baffle_stack",
+        "label": { "en": "Baffle Stack", "es": "Pila de Deflectores" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["baffles", "baffle_slope", "bore"]
+      },
+      {
+        "id": "dice_exit_window",
+        "label": { "en": "Dice Exit Window", "es": "Ventana de Salida de Dados" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["bore", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A printed dice tower makes tabletop rolls provably fair and quiet, and prints as a single household object — no felt, no glue, no purchased kit.",
+      "es": "Una torre de dados impresa hace las tiradas de mesa demostrablemente justas y silenciosas, y se imprime como un solo objeto doméstico — sin fieltro, sin pegamento, sin kit comprado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["dice-tower", "dice", "tabletop", "household", "hyperobject", "commons"]
+}

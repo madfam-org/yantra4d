@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from flask import Flask
 
-from middleware.auth import require_auth, require_role, optional_auth
+from middleware.auth import optional_auth, require_auth, require_role
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +22,7 @@ def app():
     @app.route("/protected")
     @require_auth
     def protected():
-        from flask import request, jsonify
+        from flask import jsonify, request
         return jsonify({"claims": getattr(request, "auth_claims", None)})
 
     @app.route("/admin")
@@ -34,7 +34,7 @@ def app():
     @app.route("/optional")
     @optional_auth
     def optional():
-        from flask import request, jsonify
+        from flask import jsonify, request
         return jsonify({"claims": getattr(request, "auth_claims", None)})
 
     return app

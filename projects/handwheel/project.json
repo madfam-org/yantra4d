@@ -1,0 +1,235 @@
+{
+  "project": {
+    "name": "Machine Handwheel / Crank",
+    "slug": "handwheel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A replacement handwheel, crank, or adjust knob for a machine shaft. The bore is modelled per type — round, D-flat, keyway, or hex — with a radial setscrew, so it drives the real shaft. Optional revolving handle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un volante, manivela o perilla de ajuste de repuesto para un eje de máquina. El barreno se modela por tipo — redondo, con plano D, con chavetero o hexagonal — con prisionero radial, para acoplar al eje real. Manija giratoria opcional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/handwheel.webp",
+    "difficulty": "intermediate",
+    "tags": ["handwheel", "crank", "knob", "machine", "repair", "shaft", "bore", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "handwheel",
+      "label": { "en": "Handwheel", "es": "Volante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["handwheel"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "crank",
+      "label": { "en": "Crank", "es": "Manivela" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["crank"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "knob",
+      "label": { "en": "Adjust Knob", "es": "Perilla de Ajuste" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["knob"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "handwheel", "label": { "en": "Handwheel", "es": "Volante" }, "render_mode": 0, "color": "#6a6f78" },
+    { "id": "crank", "label": { "en": "Crank", "es": "Manivela" }, "render_mode": 0, "color": "#82868f" },
+    { "id": "knob", "label": { "en": "Adjust Knob", "es": "Perilla de Ajuste" }, "render_mode": 0, "color": "#565a62" }
+  ],
+  "parameter_groups": [
+    { "id": "bore", "label": { "en": "Shaft Bore", "es": "Barreno del Eje" } },
+    { "id": "wheel", "label": { "en": "Wheel & Hub", "es": "Rueda y Cubo" } },
+    { "id": "handle", "label": { "en": "Handle", "es": "Manija" } },
+    { "id": "crank", "label": { "en": "Crank Arm", "es": "Brazo de Manivela" } }
+  ],
+  "parameters": [
+    {
+      "id": "bore_dia", "type": "slider", "default": 10.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "bore", "modes": ["handwheel", "crank", "knob"],
+      "label": { "en": "Bore Diameter (mm)", "es": "Diámetro del Barreno (mm)" },
+      "tooltip": { "en": "Shaft diameter (across flats for hex)", "es": "Diámetro del eje (entre caras para hexagonal)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bore_type", "type": "select", "default": "round",
+      "group": "bore", "modes": ["handwheel", "crank", "knob"],
+      "label": { "en": "Bore Type", "es": "Tipo de Barreno" },
+      "tooltip": { "en": "Shaft interface shape", "es": "Forma de la interfaz del eje" },
+      "options": [
+        { "value": "round", "label": { "en": "Round", "es": "Redondo" } },
+        { "value": "dflat", "label": { "en": "D-Flat", "es": "Plano D" } },
+        { "value": "keyway", "label": { "en": "Keyway", "es": "Chavetero" } },
+        { "value": "hex", "label": { "en": "Hex", "es": "Hexagonal" } }
+      ]
+    },
+    {
+      "id": "bore_fit", "type": "slider", "default": 0.2, "min": 0.0, "max": 0.6, "step": 0.05,
+      "group": "bore", "modes": ["handwheel", "crank", "knob"], "advanced": true,
+      "label": { "en": "Bore Clearance (mm)", "es": "Holgura del Barreno (mm)" },
+      "tooltip": { "en": "Per-side clearance so the printed bore slips onto the shaft", "es": "Holgura por lado para que el barreno impreso entre en el eje" }
+    },
+    {
+      "id": "setscrew", "type": "checkbox", "default": true,
+      "group": "bore", "modes": ["handwheel", "crank", "knob"],
+      "label": { "en": "Setscrew Hole", "es": "Agujero de Prisionero" },
+      "tooltip": { "en": "Radial hole to lock the boss to the shaft", "es": "Agujero radial para fijar el cubo al eje" }
+    },
+    {
+      "id": "setscrew_d", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "bore", "modes": ["handwheel", "crank", "knob"], "advanced": true,
+      "label": { "en": "Setscrew Ø (mm)", "es": "Ø del Prisionero (mm)" },
+      "tooltip": { "en": "Tap-drill diameter for the setscrew", "es": "Diámetro de broca de roscado para el prisionero" }
+    },
+    {
+      "id": "hub_dia", "type": "slider", "default": 26.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "wheel", "modes": ["handwheel", "crank", "knob"],
+      "label": { "en": "Hub Diameter (mm)", "es": "Diámetro del Cubo (mm)" },
+      "tooltip": { "en": "Boss outer diameter around the bore", "es": "Diámetro exterior del cubo alrededor del barreno" }
+    },
+    {
+      "id": "hub_len", "type": "slider", "default": 22.0, "min": 8.0, "max": 50.0, "step": 1.0,
+      "group": "wheel", "modes": ["handwheel", "crank"],
+      "label": { "en": "Hub Length (mm)", "es": "Longitud del Cubo (mm)" },
+      "tooltip": { "en": "Boss length along the shaft (grip length)", "es": "Longitud del cubo a lo largo del eje (longitud de agarre)" }
+    },
+    {
+      "id": "wheel_dia", "type": "slider", "default": 90.0, "min": 40.0, "max": 220.0, "step": 2.0,
+      "group": "wheel", "modes": ["handwheel"],
+      "label": { "en": "Wheel Outer Ø (mm)", "es": "Ø Exterior de la Rueda (mm)" },
+      "tooltip": { "en": "Overall wheel diameter", "es": "Diámetro total de la rueda" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "rim_t", "type": "slider", "default": 12.0, "min": 5.0, "max": 25.0, "step": 0.5,
+      "group": "wheel", "modes": ["handwheel"],
+      "label": { "en": "Rim Thickness (mm)", "es": "Grosor del Aro (mm)" },
+      "tooltip": { "en": "Radial thickness of the rim ring", "es": "Grosor radial del anillo del aro" }
+    },
+    {
+      "id": "rim_w", "type": "slider", "default": 14.0, "min": 6.0, "max": 30.0, "step": 0.5,
+      "group": "wheel", "modes": ["handwheel", "crank"],
+      "label": { "en": "Rim / Arm Width (mm)", "es": "Ancho de Aro / Brazo (mm)" },
+      "tooltip": { "en": "Axial thickness of the rim and spokes / crank arm", "es": "Grosor axial del aro y radios / brazo de manivela" }
+    },
+    {
+      "id": "spokes", "type": "slider", "default": 3, "min": 0, "max": 8, "step": 1,
+      "group": "wheel", "modes": ["handwheel"],
+      "label": { "en": "Spoke Count (0 = solid)", "es": "Número de Radios (0 = macizo)" },
+      "tooltip": { "en": "Number of spokes; 0 makes a solid disc web", "es": "Número de radios; 0 genera un disco macizo" }
+    },
+    {
+      "id": "spoke_w", "type": "slider", "default": 10.0, "min": 4.0, "max": 25.0, "step": 0.5,
+      "group": "wheel", "modes": ["handwheel"], "advanced": true,
+      "label": { "en": "Spoke Width (mm)", "es": "Ancho del Radio (mm)" },
+      "tooltip": { "en": "Width of each spoke", "es": "Ancho de cada radio" }
+    },
+    {
+      "id": "handle", "type": "checkbox", "default": true,
+      "group": "handle", "modes": ["handwheel"],
+      "label": { "en": "Revolving Handle", "es": "Manija Giratoria" },
+      "tooltip": { "en": "Add a handle knob on the rim (always present on a crank)", "es": "Agrega una perilla de manija en el aro (siempre presente en la manivela)" }
+    },
+    {
+      "id": "handle_off", "type": "slider", "default": 34.0, "min": 10.0, "max": 100.0, "step": 1.0,
+      "group": "handle", "modes": ["handwheel"],
+      "label": { "en": "Handle Offset (mm)", "es": "Desfase de la Manija (mm)" },
+      "tooltip": { "en": "Handle distance from the wheel centre", "es": "Distancia de la manija desde el centro de la rueda" }
+    },
+    {
+      "id": "handle_dia", "type": "slider", "default": 12.0, "min": 6.0, "max": 25.0, "step": 0.5,
+      "group": "handle", "modes": ["handwheel", "crank"],
+      "label": { "en": "Handle Diameter (mm)", "es": "Diámetro de la Manija (mm)" },
+      "tooltip": { "en": "Grip diameter of the handle knob", "es": "Diámetro de agarre de la perilla de la manija" }
+    },
+    {
+      "id": "handle_len", "type": "slider", "default": 28.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "handle", "modes": ["handwheel", "crank"],
+      "label": { "en": "Handle Length (mm)", "es": "Longitud de la Manija (mm)" },
+      "tooltip": { "en": "Length of the handle knob", "es": "Longitud de la perilla de la manija" }
+    },
+    {
+      "id": "crank_len", "type": "slider", "default": 70.0, "min": 30.0, "max": 160.0, "step": 2.0,
+      "group": "crank", "modes": ["crank"],
+      "label": { "en": "Crank Arm Length (mm)", "es": "Longitud del Brazo (mm)" },
+      "tooltip": { "en": "Centre-to-handle radius of the crank arm", "es": "Radio centro-a-manija del brazo de manivela" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "lathe_crossfeed", "mode": "handwheel",
+      "label": { "en": "Lathe Cross-Feed Wheel", "es": "Volante de Avance Transversal" },
+      "values": { "bore_dia": 12.0, "bore_type": "keyway", "wheel_dia": 100.0, "spokes": 3, "handle": true, "hub_len": 22.0 }
+    },
+    {
+      "id": "valve_crank", "mode": "crank",
+      "label": { "en": "Valve Hand Crank", "es": "Manivela de Válvula" },
+      "values": { "bore_dia": 10.0, "bore_type": "dflat", "crank_len": 80.0, "handle_len": 30.0, "hub_len": 20.0 }
+    },
+    {
+      "id": "fine_adjust_knob", "mode": "knob",
+      "label": { "en": "Fine-Adjust Knob (hex)", "es": "Perilla de Ajuste Fino (hex)" },
+      "values": { "bore_dia": 6.0, "bore_type": "hex", "hub_dia": 30.0, "setscrew": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hub_dia > bore_dia + 4",
+      "severity": "error",
+      "message": { "en": "Hub must be at least 4 mm larger than the bore", "es": "El cubo debe ser al menos 4 mm mayor que el barreno" }
+    },
+    {
+      "expression": "wheel_dia > hub_dia + 2 * rim_t",
+      "severity": "warning",
+      "message": { "en": "Wheel is small relative to hub and rim", "es": "La rueda es pequeña respecto al cubo y el aro" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "shaft_bore",
+        "label": { "en": "Shaft Bore", "es": "Barreno del Eje" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["bore_dia", "bore_type", "bore_fit", "setscrew", "setscrew_d"]
+      },
+      {
+        "id": "handle_mount",
+        "label": { "en": "Handle Mount", "es": "Montaje de Manija" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["handle_off", "handle_dia", "handle_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps old machines running — a broken cast handwheel, crank, or knob is the reason a lathe, mill, or valve gets scrapped. Model the exact bore (round/D-flat/keyway/hex) and print the replacement instead.",
+      "es": "Mantiene las máquinas viejas en marcha — un volante, manivela o perilla de fundición roto es la razón por la que se desecha un torno, fresadora o válvula. Modela el barreno exacto (redondo/plano D/chavetero/hex) e imprime el repuesto."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["handwheel", "crank", "knob", "machine", "repair", "industrial", "hyperobject", "commons"]
+}

@@ -1,0 +1,179 @@
+{
+  "project": {
+    "name": "Motorcycle Bar-End / Mirror Mount",
+    "slug": "barend-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Handlebar hardware for motorcycles and bicycles: a split clamp that closes around the bar to carry an accessory, an expanding plug for the hollow bar end (bar-end weights and mirrors), and a wider clamp with an action-cam / phone cradle. Sized to real bar diameters — 7/8\" (22.2 mm), 1\" (25.4 mm), 31.8 mm oversize.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de manillar para motocicletas y bicicletas: una abrazadera partida que se cierra sobre el manillar para llevar un accesorio, un tapón expansor para el extremo hueco del manillar (contrapesos y espejos de extremo), y una abrazadera más ancha con soporte para cámara de acción / teléfono. Dimensionado a diámetros reales — 7/8\" (22.2 mm), 1\" (25.4 mm), 31.8 mm sobredimensionado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/barend-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["barend", "motorcycle", "bicycle", "handlebar", "clamp", "mirror", "phone-mount", "commercial", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bar_clamp",
+      "label": { "en": "Bar Clamp", "es": "Abrazadera de Manillar" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bar_clamp"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "bar_end_plug",
+      "label": { "en": "Bar-End Plug", "es": "Tapón de Extremo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bar_end_plug"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "phone_clamp",
+      "label": { "en": "Phone / Cam Clamp", "es": "Abrazadera Teléfono / Cámara" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["phone_clamp"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "bar_clamp", "label": { "en": "Bar Clamp", "es": "Abrazadera de Manillar" }, "render_mode": 0, "color": "#dc2626" },
+    { "id": "bar_end_plug", "label": { "en": "Bar-End Plug", "es": "Tapón de Extremo" }, "render_mode": 0, "color": "#ef4444" },
+    { "id": "phone_clamp", "label": { "en": "Phone / Cam Clamp", "es": "Abrazadera Teléfono / Cámara" }, "render_mode": 0, "color": "#f87171" }
+  ],
+  "parameter_groups": [
+    { "id": "bar", "label": { "en": "Handlebar", "es": "Manillar" } },
+    { "id": "clamp", "label": { "en": "Clamp", "es": "Abrazadera" } },
+    { "id": "platform", "label": { "en": "Platform", "es": "Plataforma" } }
+  ],
+  "parameters": [
+    {
+      "id": "bar_od", "type": "slider", "default": 22.2, "min": 15.0, "max": 45.0, "step": 0.1,
+      "group": "bar", "modes": ["bar_clamp", "bar_end_plug", "phone_clamp"],
+      "label": { "en": "Bar Outer Diameter (mm)", "es": "Diámetro Exterior (mm)" },
+      "tooltip": { "en": "Handlebar OD. 7/8\"=22.2, 1\"=25.4, oversize=31.8 mm", "es": "Diámetro exterior del manillar. 7/8\"=22.2, 1\"=25.4, sobredimensionado=31.8 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "bar_id", "type": "slider", "default": 16.0, "min": 8.0, "max": 40.0, "step": 0.5,
+      "group": "bar", "modes": ["bar_end_plug"],
+      "label": { "en": "Bar Inner Diameter (mm)", "es": "Diámetro Interior (mm)" },
+      "tooltip": { "en": "Hollow bar ID for the expanding plug. Commonly 14-19 mm", "es": "Diámetro interior hueco para el tapón expansor. Comúnmente 14-19 mm" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "clamp", "modes": ["bar_clamp", "bar_end_plug", "phone_clamp"],
+      "label": { "en": "Wall / Body (mm)", "es": "Pared / Cuerpo (mm)" },
+      "tooltip": { "en": "Clamp wall and body thickness", "es": "Grosor de pared y cuerpo de la abrazadera" }
+    },
+    {
+      "id": "clamp_w", "type": "slider", "default": 20.0, "min": 10.0, "max": 50.0, "step": 1.0,
+      "group": "clamp", "modes": ["bar_clamp", "phone_clamp"],
+      "label": { "en": "Clamp Width (mm)", "es": "Ancho de Abrazadera (mm)" },
+      "tooltip": { "en": "Width of the clamp along the bar", "es": "Ancho de la abrazadera a lo largo del manillar" }
+    },
+    {
+      "id": "bolt_d", "type": "slider", "default": 5.2, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "clamp", "modes": ["bar_clamp", "phone_clamp"], "advanced": true,
+      "label": { "en": "Clamp Bolt Hole (mm)", "es": "Orificio de Perno (mm)" },
+      "tooltip": { "en": "Clearance for the clamp pinch bolt (M5 ~5.2 mm)", "es": "Holgura para el perno de apriete (M5 ~5.2 mm)" }
+    },
+    {
+      "id": "acc_bolt_d", "type": "slider", "default": 8.4, "min": 3.0, "max": 12.0, "step": 0.1,
+      "group": "clamp", "modes": ["bar_clamp", "bar_end_plug", "phone_clamp"],
+      "label": { "en": "Accessory Bolt (mm)", "es": "Perno de Accesorio (mm)" },
+      "tooltip": { "en": "Accessory / mirror bolt clearance. M8 ~8.4 mm (bar-end mirror standard)", "es": "Holgura del perno de accesorio / espejo. M8 ~8.4 mm (estándar de espejo de extremo)" }
+    },
+    {
+      "id": "plate_len", "type": "slider", "default": 40.0, "min": 20.0, "max": 90.0, "step": 1.0,
+      "group": "platform", "modes": ["phone_clamp"],
+      "label": { "en": "Platform Length (mm)", "es": "Longitud de Plataforma (mm)" },
+      "tooltip": { "en": "Length of the phone / cam platform", "es": "Longitud de la plataforma de teléfono / cámara" }
+    },
+    {
+      "id": "plate_wid", "type": "slider", "default": 32.0, "min": 20.0, "max": 90.0, "step": 1.0,
+      "group": "platform", "modes": ["phone_clamp"],
+      "label": { "en": "Platform Width (mm)", "es": "Ancho de Plataforma (mm)" },
+      "tooltip": { "en": "Width of the phone / cam platform", "es": "Ancho de la plataforma de teléfono / cámara" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "clamp", "modes": ["bar_clamp", "bar_end_plug", "phone_clamp"], "advanced": true,
+      "label": { "en": "Bar Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap between the clamp bore and the bar", "es": "Espacio por lado entre el orificio de la abrazadera y el manillar" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "seven_eighths", "mode": "bar_clamp",
+      "label": { "en": "7/8\" Bar Clamp (22.2 mm)", "es": "Abrazadera 7/8\" (22.2 mm)" },
+      "values": { "bar_od": 22.2, "wall": 5, "clamp_w": 20, "acc_bolt_d": 8.4 }
+    },
+    {
+      "id": "cruiser_end", "mode": "bar_end_plug",
+      "label": { "en": "1\" Bar-End Plug (M8)", "es": "Tapón de Extremo 1\" (M8)" },
+      "values": { "bar_od": 25.4, "bar_id": 18, "acc_bolt_d": 8.4 }
+    },
+    {
+      "id": "cam_platform", "mode": "phone_clamp",
+      "label": { "en": "Action-Cam Platform", "es": "Plataforma para Cámara" },
+      "values": { "bar_od": 22.2, "plate_len": 40, "plate_wid": 32 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bar_id < bar_od",
+      "severity": "error",
+      "message": { "en": "Bar inner diameter must be smaller than the outer diameter", "es": "El diámetro interior debe ser menor que el exterior" }
+    },
+    {
+      "expression": "acc_bolt_d < bar_od",
+      "severity": "warning",
+      "message": { "en": "Accessory bolt approaching the bar diameter weakens the mount", "es": "Un perno de accesorio cercano al diámetro del manillar debilita el montaje" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 70] },
+    { "id": "front", "label": { "en": "Front (Cross-Section)", "es": "Frontal (Sección)" }, "position": [-160, 0, 10] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 40, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "handlebar_clamp",
+        "label": { "en": "Handlebar Clamp", "es": "Abrazadera de Manillar" },
+        "geometry_type": "socket",
+        "standard": "7/8-1in bar",
+        "parameters": ["bar_od", "wall", "clamp_w", "clearance"]
+      },
+      {
+        "id": "bar_end_socket",
+        "label": { "en": "Bar-End Socket", "es": "Zócalo de Extremo" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["bar_id", "acc_bolt_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Handlebar accessory mounts are proprietary and priced per accessory, yet nearly every bar in the world is one of a handful of diameters (22.2 / 25.4 / 31.8 mm). A clamp printed to the exact bar — plus a bar-end plug for the hollow tube — lets a rider fit a mirror, phone or camera to any motorcycle or bicycle from durable printed parts, and standardise every mount on the bike to one bolt size instead of buying a per-brand bracket.",
+      "es": "Los soportes de accesorios de manillar son propietarios y se cobran por accesorio, pero casi todo manillar del mundo es uno de unos pocos diámetros (22.2 / 25.4 / 31.8 mm). Una abrazadera impresa al manillar exacto — más un tapón para el tubo hueco — permite a un motociclista o ciclista montar un espejo, teléfono o cámara en cualquier vehículo con piezas impresas duraderas, y estandarizar cada soporte a un solo tamaño de perno en vez de comprar un soporte por marca."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["barend", "motorcycle", "bicycle", "handlebar", "clamp", "mirror", "phone-mount", "commercial", "hyperobject", "commons"]
+}

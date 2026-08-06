@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Drip / Dosing Line Holder",
+    "slug": "dosing-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Tidy up the thin silicone and vinyl lines from a reef dosing pump, RODI top-off or CO2 drip system. Build a snap C-clip that grips a single tube, a rim clip that hangs a line over the tank edge, or a multi-line routing rail. Sized for 3/16\"-1/4\" (4.76-6.35 mm) aquarium tubing.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Ordena las líneas delgadas de silicona y vinilo de una bomba dosificadora de arrecife, relleno RODI o sistema de goteo de CO2. Genera un clip C que sujeta un tubo, un clip de borde que cuelga una línea sobre el canto del tanque, o un riel de enrutamiento multilínea. Dimensionado para tubos de acuario de 3/16\"-1/4\" (4.76-6.35 mm).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dosing-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["dosing", "drip", "aquarium", "reef", "tube-clip", "rim-clip", "rodi", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "line_clip",
+      "label": { "en": "Line Clip", "es": "Clip de Línea" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["line_clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "rim_clip",
+      "label": { "en": "Rim Clip", "es": "Clip de Borde" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rim_clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "multi_clip",
+      "label": { "en": "Routing Rail", "es": "Riel de Enrutamiento" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_clip"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "line_clip", "label": { "en": "Line Clip", "es": "Clip de Línea" }, "render_mode": 0, "color": "#0284c7" },
+    { "id": "rim_clip", "label": { "en": "Rim Clip", "es": "Clip de Borde" }, "render_mode": 0, "color": "#0ea5e9" },
+    { "id": "multi_clip", "label": { "en": "Routing Rail", "es": "Riel de Enrutamiento" }, "render_mode": 0, "color": "#38bdf8" }
+  ],
+  "parameter_groups": [
+    { "id": "tube", "label": { "en": "Tube & Clip", "es": "Tubo y Clip" } },
+    { "id": "rim", "label": { "en": "Rim Hook", "es": "Gancho de Borde" } },
+    { "id": "rail", "label": { "en": "Routing Rail", "es": "Riel" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_od", "type": "slider", "default": 6.35, "min": 2.5, "max": 25.0, "step": 0.05,
+      "group": "tube", "modes": ["line_clip", "rim_clip", "multi_clip"],
+      "label": { "en": "Tube Diameter (mm)", "es": "Diámetro de Tubo (mm)" },
+      "tooltip": { "en": "Tube outer diameter. Aquarium airline & 1/4\" RODI are both 6.35 mm; rigid 3/16\" is 4.76 mm; 3/8\" is 9.53 mm", "es": "Diámetro exterior del tubo. Airline de acuario y RODI 1/4\" son 6.35 mm; 3/16\" rígido es 4.76 mm; 3/8\" es 9.53 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.2, "min": 1.4, "max": 5.0, "step": 0.1,
+      "group": "tube", "modes": ["line_clip", "rim_clip", "multi_clip"],
+      "label": { "en": "Clip Wall (mm)", "es": "Pared del Clip (mm)" },
+      "tooltip": { "en": "Wall thickness of the clip C-section", "es": "Grosor de pared de la sección C del clip" }
+    },
+    {
+      "id": "clip_w", "type": "slider", "default": 8.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "tube", "modes": ["line_clip", "rim_clip", "multi_clip"],
+      "label": { "en": "Clip Width (mm)", "es": "Ancho del Clip (mm)" },
+      "tooltip": { "en": "Width of the clip along the tube", "es": "Ancho del clip a lo largo del tubo" }
+    },
+    {
+      "id": "mouth", "type": "slider", "default": 0.78, "min": 0.55, "max": 0.92, "step": 0.01,
+      "group": "tube", "modes": ["line_clip", "rim_clip", "multi_clip"], "advanced": true,
+      "label": { "en": "Snap Mouth (× OD)", "es": "Boca de Encaje (× OD)" },
+      "tooltip": { "en": "Mouth opening as a fraction of tube OD. Smaller grips harder", "es": "Abertura de la boca como fracción del OD del tubo. Menor agarra más fuerte" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "tube", "modes": ["line_clip", "rim_clip", "multi_clip"], "advanced": true,
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura (mm)" },
+      "tooltip": { "en": "Per-side gap on the tube bore and the rim slot", "es": "Espacio por lado en el orificio del tubo y la ranura del borde" }
+    },
+    {
+      "id": "rim_th", "type": "slider", "default": 8.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "rim", "modes": ["rim_clip"],
+      "label": { "en": "Tank Rim Thickness (mm)", "es": "Grosor del Borde (mm)" },
+      "tooltip": { "en": "Thickness of the rim / glass edge the hook straddles (5-12 mm typical)", "es": "Grosor del borde / canto de vidrio que abraza el gancho (5-12 mm típico)" }
+    },
+    {
+      "id": "hook_drop", "type": "slider", "default": 18.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "rim", "modes": ["rim_clip"],
+      "label": { "en": "Inner Drop (mm)", "es": "Bajada Interior (mm)" },
+      "tooltip": { "en": "How far the hook reaches down the inside of the tank", "es": "Qué tanto baja el gancho por el interior del tanque" }
+    },
+    {
+      "id": "n_clips", "type": "slider", "default": 3.0, "min": 1.0, "max": 8.0, "step": 1.0,
+      "group": "rail", "modes": ["multi_clip"],
+      "label": { "en": "Number of Clips", "es": "Número de Clips" },
+      "tooltip": { "en": "How many tube clips on the routing rail", "es": "Cuántos clips de tubo en el riel de enrutamiento" }
+    },
+    {
+      "id": "clip_pitch", "type": "slider", "default": 14.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "rail", "modes": ["multi_clip"],
+      "label": { "en": "Clip Spacing (mm)", "es": "Separación de Clips (mm)" },
+      "tooltip": { "en": "Center-to-center spacing of clips on the rail", "es": "Separación centro a centro de los clips en el riel" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "airline_clip", "mode": "line_clip",
+      "label": { "en": "Airline / RODI Clip (6.35 mm)", "es": "Clip Airline / RODI (6.35 mm)" },
+      "values": { "tube_od": 6.35, "wall": 2.2, "clip_w": 8 }
+    },
+    {
+      "id": "dosing_rim", "mode": "rim_clip",
+      "label": { "en": "Dosing-Line Rim Clip", "es": "Clip de Borde para Dosificación" },
+      "values": { "tube_od": 4.76, "rim_th": 8, "hook_drop": 18 }
+    },
+    {
+      "id": "four_line_rail", "mode": "multi_clip",
+      "label": { "en": "4-Line Routing Rail", "es": "Riel de 4 Líneas" },
+      "values": { "tube_od": 6.35, "n_clips": 4, "clip_pitch": 14 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "mouth < 1",
+      "severity": "error",
+      "message": { "en": "Mouth must be narrower than the tube so the clip retains it", "es": "La boca debe ser más estrecha que el tubo para que el clip lo retenga" }
+    },
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Large clearance loosens the tube grip", "es": "Una holgura grande afloja el agarre del tubo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 50] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -100, 15] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 40, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "tube_snap_clip",
+        "label": { "en": "Tube Snap Clip", "es": "Clip de Encaje de Tubo" },
+        "geometry_type": "snap",
+        "standard": "3/16-1/4in tube",
+        "parameters": ["tube_od", "wall", "mouth", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Dosing, RODI and drip lines are a maintenance nuisance that tank kits never organise. A clip sized to the exact tube a keeper runs — snapping around the line and onto the rim — routes lines cleanly, prevents siphon-break accidents and salt creep, and is printed in aquarium-safe filament for pennies rather than bought as a proprietary accessory.",
+      "es": "Las líneas de dosificación, RODI y goteo son una molestia de mantenimiento que los kits de acuario nunca organizan. Un clip dimensionado al tubo exacto que usa el aficionado — que encaja alrededor de la línea y sobre el borde — enruta las líneas limpiamente, previene accidentes por ruptura de sifón y la trepada de sal, y se imprime en filamento apto para acuario por centavos en vez de comprarse como accesorio propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["dosing", "drip", "aquarium", "reef", "tube-clip", "rim-clip", "rodi", "household", "hyperobject", "commons"]
+}

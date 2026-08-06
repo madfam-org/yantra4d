@@ -1,0 +1,168 @@
+{
+  "project": {
+    "name": "Cable Gland / Strain Nut",
+    "slug": "cable-gland",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Threaded cable glands that seal a cable where it passes through an enclosure wall and take the strain off the terminations inside. The panel thread is a real PG (DIN 40430) or metric-ISO gland thread, so the printed body screws into off-the-shelf knockouts and lock nuts. Pick the size (PG7-PG21, M12-M25) and the thread major diameter, pitch and clearance-cored cable bore all land on the standard. Includes the gland body, a matching interior lock/strain nut, and a threaded sealing reducer for thinner cable.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Prensaestopas roscados que sellan un cable donde atraviesa la pared de un gabinete y liberan la tensión de las terminaciones internas. La rosca del panel es una rosca de prensaestopas real PG (DIN 40430) o métrica-ISO, así que el cuerpo impreso se enrosca en knockouts y contratuercas comerciales. Elige el tamaño (PG7-PG21, M12-M25) y el diámetro mayor de rosca, el paso y el barreno del cable con holgura coinciden con la norma. Incluye el cuerpo del prensaestopas, una contratuerca interior a juego y un reductor sellador roscado para cable más delgado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cable-gland.webp",
+    "difficulty": "intermediate",
+    "tags": ["cable-gland", "strain-relief", "pg-thread", "metric", "enclosure", "conduit", "electrical", "power", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "gland_body",
+      "label": { "en": "Gland Body", "es": "Cuerpo del Prensaestopas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gland_body"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "lock_nut",
+      "label": { "en": "Lock / Strain Nut", "es": "Contratuerca" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lock_nut"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "sealing_reducer",
+      "label": { "en": "Sealing Reducer", "es": "Reductor Sellador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sealing_reducer"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "gland_body", "label": { "en": "Gland Body", "es": "Cuerpo del Prensaestopas" }, "render_mode": 0, "color": "#2b2f36" },
+    { "id": "lock_nut", "label": { "en": "Lock Nut", "es": "Contratuerca" }, "render_mode": 0, "color": "#3b3f46" },
+    { "id": "sealing_reducer", "label": { "en": "Sealing Reducer", "es": "Reductor" }, "render_mode": 0, "color": "#4b4f56" }
+  ],
+  "parameter_groups": [
+    { "id": "thread", "label": { "en": "Thread", "es": "Rosca" } },
+    { "id": "cable", "label": { "en": "Cable", "es": "Cable" } },
+    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } }
+  ],
+  "parameters": [
+    {
+      "id": "gland_size", "type": "select", "default": "PG9",
+      "group": "thread", "modes": ["gland_body", "lock_nut", "sealing_reducer"],
+      "label": { "en": "Gland Size", "es": "Tamaño de Prensaestopas" },
+      "tooltip": { "en": "PG (DIN 40430) or metric-ISO gland thread", "es": "Rosca PG (DIN 40430) o métrica-ISO" },
+      "options": [
+        { "value": "PG7", "label": { "en": "PG7 (12.5 mm)", "es": "PG7 (12.5 mm)" } },
+        { "value": "PG9", "label": { "en": "PG9 (15.2 mm)", "es": "PG9 (15.2 mm)" } },
+        { "value": "PG11", "label": { "en": "PG11 (18.6 mm)", "es": "PG11 (18.6 mm)" } },
+        { "value": "PG13.5", "label": { "en": "PG13.5 (20.4 mm)", "es": "PG13.5 (20.4 mm)" } },
+        { "value": "PG16", "label": { "en": "PG16 (22.5 mm)", "es": "PG16 (22.5 mm)" } },
+        { "value": "PG21", "label": { "en": "PG21 (28.3 mm)", "es": "PG21 (28.3 mm)" } },
+        { "value": "M12", "label": { "en": "M12 x 1.5", "es": "M12 x 1.5" } },
+        { "value": "M16", "label": { "en": "M16 x 1.5", "es": "M16 x 1.5" } },
+        { "value": "M20", "label": { "en": "M20 x 1.5", "es": "M20 x 1.5" } },
+        { "value": "M25", "label": { "en": "M25 x 1.5", "es": "M25 x 1.5" } }
+      ]
+    },
+    {
+      "id": "cable_dia", "type": "slider", "default": 6.0, "min": 1.5, "max": 24.0, "step": 0.5,
+      "group": "cable", "modes": ["gland_body", "sealing_reducer"],
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro de Cable (mm)" },
+      "tooltip": { "en": "Target cable OD (clamped to the size's sealing range)", "es": "Diámetro exterior del cable (limitado al rango de la talla)" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "thread", "modes": ["gland_body", "lock_nut", "sealing_reducer"], "advanced": true,
+      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Printed-thread fit slop per side", "es": "Holgura de ajuste de rosca por lado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "structure", "modes": ["gland_body", "lock_nut", "sealing_reducer"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body wall around the bore", "es": "Pared del cuerpo alrededor del barreno" }
+    },
+    {
+      "id": "thread_turns", "type": "slider", "default": 3.0, "min": 1.0, "max": 4.0, "step": 0.5,
+      "group": "thread", "modes": ["gland_body", "sealing_reducer"],
+      "label": { "en": "Engagement Turns", "es": "Vueltas de Engrane" },
+      "tooltip": { "en": "How many turns of panel thread", "es": "Cuántas vueltas de rosca de panel" }
+    },
+    {
+      "id": "head_flats", "type": "checkbox", "default": true,
+      "group": "structure", "modes": ["gland_body"],
+      "label": { "en": "Hex Wrench Flats", "es": "Caras Hexagonales" },
+      "tooltip": { "en": "Cut wrench flats on the body", "es": "Corta caras de llave en el cuerpo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "pg9_body", "mode": "gland_body",
+      "label": { "en": "PG9 Gland (6 mm cable)", "es": "Prensaestopas PG9 (cable 6 mm)" },
+      "values": { "gland_size": "PG9", "cable_dia": 6.0 }
+    },
+    {
+      "id": "pg9_nut", "mode": "lock_nut",
+      "label": { "en": "PG9 Lock Nut", "es": "Contratuerca PG9" },
+      "values": { "gland_size": "PG9" }
+    },
+    {
+      "id": "pg21_reducer", "mode": "sealing_reducer",
+      "label": { "en": "PG21 Reducer", "es": "Reductor PG21" },
+      "values": { "gland_size": "PG21", "cable_dia": 8.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 48, "wasm_multiplier": 5, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "gland_thread",
+        "label": { "en": "PG / Metric Gland Thread", "es": "Rosca de Prensaestopas PG / Métrica" },
+        "geometry_type": "thread",
+        "standard": "PG7-PG21 / M12-M25",
+        "parameters": ["gland_size", "clearance", "thread_turns"],
+        "compatible_with": ["terminal-cover", "conduit-clip"]
+      },
+      {
+        "id": "cable_bore",
+        "label": { "en": "Sealed Cable Bore", "es": "Barreno de Cable Sellado" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["cable_dia", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Puts a proper, standards-matched strain relief on any enclosure penetration for the cost of a few grams of filament, so field-built control boxes, off-grid battery boxes and irrigation cabinets get a sealed, snag-free cable entry instead of a cable jammed through a raw hole. Because the thread matches PG/metric knockouts, printed glands drop straight into existing panels and lock nuts.",
+      "es": "Coloca un alivio de tensión adecuado y conforme a norma en cualquier penetración de gabinete por unos gramos de filamento, para que cajas de control armadas en campo, cajas de baterías aisladas y gabinetes de riego tengan una entrada de cable sellada y sin enganches en lugar de un cable forzado por un agujero. Como la rosca coincide con knockouts PG/métricos, los prensaestopas impresos encajan directo en paneles y contratuercas existentes."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cable-gland", "strain-relief", "pg-thread", "metric", "enclosure", "electrical", "infrastructure", "hyperobject", "commons"]
+}

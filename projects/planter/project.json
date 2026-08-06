@@ -1,0 +1,171 @@
+{
+  "project": {
+    "name": "Self-Watering Planter",
+    "slug": "planter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A pot with a water reservoir in the base and a wicking path up to the soil, so plants water themselves between fillings. A false floor sits above the reservoir; wick holes pull water up; an overflow hole stops over-filling. Includes a matching saucer and a lift-out inner pot with wick legs. Round or square.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una maceta con un depósito de agua en la base y un camino de mecha hacia la tierra, para que las plantas se rieguen solas entre llenados. Un piso falso queda sobre el depósito; los orificios de mecha suben el agua; un rebosadero evita el sobrellenado. Incluye un plato a juego y una maceta interior extraíble con patas de mecha. Redonda o cuadrada.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/planter.webp",
+    "difficulty": "intermediate",
+    "tags": ["planter", "self-watering", "pot", "reservoir", "garden", "wicking", "gardening", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "planter",
+      "label": { "en": "Planter", "es": "Maceta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["planter"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "saucer",
+      "label": { "en": "Saucer", "es": "Plato" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["saucer"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "insert",
+      "label": { "en": "Inner Pot Insert", "es": "Maceta Interior" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["insert"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "planter", "label": { "en": "Planter", "es": "Maceta" }, "render_mode": 0, "color": "#8a7d5b" },
+    { "id": "saucer", "label": { "en": "Saucer", "es": "Plato" }, "render_mode": 0, "color": "#9a8d6b" },
+    { "id": "insert", "label": { "en": "Inner Pot", "es": "Maceta Interior" }, "render_mode": 0, "color": "#7a6d4b" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Pot Size", "es": "Tamaño de Maceta" } },
+    { "id": "reservoir", "label": { "en": "Reservoir & Wicking", "es": "Depósito y Mecha" } },
+    { "id": "shell", "label": { "en": "Walls", "es": "Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "shape", "type": "select", "default": "round",
+      "group": "size", "modes": ["planter", "saucer", "insert"],
+      "label": { "en": "Shape", "es": "Forma" },
+      "tooltip": { "en": "Round or square footprint", "es": "Base redonda o cuadrada" },
+      "options": [
+        { "value": "round", "label": { "en": "Round", "es": "Redonda" } },
+        { "value": "square", "label": { "en": "Square", "es": "Cuadrada" } }
+      ]
+    },
+    {
+      "id": "pot_dia", "type": "slider", "default": 120.0, "min": 40, "max": 400, "step": 2,
+      "group": "size", "modes": ["planter", "saucer", "insert"],
+      "label": { "en": "Pot Diameter / Width (mm)", "es": "Diámetro / Ancho de Maceta (mm)" },
+      "tooltip": { "en": "Outer diameter (round) or side (square)", "es": "Diámetro exterior (redonda) o lado (cuadrada)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 130.0, "min": 50, "max": 500, "step": 2,
+      "group": "size", "modes": ["planter"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Overall pot height", "es": "Altura total de la maceta" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "reservoir_h", "type": "slider", "default": 35.0, "min": 10, "max": 120, "step": 1,
+      "group": "reservoir", "modes": ["planter", "insert"],
+      "label": { "en": "Reservoir Height (mm)", "es": "Altura de Depósito (mm)" },
+      "tooltip": { "en": "Water chamber height at the base", "es": "Altura de la cámara de agua en la base" }
+    },
+    {
+      "id": "wick_count", "type": "slider", "default": 4, "min": 1, "max": 8, "step": 1,
+      "group": "reservoir", "modes": ["planter", "insert"],
+      "label": { "en": "Wick Holes", "es": "Orificios de Mecha" },
+      "tooltip": { "en": "Holes in the false floor that pull water up", "es": "Orificios en el piso falso que suben el agua" }
+    },
+    {
+      "id": "wick_dia", "type": "slider", "default": 16.0, "min": 4, "max": 40, "step": 1,
+      "group": "reservoir", "modes": ["planter", "insert"],
+      "label": { "en": "Wick Hole Diameter (mm)", "es": "Diámetro de Orificio de Mecha (mm)" },
+      "tooltip": { "en": "Size of each wicking hole", "es": "Tamaño de cada orificio de mecha" }
+    },
+    {
+      "id": "drainage", "type": "checkbox", "default": true,
+      "group": "reservoir", "modes": ["planter"],
+      "label": { "en": "Overflow Hole", "es": "Rebosadero" },
+      "tooltip": { "en": "Side hole at reservoir top to prevent over-filling", "es": "Orificio lateral en el tope del depósito para evitar sobrellenado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "shell", "modes": ["planter", "saucer", "insert"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Pot wall and floor thickness", "es": "Grosor de pared y piso de la maceta" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "herb_pot", "mode": "planter",
+      "label": { "en": "Herb Pot (round)", "es": "Maceta de Hierbas (redonda)" },
+      "values": { "shape": "round", "pot_dia": 110, "height": 120, "reservoir_h": 32 }
+    },
+    {
+      "id": "square_patio", "mode": "planter",
+      "label": { "en": "Square Patio Planter", "es": "Maceta de Patio Cuadrada" },
+      "values": { "shape": "square", "pot_dia": 160, "height": 160, "reservoir_h": 45, "wick_count": 5 }
+    },
+    {
+      "id": "matching_saucer", "mode": "saucer",
+      "label": { "en": "Matching Saucer", "es": "Plato a Juego" },
+      "values": { "shape": "round", "pot_dia": 110 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "reservoir_h < height",
+      "severity": "error",
+      "message": { "en": "Reservoir must be shorter than the pot height", "es": "El depósito debe ser más bajo que la altura de la maceta" }
+    },
+    {
+      "expression": "wick_dia < pot_dia / 3",
+      "severity": "warning",
+      "message": { "en": "Wick holes are large relative to the pot", "es": "Los orificios de mecha son grandes respecto a la maceta" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 220, 190] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 340] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -340, 70] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "self_watering_reservoir",
+        "label": { "en": "Self-Watering Reservoir", "es": "Depósito de Autorriego" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["reservoir_h", "wick_count", "wick_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Water-thrifty growing at home: a self-watering pot lets seedlings and herbs go days between waterings, saving water and rescuing plants from missed days, so more people can grow food and greenery in small spaces.",
+      "es": "Cultivo que ahorra agua en casa: una maceta de autorriego permite que plántulas y hierbas pasen días entre riegos, ahorrando agua y rescatando plantas de días olvidados, para que más personas cultiven alimentos y verde en espacios pequeños."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["planter", "self-watering", "garden", "household", "hyperobject", "commons"]
+}

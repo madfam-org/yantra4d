@@ -1,6 +1,14 @@
 import json
-from unittest.mock import patch, MagicMock
-from services.engine.cadquery_engine import _cadquery_env, build_cadquery_command, run_render, stream_render, cancel_render
+from unittest.mock import MagicMock, patch
+
+from services.engine.cadquery_engine import (
+    _cadquery_env,
+    build_cadquery_command,
+    cancel_render,
+    run_render,
+    stream_render,
+)
+
 
 def test_cadquery_env(monkeypatch):
     monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")

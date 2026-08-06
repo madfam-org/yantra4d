@@ -1,0 +1,197 @@
+{
+  "project": {
+    "name": "Hopper / Funnel Feeder",
+    "slug": "hopper-feeder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A hopper that funnels bulk material to an outlet. The taper wall angle is exposed so you can set it steeper than the material's angle of repose for reliable flow. Choose a round (conical), square (pyramidal to a round outlet), or wedge (linear trough to a slot) shape. Built as a genuine watertight hollow shell.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tolva que canaliza material a granel hacia una salida. El ángulo de la pared cónica está expuesto para ajustarlo más pronunciado que el ángulo de reposo del material y lograr un flujo confiable. Elige forma redonda (cónica), cuadrada (piramidal a salida redonda) o cuña (canal lineal a ranura). Construida como una carcasa hueca hermética real.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hopper-feeder.webp",
+    "difficulty": "intermediate",
+    "tags": ["hopper", "funnel", "feeder", "material-handling", "chute", "bulk-material", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "round_hopper",
+      "label": { "en": "Round Hopper", "es": "Tolva Redonda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["round_hopper"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "square_hopper",
+      "label": { "en": "Square Hopper", "es": "Tolva Cuadrada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["square_hopper"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "trough_feeder",
+      "label": { "en": "Trough Feeder", "es": "Canal Alimentador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["trough_feeder"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "round_hopper", "label": { "en": "Round Hopper", "es": "Tolva Redonda" }, "render_mode": 0, "color": "#b0895b" },
+    { "id": "square_hopper", "label": { "en": "Square Hopper", "es": "Tolva Cuadrada" }, "render_mode": 0, "color": "#c0996b" },
+    { "id": "trough_feeder", "label": { "en": "Trough Feeder", "es": "Canal Alimentador" }, "render_mode": 0, "color": "#cca97c" }
+  ],
+  "parameter_groups": [
+    { "id": "opening", "label": { "en": "Top Opening", "es": "Abertura Superior" } },
+    { "id": "outlet", "label": { "en": "Outlet", "es": "Salida" } },
+    { "id": "taper", "label": { "en": "Taper & Wall", "es": "Cono y Pared" } }
+  ],
+  "parameters": [
+    {
+      "id": "top_w", "type": "slider", "default": 120, "min": 30, "max": 300, "step": 1,
+      "group": "opening", "modes": ["round_hopper", "square_hopper", "trough_feeder"],
+      "label": { "en": "Top Opening Width (mm)", "es": "Ancho de Abertura Superior (mm)" },
+      "tooltip": { "en": "Top opening X dimension (diameter for round)", "es": "Dimensión X de la abertura superior (diámetro para redonda)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "top_d", "type": "slider", "default": 120, "min": 30, "max": 300, "step": 1,
+      "group": "opening", "modes": ["square_hopper"],
+      "label": { "en": "Top Opening Depth (mm)", "es": "Profundidad de Abertura Superior (mm)" },
+      "tooltip": { "en": "Top opening Y dimension (square hopper)", "es": "Dimensión Y de la abertura superior (tolva cuadrada)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "outlet_dia", "type": "slider", "default": 20.0, "min": 4.0, "max": 80.0, "step": 1.0,
+      "group": "outlet", "modes": ["round_hopper", "square_hopper", "trough_feeder"],
+      "label": { "en": "Outlet Diameter (mm)", "es": "Diámetro de Salida (mm)" },
+      "tooltip": { "en": "Diameter of the round outlet (slot width for the trough)", "es": "Diámetro de la salida redonda (ancho de ranura para el canal)" }
+    },
+    {
+      "id": "outlet_len", "type": "slider", "default": 15.0, "min": 0.0, "max": 60.0, "step": 1.0,
+      "group": "outlet", "modes": ["round_hopper", "square_hopper", "trough_feeder"],
+      "label": { "en": "Outlet Spout Length (mm)", "es": "Longitud del Pico de Salida (mm)" },
+      "tooltip": { "en": "Straight spout below the taper (0 = none)", "es": "Pico recto debajo del cono (0 = ninguno)" }
+    },
+    {
+      "id": "slot_len", "type": "slider", "default": 80.0, "min": 20.0, "max": 250.0, "step": 1.0,
+      "group": "outlet", "modes": ["trough_feeder"],
+      "label": { "en": "Trough Length (mm)", "es": "Longitud del Canal (mm)" },
+      "tooltip": { "en": "Length of the trough / slot outlet", "es": "Longitud del canal / ranura de salida" }
+    },
+    {
+      "id": "height", "type": "slider", "default": 100, "min": 20, "max": 300, "step": 1,
+      "group": "taper", "modes": ["round_hopper", "square_hopper", "trough_feeder"],
+      "label": { "en": "Body Height (mm)", "es": "Altura del Cuerpo (mm)" },
+      "tooltip": { "en": "Minimum funnel height (raised automatically if the wall angle needs it)", "es": "Altura mínima del embudo (se aumenta automáticamente si el ángulo lo requiere)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall_angle", "type": "slider", "default": 60.0, "min": 20.0, "max": 85.0, "step": 1.0,
+      "group": "taper", "modes": ["round_hopper", "square_hopper", "trough_feeder"],
+      "label": { "en": "Wall Angle (°)", "es": "Ángulo de Pared (°)" },
+      "tooltip": { "en": "Taper angle from horizontal — set above the material's angle of repose for reliable flow", "es": "Ángulo del cono desde la horizontal — ajústalo por encima del ángulo de reposo del material para un flujo confiable" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.2, "max": 8.0, "step": 0.2,
+      "group": "taper", "modes": ["round_hopper", "square_hopper", "trough_feeder"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shell wall thickness", "es": "Grosor de la pared de la carcasa" }
+    },
+    {
+      "id": "rim", "type": "checkbox", "default": true,
+      "group": "taper", "modes": ["round_hopper", "square_hopper"],
+      "label": { "en": "Top Stiffening Rim", "es": "Borde Rigidizador Superior" },
+      "tooltip": { "en": "Add a reinforcing rim around the top opening", "es": "Agregar un borde de refuerzo alrededor de la abertura superior" }
+    },
+    {
+      "id": "shape", "type": "select", "default": "round",
+      "group": "taper", "modes": ["round_hopper", "square_hopper", "trough_feeder"], "advanced": true,
+      "label": { "en": "Shape Family", "es": "Familia de Forma" },
+      "tooltip": { "en": "Descriptive shape family (the active mode drives the geometry)", "es": "Familia de forma descriptiva (el modo activo determina la geometría)" },
+      "options": [
+        { "value": "round", "label": { "en": "Round (conical)", "es": "Redonda (cónica)" } },
+        { "value": "square", "label": { "en": "Square (pyramidal)", "es": "Cuadrada (piramidal)" } },
+        { "value": "wedge", "label": { "en": "Wedge (trough)", "es": "Cuña (canal)" } }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "pellet_funnel", "mode": "round_hopper",
+      "label": { "en": "Pellet Funnel", "es": "Embudo de Pellets" },
+      "values": { "top_w": 120, "outlet_dia": 20, "wall_angle": 60, "height": 100, "wall": 2.4 }
+    },
+    {
+      "id": "powder_hopper", "mode": "round_hopper",
+      "label": { "en": "Steep Powder Hopper", "es": "Tolva de Polvo Pronunciada" },
+      "values": { "top_w": 100, "outlet_dia": 12, "wall_angle": 75, "height": 120, "wall": 2.0 }
+    },
+    {
+      "id": "square_bin", "mode": "square_hopper",
+      "label": { "en": "Square Feed Bin", "es": "Depósito Cuadrado de Alimentación" },
+      "values": { "top_w": 150, "top_d": 150, "outlet_dia": 25, "wall_angle": 60, "height": 110 }
+    },
+    {
+      "id": "line_trough", "mode": "trough_feeder",
+      "label": { "en": "Line Trough Feeder", "es": "Canal Alimentador Lineal" },
+      "values": { "top_w": 120, "outlet_dia": 16, "wall_angle": 55, "slot_len": 120, "height": 90 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall_angle >= 30",
+      "severity": "warning",
+      "message": { "en": "Shallow wall angle may not exceed the material angle of repose (risk of bridging)", "es": "Un ángulo de pared bajo puede no superar el ángulo de reposo del material (riesgo de atascamiento)" }
+    },
+    {
+      "expression": "outlet_dia < top_w",
+      "severity": "error",
+      "message": { "en": "Outlet must be smaller than the top opening", "es": "La salida debe ser más pequeña que la abertura superior" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 280] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -280, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "hopper_taper",
+        "label": { "en": "Hopper Taper", "es": "Cono de la Tolva" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["outlet_dia", "wall_angle"]
+      },
+      {
+        "id": "outlet_spout",
+        "label": { "en": "Outlet Spout", "es": "Pico de Salida" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["outlet_dia", "outlet_len", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Reliable bulk-material handling for makerspaces, farms, and small production — a flow-correct funnel sized to the outlet and steeper than the angle of repose keeps pellets, seed, or powder moving without bridging or store-bought hoppers.",
+      "es": "Manejo confiable de material a granel para talleres, granjas y producción pequeña — un embudo con flujo correcto dimensionado a la salida y más pronunciado que el ángulo de reposo mantiene en movimiento pellets, semillas o polvo sin atascamientos ni tolvas compradas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hopper", "funnel", "feeder", "material-handling", "industrial", "hyperobject", "commons"]
+}

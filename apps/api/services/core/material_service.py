@@ -7,7 +7,6 @@ import json
 import logging
 from pathlib import Path
 
-
 logger = logging.getLogger(__name__)
 
 # Cache of all discovered material dictionaries
@@ -48,7 +47,7 @@ def discover_materials(force_refresh=False):
         manifest_path = child / "material.json"
         if manifest_path.exists() and manifest_path.is_file():
             try:
-                with open(manifest_path, "r", encoding="utf-8") as f:
+                with open(manifest_path, encoding="utf-8") as f:
                     data = json.load(f)
                     materials.append(data)
             except Exception as e:

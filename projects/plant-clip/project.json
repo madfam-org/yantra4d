@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "Trellis / Plant Clip",
+    "slug": "plant-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A gentle clip that ties a plant stem to a stake, a trellis wire, or itself. Three styles: a figure-of-eight stake clip, a wire clip that snaps over a trellis wire, and a soft spiral wrap. The C-loops grip a little smaller than the stem so they hold, but spring on without crushing the plant.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un clip suave que sujeta el tallo de una planta a una estaca, un alambre de espaldera o a sí mismo. Tres estilos: un clip de estaca en forma de ocho, un clip que se ajusta sobre un alambre de espaldera y una espiral suave. Los aros en C sujetan un poco más pequeños que el tallo para retener, pero entran sin aplastar la planta.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/plant-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["plant", "clip", "trellis", "stake", "garden", "support", "tomato", "vine", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "stake_clip",
+      "label": { "en": "Stake Clip", "es": "Clip de Estaca" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stake_clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "wire_clip",
+      "label": { "en": "Wire Clip", "es": "Clip de Alambre" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wire_clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "spiral_clip",
+      "label": { "en": "Spiral Wrap", "es": "Espiral" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spiral_clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "stake_clip", "label": { "en": "Stake Clip", "es": "Clip de Estaca" }, "render_mode": 0, "color": "#6a9d4a" },
+    { "id": "wire_clip", "label": { "en": "Wire Clip", "es": "Clip de Alambre" }, "render_mode": 0, "color": "#7aad5a" },
+    { "id": "spiral_clip", "label": { "en": "Spiral Wrap", "es": "Espiral" }, "render_mode": 0, "color": "#5a8d3a" }
+  ],
+  "parameter_groups": [
+    { "id": "stem", "label": { "en": "Stem", "es": "Tallo" } },
+    { "id": "target", "label": { "en": "Attachment", "es": "Sujeción" } },
+    { "id": "form", "label": { "en": "Clip Form", "es": "Forma del Clip" } }
+  ],
+  "parameters": [
+    {
+      "id": "stem_dia", "type": "slider", "default": 10.0, "min": 3, "max": 40, "step": 0.5,
+      "group": "stem", "modes": ["stake_clip", "wire_clip", "spiral_clip"],
+      "label": { "en": "Stem Diameter (mm)", "es": "Diámetro del Tallo (mm)" },
+      "tooltip": { "en": "Diameter of the plant stem the clip holds", "es": "Diámetro del tallo de la planta que sujeta el clip" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "stake_dia", "type": "slider", "default": 11.0, "min": 3, "max": 40, "step": 0.5,
+      "group": "target", "modes": ["stake_clip"],
+      "label": { "en": "Stake Diameter (mm)", "es": "Diámetro de Estaca (mm)" },
+      "tooltip": { "en": "Diameter of the stake the second loop grips", "es": "Diámetro de la estaca que sujeta el segundo aro" }
+    },
+    {
+      "id": "wire_dia", "type": "slider", "default": 3.0, "min": 1.5, "max": 12, "step": 0.5,
+      "group": "target", "modes": ["wire_clip"],
+      "label": { "en": "Trellis Wire Diameter (mm)", "es": "Diámetro de Alambre (mm)" },
+      "tooltip": { "en": "Diameter of the trellis wire the slot snaps over", "es": "Diámetro del alambre de espaldera sobre el que se ajusta la ranura" }
+    },
+    {
+      "id": "mouth", "type": "slider", "default": 0.7, "min": 0.4, "max": 0.95, "step": 0.05,
+      "group": "form", "modes": ["stake_clip", "wire_clip"],
+      "label": { "en": "Mouth Opening (fraction)", "es": "Apertura de Boca (fracción)" },
+      "tooltip": { "en": "Opening width as a fraction of stem diameter (smaller = grips harder)", "es": "Ancho de apertura como fracción del diámetro del tallo (menor = sujeta más)" }
+    },
+    {
+      "id": "width", "type": "slider", "default": 10.0, "min": 4, "max": 30, "step": 0.5,
+      "group": "form", "modes": ["stake_clip", "wire_clip", "spiral_clip"],
+      "label": { "en": "Clip Width (mm)", "es": "Ancho del Clip (mm)" },
+      "tooltip": { "en": "How wide the clip is along the stem", "es": "Qué tan ancho es el clip a lo largo del tallo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "form", "modes": ["stake_clip", "wire_clip", "spiral_clip"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Clip wall thickness (thinner = more spring)", "es": "Grosor de pared del clip (más delgado = más resorte)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "tomato_stake", "mode": "stake_clip",
+      "label": { "en": "Tomato Stake Clip", "es": "Clip de Estaca para Tomate" },
+      "values": { "stem_dia": 12, "stake_dia": 11, "width": 12 }
+    },
+    {
+      "id": "vine_wire", "mode": "wire_clip",
+      "label": { "en": "Vine Wire Clip", "es": "Clip de Alambre para Vid" },
+      "values": { "stem_dia": 8, "wire_dia": 3, "mouth": 0.65 }
+    },
+    {
+      "id": "soft_spiral", "mode": "spiral_clip",
+      "label": { "en": "Soft Spiral (seedling)", "es": "Espiral Suave (plántula)" },
+      "values": { "stem_dia": 6, "wall": 2.0, "width": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "mouth <= 0.95",
+      "severity": "warning",
+      "message": { "en": "A very wide mouth may not retain the stem", "es": "Una boca muy amplia puede no retener el tallo" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [45, 45, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 70] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -70, 6] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "stem_clip",
+        "label": { "en": "Stem Clip", "es": "Clip de Tallo" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["stem_dia", "mouth", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Healthier gardens, less plastic: printed plant clips replace throwaway ties and metal that damages stems, letting growers train tomatoes, vines, and climbers gently and reuse the clips season after season.",
+      "es": "Jardines más sanos, menos plástico: los clips de planta impresos reemplazan ataduras desechables y metal que daña tallos, permitiendo a los cultivadores guiar tomates, vides y trepadoras con suavidad y reutilizar los clips temporada tras temporada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["plant", "clip", "trellis", "household", "hyperobject", "commons"]
+}

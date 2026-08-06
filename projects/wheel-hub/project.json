@@ -1,0 +1,190 @@
+{
+  "project": {
+    "name": "Robot Wheel / Hub",
+    "slug": "wheel-hub",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A drive wheel or hub with a shaft bore matched to a real motor shaft: a 3 mm or 4 mm D-shaft (round with one flat), a 6 mm round shaft (round bore + set-screw), or the TT gearmotor shaft (hex bore adapter). The bore keys the wheel to the shaft so it drives. Choose a drive wheel, a shaft-to-bolt-circle hub adapter, or a flanged pulley wheel.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una rueda motriz o cubo con un barreno de eje que coincide con un eje de motor real: un eje D de 3 mm o 4 mm (redondo con un plano), un eje redondo de 6 mm (barreno redondo + prisionero) o el eje del motorreductor TT (adaptador de barreno hexagonal). El barreno acopla la rueda al eje para que impulse. Elige una rueda motriz, un adaptador de cubo a circulo de tornillos o una rueda polea con bridas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/wheel-hub.webp",
+    "difficulty": "intermediate",
+    "tags": ["wheel", "hub", "shaft", "d-shaft", "tt-motor", "pulley", "robot", "robotics", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "wheel",
+      "label": { "en": "Drive Wheel", "es": "Rueda Motriz" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wheel"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "hub_adapter",
+      "label": { "en": "Hub Adapter", "es": "Adaptador de Cubo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hub_adapter"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "pulley_wheel",
+      "label": { "en": "Pulley Wheel", "es": "Rueda Polea" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pulley_wheel"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 17 }
+    }
+  ],
+  "parts": [
+    { "id": "wheel", "label": { "en": "Drive Wheel", "es": "Rueda Motriz" }, "render_mode": 0, "color": "#3f5c8f" },
+    { "id": "hub_adapter", "label": { "en": "Hub Adapter", "es": "Adaptador de Cubo" }, "render_mode": 0, "color": "#5c6b7a" },
+    { "id": "pulley_wheel", "label": { "en": "Pulley Wheel", "es": "Rueda Polea" }, "render_mode": 0, "color": "#4a6ba0" }
+  ],
+  "parameter_groups": [
+    { "id": "shaft", "label": { "en": "Shaft", "es": "Eje" } },
+    { "id": "wheel", "label": { "en": "Wheel", "es": "Rueda" } },
+    { "id": "adapter", "label": { "en": "Adapter", "es": "Adaptador" } }
+  ],
+  "parameters": [
+    {
+      "id": "shaft", "type": "select", "default": "3mm-D",
+      "group": "shaft", "modes": ["wheel", "hub_adapter", "pulley_wheel"],
+      "label": { "en": "Motor Shaft", "es": "Eje del Motor" },
+      "tooltip": { "en": "Shaft interface — sets the keyed bore geometry", "es": "Interfaz del eje — define la geometria del barreno acoplado" },
+      "options": [
+        { "value": "3mm-D", "label": { "en": "3 mm D-shaft", "es": "Eje D de 3 mm" } },
+        { "value": "4mm-D", "label": { "en": "4 mm D-shaft", "es": "Eje D de 4 mm" } },
+        { "value": "6mm-round", "label": { "en": "6 mm round (set-screw)", "es": "6 mm redondo (prisionero)" } },
+        { "value": "hex-TT-motor", "label": { "en": "TT gearmotor (hex)", "es": "Motorreductor TT (hex)" } }
+      ]
+    },
+    {
+      "id": "bore_clear", "type": "slider", "default": 0.2, "min": 0.0, "max": 0.6, "step": 0.05,
+      "group": "shaft", "modes": ["wheel", "hub_adapter", "pulley_wheel"], "advanced": true,
+      "label": { "en": "Bore Clearance (mm)", "es": "Holgura del Barreno (mm)" },
+      "tooltip": { "en": "Bore clearance over the shaft (press-fit to slip-fit)", "es": "Holgura del barreno sobre el eje (de ajuste a presion a deslizante)" }
+    },
+    {
+      "id": "set_d", "type": "slider", "default": 3.0, "min": 2.0, "max": 5.0, "step": 0.1,
+      "group": "shaft", "modes": ["wheel", "hub_adapter", "pulley_wheel"], "advanced": true,
+      "label": { "en": "Set-Screw (mm)", "es": "Prisionero (mm)" },
+      "tooltip": { "en": "Radial set-screw diameter for the round shaft", "es": "Diametro del prisionero radial para el eje redondo" }
+    },
+    {
+      "id": "wheel_d", "type": "slider", "default": 60.0, "min": 24.0, "max": 120.0, "step": 1,
+      "group": "wheel", "modes": ["wheel", "pulley_wheel"],
+      "label": { "en": "Wheel Diameter (mm)", "es": "Diametro de Rueda (mm)" },
+      "tooltip": { "en": "Outer wheel / pulley diameter", "es": "Diametro exterior de rueda / polea" }
+    },
+    {
+      "id": "wheel_w", "type": "slider", "default": 12.0, "min": 6.0, "max": 30.0, "step": 1,
+      "group": "wheel", "modes": ["wheel", "pulley_wheel"],
+      "label": { "en": "Wheel Width (mm)", "es": "Ancho de Rueda (mm)" },
+      "tooltip": { "en": "Wheel width (Z)", "es": "Ancho de la rueda (Z)" }
+    },
+    {
+      "id": "groove_d", "type": "slider", "default": 3.0, "min": 0.5, "max": 8.0, "step": 0.5,
+      "group": "wheel", "modes": ["wheel", "pulley_wheel"],
+      "label": { "en": "Groove Depth (mm)", "es": "Profundidad de Ranura (mm)" },
+      "tooltip": { "en": "Tyre / belt groove depth (radial)", "es": "Profundidad de la ranura de llanta / banda (radial)" }
+    },
+    {
+      "id": "hub_d", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 0.5,
+      "group": "wheel", "modes": ["wheel", "hub_adapter", "pulley_wheel"],
+      "label": { "en": "Hub Diameter (mm)", "es": "Diametro del Cubo (mm)" },
+      "tooltip": { "en": "Central hub / boss diameter around the bore", "es": "Diametro del cubo / buje central alrededor del barreno" }
+    },
+    {
+      "id": "bolt_circle", "type": "slider", "default": 24.0, "min": 12.0, "max": 50.0, "step": 1,
+      "group": "adapter", "modes": ["hub_adapter"],
+      "label": { "en": "Bolt Circle (mm)", "es": "Circulo de Tornillos (mm)" },
+      "tooltip": { "en": "Adapter output bolt-circle diameter", "es": "Diametro del circulo de tornillos de salida del adaptador" }
+    },
+    {
+      "id": "bolt_d", "type": "slider", "default": 3.4, "min": 2.0, "max": 6.0, "step": 0.1,
+      "group": "adapter", "modes": ["hub_adapter"],
+      "label": { "en": "Bolt Hole (mm)", "es": "Agujero de Tornillo (mm)" },
+      "tooltip": { "en": "Adapter bolt-hole diameter (3.4 = M3)", "es": "Diametro del agujero de tornillo del adaptador (3.4 = M3)" }
+    },
+    {
+      "id": "bolt_n", "type": "slider", "default": 4, "min": 2, "max": 12, "step": 1,
+      "group": "adapter", "modes": ["hub_adapter"],
+      "label": { "en": "Bolt Count", "es": "Numero de Tornillos" },
+      "tooltip": { "en": "Number of bolts around the adapter circle", "es": "Numero de tornillos alrededor del circulo del adaptador" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "tt_wheel", "mode": "wheel",
+      "label": { "en": "TT Motor Wheel", "es": "Rueda Motor TT" },
+      "values": { "shaft": "hex-TT-motor", "wheel_d": 65, "wheel_w": 26, "groove_d": 4 }
+    },
+    {
+      "id": "d3_adapter", "mode": "hub_adapter",
+      "label": { "en": "3 mm D Hub", "es": "Cubo D 3 mm" },
+      "values": { "shaft": "3mm-D", "bolt_circle": 24, "bolt_n": 4 }
+    },
+    {
+      "id": "round_pulley", "mode": "pulley_wheel",
+      "label": { "en": "6 mm Cord Pulley", "es": "Polea de Cordon 6 mm" },
+      "values": { "shaft": "6mm-round", "wheel_d": 40, "wheel_w": 14, "groove_d": 5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wheel_d >= 24",
+      "severity": "error",
+      "message": { "en": "Wheel must be at least 24 mm to fit the hub and bore", "es": "La rueda debe medir al menos 24 mm para alojar el cubo y el barreno" }
+    },
+    {
+      "expression": "hub_d >= 8",
+      "severity": "warning",
+      "message": { "en": "A hub under 8 mm leaves thin walls around the shaft bore", "es": "Un cubo menor a 8 mm deja paredes delgadas alrededor del barreno" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [80, 80, 60] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 15] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 15, "per_unit": 4, "per_part": 17,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "motor_shaft_bore",
+        "label": { "en": "Motor Shaft Bore", "es": "Barreno del Eje del Motor" },
+        "geometry_type": "socket",
+        "standard": "3/4/6mm / TT hex",
+        "parameters": ["shaft", "bore_clear", "set_d"]
+      },
+      {
+        "id": "output_bolt_circle",
+        "label": { "en": "Output Bolt Circle", "es": "Circulo de Tornillos de Salida" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["bolt_circle", "bolt_d", "bolt_n"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Small robots run on a handful of motor shaft standards — 3/4 mm D-shafts, 6 mm round, and the ubiquitous TT gearmotor. A printed wheel or hub keyed to the exact shaft turns any of those motors into drive without buying a matching wheel, and the bore-clearance control tunes the press fit per printer.",
+      "es": "Los robots pequenos funcionan con un punado de estandares de eje — ejes D de 3/4 mm, redondo de 6 mm y el ubicuo motorreductor TT. Una rueda o cubo impreso acoplado al eje exacto convierte cualquiera de esos motores en traccion sin comprar una rueda a medida, y el control de holgura del barreno ajusta el encaje por impresora."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["wheel", "hub", "shaft", "tt-motor", "pulley", "robotics", "industrial", "hyperobject", "commons"]
+}

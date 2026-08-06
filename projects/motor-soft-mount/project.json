@@ -1,0 +1,540 @@
+{
+  "project": {
+    "name": "Motor Soft-Mount Pod",
+    "slug": "motor-soft-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A vibration-isolating motor pod for FPV / RC brushless motors. Carries the standard square motor bolt pattern (9x9 M2, 16x16 or 19x19 M3) and clamps to the frame arm. Soft mode adds compliant flex slots (print in TPU) to damp airframe vibration; rigid and landing-skid variants included.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de motor aislante de vibraciones para motores brushless FPV / RC. Lleva el patron cuadrado estandar de tornillos (9x9 M2, 16x16 o 19x19 M3) y se sujeta al brazo del cuadro. El modo blando agrega ranuras flexibles (imprimir en TPU) para amortiguar la vibracion; se incluyen variantes rigida y con pata de aterrizaje.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/motor-soft-mount.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "drone",
+      "fpv",
+      "motor",
+      "soft-mount",
+      "vibration",
+      "brushless",
+      "rc",
+      "tpu",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "soft_mount",
+      "label": {
+        "en": "Soft Mount (flex)",
+        "es": "Montura Blanda (flexible)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "soft_mount"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "rigid_mount",
+      "label": {
+        "en": "Rigid Mount",
+        "es": "Montura Rigida"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rigid_mount"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "skid_mount",
+      "label": {
+        "en": "Skid Mount (landing foot)",
+        "es": "Montura con Pata"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "skid_mount"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "soft_mount",
+      "label": {
+        "en": "Soft Mount",
+        "es": "Montura Blanda"
+      },
+      "render_mode": 0,
+      "color": "#e07a3f"
+    },
+    {
+      "id": "rigid_mount",
+      "label": {
+        "en": "Rigid Mount",
+        "es": "Montura Rigida"
+      },
+      "render_mode": 0,
+      "color": "#c85a2a"
+    },
+    {
+      "id": "skid_mount",
+      "label": {
+        "en": "Skid Mount",
+        "es": "Montura con Pata"
+      },
+      "render_mode": 0,
+      "color": "#f0975c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "motor",
+      "label": {
+        "en": "Motor Pattern",
+        "es": "Patron de Motor"
+      }
+    },
+    {
+      "id": "clamp",
+      "label": {
+        "en": "Arm Clamp",
+        "es": "Sujecion de Brazo"
+      }
+    },
+    {
+      "id": "flex",
+      "label": {
+        "en": "Isolation & Foot",
+        "es": "Aislamiento y Pata"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "motor_pattern",
+      "type": "select",
+      "default": "16x16",
+      "group": "motor",
+      "modes": [
+        "soft_mount",
+        "rigid_mount",
+        "skid_mount"
+      ],
+      "label": {
+        "en": "Motor Bolt Pattern",
+        "es": "Patron de Tornillos del Motor"
+      },
+      "tooltip": {
+        "en": "Square motor mounting hole pattern (9x9 M2, 16x16/19x19 M3)",
+        "es": "Patron cuadrado de agujeros del motor (9x9 M2, 16x16/19x19 M3)"
+      },
+      "options": [
+        {
+          "value": "9x9",
+          "label": {
+            "en": "9x9 mm (M2)",
+            "es": "9x9 mm (M2)"
+          }
+        },
+        {
+          "value": "16x16",
+          "label": {
+            "en": "16x16 mm (M3)",
+            "es": "16x16 mm (M3)"
+          }
+        },
+        {
+          "value": "19x19",
+          "label": {
+            "en": "19x19 mm (M3)",
+            "es": "19x19 mm (M3)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "plate_thick",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "motor",
+      "modes": [
+        "soft_mount",
+        "rigid_mount",
+        "skid_mount"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Motor plate thickness",
+        "es": "Grosor de la placa del motor"
+      }
+    },
+    {
+      "id": "bore_d",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 22.0,
+      "step": 0.5,
+      "group": "motor",
+      "modes": [
+        "soft_mount",
+        "rigid_mount",
+        "skid_mount"
+      ],
+      "label": {
+        "en": "Central Bore (mm)",
+        "es": "Barreno Central (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance bore for the motor bell / shaft",
+        "es": "Barreno de holgura para la campana / eje del motor"
+      }
+    },
+    {
+      "id": "arm_width",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "soft_mount",
+        "rigid_mount"
+      ],
+      "label": {
+        "en": "Arm Width (mm)",
+        "es": "Ancho de Brazo (mm)"
+      },
+      "tooltip": {
+        "en": "Frame arm width to clamp",
+        "es": "Ancho del brazo del cuadro a sujetar"
+      }
+    },
+    {
+      "id": "arm_thick",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "soft_mount",
+        "rigid_mount"
+      ],
+      "label": {
+        "en": "Arm Thickness (mm)",
+        "es": "Grosor de Brazo (mm)"
+      },
+      "tooltip": {
+        "en": "Frame arm thickness (clamp depth)",
+        "es": "Grosor del brazo (profundidad de sujecion)"
+      }
+    },
+    {
+      "id": "clamp_wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "soft_mount",
+        "rigid_mount"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Clamp Wall (mm)",
+        "es": "Pared de Sujecion (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness around the arm",
+        "es": "Grosor de pared alrededor del brazo"
+      }
+    },
+    {
+      "id": "iso_gap",
+      "type": "slider",
+      "default": 2.4,
+      "min": 0.8,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "flex",
+      "modes": [
+        "soft_mount"
+      ],
+      "label": {
+        "en": "Isolation Gap (mm)",
+        "es": "Separacion de Aislamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Flex-slot width decoupling the motor plate",
+        "es": "Ancho de ranura flexible que desacopla la placa del motor"
+      }
+    },
+    {
+      "id": "flex_slots",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "flex",
+      "modes": [
+        "soft_mount"
+      ],
+      "label": {
+        "en": "Flex Slots",
+        "es": "Ranuras Flexibles"
+      },
+      "tooltip": {
+        "en": "Number of compliant comb slots per neck",
+        "es": "Numero de ranuras tipo peine por cuello"
+      }
+    },
+    {
+      "id": "foot_dia",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 1,
+      "group": "flex",
+      "modes": [
+        "skid_mount"
+      ],
+      "label": {
+        "en": "Landing Foot Diameter (mm)",
+        "es": "Diametro de Pata (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the landing foot pad",
+        "es": "Diametro de la pata de aterrizaje"
+      }
+    },
+    {
+      "id": "foot_drop",
+      "type": "slider",
+      "default": 14.0,
+      "min": 4.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "flex",
+      "modes": [
+        "skid_mount"
+      ],
+      "label": {
+        "en": "Foot Drop (mm)",
+        "es": "Caida de Pata (mm)"
+      },
+      "tooltip": {
+        "en": "How far the foot drops below the pod",
+        "es": "Cuanto baja la pata debajo del soporte"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cinewhoop_soft",
+      "mode": "soft_mount",
+      "label": {
+        "en": "Cinewhoop Soft (16x16)",
+        "es": "Cinewhoop Blando (16x16)"
+      },
+      "values": {
+        "motor_pattern": "16x16",
+        "arm_width": 10,
+        "arm_thick": 4,
+        "iso_gap": 2.4,
+        "flex_slots": 3
+      }
+    },
+    {
+      "id": "freestyle_rigid",
+      "mode": "rigid_mount",
+      "label": {
+        "en": "Freestyle Rigid (19x19)",
+        "es": "Freestyle Rigido (19x19)"
+      },
+      "values": {
+        "motor_pattern": "19x19",
+        "arm_width": 14,
+        "arm_thick": 6,
+        "plate_thick": 5
+      }
+    },
+    {
+      "id": "tinywhoop_skid",
+      "mode": "skid_mount",
+      "label": {
+        "en": "Tiny Skid (9x9)",
+        "es": "Pata Tiny (9x9)"
+      },
+      "values": {
+        "motor_pattern": "9x9",
+        "bore_d": 7,
+        "foot_dia": 12,
+        "foot_drop": 10
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "arm_width >= 6",
+      "severity": "warning",
+      "message": {
+        "en": "Arm width is very small for a printed clamp",
+        "es": "El ancho de brazo es muy pequeno para una sujecion impresa"
+      }
+    },
+    {
+      "expression": "clamp_wall >= 1.5",
+      "severity": "error",
+      "message": {
+        "en": "Clamp wall must be at least 1.5 mm",
+        "es": "La pared de sujecion debe ser de al menos 1.5 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isometrico"
+      },
+      "position": [
+        70,
+        70,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        120
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -120,
+        10
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "motor_bolt_pattern",
+        "label": {
+          "en": "Motor Bolt Pattern",
+          "es": "Patron de Tornillos del Motor"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "16x16 / 19x19 / 9x9 brushless motor mount",
+        "parameters": [
+          "motor_pattern",
+          "bore_d"
+        ],
+        "compatible_with": [
+          "landing-skid",
+          "prop-guard"
+        ]
+      },
+      {
+        "id": "arm_clamp",
+        "label": {
+          "en": "Frame Arm Clamp",
+          "es": "Sujecion de Brazo"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "arm_width",
+          "arm_thick",
+          "clamp_wall"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Motors are the most vibration-critical joint on a multirotor. On-demand soft-mounts damp jello out of FPV footage and extend motor life, tuned to the exact arm and bolt pattern instead of buying rig-specific parts.",
+      "es": "Los motores son la union mas critica en vibracion de un multirotor. Los soportes blandos bajo demanda amortiguan el jello del video FPV y alargan la vida del motor, ajustados al brazo y patron exactos en vez de comprar piezas especificas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "drone",
+    "fpv",
+    "motor",
+    "soft-mount",
+    "rc",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

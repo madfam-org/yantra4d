@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Sports Ball Wall Storage",
+    "slug": "ball-storage",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A wall holder that cradles a sports ball off the floor, sized by the ball diameter so the claw or ring hugs the ball at its equator. A three-prong claw, a simple sloped ring, or a double holder for two balls.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de pared que sostiene un balón deportivo fuera del piso, dimensionado por el diámetro del balón para que la garra o el anillo lo abrace en su ecuador. Una garra de tres puntas, un anillo inclinado simple, o un soporte doble para dos balones.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/ball-storage.webp",
+    "difficulty": "beginner",
+    "tags": ["ball", "basketball", "soccer", "volleyball", "storage", "claw", "wall", "sports", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "claw_holder",
+      "label": { "en": "Claw Holder", "es": "Soporte de Garra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["claw_holder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "ring_holder",
+      "label": { "en": "Ring Holder", "es": "Soporte de Anillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ring_holder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "double_holder",
+      "label": { "en": "Double Holder", "es": "Soporte Doble" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["double_holder"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "claw_holder", "label": { "en": "Claw Holder", "es": "Soporte de Garra" }, "render_mode": 0, "color": "#ea580c" },
+    { "id": "ring_holder", "label": { "en": "Ring Holder", "es": "Soporte de Anillo" }, "render_mode": 0, "color": "#f97316" },
+    { "id": "double_holder", "label": { "en": "Double Holder", "es": "Soporte Doble" }, "render_mode": 0, "color": "#c2410c" }
+  ],
+  "parameter_groups": [
+    { "id": "ball", "label": { "en": "Ball & Cradle", "es": "Balón y Cuna" } },
+    { "id": "mount", "label": { "en": "Plate & Mount", "es": "Placa y Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "ball_dia", "type": "slider", "default": 240, "min": 90, "max": 300, "step": 2,
+      "group": "ball", "modes": ["claw_holder", "ring_holder", "double_holder"],
+      "label": { "en": "Ball Diameter (mm)", "es": "Diámetro del Balón (mm)" },
+      "tooltip": { "en": "Ball diameter — basketball ≈240, soccer ≈220, volleyball ≈210", "es": "Diámetro del balón — baloncesto ≈240, fútbol ≈220, voleibol ≈210" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.6 }
+    },
+    {
+      "id": "prongs", "type": "slider", "default": 3, "min": 2, "max": 5, "step": 1,
+      "group": "ball", "modes": ["claw_holder"],
+      "label": { "en": "Claw Prongs", "es": "Puntas de la Garra" },
+      "tooltip": { "en": "Number of prongs cupping the ball (3 is standard)", "es": "Número de puntas que sostienen el balón (3 es estándar)" }
+    },
+    {
+      "id": "prong_w", "type": "slider", "default": 16, "min": 8, "max": 40, "step": 1,
+      "group": "ball", "modes": ["claw_holder", "ring_holder", "double_holder"],
+      "label": { "en": "Prong / Ring Width (mm)", "es": "Ancho de Punta / Anillo (mm)" },
+      "tooltip": { "en": "Width of the prongs or ring band", "es": "Ancho de las puntas o la banda del anillo" }
+    },
+    {
+      "id": "prong_t", "type": "slider", "default": 8, "min": 4, "max": 16, "step": 0.5,
+      "group": "ball", "modes": ["claw_holder", "ring_holder", "double_holder"],
+      "label": { "en": "Prong / Ring Thickness (mm)", "es": "Grosor de Punta / Anillo (mm)" },
+      "tooltip": { "en": "Thickness of the prongs or ring band", "es": "Grosor de las puntas o la banda del anillo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 4.0, "max": 12.0, "step": 0.5,
+      "group": "mount", "modes": ["claw_holder", "ring_holder", "double_holder"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Back plate thickness (strength)", "es": "Grosor de la placa trasera (resistencia)" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 90, "min": 50, "max": 160, "step": 2,
+      "group": "mount", "modes": ["claw_holder", "ring_holder", "double_holder"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Back plate width", "es": "Ancho de la placa trasera" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 5.0, "min": 3.5, "max": 10.0, "step": 0.5,
+      "group": "mount", "modes": ["claw_holder", "ring_holder", "double_holder"], "advanced": true,
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Diameter of the wall screw holes", "es": "Diámetro de los orificios de tornillo de pared" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "basketball", "mode": "claw_holder",
+      "label": { "en": "Basketball Claw", "es": "Garra de Baloncesto" },
+      "values": { "ball_dia": 240, "prongs": 3 }
+    },
+    {
+      "id": "soccer_ring", "mode": "ring_holder",
+      "label": { "en": "Soccer Ball Ring", "es": "Anillo de Balón de Fútbol" },
+      "values": { "ball_dia": 220 }
+    },
+    {
+      "id": "two_ball_rack", "mode": "double_holder",
+      "label": { "en": "Two-Ball Rack", "es": "Rack de Dos Balones" },
+      "values": { "ball_dia": 220 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "prong_t >= 4.0",
+      "severity": "warning",
+      "message": { "en": "Thin prongs may flex under a heavy ball", "es": "Puntas delgadas pueden flexionarse con un balón pesado" }
+    },
+    {
+      "expression": "wall >= 4.0",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 4 mm to bear the load", "es": "La placa debe tener al menos 4 mm para soportar la carga" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 220, 180] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 360] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -360, 100] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "ball_claw",
+        "label": { "en": "Ball Claw", "es": "Garra de Balón" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["ball_dia", "prongs", "prong_w", "prong_t"]
+      },
+      {
+        "id": "wall_mount",
+        "label": { "en": "Wall Mount", "es": "Montaje de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["plate_w", "wall", "screw_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Sports balls roll around and get underfoot; a printable claw sized to any ball reclaims garage and gym floor space, keeping schools, clubs, and families organized without buying molded ball racks.",
+      "es": "Los balones deportivos ruedan y estorban; una garra imprimible dimensionada a cualquier balón recupera espacio de garaje y gimnasio, manteniendo organizados a escuelas, clubes y familias sin comprar racks moldeados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["ball", "basketball", "storage", "sports", "household", "hyperobject", "commons"]
+}

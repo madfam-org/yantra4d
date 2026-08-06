@@ -2,7 +2,7 @@
 import pytest
 from flask import Flask
 
-from utils.validators import validate_project_slug, require_valid_slug
+from utils.validators import require_valid_slug, validate_project_slug
 
 
 class TestValidateProjectSlug:

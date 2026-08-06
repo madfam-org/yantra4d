@@ -1,0 +1,479 @@
+{
+  "project": {
+    "name": "Shampoo / Bottle Wall Bracket",
+    "slug": "bottle-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Shower-shelf brackets and pump-bottle holders sized to real bottle bodies — shampoo / conditioner bottles (~55-90 mm) and pump dispensers (~50-75 mm). Build a wall shelf with ring cutouts a bottle drops into (upright or inverted to drain), a neck hook that grips a pump bottle under its collar, or a C-clip that snaps around the bottle body.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Soportes de repisa de ducha y sujetadores de botellas con bomba dimensionados a cuerpos reales — champú / acondicionador (~55-90 mm) y dispensadores con bomba (~50-75 mm). Genera una repisa de pared con orificios anulares donde cae la botella (vertical o invertida para escurrir), un gancho que sujeta la botella bajo su collar, o un clip en C que abraza el cuerpo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bottle-bracket.webp",
+    "tags": [
+      "shower",
+      "bathroom",
+      "shampoo",
+      "bottle",
+      "bracket",
+      "shelf",
+      "household",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "shelf_ring",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Shelf Ring",
+        "es": "Repisa con Anillos"
+      },
+      "parts": [
+        "shelf_ring"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "neck_hook",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Neck Hook",
+        "es": "Gancho de Cuello"
+      },
+      "parts": [
+        "neck_hook"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "body_clip",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Body Clip",
+        "es": "Clip de Cuerpo"
+      },
+      "parts": [
+        "body_clip"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "shelf_ring",
+      "render_mode": 0,
+      "label": {
+        "en": "Shelf Ring",
+        "es": "Repisa con Anillos"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "neck_hook",
+      "render_mode": 0,
+      "label": {
+        "en": "Neck Hook",
+        "es": "Gancho de Cuello"
+      },
+      "default_color": "#6fa3bf"
+    },
+    {
+      "id": "body_clip",
+      "render_mode": 0,
+      "label": {
+        "en": "Body Clip",
+        "es": "Clip de Cuerpo"
+      },
+      "default_color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bottle",
+      "label": {
+        "en": "Bottle",
+        "es": "Botella"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Bracket Body",
+        "es": "Cuerpo del Soporte"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Wall Mount",
+        "es": "Montaje en Pared"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bottle_d",
+      "type": "slider",
+      "default": 70.0,
+      "min": 30.0,
+      "max": 110.0,
+      "step": 1,
+      "group": "bottle",
+      "modes": [
+        "shelf_ring",
+        "neck_hook",
+        "body_clip"
+      ],
+      "label": {
+        "en": "Bottle Body Ø (mm)",
+        "es": "Ø del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Bottle body diameter. Shampoo ~55-90, pump ~50-75",
+        "es": "Diámetro del cuerpo. Champú ~55-90, bomba ~50-75"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "neck_d",
+      "type": "slider",
+      "default": 28.0,
+      "min": 15.0,
+      "max": 45.0,
+      "step": 0.5,
+      "group": "bottle",
+      "modes": [
+        "neck_hook"
+      ],
+      "label": {
+        "en": "Pump Neck Ø (mm)",
+        "es": "Ø del Cuello (mm)"
+      },
+      "tooltip": {
+        "en": "Pump-bottle neck diameter caught under the collar",
+        "es": "Diámetro del cuello sujetado bajo el collar"
+      }
+    },
+    {
+      "id": "count",
+      "type": "slider",
+      "default": 1,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "group": "bottle",
+      "modes": [
+        "shelf_ring"
+      ],
+      "label": {
+        "en": "Bottles on Shelf",
+        "es": "Botellas en Repisa"
+      },
+      "tooltip": {
+        "en": "How many ring cutouts the shelf has",
+        "es": "Cuántos orificios anulares tiene la repisa"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "shelf_ring",
+        "neck_hook",
+        "body_clip"
+      ],
+      "label": {
+        "en": "Wall / Rim (mm)",
+        "es": "Pared / Borde (mm)"
+      },
+      "tooltip": {
+        "en": "Wall and rim thickness",
+        "es": "Grosor de pared y borde"
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 55.0,
+      "min": 30.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "shelf_ring",
+        "body_clip"
+      ],
+      "label": {
+        "en": "Shelf Depth / Clip Reach (mm)",
+        "es": "Profundidad / Alcance (mm)"
+      },
+      "tooltip": {
+        "en": "How far the shelf or clip projects from the wall",
+        "es": "Cuánto sobresale la repisa o clip de la pared"
+      }
+    },
+    {
+      "id": "plate_h",
+      "type": "slider",
+      "default": 50.0,
+      "min": 30.0,
+      "max": 100.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "shelf_ring",
+        "neck_hook",
+        "body_clip"
+      ],
+      "label": {
+        "en": "Wall Plate Height (mm)",
+        "es": "Altura de la Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the back plate against the wall",
+        "es": "Altura de la placa trasera contra la pared"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "mount",
+      "modes": [
+        "shelf_ring",
+        "neck_hook",
+        "body_clip"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Screw Hole Ø (mm)",
+        "es": "Ø de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Wall-mount screw clearance (M4 ~4.2 mm)",
+        "es": "Holgura del tornillo de pared (M4 ~4.2 mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "single_shampoo",
+      "mode": "shelf_ring",
+      "label": {
+        "en": "Single Shampoo Shelf",
+        "es": "Repisa de Champú"
+      },
+      "values": {
+        "bottle_d": 75.0,
+        "count": 1
+      }
+    },
+    {
+      "id": "triple_shower",
+      "mode": "shelf_ring",
+      "label": {
+        "en": "Triple Shower Caddy",
+        "es": "Repisa Triple de Ducha"
+      },
+      "values": {
+        "bottle_d": 65.0,
+        "count": 3
+      }
+    },
+    {
+      "id": "pump_hanger",
+      "mode": "neck_hook",
+      "label": {
+        "en": "Pump-Bottle Hanger",
+        "es": "Colgador de Bomba"
+      },
+      "values": {
+        "bottle_d": 60.0,
+        "neck_d": 28.0
+      }
+    },
+    {
+      "id": "body_snap",
+      "mode": "body_clip",
+      "label": {
+        "en": "Body Snap Clip",
+        "es": "Clip de Cuerpo"
+      },
+      "values": {
+        "bottle_d": 70.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "neck_d < bottle_d",
+      "severity": "error",
+      "message": {
+        "en": "Neck must be narrower than the bottle body",
+        "es": "El cuello debe ser más estrecho que el cuerpo"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        160,
+        160,
+        130
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -240,
+        40
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        260
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 14,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "bottle_body_socket",
+        "label": {
+          "en": "Bottle Body Socket",
+          "es": "Alojamiento del Cuerpo"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "bottle_d",
+          "count"
+        ]
+      },
+      {
+        "id": "pump_neck_catch",
+        "label": {
+          "en": "Pump Neck Catch",
+          "es": "Sujeción de Cuello"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "neck_d"
+        ]
+      },
+      {
+        "id": "wall_screw_mount",
+        "label": {
+          "en": "Wall Screw Mount",
+          "es": "Montaje con Tornillo"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO 7045 M4",
+        "parameters": [
+          "screw_d"
+        ],
+        "compatible_with": [
+          "dryer-holster",
+          "hasp",
+          "toiletry-holder"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Shower shelving is normally a suction-cup product that fails, or an over-priced caddy sized for nothing in particular. Fitting the ring, hook, or clip to a real bottle body or pump neck lets anyone screw-mount a bracket that holds the bottle they actually use, reducing plastic-organizer churn and keeping the last of every bottle drainable.",
+      "es": "La repisa de ducha suele ser un producto de ventosa que falla, o una caja sobrevalorada sin medida real. Ajustar el anillo, gancho o clip a un cuerpo o cuello de bomba reales permite atornillar un soporte que sujete la botella que realmente usas, reduciendo el recambio de organizadores plásticos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "shower",
+    "bathroom",
+    "shampoo",
+    "bottle",
+    "bracket",
+    "shelf",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

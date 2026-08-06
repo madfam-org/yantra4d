@@ -1,0 +1,185 @@
+{
+  "project": {
+    "name": "Snap-Fit Cantilever Kit",
+    "slug": "snap-fit",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Reusable snap-fit connectors — a cantilever beam whose hooked end deflects to snap over a mating ledge, shipped with the catch that receives it so both halves actually clip together. Cantilever hook, annular (ring) snap for round bores, and ball-detent bump variants, plus a small test clip for tuning fit.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Conectores de encaje a presión reutilizables — una viga en voladizo cuyo extremo con gancho se flexiona para engancharse sobre un reborde, incluida la trampa que lo recibe para que ambas mitades encajen realmente. Variantes de gancho en voladizo, anular (anillo) para agujeros redondos y de tope esférico, más un clip de prueba para ajustar la tolerancia.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/snap-fit.webp",
+    "difficulty": "advanced",
+    "tags": ["snap-fit", "cantilever", "hook", "clip", "connector", "latch", "annular", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cantilever_pair",
+      "label": { "en": "Cantilever Pair (hook + catch)", "es": "Par en Voladizo (gancho + trampa)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cantilever_pair"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "annular_snap",
+      "label": { "en": "Annular Snap (ring + bore)", "es": "Encaje Anular (anillo + agujero)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["annular_snap"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "test_clip",
+      "label": { "en": "Test Clip", "es": "Clip de Prueba" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["test_clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "cantilever_pair", "label": { "en": "Cantilever Pair", "es": "Par en Voladizo" }, "render_mode": 0, "color": "#b0764b" },
+    { "id": "annular_snap", "label": { "en": "Annular Snap", "es": "Encaje Anular" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "test_clip", "label": { "en": "Test Clip", "es": "Clip de Prueba" }, "render_mode": 0, "color": "#8a7d5b" }
+  ],
+  "parameter_groups": [
+    { "id": "beam", "label": { "en": "Beam", "es": "Viga" } },
+    { "id": "engagement", "label": { "en": "Engagement", "es": "Enganche" } },
+    { "id": "annular", "label": { "en": "Annular Snap", "es": "Encaje Anular" } }
+  ],
+  "parameters": [
+    {
+      "id": "snap_type", "type": "select", "default": "cantilever",
+      "group": "engagement", "modes": ["cantilever_pair", "annular_snap", "test_clip"],
+      "label": { "en": "Snap Type", "es": "Tipo de Encaje" },
+      "tooltip": { "en": "cantilever: classic hooked beam. annular: a ring bead for round bores. ball_detent: a rounded bump detent.", "es": "cantilever: viga con gancho clásico. annular: cordón de anillo para agujeros redondos. ball_detent: tope redondeado." },
+      "options": [
+        { "value": "cantilever", "label": { "en": "Cantilever Hook", "es": "Gancho en Voladizo" } },
+        { "value": "annular", "label": { "en": "Annular (ring) Snap", "es": "Encaje Anular (anillo)" } },
+        { "value": "ball_detent", "label": { "en": "Ball Detent (bump)", "es": "Tope Esférico" } }
+      ]
+    },
+    {
+      "id": "beam_len", "type": "slider", "default": 20.0, "min": 6.0, "max": 50.0, "step": 1.0,
+      "group": "beam", "modes": ["cantilever_pair", "annular_snap", "test_clip"],
+      "label": { "en": "Beam Length (mm)", "es": "Longitud de Viga (mm)" },
+      "tooltip": { "en": "Free length of the cantilever (longer = softer, easier deflection)", "es": "Longitud libre del voladizo (más largo = más flexible)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "beam_thick", "type": "slider", "default": 3.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "beam", "modes": ["cantilever_pair", "annular_snap", "test_clip"],
+      "label": { "en": "Beam Thickness (mm)", "es": "Grosor de Viga (mm)" },
+      "tooltip": { "en": "Beam thickness at the root (thicker = stiffer, higher snap force)", "es": "Grosor de la viga en la raíz (más grueso = más rígido)" }
+    },
+    {
+      "id": "beam_width", "type": "slider", "default": 8.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "beam", "modes": ["cantilever_pair", "test_clip"],
+      "label": { "en": "Beam Width (mm)", "es": "Ancho de Viga (mm)" },
+      "tooltip": { "en": "Beam width across the deflection direction", "es": "Ancho de la viga perpendicular a la flexión" }
+    },
+    {
+      "id": "hook_depth", "type": "slider", "default": 1.8, "min": 0.4, "max": 5.0, "step": 0.1,
+      "group": "engagement", "modes": ["cantilever_pair", "annular_snap", "test_clip"],
+      "label": { "en": "Hook / Engagement Depth (mm)", "es": "Profundidad de Gancho / Enganche (mm)" },
+      "tooltip": { "en": "Undercut depth the hook/bead catches by (auto-clamped to the beam)", "es": "Profundidad del socavado con que engancha el gancho/cordón (limitada a la viga)" }
+    },
+    {
+      "id": "insert_angle", "type": "slider", "default": 35.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "engagement", "modes": ["cantilever_pair", "test_clip"], "advanced": true,
+      "label": { "en": "Lead-in Angle (°)", "es": "Ángulo de Entrada (°)" },
+      "tooltip": { "en": "Insertion ramp angle (lower = easier push-in, shallower ramp)", "es": "Ángulo de la rampa de inserción (menor = entrada más fácil)" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.05, "max": 1.0, "step": 0.05,
+      "group": "engagement", "modes": ["cantilever_pair", "annular_snap", "test_clip"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Printed gap between hook and ledge / shaft and bore", "es": "Espacio impreso entre gancho y reborde / eje y agujero" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "engagement", "modes": ["cantilever_pair", "annular_snap", "test_clip"], "advanced": true,
+      "label": { "en": "Base / Wall Thickness (mm)", "es": "Grosor de Base / Pared (mm)" },
+      "tooltip": { "en": "Thickness of the base pad, catch wall, and bore wall", "es": "Grosor de la base, la pared de la trampa y la pared del agujero" }
+    },
+    {
+      "id": "bore_dia", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "annular", "modes": ["annular_snap"],
+      "label": { "en": "Bore Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Nominal shaft/bore diameter for the annular ring snap", "es": "Diámetro nominal de eje/agujero para el encaje anular" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    }
+  ],
+  "presets": [
+    {
+      "id": "enclosure_latch", "mode": "cantilever_pair",
+      "label": { "en": "Enclosure Latch", "es": "Pestillo de Carcasa" },
+      "values": { "snap_type": "cantilever", "beam_len": 22, "beam_thick": 2.4, "beam_width": 8, "hook_depth": 1.8, "clearance": 0.3 }
+    },
+    {
+      "id": "shaft_ring_snap", "mode": "annular_snap",
+      "label": { "en": "Shaft Ring Snap 16 mm", "es": "Encaje de Anillo 16 mm" },
+      "values": { "snap_type": "annular", "bore_dia": 16, "beam_len": 24, "hook_depth": 1.6, "wall": 3 }
+    },
+    {
+      "id": "detent_test_clip", "mode": "test_clip",
+      "label": { "en": "Ball-Detent Test Clip", "es": "Clip de Prueba de Tope" },
+      "values": { "snap_type": "ball_detent", "beam_len": 18, "beam_thick": 2.0, "beam_width": 8, "hook_depth": 1.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hook_depth <= beam_thick * 1.5",
+      "severity": "warning",
+      "message": { "en": "Hook depth is large relative to beam thickness", "es": "La profundidad del gancho es grande respecto al grosor de la viga" }
+    },
+    {
+      "expression": "beam_thick >= 1.2",
+      "severity": "error",
+      "message": { "en": "Beam must be at least 1.2 mm thick to print", "es": "La viga debe tener al menos 1.2 mm de grosor para imprimirse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "cantilever_snap_hook",
+        "label": { "en": "Cantilever Snap Hook", "es": "Gancho de Encaje en Voladizo" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["beam_thick", "hook_depth", "beam_len", "beam_width", "insert_angle", "clearance"]
+      },
+      {
+        "id": "annular_ring_snap",
+        "label": { "en": "Annular Ring Snap", "es": "Encaje de Anillo Anular" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["bore_dia", "hook_depth", "clearance", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Snap-fits replace screws and glue with tool-free, reversible joints — the backbone of repairable, disassemblable design. A tunable, printable snap kit lets makers add secure latches to any project and repair broken clips instead of scrapping whole assemblies.",
+      "es": "Los encajes a presión reemplazan tornillos y pegamento con uniones reversibles y sin herramientas — la base del diseño reparable y desmontable. Un kit imprimible y ajustable permite añadir pestillos seguros a cualquier proyecto y reparar clips rotos en vez de desechar ensamblajes completos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["snap-fit", "cantilever", "clip", "latch", "connector", "industrial", "hyperobject", "commons"]
+}

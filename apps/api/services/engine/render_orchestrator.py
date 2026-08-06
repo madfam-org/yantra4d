@@ -13,9 +13,9 @@ import redis
 
 from config import Config
 from manifest import get_manifest
+from services.engine.format_converter import convert_mesh, stl_to_glb
 from services.engine.openscad import compute_scad_hash, validate_params
 from services.engine.render_cache import render_cache
-from services.engine.format_converter import stl_to_glb, convert_mesh
 from services.engine.render_contract import (
     RENDER_EVENT_CANCELLED,
     RENDER_EVENT_COMPLETE,
@@ -198,16 +198,18 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     scad_path = payload['scad_path']
 
     manifest = get_manifest(project_slug)
-    engine = manifest.engine
+    # Per-mode engine resolution enables dual-engine cartridges (e.g. legacy
+    # OpenSCAD modes alongside CadQuery modes). `scad_path` already points at the
+    # active mode's primary file, so a per-mode engine routes each mode correctly.
+    mode_id = data.get('mode')
+    engine = manifest.mode_engine(mode_id)
 
     # Dual-engine fallback: CadQuery for formats the primary engine can't produce
-    if engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
-        mode_id = data.get('mode')
-        if mode_id:
-            mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
-            if mode_config and mode_config.get('cq_file'):
-                engine = "cadquery"
-                scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
+    if mode_id and engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
+        mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
+        if mode_config and mode_config.get('cq_file'):
+            engine = "cadquery"
+            scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
 
     # Validate engine+format compatibility
     if engine == "cadquery":

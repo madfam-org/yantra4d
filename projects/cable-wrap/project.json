@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Cable Wrap & XLR Label",
+    "slug": "cable-wrap",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Tames stage and studio cabling. A figure-8 winder to coil a cable without memory kinks, a snap ring that labels an XLR barrel with engraved text, and a wall hook keeper. Sized by the cable diameter so the channel grips your specific cable.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Ordena el cableado de escenario y estudio. Un enrollador en figura-8 para enrollar un cable sin dobleces de memoria, un anillo a presión que etiqueta un conector XLR con texto grabado, y un gancho de pared. Se dimensiona por el diámetro del cable para que el canal sujete tu cable específico.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cable-wrap.webp",
+    "difficulty": "beginner",
+    "tags": ["cable", "wrap", "winder", "xlr", "label", "stage", "studio", "management", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "wrap",
+      "label": { "en": "Figure-8 Winder", "es": "Enrollador Figura-8" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wrap"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "xlr_label",
+      "label": { "en": "XLR Label Ring", "es": "Anillo Etiqueta XLR" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["xlr_label"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "hook_keeper",
+      "label": { "en": "Hook Keeper", "es": "Gancho Guarda-Cable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_keeper"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "wrap", "label": { "en": "Figure-8 Winder", "es": "Enrollador Figura-8" }, "render_mode": 0, "color": "#0d9488" },
+    { "id": "xlr_label", "label": { "en": "XLR Label Ring", "es": "Anillo Etiqueta XLR" }, "render_mode": 0, "color": "#14b8a6" },
+    { "id": "hook_keeper", "label": { "en": "Hook Keeper", "es": "Gancho Guarda-Cable" }, "render_mode": 0, "color": "#0f766e" }
+  ],
+  "parameter_groups": [
+    { "id": "cable", "label": { "en": "Cable", "es": "Cable" } },
+    { "id": "winder", "label": { "en": "Winder", "es": "Enrollador" } },
+    { "id": "label", "label": { "en": "XLR Label", "es": "Etiqueta XLR" } }
+  ],
+  "parameters": [
+    {
+      "id": "cable_dia", "type": "slider", "default": 7.0, "min": 2.0, "max": 25.0, "step": 0.5,
+      "group": "cable", "modes": ["wrap", "hook_keeper"],
+      "label": { "en": "Cable Diameter (mm)", "es": "Diámetro del Cable (mm)" },
+      "tooltip": { "en": "Outer diameter of the cable — sizes the channel/saddle", "es": "Diámetro exterior del cable — dimensiona el canal/silla" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "cable", "modes": ["wrap", "xlr_label", "hook_keeper"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body wall thickness", "es": "Grosor de la pared del cuerpo" }
+    },
+    {
+      "id": "wrap_len", "type": "slider", "default": 90, "min": 50, "max": 200, "step": 1,
+      "group": "winder", "modes": ["wrap"],
+      "label": { "en": "Winder Length (mm)", "es": "Largo del Enrollador (mm)" },
+      "tooltip": { "en": "Overall length of the figure-8 winder", "es": "Longitud total del enrollador figura-8" }
+    },
+    {
+      "id": "spool_dia", "type": "slider", "default": 34, "min": 18, "max": 80, "step": 1,
+      "group": "winder", "modes": ["wrap"],
+      "label": { "en": "End Spool Diameter (mm)", "es": "Diámetro del Carrete (mm)" },
+      "tooltip": { "en": "Diameter of each end spool flange", "es": "Diámetro de cada brida de carrete" }
+    },
+    {
+      "id": "label_text", "type": "text", "default": "MIC 1", "maxlength": 10,
+      "group": "label", "modes": ["xlr_label"],
+      "label": { "en": "Label Text", "es": "Texto de Etiqueta" },
+      "tooltip": { "en": "Text engraved on the ring (up to 10 characters)", "es": "Texto grabado en el anillo (hasta 10 caracteres)" }
+    },
+    {
+      "id": "label_dia", "type": "slider", "default": 19, "min": 10, "max": 40, "step": 0.5,
+      "group": "label", "modes": ["xlr_label"],
+      "label": { "en": "Barrel Diameter (mm)", "es": "Diámetro del Barril (mm)" },
+      "tooltip": { "en": "Outer diameter of the XLR/connector barrel to clip onto", "es": "Diámetro exterior del barril XLR/conector al que se ajusta" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "cable", "modes": ["hook_keeper"], "advanced": true,
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Diameter of the hook keeper's wall screw holes", "es": "Diámetro de los orificios de tornillo del gancho" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "instrument_cable", "mode": "wrap",
+      "label": { "en": "Instrument Cable Winder", "es": "Enrollador de Cable de Instrumento" },
+      "values": { "cable_dia": 7, "wrap_len": 90, "spool_dia": 34 }
+    },
+    {
+      "id": "mic_channel_label", "mode": "xlr_label",
+      "label": { "en": "Mic Channel Label", "es": "Etiqueta de Canal de Micrófono" },
+      "values": { "label_text": "MIC 1", "label_dia": 19 }
+    },
+    {
+      "id": "rack_hook", "mode": "hook_keeper",
+      "label": { "en": "Rack / Wall Hook", "es": "Gancho de Rack / Pared" },
+      "values": { "cable_dia": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "spool_dia >= 18",
+      "severity": "warning",
+      "message": { "en": "Small spools give the cable a tight bend radius", "es": "Carretes pequeños dan al cable un radio de curvatura ajustado" }
+    },
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 45
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "cable_wrap",
+        "label": { "en": "Cable Wrap", "es": "Envoltura de Cable" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["cable_dia", "spool_dia", "wall"]
+      },
+      {
+        "id": "xlr_barrel_clip",
+        "label": { "en": "XLR Barrel Clip", "es": "Clip de Barril XLR" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["label_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cable chaos wastes setup time and destroys cables; on-demand winders and engraved channel labels let any performer or crew organize signal chains without buying single-use velcro and tape.",
+      "es": "El caos de cables desperdicia tiempo de montaje y destruye cables; enrolladores bajo demanda y etiquetas de canal grabadas permiten a cualquier músico o equipo organizar la cadena de señal sin comprar velcro y cinta de un solo uso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cable", "wrap", "xlr", "label", "management", "commercial", "hyperobject", "commons"]
+}

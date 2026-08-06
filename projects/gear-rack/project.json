@@ -1,0 +1,603 @@
+{
+  "project": {
+    "name": "Involute Gear Rack",
+    "slug": "gear-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A linear involute gear rack that meshes with a spur pinion. Straight trapezoidal teeth inclined at the pressure angle (ISO 53 / DIN 867), with optional back-mounting holes and an optional matching involute pinion for a complete rack-and-pinion set.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una cremallera lineal de involuta que engrana con un piñón recto. Dientes trapezoidales rectos inclinados al ángulo de presión (ISO 53 / DIN 867), con orificios de montaje traseros opcionales y un piñón de involuta a juego opcional para un conjunto completo de cremallera y piñón.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gear-rack.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "gear",
+      "rack",
+      "pinion",
+      "involute",
+      "linear",
+      "motion",
+      "mechanism",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rack",
+      "label": {
+        "en": "Rack",
+        "es": "Cremallera"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rack"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "rack_with_holes",
+      "label": {
+        "en": "Rack with Mounting Holes",
+        "es": "Cremallera con Orificios"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rack_with_holes"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "rack_and_pinion",
+      "label": {
+        "en": "Rack and Pinion",
+        "es": "Cremallera y Piñón"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rack_and_pinion"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "rack",
+      "label": {
+        "en": "Rack",
+        "es": "Cremallera"
+      },
+      "render_mode": 0,
+      "color": "#6ea8fe"
+    },
+    {
+      "id": "rack_with_holes",
+      "label": {
+        "en": "Rack with Mounting Holes",
+        "es": "Cremallera con Orificios"
+      },
+      "render_mode": 0,
+      "color": "#f59e0b"
+    },
+    {
+      "id": "rack_and_pinion",
+      "label": {
+        "en": "Rack and Pinion",
+        "es": "Cremallera y Piñón"
+      },
+      "render_mode": 0,
+      "color": "#34d399"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "gear",
+      "label": {
+        "en": "Gear Geometry",
+        "es": "Geometría del Engrane"
+      }
+    },
+    {
+      "id": "rack",
+      "label": {
+        "en": "Rack Body",
+        "es": "Cuerpo de Cremallera"
+      }
+    },
+    {
+      "id": "mounting",
+      "label": {
+        "en": "Mounting",
+        "es": "Montaje"
+      }
+    },
+    {
+      "id": "pinion",
+      "label": {
+        "en": "Pinion",
+        "es": "Piñón"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "m",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.5,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "gear",
+      "modes": [
+        "rack",
+        "rack_with_holes",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Module (mm)",
+        "es": "Módulo (mm)"
+      },
+      "tooltip": {
+        "en": "Tooth size; circular pitch = pi x module. Must match the pinion.",
+        "es": "Tamaño del diente; paso circular = pi x módulo. Debe coincidir con el piñón."
+      }
+    },
+    {
+      "id": "pressure_angle",
+      "type": "select",
+      "default": 20,
+      "group": "gear",
+      "modes": [
+        "rack",
+        "rack_with_holes",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Pressure Angle",
+        "es": "Ángulo de Presión"
+      },
+      "tooltip": {
+        "en": "Flank inclination standard. 20 deg is the modern default.",
+        "es": "Estándar de inclinación del flanco. 20 grados es el valor moderno."
+      },
+      "options": [
+        {
+          "value": 14.5,
+          "label": {
+            "en": "14.5 deg (legacy)",
+            "es": "14.5 grados (heredado)"
+          }
+        },
+        {
+          "value": 20,
+          "label": {
+            "en": "20 deg (standard)",
+            "es": "20 grados (estándar)"
+          }
+        },
+        {
+          "value": 25,
+          "label": {
+            "en": "25 deg (high load)",
+            "es": "25 grados (alta carga)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rack_teeth",
+      "type": "slider",
+      "default": 12,
+      "min": 2,
+      "max": 60,
+      "step": 1,
+      "group": "rack",
+      "modes": [
+        "rack",
+        "rack_with_holes",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Rack Teeth",
+        "es": "Dientes de Cremallera"
+      },
+      "tooltip": {
+        "en": "Number of teeth; length = teeth x pi x module.",
+        "es": "Número de dientes; longitud = dientes x pi x módulo."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 6.28
+      }
+    },
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 12.0,
+      "min": 3.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "rack",
+      "modes": [
+        "rack",
+        "rack_with_holes",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Face Width (mm)",
+        "es": "Ancho de Cara (mm)"
+      },
+      "tooltip": {
+        "en": "Tooth face width / thickness in Z.",
+        "es": "Ancho de cara del diente / grosor en Z."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "height",
+      "type": "slider",
+      "default": 10.0,
+      "min": 2.0,
+      "max": 30.0,
+      "step": 1.0,
+      "group": "rack",
+      "modes": [
+        "rack",
+        "rack_with_holes",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Backing Height (mm)",
+        "es": "Altura de Respaldo (mm)"
+      },
+      "tooltip": {
+        "en": "Solid backing below the tooth roots.",
+        "es": "Respaldo sólido debajo de las raíces de los dientes."
+      }
+    },
+    {
+      "id": "mount_holes",
+      "type": "checkbox",
+      "default": false,
+      "group": "mounting",
+      "modes": [
+        "rack",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Mounting Holes",
+        "es": "Orificios de Montaje"
+      },
+      "tooltip": {
+        "en": "Add through-holes along the rack back.",
+        "es": "Agregar orificios pasantes a lo largo del respaldo."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "mounting",
+      "modes": [
+        "rack",
+        "rack_with_holes",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Hole Diameter (mm)",
+        "es": "Diámetro de Orificio (mm)"
+      },
+      "tooltip": {
+        "en": "Mounting-hole diameter.",
+        "es": "Diámetro del orificio de montaje."
+      }
+    },
+    {
+      "id": "hole_count",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "group": "mounting",
+      "modes": [
+        "rack",
+        "rack_with_holes",
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Hole Count",
+        "es": "Número de Orificios"
+      },
+      "tooltip": {
+        "en": "How many evenly-spaced mounting holes.",
+        "es": "Cuántos orificios de montaje equidistantes."
+      }
+    },
+    {
+      "id": "include_pinion",
+      "type": "checkbox",
+      "default": false,
+      "group": "pinion",
+      "modes": [
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Include Pinion",
+        "es": "Incluir Piñón"
+      },
+      "tooltip": {
+        "en": "Add a matching involute pinion beside the rack.",
+        "es": "Agregar un piñón de involuta a juego junto a la cremallera."
+      }
+    },
+    {
+      "id": "pinion_teeth",
+      "type": "slider",
+      "default": 16,
+      "min": 6,
+      "max": 60,
+      "step": 1,
+      "group": "pinion",
+      "modes": [
+        "rack_and_pinion"
+      ],
+      "label": {
+        "en": "Pinion Teeth",
+        "es": "Dientes del Piñón"
+      },
+      "tooltip": {
+        "en": "Pinion tooth count (shares module and pressure angle).",
+        "es": "Número de dientes del piñón (comparte módulo y ángulo de presión)."
+      }
+    },
+    {
+      "id": "bore",
+      "type": "slider",
+      "default": 6.0,
+      "min": 0.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "pinion",
+      "modes": [
+        "rack_and_pinion"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Pinion Bore (mm)",
+        "es": "Barreno del Piñón (mm)"
+      },
+      "tooltip": {
+        "en": "Central shaft bore in the pinion (0 = solid).",
+        "es": "Barreno central del eje en el piñón (0 = sólido)."
+      }
+    },
+    {
+      "id": "flank_pts",
+      "type": "slider",
+      "default": 9,
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "group": "pinion",
+      "modes": [
+        "rack_and_pinion"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Pinion Flank Samples",
+        "es": "Muestras de Flanco del Piñón"
+      },
+      "tooltip": {
+        "en": "Involute samples per flank on the pinion (facet control).",
+        "es": "Muestras de involuta por flanco en el piñón (control de facetas)."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cnc_axis_rack",
+      "mode": "rack_with_holes",
+      "label": {
+        "en": "CNC Axis Rack (M2)",
+        "es": "Cremallera de Eje CNC (M2)"
+      },
+      "values": {
+        "m": 2,
+        "pressure_angle": 20,
+        "rack_teeth": 24,
+        "width": 12,
+        "height": 12,
+        "mount_holes": true,
+        "hole_dia": 4,
+        "hole_count": 4
+      }
+    },
+    {
+      "id": "demo_set",
+      "mode": "rack_and_pinion",
+      "label": {
+        "en": "Rack-and-Pinion Demo Set",
+        "es": "Conjunto Demo Cremallera-Piñón"
+      },
+      "values": {
+        "m": 2,
+        "pressure_angle": 20,
+        "rack_teeth": 14,
+        "width": 10,
+        "height": 8,
+        "include_pinion": true,
+        "pinion_teeth": 16,
+        "bore": 6
+      }
+    },
+    {
+      "id": "heavy_rack",
+      "mode": "rack",
+      "label": {
+        "en": "Heavy Rack (M4)",
+        "es": "Cremallera Pesada (M4)"
+      },
+      "values": {
+        "m": 4,
+        "pressure_angle": 25,
+        "rack_teeth": 16,
+        "width": 24,
+        "height": 18
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hole_dia < height",
+      "severity": "warning",
+      "message": {
+        "en": "Hole diameter should be smaller than the backing height",
+        "es": "El diámetro del orificio debe ser menor que la altura de respaldo"
+      }
+    },
+    {
+      "expression": "m >= 0.5",
+      "severity": "error",
+      "message": {
+        "en": "Module must be at least 0.5 mm",
+        "es": "El módulo debe ser de al menos 0.5 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        90
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        200
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 48,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "involute_rack_tooth",
+        "label": {
+          "en": "Involute Rack Tooth",
+          "es": "Diente de Cremallera de Involuta"
+        },
+        "geometry_type": "spline",
+        "standard": "ISO 53",
+        "parameters": [
+          "m",
+          "pressure_angle",
+          "rack_teeth"
+        ]
+      },
+      {
+        "id": "rack_back_mount",
+        "label": {
+          "en": "Rack Back Mounting Pattern",
+          "es": "Patrón de Montaje Trasero"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "mount_holes",
+          "hole_dia",
+          "hole_count",
+          "height"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Linear motion on demand: CNC axes, sliding gates, and lab positioners need racks matched to a specific module and travel. A commons rack-and-pinion generator replaces proprietary spares with printable, interoperable parts.",
+      "es": "Movimiento lineal bajo demanda: ejes CNC, portones deslizantes y posicionadores de laboratorio necesitan cremalleras con un módulo y recorrido específicos. Un generador de cremallera y piñón del procomún reemplaza repuestos propietarios con piezas imprimibles e interoperables."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "gear",
+    "rack",
+    "pinion",
+    "involute",
+    "linear",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

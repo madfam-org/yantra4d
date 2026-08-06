@@ -1,0 +1,240 @@
+{
+  "project": {
+    "name": "Cuvette / Filter Wheel",
+    "slug": "filter-wheel",
+    "version": "1.0.0",
+    "description": {
+      "en": "Benchtop optics hyperobject: a detented rotating filter/optic wheel that seats Ø1 in or Ø25 mm optics, a multi-well cuvette holder block with beam-access windows for standard 10 mm cuvettes, and a knurled retaining hub cap. Swap filters by hand or organize spectroscopy cells on the bench.",
+      "es": "Hiperobjeto de óptica de mesa: una rueda de filtros/óptica giratoria con retenes que aloja ópticas de Ø1 in o Ø25 mm, un bloque portacubetas de múltiples pozos con ventanas de paso de haz para cubetas estándar de 10 mm, y una tapa de cubo estriada. Cambia filtros a mano u organiza celdas de espectroscopía en la mesa."
+    },
+    "thumbnail": "/projects/filter-wheel.webp",
+    "tags": ["optics", "filter-wheel", "cuvette", "spectroscopy", "lab", "medical", "hyperobject", "commons"],
+    "difficulty": "advanced",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Optic seats use +0.2 mm radial clearance; print opaque black filament to block stray light between filter positions.",
+        "es": "Los asientos ópticos usan +0.2 mm de holgura radial; imprime en filamento negro opaco para bloquear luz parásita entre posiciones."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "optic_seat",
+        "label": {
+          "en": "Optic Seat & Light Path",
+          "es": "Asiento Óptico y Paso de Luz"
+        },
+        "geometry_type": "socket",
+        "standard": "Ø1 in (25.4 mm) / Ø25 mm optic",
+        "parameters": ["optic_diameter", "positions"]
+      },
+      {
+        "id": "cuvette_well",
+        "label": {
+          "en": "Cuvette Well (10 mm path)",
+          "es": "Pozo de Cubeta (paso 10 mm)"
+        },
+        "geometry_type": "pocket",
+        "standard": "12.5 mm square, 10 mm path-length cuvette",
+        "parameters": ["cuvette_wells"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Lets teaching and field labs assemble spectroscopy and imaging optics trains without proprietary filter wheels, lowering the barrier to hands-on photonics.",
+      "es": "Permite a laboratorios docentes y de campo montar trenes ópticos de espectroscopía e imagen sin ruedas de filtros propietarias, reduciendo la barrera a la fotónica práctica."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "wheel",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Filter / Optic Wheel",
+        "es": "Rueda de Filtros / Óptica"
+      },
+      "description": {
+        "en": "Rotating disc with N optic pockets, per-seat light-path holes, a central shaft bore, and rim detent notches for indexed positions."
+      },
+      "parts": ["wheel"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "cuvette_block",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Cuvette Holder Block",
+        "es": "Bloque Portacubetas"
+      },
+      "description": {
+        "en": "Multi-well block sized for 12.5 mm square (10 mm path) cuvettes, with a beam-access window at each well so light reaches the sample."
+      },
+      "parts": ["cuvette_block"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "hub_cap",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Retaining Hub Cap",
+        "es": "Tapa de Cubo Retenedora"
+      },
+      "description": {
+        "en": "Stepped cap with a locating boss and shaft bore that pins the wheel to its shaft; fluted rim for finger grip."
+      },
+      "parts": ["hub_cap"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "wheel",
+      "render_mode": 0,
+      "label": {
+        "en": "Filter / Optic Wheel",
+        "es": "Rueda de Filtros / Óptica"
+      },
+      "default_color": "#1a202c"
+    },
+    {
+      "id": "cuvette_block",
+      "render_mode": 0,
+      "label": {
+        "en": "Cuvette Holder Block",
+        "es": "Bloque Portacubetas"
+      },
+      "default_color": "#2d3748"
+    },
+    {
+      "id": "hub_cap",
+      "render_mode": 0,
+      "label": {
+        "en": "Retaining Hub Cap",
+        "es": "Tapa de Cubo Retenedora"
+      },
+      "default_color": "#4a5568"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "optic_diameter",
+      "type": "slider",
+      "default": 25.4,
+      "min": 12.7,
+      "max": 25.4,
+      "step": 0.1,
+      "label": {
+        "en": "Optic Diameter (mm)",
+        "es": "Diámetro de la Óptica (mm)"
+      },
+      "tooltip": {
+        "en": "25.4 mm = Ø1 in optic, 25 mm = metric optic, 12.7 mm = Ø1/2 in.",
+        "es": "25.4 mm = óptica Ø1 in, 25 mm = óptica métrica, 12.7 mm = Ø1/2 in."
+      },
+      "group": "wheel"
+    },
+    {
+      "id": "positions",
+      "type": "slider",
+      "default": 6,
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "label": {
+        "en": "Filter Positions",
+        "es": "Posiciones de Filtro"
+      },
+      "group": "wheel"
+    },
+    {
+      "id": "wheel_thickness",
+      "type": "slider",
+      "default": 8,
+      "min": 4,
+      "max": 14,
+      "step": 0.5,
+      "label": {
+        "en": "Wheel Thickness (mm)",
+        "es": "Grosor de la Rueda (mm)"
+      },
+      "group": "wheel"
+    },
+    {
+      "id": "bore_diameter",
+      "type": "slider",
+      "default": 6,
+      "min": 3,
+      "max": 10,
+      "step": 0.5,
+      "label": {
+        "en": "Shaft Bore (mm)",
+        "es": "Barreno del Eje (mm)"
+      },
+      "group": "wheel"
+    },
+    {
+      "id": "cuvette_wells",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "label": {
+        "en": "Cuvette Wells",
+        "es": "Pozos de Cubeta"
+      },
+      "group": "cuvette"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "wheel",
+      "label": {
+        "en": "Filter Wheel",
+        "es": "Rueda de Filtros"
+      }
+    },
+    {
+      "id": "cuvette",
+      "label": {
+        "en": "Cuvette Holder",
+        "es": "Portacubetas"
+      }
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

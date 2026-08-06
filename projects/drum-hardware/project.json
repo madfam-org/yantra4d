@@ -1,0 +1,161 @@
+{
+  "project": {
+    "name": "Drum / Cymbal Sleeve & Wingnut",
+    "slug": "drum-hardware",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Tension-rod and cymbal hardware. The functional interface is the drum tension-rod thread — the near-universal 12-24 (major 5.49 mm, 24 TPI, pitch 1.058 mm) on American/Asian kits, or M5 (DW/PDP). Build a female-threaded wingnut for cymbal tilters and hi-hat clutches, a printed male-threaded tension rod with a 7 mm square drum-key drive, or a smooth stepped cymbal sleeve that isolates the cymbal from the metal rod.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de varilla de tensión y platillo. La interfaz funcional es la rosca de la varilla de tensión — la casi universal 12-24 (mayor 5.49 mm, 24 hilos/pulg, paso 1.058 mm) en baterías americanas/asiáticas, o M5 (DW/PDP). Genera una tuerca de mariposa con rosca interna para inclinadores de platillo y clutches de hi-hat, una varilla de tensión con rosca externa y cabeza cuadrada de 7 mm para llave, o un buje escalonado que aísla el platillo de la varilla metálica.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/drum-hardware.webp",
+    "tags": ["drum", "cymbal", "tension-rod", "wingnut", "12-24", "percussion", "music", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "wingnut",
+      "label": { "en": "Wingnut", "es": "Tuerca de Mariposa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wingnut"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "tension_rod",
+      "label": { "en": "Tension Rod", "es": "Varilla de Tensión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tension_rod"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "cymbal_sleeve",
+      "label": { "en": "Cymbal Sleeve", "es": "Buje de Platillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cymbal_sleeve"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "wingnut", "label": { "en": "Wingnut", "es": "Tuerca de Mariposa" }, "render_mode": 0, "color": "#8f5b4a" },
+    { "id": "tension_rod", "label": { "en": "Tension Rod", "es": "Varilla de Tensión" }, "render_mode": 0, "color": "#a36f5b" },
+    { "id": "cymbal_sleeve", "label": { "en": "Cymbal Sleeve", "es": "Buje de Platillo" }, "render_mode": 0, "color": "#bf8a6f" }
+  ],
+  "parameter_groups": [
+    { "id": "thread", "label": { "en": "Thread", "es": "Rosca" } },
+    { "id": "rod", "label": { "en": "Rod", "es": "Varilla" } },
+    { "id": "sleeve", "label": { "en": "Sleeve", "es": "Buje" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "thread_std", "type": "select", "default": "12-24",
+      "group": "thread", "modes": ["wingnut", "tension_rod"],
+      "label": { "en": "Tension-Rod Thread", "es": "Rosca de Varilla" },
+      "tooltip": { "en": "12-24 (US/Asian standard, 5.49 mm, pitch 1.058 mm) or M5 (DW/PDP)", "es": "12-24 (estándar US/asiático, 5.49 mm, paso 1.058 mm) o M5 (DW/PDP)" },
+      "options": [
+        { "value": "12-24", "label": { "en": "12-24 (5.49 mm, 24 TPI)", "es": "12-24 (5.49 mm, 24 hilos/pulg)" } },
+        { "value": "M5", "label": { "en": "M5 (DW / PDP)", "es": "M5 (DW / PDP)" } }
+      ]
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.35, "min": 0.0, "max": 0.8, "step": 0.05,
+      "group": "thread", "modes": ["wingnut", "tension_rod"], "advanced": true,
+      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Per-side printed-thread fit slop — tune per printer/material", "es": "Holgura por lado de la rosca impresa — ajustar por impresora/material" }
+    },
+    {
+      "id": "rod_len", "type": "slider", "default": 42.0, "min": 16.0, "max": 80.0, "step": 1,
+      "group": "rod", "modes": ["tension_rod"],
+      "label": { "en": "Rod Threaded Length (mm)", "es": "Longitud Roscada (mm)" },
+      "tooltip": { "en": "Threaded length of the tension rod below the head", "es": "Longitud roscada de la varilla bajo la cabeza" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "sleeve_len", "type": "slider", "default": 40.0, "min": 20.0, "max": 70.0, "step": 1,
+      "group": "sleeve", "modes": ["cymbal_sleeve"],
+      "label": { "en": "Sleeve Length (mm)", "es": "Longitud del Buje (mm)" },
+      "tooltip": { "en": "Length of the cymbal sleeve up the stand post", "es": "Longitud del buje sobre el poste del soporte" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "post_d", "type": "slider", "default": 6.0, "min": 5.0, "max": 12.7, "step": 0.1,
+      "group": "sleeve", "modes": ["cymbal_sleeve"],
+      "label": { "en": "Stand Post Bore (mm)", "es": "Orificio del Poste (mm)" },
+      "tooltip": { "en": "Clearance bore for the cymbal-stand post (6 mm or 8 mm typical)", "es": "Orificio de holgura para el poste del soporte (6 mm u 8 mm típico)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.5,
+      "group": "body", "modes": ["wingnut", "tension_rod", "cymbal_sleeve"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Hub / head / sleeve wall thickness", "es": "Grosor de pared del cubo / cabeza / buje" }
+    },
+    {
+      "id": "sq_drive", "type": "slider", "default": 7.0, "min": 5.0, "max": 9.0, "step": 0.1,
+      "group": "rod", "modes": ["tension_rod"], "advanced": true,
+      "label": { "en": "Drum-Key Square (mm)", "es": "Cuadrado de Llave (mm)" },
+      "tooltip": { "en": "Square drum-key drive across flats (~7 mm standard)", "es": "Impulsor cuadrado de llave de batería (~7 mm estándar)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_wingnut", "mode": "wingnut",
+      "label": { "en": "12-24 Wingnut", "es": "Tuerca de Mariposa 12-24" },
+      "values": { "thread_std": "12-24", "clearance": 0.35, "wall": 3.0 }
+    },
+    {
+      "id": "std_tension_rod", "mode": "tension_rod",
+      "label": { "en": "12-24 Tension Rod", "es": "Varilla de Tensión 12-24" },
+      "values": { "thread_std": "12-24", "clearance": 0.35, "rod_len": 42.0, "wall": 3.0, "sq_drive": 7.0 }
+    },
+    {
+      "id": "cymbal_felt_sleeve", "mode": "cymbal_sleeve",
+      "label": { "en": "8 mm Cymbal Sleeve", "es": "Buje de Platillo 8 mm" },
+      "values": { "sleeve_len": 40.0, "post_d": 8.0, "wall": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Too much clearance and the thread strips under tension", "es": "Demasiada holgura y la rosca se barre bajo tensión" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 90] },
+    { "id": "front", "label": { "en": "Front (Cross-Section)", "es": "Frontal (Sección)" }, "position": [0, -160, 10] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 15, "per_unit": 4, "per_part": 15,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "tension_rod_thread",
+        "label": { "en": "Tension-Rod Thread", "es": "Rosca de Varilla de Tensión" },
+        "geometry_type": "thread",
+        "standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
+        "parameters": ["thread_std", "clearance", "rod_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Drum tension rods, wingnuts, cymbal sleeves and felts strip, rust and vanish, and a single missing 12-24 rod or cymbal sleeve sidelines a whole drum. The 12-24 tension-rod thread is a near-universal standard across American and Asian kits (M5 for DW/PDP), so a printed wingnut, rod or sleeve keeps a kit playable from parts a drummer can make at home, instead of a proprietary bag from the drum shop. Cymbal sleeves in particular are cheap to lose and critical for protecting the cymbal bell.",
+      "es": "Las varillas de tensión, tuercas de mariposa, bujes y fieltros de batería se barren, oxidan y desaparecen, y una sola varilla 12-24 o buje faltante deja fuera un tambor entero. La rosca 12-24 es un estándar casi universal en baterías americanas y asiáticas (M5 para DW/PDP), así que una tuerca, varilla o buje impreso mantiene tocable la batería con piezas que un baterista hace en casa, en vez de una bolsa propietaria de la tienda. Los bujes de platillo en particular son baratos de perder y críticos para proteger la campana del platillo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drum", "cymbal", "tension-rod", "wingnut", "12-24", "percussion", "music", "commercial", "hyperobject", "commons"]
+}

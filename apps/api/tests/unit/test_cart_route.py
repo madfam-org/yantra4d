@@ -1,10 +1,10 @@
 """Tests for the BOM cart endpoint (ForgeSight pricing integration)."""
 import json
-import pytest
 from unittest.mock import patch
 
-from services.integrations.forgesight import Quote, QuoteItem
+import pytest
 
+from services.integrations.forgesight import Quote, QuoteItem
 
 MOCK_MANIFEST = {
     "project": {"name": "Test Project", "slug": "test-project"},

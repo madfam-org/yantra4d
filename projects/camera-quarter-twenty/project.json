@@ -1,0 +1,592 @@
+{
+  "project": {
+    "name": "1/4-20 Camera / Tripod Interface",
+    "slug": "camera-quarter-twenty",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The universal camera/tripod 1/4\"-20 UNC interface — the base every mount, plate, and adapter bolts onto. Generate a 1/4-20 male stud (tripod screw), a 1/4-20 female socket (for plates and mounts), or the ubiquitous 1/4-to-3/8 adapter, on a configurable disc or plate base. Threads render fast and watertight by default.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La interfaz universal cámara/trípode 1/4\"-20 UNC — la base sobre la que se atornilla toda montura, placa y adaptador. Genera un perno macho 1/4-20 (tornillo de trípode), un casquillo hembra 1/4-20 (para placas y monturas), o el ubicuo adaptador 1/4-a-3/8, sobre una base de disco o placa configurable. Las roscas se renderizan rápido y estancas por defecto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/camera-quarter-twenty.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "camera",
+      "tripod",
+      "quarter-twenty",
+      "1/4-20",
+      "3/8-16",
+      "mount",
+      "adapter",
+      "photography",
+      "thread",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "stud",
+      "label": {
+        "en": "Stud (Male)",
+        "es": "Perno (Macho)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "stud"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "socket",
+      "label": {
+        "en": "Socket (Female)",
+        "es": "Casquillo (Hembra)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "socket"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "adapter",
+      "label": {
+        "en": "1/4-to-3/8 Adapter",
+        "es": "Adaptador 1/4-a-3/8"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "adapter"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 9
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "stud",
+      "label": {
+        "en": "Stud",
+        "es": "Perno"
+      },
+      "render_mode": 0,
+      "color": "#4a5568"
+    },
+    {
+      "id": "socket",
+      "label": {
+        "en": "Socket",
+        "es": "Casquillo"
+      },
+      "render_mode": 0,
+      "color": "#718096"
+    },
+    {
+      "id": "adapter",
+      "label": {
+        "en": "Adapter",
+        "es": "Adaptador"
+      },
+      "render_mode": 0,
+      "color": "#5a6b7b"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "interface",
+      "label": {
+        "en": "Interface",
+        "es": "Interfaz"
+      }
+    },
+    {
+      "id": "thread",
+      "label": {
+        "en": "Thread",
+        "es": "Rosca"
+      }
+    },
+    {
+      "id": "base",
+      "label": {
+        "en": "Base",
+        "es": "Base"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "target_part",
+      "type": "select",
+      "default": "stud",
+      "group": "interface",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "label": {
+        "en": "Part",
+        "es": "Pieza"
+      },
+      "tooltip": {
+        "en": "Which interface to generate",
+        "es": "Qué interfaz generar"
+      },
+      "options": [
+        {
+          "value": "stud",
+          "label": {
+            "en": "Stud — 1/4-20 male boss",
+            "es": "Perno — macho 1/4-20"
+          }
+        },
+        {
+          "value": "socket",
+          "label": {
+            "en": "Socket — 1/4-20 female hole",
+            "es": "Casquillo — orificio hembra 1/4-20"
+          }
+        },
+        {
+          "value": "adapter",
+          "label": {
+            "en": "Adapter — 1/4 socket + top stud",
+            "es": "Adaptador — casquillo 1/4 + perno superior"
+          }
+        }
+      ]
+    },
+    {
+      "id": "adapter_top",
+      "type": "select",
+      "default": "3/8-16",
+      "group": "interface",
+      "modes": [
+        "adapter"
+      ],
+      "label": {
+        "en": "Adapter Top Interface",
+        "es": "Interfaz Superior del Adaptador"
+      },
+      "tooltip": {
+        "en": "Thread on the top face of the adapter (bottom is always a 1/4-20 socket)",
+        "es": "Rosca en la cara superior del adaptador (la inferior siempre es un casquillo 1/4-20)"
+      },
+      "options": [
+        {
+          "value": "3/8-16",
+          "label": {
+            "en": "3/8\"-16 stud (9.525 mm)",
+            "es": "Perno 3/8\"-16 (9.525 mm)"
+          }
+        },
+        {
+          "value": "1/4-20",
+          "label": {
+            "en": "1/4\"-20 stud (6.35 mm)",
+            "es": "Perno 1/4\"-20 (6.35 mm)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "thread_style",
+      "type": "select",
+      "default": "cosmetic",
+      "group": "thread",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "label": {
+        "en": "Thread Style",
+        "es": "Estilo de Rosca"
+      },
+      "tooltip": {
+        "en": "Cosmetic: fast, watertight thread envelope (default). Smooth: plain pitch-diameter cylinder/hole for tapping or a heat-set insert. Real: true swept helix (slower).",
+        "es": "Cosmética: envolvente de rosca rápida y estanca (por defecto). Lisa: cilindro/orificio liso a diámetro de paso para roscar o inserto térmico. Real: hélice barrida verdadera (más lenta)."
+      },
+      "options": [
+        {
+          "value": "cosmetic",
+          "label": {
+            "en": "Cosmetic (fast, default)",
+            "es": "Cosmética (rápida, por defecto)"
+          }
+        },
+        {
+          "value": "smooth",
+          "label": {
+            "en": "Smooth (tap / heat-set)",
+            "es": "Lisa (roscar / inserto)"
+          }
+        },
+        {
+          "value": "real",
+          "label": {
+            "en": "Real helix (slower)",
+            "es": "Hélice real (más lenta)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "thread_len",
+      "type": "slider",
+      "default": 8.0,
+      "min": 3.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "thread",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "label": {
+        "en": "Thread Length / Depth (mm)",
+        "es": "Longitud / Profundidad de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Stud height, or socket depth (clamped so it never breaches the base)",
+        "es": "Altura del perno, o profundidad del casquillo (limitada para no perforar la base)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "chamfer_lead",
+      "type": "checkbox",
+      "default": true,
+      "group": "thread",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "label": {
+        "en": "Lead-in Chamfer",
+        "es": "Chaflán de Entrada"
+      },
+      "tooltip": {
+        "en": "Chamfer the thread start / socket mouth for easy engagement",
+        "es": "Achaflanar el inicio de rosca / boca del casquillo para facilitar el enrosque"
+      }
+    },
+    {
+      "id": "ring_count",
+      "type": "slider",
+      "default": 10,
+      "min": 3,
+      "max": 40,
+      "step": 1,
+      "group": "thread",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Cosmetic Thread Detail",
+        "es": "Detalle de Rosca Cosmética"
+      },
+      "tooltip": {
+        "en": "Number of thread teeth in the cosmetic envelope (higher = finer, slightly slower). Ignored for smooth/real styles.",
+        "es": "Número de dientes de rosca en la envolvente cosmética (mayor = más fino, un poco más lento). Se ignora en estilos liso/real."
+      }
+    },
+    {
+      "id": "base_shape",
+      "type": "select",
+      "default": "disc",
+      "group": "base",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "label": {
+        "en": "Base Shape",
+        "es": "Forma de la Base"
+      },
+      "tooltip": {
+        "en": "Disc or rounded square mounting base",
+        "es": "Base de montaje en disco o cuadrado redondeado"
+      },
+      "options": [
+        {
+          "value": "disc",
+          "label": {
+            "en": "Disc",
+            "es": "Disco"
+          }
+        },
+        {
+          "value": "square",
+          "label": {
+            "en": "Square",
+            "es": "Cuadrado"
+          }
+        }
+      ]
+    },
+    {
+      "id": "base_size",
+      "type": "slider",
+      "default": 25.0,
+      "min": 8.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "base",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "label": {
+        "en": "Base Size (mm)",
+        "es": "Tamaño de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Disc diameter or square side length",
+        "es": "Diámetro del disco o lado del cuadrado"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 0.5
+      }
+    },
+    {
+      "id": "base_thick",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.5,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "stud",
+        "socket",
+        "adapter"
+      ],
+      "label": {
+        "en": "Base Thickness (mm)",
+        "es": "Grosor de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Base plate / body thickness",
+        "es": "Grosor de la placa base / cuerpo"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "tripod_screw",
+      "mode": "stud",
+      "label": {
+        "en": "Tripod Quick-Plate Screw",
+        "es": "Tornillo de Placa Rápida"
+      },
+      "values": {
+        "target_part": "stud",
+        "base_shape": "disc",
+        "base_size": 25,
+        "base_thick": 4,
+        "thread_len": 8,
+        "thread_style": "cosmetic"
+      }
+    },
+    {
+      "id": "mount_socket",
+      "mode": "socket",
+      "label": {
+        "en": "Camera Mount Socket Plate",
+        "es": "Placa con Casquillo"
+      },
+      "values": {
+        "target_part": "socket",
+        "base_shape": "square",
+        "base_size": 40,
+        "base_thick": 8,
+        "thread_len": 6,
+        "thread_style": "cosmetic"
+      }
+    },
+    {
+      "id": "quarter_to_threeeighth",
+      "mode": "adapter",
+      "label": {
+        "en": "1/4-to-3/8 Adapter",
+        "es": "Adaptador 1/4-a-3/8"
+      },
+      "values": {
+        "target_part": "adapter",
+        "adapter_top": "3/8-16",
+        "base_shape": "disc",
+        "base_size": 16,
+        "base_thick": 6,
+        "thread_len": 6,
+        "thread_style": "cosmetic"
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thread_len <= base_thick + 36",
+      "severity": "warning",
+      "message": {
+        "en": "Very long stud relative to base — check stability",
+        "es": "Perno muy largo respecto a la base — revise estabilidad"
+      }
+    },
+    {
+      "expression": "base_thick >= 1.5",
+      "severity": "error",
+      "message": {
+        "en": "Base must be at least 1.5 mm",
+        "es": "La base debe ser de al menos 1.5 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        55,
+        55,
+        45
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -90,
+        15
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "quarter_twenty_thread",
+        "label": {
+          "en": "1/4-20 UNC Camera Thread",
+          "es": "Rosca de Cámara 1/4-20 UNC"
+        },
+        "geometry_type": "thread",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "target_part",
+          "thread_style",
+          "thread_len",
+          "chamfer_lead"
+        ],
+        "compatible_with": [
+          "ball-socket",
+          "gopro-mount",
+          "sensor-mount-plate",
+          "spigot-adapter"
+        ]
+      },
+      {
+        "id": "three_eighth_sixteen_thread",
+        "label": {
+          "en": "3/8-16 UNC Tripod Thread",
+          "es": "Rosca de Trípode 3/8-16 UNC"
+        },
+        "geometry_type": "thread",
+        "standard": "ASME B1.1 3/8-16 UNC",
+        "parameters": [
+          "adapter_top",
+          "thread_style",
+          "thread_len",
+          "chamfer_lead"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The single most common mechanical interface in photography and video — every tripod, ballhead, cage, arm, and quick-release plate speaks 1/4-20. An open, printable base for this thread lets anyone build mounts and 1/4-to-3/8 adapters on demand instead of buying single-purpose parts.",
+      "es": "La interfaz mecánica más común en fotografía y video — todo trípode, rótula, jaula, brazo y placa de liberación rápida habla 1/4-20. Una base abierta e imprimible para esta rosca permite a cualquiera fabricar monturas y adaptadores 1/4-a-3/8 bajo demanda en lugar de comprar piezas de un solo uso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "camera",
+    "tripod",
+    "quarter-twenty",
+    "adapter",
+    "commercial",
+    "thread",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,10 +1,10 @@
 """Unit tests for openscad service pure functions."""
 import json
 import subprocess
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 import pytest
-from types import SimpleNamespace
-from unittest.mock import patch, MagicMock
 
 
 # ---------------------------------------------------------------------------

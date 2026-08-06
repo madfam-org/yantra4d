@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Seed Tray / Cell Insert placeholder">
+  <defs>
+    <linearGradient id="bgaeb2ac9d" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="hsl(200,58%,42%)"/>
+      <stop offset="1" stop-color="hsl(175,64%,32%)"/>
+    </linearGradient>
+    <radialGradient id="vigaeb2ac9d" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.28"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bgaeb2ac9d)"/>
+  <g transform="rotate(141 200 150)" opacity="0.9"><circle cx="340" cy="275" r="3" fill="#fff" opacity="0.06"/><circle cx="127" cy="90" r="8" fill="#fff" opacity="0.06"/><circle cx="130" cy="265" r="3" fill="#fff" opacity="0.06"/><circle cx="213" cy="232" r="6" fill="#fff" opacity="0.06"/><circle cx="308" cy="179" r="3" fill="#fff" opacity="0.06"/></g>
+  <g opacity="0.95">
+            <g fill="none" stroke="#ffffff" stroke-width="6">
+              <rect x="128" y="100" width="48" height="48" rx="6"/>
+              <rect x="188" y="100" width="48" height="48" rx="6"/>
+              <rect x="236" y="100" width="36" height="48" rx="6" opacity="0.6"/>
+              <rect x="128" y="160" width="48" height="48" rx="6"/>
+              <rect x="188" y="160" width="48" height="48" rx="6"/>
+              <rect x="236" y="160" width="36" height="48" rx="6" opacity="0.6"/>
+            </g></g>
+  <rect width="400" height="300" fill="url(#vigaeb2ac9d)"/>
+  <text x="24" y="272" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+        font-size="20" font-weight="700" fill="#fff" opacity="0.92">Seed Tray / Cell Insert</text>
+  <text x="376" y="40" text-anchor="end" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+        font-size="15" fill="#fff" opacity="0.6">grid</text>
+  <text x="24" y="44" font-family="ui-sans-serif,system-ui,sans-serif" font-size="30" font-weight="800"
+        fill="#fff" opacity="0.85">S</text>
+</svg>

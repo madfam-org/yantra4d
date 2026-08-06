@@ -2,17 +2,17 @@
 OpenSCAD Service
 Handles all OpenSCAD subprocess interactions.
 """
+import json
 import logging
 import os
 import queue
 import re
 import subprocess
-import json
 import tempfile
 import threading
 import time
-from pathlib import Path
 from collections.abc import Callable
+from pathlib import Path
 
 from config import Config
 from manifest import get_manifest
@@ -53,9 +53,8 @@ def _openscad_env(scad_path: str | None = None):
         paths.insert(0, project_dir)
         
         local_fonts = os.path.join(project_dir, "fonts")
-        if os.path.isdir(local_fonts):
-            if local_fonts not in fonts_dirs:
-                fonts_dirs.append(local_fonts)
+        if os.path.isdir(local_fonts) and local_fonts not in fonts_dirs:
+            fonts_dirs.append(local_fonts)
                 
     if fonts_dirs:
         cache_key = ":".join(fonts_dirs)
@@ -175,8 +174,7 @@ def validate_params(params: dict, project_slug: str | None = None) -> dict:
             cleaned[key] = str_val
 
     # Explicitly remove render_mode if present, as it's handled via the mode ID
-    if 'render_mode' in cleaned:
-        del cleaned['render_mode']
+    cleaned.pop('render_mode', None)
 
     return cleaned
 
@@ -366,7 +364,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         yield json.dumps({
             'event': 'error',
             'part': part,
-            'message': f'Internal Process Error: {str(e)}'
+            'message': f'Internal Process Error: {e!s}'
         })
         return
 

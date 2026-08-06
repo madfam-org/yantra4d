@@ -1,0 +1,183 @@
+{
+  "project": {
+    "name": "FPV Camera Cage",
+    "slug": "fpv-camera-cage",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Protects and angles a micro FPV camera. The camera drops into a cradle pocket sized to the standard form factor (nano 14 mm, micro 19 mm, mini 21 mm) and tilts to a chosen up-angle, with tabs that bolt to the frame side plates. Choose a full protective cage, an open tilt bracket, or a minimal naked mount.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Protege y angula una camara micro FPV. La camara entra en una cuna dimensionada al formato estandar (nano 14 mm, micro 19 mm, mini 21 mm) y se inclina a un angulo elegido, con pestanas que se atornillan a las placas laterales del cuadro. Elige una jaula protectora completa, un soporte inclinable abierto o una montura minima.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/fpv-camera-cage.webp",
+    "difficulty": "intermediate",
+    "tags": ["drone", "fpv", "camera", "cage", "tilt", "mount", "rc", "protection", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cage",
+      "label": { "en": "Protective Cage", "es": "Jaula Protectora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cage"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "tilt_mount",
+      "label": { "en": "Tilt Bracket", "es": "Soporte Inclinable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tilt_mount"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "naked_mount",
+      "label": { "en": "Naked Mount", "es": "Montura Minima" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["naked_mount"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "cage", "label": { "en": "Protective Cage", "es": "Jaula Protectora" }, "render_mode": 0, "color": "#4a90a4" },
+    { "id": "tilt_mount", "label": { "en": "Tilt Bracket", "es": "Soporte Inclinable" }, "render_mode": 0, "color": "#357687" },
+    { "id": "naked_mount", "label": { "en": "Naked Mount", "es": "Montura Minima" }, "render_mode": 0, "color": "#66aabb" }
+  ],
+  "parameter_groups": [
+    { "id": "camera", "label": { "en": "Camera", "es": "Camara" } },
+    { "id": "housing", "label": { "en": "Housing", "es": "Carcasa" } },
+    { "id": "mount", "label": { "en": "Frame Mount", "es": "Montura al Cuadro" } }
+  ],
+  "parameters": [
+    {
+      "id": "cam_size", "type": "select", "default": "micro",
+      "group": "camera", "modes": ["cage", "tilt_mount", "naked_mount"],
+      "label": { "en": "Camera Size", "es": "Tamano de Camara" },
+      "tooltip": { "en": "FPV camera form factor (nano 14, micro 19, mini 21 mm)", "es": "Formato de camara FPV (nano 14, micro 19, mini 21 mm)" },
+      "options": [
+        { "value": "nano", "label": { "en": "Nano (14 mm)", "es": "Nano (14 mm)" } },
+        { "value": "micro", "label": { "en": "Micro (19 mm)", "es": "Micro (19 mm)" } },
+        { "value": "mini", "label": { "en": "Mini (21 mm)", "es": "Mini (21 mm)" } }
+      ]
+    },
+    {
+      "id": "tilt", "type": "slider", "default": 30.0, "min": 0.0, "max": 55.0, "step": 1,
+      "group": "camera", "modes": ["cage", "tilt_mount", "naked_mount"],
+      "label": { "en": "Camera Tilt (deg)", "es": "Inclinacion de Camara (grados)" },
+      "tooltip": { "en": "Up-tilt angle for the camera (higher = faster flight)", "es": "Angulo de inclinacion hacia arriba (mayor = vuelo mas rapido)" }
+    },
+    {
+      "id": "lens_hole", "type": "checkbox", "default": true,
+      "group": "camera", "modes": ["cage", "tilt_mount", "naked_mount"],
+      "label": { "en": "Lens Aperture", "es": "Abertura de Lente" },
+      "tooltip": { "en": "Cut an aperture so the lens / focus is reachable", "es": "Corta una abertura para alcanzar el lente / enfoque" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 4.0, "step": 0.2,
+      "group": "housing", "modes": ["cage", "tilt_mount", "naked_mount"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Cradle wall thickness", "es": "Grosor de la pared de la cuna" }
+    },
+    {
+      "id": "cam_clear", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "housing", "modes": ["cage", "tilt_mount"], "advanced": true,
+      "label": { "en": "Camera Clearance (mm)", "es": "Holgura de Camara (mm)" },
+      "tooltip": { "en": "Per-side gap around the camera body", "es": "Espacio por lado alrededor del cuerpo de la camara" }
+    },
+    {
+      "id": "base_h", "type": "slider", "default": 6.0, "min": 2.0, "max": 16.0, "step": 0.5,
+      "group": "mount", "modes": ["cage", "tilt_mount", "naked_mount"],
+      "label": { "en": "Base Height (mm)", "es": "Altura de Base (mm)" },
+      "tooltip": { "en": "Mount base height below the cradle", "es": "Altura de la base debajo de la cuna" }
+    },
+    {
+      "id": "mount_width", "type": "slider", "default": 19.0, "min": 8.0, "max": 40.0, "step": 0.5,
+      "group": "mount", "modes": ["cage", "tilt_mount", "naked_mount"],
+      "label": { "en": "Mount Tab Spacing (mm)", "es": "Separacion de Pestanas (mm)" },
+      "tooltip": { "en": "Distance between the frame-plate mount tabs", "es": "Distancia entre las pestanas de montaje al cuadro" }
+    },
+    {
+      "id": "tab_thick", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.5,
+      "group": "mount", "modes": ["cage", "tilt_mount", "naked_mount"],
+      "label": { "en": "Tab Thickness (mm)", "es": "Grosor de Pestana (mm)" },
+      "tooltip": { "en": "Mount tab thickness", "es": "Grosor de la pestana de montaje" }
+    },
+    {
+      "id": "tab_hole_d", "type": "slider", "default": 2.2, "min": 1.6, "max": 4.0, "step": 0.1,
+      "group": "mount", "modes": ["cage", "tilt_mount", "naked_mount"], "advanced": true,
+      "label": { "en": "Tab Hole (mm)", "es": "Agujero de Pestana (mm)" },
+      "tooltip": { "en": "Mount bolt hole diameter (M2 = 2.2)", "es": "Diametro del agujero (M2 = 2.2)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "micro_cage_30", "mode": "cage",
+      "label": { "en": "Micro Cage 30 deg", "es": "Jaula Micro 30 grados" },
+      "values": { "cam_size": "micro", "tilt": 30, "wall": 2.0, "mount_width": 19 }
+    },
+    {
+      "id": "nano_tilt_40", "mode": "tilt_mount",
+      "label": { "en": "Nano Tilt 40 deg", "es": "Nano Inclinado 40 grados" },
+      "values": { "cam_size": "nano", "tilt": 40, "wall": 1.6, "mount_width": 14 }
+    },
+    {
+      "id": "mini_naked_20", "mode": "naked_mount",
+      "label": { "en": "Mini Naked 20 deg", "es": "Mini Minima 20 grados" },
+      "values": { "cam_size": "mini", "tilt": 20, "wall": 2.0, "mount_width": 21 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tilt <= 55",
+      "severity": "warning",
+      "message": { "en": "Very high tilt angles clip the frame on landing", "es": "Angulos muy altos rozan el cuadro al aterrizar" }
+    },
+    {
+      "expression": "wall >= 1",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1 mm", "es": "La pared debe ser de al menos 1 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [60, 60, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, 110, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "fpv_camera_cradle",
+        "label": { "en": "FPV Camera Cradle", "es": "Cuna de Camara FPV" },
+        "geometry_type": "pocket",
+        "standard": "FPV micro/nano cam (nano 14 / micro 19 / mini 21 mm)",
+        "parameters": ["cam_size", "cam_clear", "wall"]
+      },
+      {
+        "id": "frame_mount_tabs",
+        "label": { "en": "Frame Mount Tabs", "es": "Pestanas de Montaje" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_width", "tab_thick", "tab_hole_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The camera is the most-crashed and most-swapped part on an FPV craft. On-demand cages sized to the exact cam and tilt keep the picture level and the lens protected, and let a pilot repair a mount instead of scrapping the build.",
+      "es": "La camara es la pieza mas estrellada y mas cambiada de un equipo FPV. Las jaulas bajo demanda dimensionadas a la camara y angulo exactos mantienen la imagen nivelada y el lente protegido, y permiten reparar una montura en vez de descartar el equipo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drone", "fpv", "camera", "cage", "rc", "commercial", "hyperobject", "commons"]
+}

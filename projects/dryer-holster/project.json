@@ -1,0 +1,457 @@
+{
+  "project": {
+    "name": "Hair Dryer / Tool Holster",
+    "slug": "dryer-holster",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Wall holsters for hair dryers and styling tools, sized to real handle and barrel diameters — dryer handles (~40-55 mm), barrels / nozzles (~50-75 mm), curling-iron handles (~28-35 mm). Build a U-cradle the barrel drops into, a deep handle holster the tool hangs handle-down in, or a compact cord hook.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Fundas de pared para secadores y herramientas de peinado, dimensionadas a diámetros reales de mango y barril — mangos (~40-55 mm), barriles / boquillas (~50-75 mm), mangos de rizadora (~28-35 mm). Genera una cuna en U para el barril, una funda profunda donde la herramienta cuelga del mango, o un gancho compacto para el cable.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dryer-holster.webp",
+    "tags": [
+      "bathroom",
+      "hair-dryer",
+      "holster",
+      "cradle",
+      "styling-tool",
+      "household",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "barrel_cradle",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Barrel Cradle",
+        "es": "Cuna de Barril"
+      },
+      "parts": [
+        "barrel_cradle"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "handle_holster",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Handle Holster",
+        "es": "Funda de Mango"
+      },
+      "parts": [
+        "handle_holster"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "cord_hook",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Cord Hook",
+        "es": "Gancho de Cable"
+      },
+      "parts": [
+        "cord_hook"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "barrel_cradle",
+      "render_mode": 0,
+      "label": {
+        "en": "Barrel Cradle",
+        "es": "Cuna de Barril"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "handle_holster",
+      "render_mode": 0,
+      "label": {
+        "en": "Handle Holster",
+        "es": "Funda de Mango"
+      },
+      "default_color": "#6fa3bf"
+    },
+    {
+      "id": "cord_hook",
+      "render_mode": 0,
+      "label": {
+        "en": "Cord Hook",
+        "es": "Gancho de Cable"
+      },
+      "default_color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "tool",
+      "label": {
+        "en": "Tool",
+        "es": "Herramienta"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Holster Body",
+        "es": "Cuerpo de la Funda"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Wall Mount",
+        "es": "Montaje en Pared"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "barrel_d",
+      "type": "slider",
+      "default": 62.0,
+      "min": 35.0,
+      "max": 95.0,
+      "step": 1,
+      "group": "tool",
+      "modes": [
+        "barrel_cradle"
+      ],
+      "label": {
+        "en": "Barrel Ø (mm)",
+        "es": "Ø del Barril (mm)"
+      },
+      "tooltip": {
+        "en": "Dryer barrel / nozzle diameter (~50-75 mm)",
+        "es": "Diámetro del barril / boquilla (~50-75 mm)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "handle_d",
+      "type": "slider",
+      "default": 45.0,
+      "min": 25.0,
+      "max": 65.0,
+      "step": 1,
+      "group": "tool",
+      "modes": [
+        "handle_holster",
+        "cord_hook"
+      ],
+      "label": {
+        "en": "Handle Ø (mm)",
+        "es": "Ø del Mango (mm)"
+      },
+      "tooltip": {
+        "en": "Handle diameter. Dryer ~40-55, curling iron ~28-35",
+        "es": "Diámetro del mango. Secador ~40-55, rizadora ~28-35"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "barrel_cradle",
+        "handle_holster",
+        "cord_hook"
+      ],
+      "label": {
+        "en": "Wall (mm)",
+        "es": "Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the cradle / holster",
+        "es": "Grosor de pared de la cuna / funda"
+      }
+    },
+    {
+      "id": "plate_h",
+      "type": "slider",
+      "default": 70.0,
+      "min": 40.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "barrel_cradle",
+        "handle_holster",
+        "cord_hook"
+      ],
+      "label": {
+        "en": "Wall Plate Height (mm)",
+        "es": "Altura de la Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the back plate against the wall",
+        "es": "Altura de la placa trasera contra la pared"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 60.0,
+      "min": 35.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "barrel_cradle",
+        "handle_holster",
+        "cord_hook"
+      ],
+      "label": {
+        "en": "Reach (mm)",
+        "es": "Alcance (mm)"
+      },
+      "tooltip": {
+        "en": "How far the cradle / holster / hook projects",
+        "es": "Cuánto sobresale la cuna / funda / gancho"
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "mount",
+      "modes": [
+        "barrel_cradle",
+        "handle_holster",
+        "cord_hook"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Screw Hole Ø (mm)",
+        "es": "Ø de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Wall-mount screw clearance (M4 ~4.2 mm)",
+        "es": "Holgura del tornillo de pared (M4 ~4.2 mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_dryer",
+      "mode": "barrel_cradle",
+      "label": {
+        "en": "Standard Dryer Cradle",
+        "es": "Cuna de Secador Estándar"
+      },
+      "values": {
+        "barrel_d": 62.0,
+        "plate_h": 70.0
+      }
+    },
+    {
+      "id": "handle_down",
+      "mode": "handle_holster",
+      "label": {
+        "en": "Handle-Down Holster",
+        "es": "Funda de Mango Abajo"
+      },
+      "values": {
+        "handle_d": 45.0,
+        "plate_h": 80.0
+      }
+    },
+    {
+      "id": "curling_iron",
+      "mode": "handle_holster",
+      "label": {
+        "en": "Curling-Iron Holster",
+        "es": "Funda de Rizadora"
+      },
+      "values": {
+        "handle_d": 32.0,
+        "plate_h": 70.0
+      }
+    },
+    {
+      "id": "cord_loop",
+      "mode": "cord_hook",
+      "label": {
+        "en": "Cord Loop Hook",
+        "es": "Gancho de Cable"
+      },
+      "values": {
+        "handle_d": 45.0,
+        "plate_h": 60.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall < handle_d",
+      "severity": "warning",
+      "message": {
+        "en": "Wall thicker than the handle leaves little bore",
+        "es": "Una pared más gruesa que el mango deja poco orificio"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        160,
+        160,
+        140
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -240,
+        50
+      ]
+    },
+    {
+      "id": "side",
+      "label": {
+        "en": "Side",
+        "es": "Lateral"
+      },
+      "position": [
+        240,
+        0,
+        50
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 14,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "barrel_cradle_socket",
+        "label": {
+          "en": "Barrel Cradle Socket",
+          "es": "Cuna del Barril"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "barrel_d"
+        ]
+      },
+      {
+        "id": "handle_socket",
+        "label": {
+          "en": "Handle Socket",
+          "es": "Alojamiento del Mango"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "handle_d"
+        ]
+      },
+      {
+        "id": "wall_screw_mount",
+        "label": {
+          "en": "Wall Screw Mount",
+          "es": "Montaje con Tornillo"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO 7045 M4",
+        "parameters": [
+          "screw_d"
+        ],
+        "compatible_with": [
+          "bottle-bracket",
+          "hasp",
+          "toiletry-holder"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A hot styling tool set down on a bathroom counter is a burn and fire risk, and the branded wall dock that came with it is rarely the one you keep. Sizing the cradle and holster to real barrel and handle diameters lets anyone print a wall mount that safely parks the exact dryer or iron they own, cord managed, off the counter.",
+      "es": "Una herramienta caliente apoyada en la encimera es riesgo de quemadura e incendio, y el soporte de marca que la acompaña rara vez es el que conservas. Ajustar la cuna y la funda a diámetros reales de barril y mango permite imprimir un soporte de pared que estacione con seguridad el secador o rizadora que tienes, con el cable ordenado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bathroom",
+    "hair-dryer",
+    "holster",
+    "cradle",
+    "styling-tool",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

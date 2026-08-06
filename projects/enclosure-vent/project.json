@@ -1,0 +1,485 @@
+{
+  "project": {
+    "name": "Enclosure Vent / Louvre Panel",
+    "slug": "enclosure-vent",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Ventilation panels for electronics enclosures — a solid mounting panel with an airflow cutout pattern and a corner screw border. Build angled louver slats (weather / sight shielded), a hex honeycomb grille (maximum open area), or simple parallel slot vents (print-friendly, high flow).\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Paneles de ventilación para cajas electrónicas — un panel de montaje sólido con un patrón de recorte para el flujo de aire y un borde con tornillos de esquina. Genera rejillas de lamas inclinadas (protegidas de la vista / intemperie), una rejilla hexagonal tipo panal (máxima área abierta), o ranuras paralelas simples (fáciles de imprimir, alto flujo).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/enclosure-vent.webp",
+    "tags": [
+      "enclosure",
+      "vent",
+      "louvre",
+      "grille",
+      "cooling",
+      "airflow",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "louvre_panel",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Louvre Panel",
+        "es": "Panel de Lamas"
+      },
+      "parts": [
+        "louvre_panel"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "hex_grille",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Hex Grille",
+        "es": "Rejilla Hexagonal"
+      },
+      "parts": [
+        "hex_grille"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 5,
+        "per_part": 22
+      }
+    },
+    {
+      "id": "slot_vent",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Slot Vent",
+        "es": "Ranuras"
+      },
+      "parts": [
+        "slot_vent"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "louvre_panel",
+      "render_mode": 0,
+      "label": {
+        "en": "Louvre Panel",
+        "es": "Panel de Lamas"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "hex_grille",
+      "render_mode": 0,
+      "label": {
+        "en": "Hex Grille",
+        "es": "Rejilla Hexagonal"
+      },
+      "default_color": "#6fa3bf"
+    },
+    {
+      "id": "slot_vent",
+      "render_mode": 0,
+      "label": {
+        "en": "Slot Vent",
+        "es": "Ranuras"
+      },
+      "default_color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "panel",
+      "label": {
+        "en": "Panel",
+        "es": "Panel"
+      }
+    },
+    {
+      "id": "openings",
+      "label": {
+        "en": "Openings",
+        "es": "Aberturas"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Mount",
+        "es": "Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "panel_w",
+      "type": "slider",
+      "default": 80.0,
+      "min": 30.0,
+      "max": 200.0,
+      "step": 1,
+      "group": "panel",
+      "modes": [
+        "louvre_panel",
+        "hex_grille",
+        "slot_vent"
+      ],
+      "label": {
+        "en": "Panel Width (mm)",
+        "es": "Ancho del Panel (mm)"
+      },
+      "tooltip": {
+        "en": "Overall panel width",
+        "es": "Ancho total del panel"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "panel_h",
+      "type": "slider",
+      "default": 80.0,
+      "min": 30.0,
+      "max": 200.0,
+      "step": 1,
+      "group": "panel",
+      "modes": [
+        "louvre_panel",
+        "hex_grille",
+        "slot_vent"
+      ],
+      "label": {
+        "en": "Panel Height (mm)",
+        "es": "Alto del Panel (mm)"
+      },
+      "tooltip": {
+        "en": "Overall panel height",
+        "es": "Altura total del panel"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "thick",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "panel",
+      "modes": [
+        "louvre_panel",
+        "hex_grille",
+        "slot_vent"
+      ],
+      "label": {
+        "en": "Panel Thickness (mm)",
+        "es": "Grosor del Panel (mm)"
+      },
+      "tooltip": {
+        "en": "Panel wall thickness",
+        "es": "Grosor de la pared del panel"
+      }
+    },
+    {
+      "id": "border",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "panel",
+      "modes": [
+        "louvre_panel",
+        "hex_grille",
+        "slot_vent"
+      ],
+      "label": {
+        "en": "Border (mm)",
+        "es": "Borde (mm)"
+      },
+      "tooltip": {
+        "en": "Solid frame border around the vented area",
+        "es": "Borde sólido alrededor del área ventilada"
+      }
+    },
+    {
+      "id": "open_size",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "openings",
+      "modes": [
+        "louvre_panel",
+        "hex_grille",
+        "slot_vent"
+      ],
+      "label": {
+        "en": "Opening Size (mm)",
+        "es": "Tamaño de Abertura (mm)"
+      },
+      "tooltip": {
+        "en": "Slat gap / hex across-flats / slot width",
+        "es": "Separación de lama / hex entre-caras / ancho de ranura"
+      }
+    },
+    {
+      "id": "rib",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "openings",
+      "modes": [
+        "louvre_panel",
+        "hex_grille",
+        "slot_vent"
+      ],
+      "label": {
+        "en": "Rib (mm)",
+        "es": "Nervio (mm)"
+      },
+      "tooltip": {
+        "en": "Material between openings",
+        "es": "Material entre aberturas"
+      }
+    },
+    {
+      "id": "louvre_ang",
+      "type": "slider",
+      "default": 30.0,
+      "min": 10.0,
+      "max": 45.0,
+      "step": 1,
+      "group": "openings",
+      "modes": [
+        "louvre_panel"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Louver Rake (deg)",
+        "es": "Inclinación de Lama (grados)"
+      },
+      "tooltip": {
+        "en": "Rake angle of the louver slats",
+        "es": "Ángulo de inclinación de las lamas"
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "mount",
+      "modes": [
+        "louvre_panel",
+        "hex_grille",
+        "slot_vent"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Screw Hole Ø (mm)",
+        "es": "Ø de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Corner mount screw clearance (M3 ~3.2 mm)",
+        "es": "Holgura del tornillo de esquina (M3 ~3.2 mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "louvre_80",
+      "mode": "louvre_panel",
+      "label": {
+        "en": "80 mm Louvre Vent",
+        "es": "Ventila de Lamas 80 mm"
+      },
+      "values": {
+        "panel_w": 80.0,
+        "panel_h": 80.0,
+        "louvre_ang": 30.0
+      }
+    },
+    {
+      "id": "fan_grille_80",
+      "mode": "hex_grille",
+      "label": {
+        "en": "80 mm Hex Fan Grille",
+        "es": "Rejilla de Ventilador 80 mm"
+      },
+      "values": {
+        "panel_w": 80.0,
+        "panel_h": 80.0,
+        "open_size": 6.0
+      }
+    },
+    {
+      "id": "slot_80",
+      "mode": "slot_vent",
+      "label": {
+        "en": "80 mm Slot Vent",
+        "es": "Ranuras 80 mm"
+      },
+      "values": {
+        "panel_w": 80.0,
+        "panel_h": 80.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "border * 2 < panel_w",
+      "severity": "error",
+      "message": {
+        "en": "Border too wide — no room for openings",
+        "es": "Borde demasiado ancho — sin espacio para aberturas"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        130
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        0,
+        240
+      ]
+    },
+    {
+      "id": "side",
+      "label": {
+        "en": "Side",
+        "es": "Lateral"
+      },
+      "position": [
+        240,
+        0,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 16,
+    "per_unit": 4,
+    "per_part": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "vent_opening_pattern",
+        "label": {
+          "en": "Vent Opening Pattern",
+          "es": "Patrón de Aberturas"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "open_size",
+          "rib",
+          "louvre_ang"
+        ]
+      },
+      {
+        "id": "corner_screw_mount",
+        "label": {
+          "en": "Corner Screw Mount",
+          "es": "Montaje de Esquina"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO 7045 M3",
+        "parameters": [
+          "screw_d"
+        ],
+        "compatible_with": [
+          "din-rail-clip",
+          "ferro-handle",
+          "matrix-frame"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A hot 3D printer, PC, or project box needs airflow, but a vent panel sized to your exact cutout with the open area and shielding you want is a bespoke part. A parametric louver, hex grille, or slot vent on a screw-mount border lets anyone fit ventilation to any enclosure opening — trading open area for sight/weather shielding as needed — instead of drilling holes or leaving electronics to cook.",
+      "es": "Una impresora 3D, PC o caja de proyecto caliente necesita flujo de aire, pero un panel de ventilación del tamaño de tu recorte exacto con el área abierta y la protección que quieres es una pieza a medida. Una lama, rejilla hexagonal o ranura paramétricas sobre un borde atornillado permiten ajustar la ventilación a cualquier abertura — cambiando área abierta por protección según se necesite."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "enclosure",
+    "vent",
+    "louvre",
+    "grille",
+    "cooling",
+    "airflow",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

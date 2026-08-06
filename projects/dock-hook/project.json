@@ -1,0 +1,171 @@
+{
+  "project": {
+    "name": "Monitor / Laptop Dock Hook",
+    "slug": "dock-hook",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A screwless hook that snaps onto a desk or shelf edge of a chosen thickness (a printed C-profile that springs over the edge). Choose a dock/tablet shelf with a retaining lip, a cable-drop comb with upward-open slots, or a broad headset cradle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un gancho sin tornillos que se ajusta al borde de un escritorio o estante de un grosor elegido (un perfil en C impreso que se sujeta sobre el borde). Elige una repisa para dock/tableta con labio de retención, un peine para cables con ranuras abiertas hacia arriba, o una cuna amplia para auriculares.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dock-hook.webp",
+    "difficulty": "beginner",
+    "tags": ["hook", "dock", "cable", "edge", "clamp", "desk", "under-desk", "headset", "office", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dock_hook",
+      "label": { "en": "Dock Shelf Hook", "es": "Gancho de Repisa para Dock" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dock_hook"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "cable_drop",
+      "label": { "en": "Cable Drop Comb", "es": "Peine para Cables" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cable_drop"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 15 }
+    },
+    {
+      "id": "headset_hanger",
+      "label": { "en": "Headset Cradle Hanger", "es": "Colgador de Auriculares" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["headset_hanger"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "dock_hook", "label": { "en": "Dock Shelf Hook", "es": "Gancho de Repisa" }, "render_mode": 0, "color": "#2f855a" },
+    { "id": "cable_drop", "label": { "en": "Cable Drop Comb", "es": "Peine para Cables" }, "render_mode": 0, "color": "#38a169" },
+    { "id": "headset_hanger", "label": { "en": "Headset Cradle Hanger", "es": "Colgador de Auriculares" }, "render_mode": 0, "color": "#48bb78" }
+  ],
+  "parameter_groups": [
+    { "id": "edge", "label": { "en": "Desk Edge", "es": "Borde del Escritorio" } },
+    { "id": "form", "label": { "en": "Hook Form", "es": "Forma del Gancho" } },
+    { "id": "walls", "label": { "en": "Walls", "es": "Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "edge_t", "type": "slider", "default": 25.0, "min": 6.0, "max": 60.0, "step": 1.0,
+      "group": "edge", "modes": ["dock_hook", "cable_drop", "headset_hanger"],
+      "label": { "en": "Edge Thickness (mm)", "es": "Grosor del Borde (mm)" },
+      "tooltip": { "en": "Thickness of the desk / shelf edge the C-clamp grips (a common desktop is ~25 mm)", "es": "Grosor del borde del escritorio / estante que sujeta la abrazadera en C (un escritorio común es ~25 mm)" }
+    },
+    {
+      "id": "grip_depth", "type": "slider", "default": 40.0, "min": 20.0, "max": 90.0, "step": 1.0,
+      "group": "edge", "modes": ["dock_hook", "cable_drop", "headset_hanger"],
+      "label": { "en": "Grip Depth (mm)", "es": "Profundidad de Agarre (mm)" },
+      "tooltip": { "en": "How far the C grips back onto the edge (more = more stable)", "es": "Cuánto agarra la C sobre el borde (más = más estable)" }
+    },
+    {
+      "id": "width", "type": "slider", "default": 40.0, "min": 20.0, "max": 120.0, "step": 1.0,
+      "group": "form", "modes": ["dock_hook", "cable_drop", "headset_hanger"],
+      "label": { "en": "Hook Width (mm)", "es": "Ancho del Gancho (mm)" },
+      "tooltip": { "en": "Width of the hook across the edge", "es": "Ancho del gancho a lo largo del borde" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "reach", "type": "slider", "default": 45.0, "min": 15.0, "max": 120.0, "step": 1.0,
+      "group": "form", "modes": ["dock_hook", "headset_hanger"],
+      "label": { "en": "Arm Reach (mm)", "es": "Alcance del Brazo (mm)" },
+      "tooltip": { "en": "How far the arm reaches out from the desk edge", "es": "Cuánto se extiende el brazo desde el borde del escritorio" }
+    },
+    {
+      "id": "lip", "type": "slider", "default": 18.0, "min": 6.0, "max": 50.0, "step": 1.0,
+      "group": "form", "modes": ["dock_hook"],
+      "label": { "en": "Retaining Lip (mm)", "es": "Labio de Retención (mm)" },
+      "tooltip": { "en": "Height of the up-turned lip that stops the dock sliding off", "es": "Altura del labio levantado que evita que el dock se deslice" }
+    },
+    {
+      "id": "slot_w", "type": "slider", "default": 7.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "form", "modes": ["cable_drop"],
+      "label": { "en": "Cable Slot Width (mm)", "es": "Ancho de Ranura de Cable (mm)" },
+      "tooltip": { "en": "Width of each cable slot (a fat braided USB-C is ~7 mm)", "es": "Ancho de cada ranura de cable (un USB-C trenzado grueso es ~7 mm)" }
+    },
+    {
+      "id": "slots", "type": "slider", "default": 4, "min": 1, "max": 10, "step": 1,
+      "group": "form", "modes": ["cable_drop"],
+      "label": { "en": "Cable Slot Count", "es": "Número de Ranuras" },
+      "tooltip": { "en": "Number of cable slots along the comb", "es": "Número de ranuras a lo largo del peine" }
+    },
+    {
+      "id": "cradle_w", "type": "slider", "default": 26.0, "min": 12.0, "max": 80.0, "step": 1.0,
+      "group": "form", "modes": ["headset_hanger"],
+      "label": { "en": "Cradle Width (mm)", "es": "Ancho de la Cuna (mm)" },
+      "tooltip": { "en": "Width of the headband cradle trough", "es": "Ancho de la cuna para la diadema" }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 6.0, "min": 3.0, "max": 15.0, "step": 0.5,
+      "group": "walls", "modes": ["dock_hook", "cable_drop", "headset_hanger"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Jaw, arm, and plate thickness", "es": "Grosor de mordaza, brazo y placa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_dock", "mode": "dock_hook",
+      "label": { "en": "Standard Desktop Dock", "es": "Dock de Escritorio Estándar" },
+      "values": { "edge_t": 25, "reach": 45, "lip": 18, "width": 45 }
+    },
+    {
+      "id": "four_cable_comb", "mode": "cable_drop",
+      "label": { "en": "4-Cable Drop Comb", "es": "Peine de 4 Cables" },
+      "values": { "edge_t": 25, "slots": 4, "slot_w": 7, "width": 50 }
+    },
+    {
+      "id": "headset_perch", "mode": "headset_hanger",
+      "label": { "en": "Headset Perch", "es": "Percha de Auriculares" },
+      "values": { "edge_t": 25, "reach": 55, "cradle_w": 28 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thick <= edge_t / 2",
+      "severity": "warning",
+      "message": { "en": "Very thick jaws on a thin edge leave little spring", "es": "Mordazas muy gruesas en un borde delgado dejan poco resorte" }
+    },
+    {
+      "expression": "cradle_w <= width",
+      "severity": "warning",
+      "message": { "en": "Cradle wider than the hook overhangs the clamp", "es": "Una cuna más ancha que el gancho sobresale de la abrazadera" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 110] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [220, 0, 40] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "desk_edge_snap",
+        "label": { "en": "Desk Edge Snap Clamp", "es": "Abrazadera de Borde a Presión" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["edge_t", "grip_depth", "thick", "width"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A screwless edge hook lets a renter, a student, or an office worker add dock shelves, cable management, and a headset perch to any desk without drilling holes or leaving adhesive residue — printed to the exact edge thickness rather than bought in a fixed size that may not fit.",
+      "es": "Un gancho de borde sin tornillos permite a un inquilino, estudiante o trabajador de oficina añadir repisas para dock, gestión de cables y una percha para auriculares a cualquier escritorio sin perforar agujeros ni dejar residuo de adhesivo — impreso al grosor exacto del borde en lugar de comprado en un tamaño fijo que quizás no encaje."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

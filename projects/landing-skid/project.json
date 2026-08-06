@@ -1,0 +1,547 @@
+{
+  "project": {
+    "name": "Landing Skid",
+    "slug": "landing-skid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Printable landing gear for FPV & RC multirotors. A splayed leg drops from the frame to a skid foot, protecting the belly, camera and gimbal on landing. It attaches by clamping around a round arm/boom, or by bolting to a frame plate using the standard square motor bolt pattern. Choose a boom-clamp skid, a bolt-on skid, or a tall gear for camera / cargo clearance.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Tren de aterrizaje imprimible para multirotores FPV y RC. Una pata abierta baja del cuadro a un patin, protegiendo el vientre, la camara y el gimbal al aterrizar. Se fija sujetando un brazo redondo, o atornillando a una placa del cuadro con el patron cuadrado estandar del motor. Elige un patin de abrazadera, un patin atornillado o un tren alto para camara / carga.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/landing-skid.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "drone",
+      "fpv",
+      "landing-gear",
+      "skid",
+      "boom-clamp",
+      "rc",
+      "motor",
+      "gimbal",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clamp_skid",
+      "label": {
+        "en": "Boom-Clamp Skid",
+        "es": "Patin de Abrazadera"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "clamp_skid"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    },
+    {
+      "id": "bolt_skid",
+      "label": {
+        "en": "Bolt-On Skid",
+        "es": "Patin Atornillado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bolt_skid"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    },
+    {
+      "id": "tall_gear",
+      "label": {
+        "en": "Tall Gear",
+        "es": "Tren Alto"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tall_gear"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 4,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "clamp_skid",
+      "label": {
+        "en": "Boom-Clamp Skid",
+        "es": "Patin de Abrazadera"
+      },
+      "render_mode": 0,
+      "color": "#8a8f4a"
+    },
+    {
+      "id": "bolt_skid",
+      "label": {
+        "en": "Bolt-On Skid",
+        "es": "Patin Atornillado"
+      },
+      "render_mode": 0,
+      "color": "#6f7535"
+    },
+    {
+      "id": "tall_gear",
+      "label": {
+        "en": "Tall Gear",
+        "es": "Tren Alto"
+      },
+      "render_mode": 0,
+      "color": "#a9af5c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "leg",
+      "label": {
+        "en": "Leg & Foot",
+        "es": "Pata y Patin"
+      }
+    },
+    {
+      "id": "clamp",
+      "label": {
+        "en": "Boom Clamp",
+        "es": "Abrazadera"
+      }
+    },
+    {
+      "id": "bolt",
+      "label": {
+        "en": "Bolt Mount",
+        "es": "Montaje Atornillado"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "skid_h",
+      "type": "slider",
+      "default": 45.0,
+      "min": 20.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "leg",
+      "modes": [
+        "clamp_skid",
+        "bolt_skid",
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Skid Height (mm)",
+        "es": "Altura del Patin (mm)"
+      },
+      "tooltip": {
+        "en": "Height from the frame down to the foot",
+        "es": "Altura del cuadro hasta el patin"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "leg_w",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "leg",
+      "modes": [
+        "clamp_skid",
+        "bolt_skid",
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Leg Width (mm)",
+        "es": "Ancho de Pata (mm)"
+      },
+      "tooltip": {
+        "en": "Leg width",
+        "es": "Ancho de la pata"
+      }
+    },
+    {
+      "id": "leg_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "leg",
+      "modes": [
+        "clamp_skid",
+        "bolt_skid",
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Leg Thickness (mm)",
+        "es": "Grosor de Pata (mm)"
+      },
+      "tooltip": {
+        "en": "Leg thickness (fore-aft)",
+        "es": "Grosor de la pata (adelante-atras)"
+      }
+    },
+    {
+      "id": "foot_len",
+      "type": "slider",
+      "default": 40.0,
+      "min": 15.0,
+      "max": 80.0,
+      "step": 1,
+      "group": "leg",
+      "modes": [
+        "clamp_skid",
+        "bolt_skid",
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Foot Length (mm)",
+        "es": "Largo del Patin (mm)"
+      },
+      "tooltip": {
+        "en": "Skid foot length (fore-aft slide)",
+        "es": "Largo del patin (deslizamiento)"
+      }
+    },
+    {
+      "id": "foot_w",
+      "type": "slider",
+      "default": 10.0,
+      "min": 5.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "leg",
+      "modes": [
+        "clamp_skid",
+        "bolt_skid",
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Foot Width (mm)",
+        "es": "Ancho del Patin (mm)"
+      },
+      "tooltip": {
+        "en": "Skid foot width",
+        "es": "Ancho del patin"
+      }
+    },
+    {
+      "id": "splay",
+      "type": "slider",
+      "default": 12.0,
+      "min": 0.0,
+      "max": 30.0,
+      "step": 1,
+      "group": "leg",
+      "modes": [
+        "clamp_skid",
+        "bolt_skid",
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Foot Splay (deg)",
+        "es": "Apertura del Patin (grados)"
+      },
+      "tooltip": {
+        "en": "Outward splay for a wider, more stable stance",
+        "es": "Apertura hacia afuera para una base mas estable"
+      }
+    },
+    {
+      "id": "boom_dia",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "clamp_skid"
+      ],
+      "label": {
+        "en": "Boom Diameter (mm)",
+        "es": "Diametro del Brazo (mm)"
+      },
+      "tooltip": {
+        "en": "Round arm/boom diameter the clamp grips",
+        "es": "Diametro del brazo redondo que sujeta la abrazadera"
+      }
+    },
+    {
+      "id": "clamp_wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "clamp_skid"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Clamp Wall (mm)",
+        "es": "Pared de Abrazadera (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness around the boom",
+        "es": "Grosor de pared alrededor del brazo"
+      }
+    },
+    {
+      "id": "motor_pattern",
+      "type": "select",
+      "default": "16x16",
+      "group": "bolt",
+      "modes": [
+        "bolt_skid",
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Bolt Pattern",
+        "es": "Patron de Tornillos"
+      },
+      "tooltip": {
+        "en": "Square motor bolt pattern to mount on (9x9 M2, 16x16/19x19 M3)",
+        "es": "Patron cuadrado de tornillos para montar (9x9 M2, 16x16/19x19 M3)"
+      },
+      "options": [
+        {
+          "value": "9x9",
+          "label": {
+            "en": "9x9 mm (M2)",
+            "es": "9x9 mm (M2)"
+          }
+        },
+        {
+          "value": "16x16",
+          "label": {
+            "en": "16x16 mm (M3)",
+            "es": "16x16 mm (M3)"
+          }
+        },
+        {
+          "value": "19x19",
+          "label": {
+            "en": "19x19 mm (M3)",
+            "es": "19x19 mm (M3)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tall_extra",
+      "type": "slider",
+      "default": 35.0,
+      "min": 10.0,
+      "max": 70.0,
+      "step": 1,
+      "group": "bolt",
+      "modes": [
+        "tall_gear"
+      ],
+      "label": {
+        "en": "Extra Height (mm)",
+        "es": "Altura Extra (mm)"
+      },
+      "tooltip": {
+        "en": "Added height for camera / gimbal / cargo clearance",
+        "es": "Altura extra para libre de camara / gimbal / carga"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "five_inch_clamp",
+      "mode": "clamp_skid",
+      "label": {
+        "en": "5-inch Boom Clamp",
+        "es": "Abrazadera 5-pulg"
+      },
+      "values": {
+        "boom_dia": 12,
+        "skid_h": 45,
+        "foot_len": 40,
+        "splay": 12
+      }
+    },
+    {
+      "id": "bolt_on_16",
+      "mode": "bolt_skid",
+      "label": {
+        "en": "Bolt-On 16x16",
+        "es": "Atornillado 16x16"
+      },
+      "values": {
+        "motor_pattern": "16x16",
+        "skid_h": 40,
+        "foot_len": 45,
+        "splay": 15
+      }
+    },
+    {
+      "id": "camera_tall_gear",
+      "mode": "tall_gear",
+      "label": {
+        "en": "Camera Tall Gear",
+        "es": "Tren Alto para Camara"
+      },
+      "values": {
+        "motor_pattern": "19x19",
+        "skid_h": 45,
+        "tall_extra": 45,
+        "foot_len": 55,
+        "splay": 18
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "boom_dia >= 6",
+      "severity": "warning",
+      "message": {
+        "en": "Very small boom diameter may not clamp securely",
+        "es": "Un diametro de brazo muy pequeno puede no sujetar bien"
+      }
+    },
+    {
+      "expression": "leg_t >= 3",
+      "severity": "error",
+      "message": {
+        "en": "Leg must be at least 3 mm thick to survive landings",
+        "es": "La pata debe tener al menos 3 mm para resistir aterrizajes"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isometrico"
+      },
+      "position": [
+        90,
+        90,
+        90
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 11,
+    "per_unit": 3,
+    "per_part": 13,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "boom_clamp",
+        "label": {
+          "en": "Boom Clamp",
+          "es": "Abrazadera de Brazo"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "boom_dia",
+          "clamp_wall"
+        ]
+      },
+      {
+        "id": "frame_bolt_pattern",
+        "label": {
+          "en": "Frame Bolt Pattern",
+          "es": "Patron de Tornillos del Cuadro"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "16x16 / 19x19 / 9x9 brushless motor mount",
+        "parameters": [
+          "motor_pattern"
+        ],
+        "compatible_with": [
+          "motor-soft-mount",
+          "prop-guard"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A belly landing on a camera or gimbal ends an expensive part fast. On-demand landing skids sized to the exact boom or bolt pattern absorb the touchdown and lift the payload clear, and a snapped leg is a cheap reprint instead of a grounded aircraft.",
+      "es": "Un aterrizaje sobre la camara o el gimbal destruye una pieza cara rapidamente. Los patines bajo demanda dimensionados al brazo o patron exactos absorben el aterrizaje y elevan la carga, y una pata rota es una reimpresion barata en vez de una aeronave inutilizada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "drone",
+    "fpv",
+    "landing-gear",
+    "skid",
+    "rc",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Maths: TPMS Implicit Lattice placeholder">
+  <defs>
+    <linearGradient id="bg2ae1a5b0" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="hsl(24,58%,42%)"/>
+      <stop offset="1" stop-color="hsl(40,64%,32%)"/>
+    </linearGradient>
+    <radialGradient id="vig2ae1a5b0" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.28"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg2ae1a5b0)"/>
+  <g transform="rotate(248 200 150)" opacity="0.9"><circle cx="171" cy="102" r="8" fill="#fff" opacity="0.06"/><circle cx="146" cy="205" r="5" fill="#fff" opacity="0.06"/><circle cx="145" cy="152" r="4" fill="#fff" opacity="0.06"/><circle cx="204" cy="47" r="7" fill="#fff" opacity="0.06"/><circle cx="87" cy="210" r="8" fill="#fff" opacity="0.06"/></g>
+  <g opacity="0.95">
+            <path d="M 120 202 C 160 132, 240 132, 280 202"
+                  fill="none" stroke="#ffffff" stroke-width="7"/>
+            <path d="M 120 230 C 160 160, 240 160, 280 230"
+                  fill="none" stroke="#ffffff" stroke-width="7" opacity="0.55"/></g>
+  <rect width="400" height="300" fill="url(#vig2ae1a5b0)"/>
+  <text x="24" y="272" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif"
+        font-size="20" font-weight="700" fill="#fff" opacity="0.92">Maths: TPMS Implicit Latt…</text>
+  <text x="376" y="40" text-anchor="end" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+        font-size="15" fill="#fff" opacity="0.6">surface</text>
+  <text x="24" y="44" font-family="ui-sans-serif,system-ui,sans-serif" font-size="30" font-weight="800"
+        fill="#fff" opacity="0.85">M</text>
+</svg>

@@ -1,0 +1,197 @@
+{
+  "project": {
+    "name": "Headphone / Headset Hook",
+    "slug": "headphone-hook",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A hook that hangs a headset by its headband from a broad, rounded cradle so the band does not develop a dent. Choose a mount: Under-Desk is an L-bracket that screws to a desktop underside; Wall is a flat screw plate; Clamp is a C-clamp that grips a desk edge of a set thickness with no screws.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un gancho que cuelga un audífono por su diadema desde una cuna ancha y redondeada para que la banda no se marque. Elige un montaje: Bajo Escritorio es una escuadra en L que se atornilla bajo el tablero; Pared es una placa plana atornillable; Abrazadera es una pinza en C que sujeta el borde del escritorio de un grosor dado sin tornillos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/headphone-hook.webp",
+    "difficulty": "beginner",
+    "tags": ["hook", "headphone", "headset", "cradle", "desk", "clamp", "organizer", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "under_desk_hook",
+      "label": { "en": "Under-Desk Hook", "es": "Gancho Bajo Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["under_desk_hook"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "wall_hook",
+      "label": { "en": "Wall Hook", "es": "Gancho de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_hook"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "desk_clamp",
+      "label": { "en": "Desk Clamp", "es": "Abrazadera de Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["desk_clamp"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "under_desk_hook", "label": { "en": "Under-Desk Hook", "es": "Gancho Bajo Escritorio" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "wall_hook", "label": { "en": "Wall Hook", "es": "Gancho de Pared" }, "render_mode": 0, "color": "#6fae8f" },
+    { "id": "desk_clamp", "label": { "en": "Desk Clamp", "es": "Abrazadera de Escritorio" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } },
+    { "id": "cradle", "label": { "en": "Cradle & Arm", "es": "Cuna y Brazo" } },
+    { "id": "fixing", "label": { "en": "Fixing", "es": "Fijación" } }
+  ],
+  "parameters": [
+    {
+      "id": "mount", "type": "select", "default": "under_desk",
+      "group": "mount", "modes": ["under_desk_hook", "wall_hook", "desk_clamp"],
+      "label": { "en": "Mount Style", "es": "Tipo de Montaje" },
+      "tooltip": { "en": "How the hook attaches — under a desktop, on a wall, or clamped to a desk edge", "es": "Cómo se fija el gancho — bajo el tablero, en la pared, o sujeto al borde del escritorio" },
+      "options": [
+        { "value": "under_desk", "label": { "en": "Under-Desk (screw L-bracket)", "es": "Bajo Escritorio (escuadra L)" } },
+        { "value": "wall", "label": { "en": "Wall (screw plate)", "es": "Pared (placa atornillable)" } },
+        { "value": "clamp", "label": { "en": "Clamp (C-clamp, no screws)", "es": "Abrazadera (pinza C, sin tornillos)" } }
+      ]
+    },
+    {
+      "id": "cradle_w", "type": "slider", "default": 28.0, "min": 12.0, "max": 80.0, "step": 1.0,
+      "group": "cradle", "modes": ["under_desk_hook", "wall_hook", "desk_clamp"],
+      "label": { "en": "Cradle Width (mm)", "es": "Ancho de Cuna (mm)" },
+      "tooltip": { "en": "Width of the rounded saddle the headband rests on — wide spreads the load so the band is not dented", "es": "Ancho de la cuna redondeada donde descansa la diadema — más ancho reparte la carga y no marca la banda" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "reach", "type": "slider", "default": 55.0, "min": 20.0, "max": 120.0, "step": 1.0,
+      "group": "cradle", "modes": ["under_desk_hook", "wall_hook"],
+      "label": { "en": "Reach (mm)", "es": "Alcance (mm)" },
+      "tooltip": { "en": "How far the cradle projects out from the mount", "es": "Qué tan lejos sobresale la cuna del montaje" }
+    },
+    {
+      "id": "drop", "type": "slider", "default": 45.0, "min": 15.0, "max": 120.0, "step": 1.0,
+      "group": "cradle", "modes": ["under_desk_hook"],
+      "label": { "en": "Drop (mm)", "es": "Caída (mm)" },
+      "tooltip": { "en": "How far the arm hangs below the desktop (Under-Desk only)", "es": "Qué tanto baja el brazo bajo el tablero (solo Bajo Escritorio)" }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 8.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "cradle", "modes": ["under_desk_hook", "wall_hook", "desk_clamp"],
+      "label": { "en": "Arm / Plate Thickness (mm)", "es": "Grosor de Brazo / Placa (mm)" },
+      "tooltip": { "en": "Material thickness of the arm, plate, and clamp jaws", "es": "Grosor del material del brazo, la placa y las mordazas" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 40.0, "min": 20.0, "max": 100.0, "step": 1.0,
+      "group": "fixing", "modes": ["under_desk_hook", "wall_hook"],
+      "label": { "en": "Mount Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Width of the screw mounting plate", "es": "Ancho de la placa de montaje atornillable" }
+    },
+    {
+      "id": "plate_len", "type": "slider", "default": 55.0, "min": 30.0, "max": 120.0, "step": 1.0,
+      "group": "fixing", "modes": ["under_desk_hook", "wall_hook"],
+      "label": { "en": "Mount Plate Length (mm)", "es": "Largo de Placa (mm)" },
+      "tooltip": { "en": "Length of the screw mounting plate (drives screw spacing)", "es": "Largo de la placa de montaje (define la separación de tornillos)" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "fixing", "modes": ["under_desk_hook", "wall_hook"], "advanced": true,
+      "label": { "en": "Screw Clearance Ø (mm)", "es": "Ø de Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Clearance hole diameter for the mounting screws (M4 ≈ 4.5)", "es": "Diámetro de orificio para los tornillos de montaje (M4 ≈ 4.5)" }
+    },
+    {
+      "id": "desk_t", "type": "slider", "default": 25.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "fixing", "modes": ["desk_clamp"],
+      "label": { "en": "Desk Thickness (mm)", "es": "Grosor del Escritorio (mm)" },
+      "tooltip": { "en": "Thickness of the desk edge the clamp grips (Clamp only)", "es": "Grosor del borde del escritorio que sujeta la abrazadera (solo Abrazadera)" }
+    },
+    {
+      "id": "clamp_depth", "type": "slider", "default": 45.0, "min": 25.0, "max": 90.0, "step": 1.0,
+      "group": "fixing", "modes": ["desk_clamp"],
+      "label": { "en": "Clamp Grip Depth (mm)", "es": "Profundidad de Sujeción (mm)" },
+      "tooltip": { "en": "How far the clamp reaches back over the desktop for grip", "es": "Qué tanto abarca la abrazadera sobre el tablero para sujetar" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "under_desk_default", "mode": "under_desk_hook",
+      "label": { "en": "Under-Desk Headset", "es": "Audífono Bajo Escritorio" },
+      "values": { "mount": "under_desk", "cradle_w": 30, "reach": 55, "drop": 45, "thick": 8 }
+    },
+    {
+      "id": "wall_gaming", "mode": "wall_hook",
+      "label": { "en": "Wall (wide cradle)", "es": "Pared (cuna ancha)" },
+      "values": { "mount": "wall", "cradle_w": 45, "reach": 60, "thick": 9, "plate_len": 70 }
+    },
+    {
+      "id": "clamp_25mm", "mode": "desk_clamp",
+      "label": { "en": "Clamp (25 mm desk)", "es": "Abrazadera (escritorio 25 mm)" },
+      "values": { "mount": "clamp", "cradle_w": 34, "desk_t": 25, "thick": 8, "clamp_depth": 45 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thick >= 4",
+      "severity": "error",
+      "message": { "en": "Thickness must be at least 4 mm for strength", "es": "El grosor debe ser de al menos 4 mm por resistencia" }
+    },
+    {
+      "expression": "screw_dia <= plate_w / 2",
+      "severity": "warning",
+      "message": { "en": "Screw clearance is large relative to the plate width", "es": "La holgura del tornillo es grande respecto al ancho de la placa" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [40, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [220, 0, 0] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "mount_screw_pattern",
+        "label": { "en": "Mount Screw Pattern", "es": "Patrón de Tornillos de Montaje" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["plate_w", "plate_len", "screw_dia", "thick"]
+      },
+      {
+        "id": "clamp_profile",
+        "label": { "en": "Desk-Edge Clamp Profile", "es": "Perfil de Abrazadera de Borde" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["desk_t", "clamp_depth", "thick"]
+      },
+      {
+        "id": "band_cradle",
+        "label": { "en": "Headband Cradle", "es": "Cuna de Diadema" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["cradle_w", "reach"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Reclaims desk space and protects an expensive headset: a broad, load-spreading cradle prevents the headband dent that ruins padding, and the screwless clamp mount adapts to any desk thickness without drilling holes.",
+      "es": "Recupera espacio en el escritorio y protege un audífono costoso: una cuna ancha que reparte la carga evita la marca en la diadema que arruina el acolchado, y el montaje de abrazadera sin tornillos se adapta a cualquier grosor de escritorio sin taladrar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hook", "headphone", "headset", "desk", "commercial", "hyperobject", "commons"]
+}

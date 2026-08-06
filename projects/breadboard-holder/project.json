@@ -1,0 +1,533 @@
+{
+  "project": {
+    "name": "Breadboard Holder",
+    "slug": "breadboard-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A base that holds a solderless breadboard or perfboard flat and captive on the bench while you wire a circuit. A recessed pocket sized to the standard breadboard footprint receives the board; retaining lips hold it down and corner ears bolt it to a project base. Variants add flanking power-rail channels for the clip-off DC rails, or an angled easel that tilts the board toward you.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una base que sujeta una protoboard o placa perforada plana y firme en la mesa mientras cableas un circuito. Un bolsillo rebajado dimensionado a la huella estándar de protoboard recibe la placa; unos labios de retención la sujetan y orejas de esquina la atornillan a una base. Las variantes agregan canales laterales para los rieles de alimentación desprendibles, o un caballete inclinado que orienta la placa hacia ti.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/breadboard-holder.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "breadboard",
+      "perfboard",
+      "holder",
+      "electronics",
+      "prototyping",
+      "maker",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "base_tray",
+      "label": {
+        "en": "Base Tray",
+        "es": "Bandeja Base"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "base_tray"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "rail_base",
+      "label": {
+        "en": "Tray + Power Rails",
+        "es": "Bandeja + Rieles"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rail_base"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "angled_holder",
+      "label": {
+        "en": "Angled Easel",
+        "es": "Caballete Inclinado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "angled_holder"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "base_tray",
+      "label": {
+        "en": "Base Tray",
+        "es": "Bandeja Base"
+      },
+      "render_mode": 0,
+      "color": "#3a7d44"
+    },
+    {
+      "id": "rail_base",
+      "label": {
+        "en": "Rail Base",
+        "es": "Base con Rieles"
+      },
+      "render_mode": 0,
+      "color": "#4a9d54"
+    },
+    {
+      "id": "angled_holder",
+      "label": {
+        "en": "Angled Easel",
+        "es": "Caballete"
+      },
+      "render_mode": 0,
+      "color": "#5cb85c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "board",
+      "label": {
+        "en": "Board",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "pocket",
+      "label": {
+        "en": "Pocket & Walls",
+        "es": "Bolsillo y Paredes"
+      }
+    },
+    {
+      "id": "mounting",
+      "label": {
+        "en": "Mounting",
+        "es": "Montaje"
+      }
+    },
+    {
+      "id": "easel",
+      "label": {
+        "en": "Easel",
+        "es": "Caballete"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bb_size",
+      "type": "select",
+      "default": "830pt",
+      "group": "board",
+      "modes": [
+        "base_tray",
+        "rail_base",
+        "angled_holder"
+      ],
+      "label": {
+        "en": "Breadboard Size",
+        "es": "Tamaño de Protoboard"
+      },
+      "tooltip": {
+        "en": "Standard solderless-breadboard footprint",
+        "es": "Huella estándar de protoboard"
+      },
+      "options": [
+        {
+          "value": "830pt",
+          "label": {
+            "en": "830-point (165×55)",
+            "es": "830 puntos (165×55)"
+          }
+        },
+        {
+          "value": "400pt",
+          "label": {
+            "en": "400-point (83×55)",
+            "es": "400 puntos (83×55)"
+          }
+        },
+        {
+          "value": "mini",
+          "label": {
+            "en": "Mini 170-pt (46×35)",
+            "es": "Mini 170 pts (46×35)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "board_th",
+      "type": "slider",
+      "default": 9.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "board",
+      "modes": [
+        "base_tray",
+        "rail_base",
+        "angled_holder"
+      ],
+      "label": {
+        "en": "Board Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the board held in the pocket",
+        "es": "Grosor de la placa en el bolsillo"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.1,
+      "max": 1.5,
+      "step": 0.05,
+      "group": "pocket",
+      "modes": [
+        "base_tray",
+        "rail_base",
+        "angled_holder"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Pocket Clearance (mm)",
+        "es": "Holgura de Bolsillo (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap so the board drops in",
+        "es": "Espacio por lado para insertar la placa"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "pocket",
+      "modes": [
+        "base_tray",
+        "rail_base",
+        "angled_holder"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Pocket wall thickness",
+        "es": "Grosor de la pared del bolsillo"
+      }
+    },
+    {
+      "id": "floor",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "pocket",
+      "modes": [
+        "base_tray",
+        "rail_base",
+        "angled_holder"
+      ],
+      "label": {
+        "en": "Floor Thickness (mm)",
+        "es": "Grosor de Piso (mm)"
+      },
+      "tooltip": {
+        "en": "Base floor thickness",
+        "es": "Grosor del piso de la base"
+      }
+    },
+    {
+      "id": "lip_h",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.2,
+      "group": "pocket",
+      "modes": [
+        "base_tray",
+        "rail_base",
+        "angled_holder"
+      ],
+      "label": {
+        "en": "Retaining Lip Height (mm)",
+        "es": "Altura del Labio (mm)"
+      },
+      "tooltip": {
+        "en": "How far the lips overhang the board (0 = none)",
+        "es": "Cuánto sobresalen los labios (0 = ninguno)"
+      }
+    },
+    {
+      "id": "screw_ears",
+      "type": "checkbox",
+      "default": true,
+      "group": "mounting",
+      "modes": [
+        "base_tray",
+        "rail_base"
+      ],
+      "label": {
+        "en": "Corner Screw Ears",
+        "es": "Orejas de Tornillo"
+      },
+      "tooltip": {
+        "en": "Add corner tabs to bolt the tray down",
+        "es": "Agregar pestañas para atornillar la bandeja"
+      }
+    },
+    {
+      "id": "ear_bore",
+      "type": "slider",
+      "default": 4.3,
+      "min": 2.7,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "mounting",
+      "modes": [
+        "base_tray",
+        "rail_base"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Ear Screw Bore (mm)",
+        "es": "Barreno de Oreja (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance bore in the corner ears (M3=3.4, M4=4.3)",
+        "es": "Barreno en las orejas (M3=3.4, M4=4.3)"
+      }
+    },
+    {
+      "id": "tilt_deg",
+      "type": "slider",
+      "default": 15.0,
+      "min": 5.0,
+      "max": 35.0,
+      "step": 1.0,
+      "group": "easel",
+      "modes": [
+        "angled_holder"
+      ],
+      "label": {
+        "en": "Easel Tilt (deg)",
+        "es": "Inclinación (grados)"
+      },
+      "tooltip": {
+        "en": "Angle the board tilts toward you",
+        "es": "Ángulo con que se inclina la placa"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "full_bench",
+      "mode": "base_tray",
+      "label": {
+        "en": "830-pt Bench Holder",
+        "es": "Soporte 830 pts"
+      },
+      "values": {
+        "bb_size": "830pt",
+        "screw_ears": true
+      }
+    },
+    {
+      "id": "powered_rig",
+      "mode": "rail_base",
+      "label": {
+        "en": "Powered Prototyping Rig",
+        "es": "Banco con Alimentación"
+      },
+      "values": {
+        "bb_size": "830pt",
+        "board_th": 9.0
+      }
+    },
+    {
+      "id": "mini_easel",
+      "mode": "angled_holder",
+      "label": {
+        "en": "Mini Easel (20°)",
+        "es": "Caballete Mini (20°)"
+      },
+      "values": {
+        "bb_size": "400pt",
+        "tilt_deg": 20
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "lip_h <= board_th",
+      "severity": "warning",
+      "message": {
+        "en": "Lip taller than the board will bury it",
+        "es": "Un labio más alto que la placa la cubrirá"
+      }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.6 mm",
+        "es": "La pared debe ser de al menos 1.6 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        180,
+        180,
+        140
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        280
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -260,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "breadboard_footprint",
+        "label": {
+          "en": "Breadboard Footprint",
+          "es": "Huella de Protoboard"
+        },
+        "geometry_type": "grid",
+        "standard": "830-pt breadboard",
+        "parameters": [
+          "bb_size",
+          "clearance",
+          "board_th"
+        ],
+        "compatible_with": [
+          "circuit-trainer"
+        ]
+      },
+      {
+        "id": "power_rail_channel",
+        "label": {
+          "en": "Power Rail Channel",
+          "es": "Canal de Riel de Alimentación"
+        },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": [
+          "bb_size",
+          "wall"
+        ]
+      },
+      {
+        "id": "mounting_ears",
+        "label": {
+          "en": "Corner Mounting Ears",
+          "es": "Orejas de Montaje"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "ear_bore",
+          "floor"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Removes a real friction from learning electronics: a breadboard that skids or lifts pulls jumper wires loose. A printed holder keeps the board and its power rails still, so beginners and hobbyists can build reliable circuits on any surface for the cost of a few grams of filament.",
+      "es": "Elimina una fricción real al aprender electrónica: una protoboard que se resbala o levanta afloja los cables. Un soporte impreso mantiene la placa y sus rieles quietos, para que principiantes y aficionados armen circuitos confiables en cualquier superficie por unos gramos de filamento."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "breadboard",
+    "perfboard",
+    "holder",
+    "electronics",
+    "prototyping",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

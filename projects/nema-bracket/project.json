@@ -1,0 +1,491 @@
+{
+  "project": {
+    "name": "NEMA Stepper Bracket",
+    "slug": "nema-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Mounts a NEMA 17 or NEMA 23 stepper motor. The motor face carries the correct square bolt pattern (NEMA 17: 31 mm square, M3; NEMA 23: 47.14 mm square, M4/M5) plus a central pilot bore that clears the motor register boss and shaft. Choose an L-mount, a flat surface plate, or a 2020 T-slot extrusion foot.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Monta un motor a pasos NEMA 17 o NEMA 23. La cara del motor lleva el patron de tornillos cuadrado correcto (NEMA 17: cuadro de 31 mm, M3; NEMA 23: cuadro de 47.14 mm, M4/M5) mas un barreno piloto central que libera el buje de registro y el eje del motor. Elige un soporte en L, una placa plana de superficie o un pie para extrusion 2020 con ranura en T.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/nema-bracket.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "nema",
+      "nema17",
+      "nema23",
+      "stepper",
+      "motor",
+      "bracket",
+      "cnc",
+      "3d-printer",
+      "robotics",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "l_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Soporte en L"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "l_bracket"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 4,
+        "per_part": 18
+      }
+    },
+    {
+      "id": "flat_bracket",
+      "label": {
+        "en": "Flat Plate",
+        "es": "Placa Plana"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "flat_bracket"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 15
+      }
+    },
+    {
+      "id": "extrusion_mount",
+      "label": {
+        "en": "2020 Extrusion Foot",
+        "es": "Pie para Extrusion 2020"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "extrusion_mount"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 4,
+        "per_part": 18
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "l_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Soporte en L"
+      },
+      "render_mode": 0,
+      "color": "#4f6b8f"
+    },
+    {
+      "id": "flat_bracket",
+      "label": {
+        "en": "Flat Plate",
+        "es": "Placa Plana"
+      },
+      "render_mode": 0,
+      "color": "#3f587a"
+    },
+    {
+      "id": "extrusion_mount",
+      "label": {
+        "en": "2020 Extrusion Foot",
+        "es": "Pie para Extrusion 2020"
+      },
+      "render_mode": 0,
+      "color": "#5c7ba0"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "motor",
+      "label": {
+        "en": "Motor",
+        "es": "Motor"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "base",
+      "label": {
+        "en": "Base & Foot",
+        "es": "Base y Pie"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "nema",
+      "type": "select",
+      "default": "NEMA17",
+      "group": "motor",
+      "modes": [
+        "l_bracket",
+        "flat_bracket",
+        "extrusion_mount"
+      ],
+      "label": {
+        "en": "NEMA Size",
+        "es": "Tamano NEMA"
+      },
+      "tooltip": {
+        "en": "Stepper size — sets the bolt square, bolt size and pilot bore",
+        "es": "Tamano del motor — define el cuadro de tornillos, el tornillo y el barreno piloto"
+      },
+      "options": [
+        {
+          "value": "NEMA17",
+          "label": {
+            "en": "NEMA 17 (42.3 mm, 31 mm square, M3)",
+            "es": "NEMA 17 (42.3 mm, cuadro 31 mm, M3)"
+          }
+        },
+        {
+          "value": "NEMA23",
+          "label": {
+            "en": "NEMA 23 (57 mm, 47.14 mm square, M4/M5)",
+            "es": "NEMA 23 (57 mm, cuadro 47.14 mm, M4/M5)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pilot_open",
+      "type": "checkbox",
+      "default": true,
+      "group": "motor",
+      "modes": [
+        "l_bracket",
+        "flat_bracket",
+        "extrusion_mount"
+      ],
+      "label": {
+        "en": "Pilot Bore",
+        "es": "Barreno Piloto"
+      },
+      "tooltip": {
+        "en": "Cut the central bore that clears the motor register boss / shaft",
+        "es": "Corta el barreno central que libera el buje de registro / eje del motor"
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "l_bracket",
+        "flat_bracket",
+        "extrusion_mount"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Motor plate thickness",
+        "es": "Grosor de la placa del motor"
+      }
+    },
+    {
+      "id": "margin",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "l_bracket",
+        "flat_bracket",
+        "extrusion_mount"
+      ],
+      "label": {
+        "en": "Bolt Margin (mm)",
+        "es": "Margen de Tornillos (mm)"
+      },
+      "tooltip": {
+        "en": "Material around the motor bolt square",
+        "es": "Material alrededor del cuadro de tornillos del motor"
+      }
+    },
+    {
+      "id": "base_len",
+      "type": "slider",
+      "default": 45.0,
+      "min": 25.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "base",
+      "modes": [
+        "l_bracket",
+        "extrusion_mount"
+      ],
+      "label": {
+        "en": "Base / Foot Length (mm)",
+        "es": "Largo de Base / Pie (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the horizontal base (L) or extrusion foot",
+        "es": "Largo de la base horizontal (L) o del pie de extrusion"
+      }
+    },
+    {
+      "id": "base_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "l_bracket",
+        "extrusion_mount"
+      ],
+      "label": {
+        "en": "Base Thickness (mm)",
+        "es": "Grosor de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Base / foot slab thickness",
+        "es": "Grosor de la losa de base / pie"
+      }
+    },
+    {
+      "id": "base_bolt_d",
+      "type": "slider",
+      "default": 5.2,
+      "min": 3.0,
+      "max": 6.5,
+      "step": 0.1,
+      "group": "base",
+      "modes": [
+        "l_bracket",
+        "flat_bracket",
+        "extrusion_mount"
+      ],
+      "label": {
+        "en": "Mount Bolt (mm)",
+        "es": "Tornillo de Montaje (mm)"
+      },
+      "tooltip": {
+        "en": "Base / corner mounting bolt clearance (5.2 = M5 T-nut)",
+        "es": "Holgura del tornillo de montaje base / esquina (5.2 = tuerca T M5)"
+      }
+    },
+    {
+      "id": "gusset",
+      "type": "checkbox",
+      "default": true,
+      "group": "base",
+      "modes": [
+        "l_bracket",
+        "extrusion_mount"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Corner Gusset",
+        "es": "Refuerzo de Esquina"
+      },
+      "tooltip": {
+        "en": "Add a triangular gusset to stiffen the plate/base corner",
+        "es": "Agrega un refuerzo triangular para rigidizar la esquina placa/base"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "nema17_l",
+      "mode": "l_bracket",
+      "label": {
+        "en": "NEMA 17 L-Bracket",
+        "es": "NEMA 17 en L"
+      },
+      "values": {
+        "nema": "NEMA17",
+        "plate_t": 5,
+        "base_len": 45,
+        "gusset": true
+      }
+    },
+    {
+      "id": "nema23_flat",
+      "mode": "flat_bracket",
+      "label": {
+        "en": "NEMA 23 Flat Plate",
+        "es": "NEMA 23 Placa Plana"
+      },
+      "values": {
+        "nema": "NEMA23",
+        "plate_t": 6,
+        "margin": 8
+      }
+    },
+    {
+      "id": "nema17_2020",
+      "mode": "extrusion_mount",
+      "label": {
+        "en": "NEMA 17 on 2020",
+        "es": "NEMA 17 en 2020"
+      },
+      "values": {
+        "nema": "NEMA17",
+        "base_len": 60,
+        "base_bolt_d": 5.2
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_t >= 3",
+      "severity": "error",
+      "message": {
+        "en": "Motor plate must be at least 3 mm thick",
+        "es": "La placa del motor debe tener al menos 3 mm de grosor"
+      }
+    },
+    {
+      "expression": "margin >= 3",
+      "severity": "warning",
+      "message": {
+        "en": "A margin under 3 mm leaves thin material at the bolt holes",
+        "es": "Un margen menor a 3 mm deja material delgado en los agujeros de tornillo"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isometrico"
+      },
+      "position": [
+        80,
+        80,
+        70
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -120,
+        20
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        120
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 15,
+    "per_unit": 4,
+    "per_part": 17,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "nema_bolt_pattern",
+        "label": {
+          "en": "NEMA Bolt Pattern",
+          "es": "Patron de Tornillos NEMA"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "NEMA 17/23",
+        "parameters": [
+          "nema",
+          "pilot_open"
+        ],
+        "compatible_with": [
+          "motor-mount",
+          "scara-robotics"
+        ]
+      },
+      {
+        "id": "mount_holes",
+        "label": {
+          "en": "Mount Holes",
+          "es": "Agujeros de Montaje"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "base_bolt_d",
+          "base_len"
+        ],
+        "compatible_with": [
+          "nema-bracket"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Stepper motors outlive the machines they came in, but every printer, CNC and robot needs the motor held at a different angle. An on-demand NEMA 17/23 bracket cut to the exact bolt square lets a salvaged motor drive a new build without hunting for a proprietary mount.",
+      "es": "Los motores a pasos sobreviven a las maquinas de las que vienen, pero cada impresora, CNC y robot necesita sujetar el motor en un angulo distinto. Un soporte NEMA 17/23 bajo demanda cortado al cuadro de tornillos exacto permite que un motor rescatado impulse un nuevo proyecto sin buscar un montaje propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "nema",
+    "stepper",
+    "motor",
+    "bracket",
+    "robotics",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

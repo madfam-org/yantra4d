@@ -181,8 +181,7 @@ def check_min_feature_size(mesh, cfg):
         min_extent = float("inf")
         for body in bodies:
             ext = min(body.extents)
-            if ext < min_extent:
-                min_extent = ext
+            min_extent = min(min_extent, ext)
     else:
         # Single body: use overall min extent as proxy
         min_extent = float(min(mesh.extents))

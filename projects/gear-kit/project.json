@@ -1,0 +1,218 @@
+{
+  "project": {
+    "name": "Gear / Linkage Learning Kit",
+    "slug": "gear-kit",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A snap-together STEM kit for teaching gear ratios, torque and linkages. Every piece shares one interface — a square peg grid on an 8 mm pitch with round pegs — so involute spur gears, idlers and linkage bars relocate to any grid node and mesh correctly. Build a hubbed gear with a finger crank, a multi-hole linkage bar, or a peg baseboard the whole set mounts on.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un kit STEM de montaje a presión para enseñar relaciones de engranajes, torque y mecanismos de barras. Cada pieza comparte una interfaz — una rejilla de clavijas de paso 8 mm con clavijas redondas — para que los engranajes rectos de involuta, ruedas locas y barras de enlace se reubiquen en cualquier nodo y engranen correctamente. Genera un engranaje con cubo y manivela, una barra de enlace multi-orificio, o una base de clavijas donde monta todo el conjunto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gear-kit.webp",
+    "difficulty": "intermediate",
+    "tags": ["gear", "linkage", "stem", "education", "involute", "peg-grid", "kit", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "gear_plate",
+      "label": { "en": "Spur Gear + Crank", "es": "Engranaje + Manivela" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["gear_plate"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "link_bar",
+      "label": { "en": "Linkage Bar", "es": "Barra de Enlace" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["link_bar"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "peg_base",
+      "label": { "en": "Peg Baseboard", "es": "Base de Clavijas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["peg_base"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "gear_plate", "label": { "en": "Spur Gear + Crank", "es": "Engranaje + Manivela" }, "render_mode": 0, "color": "#4a7c8f" },
+    { "id": "link_bar", "label": { "en": "Linkage Bar", "es": "Barra de Enlace" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "peg_base", "label": { "en": "Peg Baseboard", "es": "Base de Clavijas" }, "render_mode": 0, "color": "#6fa3bf" }
+  ],
+  "parameter_groups": [
+    { "id": "grid", "label": { "en": "Peg Grid", "es": "Rejilla de Clavijas" } },
+    { "id": "gear", "label": { "en": "Gear", "es": "Engranaje" } },
+    { "id": "link", "label": { "en": "Linkage", "es": "Enlace" } },
+    { "id": "base", "label": { "en": "Baseboard", "es": "Base" } }
+  ],
+  "parameters": [
+    {
+      "id": "grid_pitch", "type": "slider", "default": 8.0, "min": 5.0, "max": 20.0, "step": 0.5,
+      "group": "grid", "modes": ["gear_plate", "link_bar", "peg_base"],
+      "label": { "en": "Grid Pitch (mm)", "es": "Paso de Rejilla (mm)" },
+      "tooltip": { "en": "Peg-to-peg spacing shared by every part. Kit standard is 8 mm", "es": "Separación entre clavijas compartida por cada pieza. El estándar del kit es 8 mm" }
+    },
+    {
+      "id": "peg_dia", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.1,
+      "group": "grid", "modes": ["gear_plate", "link_bar", "peg_base"],
+      "label": { "en": "Peg Diameter (mm)", "es": "Diámetro de Clavija (mm)" },
+      "tooltip": { "en": "Diameter of the upright peg the gear hubs and links turn on", "es": "Diámetro de la clavija vertical sobre la que giran los cubos y enlaces" }
+    },
+    {
+      "id": "peg_clear", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "grid", "modes": ["gear_plate", "link_bar"], "advanced": true,
+      "label": { "en": "Running Clearance (mm)", "es": "Holgura de Giro (mm)" },
+      "tooltip": { "en": "Bore-over-peg gap so parts spin freely (~0.4 mm)", "es": "Espacio del orificio sobre la clavija para que las piezas giren libremente (~0.4 mm)" }
+    },
+    {
+      "id": "module", "type": "slider", "default": 2.0, "min": 0.8, "max": 4.0, "step": 0.1,
+      "group": "gear", "modes": ["gear_plate"],
+      "label": { "en": "Gear Module (mm)", "es": "Módulo del Engranaje (mm)" },
+      "tooltip": { "en": "ISO 53 module: pitch diameter = module x teeth. Gears mesh only if they share module + pressure angle", "es": "Módulo ISO 53: diámetro primitivo = módulo x dientes. Los engranajes engranan solo si comparten módulo y ángulo de presión" }
+    },
+    {
+      "id": "teeth", "type": "slider", "default": 16, "min": 8, "max": 60, "step": 1,
+      "group": "gear", "modes": ["gear_plate"],
+      "label": { "en": "Tooth Count", "es": "Número de Dientes" },
+      "tooltip": { "en": "Teeth on the gear. Ratio between two gears = driven teeth / driver teeth", "es": "Dientes del engranaje. La relación entre dos engranajes = dientes conducidos / dientes conductores" }
+    },
+    {
+      "id": "pressure_angle", "type": "slider", "default": 20.0, "min": 14.5, "max": 25.0, "step": 0.5,
+      "group": "gear", "modes": ["gear_plate"], "advanced": true,
+      "label": { "en": "Pressure Angle (deg)", "es": "Ángulo de Presión (grados)" },
+      "tooltip": { "en": "Involute pressure angle. 20 deg is the DIN 867 default", "es": "Ángulo de presión de la involuta. 20 grados es el estándar DIN 867" }
+    },
+    {
+      "id": "gear_thick", "type": "slider", "default": 6.0, "min": 2.0, "max": 16.0, "step": 0.5,
+      "group": "gear", "modes": ["gear_plate"],
+      "label": { "en": "Gear Thickness (mm)", "es": "Grosor del Engranaje (mm)" },
+      "tooltip": { "en": "Face width of the gear", "es": "Ancho de cara del engranaje" }
+    },
+    {
+      "id": "hub_height", "type": "slider", "default": 5.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "gear", "modes": ["gear_plate"], "advanced": true,
+      "label": { "en": "Hub Height (mm)", "es": "Altura del Cubo (mm)" },
+      "tooltip": { "en": "How far the central hub rises above the gear face", "es": "Cuánto sube el cubo central por encima de la cara del engranaje" }
+    },
+    {
+      "id": "crank", "type": "checkbox", "default": true,
+      "group": "gear", "modes": ["gear_plate"],
+      "label": { "en": "Finger Crank", "es": "Manivela de Dedo" },
+      "tooltip": { "en": "Add an off-centre crank knob to turn the gear by hand", "es": "Añade una perilla de manivela descentrada para girar el engranaje a mano" }
+    },
+    {
+      "id": "link_holes", "type": "slider", "default": 4, "min": 2, "max": 12, "step": 1,
+      "group": "link", "modes": ["link_bar"],
+      "label": { "en": "Pivot Holes", "es": "Orificios de Pivote" },
+      "tooltip": { "en": "Number of grid-pitch pivot holes along the linkage bar", "es": "Número de orificios de pivote a paso de rejilla en la barra de enlace" }
+    },
+    {
+      "id": "link_thick", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "link", "modes": ["link_bar"],
+      "label": { "en": "Bar Thickness (mm)", "es": "Grosor de Barra (mm)" },
+      "tooltip": { "en": "Thickness of the linkage bar", "es": "Grosor de la barra de enlace" }
+    },
+    {
+      "id": "base_cols", "type": "slider", "default": 4, "min": 2, "max": 8, "step": 1,
+      "group": "base", "modes": ["peg_base"],
+      "label": { "en": "Peg Columns", "es": "Columnas de Clavijas" },
+      "tooltip": { "en": "Number of peg columns (X)", "es": "Número de columnas de clavijas (X)" }
+    },
+    {
+      "id": "base_rows", "type": "slider", "default": 4, "min": 2, "max": 8, "step": 1,
+      "group": "base", "modes": ["peg_base"],
+      "label": { "en": "Peg Rows", "es": "Filas de Clavijas" },
+      "tooltip": { "en": "Number of peg rows (Y)", "es": "Número de filas de clavijas (Y)" }
+    },
+    {
+      "id": "base_thick", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "base", "modes": ["peg_base"], "advanced": true,
+      "label": { "en": "Baseboard Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Thickness of the baseboard slab", "es": "Grosor de la placa base" }
+    },
+    {
+      "id": "peg_len", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 1,
+      "group": "base", "modes": ["peg_base"],
+      "label": { "en": "Peg Length (mm)", "es": "Longitud de Clavija (mm)" },
+      "tooltip": { "en": "Height of the pegs above the baseboard — must clear the gear + hub stack", "es": "Altura de las clavijas sobre la base — debe superar el conjunto engranaje + cubo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "starter_2to1", "mode": "gear_plate",
+      "label": { "en": "2:1 Reduction Gear (16T)", "es": "Engranaje Reductor 2:1 (16D)" },
+      "values": { "module": 2.0, "teeth": 16, "pressure_angle": 20.0, "gear_thick": 6.0, "crank": true }
+    },
+    {
+      "id": "four_bar", "mode": "link_bar",
+      "label": { "en": "Four-Bar Linkage Arm", "es": "Brazo de Cuatro Barras" },
+      "values": { "link_holes": 4, "link_thick": 4.0, "grid_pitch": 8.0 }
+    },
+    {
+      "id": "classroom_base", "mode": "peg_base",
+      "label": { "en": "4x4 Classroom Baseboard", "es": "Base de Aula 4x4" },
+      "values": { "base_cols": 4, "base_rows": 4, "base_thick": 4.0, "peg_len": 10.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "peg_dia < grid_pitch",
+      "severity": "error",
+      "message": { "en": "Peg diameter must be smaller than the grid pitch", "es": "El diámetro de la clavija debe ser menor que el paso de rejilla" }
+    },
+    {
+      "expression": "peg_len > gear_thick + hub_height",
+      "severity": "warning",
+      "message": { "en": "Pegs shorter than the gear + hub stack will not retain the gear", "es": "Clavijas más cortas que el conjunto engranaje + cubo no retendrán el engranaje" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "peg_grid",
+        "label": { "en": "8 mm Peg Grid", "es": "Rejilla de Clavijas 8 mm" },
+        "geometry_type": "grid",
+        "standard": "internal peg grid 8mm",
+        "parameters": ["grid_pitch", "peg_dia", "peg_clear"]
+      },
+      {
+        "id": "involute_teeth",
+        "label": { "en": "Involute Gear Mesh", "es": "Engrane de Involuta" },
+        "geometry_type": "profile",
+        "standard": "ISO 53 / DIN 867 (20 deg)",
+        "parameters": ["module", "teeth", "pressure_angle"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Physical gear-ratio and linkage manipulatives make abstract mechanical ideas — reduction, torque, mechanical advantage, four-bar motion — tangible for learners. A shared 8 mm peg grid and true involute teeth mean any printed gear meshes with any other of the same module, so a classroom can grow a compatible set indefinitely from open files instead of buying closed proprietary kits.",
+      "es": "Los manipulativos físicos de relación de engranajes y mecanismos de barras hacen tangibles ideas mecánicas abstractas — reducción, torque, ventaja mecánica, movimiento de cuatro barras — para quien aprende. Una rejilla de clavijas de 8 mm compartida y dientes de involuta reales hacen que cualquier engranaje impreso engrane con otro del mismo módulo, para que un aula amplíe indefinidamente un conjunto compatible desde archivos abiertos en vez de comprar kits propietarios cerrados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gear", "linkage", "stem", "education", "involute", "peg-grid", "kit", "commercial", "hyperobject", "commons"]
+}

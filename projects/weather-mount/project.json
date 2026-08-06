@@ -1,0 +1,191 @@
+{
+  "project": {
+    "name": "Weather-Instrument Mount",
+    "slug": "weather-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Mounts a rain gauge, thermometer, anemometer, or other backyard weather sensor to a pole or fence. A split clamp wraps a round pole; a flat plate screws to a fence; a cradle ring holds a cylindrical instrument. All share one mounting-boss interface so the cradle plugs into either mount.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Monta un pluviómetro, termómetro, anemómetro u otro sensor meteorológico en un poste o una cerca. Una abrazadera partida envuelve un poste redondo; una placa plana se atornilla a la cerca; un anillo cuna sostiene un instrumento cilíndrico. Todos comparten una interfaz de espiga para que la cuna encaje en cualquier montaje.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/weather-mount.webp",
+    "difficulty": "beginner",
+    "tags": ["weather", "rain-gauge", "sensor", "mount", "pole", "fence", "outdoor", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pole_clamp",
+      "label": { "en": "Pole Clamp", "es": "Abrazadera de Poste" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pole_clamp"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "fence_mount",
+      "label": { "en": "Fence Mount", "es": "Montaje de Cerca" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["fence_mount"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "gauge_cradle",
+      "label": { "en": "Gauge Cradle", "es": "Cuna de Instrumento" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gauge_cradle"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "pole_clamp", "label": { "en": "Pole Clamp", "es": "Abrazadera de Poste" }, "render_mode": 0, "color": "#3a6a7a" },
+    { "id": "fence_mount", "label": { "en": "Fence Mount", "es": "Montaje de Cerca" }, "render_mode": 0, "color": "#4a7a8a" },
+    { "id": "gauge_cradle", "label": { "en": "Gauge Cradle", "es": "Cuna de Instrumento" }, "render_mode": 0, "color": "#5a8a9a" }
+  ],
+  "parameter_groups": [
+    { "id": "clamp", "label": { "en": "Pole Clamp", "es": "Abrazadera de Poste" } },
+    { "id": "boss", "label": { "en": "Mounting Boss", "es": "Espiga de Montaje" } },
+    { "id": "fixture", "label": { "en": "Cradle & Plate", "es": "Cuna y Placa" } }
+  ],
+  "parameters": [
+    {
+      "id": "pole_dia", "type": "slider", "default": 34.0, "min": 12.0, "max": 120.0, "step": 1.0,
+      "group": "clamp", "modes": ["pole_clamp"],
+      "label": { "en": "Pole Diameter (mm)", "es": "Diámetro del Poste (mm)" },
+      "tooltip": { "en": "Outer diameter of the pole the clamp wraps", "es": "Diámetro exterior del poste que envuelve la abrazadera" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "clamp_wall", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "clamp", "modes": ["pole_clamp", "fence_mount"],
+      "label": { "en": "Wall / Plate Thickness (mm)", "es": "Grosor de Pared / Placa (mm)" },
+      "tooltip": { "en": "Clamp band and fence-plate thickness", "es": "Grosor de la banda y de la placa de cerca" }
+    },
+    {
+      "id": "clamp_h", "type": "slider", "default": 30.0, "min": 12.0, "max": 80.0, "step": 1.0,
+      "group": "clamp", "modes": ["pole_clamp"],
+      "label": { "en": "Clamp Height (mm)", "es": "Altura de Abrazadera (mm)" },
+      "tooltip": { "en": "Band height — taller grips the pole more firmly", "es": "Altura de la banda — más alta sujeta el poste con más firmeza" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "clamp", "modes": ["pole_clamp", "fence_mount"],
+      "label": { "en": "Bolt / Screw (mm)", "es": "Perno / Tornillo (mm)" },
+      "tooltip": { "en": "Clamp bolt and fence screw diameter", "es": "Diámetro del perno de abrazadera y del tornillo de cerca" }
+    },
+    {
+      "id": "boss_dia", "type": "slider", "default": 20.0, "min": 10.0, "max": 50.0, "step": 1.0,
+      "group": "boss", "modes": ["pole_clamp", "fence_mount", "gauge_cradle"],
+      "label": { "en": "Boss Diameter (mm)", "es": "Diámetro de Espiga (mm)" },
+      "tooltip": { "en": "Shared mounting-boss diameter (the interface)", "es": "Diámetro de la espiga compartida (la interfaz)" }
+    },
+    {
+      "id": "boss_len", "type": "slider", "default": 22.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "boss", "modes": ["pole_clamp", "fence_mount", "gauge_cradle"],
+      "label": { "en": "Boss Length (mm)", "es": "Largo de Espiga (mm)" },
+      "tooltip": { "en": "How far the boss projects / how deep the cradle plugs", "es": "Cuánto sobresale la espiga / qué tan profundo encaja la cuna" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "boss", "modes": ["gauge_cradle"], "advanced": true,
+      "label": { "en": "Plug Clearance (mm)", "es": "Holgura de Espiga (mm)" },
+      "tooltip": { "en": "Per-side slop for a printable boss/plug fit", "es": "Holgura por lado para un ajuste imprimible de espiga" }
+    },
+    {
+      "id": "cradle_dia", "type": "slider", "default": 40.0, "min": 15.0, "max": 120.0, "step": 1.0,
+      "group": "fixture", "modes": ["gauge_cradle"],
+      "label": { "en": "Instrument Diameter (mm)", "es": "Diámetro del Instrumento (mm)" },
+      "tooltip": { "en": "Body diameter of the gauge/sensor the ring holds", "es": "Diámetro del cuerpo del instrumento que sostiene el anillo" }
+    },
+    {
+      "id": "cradle_h", "type": "slider", "default": 35.0, "min": 12.0, "max": 100.0, "step": 1.0,
+      "group": "fixture", "modes": ["gauge_cradle"],
+      "label": { "en": "Cradle Height (mm)", "es": "Altura de la Cuna (mm)" },
+      "tooltip": { "en": "Height of the holding ring", "es": "Altura del anillo de sujeción" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 60.0, "min": 30.0, "max": 200.0, "step": 2.0,
+      "group": "fixture", "modes": ["fence_mount"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Fence-plate width", "es": "Ancho de la placa de cerca" }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 80.0, "min": 30.0, "max": 250.0, "step": 2.0,
+      "group": "fixture", "modes": ["fence_mount"],
+      "label": { "en": "Plate Height (mm)", "es": "Alto de Placa (mm)" },
+      "tooltip": { "en": "Fence-plate height", "es": "Alto de la placa de cerca" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "fence_post", "mode": "pole_clamp",
+      "label": { "en": "Round Fence Post", "es": "Poste Redondo" },
+      "values": { "pole_dia": 34, "clamp_h": 32, "boss_dia": 20 }
+    },
+    {
+      "id": "flat_fence", "mode": "fence_mount",
+      "label": { "en": "Flat Fence Board", "es": "Tabla de Cerca Plana" },
+      "values": { "plate_w": 60, "plate_h": 80, "boss_dia": 20 }
+    },
+    {
+      "id": "rain_gauge", "mode": "gauge_cradle",
+      "label": { "en": "Rain-Gauge Cradle", "es": "Cuna de Pluviómetro" },
+      "values": { "cradle_dia": 40, "cradle_h": 40, "boss_dia": 20 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "boss_dia < pole_dia + 2 * clamp_wall",
+      "severity": "warning",
+      "message": { "en": "Boss is large relative to the clamp back", "es": "La espiga es grande respecto al dorso de la abrazadera" }
+    },
+    {
+      "expression": "clamp_wall >= 3",
+      "severity": "error",
+      "message": { "en": "Clamp/plate wall must be at least 3 mm", "es": "La pared de abrazadera/placa debe ser de al menos 3 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "pole_clamp",
+        "label": { "en": "Pole Clamp", "es": "Abrazadera de Poste" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["pole_dia", "clamp_wall", "clamp_h", "bolt_dia"]
+      },
+      {
+        "id": "mounting_boss",
+        "label": { "en": "Mounting Boss", "es": "Espiga de Montaje" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["boss_dia", "boss_len", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Citizen weather stations need to survive outdoors on whatever pole or fence a household already has. A printable clamp + fence plate sharing one boss lets any gauge or sensor be sited and re-sited without buying vendor-specific hardware, supporting community climate data collection.",
+      "es": "Las estaciones meteorológicas ciudadanas deben sobrevivir a la intemperie en el poste o cerca que ya tiene un hogar. Una abrazadera imprimible + placa de cerca que comparten una espiga permiten ubicar y reubicar cualquier instrumento sin comprar herrajes de marca, apoyando la recolección comunitaria de datos climáticos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["weather", "rain-gauge", "sensor", "mount", "pole", "fence", "infrastructure", "hyperobject", "commons"]
+}

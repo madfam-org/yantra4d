@@ -55,6 +55,39 @@ describe('useConstraints', () => {
     expect(result.current.violations[0].severity).toBe('warning')
   })
 
+  // The 555 authored constraints across the commons use `expression`, not `rule`.
+  // These lock in that the evaluator reads `expression` and derives applies_to.
+  it('evaluates constraints authored with `expression` (the real manifest shape)', () => {
+    const constraints = [
+      { expression: 'grid_x * grid_y <= 24', severity: 'warning',
+        message: { en: 'Large grids may be slow', es: 'Rejillas grandes pueden tardar' } },
+    ]
+    const passing = renderHook(() => useConstraints(constraints, { grid_x: 3, grid_y: 3 }))
+    expect(passing.result.current.violations).toEqual([])
+    const failing = renderHook(() => useConstraints(constraints, { grid_x: 6, grid_y: 6 }))
+    expect(failing.result.current.violations).toHaveLength(1)
+    expect(failing.result.current.violations[0].message.en).toBe('Large grids may be slow')
+  })
+
+  it('derives applies_to from the expression when not declared', () => {
+    const constraints = [
+      { expression: 'slot_w < plate_w', severity: 'error', message: { en: 'Slot too wide' } },
+    ]
+    const { result } = renderHook(() => useConstraints(constraints, { slot_w: 50, plate_w: 40 }))
+    expect(result.current.hasErrors).toBe(true)
+    // both referenced params should carry the violation so their controls light up
+    expect(Object.keys(result.current.byParam).sort()).toEqual(['plate_w', 'slot_w'])
+  })
+
+  it('still supports legacy `rule` and prefers `expression` when both present', () => {
+    const constraints = [
+      { expression: 'a <= 1', rule: 'a <= 999', severity: 'warning', message: { en: 'x' } },
+    ]
+    const { result } = renderHook(() => useConstraints(constraints, { a: 5 }))
+    // expression (a<=1) is violated at a=5; if it had used rule (a<=999) it would pass
+    expect(result.current.violations).toHaveLength(1)
+  })
+
   it('detects compartment count violation', () => {
     const params = { width_units: 2, depth_units: 1, vertical_chambers: 4, horizontal_chambers: 4 }
     const { result } = renderHook(() => useConstraints(GRIDFINITY_CONSTRAINTS, params))

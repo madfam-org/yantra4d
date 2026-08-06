@@ -1,0 +1,168 @@
+{
+  "project": {
+    "name": "Nameplate",
+    "slug": "nameplate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A personalized nameplate or sign with embossed or debossed text. Type a name, pick a form — a standing desk wedge, a wall plate, or a hanging door sign — and print. The plate auto-sizes to the text and always exports watertight, falling back gracefully if a glyph breaks one text mode.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una placa de nombre o letrero personalizado con texto en relieve o hueco. Escribe un nombre, elige una forma — una cuña de escritorio, una placa de pared o un letrero colgante de puerta — e imprime. La placa se dimensiona automáticamente al texto y siempre se exporta estanca, con respaldo si un carácter rompe un modo de texto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/nameplate.webp",
+    "difficulty": "beginner",
+    "tags": ["nameplate", "sign", "text", "personalization", "desk", "door", "label", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "desk_nameplate",
+      "label": { "en": "Desk Nameplate", "es": "Placa de Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["desk_nameplate"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "wall_plate",
+      "label": { "en": "Wall Plate", "es": "Placa de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_plate"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "door_sign",
+      "label": { "en": "Door Sign", "es": "Letrero de Puerta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["door_sign"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "desk_nameplate", "label": { "en": "Desk Nameplate", "es": "Placa de Escritorio" }, "render_mode": 0, "color": "#7f6f8f" },
+    { "id": "wall_plate", "label": { "en": "Wall Plate", "es": "Placa de Pared" }, "render_mode": 0, "color": "#9a8aa8" },
+    { "id": "door_sign", "label": { "en": "Door Sign", "es": "Letrero de Puerta" }, "render_mode": 0, "color": "#b5a5c0" }
+  ],
+  "parameter_groups": [
+    { "id": "text", "label": { "en": "Text", "es": "Texto" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } },
+    { "id": "style", "label": { "en": "Style", "es": "Estilo" } }
+  ],
+  "parameters": [
+    {
+      "id": "text", "type": "text", "default": "HELLO", "maxlength": 20,
+      "group": "text", "modes": ["desk_nameplate", "wall_plate", "door_sign"],
+      "label": { "en": "Name / Text", "es": "Nombre / Texto" },
+      "tooltip": { "en": "The name or label to show", "es": "El nombre o texto a mostrar" }
+    },
+    {
+      "id": "size", "type": "slider", "default": 28.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "text", "modes": ["desk_nameplate", "wall_plate", "door_sign"],
+      "label": { "en": "Text Height (mm)", "es": "Altura del Texto (mm)" },
+      "tooltip": { "en": "Cap height of the letters (plate scales to fit)", "es": "Altura de las letras (la placa se ajusta)" }
+    },
+    {
+      "id": "text_mode", "type": "select", "default": "emboss",
+      "group": "text", "modes": ["desk_nameplate", "wall_plate", "door_sign"],
+      "label": { "en": "Text Style", "es": "Estilo de Texto" },
+      "tooltip": { "en": "Raised (emboss) or recessed (deboss). Falls back automatically if a glyph breaks one mode.", "es": "Elevado (relieve) o rebajado (hueco). Cambia automáticamente si un carácter rompe un modo." },
+      "options": [
+        { "value": "emboss", "label": { "en": "Embossed (raised)", "es": "En Relieve (elevado)" } },
+        { "value": "deboss", "label": { "en": "Debossed (recessed)", "es": "Hueco (rebajado)" } }
+      ]
+    },
+    {
+      "id": "text_depth", "type": "slider", "default": 1.2, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "text", "modes": ["desk_nameplate", "wall_plate", "door_sign"], "advanced": true,
+      "label": { "en": "Text Depth (mm)", "es": "Profundidad de Texto (mm)" },
+      "tooltip": { "en": "How high the emboss rises / how deep the deboss cuts", "es": "Qué tan alto sube el relieve / qué tan profundo corta el hueco" }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "plate", "modes": ["desk_nameplate", "wall_plate", "door_sign"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Base plate thickness", "es": "Grosor de la placa base" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 14.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "plate", "modes": ["desk_nameplate", "wall_plate", "door_sign"],
+      "label": { "en": "Border (mm)", "es": "Borde (mm)" },
+      "tooltip": { "en": "Border around the text", "es": "Borde alrededor del texto" }
+    },
+    {
+      "id": "style", "type": "select", "default": "desk-wedge",
+      "group": "style", "modes": ["desk_nameplate", "wall_plate", "door_sign"],
+      "label": { "en": "Style", "es": "Estilo" },
+      "tooltip": { "en": "Presentation style (matches the mode)", "es": "Estilo de presentación (coincide con el modo)" },
+      "options": [
+        { "value": "desk-wedge", "label": { "en": "Desk Wedge", "es": "Cuña de Escritorio" } },
+        { "value": "wall-plate", "label": { "en": "Wall Plate", "es": "Placa de Pared" } },
+        { "value": "door-hanger", "label": { "en": "Door Hanger", "es": "Colgante de Puerta" } }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "desk_name", "mode": "desk_nameplate",
+      "label": { "en": "Office Desk Plate", "es": "Placa de Escritorio" },
+      "values": { "text": "A. RUIZ", "size": 26, "text_mode": "emboss" }
+    },
+    {
+      "id": "room_plate", "mode": "wall_plate",
+      "label": { "en": "Room Wall Plate", "es": "Placa de Habitación" },
+      "values": { "text": "STUDIO", "size": 30, "text_mode": "deboss" }
+    },
+    {
+      "id": "kids_door", "mode": "door_sign",
+      "label": { "en": "Kid's Door Sign", "es": "Letrero de Puerta Infantil" },
+      "values": { "text": "MAYA", "size": 34, "text_mode": "emboss" }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "text_depth <= plate_t - 1",
+      "severity": "warning",
+      "message": { "en": "Deep text on a thin plate may perforate it", "es": "Texto profundo en una placa delgada puede perforarla" }
+    },
+    {
+      "expression": "plate_t >= 3",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 3 mm", "es": "La placa debe ser de al menos 3 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "text_plate",
+        "label": { "en": "Text Plate", "es": "Placa de Texto" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["text", "size", "text_mode", "text_depth", "margin"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A named plate anyone can make in seconds for a desk, door, or room — personalization and wayfinding without ordering engraved signage.",
+      "es": "Una placa con nombre que cualquiera hace en segundos para un escritorio, puerta o habitación — personalización y señalización sin encargar letreros grabados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["nameplate", "sign", "text", "personalization", "household", "hyperobject", "commons"]
+}

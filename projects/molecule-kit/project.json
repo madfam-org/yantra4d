@@ -1,0 +1,189 @@
+{
+  "project": {
+    "name": "Molecule / Atom Model Kit",
+    "slug": "molecule-kit",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A ball-and-stick molecular modelling set. Atoms are faceted balls bored with bond sockets at the real VSEPR bond angles — tetrahedral 109.5 deg, trigonal-planar 120 deg, linear 180 deg, octahedral 90 deg, or bent — and bonds are struts that plug into any matching socket. Build an atom, a single-bond strut, or a double-bond connector.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un juego de modelado molecular de bolas y varillas. Los átomos son esferas facetadas perforadas con enchufes de enlace en los ángulos reales VSEPR — tetraédrico 109.5 grados, trigonal plano 120 grados, lineal 180 grados, octaédrico 90 grados, o angular — y los enlaces son varillas que se insertan en cualquier enchufe compatible. Genera un átomo, una varilla de enlace simple, o un conector de doble enlace.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/molecule-kit.webp",
+    "difficulty": "intermediate",
+    "tags": ["molecule", "chemistry", "atom", "vsepr", "education", "stem", "ball-and-stick", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "atom",
+      "label": { "en": "Atom (sockets)", "es": "Átomo (enchufes)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["atom"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "bond",
+      "label": { "en": "Single Bond", "es": "Enlace Simple" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["bond"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "double_bond",
+      "label": { "en": "Double Bond", "es": "Doble Enlace" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["double_bond"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "atom", "label": { "en": "Atom", "es": "Átomo" }, "render_mode": 0, "color": "#3d6fb4" },
+    { "id": "bond", "label": { "en": "Single Bond", "es": "Enlace Simple" }, "render_mode": 0, "color": "#7f8c8d" },
+    { "id": "double_bond", "label": { "en": "Double Bond", "es": "Doble Enlace" }, "render_mode": 0, "color": "#95a5a6" }
+  ],
+  "parameter_groups": [
+    { "id": "atomgrp", "label": { "en": "Atom", "es": "Átomo" } },
+    { "id": "socket", "label": { "en": "Bond Socket", "es": "Enchufe de Enlace" } },
+    { "id": "bondgrp", "label": { "en": "Bond", "es": "Enlace" } }
+  ],
+  "parameters": [
+    {
+      "id": "geometry", "type": "select", "default": "tetrahedral",
+      "group": "atomgrp", "modes": ["atom"],
+      "options": [
+        { "value": "tetrahedral", "label": { "en": "Tetrahedral (109.5 deg, 4 bonds)", "es": "Tetraédrico (109.5 grados, 4 enlaces)" } },
+        { "value": "trigonal", "label": { "en": "Trigonal Planar (120 deg, 3 bonds)", "es": "Trigonal Plano (120 grados, 3 enlaces)" } },
+        { "value": "linear", "label": { "en": "Linear (180 deg, 2 bonds)", "es": "Lineal (180 grados, 2 enlaces)" } },
+        { "value": "bent", "label": { "en": "Bent (104.5 deg, 2 bonds)", "es": "Angular (104.5 grados, 2 enlaces)" } },
+        { "value": "octahedral", "label": { "en": "Octahedral (90 deg, 6 bonds)", "es": "Octaédrico (90 grados, 6 enlaces)" } }
+      ],
+      "label": { "en": "Molecular Geometry", "es": "Geometría Molecular" },
+      "tooltip": { "en": "VSEPR geometry — sets the number and angle of the bond sockets", "es": "Geometría VSEPR — define el número y ángulo de los enchufes de enlace" }
+    },
+    {
+      "id": "atom_dia", "type": "slider", "default": 18.0, "min": 8.0, "max": 40.0, "step": 0.5,
+      "group": "atomgrp", "modes": ["atom"],
+      "label": { "en": "Atom Diameter (mm)", "es": "Diámetro del Átomo (mm)" },
+      "tooltip": { "en": "Ball diameter — scale up for larger central atoms", "es": "Diámetro de la bola — aumenta para átomos centrales más grandes" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "socket_dia", "type": "slider", "default": 4.0, "min": 2.0, "max": 12.0, "step": 0.1,
+      "group": "socket", "modes": ["atom", "bond", "double_bond"],
+      "label": { "en": "Socket Diameter (mm)", "es": "Diámetro de Enchufe (mm)" },
+      "tooltip": { "en": "Bore the bond plug enters — the shared connector diameter", "es": "Perforación en la que entra el enchufe del enlace — el diámetro compartido del conector" }
+    },
+    {
+      "id": "socket_depth", "type": "slider", "default": 6.0, "min": 2.0, "max": 18.0, "step": 0.5,
+      "group": "socket", "modes": ["atom"], "advanced": true,
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad de Enchufe (mm)" },
+      "tooltip": { "en": "How deep the socket bores into the atom (auto-capped to keep a solid core)", "es": "Cuán profundo perfora el enchufe en el átomo (limitado automáticamente para mantener un núcleo sólido)" }
+    },
+    {
+      "id": "bond_len", "type": "slider", "default": 30.0, "min": 10.0, "max": 120.0, "step": 1,
+      "group": "bondgrp", "modes": ["bond", "double_bond"],
+      "label": { "en": "Bond Length (mm)", "es": "Longitud de Enlace (mm)" },
+      "tooltip": { "en": "Overall bond length including plugs — sets the atom spacing", "es": "Longitud total del enlace incluyendo enchufes — define la separación entre átomos" }
+    },
+    {
+      "id": "bond_dia", "type": "slider", "default": 6.0, "min": 2.5, "max": 14.0, "step": 0.1,
+      "group": "bondgrp", "modes": ["bond", "double_bond"],
+      "label": { "en": "Bond Diameter (mm)", "es": "Diámetro de Enlace (mm)" },
+      "tooltip": { "en": "Diameter of the bond body strut", "es": "Diámetro de la varilla del cuerpo del enlace" }
+    },
+    {
+      "id": "plug_fit", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "bondgrp", "modes": ["bond", "double_bond"], "advanced": true,
+      "label": { "en": "Plug Press Fit (mm)", "es": "Ajuste a Presión (mm)" },
+      "tooltip": { "en": "How much the plug is undersized vs the socket for a friction fit", "es": "Cuánto más pequeño es el enchufe que el receptáculo para un ajuste por fricción" }
+    },
+    {
+      "id": "plug_len", "type": "slider", "default": 5.5, "min": 2.0, "max": 18.0, "step": 0.5,
+      "group": "bondgrp", "modes": ["bond", "double_bond"], "advanced": true,
+      "label": { "en": "Plug Length (mm)", "es": "Longitud de Enchufe (mm)" },
+      "tooltip": { "en": "Length of the plug at each bond end (fits the socket depth)", "es": "Longitud del enchufe en cada extremo del enlace (encaja en la profundidad del receptáculo)" }
+    },
+    {
+      "id": "double_gap", "type": "slider", "default": 7.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "bondgrp", "modes": ["double_bond"],
+      "label": { "en": "Double-Bond Gap (mm)", "es": "Separación de Doble Enlace (mm)" },
+      "tooltip": { "en": "Centre-to-centre spacing of the twin struts of a double bond", "es": "Separación centro a centro de las dos varillas de un doble enlace" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "carbon_sp3", "mode": "atom",
+      "label": { "en": "Carbon sp3 (Tetrahedral)", "es": "Carbono sp3 (Tetraédrico)" },
+      "values": { "geometry": "tetrahedral", "atom_dia": 18.0, "socket_dia": 4.0 }
+    },
+    {
+      "id": "single_bond", "mode": "bond",
+      "label": { "en": "Standard Single Bond", "es": "Enlace Simple Estándar" },
+      "values": { "bond_len": 30.0, "bond_dia": 6.0, "socket_dia": 4.0 }
+    },
+    {
+      "id": "cc_double", "mode": "double_bond",
+      "label": { "en": "C=C Double Bond", "es": "Doble Enlace C=C" },
+      "values": { "bond_len": 28.0, "bond_dia": 5.0, "double_gap": 7.0, "socket_dia": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "socket_dia < atom_dia",
+      "severity": "error",
+      "message": { "en": "Socket diameter must be smaller than the atom", "es": "El diámetro del enchufe debe ser menor que el átomo" }
+    },
+    {
+      "expression": "bond_len > 2 * plug_len",
+      "severity": "warning",
+      "message": { "en": "Bond length should exceed the two plug lengths so a real body remains", "es": "La longitud del enlace debe superar la de los dos enchufes para que quede un cuerpo real" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 70] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 0] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "bond_socket",
+        "label": { "en": "Bond Plug / Socket", "es": "Enchufe / Receptáculo de Enlace" },
+        "geometry_type": "socket",
+        "standard": "internal bond socket",
+        "parameters": ["socket_dia", "socket_depth", "plug_fit", "plug_len"]
+      },
+      {
+        "id": "vsepr_angles",
+        "label": { "en": "VSEPR Bond Angles", "es": "Ángulos de Enlace VSEPR" },
+        "geometry_type": "custom",
+        "standard": "VSEPR (109.5 / 120 / 180 / 90 deg)",
+        "parameters": ["geometry"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Physical ball-and-stick models turn abstract molecular geometry — VSEPR angles, isomerism, chirality, ring strain — into something a learner can hold and rotate. A single shared socket diameter means every printed atom accepts every printed bond, so a chemistry class can build an unlimited compatible set from open files instead of buying fixed proprietary kits, and blind or low-vision students gain a tactile model of structure.",
+      "es": "Los modelos físicos de bolas y varillas convierten la geometría molecular abstracta — ángulos VSEPR, isomería, quiralidad, tensión de anillo — en algo que quien aprende puede sostener y girar. Un único diámetro de enchufe compartido hace que cada átomo impreso acepte cada enlace impreso, para que una clase de química construya un conjunto compatible ilimitado desde archivos abiertos en vez de comprar kits propietarios fijos, y estudiantes ciegos o de baja visión obtienen un modelo táctil de la estructura."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["molecule", "chemistry", "atom", "vsepr", "education", "stem", "ball-and-stick", "commercial", "hyperobject", "commons"]
+}

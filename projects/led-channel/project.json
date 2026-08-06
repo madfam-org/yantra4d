@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "LED Strip Channel",
+    "slug": "led-channel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A mounting channel and diffuser for adhesive LED strip (5050 / 2835 tape). The U-channel holds and protects the strip and gives it a surface to sit proud of; a snap-on cover clips into the channel lips to diffuse the LEDs; a corner piece turns a run through 90 degrees. Sized by the strip width so common tapes drop straight in.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un canal de montaje y difusor para tira LED adhesiva (5050 / 2835). El canal en U sostiene y protege la tira y le da una superficie donde apoyarse; una cubierta a presión encaja en los labios del canal para difundir los LED; una pieza de esquina gira un tramo 90 grados. Se dimensiona por el ancho de la tira para que las cintas comunes entren directo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/led-channel.webp",
+    "difficulty": "beginner",
+    "tags": ["led", "strip", "channel", "diffuser", "lighting", "5050", "2835", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "channel",
+      "label": { "en": "U-Channel", "es": "Canal en U" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["channel"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "diffuser_cover",
+      "label": { "en": "Diffuser Cover", "es": "Cubierta Difusora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["diffuser_cover"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "corner",
+      "label": { "en": "90° Corner", "es": "Esquina 90°" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "channel", "label": { "en": "U-Channel", "es": "Canal en U" }, "render_mode": 0, "color": "#b58900" },
+    { "id": "diffuser_cover", "label": { "en": "Diffuser Cover", "es": "Cubierta" }, "render_mode": 0, "color": "#e0e0e0" },
+    { "id": "corner", "label": { "en": "Corner", "es": "Esquina" }, "render_mode": 0, "color": "#cb9a10" }
+  ],
+  "parameter_groups": [
+    { "id": "strip", "label": { "en": "Strip", "es": "Tira" } },
+    { "id": "profile", "label": { "en": "Channel Profile", "es": "Perfil del Canal" } },
+    { "id": "mounting", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "strip_width", "type": "slider", "default": 10.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "strip", "modes": ["channel", "diffuser_cover", "corner"],
+      "label": { "en": "Strip Width (mm)", "es": "Ancho de Tira (mm)" },
+      "tooltip": { "en": "LED tape width (5050 ≈ 10 mm, 2835 ≈ 8 mm)", "es": "Ancho de la cinta LED (5050 ≈ 10 mm, 2835 ≈ 8 mm)" }
+    },
+    {
+      "id": "length", "type": "slider", "default": 150.0, "min": 20.0, "max": 400.0, "step": 5.0,
+      "group": "strip", "modes": ["channel", "diffuser_cover"],
+      "label": { "en": "Run Length (mm)", "es": "Longitud del Tramo (mm)" },
+      "tooltip": { "en": "Length of the straight channel", "es": "Longitud del canal recto" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 7.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "profile", "modes": ["channel", "corner"],
+      "label": { "en": "Interior Depth (mm)", "es": "Profundidad Interior (mm)" },
+      "tooltip": { "en": "Depth for the LED and wiring", "es": "Profundidad para el LED y el cableado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.6, "min": 1.0, "max": 4.0, "step": 0.2,
+      "group": "profile", "modes": ["channel", "diffuser_cover", "corner"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Channel wall thickness", "es": "Grosor de la pared del canal" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 1.4, "min": 1.0, "max": 4.0, "step": 0.2,
+      "group": "profile", "modes": ["channel", "corner"],
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Channel floor thickness", "es": "Grosor del piso del canal" }
+    },
+    {
+      "id": "lip", "type": "slider", "default": 1.0, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "profile", "modes": ["channel", "diffuser_cover", "corner"], "advanced": true,
+      "label": { "en": "Snap Lip (mm)", "es": "Labio de Encaje (mm)" },
+      "tooltip": { "en": "Inward lip the cover clips under", "es": "Labio interior bajo el que encaja la cubierta" }
+    },
+    {
+      "id": "screw_pilots", "type": "checkbox", "default": true,
+      "group": "mounting", "modes": ["channel"],
+      "label": { "en": "Screw Pilots", "es": "Pilotos de Tornillo" },
+      "tooltip": { "en": "Countersunk screw pilots along the floor", "es": "Pilotos avellanados a lo largo del piso" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "under_cabinet", "mode": "channel",
+      "label": { "en": "Under-Cabinet Run", "es": "Tramo Bajo Gabinete" },
+      "values": { "strip_width": 10, "length": 300 }
+    },
+    {
+      "id": "frosted_cover", "mode": "diffuser_cover",
+      "label": { "en": "Frosted Cover", "es": "Cubierta Esmerilada" },
+      "values": { "strip_width": 10, "length": 300 }
+    },
+    {
+      "id": "shelf_corner", "mode": "corner",
+      "label": { "en": "Shelf Corner", "es": "Esquina de Estante" },
+      "values": { "strip_width": 10, "depth": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "lip <= wall",
+      "severity": "warning",
+      "message": { "en": "Snap lip larger than the wall is fragile", "es": "Un labio mayor que la pared es frágil" }
+    },
+    {
+      "expression": "wall >= 1",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1 mm", "es": "La pared debe ser de al menos 1 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "led_strip_channel",
+        "label": { "en": "LED Strip Channel", "es": "Canal de Tira LED" },
+        "geometry_type": "profile",
+        "standard": "5050/2835 strip",
+        "parameters": ["strip_width", "depth", "wall"]
+      },
+      {
+        "id": "cover_snap",
+        "label": { "en": "Cover Snap Lip", "es": "Labio de Cubierta" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["lip", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Makes tidy, durable LED lighting from cheap adhesive tape: the channel protects the strip, hides the raw diodes behind a diffuser, and lets a run turn corners cleanly. Anyone can light a shelf, desk or workshop without buying proprietary aluminium extrusion.",
+      "es": "Convierte cinta LED barata en iluminación ordenada y durable: el canal protege la tira, oculta los diodos tras un difusor y permite girar esquinas limpiamente. Cualquiera puede iluminar un estante, escritorio o taller sin comprar extrusión de aluminio propietaria."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["led", "strip", "channel", "diffuser", "lighting", "industrial", "hyperobject", "commons"]
+}

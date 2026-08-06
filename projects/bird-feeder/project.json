@@ -1,0 +1,530 @@
+{
+  "project": {
+    "name": "Bottle-Fed Bird Feeder",
+    "slug": "bird-feeder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Turns a discarded PET soda bottle into a gravity bird / seed feeder. The feeder cap screws onto a standard PCO-1881 bottle neck; seed flows down through ports onto a catch tray with perches. Threaded cap, tray base, or a standalone tube feeder that needs no bottle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Convierte una botella PET desechada en un comedero de gravedad para aves o semillas. La tapa se enrosca en un cuello de botella PCO-1881 estándar; la semilla baja por los puertos hasta una bandeja con perchas. Tapa roscada, base con bandeja, o un comedero de tubo autónomo sin botella.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bird-feeder.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bird",
+      "feeder",
+      "seed",
+      "bottle",
+      "pco-1881",
+      "garden",
+      "wildlife",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "feeder_cap",
+      "label": {
+        "en": "Feeder Cap",
+        "es": "Tapa Comedero"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "feeder_cap"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "tray_base",
+      "label": {
+        "en": "Tray Base",
+        "es": "Base con Bandeja"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tray_base"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "tube_feeder",
+      "label": {
+        "en": "Tube Feeder",
+        "es": "Comedero de Tubo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tube_feeder"
+      ],
+      "estimate": {
+        "base_time": 13,
+        "per_unit": 4,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "feeder_cap",
+      "label": {
+        "en": "Feeder Cap",
+        "es": "Tapa Comedero"
+      },
+      "render_mode": 0,
+      "color": "#c07a2a"
+    },
+    {
+      "id": "tray_base",
+      "label": {
+        "en": "Tray Base",
+        "es": "Base con Bandeja"
+      },
+      "render_mode": 0,
+      "color": "#a86420"
+    },
+    {
+      "id": "tube_feeder",
+      "label": {
+        "en": "Tube Feeder",
+        "es": "Comedero de Tubo"
+      },
+      "render_mode": 0,
+      "color": "#d08a3a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "thread",
+      "label": {
+        "en": "Bottle Thread",
+        "es": "Rosca de Botella"
+      }
+    },
+    {
+      "id": "feed",
+      "label": {
+        "en": "Seed & Ports",
+        "es": "Semilla y Puertos"
+      }
+    },
+    {
+      "id": "tray",
+      "label": {
+        "en": "Tray & Perch",
+        "es": "Bandeja y Percha"
+      }
+    },
+    {
+      "id": "tube",
+      "label": {
+        "en": "Tube Reservoir",
+        "es": "Depósito de Tubo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "turns",
+      "type": "slider",
+      "default": 1.5,
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.25,
+      "group": "thread",
+      "modes": [
+        "feeder_cap"
+      ],
+      "label": {
+        "en": "Thread Turns",
+        "es": "Vueltas de Rosca"
+      },
+      "tooltip": {
+        "en": "PCO-1881 engagement turns",
+        "es": "Vueltas de agarre PCO-1881"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.1,
+      "max": 0.9,
+      "step": 0.05,
+      "group": "thread",
+      "modes": [
+        "feeder_cap"
+      ],
+      "label": {
+        "en": "Thread Clearance (mm)",
+        "es": "Holgura de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side slop for a printable bottle-thread fit",
+        "es": "Holgura por lado para un ajuste imprimible"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.6,
+      "min": 2.0,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "thread",
+      "modes": [
+        "feeder_cap",
+        "tray_base",
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Cap / tray / tube wall thickness",
+        "es": "Grosor de pared de tapa / bandeja / tubo"
+      }
+    },
+    {
+      "id": "port_count",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "group": "feed",
+      "modes": [
+        "feeder_cap",
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Seed Ports",
+        "es": "Puertos de Semilla"
+      },
+      "tooltip": {
+        "en": "Number of feeding ports around the body",
+        "es": "Número de puertos de alimentación alrededor del cuerpo"
+      }
+    },
+    {
+      "id": "port_size",
+      "type": "slider",
+      "default": 14.0,
+      "min": 6.0,
+      "max": 26.0,
+      "step": 1.0,
+      "group": "feed",
+      "modes": [
+        "feeder_cap",
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Port Size (mm)",
+        "es": "Tamaño de Puerto (mm)"
+      },
+      "tooltip": {
+        "en": "Feeding port opening — match your seed size",
+        "es": "Apertura del puerto — según el tamaño de la semilla"
+      }
+    },
+    {
+      "id": "tray_dia",
+      "type": "slider",
+      "default": 110.0,
+      "min": 70.0,
+      "max": 220.0,
+      "step": 2.0,
+      "group": "tray",
+      "modes": [
+        "tray_base",
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Tray Diameter (mm)",
+        "es": "Diámetro de Bandeja (mm)"
+      },
+      "tooltip": {
+        "en": "Catch-tray outer diameter",
+        "es": "Diámetro exterior de la bandeja"
+      }
+    },
+    {
+      "id": "tray_wall_h",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "tray",
+      "modes": [
+        "tray_base",
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Tray Lip Height (mm)",
+        "es": "Altura del Borde (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the tray wall that holds seed",
+        "es": "Altura de la pared que retiene la semilla"
+      }
+    },
+    {
+      "id": "perch_len",
+      "type": "slider",
+      "default": 32.0,
+      "min": 15.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "tray",
+      "modes": [
+        "tray_base",
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Perch Length (mm)",
+        "es": "Largo de Percha (mm)"
+      },
+      "tooltip": {
+        "en": "How far each perch sticks out past the tray",
+        "es": "Cuánto sobresale cada percha de la bandeja"
+      }
+    },
+    {
+      "id": "perch_dia",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "tray",
+      "modes": [
+        "tray_base",
+        "tube_feeder"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Perch Diameter (mm)",
+        "es": "Diámetro de Percha (mm)"
+      },
+      "tooltip": {
+        "en": "Perch rod diameter",
+        "es": "Diámetro de la varilla de percha"
+      }
+    },
+    {
+      "id": "tube_h",
+      "type": "slider",
+      "default": 140.0,
+      "min": 60.0,
+      "max": 300.0,
+      "step": 2.0,
+      "group": "tube",
+      "modes": [
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Tube Height (mm)",
+        "es": "Altura de Tubo (mm)"
+      },
+      "tooltip": {
+        "en": "Seed reservoir height",
+        "es": "Altura del depósito de semilla"
+      }
+    },
+    {
+      "id": "tube_dia",
+      "type": "slider",
+      "default": 60.0,
+      "min": 35.0,
+      "max": 120.0,
+      "step": 2.0,
+      "group": "tube",
+      "modes": [
+        "tube_feeder"
+      ],
+      "label": {
+        "en": "Tube Diameter (mm)",
+        "es": "Diámetro de Tubo (mm)"
+      },
+      "tooltip": {
+        "en": "Seed reservoir diameter",
+        "es": "Diámetro del depósito de semilla"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "soda_bottle",
+      "mode": "feeder_cap",
+      "label": {
+        "en": "Soda-Bottle Cap",
+        "es": "Tapa de Refresco"
+      },
+      "values": {
+        "turns": 1.5,
+        "port_count": 3,
+        "port_size": 14
+      }
+    },
+    {
+      "id": "catch_tray",
+      "mode": "tray_base",
+      "label": {
+        "en": "Catch Tray + Perch",
+        "es": "Bandeja + Percha"
+      },
+      "values": {
+        "tray_dia": 120,
+        "perch_len": 34,
+        "port_count": 3
+      }
+    },
+    {
+      "id": "big_tube",
+      "mode": "tube_feeder",
+      "label": {
+        "en": "Standalone Tube",
+        "es": "Tubo Autónomo"
+      },
+      "values": {
+        "tube_h": 160,
+        "tube_dia": 70,
+        "tray_dia": 130,
+        "port_count": 4
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "port_size < tube_dia",
+      "severity": "warning",
+      "message": {
+        "en": "Seed port is large relative to the tube",
+        "es": "El puerto de semilla es grande respecto al tubo"
+      }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 2 mm",
+        "es": "La pared debe ser de al menos 2 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        170,
+        170,
+        170
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        280
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -260,
+        90
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 13,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "pet_bottle_neck",
+        "label": {
+          "en": "PET Bottle Neck",
+          "es": "Cuello de Botella PET"
+        },
+        "geometry_type": "thread",
+        "standard": "PCO 1881",
+        "parameters": [
+          "turns",
+          "clearance",
+          "wall"
+        ],
+        "compatible_with": [
+          "bottle-thread",
+          "faircap-filter",
+          "pet-dispenser"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Backyard feeders support pollinators and songbird populations under pressure from habitat loss. Reusing a PET bottle as the reservoir keeps a bottle out of the waste stream and makes a feeder essentially free.",
+      "es": "Los comederos de jardín apoyan a polinizadores y aves canoras presionadas por la pérdida de hábitat. Reutilizar una botella PET como depósito la mantiene fuera del flujo de residuos y hace el comedero prácticamente gratuito."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bird",
+    "feeder",
+    "seed",
+    "bottle",
+    "garden",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

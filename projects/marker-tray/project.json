@@ -1,0 +1,185 @@
+{
+  "project": {
+    "name": "Whiteboard / Marker Tray",
+    "slug": "marker-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A whiteboard marker tray / eraser holder parametric on the dry-erase marker body diameter, with optional disc-magnet pockets so it mounts to a steel board. Choose a horizontal rail trough with anti-roll cradles, an eraser block with marker bores, or an upright marker cup.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bandeja para marcadores de pizarra / soporte de borrador parametrizado según el diámetro del cuerpo del marcador, con bolsillos opcionales para imanes de disco para montarse en una pizarra de acero. Elige un canal horizontal con cunas antideslizantes, un bloque para borrador con orificios para marcadores, o un vaso vertical para marcadores.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/marker-tray.webp",
+    "difficulty": "beginner",
+    "tags": ["whiteboard", "marker", "dry-erase", "tray", "eraser", "magnet", "office", "classroom", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "marker_tray",
+      "label": { "en": "Rail Marker Trough", "es": "Canal de Riel para Marcadores" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["marker_tray"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "eraser_holder",
+      "label": { "en": "Eraser + Marker Block", "es": "Bloque de Borrador y Marcadores" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["eraser_holder"],
+      "estimate": { "base_time": 13, "per_unit": 5, "per_part": 15 }
+    },
+    {
+      "id": "marker_cup",
+      "label": { "en": "Upright Marker Cup", "es": "Vaso Vertical para Marcadores" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["marker_cup"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "marker_tray", "label": { "en": "Rail Marker Trough", "es": "Canal de Riel" }, "render_mode": 0, "color": "#c53030" },
+    { "id": "eraser_holder", "label": { "en": "Eraser + Marker Block", "es": "Bloque de Borrador" }, "render_mode": 0, "color": "#e53e3e" },
+    { "id": "marker_cup", "label": { "en": "Upright Marker Cup", "es": "Vaso Vertical" }, "render_mode": 0, "color": "#fc8181" }
+  ],
+  "parameter_groups": [
+    { "id": "marker", "label": { "en": "Marker", "es": "Marcador" } },
+    { "id": "form", "label": { "en": "Tray Form", "es": "Forma de la Bandeja" } },
+    { "id": "mount", "label": { "en": "Magnet Mount", "es": "Montaje Magnético" } },
+    { "id": "walls", "label": { "en": "Walls", "es": "Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "marker_dia", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "marker", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Marker Body Ø (mm)", "es": "Ø del Cuerpo del Marcador (mm)" },
+      "tooltip": { "en": "Body diameter of the dry-erase marker. Chisel-tip (Expo) ~16, fine-tip ~12, jumbo ~22.", "es": "Diámetro del cuerpo del marcador de borrado en seco. Punta biselada (Expo) ~16, punta fina ~12, jumbo ~22." }
+    },
+    {
+      "id": "markers", "type": "slider", "default": 4, "min": 1, "max": 12, "step": 1,
+      "group": "marker", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Marker Positions", "es": "Posiciones de Marcadores" },
+      "tooltip": { "en": "Number of marker slots / bores (the eraser block uses up to 3)", "es": "Número de ranuras / orificios para marcadores (el bloque de borrador usa hasta 3)" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 1.5, "min": 0.4, "max": 5.0, "step": 0.1,
+      "group": "marker", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Marker Clearance (mm)", "es": "Holgura del Marcador (mm)" },
+      "tooltip": { "en": "Gap around each marker so it drops in and out", "es": "Holgura alrededor de cada marcador para que entre y salga" }
+    },
+    {
+      "id": "tray_h", "type": "slider", "default": 28.0, "min": 16.0, "max": 120.0, "step": 1.0,
+      "group": "form", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Trough / block / cup height", "es": "Altura del canal / bloque / vaso" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "eraser_w", "type": "slider", "default": 58.0, "min": 30.0, "max": 140.0, "step": 1.0,
+      "group": "form", "modes": ["eraser_holder"],
+      "label": { "en": "Eraser Pocket Width (mm)", "es": "Ancho del Bolsillo del Borrador (mm)" },
+      "tooltip": { "en": "Width of the eraser pocket (a standard whiteboard eraser is ~55-60 mm)", "es": "Ancho del bolsillo del borrador (un borrador de pizarra estándar mide ~55-60 mm)" }
+    },
+    {
+      "id": "eraser_d", "type": "slider", "default": 32.0, "min": 20.0, "max": 90.0, "step": 1.0,
+      "group": "form", "modes": ["eraser_holder"],
+      "label": { "en": "Eraser Pocket Depth (mm)", "es": "Profundidad del Bolsillo (mm)" },
+      "tooltip": { "en": "Front-to-back depth of the eraser pocket", "es": "Profundidad de adelante hacia atrás del bolsillo del borrador" }
+    },
+    {
+      "id": "magnets", "type": "slider", "default": 2, "min": 0, "max": 6, "step": 1,
+      "group": "mount", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Magnet Pockets", "es": "Bolsillos para Imanes" },
+      "tooltip": { "en": "Number of disc-magnet pockets on the back face (0 = none)", "es": "Número de bolsillos para imanes de disco en la cara trasera (0 = ninguno)" }
+    },
+    {
+      "id": "magnet_dia", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "mount", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Magnet Ø (mm)", "es": "Ø del Imán (mm)" },
+      "tooltip": { "en": "Diameter of the disc magnet", "es": "Diámetro del imán de disco" }
+    },
+    {
+      "id": "magnet_t", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.5,
+      "group": "mount", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Magnet Pocket Depth (mm)", "es": "Profundidad del Bolsillo del Imán (mm)" },
+      "tooltip": { "en": "Depth of the magnet pocket (= disc thickness)", "es": "Profundidad del bolsillo del imán (= grosor del disco)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "walls", "modes": ["marker_tray", "eraser_holder", "marker_cup"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and floor thickness", "es": "Grosor de pared y piso" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "expo_rail", "mode": "marker_tray",
+      "label": { "en": "Expo 4-Marker Rail", "es": "Riel Expo de 4 Marcadores" },
+      "values": { "marker_dia": 16, "markers": 4, "magnets": 2, "tray_h": 28 }
+    },
+    {
+      "id": "eraser_station", "mode": "eraser_holder",
+      "label": { "en": "Eraser + 3 Markers", "es": "Borrador + 3 Marcadores" },
+      "values": { "marker_dia": 16, "markers": 3, "eraser_w": 58, "eraser_d": 32, "magnets": 2 }
+    },
+    {
+      "id": "marker_caddy", "mode": "marker_cup",
+      "label": { "en": "Magnetic Marker Cup", "es": "Vaso Magnético para Marcadores" },
+      "values": { "marker_dia": 16, "markers": 5, "tray_h": 60, "magnets": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "magnet_dia <= tray_h",
+      "severity": "warning",
+      "message": { "en": "A magnet wider than the tray is tall won't fit the back face", "es": "Un imán más ancho que la altura de la bandeja no cabe en la cara trasera" }
+    },
+    {
+      "expression": "magnet_t < wall + 1",
+      "severity": "warning",
+      "message": { "en": "A magnet pocket deeper than the wall may break through the front", "es": "Un bolsillo de imán más profundo que la pared puede atravesar el frente" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "back", "label": { "en": "Back (magnets)", "es": "Trasera (imanes)" }, "position": [0, 240, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "marker_pocket",
+        "label": { "en": "Marker / Eraser Pocket", "es": "Bolsillo de Marcador / Borrador" },
+        "geometry_type": "pocket",
+        "standard": "dry-erase marker",
+        "parameters": ["marker_dia", "clearance", "markers", "eraser_w", "eraser_d"]
+      },
+      {
+        "id": "disc_magnet_mount",
+        "label": { "en": "Disc Magnet Mount", "es": "Montaje de Imán de Disco" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["magnets", "magnet_dia", "magnet_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A magnet-mounted marker tray sized to the actual marker keeps a classroom or meeting-room whiteboard organized without adhesive trays that fall off, and prints to fit whatever markers are on hand — a low-cost fix for schools that replaces a consumable plastic accessory with a one-time print.",
+      "es": "Una bandeja para marcadores con montaje magnético dimensionada al marcador real mantiene organizada la pizarra de un aula o sala de reuniones sin bandejas adhesivas que se caen, y se imprime para ajustarse a los marcadores disponibles — una solución de bajo costo para escuelas que reemplaza un accesorio de plástico consumible por una impresión única."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Parametric Pipe Fitting",
+    "slug": "pipe-fitting",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A slip-fit coupler, elbow, or tee for repairing PVC and poly pipe. Each fitting is a hollow socket that slides over the pipe outer diameter; size it by nominal PVC schedule (1/2\", 3/4\", 1\") or by a measured OD, tune the clearance for a printable slip fit, and splice a broken run without a store trip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un acople, codo o tee de ajuste deslizante para reparar tubería de PVC y poli. Cada conexión es un casquillo hueco que se desliza sobre el diámetro exterior del tubo; dimensione por cédula PVC nominal (1/2\", 3/4\", 1\") o por un diámetro medido, ajuste la holgura para un encaje imprimible y repare un tramo roto sin ir a la tienda.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pipe-fitting.webp",
+    "difficulty": "intermediate",
+    "tags": ["pipe", "fitting", "plumbing", "coupler", "elbow", "tee", "pvc", "repair", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "coupler",
+      "label": { "en": "Coupler", "es": "Acople" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["coupler"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "elbow",
+      "label": { "en": "Elbow", "es": "Codo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["elbow"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "tee",
+      "label": { "en": "Tee (3-way)", "es": "Tee (3 vías)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tee"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "coupler", "label": { "en": "Coupler", "es": "Acople" }, "render_mode": 0, "color": "#8a9aa8" },
+    { "id": "elbow", "label": { "en": "Elbow", "es": "Codo" }, "render_mode": 0, "color": "#7d8fa0" },
+    { "id": "tee", "label": { "en": "Tee", "es": "Tee" }, "render_mode": 0, "color": "#93a3b1" }
+  ],
+  "parameter_groups": [
+    { "id": "pipe", "label": { "en": "Pipe Size", "es": "Tamaño de Tubo" } },
+    { "id": "socket", "label": { "en": "Socket & Fit", "es": "Casquillo y Ajuste" } },
+    { "id": "shape", "label": { "en": "Fitting Shape", "es": "Forma de Conexión" } }
+  ],
+  "parameters": [
+    {
+      "id": "pipe_size", "type": "select", "default": "3/4in",
+      "group": "pipe", "modes": ["coupler", "elbow", "tee"],
+      "label": { "en": "Nominal Pipe Size", "es": "Tamaño Nominal de Tubo" },
+      "tooltip": { "en": "Standard PVC schedule size, or Custom to enter a measured OD", "es": "Tamaño de cédula PVC estándar, o Personalizado para un diámetro medido" },
+      "options": [
+        { "value": "1/2in", "label": { "en": "1/2\" PVC (OD 21.3 mm)", "es": "1/2\" PVC (DE 21.3 mm)" } },
+        { "value": "3/4in", "label": { "en": "3/4\" PVC (OD 26.7 mm)", "es": "3/4\" PVC (DE 26.7 mm)" } },
+        { "value": "1in", "label": { "en": "1\" PVC (OD 33.4 mm)", "es": "1\" PVC (DE 33.4 mm)" } },
+        { "value": "custom", "label": { "en": "Custom (use OD below)", "es": "Personalizado (usar DE abajo)" } }
+      ]
+    },
+    {
+      "id": "pipe_od", "type": "slider", "default": 26.7, "min": 8, "max": 120, "step": 0.1,
+      "group": "pipe", "modes": ["coupler", "elbow", "tee"], "advanced": true,
+      "label": { "en": "Custom Pipe OD (mm)", "es": "DE de Tubo Personalizado (mm)" },
+      "tooltip": { "en": "Measured pipe outer diameter (used when size = Custom)", "es": "Diámetro exterior medido (se usa cuando el tamaño = Personalizado)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "socket", "modes": ["coupler", "elbow", "tee"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Fitting wall wrapping the socket", "es": "Pared de la conexión que envuelve el casquillo" }
+    },
+    {
+      "id": "socket_depth", "type": "slider", "default": 22.0, "min": 8, "max": 80, "step": 1,
+      "group": "socket", "modes": ["coupler", "elbow", "tee"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad de Casquillo (mm)" },
+      "tooltip": { "en": "How far the pipe slides into each socket", "es": "Cuánto entra el tubo en cada casquillo" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "socket", "modes": ["coupler", "elbow", "tee"],
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura de Deslizamiento (mm)" },
+      "tooltip": { "en": "Per-side gap over the pipe OD for a printable slip fit", "es": "Espacio por lado sobre el DE del tubo para un encaje imprimible" }
+    },
+    {
+      "id": "stop_ring", "type": "checkbox", "default": true,
+      "group": "socket", "modes": ["coupler", "tee"],
+      "label": { "en": "Internal Stop Ring", "es": "Anillo de Tope Interno" },
+      "tooltip": { "en": "Shoulder so the pipe end seats to a repeatable depth", "es": "Reborde para que el tubo asiente a una profundidad repetible" }
+    },
+    {
+      "id": "elbow_angle", "type": "slider", "default": 90.0, "min": 15, "max": 165, "step": 5,
+      "group": "shape", "modes": ["elbow"],
+      "label": { "en": "Elbow Angle (deg)", "es": "Ángulo de Codo (grados)" },
+      "tooltip": { "en": "Bend angle between the two elbow legs", "es": "Ángulo de curvatura entre las dos ramas del codo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "half_inch_coupler", "mode": "coupler",
+      "label": { "en": "1/2\" Repair Coupler", "es": "Acople de Reparación 1/2\"" },
+      "values": { "pipe_size": "1/2in", "wall": 2.6, "socket_depth": 18 }
+    },
+    {
+      "id": "three_quarter_elbow", "mode": "elbow",
+      "label": { "en": "3/4\" 90° Elbow", "es": "Codo 90° de 3/4\"" },
+      "values": { "pipe_size": "3/4in", "elbow_angle": 90, "wall": 3.0 }
+    },
+    {
+      "id": "one_inch_tee", "mode": "tee",
+      "label": { "en": "1\" Tee", "es": "Tee de 1\"" },
+      "values": { "pipe_size": "1in", "wall": 3.4, "socket_depth": 26 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= wall",
+      "severity": "warning",
+      "message": { "en": "Clearance should stay well below wall thickness", "es": "La holgura debe ser bastante menor que el grosor de pared" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm to hold pressure", "es": "La pared debe ser de al menos 1.6 mm para resistir presión" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "pipe_slip_socket",
+        "label": { "en": "Pipe Slip Socket", "es": "Casquillo Deslizante de Tubo" },
+        "geometry_type": "socket",
+        "standard": "PVC sched (nominal)",
+        "parameters": ["pipe_od", "pipe_size", "wall", "socket_depth", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "On-demand plumbing repair parts: a printed slip fitting splices a broken PVC or poly run in minutes, keeping water systems and irrigation running where a hardware store is far or the exact fitting is out of stock.",
+      "es": "Piezas de reparación de plomería bajo demanda: una conexión deslizante impresa repara un tramo roto de PVC o poli en minutos, manteniendo funcionando sistemas de agua y riego donde la ferretería está lejos o la pieza exacta está agotada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pipe", "fitting", "plumbing", "infrastructure", "hyperobject", "commons"]
+}

@@ -1,0 +1,163 @@
+{
+  "project": {
+    "name": "Guitar Pick Holder & Punch",
+    "slug": "pick-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Keeps guitar picks where you need them and lets you make your own. A slim pocket clip, a wall tray with pick slots, and a punch/stencil template with the classic 351 pick outline cut clean through it. Every part shares the same real pick footprint.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Mantiene tus púas de guitarra a mano y te deja fabricar las tuyas. Un clip de bolsillo delgado, una bandeja de pared con ranuras y una plantilla/troquel con el contorno clásico de púa 351 recortado por completo. Todas las piezas comparten la misma huella real de púa.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pick-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["guitar", "pick", "plectrum", "holder", "clip", "351", "music", "template", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pick_clip",
+      "label": { "en": "Pocket Clip", "es": "Clip de Bolsillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pick_clip"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "wall_holder",
+      "label": { "en": "Wall Tray", "es": "Bandeja de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_holder"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "pick_punch_template",
+      "label": { "en": "Pick Punch Template", "es": "Plantilla Troqueladora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pick_punch_template"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 7 }
+    }
+  ],
+  "parts": [
+    { "id": "pick_clip", "label": { "en": "Pocket Clip", "es": "Clip de Bolsillo" }, "render_mode": 0, "color": "#7c3aed" },
+    { "id": "wall_holder", "label": { "en": "Wall Tray", "es": "Bandeja de Pared" }, "render_mode": 0, "color": "#9061f0" },
+    { "id": "pick_punch_template", "label": { "en": "Pick Punch Template", "es": "Plantilla Troqueladora" }, "render_mode": 0, "color": "#6d28d9" }
+  ],
+  "parameter_groups": [
+    { "id": "pick", "label": { "en": "Pick Shape", "es": "Forma de Púa" } },
+    { "id": "body", "label": { "en": "Body & Mount", "es": "Cuerpo y Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "pick_size", "type": "slider", "default": 31, "min": 18, "max": 45, "step": 0.5,
+      "group": "pick", "modes": ["pick_clip", "wall_holder", "pick_punch_template"],
+      "label": { "en": "Pick Size (mm)", "es": "Tamaño de Púa (mm)" },
+      "tooltip": { "en": "Overall pick span — a standard 351 is about 31 mm", "es": "Tamaño total de la púa — una 351 estándar mide unos 31 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pick_count", "type": "slider", "default": 6, "min": 1, "max": 30, "step": 1,
+      "group": "pick", "modes": ["pick_clip", "wall_holder"],
+      "label": { "en": "Pick Count", "es": "Número de Púas" },
+      "tooltip": { "en": "How many picks the clip stack or wall tray holds", "es": "Cuántas púas guarda el clip o la bandeja de pared" }
+    },
+    {
+      "id": "pick_th", "type": "slider", "default": 1.0, "min": 0.5, "max": 2.0, "step": 0.1,
+      "group": "pick", "modes": ["pick_clip", "wall_holder"], "advanced": true,
+      "label": { "en": "Pick Thickness (mm)", "es": "Grosor de Púa (mm)" },
+      "tooltip": { "en": "Thickness of a single pick — sizes the stack/slots", "es": "Grosor de una púa — dimensiona el conjunto/ranuras" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "body", "modes": ["pick_clip", "wall_holder", "pick_punch_template"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body wall thickness", "es": "Grosor de la pared del cuerpo" }
+    },
+    {
+      "id": "mount", "type": "select", "default": "screw",
+      "group": "body", "modes": ["wall_holder"],
+      "label": { "en": "Wall Mount", "es": "Montaje de Pared" },
+      "tooltip": { "en": "How the wall tray attaches", "es": "Cómo se fija la bandeja de pared" },
+      "options": [
+        { "value": "screw", "label": { "en": "Screw holes", "es": "Orificios para tornillo" } },
+        { "value": "adhesive", "label": { "en": "Adhesive back (flat)", "es": "Reverso adhesivo (plano)" } }
+      ]
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "body", "modes": ["wall_holder"], "advanced": true,
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Diameter of the wall screw holes (screw mount only)", "es": "Diámetro de los orificios de tornillo (solo montaje con tornillo)" }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "body", "modes": ["pick_punch_template"],
+      "label": { "en": "Template Thickness (mm)", "es": "Grosor de Plantilla (mm)" },
+      "tooltip": { "en": "Thickness of the punch/stencil plate", "es": "Grosor de la placa troqueladora/plantilla" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "belt_clip", "mode": "pick_clip",
+      "label": { "en": "Belt / Strap Clip (6 picks)", "es": "Clip de Correa (6 púas)" },
+      "values": { "pick_size": 31, "pick_count": 6 }
+    },
+    {
+      "id": "desk_tray", "mode": "wall_holder",
+      "label": { "en": "Desk / Wall Tray (10 picks)", "es": "Bandeja de Escritorio (10 púas)" },
+      "values": { "pick_size": 31, "pick_count": 10, "mount": "screw" }
+    },
+    {
+      "id": "standard_351_stencil", "mode": "pick_punch_template",
+      "label": { "en": "Standard 351 Stencil", "es": "Plantilla 351 Estándar" },
+      "values": { "pick_size": 31, "plate_t": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pick_th <= 2.0",
+      "severity": "warning",
+      "message": { "en": "Very thick picks may not seat in the slots", "es": "Púas muy gruesas pueden no asentarse en las ranuras" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 45
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "pick_outline",
+        "label": { "en": "Pick Outline (351)", "es": "Contorno de Púa (351)" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["pick_size", "pick_th"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Picks are cheap but constantly lost; the shared 351 outline lets anyone store, carry, and even cut their own from scrap sheet — closing the loop on a tiny disposable object.",
+      "es": "Las púas son baratas pero se pierden constantemente; el contorno 351 compartido permite a cualquiera guardarlas, llevarlas e incluso cortar las suyas de lámina reciclada — cerrando el ciclo de un pequeño objeto desechable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["guitar", "pick", "plectrum", "holder", "music", "commercial", "hyperobject", "commons"]
+}

@@ -1,0 +1,168 @@
+{
+  "project": {
+    "name": "Drawer Divider / Insert Grid",
+    "slug": "drawer-divider",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An adjustable cell grid sized to a drawer. Choose a solid-bottom divided tray, a bottomless interlocking grid that drops into an existing drawer, or a single slotted strip. Pick your column and row counts and the cells resize to fill the space.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una rejilla de celdas ajustable dimensionada a un cajón. Elige una bandeja dividida con fondo, una rejilla entrelazada sin fondo que se coloca en un cajón existente, o una sola tira ranurada. Elige el número de columnas y filas y las celdas se redimensionan para llenar el espacio.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/drawer-divider.webp",
+    "difficulty": "beginner",
+    "tags": ["drawer", "divider", "organizer", "grid", "insert", "kitchen", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "label": { "en": "Divided Tray", "es": "Bandeja Dividida" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "dividers",
+      "label": { "en": "Drop-in Grid", "es": "Rejilla Insertable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dividers"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "single_divider",
+      "label": { "en": "Single Strip", "es": "Tira Individual" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_divider"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "tray", "label": { "en": "Divided Tray", "es": "Bandeja Dividida" }, "render_mode": 0, "color": "#c58a4f" },
+    { "id": "dividers", "label": { "en": "Drop-in Grid", "es": "Rejilla Insertable" }, "render_mode": 0, "color": "#d6a86a" },
+    { "id": "single_divider", "label": { "en": "Single Strip", "es": "Tira Individual" }, "render_mode": 0, "color": "#e0bd8a" }
+  ],
+  "parameter_groups": [
+    { "id": "envelope", "label": { "en": "Drawer Size", "es": "Tamaño del Cajón" } },
+    { "id": "grid", "label": { "en": "Cell Grid", "es": "Rejilla de Celdas" } },
+    { "id": "walls", "label": { "en": "Walls & Floor", "es": "Paredes y Piso" } }
+  ],
+  "parameters": [
+    {
+      "id": "overall_w", "type": "slider", "default": 200, "min": 40, "max": 400, "step": 1,
+      "group": "envelope", "modes": ["tray", "dividers", "single_divider"],
+      "label": { "en": "Drawer Width (mm)", "es": "Ancho del Cajón (mm)" },
+      "tooltip": { "en": "Overall interior width to fill (X)", "es": "Ancho interior total a llenar (X)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "overall_d", "type": "slider", "default": 150, "min": 40, "max": 400, "step": 1,
+      "group": "envelope", "modes": ["tray", "dividers"],
+      "label": { "en": "Drawer Depth (mm)", "es": "Profundidad del Cajón (mm)" },
+      "tooltip": { "en": "Overall interior depth to fill (Y)", "es": "Profundidad interior total a llenar (Y)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "overall_h", "type": "slider", "default": 50, "min": 12, "max": 120, "step": 1,
+      "group": "envelope", "modes": ["tray", "dividers", "single_divider"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Divider / tray wall height (Z)", "es": "Altura de pared del divisor / bandeja (Z)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 3, "min": 1, "max": 12, "step": 1,
+      "group": "grid", "modes": ["tray", "dividers", "single_divider"],
+      "label": { "en": "Columns (across Width)", "es": "Columnas (a lo Ancho)" },
+      "tooltip": { "en": "Number of cell columns across the width", "es": "Número de columnas de celda a lo ancho" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 2, "min": 1, "max": 12, "step": 1,
+      "group": "grid", "modes": ["tray", "dividers"],
+      "label": { "en": "Rows (across Depth)", "es": "Filas (a lo Profundo)" },
+      "tooltip": { "en": "Number of cell rows across the depth", "es": "Número de filas de celda a lo profundo" }
+    },
+    {
+      "id": "interlock", "type": "checkbox", "default": true,
+      "group": "grid", "modes": ["tray", "dividers", "single_divider"],
+      "label": { "en": "Interlocking Half-Lap", "es": "Ensamble a Media Madera" },
+      "tooltip": { "en": "Slot cross-dividers together for a rigid bottomless grid", "es": "Ranura los divisores cruzados para una rejilla rígida sin fondo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.6, "min": 0.8, "max": 4.0, "step": 0.2,
+      "group": "walls", "modes": ["tray", "dividers", "single_divider"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Thickness of the walls and partitions", "es": "Grosor de las paredes y particiones" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 1.6, "min": 0.8, "max": 6.0, "step": 0.2,
+      "group": "walls", "modes": ["tray"], "advanced": true,
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Bottom thickness (tray only)", "es": "Grosor del fondo (solo bandeja)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cutlery_tray", "mode": "tray",
+      "label": { "en": "Cutlery Tray (5×1)", "es": "Bandeja de Cubiertos (5×1)" },
+      "values": { "overall_w": 400, "overall_d": 120, "overall_h": 45, "cols": 5, "rows": 1, "wall": 2.0 }
+    },
+    {
+      "id": "junk_drawer_grid", "mode": "dividers",
+      "label": { "en": "Junk-Drawer Grid (4×3)", "es": "Rejilla de Cajón (4×3)" },
+      "values": { "overall_w": 240, "overall_d": 180, "overall_h": 50, "cols": 4, "rows": 3, "interlock": true }
+    },
+    {
+      "id": "deep_tools", "mode": "tray",
+      "label": { "en": "Deep Tool Bins (3×2)", "es": "Contenedores Profundos (3×2)" },
+      "values": { "overall_w": 210, "overall_d": 150, "overall_h": 90, "cols": 3, "rows": 2, "wall": 2.4, "floor": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall <= overall_w / 4",
+      "severity": "error",
+      "message": { "en": "Wall too thick for this width", "es": "Pared demasiado gruesa para este ancho" }
+    },
+    {
+      "expression": "floor <= overall_h - 1",
+      "severity": "warning",
+      "message": { "en": "Floor leaves almost no cell depth", "es": "El piso casi no deja profundidad de celda" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 220, 180] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "grid",
+        "label": { "en": "Adjustable Cell Grid", "es": "Rejilla de Celdas Ajustable" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["cols", "rows", "overall_w", "overall_d", "wall", "interlock"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns any drawer into organised, right-sized cells on demand — a printed-to-fit alternative to buying multiple plastic organiser sets, cutting packaging waste and clutter.",
+      "es": "Convierte cualquier cajón en celdas organizadas y a medida bajo demanda — una alternativa impresa a medida a comprar varios juegos de organizadores plásticos, reduciendo residuos de empaque y desorden."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drawer", "divider", "organizer", "grid", "household", "hyperobject", "commons"]
+}

@@ -16,8 +16,9 @@ To run:
 
 import json
 import os
-import time
 import threading
+import time
+
 import pytest
 
 # Guard: skip this entire file unless explicitly opted in
@@ -72,8 +73,8 @@ def _publish_to_broker(topic: str, payload: dict, host: str, port: int) -> bool:
 def telemetry_service():
     """Fixture that returns a fresh MqttTelemetryService connected to the broker."""
     # Import here so tests that skip early don't pull in backend internals
-    import sys
     import os as _os
+    import sys
 
     # Ensure the API app root is on sys.path for direct import
     api_root = _os.path.join(_os.path.dirname(__file__), "../..")

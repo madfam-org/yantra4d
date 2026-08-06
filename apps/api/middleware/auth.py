@@ -126,7 +126,7 @@ def require_role(role: str):
 
 def require_tier(min_tier: str):
     """Decorator factory: optional_auth + check tier hierarchy."""
-    from services.core.tier_service import resolve_tier, has_tier
+    from services.core.tier_service import has_tier, resolve_tier
 
     def decorator(f):
         @functools.wraps(f)

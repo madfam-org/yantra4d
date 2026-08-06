@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Aquarium Fitting",
+    "slug": "aquarium-fitting",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Rim-mounted hardware for a glass aquarium: a clip that hooks over the tank rim and cradles a filter hose or lily pipe, a feeding ring that corrals floating flake food, and a slim clip for a thin glass lily pipe. Sized by the tube diameter and the tank-rim thickness.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de borde para un acuario de vidrio: un clip que engancha sobre el borde del tanque y sostiene una manguera de filtro o tubo lily, un aro de alimentación que contiene el alimento en hojuelas flotante y un clip delgado para un tubo lily de vidrio fino. Se dimensiona por el diámetro del tubo y el grosor del borde del tanque.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/aquarium-fitting.webp",
+    "difficulty": "intermediate",
+    "tags": ["aquarium", "fish", "hose", "lily-pipe", "feeding-ring", "rim", "clip", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "hose_holder",
+      "label": { "en": "Hose Holder", "es": "Soporte de Manguera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hose_holder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "feeding_ring",
+      "label": { "en": "Feeding Ring", "es": "Aro de Alimentación" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["feeding_ring"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "lily_pipe_clip",
+      "label": { "en": "Lily-Pipe Clip", "es": "Clip para Tubo Lily" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lily_pipe_clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "hose_holder", "label": { "en": "Hose Holder", "es": "Soporte de Manguera" }, "render_mode": 0, "color": "#0d9488" },
+    { "id": "feeding_ring", "label": { "en": "Feeding Ring", "es": "Aro de Alimentación" }, "render_mode": 0, "color": "#14b8a6" },
+    { "id": "lily_pipe_clip", "label": { "en": "Lily-Pipe Clip", "es": "Clip para Tubo Lily" }, "render_mode": 0, "color": "#2dd4bf" }
+  ],
+  "parameter_groups": [
+    { "id": "interface", "label": { "en": "Tube & Rim", "es": "Tubo y Borde" } },
+    { "id": "hook", "label": { "en": "Hook", "es": "Gancho" } },
+    { "id": "ring", "label": { "en": "Feeding Ring", "es": "Aro de Alimentación" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_dia", "type": "slider", "default": 16.0, "min": 5.0, "max": 40.0, "step": 0.5,
+      "group": "interface", "modes": ["hose_holder", "lily_pipe_clip"],
+      "label": { "en": "Tube Diameter (mm)", "es": "Diámetro de Tubo (mm)" },
+      "tooltip": { "en": "Outer diameter of the hose or lily pipe the cradle grips", "es": "Diámetro exterior de la manguera o tubo lily que sostiene la cuna" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "rim_th", "type": "slider", "default": 8.0, "min": 3.0, "max": 25.0, "step": 0.5,
+      "group": "interface", "modes": ["hose_holder", "feeding_ring", "lily_pipe_clip"],
+      "label": { "en": "Tank Rim Thickness (mm)", "es": "Grosor del Borde (mm)" },
+      "tooltip": { "en": "Thickness of the glass rim the hook straddles", "es": "Grosor del borde de vidrio que abraza el gancho" }
+    },
+    {
+      "id": "hook_depth", "type": "slider", "default": 22.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "hook", "modes": ["hose_holder", "lily_pipe_clip"],
+      "label": { "en": "Inner Drop (mm)", "es": "Bajada Interior (mm)" },
+      "tooltip": { "en": "How far the hook reaches down the inside of the tank", "es": "Qué tanto baja el gancho por el interior del tanque" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "hook", "modes": ["hose_holder", "feeding_ring", "lily_pipe_clip"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Hook / clip / ring wall thickness", "es": "Grosor de pared del gancho / clip / aro" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "hook", "modes": ["hose_holder", "feeding_ring", "lily_pipe_clip"],
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura (mm)" },
+      "tooltip": { "en": "Per-side gap on both the rim slot and the tube cradle", "es": "Espacio por lado tanto en la ranura del borde como en la cuna del tubo" }
+    },
+    {
+      "id": "width", "type": "slider", "default": 14.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "hook", "modes": ["hose_holder", "feeding_ring"],
+      "label": { "en": "Hook Width (mm)", "es": "Ancho del Gancho (mm)" },
+      "tooltip": { "en": "Width of the rim hook along the tank edge", "es": "Ancho del gancho de borde a lo largo del canto del tanque" }
+    },
+    {
+      "id": "ring_dia", "type": "slider", "default": 65.0, "min": 30.0, "max": 150.0, "step": 2.0,
+      "group": "ring", "modes": ["feeding_ring"],
+      "label": { "en": "Feeding Ring Diameter (mm)", "es": "Diámetro del Aro (mm)" },
+      "tooltip": { "en": "Inner diameter of the food-corral ring", "es": "Diámetro interior del aro que contiene el alimento" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "canister_hose", "mode": "hose_holder",
+      "label": { "en": "Canister-Filter Hose (16 mm)", "es": "Manguera de Filtro Canister (16 mm)" },
+      "values": { "tube_dia": 16, "rim_th": 8, "hook_depth": 24 }
+    },
+    {
+      "id": "flake_ring", "mode": "feeding_ring",
+      "label": { "en": "Flake Feeding Ring", "es": "Aro para Hojuelas" },
+      "values": { "ring_dia": 65, "rim_th": 8 }
+    },
+    {
+      "id": "glass_lily", "mode": "lily_pipe_clip",
+      "label": { "en": "Glass Lily-Pipe Clip (13 mm)", "es": "Clip Tubo Lily de Vidrio (13 mm)" },
+      "values": { "tube_dia": 13, "rim_th": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 1.0",
+      "severity": "warning",
+      "message": { "en": "Large clearance loosens the rim and tube grip", "es": "Una holgura grande afloja el agarre del borde y del tubo" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "tube_rim_clip",
+        "label": { "en": "Tube/Rim Clip", "es": "Clip Tubo/Borde" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["tube_dia", "rim_th", "wall", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Aquarium accessories are marked up heavily and rarely fit a specific rim or hose. A hook sized to the exact glass thickness and tube diameter keeps hoses tidy and food contained, printable in aquarium-safe filament for any tank.",
+      "es": "Los accesorios de acuario tienen un margen alto y rara vez encajan en un borde o manguera específicos. Un gancho dimensionado al grosor de vidrio y diámetro de tubo exactos mantiene las mangueras ordenadas y el alimento contenido, imprimible en filamento apto para acuario para cualquier tanque."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["aquarium", "fish", "hose", "lily-pipe", "feeding-ring", "household", "hyperobject", "commons"]
+}

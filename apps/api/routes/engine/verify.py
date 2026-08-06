@@ -7,14 +7,14 @@ import logging
 import subprocess
 import sys
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
+import rate_limits
 from config import Config
 from extensions import limiter
-import rate_limits
 from manifest import get_manifest, resolve_part_config
 from middleware.auth import require_tier
-from utils.route_helpers import safe_join_path, handle_exceptions
+from utils.route_helpers import handle_exceptions, safe_join_path
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ def verify_design():
         logger.info(f"Verifying {part}: {' '.join(cmd[:3])}...")
 
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120, check=False)
             output = result.stdout + result.stderr
 
             # Parse structured output (look for ===JSON=== marker)
@@ -96,7 +96,7 @@ def verify_design():
             all_passed = False
         except Exception as e:
             logger.error(f"Verification failed for {part}: {e}")
-            results.append(f"--- {part} ---\n[ERROR] {str(e)}\n")
+            results.append(f"--- {part} ---\n[ERROR] {e!s}\n")
             all_passed = False
 
     combined = "\n".join(results)

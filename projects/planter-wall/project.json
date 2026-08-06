@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Planter Wall",
+    "slug": "planter-wall",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A modular vertical-garden wall: interlocking pocket modules hang on a base rail and clip to each other on a grid, so a bare wall becomes a living green field. Each pocket holds soil with drainage; corner modules close row edges; a base rail screws to the wall and carries the bottom row.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un jardín vertical modular: módulos de bolsillo entrelazables cuelgan de un riel base y se enganchan entre sí en cuadrícula, convirtiendo una pared desnuda en un campo verde vivo. Cada bolsillo retiene tierra con drenaje; los módulos de esquina cierran los bordes de fila; un riel base se atornilla a la pared y sostiene la fila inferior.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/planter-wall.webp",
+    "difficulty": "intermediate",
+    "tags": ["planter", "vertical-garden", "wall", "modular", "green-wall", "interlock", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pocket_module",
+      "label": { "en": "Pocket Module", "es": "Módulo de Bolsillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pocket_module"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "corner_module",
+      "label": { "en": "Corner Module", "es": "Módulo de Esquina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_module"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "base_rail",
+      "label": { "en": "Base Rail", "es": "Riel Base" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["base_rail"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "pocket_module", "label": { "en": "Pocket Module", "es": "Módulo de Bolsillo" }, "render_mode": 0, "color": "#4f8f5f" },
+    { "id": "corner_module", "label": { "en": "Corner Module", "es": "Módulo de Esquina" }, "render_mode": 0, "color": "#6aa87a" },
+    { "id": "base_rail", "label": { "en": "Base Rail", "es": "Riel Base" }, "render_mode": 0, "color": "#84c095" }
+  ],
+  "parameter_groups": [
+    { "id": "module", "label": { "en": "Module", "es": "Módulo" } },
+    { "id": "interlock", "label": { "en": "Interlock & Rail", "es": "Ensamble y Riel" } },
+    { "id": "grow", "label": { "en": "Drainage", "es": "Drenaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "module_w", "type": "slider", "default": 120.0, "min": 60.0, "max": 300.0, "step": 2.0,
+      "group": "module", "modes": ["pocket_module", "corner_module", "base_rail"],
+      "label": { "en": "Module Width (mm)", "es": "Ancho del Módulo (mm)" },
+      "tooltip": { "en": "Module width and grid pitch", "es": "Ancho del módulo y paso de cuadrícula" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "module_h", "type": "slider", "default": 90.0, "min": 50.0, "max": 200.0, "step": 2.0,
+      "group": "module", "modes": ["pocket_module", "corner_module", "base_rail"],
+      "label": { "en": "Module Height (mm)", "es": "Alto del Módulo (mm)" },
+      "tooltip": { "en": "Module height", "es": "Alto del módulo" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pocket_d", "type": "slider", "default": 70.0, "min": 40.0, "max": 160.0, "step": 2.0,
+      "group": "module", "modes": ["pocket_module", "corner_module"],
+      "label": { "en": "Pocket Depth (mm)", "es": "Profundidad del Bolsillo (mm)" },
+      "tooltip": { "en": "How far the pocket projects from the wall (soil volume)", "es": "Cuánto sobresale el bolsillo de la pared (volumen de tierra)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "module", "modes": ["pocket_module", "corner_module", "base_rail"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Pocket and rail wall thickness", "es": "Grosor de pared del bolsillo y el riel" }
+    },
+    {
+      "id": "peg", "type": "slider", "default": 8.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "interlock", "modes": ["pocket_module", "corner_module", "base_rail"],
+      "label": { "en": "Interlock Peg (mm)", "es": "Perno de Ensamble (mm)" },
+      "tooltip": { "en": "Side peg / rail hook size", "es": "Tamaño del perno lateral / gancho del riel" }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "interlock", "modes": ["pocket_module", "corner_module"], "advanced": true,
+      "label": { "en": "Interlock Fit (mm)", "es": "Ajuste de Ensamble (mm)" },
+      "tooltip": { "en": "Socket clearance so pegs slide in", "es": "Holgura del receptáculo para que entren los pernos" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "interlock", "modes": ["base_rail"],
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Wall screw hole diameter", "es": "Diámetro del orificio del tornillo de pared" }
+    },
+    {
+      "id": "drain_dia", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5,
+      "group": "grow", "modes": ["pocket_module", "corner_module"],
+      "label": { "en": "Drainage Hole (mm)", "es": "Orificio de Drenaje (mm)" },
+      "tooltip": { "en": "Floor drainage hole diameter", "es": "Diámetro del orificio de drenaje del piso" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "herb_pocket", "mode": "pocket_module",
+      "label": { "en": "Herb Pocket", "es": "Bolsillo de Hierbas" },
+      "values": { "module_w": 120, "module_h": 90, "pocket_d": 70 }
+    },
+    {
+      "id": "edge_corner", "mode": "corner_module",
+      "label": { "en": "Row-End Corner", "es": "Esquina de Fin de Fila" },
+      "values": { "module_w": 120, "module_h": 90, "pocket_d": 70 }
+    },
+    {
+      "id": "wall_rail", "mode": "base_rail",
+      "label": { "en": "Wall Base Rail", "es": "Riel Base de Pared" },
+      "values": { "module_w": 120, "module_h": 90, "screw_dia": 4.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall under 2 mm will bulge under wet soil", "es": "Una pared menor a 2 mm se abomba con tierra húmeda" }
+    },
+    {
+      "expression": "pocket_d <= module_w",
+      "severity": "warning",
+      "message": { "en": "Deep pocket relative to width may tip forward", "es": "Un bolsillo profundo respecto al ancho puede volcarse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 200, 170] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -300, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "planter_wall_module",
+        "label": { "en": "Planter Wall Module", "es": "Módulo de Jardín Vertical" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["module_w", "module_h", "peg", "fit"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Grows food and greenery on any wall from tileable printed pockets — vertical gardening for small spaces and food resilience without proprietary green-wall systems.",
+      "es": "Cultiva alimentos y vegetación en cualquier pared con bolsillos impresos entrelazables — jardinería vertical para espacios pequeños y resiliencia alimentaria sin sistemas de muro verde propietarios."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["planter", "vertical-garden", "wall", "modular", "household", "hyperobject", "commons"]
+}

@@ -1,11 +1,19 @@
 """Tests for tier service."""
 import sys
 from pathlib import Path
-
+from typing import ClassVar
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.core.tier_service import resolve_tier, has_tier, get_tier_limits, get_render_limit, get_render_limit_for_project, check_feature, load_tiers
+from services.core.tier_service import (
+    check_feature,
+    get_render_limit,
+    get_render_limit_for_project,
+    get_tier_limits,
+    has_tier,
+    load_tiers,
+    resolve_tier,
+)
 
 
 class TestResolveTier:
@@ -105,17 +113,17 @@ class TestGetRenderLimitForProject:
     def test_project_manifest_object_with_override(self):
         """ProjectManifest objects have .project attribute, not .get()."""
         class FakeManifest:
-            project = {"name": "Demo", "guest_render_limit": 50}
+            project: ClassVar[dict] = {"name": "Demo", "guest_render_limit": 50}
         assert get_render_limit_for_project("guest", FakeManifest()) == 50
 
     def test_project_manifest_object_without_override(self):
         class FakeManifest:
-            project = {"name": "Demo"}
+            project: ClassVar[dict] = {"name": "Demo"}
         assert get_render_limit_for_project("guest", FakeManifest()) == 10
 
     def test_project_manifest_object_non_guest(self):
         class FakeManifest:
-            project = {"name": "Demo", "guest_render_limit": 50}
+            project: ClassVar[dict] = {"name": "Demo", "guest_render_limit": 50}
         assert get_render_limit_for_project("pro", FakeManifest()) == 150
 
 

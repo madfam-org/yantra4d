@@ -1,0 +1,196 @@
+{
+  "project": {
+    "name": "Trim Panel Clip",
+    "slug": "trim-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Replaces the brittle plastic clips that always snap when you pull a door card, trim panel, or under-tray. A retention barb passes through the panel hole and springs behind it. Choose a fir-tree push clip, a U-shaped edge clip, or an expanding rivet clip. Sized to the panel hole diameter, shape, and thickness so one clip family fits thousands of panels.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Reemplaza los clips de plástico frágiles que siempre se rompen al desmontar un panel de puerta, moldura o cubierta inferior. Una lengüeta de retención pasa por el orificio del panel y se abre detrás. Elige un clip de empuje tipo árbol, un clip de borde en U, o un clip remache expansible. Dimensionado al diámetro, forma y grosor del orificio del panel para que una familia de clips sirva para miles de paneles.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/trim-clip.webp",
+    "difficulty": "intermediate",
+    "tags": ["trim", "clip", "car", "fastener", "panel", "retainer", "automotive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "push_clip",
+      "label": { "en": "Push Clip", "es": "Clip de Empuje" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["push_clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "edge_clip",
+      "label": { "en": "Edge Clip", "es": "Clip de Borde" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["edge_clip"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "rivet_clip",
+      "label": { "en": "Rivet Clip", "es": "Clip Remache" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rivet_clip"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "push_clip", "label": { "en": "Push Clip", "es": "Clip de Empuje" }, "render_mode": 0, "color": "#4b5f74" },
+    { "id": "edge_clip", "label": { "en": "Edge Clip", "es": "Clip de Borde" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "rivet_clip", "label": { "en": "Rivet Clip", "es": "Clip Remache" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "hole", "label": { "en": "Panel Hole", "es": "Orificio del Panel" } },
+    { "id": "retention", "label": { "en": "Retention", "es": "Retención" } },
+    { "id": "head", "label": { "en": "Head & Shank", "es": "Cabeza y Vástago" } },
+    { "id": "edge", "label": { "en": "Edge Clip", "es": "Clip de Borde" } }
+  ],
+  "parameters": [
+    {
+      "id": "hole_dia", "type": "slider", "default": 8.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "hole", "modes": ["push_clip", "edge_clip", "rivet_clip"],
+      "label": { "en": "Panel Hole Diameter (mm)", "es": "Diámetro del Orificio (mm)" },
+      "tooltip": { "en": "Diameter of the hole in the panel the clip passes through", "es": "Diámetro del orificio del panel por el que pasa el clip" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "hole_shape", "type": "select", "default": "round",
+      "group": "hole", "modes": ["push_clip", "rivet_clip"],
+      "label": { "en": "Hole Shape", "es": "Forma del Orificio" },
+      "tooltip": { "en": "Round hole (cylindrical shank) or square hole (anti-rotation shank)", "es": "Orificio redondo (vástago cilíndrico) u orificio cuadrado (vástago anti-giro)" },
+      "options": [
+        { "value": "round", "label": { "en": "Round", "es": "Redondo" } },
+        { "value": "square", "label": { "en": "Square", "es": "Cuadrado" } }
+      ]
+    },
+    {
+      "id": "panel_t", "type": "slider", "default": 2.5, "min": 0.8, "max": 8.0, "step": 0.1,
+      "group": "hole", "modes": ["push_clip", "edge_clip", "rivet_clip"],
+      "label": { "en": "Panel Thickness (mm)", "es": "Grosor del Panel (mm)" },
+      "tooltip": { "en": "Thickness of the panel the clip grips behind", "es": "Grosor del panel que el clip sujeta por detrás" }
+    },
+    {
+      "id": "barb_count", "type": "slider", "default": 3, "min": 1, "max": 6, "step": 1,
+      "group": "retention", "modes": ["push_clip"],
+      "label": { "en": "Fir-Tree Barbs", "es": "Lengüetas de Árbol" },
+      "tooltip": { "en": "Number of stacked barb rings on the push clip", "es": "Número de lengüetas apiladas en el clip de empuje" }
+    },
+    {
+      "id": "barb_grip", "type": "slider", "default": 1.6, "min": 0.3, "max": 4.0, "step": 0.1,
+      "group": "retention", "modes": ["push_clip", "rivet_clip"],
+      "label": { "en": "Barb Overhang (mm)", "es": "Saliente de Lengüeta (mm)" },
+      "tooltip": { "en": "How far each barb flares past the hole, per side", "es": "Qué tanto sobresale cada lengüeta del orificio, por lado" }
+    },
+    {
+      "id": "head_dia", "type": "slider", "default": 16.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "head", "modes": ["push_clip", "rivet_clip"],
+      "label": { "en": "Head Flange Diameter (mm)", "es": "Diámetro de la Cabeza (mm)" },
+      "tooltip": { "en": "Top retainer flange diameter", "es": "Diámetro de la brida retenedora superior" }
+    },
+    {
+      "id": "head_thick", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.5,
+      "group": "head", "modes": ["push_clip", "rivet_clip"], "advanced": true,
+      "label": { "en": "Head Thickness (mm)", "es": "Grosor de la Cabeza (mm)" },
+      "tooltip": { "en": "Thickness of the retainer flange", "es": "Grosor de la brida retenedora" }
+    },
+    {
+      "id": "shank_len", "type": "slider", "default": 14.0, "min": 6.0, "max": 30.0, "step": 1.0,
+      "group": "head", "modes": ["push_clip", "rivet_clip"],
+      "label": { "en": "Shank Length (mm)", "es": "Longitud del Vástago (mm)" },
+      "tooltip": { "en": "Length of the shank below the flange", "es": "Longitud del vástago bajo la brida" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 5.0, "step": 0.2,
+      "group": "head", "modes": ["push_clip", "edge_clip", "rivet_clip"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Generic wall / arm thickness", "es": "Grosor genérico de pared / brazo" }
+    },
+    {
+      "id": "edge_gap", "type": "slider", "default": 2.5, "min": 0.6, "max": 8.0, "step": 0.1,
+      "group": "edge", "modes": ["edge_clip"],
+      "label": { "en": "Edge Slot Gap (mm)", "es": "Ranura del Borde (mm)" },
+      "tooltip": { "en": "Gap between the arms = the panel/flange thickness", "es": "Separación entre brazos = grosor del panel/pestaña" }
+    },
+    {
+      "id": "edge_reach", "type": "slider", "default": 16.0, "min": 6.0, "max": 30.0, "step": 1.0,
+      "group": "edge", "modes": ["edge_clip"],
+      "label": { "en": "Edge Grip Reach (mm)", "es": "Alcance del Borde (mm)" },
+      "tooltip": { "en": "How far the arms grip over the panel edge", "es": "Qué tanto agarran los brazos sobre el borde del panel" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "door_card_8mm", "mode": "push_clip",
+      "label": { "en": "Door Card 8 mm", "es": "Panel de Puerta 8 mm" },
+      "values": { "hole_dia": 8, "hole_shape": "round", "panel_t": 2.5, "barb_count": 3, "head_dia": 16 }
+    },
+    {
+      "id": "trim_edge_flange", "mode": "edge_clip",
+      "label": { "en": "Trim Edge Flange", "es": "Pestaña de Moldura" },
+      "values": { "hole_dia": 8, "panel_t": 2.0, "edge_gap": 2.0, "edge_reach": 16 }
+    },
+    {
+      "id": "undertray_rivet_10mm", "mode": "rivet_clip",
+      "label": { "en": "Under-Tray Rivet 10 mm", "es": "Remache de Cubierta 10 mm" },
+      "values": { "hole_dia": 10, "hole_shape": "round", "panel_t": 3.0, "shank_len": 16, "head_dia": 20 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "barb_grip <= hole_dia / 2",
+      "severity": "warning",
+      "message": { "en": "Barb overhang is large relative to the hole", "es": "El saliente de la lengüeta es grande respecto al orificio" }
+    },
+    {
+      "expression": "wall >= 1",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1 mm", "es": "La pared debe ser de al menos 1 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -110, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "panel_barb_clip",
+        "label": { "en": "Panel Barb Clip", "es": "Clip de Lengüeta de Panel" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["hole_dia", "hole_shape", "panel_t", "barb_count", "barb_grip"]
+      },
+      {
+        "id": "edge_grip",
+        "label": { "en": "Panel Edge Grip", "es": "Agarre de Borde de Panel" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["edge_gap", "edge_reach", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The plastic clip is the single most-broken car part during any interior repair, and dealers sell them by the bag; a printable clip family sized to the hole and panel thickness makes each one a cents-of-filament reprint in the exact retention profile the panel needs.",
+      "es": "El clip de plástico es la pieza que más se rompe en cualquier reparación de interiores, y los concesionarios los venden por bolsa; una familia de clips imprimible dimensionada al orificio y grosor del panel convierte cada uno en una reimpresión de céntimos de filamento con el perfil de retención exacto que el panel necesita."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["trim", "clip", "car", "fastener", "automotive", "commercial", "hyperobject", "commons"]
+}

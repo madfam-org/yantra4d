@@ -1,0 +1,539 @@
+{
+  "project": {
+    "name": "Bearing Housing / Pillow Block",
+    "slug": "bearing-housing",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric housing that seats a standard deep-groove ball bearing (608, 623, 625, 6900, 6902) in a press-fit bore with a shoulder so the bearing seats to a positive stop. The seat bore, seat depth, and shaft clearance come from the bearing table so the printed part fits a real bearing. Build a raised pillow block with a horizontal shaft axis, a flat flange mount with a face bolt pattern, or a bare press-fit insert ring.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un alojamiento paramétrico que aloja un rodamiento rígido de bolas estándar (608, 623, 625, 6900, 6902) en un barreno a presión con un hombro para que el rodamiento asiente contra un tope positivo. El barreno del asiento, la profundidad y la holgura del eje provienen de la tabla de rodamientos para que la pieza impresa encaje con un rodamiento real. Construye una chumacera elevada con eje horizontal, un montaje de brida plana con patrón de tornillos frontal, o un anillo insertable a presión.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bearing-housing.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bearing-housing",
+      "pillow-block",
+      "bearing",
+      "608",
+      "6900",
+      "mount",
+      "flange",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pillow_block",
+      "label": {
+        "en": "Pillow Block",
+        "es": "Chumacera"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pillow_block"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "flange_mount",
+      "label": {
+        "en": "Flange Mount",
+        "es": "Brida"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "flange_mount"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "insert",
+      "label": {
+        "en": "Insert Ring",
+        "es": "Anillo Insertable"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "insert"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "pillow_block",
+      "label": {
+        "en": "Pillow Block",
+        "es": "Chumacera"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "flange_mount",
+      "label": {
+        "en": "Flange Mount",
+        "es": "Brida"
+      },
+      "render_mode": 0,
+      "color": "#4b7f9c"
+    },
+    {
+      "id": "insert",
+      "label": {
+        "en": "Insert Ring",
+        "es": "Anillo Insertable"
+      },
+      "render_mode": 0,
+      "color": "#8bb5cc"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bearing",
+      "label": {
+        "en": "Bearing",
+        "es": "Rodamiento"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body & Walls",
+        "es": "Cuerpo y Paredes"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Mounting Bolts",
+        "es": "Tornillos de Montaje"
+      }
+    },
+    {
+      "id": "pillow",
+      "label": {
+        "en": "Pillow Block",
+        "es": "Chumacera"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bearing",
+      "type": "select",
+      "default": "608",
+      "group": "bearing",
+      "modes": [
+        "pillow_block",
+        "flange_mount",
+        "insert"
+      ],
+      "label": {
+        "en": "Bearing",
+        "es": "Rodamiento"
+      },
+      "tooltip": {
+        "en": "Deep-groove ball bearing designation (ID × OD × width). The seat is sized to the OD.",
+        "es": "Designación de rodamiento rígido de bolas (DI × DE × ancho). El asiento se dimensiona al DE."
+      },
+      "options": [
+        {
+          "value": "608",
+          "label": {
+            "en": "608 · 8×22×7",
+            "es": "608 · 8×22×7"
+          }
+        },
+        {
+          "value": "623",
+          "label": {
+            "en": "623 · 3×10×4",
+            "es": "623 · 3×10×4"
+          }
+        },
+        {
+          "value": "625",
+          "label": {
+            "en": "625 · 5×16×5",
+            "es": "625 · 5×16×5"
+          }
+        },
+        {
+          "value": "6900",
+          "label": {
+            "en": "6900 · 10×22×6",
+            "es": "6900 · 10×22×6"
+          }
+        },
+        {
+          "value": "6902",
+          "label": {
+            "en": "6902 · 15×28×7",
+            "es": "6902 · 15×28×7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mount_style",
+      "type": "select",
+      "default": "raised",
+      "group": "pillow",
+      "modes": [
+        "pillow_block"
+      ],
+      "label": {
+        "en": "Pillow-Block Profile",
+        "es": "Perfil de Chumacera"
+      },
+      "tooltip": {
+        "en": "Raised lifts the shaft axis on a pedestal; flush keeps a low profile.",
+        "es": "Elevado sube el eje sobre un pedestal; a ras mantiene un perfil bajo."
+      },
+      "options": [
+        {
+          "value": "raised",
+          "label": {
+            "en": "Raised pedestal",
+            "es": "Pedestal elevado"
+          }
+        },
+        {
+          "value": "flush",
+          "label": {
+            "en": "Flush / low profile",
+            "es": "A ras / perfil bajo"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "pillow_block",
+        "flange_mount",
+        "insert"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Material around the bearing outer race",
+        "es": "Material alrededor de la pista exterior del rodamiento"
+      }
+    },
+    {
+      "id": "back_wall",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "body",
+      "modes": [
+        "pillow_block",
+        "flange_mount",
+        "insert"
+      ],
+      "label": {
+        "en": "Shoulder Thickness (mm)",
+        "es": "Grosor del Hombro (mm)"
+      },
+      "tooltip": {
+        "en": "The lip the bearing seats against (positive stop)",
+        "es": "El labio contra el que asienta el rodamiento (tope positivo)"
+      }
+    },
+    {
+      "id": "press_fit",
+      "type": "slider",
+      "default": 0.0,
+      "min": -0.3,
+      "max": 0.4,
+      "step": 0.05,
+      "group": "body",
+      "modes": [
+        "pillow_block",
+        "flange_mount",
+        "insert"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Seat Fit Adjust (mm)",
+        "es": "Ajuste de Asiento (mm)"
+      },
+      "tooltip": {
+        "en": "Negative tightens the press fit; positive loosens it (per material/printer)",
+        "es": "Negativo aprieta el ajuste a presión; positivo lo afloja (por material/impresora)"
+      }
+    },
+    {
+      "id": "mount_holes",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 4,
+      "step": 2,
+      "group": "mount",
+      "modes": [
+        "pillow_block",
+        "flange_mount"
+      ],
+      "label": {
+        "en": "Mounting Bolts",
+        "es": "Tornillos de Montaje"
+      },
+      "tooltip": {
+        "en": "2 or 4 bolts to fix the housing down",
+        "es": "2 o 4 tornillos para fijar el alojamiento"
+      }
+    },
+    {
+      "id": "bolt_dia",
+      "type": "slider",
+      "default": 4.5,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "mount",
+      "modes": [
+        "pillow_block",
+        "flange_mount"
+      ],
+      "label": {
+        "en": "Bolt Clearance (mm)",
+        "es": "Holgura de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Mounting bolt through-hole diameter (4.5 mm ≈ M4)",
+        "es": "Diámetro del agujero del tornillo de montaje (4.5 mm ≈ M4)"
+      }
+    },
+    {
+      "id": "riser",
+      "type": "slider",
+      "default": 10.0,
+      "min": 0.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "pillow",
+      "modes": [
+        "pillow_block"
+      ],
+      "label": {
+        "en": "Raise Height (mm)",
+        "es": "Altura de Elevación (mm)"
+      },
+      "tooltip": {
+        "en": "How far the pedestal lifts the shaft axis above the base",
+        "es": "Cuánto eleva el pedestal el eje sobre la base"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "pillow_608",
+      "mode": "pillow_block",
+      "label": {
+        "en": "Pillow Block 608",
+        "es": "Chumacera 608"
+      },
+      "values": {
+        "bearing": "608",
+        "mount_style": "raised",
+        "wall": 4,
+        "mount_holes": 4,
+        "riser": 12,
+        "bolt_dia": 4.5
+      }
+    },
+    {
+      "id": "flange_6900",
+      "mode": "flange_mount",
+      "label": {
+        "en": "Flange Mount 6900",
+        "es": "Brida 6900"
+      },
+      "values": {
+        "bearing": "6900",
+        "wall": 4,
+        "mount_holes": 4,
+        "bolt_dia": 4.5
+      }
+    },
+    {
+      "id": "insert_625",
+      "mode": "insert",
+      "label": {
+        "en": "Press-Fit Insert 625",
+        "es": "Inserto a Presión 625"
+      },
+      "values": {
+        "bearing": "625",
+        "wall": 3,
+        "back_wall": 2,
+        "press_fit": -0.05
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "back_wall >= 1.2",
+      "severity": "error",
+      "message": {
+        "en": "Shoulder must be at least 1.2 mm to form a stop",
+        "es": "El hombro debe ser de al menos 1.2 mm para formar un tope"
+      }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "warning",
+      "message": {
+        "en": "Thin walls may split under a press fit",
+        "es": "Las paredes delgadas pueden partirse con un ajuste a presión"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        120
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -120,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "bearing_seat",
+        "label": {
+          "en": "Bearing Seat",
+          "es": "Asiento de Rodamiento"
+        },
+        "geometry_type": "socket",
+        "standard": "ISO 15 (608/625/6900)",
+        "parameters": [
+          "bearing",
+          "back_wall",
+          "press_fit"
+        ],
+        "compatible_with": [
+          "linear-wheel",
+          "roller-bracket",
+          "timing-pulley"
+        ]
+      },
+      {
+        "id": "housing_mount",
+        "label": {
+          "en": "Housing Mount Pattern",
+          "es": "Patrón de Montaje del Alojamiento"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "mount_holes",
+          "bolt_dia"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A press-fit bearing housing turns a loose bearing into a mountable rotating joint for machines, carts, and mechanisms. Sizing the seat to a standard bearing lets any maker build a supported shaft without machining a metal block.",
+      "es": "Un alojamiento de rodamiento a presión convierte un rodamiento suelto en una junta rotativa montable para máquinas, carros y mecanismos. Dimensionar el asiento a un rodamiento estándar permite construir un eje apoyado sin maquinar un bloque metálico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bearing-housing",
+    "pillow-block",
+    "bearing",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

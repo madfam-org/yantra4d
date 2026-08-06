@@ -1,0 +1,604 @@
+{
+  "project": {
+    "name": "NATO Accessory Rail",
+    "slug": "nato-rail",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The NATO accessory rail — a dovetail cross-section with ~44° flanks and safety notches that photo/video accessory ecosystems share for quick-release mounting. Build a length of NATO rail with mounting holes, a quick-release clamp that grips the rail dovetail, or a rail adapter carrying a 1/4-20 face.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El riel de accesorios NATO — una sección de cola de milano con flancos de ~44° y muescas de seguridad que los ecosistemas de accesorios de foto/video comparten para montaje de liberación rápida. Genera un tramo de riel NATO con orificios de montaje, una abrazadera de liberación rápida que agarra la cola de milano, o un adaptador con cara 1/4-20.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/nato-rail.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "nato",
+      "rail",
+      "dovetail",
+      "quick-release",
+      "accessory",
+      "mount",
+      "cage",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "nato_rail_section",
+      "label": {
+        "en": "NATO Rail Section",
+        "es": "Tramo de Riel NATO"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "nato_rail_section"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "nato_clamp",
+      "label": {
+        "en": "NATO Quick-Release Clamp",
+        "es": "Abrazadera de Liberación Rápida NATO"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "nato_clamp"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "rail_adapter",
+      "label": {
+        "en": "Rail Adapter (1/4-20)",
+        "es": "Adaptador de Riel (1/4-20)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rail_adapter"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "nato_rail_section",
+      "label": {
+        "en": "NATO Rail",
+        "es": "Riel NATO"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "nato_clamp",
+      "label": {
+        "en": "NATO Clamp",
+        "es": "Abrazadera NATO"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "rail_adapter",
+      "label": {
+        "en": "Rail Adapter",
+        "es": "Adaptador de Riel"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "rail",
+      "label": {
+        "en": "NATO Rail",
+        "es": "Riel NATO"
+      }
+    },
+    {
+      "id": "clamp",
+      "label": {
+        "en": "Clamp",
+        "es": "Abrazadera"
+      }
+    },
+    {
+      "id": "adapter",
+      "label": {
+        "en": "Adapter Face",
+        "es": "Cara del Adaptador"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "rail_w",
+      "type": "slider",
+      "default": 21.2,
+      "min": 12.0,
+      "max": 40.0,
+      "step": 0.1,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section",
+        "nato_clamp",
+        "rail_adapter"
+      ],
+      "label": {
+        "en": "Rail Width (mm)",
+        "es": "Ancho de Riel (mm)"
+      },
+      "tooltip": {
+        "en": "NATO rail top platform width. Standard is ~21.2 mm",
+        "es": "Ancho de la plataforma superior del riel NATO. El estándar es ~21.2 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "flank_ang",
+      "type": "slider",
+      "default": 44.0,
+      "min": 30.0,
+      "max": 55.0,
+      "step": 1,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section",
+        "nato_clamp",
+        "rail_adapter"
+      ],
+      "label": {
+        "en": "Dovetail Flank Angle (deg)",
+        "es": "Ángulo de Flanco (grados)"
+      },
+      "tooltip": {
+        "en": "Undercut angle of the dovetail flanks from vertical. NATO ~44°",
+        "es": "Ángulo de socavado de los flancos de la cola de milano desde la vertical. NATO ~44°"
+      }
+    },
+    {
+      "id": "rail_h",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section",
+        "nato_clamp",
+        "rail_adapter"
+      ],
+      "label": {
+        "en": "Rail Height (mm)",
+        "es": "Altura de Riel (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the dovetail block",
+        "es": "Altura del bloque de cola de milano"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "rail_len",
+      "type": "slider",
+      "default": 50.0,
+      "min": 15.0,
+      "max": 200.0,
+      "step": 1,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section",
+        "rail_adapter"
+      ],
+      "label": {
+        "en": "Rail Length (mm)",
+        "es": "Longitud de Riel (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the rail along its axis (Y)",
+        "es": "Longitud del riel a lo largo de su eje (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "notch_w",
+      "type": "slider",
+      "default": 1.5,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Safety Notch Width (mm)",
+        "es": "Ancho de Muesca de Seguridad (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the transverse safety notches. NATO ~1.5 mm",
+        "es": "Ancho de las muescas de seguridad transversales. NATO ~1.5 mm"
+      }
+    },
+    {
+      "id": "notch_count",
+      "type": "slider",
+      "default": 3,
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section"
+      ],
+      "label": {
+        "en": "Safety Notches",
+        "es": "Muescas de Seguridad"
+      },
+      "tooltip": {
+        "en": "Number of transverse detent notches across the rail top",
+        "es": "Número de muescas de retención transversales en la parte superior del riel"
+      }
+    },
+    {
+      "id": "base_th",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section",
+        "rail_adapter"
+      ],
+      "label": {
+        "en": "Base Plate Thickness (mm)",
+        "es": "Grosor de Placa Base (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the plate under the dovetail",
+        "es": "Grosor de la placa bajo la cola de milano"
+      }
+    },
+    {
+      "id": "mount_hole_d",
+      "type": "slider",
+      "default": 4.5,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "rail",
+      "modes": [
+        "nato_rail_section"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Mounting Hole (mm)",
+        "es": "Orificio de Montaje (mm)"
+      },
+      "tooltip": {
+        "en": "Rail mounting hole diameter (M4 clearance ~4.5 mm)",
+        "es": "Diámetro del orificio de montaje del riel (holgura M4 ~4.5 mm)"
+      }
+    },
+    {
+      "id": "clamp_clear",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "clamp",
+      "modes": [
+        "nato_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Clamp Fit Clearance (mm)",
+        "es": "Holgura de Ajuste de Abrazadera (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap between clamp jaw and rail dovetail",
+        "es": "Espacio por lado entre la mordaza y la cola de milano del riel"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "nato_clamp"
+      ],
+      "label": {
+        "en": "Clamp Wall (mm)",
+        "es": "Pared de Abrazadera (mm)"
+      },
+      "tooltip": {
+        "en": "Wall and jaw thickness of the clamp body",
+        "es": "Grosor de pared y mordaza del cuerpo de la abrazadera"
+      }
+    },
+    {
+      "id": "clamp_bolt_d",
+      "type": "slider",
+      "default": 5.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "clamp",
+      "modes": [
+        "nato_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Clamp Bolt Hole (mm)",
+        "es": "Orificio del Perno de Abrazadera (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance for the clamp bolt (M5 ~5.2 mm)",
+        "es": "Holgura para el perno de la abrazadera (M5 ~5.2 mm)"
+      }
+    },
+    {
+      "id": "face_th",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 15.0,
+      "step": 0.5,
+      "group": "adapter",
+      "modes": [
+        "rail_adapter"
+      ],
+      "label": {
+        "en": "Adapter Face Thickness (mm)",
+        "es": "Grosor de Cara del Adaptador (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the perpendicular accessory face",
+        "es": "Grosor de la cara de accesorio perpendicular"
+      }
+    },
+    {
+      "id": "face_hole_d",
+      "type": "slider",
+      "default": 6.6,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "adapter",
+      "modes": [
+        "nato_clamp",
+        "rail_adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "1/4-20 Face Hole (mm)",
+        "es": "Orificio de Cara 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "1/4-20 accessory hole on the face (~6.6 mm clearance)",
+        "es": "Orificio de accesorio 1/4-20 en la cara (~6.6 mm de holgura)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_nato_rail",
+      "mode": "nato_rail_section",
+      "label": {
+        "en": "Standard NATO Rail (50mm)",
+        "es": "Riel NATO Estándar (50mm)"
+      },
+      "values": {
+        "rail_w": 21.2,
+        "flank_ang": 44.0,
+        "rail_h": 6.0,
+        "rail_len": 50.0,
+        "notch_count": 3
+      }
+    },
+    {
+      "id": "qr_clamp",
+      "mode": "nato_clamp",
+      "label": {
+        "en": "Quick-Release Clamp",
+        "es": "Abrazadera de Liberación Rápida"
+      },
+      "values": {
+        "rail_w": 21.2,
+        "flank_ang": 44.0,
+        "rail_h": 6.0,
+        "wall": 4.0,
+        "clamp_clear": 0.35
+      }
+    },
+    {
+      "id": "nato_to_quarter",
+      "mode": "rail_adapter",
+      "label": {
+        "en": "NATO-to-1/4-20 Adapter",
+        "es": "Adaptador NATO a 1/4-20"
+      },
+      "values": {
+        "rail_w": 21.2,
+        "flank_ang": 44.0,
+        "rail_h": 6.0,
+        "rail_len": 40.0,
+        "face_th": 6.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "flank_ang >= 30",
+      "severity": "warning",
+      "message": {
+        "en": "Shallow flank angles weaken the dovetail undercut grip",
+        "es": "Ángulos de flanco poco profundos debilitan el agarre de la cola de milano"
+      }
+    },
+    {
+      "expression": "clamp_bolt_d < rail_w",
+      "severity": "error",
+      "message": {
+        "en": "Clamp bolt hole must be narrower than the rail width",
+        "es": "El orificio del perno debe ser más estrecho que el ancho del riel"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        70
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front (Cross-Section)",
+        "es": "Frontal (Sección)"
+      },
+      "position": [
+        0,
+        -160,
+        15
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        180
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 13,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "nato_accessory_rail",
+        "label": {
+          "en": "NATO Rail",
+          "es": "Riel NATO"
+        },
+        "geometry_type": "rail",
+        "standard": "NATO accessory rail",
+        "parameters": [
+          "rail_w",
+          "flank_ang",
+          "rail_h",
+          "notch_w"
+        ]
+      },
+      {
+        "id": "quarter_20_face",
+        "label": {
+          "en": "1/4-20 Accessory Face",
+          "es": "Cara de Accesorio 1/4-20"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "face_hole_d"
+        ],
+        "compatible_with": [
+          "arca-plate",
+          "optical-post",
+          "rod-rig-clamp",
+          "sensor-mount-plate",
+          "shoe-mount"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The NATO rail is an open quick-release standard shared across camera cages, handles and accessory ecosystems — a dovetail anyone can machine or print. On-demand rail sections, clamps and adapters let a maker add or move accessory mounting points anywhere on a rig from stock parts, instead of buying proprietary brackets, and repair a snapped clamp on set.",
+      "es": "El riel NATO es un estándar abierto de liberación rápida compartido por jaulas de cámara, mangos y ecosistemas de accesorios — una cola de milano que cualquiera puede mecanizar o imprimir. Tramos de riel, abrazaderas y adaptadores bajo demanda permiten a un creador añadir o mover puntos de montaje en cualquier parte de un equipo con piezas estándar, en vez de comprar soportes propietarios, y reparar una abrazadera rota en el set."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "nato",
+    "rail",
+    "dovetail",
+    "quick-release",
+    "accessory",
+    "cage",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

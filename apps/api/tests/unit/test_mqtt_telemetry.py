@@ -1,6 +1,5 @@
 """Unit tests for MQTT Telemetry Service."""
 import json
-
 from unittest.mock import MagicMock, patch
 
 

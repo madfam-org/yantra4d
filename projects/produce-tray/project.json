@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Egg / Produce Tray",
+    "slug": "produce-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Stackable trays for storing eggs and produce: an egg-cup array that cradles eggs upright, a flat tray divided into open compartments for berries and small produce, and a plain stacking tray. All share one cup-array footprint and a common stacking lip so trays nest.\n\nFood-contact note: eggs and produce contact the print. Geometry only — food-safe filament and hygiene are the maker's responsibility.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Bandejas apilables para guardar huevos y verduras: un arreglo de copas que sostiene los huevos de pie, una bandeja plana dividida en compartimentos abiertos para moras y verduras pequeñas, y una bandeja apilable simple. Todas comparten una huella de arreglo de copas y un labio de apilado común para que las bandejas se aniden.\n\nNota de contacto con alimentos: los huevos y las verduras tocan la impresión. Solo geometría — el filamento apto para alimentos y la higiene son responsabilidad del fabricante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/produce-tray.webp",
+    "difficulty": "beginner",
+    "tags": ["egg", "produce", "tray", "kitchen", "storage", "stackable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "egg_tray",
+      "label": { "en": "Egg Tray", "es": "Bandeja de Huevos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["egg_tray"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "produce_tray",
+      "label": { "en": "Produce Tray", "es": "Bandeja de Verduras" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["produce_tray"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "stacking_tray",
+      "label": { "en": "Stacking Tray", "es": "Bandeja Apilable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stacking_tray"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "egg_tray", "label": { "en": "Egg Tray", "es": "Bandeja de Huevos" }, "render_mode": 0, "color": "#c7a95b" },
+    { "id": "produce_tray", "label": { "en": "Produce Tray", "es": "Bandeja de Verduras" }, "render_mode": 0, "color": "#d9c07a" },
+    { "id": "stacking_tray", "label": { "en": "Stacking Tray", "es": "Bandeja Apilable" }, "render_mode": 0, "color": "#b8964a" }
+  ],
+  "parameter_groups": [
+    { "id": "cup", "label": { "en": "Cups", "es": "Copas" } },
+    { "id": "grid", "label": { "en": "Grid", "es": "Cuadrícula" } },
+    { "id": "tray", "label": { "en": "Tray", "es": "Bandeja" } }
+  ],
+  "parameters": [
+    {
+      "id": "cup_dia", "type": "slider", "default": 45, "min": 20, "max": 90, "step": 1,
+      "group": "cup", "modes": ["egg_tray", "produce_tray", "stacking_tray"],
+      "label": { "en": "Cup Diameter (mm)", "es": "Diámetro de Copa (mm)" },
+      "tooltip": { "en": "Egg cup diameter (a chicken egg is ~45 mm) — also sets the tray cell size", "es": "Diámetro de la copa (un huevo de gallina mide ~45 mm) — también fija el tamaño de celda" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "cup_depth", "type": "slider", "default": 26, "min": 8, "max": 60, "step": 1,
+      "group": "cup", "modes": ["egg_tray"],
+      "label": { "en": "Cup Depth (mm)", "es": "Profundidad de Copa (mm)" },
+      "tooltip": { "en": "How deep each egg cup goes", "es": "Qué tan profunda es cada copa" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 6, "min": 1, "max": 8, "step": 1,
+      "group": "grid", "modes": ["egg_tray", "produce_tray", "stacking_tray"],
+      "label": { "en": "Columns", "es": "Columnas" },
+      "tooltip": { "en": "Cups / compartments across", "es": "Copas / compartimentos a lo ancho" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 2, "min": 1, "max": 8, "step": 1,
+      "group": "grid", "modes": ["egg_tray", "produce_tray", "stacking_tray"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Cups / compartments deep", "es": "Copas / compartimentos a lo profundo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "tray", "modes": ["egg_tray", "produce_tray", "stacking_tray"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Tray and divider wall thickness", "es": "Grosor de pared de la bandeja y divisores" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.5, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "tray", "modes": ["egg_tray", "produce_tray", "stacking_tray"], "advanced": true,
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Tray floor thickness", "es": "Grosor del piso de la bandeja" }
+    },
+    {
+      "id": "stack_lip", "type": "slider", "default": 6.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "tray", "modes": ["egg_tray", "stacking_tray"],
+      "label": { "en": "Stacking Lip (mm)", "es": "Labio de Apilado (mm)" },
+      "tooltip": { "en": "Height of the rim that lets trays nest", "es": "Altura del borde que permite anidar bandejas" }
+    },
+    {
+      "id": "compart_h", "type": "slider", "default": 40.0, "min": 10.0, "max": 80.0, "step": 1.0,
+      "group": "tray", "modes": ["produce_tray"],
+      "label": { "en": "Compartment Height (mm)", "es": "Altura de Compartimento (mm)" },
+      "tooltip": { "en": "Height of the produce compartment walls", "es": "Altura de las paredes de los compartimentos" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "half_dozen_eggs", "mode": "egg_tray",
+      "label": { "en": "Half-Dozen Eggs (6×2)", "es": "Media Docena (6×2)" },
+      "values": { "cup_dia": 45, "cup_depth": 26, "cols": 6, "rows": 2 }
+    },
+    {
+      "id": "berry_compartments", "mode": "produce_tray",
+      "label": { "en": "Berry Compartments (3×3)", "es": "Compartimentos de Moras (3×3)" },
+      "values": { "cup_dia": 55, "cols": 3, "rows": 3, "compart_h": 45 }
+    },
+    {
+      "id": "drip_base", "mode": "stacking_tray",
+      "label": { "en": "Drip Base", "es": "Base de Goteo" },
+      "values": { "cup_dia": 45, "cols": 6, "rows": 2, "stack_lip": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "floor >= 1.6",
+      "severity": "error",
+      "message": { "en": "Floor must be at least 1.6 mm", "es": "El piso debe ser de al menos 1.6 mm" }
+    },
+    {
+      "expression": "cup_depth <= cup_dia * 1.5",
+      "severity": "warning",
+      "message": { "en": "Very deep cups relative to diameter", "es": "Copas muy profundas respecto al diámetro" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cup_array",
+        "label": { "en": "Cup Array", "es": "Arreglo de Copas" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["cup_dia", "cols", "rows"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Reusable, washable egg and produce trays sized to a household's fridge and stock replace disposable pulp cartons and clamshell packaging, cutting single-use waste and standardizing storage on one nesting footprint.",
+      "es": "Bandejas reutilizables y lavables para huevos y verduras dimensionadas al refrigerador y despensa de un hogar reemplazan cartones de pulpa desechables y empaques tipo concha, reduciendo el desperdicio de un solo uso y estandarizando el almacenamiento en una huella anidable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["egg", "produce", "tray", "kitchen", "storage", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,181 @@
+{
+  "project": {
+    "name": "Phone / Tablet Stand",
+    "slug": "device-stand",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An angled desk stand that cradles a phone or tablet in a slot tilted to a comfortable viewing angle, with a front lip that catches the device and a bottom cable slot so it charges while docked. Stand mode is a one-piece easel wedge; Adjustable mode is a base with angle notches plus a separate prop leg; Dock mode routes a cable channel to the rest and adds a raised back support.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de escritorio inclinado que sostiene un teléfono o tableta en una ranura inclinada a un ángulo de visión cómodo, con un labio frontal que retiene el dispositivo y una ranura inferior para el cable para cargar mientras está acoplado. El modo Soporte es una cuña de caballete de una pieza; el modo Ajustable es una base con muescas de ángulo más una pata de apoyo separada; el modo Dock enruta un canal para el cable hasta el descanso y añade un respaldo elevado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/device-stand.webp",
+    "difficulty": "beginner",
+    "tags": ["stand", "phone", "tablet", "dock", "desk", "holder", "accessory", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "stand",
+      "label": { "en": "Stand", "es": "Soporte" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stand"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "adjustable",
+      "label": { "en": "Adjustable", "es": "Ajustable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["adjustable"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "dock",
+      "label": { "en": "Dock", "es": "Dock" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dock"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "stand", "label": { "en": "Stand", "es": "Soporte" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "adjustable", "label": { "en": "Adjustable", "es": "Ajustable" }, "render_mode": 0, "color": "#6fae8f" },
+    { "id": "dock", "label": { "en": "Dock", "es": "Dock" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "device", "label": { "en": "Device Fit", "es": "Ajuste del Dispositivo" } },
+    { "id": "form", "label": { "en": "Stand Form", "es": "Forma del Soporte" } },
+    { "id": "cable", "label": { "en": "Cable", "es": "Cable" } }
+  ],
+  "parameters": [
+    {
+      "id": "device_t", "type": "slider", "default": 11.0, "min": 3.0, "max": 40.0, "step": 0.5,
+      "group": "device", "modes": ["stand", "adjustable", "dock"],
+      "label": { "en": "Device Thickness (mm)", "es": "Grosor del Dispositivo (mm)" },
+      "tooltip": { "en": "Width of the rest slot the device sits in (phone ≈ 8-12, tablet ≈ 7-11, cased ≈ 14-22)", "es": "Ancho de la ranura donde descansa el dispositivo (teléfono ≈ 8-12, tableta ≈ 7-11, con funda ≈ 14-22)" }
+    },
+    {
+      "id": "angle", "type": "slider", "default": 60.0, "min": 35.0, "max": 80.0, "step": 1.0,
+      "group": "device", "modes": ["stand", "adjustable", "dock"],
+      "label": { "en": "View Angle (deg)", "es": "Ángulo de Visión (grados)" },
+      "tooltip": { "en": "Lean of the device from horizontal — higher is more upright", "es": "Inclinación del dispositivo desde la horizontal — mayor es más vertical" }
+    },
+    {
+      "id": "width", "type": "slider", "default": 100.0, "min": 40.0, "max": 260.0, "step": 1.0,
+      "group": "device", "modes": ["stand", "adjustable", "dock"],
+      "label": { "en": "Stand Width (mm)", "es": "Ancho del Soporte (mm)" },
+      "tooltip": { "en": "Width across the device — narrower for phones, wider for tablets", "es": "Ancho a lo largo del dispositivo — más angosto para teléfonos, más ancho para tabletas" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "lip_h", "type": "slider", "default": 12.0, "min": 4.0, "max": 60.0, "step": 1.0,
+      "group": "device", "modes": ["stand", "adjustable", "dock"],
+      "label": { "en": "Catch Lip Height (mm)", "es": "Altura del Labio (mm)" },
+      "tooltip": { "en": "Height of the front ledge that stops the device sliding off", "es": "Altura del reborde frontal que evita que el dispositivo se deslice" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 75.0, "min": 40.0, "max": 200.0, "step": 1.0,
+      "group": "form", "modes": ["stand", "adjustable", "dock"],
+      "label": { "en": "Base Depth (mm)", "es": "Profundidad de Base (mm)" },
+      "tooltip": { "en": "Front-to-back footprint (stability against tipping)", "es": "Huella de adelante hacia atrás (estabilidad ante volcaduras)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 70.0, "min": 35.0, "max": 200.0, "step": 1.0,
+      "group": "form", "modes": ["stand", "adjustable", "dock"],
+      "label": { "en": "Stand Height (mm)", "es": "Altura del Soporte (mm)" },
+      "tooltip": { "en": "Overall height of the resting face", "es": "Altura total de la cara de descanso" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "form", "modes": ["stand", "adjustable", "dock"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body and slot wall thickness", "es": "Grosor de pared del cuerpo y la ranura" }
+    },
+    {
+      "id": "cable_slot", "type": "checkbox", "default": true,
+      "group": "cable", "modes": ["stand", "dock"],
+      "label": { "en": "Cable Slot", "es": "Ranura para Cable" },
+      "tooltip": { "en": "Notch under the rest so a charging cable reaches the port", "es": "Muesca bajo el descanso para que el cable de carga llegue al puerto" }
+    },
+    {
+      "id": "cable_w", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "cable", "modes": ["stand", "dock"],
+      "label": { "en": "Cable Slot Width (mm)", "es": "Ancho de Ranura de Cable (mm)" },
+      "tooltip": { "en": "Width of the cable slot / channel", "es": "Ancho de la ranura / canal del cable" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "phone_upright", "mode": "stand",
+      "label": { "en": "Phone (upright 65°)", "es": "Teléfono (vertical 65°)" },
+      "values": { "device_t": 11, "angle": 65, "width": 85, "height": 65, "lip_h": 12, "cable_slot": true }
+    },
+    {
+      "id": "tablet_easel", "mode": "stand",
+      "label": { "en": "Tablet Easel (55°)", "es": "Caballete para Tableta (55°)" },
+      "values": { "device_t": 9, "angle": 55, "width": 190, "depth": 110, "height": 95, "lip_h": 16 }
+    },
+    {
+      "id": "charging_dock", "mode": "dock",
+      "label": { "en": "Charging Dock", "es": "Dock de Carga" },
+      "values": { "device_t": 14, "angle": 62, "width": 95, "depth": 90, "height": 75, "cable_slot": true, "cable_w": 18 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "device_t + 2 * wall <= width",
+      "severity": "warning",
+      "message": { "en": "Slot plus walls is close to the stand width", "es": "La ranura más las paredes se acerca al ancho del soporte" }
+    },
+    {
+      "expression": "wall >= 2.5",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.5 mm", "es": "La pared debe ser de al menos 2.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [220, 0, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "device_rest_slot",
+        "label": { "en": "Device Rest Slot", "es": "Ranura de Descanso del Dispositivo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["device_t", "angle", "wall", "lip_h"]
+      },
+      {
+        "id": "cable_pass",
+        "label": { "en": "Cable Pass-Through", "es": "Paso de Cable" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["cable_slot", "cable_w"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A stand is the most-printed phone/tablet accessory; sizing the rest slot to the exact device (bare or cased) and the lean to the user keeps devices propped for video calls and reading without buying a plastic dock per device.",
+      "es": "Un soporte es el accesorio para teléfono/tableta más impreso; dimensionar la ranura al dispositivo exacto (con o sin funda) y la inclinación al usuario mantiene los dispositivos apoyados para videollamadas y lectura sin comprar un dock de plástico por dispositivo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["stand", "phone", "tablet", "dock", "commercial", "hyperobject", "commons"]
+}

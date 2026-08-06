@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 
-
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from utils.project_resolver import resolve_project_dir
@@ -73,6 +72,6 @@ class TestResolveProjectDir:
 
         monkeypatch.setattr("services.editor.git_operations.git_init", mock_git_init)
 
-        project_dir, err = resolve_project_dir(slug, auto_git=True)
+        _project_dir, err = resolve_project_dir(slug, auto_git=True)
         assert err is None
         assert len(called) == 1

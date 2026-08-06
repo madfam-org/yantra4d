@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Mobility Tube Tip",
+    "slug": "mobility-tip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Printable replacement tips and holders for the round tubes of canes, crutches, and walkers. Sized by the outer tube diameter so the socket press-fits; the ground face carries a concentric tread for grip. A printable mobility aid, not a certified medical device.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Punteras y soportes imprimibles para los tubos redondos de bastones, muletas y andaderas. Se dimensiona por el diámetro exterior del tubo para que el casquillo entre a presión; la cara de apoyo lleva una banda de rodadura concéntrica para agarre. Una ayuda de movilidad imprimible, no un dispositivo médico certificado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mobility-tip.webp",
+    "difficulty": "beginner",
+    "tags": ["cane", "crutch", "walker", "tip", "mobility", "assistive", "accessibility", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cane_tip",
+      "label": { "en": "Cane Tip", "es": "Puntera de Bastón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cane_tip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "quad_foot",
+      "label": { "en": "Quad Foot", "es": "Base Cuádruple" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["quad_foot"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "clip_holder",
+      "label": { "en": "Clip Holder", "es": "Soporte de Clip" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip_holder"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "cane_tip", "label": { "en": "Cane Tip", "es": "Puntera de Bastón" }, "render_mode": 0, "color": "#334155" },
+    { "id": "quad_foot", "label": { "en": "Quad Foot", "es": "Base Cuádruple" }, "render_mode": 0, "color": "#475569" },
+    { "id": "clip_holder", "label": { "en": "Clip Holder", "es": "Soporte de Clip" }, "render_mode": 0, "color": "#64748b" }
+  ],
+  "parameter_groups": [
+    { "id": "interface", "label": { "en": "Tube Fit", "es": "Ajuste de Tubo" } },
+    { "id": "body", "label": { "en": "Body & Tread", "es": "Cuerpo y Rodadura" } },
+    { "id": "foot", "label": { "en": "Quad Foot", "es": "Base Cuádruple" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_dia", "type": "slider", "default": 19.0, "min": 8.0, "max": 40.0, "step": 0.5,
+      "group": "interface", "modes": ["cane_tip", "quad_foot", "clip_holder"],
+      "label": { "en": "Tube Diameter (mm)", "es": "Diámetro de Tubo (mm)" },
+      "tooltip": { "en": "Outer diameter of the cane / crutch / walker tube the part fits", "es": "Diámetro exterior del tubo del bastón / muleta / andadera al que se ajusta la pieza" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "interface", "modes": ["cane_tip", "quad_foot", "clip_holder"],
+      "label": { "en": "Press-Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap so the socket presses onto the tube (0.2-0.4 for a snug fit)", "es": "Espacio por lado para que el casquillo entre a presión (0.2-0.4 para un ajuste firme)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "body", "modes": ["cane_tip", "quad_foot", "clip_holder"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall around the tube socket", "es": "Pared alrededor del casquillo del tubo" }
+    },
+    {
+      "id": "socket_h", "type": "slider", "default": 28.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "body", "modes": ["cane_tip", "quad_foot", "clip_holder"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad de Casquillo (mm)" },
+      "tooltip": { "en": "How far the tube seats into the socket", "es": "Qué tan profundo se asienta el tubo en el casquillo" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 5.0, "min": 3.0, "max": 15.0, "step": 0.5,
+      "group": "body", "modes": ["cane_tip", "quad_foot"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Solid ground-contact base under the socket", "es": "Base sólida de contacto con el suelo bajo el casquillo" }
+    },
+    {
+      "id": "tread", "type": "slider", "default": 1.2, "min": 0.0, "max": 3.0, "step": 0.1,
+      "group": "body", "modes": ["cane_tip", "quad_foot"],
+      "label": { "en": "Tread Depth (mm)", "es": "Profundidad de Rodadura (mm)" },
+      "tooltip": { "en": "Depth of the concentric grip grooves on the ground face (0 = smooth)", "es": "Profundidad de las ranuras concéntricas de agarre en la cara de apoyo (0 = liso)" }
+    },
+    {
+      "id": "foot_dia", "type": "slider", "default": 55.0, "min": 40.0, "max": 110.0, "step": 1.0,
+      "group": "foot", "modes": ["quad_foot"],
+      "label": { "en": "Foot Base Diameter (mm)", "es": "Diámetro de Base (mm)" },
+      "tooltip": { "en": "Overall diameter of the four-lobe stability base", "es": "Diámetro total de la base cuádruple de estabilidad" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_cane", "mode": "cane_tip",
+      "label": { "en": "Standard 19 mm Cane", "es": "Bastón Estándar 19 mm" },
+      "values": { "tube_dia": 19, "clearance": 0.3, "tread": 1.2 }
+    },
+    {
+      "id": "walker_leg", "mode": "cane_tip",
+      "label": { "en": "Walker Leg (25 mm)", "es": "Pata de Andadera (25 mm)" },
+      "values": { "tube_dia": 25, "clearance": 0.35, "socket_h": 34 }
+    },
+    {
+      "id": "stability_foot", "mode": "quad_foot",
+      "label": { "en": "Stability Quad Foot", "es": "Base Cuádruple de Estabilidad" },
+      "values": { "tube_dia": 22, "foot_dia": 70, "tread": 1.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 1.0",
+      "severity": "warning",
+      "message": { "en": "Large clearance may make the tip loose on the tube", "es": "Una holgura grande puede aflojar la puntera en el tubo" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm to withstand load", "es": "La pared debe ser de al menos 2 mm para soportar carga" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -110, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "tube_tip_socket",
+        "label": { "en": "Tube Tip Socket", "es": "Casquillo de Puntera de Tubo" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["tube_dia", "clearance", "wall", "socket_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Commercial cane and walker tips are a recurring, hard-to-source consumable. A tip sized to any tube diameter — printed in tough TPU — restores a mobility aid at near-zero cost and keeps independence from a single supplier.",
+      "es": "Las punteras comerciales de bastón y andadera son un consumible recurrente y difícil de conseguir. Una puntera dimensionada a cualquier diámetro de tubo — impresa en TPU resistente — restaura una ayuda de movilidad a costo casi nulo y evita depender de un solo proveedor."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cane", "crutch", "walker", "mobility", "assistive", "medical", "hyperobject", "commons"]
+}

@@ -1,0 +1,153 @@
+{
+  "project": {
+    "name": "Stackable Drawer System",
+    "slug": "stacking-drawer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A small modular drawer unit. The carcass is an open shell with side rails and a stacking interlock (pegs on top, sockets below) so units stack and lock. The drawer slides in on those rails with clearance on every side and has a front handle. The drawer that prints from this file always fits the carcass that prints from it.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una unidad de cajón modular pequeña. El armazón es una carcasa abierta con rieles laterales y un enclavamiento de apilado (clavijas arriba, casquillos abajo) para que las unidades se apilen y bloqueen. El cajón se desliza sobre esos rieles con holgura en cada lado y tiene un tirador frontal. El cajón que se imprime desde este archivo siempre encaja en el armazón que se imprime desde él.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/stacking-drawer.webp",
+    "difficulty": "intermediate",
+    "tags": ["drawer", "stacking", "modular", "carcass", "organizer", "storage", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "carcass",
+      "label": { "en": "Carcass", "es": "Armazón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["carcass"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "drawer",
+      "label": { "en": "Drawer", "es": "Cajón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["drawer"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "carcass", "label": { "en": "Carcass", "es": "Armazón" }, "render_mode": 0, "color": "#8a6f4f" },
+    { "id": "drawer", "label": { "en": "Drawer", "es": "Cajón" }, "render_mode": 0, "color": "#c9a978" }
+  ],
+  "parameter_groups": [
+    { "id": "dimensions", "label": { "en": "Drawer Interior", "es": "Interior del Cajón" } },
+    { "id": "fit", "label": { "en": "Slide & Fit", "es": "Deslizamiento y Ajuste" } },
+    { "id": "stacking", "label": { "en": "Stacking", "es": "Apilado" } }
+  ],
+  "parameters": [
+    {
+      "id": "inner_w", "type": "slider", "default": 100, "min": 40, "max": 220, "step": 1,
+      "group": "dimensions", "modes": ["carcass", "drawer"],
+      "label": { "en": "Interior Width (mm)", "es": "Ancho Interior (mm)" },
+      "tooltip": { "en": "Usable drawer interior X", "es": "Ancho interior utilizable del cajón X" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_d", "type": "slider", "default": 120, "min": 40, "max": 280, "step": 1,
+      "group": "dimensions", "modes": ["carcass", "drawer"],
+      "label": { "en": "Interior Depth (mm)", "es": "Profundidad Interior (mm)" },
+      "tooltip": { "en": "Usable drawer interior Y (front-to-back)", "es": "Profundidad interior utilizable Y (frente a fondo)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_h", "type": "slider", "default": 45, "min": 20, "max": 150, "step": 1,
+      "group": "dimensions", "modes": ["carcass", "drawer"],
+      "label": { "en": "Interior Height (mm)", "es": "Altura Interior (mm)" },
+      "tooltip": { "en": "Usable drawer interior Z", "es": "Altura interior utilizable del cajón Z" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "dimensions", "modes": ["carcass", "drawer"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall thickness for both parts", "es": "Grosor de pared para ambas piezas" }
+    },
+    {
+      "id": "clear", "type": "slider", "default": 0.4, "min": 0.15, "max": 1.0, "step": 0.05,
+      "group": "fit", "modes": ["carcass", "drawer"],
+      "label": { "en": "Slide Clearance (mm)", "es": "Holgura de Deslizamiento (mm)" },
+      "tooltip": { "en": "Per-side gap between drawer and carcass for a smooth slide", "es": "Espacio por lado entre cajón y armazón para deslizar suave" }
+    },
+    {
+      "id": "rail", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.5,
+      "group": "fit", "modes": ["carcass", "drawer"],
+      "label": { "en": "Rail Size (mm)", "es": "Tamaño de Riel (mm)" },
+      "tooltip": { "en": "Width/height of the side rails and matching drawer grooves", "es": "Ancho/altura de los rieles laterales y las ranuras del cajón" }
+    },
+    {
+      "id": "interlock", "type": "slider", "default": 4.0, "min": 0.0, "max": 8.0, "step": 0.5,
+      "group": "stacking", "modes": ["carcass"],
+      "label": { "en": "Stack Peg Size (mm)", "es": "Tamaño de Clavija (mm)" },
+      "tooltip": { "en": "Corner peg/socket size for stacking (0 = flat, no stacking)", "es": "Tamaño de clavija/casquillo de esquina para apilar (0 = plano, sin apilar)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "desk_tray", "mode": "drawer",
+      "label": { "en": "Desk Tray Drawer", "es": "Cajón de Escritorio" },
+      "values": { "inner_w": 120, "inner_d": 150, "inner_h": 35, "wall": 2.0, "clear": 0.4 }
+    },
+    {
+      "id": "parts_cabinet", "mode": "carcass",
+      "label": { "en": "Parts Cabinet Unit", "es": "Unidad de Gabinete" },
+      "values": { "inner_w": 80, "inner_d": 100, "inner_h": 50, "wall": 2.0, "clear": 0.4, "interlock": 4 }
+    },
+    {
+      "id": "deep_drawer", "mode": "drawer",
+      "label": { "en": "Deep Drawer", "es": "Cajón Profundo" },
+      "values": { "inner_w": 140, "inner_d": 180, "inner_h": 100, "wall": 2.5, "clear": 0.5, "rail": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clear <= 1",
+      "severity": "warning",
+      "message": { "en": "Large clearance makes the drawer sloppy", "es": "Una holgura grande hace el cajón flojo" }
+    },
+    {
+      "expression": "wall <= inner_w / 4",
+      "severity": "error",
+      "message": { "en": "Wall too thick for this interior width", "es": "Pared demasiado gruesa para este ancho interior" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, -180, 150] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 3, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "rail",
+        "label": { "en": "Drawer Slide + Stack Interlock", "es": "Deslizador de Cajón + Enclavamiento de Apilado" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["inner_w", "inner_d", "inner_h", "wall", "clear", "rail", "interlock"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printed-to-fit modular drawer system that stacks and locks — build exactly the small-parts cabinet a space needs, one unit at a time, without buying a whole storage tower.",
+      "es": "Un sistema de cajones modular impreso a medida que se apila y bloquea — construye exactamente el gabinete de piezas pequeñas que un espacio necesita, una unidad a la vez, sin comprar una torre de almacenamiento completa."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drawer", "stacking", "modular", "storage", "household", "hyperobject", "commons"]
+}

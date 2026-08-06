@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Wall Tile",
+    "slug": "wall-tile",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Interlocking decorative wall and acoustic tiles. Each square panel has a tongue-and-groove interlock on its edges so tiles snap together edge-to-edge into a seamless field. Pick a flat tile, a raised relief-pattern tile, or an acoustic tile whose faceted sound-scatter blocks diffuse reflections.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Azulejos decorativos y acústicos entrelazables para pared. Cada panel cuadrado tiene un ensamble de lengüeta y ranura en los bordes para que los azulejos se unan borde con borde en un campo continuo. Elige un azulejo plano, uno con patrón en relieve o uno acústico cuyos bloques facetados difusores dispersan reflexiones de sonido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/wall-tile.webp",
+    "difficulty": "intermediate",
+    "tags": ["tile", "wall", "acoustic", "diffuser", "interlock", "decor", "panel", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "flat_tile",
+      "label": { "en": "Flat Tile", "es": "Azulejo Plano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flat_tile"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "relief_tile",
+      "label": { "en": "Relief Tile", "es": "Azulejo en Relieve" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["relief_tile"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "acoustic_tile",
+      "label": { "en": "Acoustic Tile", "es": "Azulejo Acústico" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["acoustic_tile"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "flat_tile", "label": { "en": "Flat Tile", "es": "Azulejo Plano" }, "render_mode": 0, "color": "#5f7f8f" },
+    { "id": "relief_tile", "label": { "en": "Relief Tile", "es": "Azulejo en Relieve" }, "render_mode": 0, "color": "#6f9aa8" },
+    { "id": "acoustic_tile", "label": { "en": "Acoustic Tile", "es": "Azulejo Acústico" }, "render_mode": 0, "color": "#84b5c4" }
+  ],
+  "parameter_groups": [
+    { "id": "tile", "label": { "en": "Tile", "es": "Azulejo" } },
+    { "id": "interlock", "label": { "en": "Interlock", "es": "Ensamble" } },
+    { "id": "pattern", "label": { "en": "Pattern", "es": "Patrón" } }
+  ],
+  "parameters": [
+    {
+      "id": "tile_size", "type": "slider", "default": 100.0, "min": 40.0, "max": 250.0, "step": 2.0,
+      "group": "tile", "modes": ["flat_tile", "relief_tile", "acoustic_tile"],
+      "label": { "en": "Tile Size (mm)", "es": "Tamaño del Azulejo (mm)" },
+      "tooltip": { "en": "Square tile edge length", "es": "Longitud del borde del azulejo cuadrado" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "base_t", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "tile", "modes": ["flat_tile", "relief_tile", "acoustic_tile"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Panel thickness behind the pattern", "es": "Grosor del panel tras el patrón" }
+    },
+    {
+      "id": "interlock", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "interlock", "modes": ["flat_tile", "relief_tile", "acoustic_tile"],
+      "label": { "en": "Interlock Size (mm)", "es": "Tamaño de Ensamble (mm)" },
+      "tooltip": { "en": "Tongue/groove size on the tile edges", "es": "Tamaño de lengüeta/ranura en los bordes" }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "interlock", "modes": ["flat_tile", "relief_tile", "acoustic_tile"], "advanced": true,
+      "label": { "en": "Interlock Fit (mm)", "es": "Ajuste de Ensamble (mm)" },
+      "tooltip": { "en": "Groove oversize for a snug snap", "es": "Sobredimensión de la ranura para un encaje ajustado" }
+    },
+    {
+      "id": "pattern", "type": "select", "default": "grid",
+      "group": "pattern", "modes": ["relief_tile"],
+      "label": { "en": "Relief Pattern", "es": "Patrón en Relieve" },
+      "tooltip": { "en": "Arrangement of the raised blocks", "es": "Disposición de los bloques elevados" },
+      "options": [
+        { "value": "grid", "label": { "en": "Grid", "es": "Cuadrícula" } },
+        { "value": "diagonal", "label": { "en": "Diagonal (checker)", "es": "Diagonal (ajedrez)" } },
+        { "value": "concentric", "label": { "en": "Concentric", "es": "Concéntrico" } }
+      ]
+    },
+    {
+      "id": "relief_h", "type": "slider", "default": 3.0, "min": 1.0, "max": 12.0, "step": 0.5,
+      "group": "pattern", "modes": ["relief_tile", "acoustic_tile"],
+      "label": { "en": "Relief Height (mm)", "es": "Altura de Relieve (mm)" },
+      "tooltip": { "en": "Max height of the raised / scatter blocks", "es": "Altura máxima de los bloques elevados / difusores" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cells", "type": "slider", "default": 6, "min": 2, "max": 10, "step": 1,
+      "group": "pattern", "modes": ["relief_tile", "acoustic_tile"],
+      "label": { "en": "Cells per Side", "es": "Celdas por Lado" },
+      "tooltip": { "en": "Pattern subdivision across the tile", "es": "Subdivisión del patrón a lo ancho del azulejo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "plain_100", "mode": "flat_tile",
+      "label": { "en": "Plain 100 mm Tile", "es": "Azulejo Plano 100 mm" },
+      "values": { "tile_size": 100, "base_t": 4, "interlock": 6 }
+    },
+    {
+      "id": "grid_relief", "mode": "relief_tile",
+      "label": { "en": "Grid Relief Panel", "es": "Panel en Relieve de Cuadrícula" },
+      "values": { "tile_size": 120, "pattern": "grid", "relief_h": 4, "cells": 6 }
+    },
+    {
+      "id": "qrd_diffuser", "mode": "acoustic_tile",
+      "label": { "en": "QRD Diffuser Tile", "es": "Azulejo Difusor QRD" },
+      "values": { "tile_size": 150, "relief_h": 10, "cells": 7 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "interlock <= tile_size / 5",
+      "severity": "warning",
+      "message": { "en": "Interlock is large relative to the tile", "es": "El ensamble es grande respecto al azulejo" }
+    },
+    {
+      "expression": "base_t >= 2",
+      "severity": "error",
+      "message": { "en": "Base under 2 mm is too weak to interlock", "es": "Una base menor a 2 mm es muy débil para ensamblar" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "tile_interlock",
+        "label": { "en": "Tile Interlock", "es": "Ensamble de Azulejo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["tile_size", "interlock", "fit", "base_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A tileable wall surface anyone can print in any quantity — decorative or sound-absorbing — turning bare walls into custom finishes and treated rooms without contractor panels.",
+      "es": "Una superficie de pared entrelazable que cualquiera imprime en cualquier cantidad — decorativa o absorbente de sonido — convirtiendo paredes desnudas en acabados a medida y salas tratadas sin paneles de contratista."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["tile", "wall", "acoustic", "interlock", "decor", "household", "hyperobject", "commons"]
+}

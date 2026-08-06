@@ -1,0 +1,177 @@
+{
+  "project": {
+    "name": "Instrument Wall Hook",
+    "slug": "instrument-hook",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A wall hanger that cradles a stringed instrument by its neck. Sized by neck width so the rounded saddle fits a guitar, bass, violin, or ukulele exactly, with a stud-screw back plate. Single or double cradle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un colgador de pared que sostiene un instrumento de cuerda por su mástil. Se dimensiona por el ancho del mástil para que la silla redondeada encaje exactamente en una guitarra, bajo, violín o ukulele, con una placa trasera atornillable al montante. Cuna simple o doble.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/instrument-hook.webp",
+    "difficulty": "beginner",
+    "tags": ["guitar", "instrument", "hook", "hanger", "wall", "music", "bass", "violin", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "guitar_hook",
+      "label": { "en": "Guitar Hook", "es": "Gancho de Guitarra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["guitar_hook"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "violin_hook",
+      "label": { "en": "Violin / Ukulele Hook", "es": "Gancho de Violín / Ukulele" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["violin_hook"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "multi_hook",
+      "label": { "en": "Double Hook", "es": "Gancho Doble" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_hook"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "guitar_hook", "label": { "en": "Guitar Hook", "es": "Gancho de Guitarra" }, "render_mode": 0, "color": "#b5651d" },
+    { "id": "violin_hook", "label": { "en": "Violin / Ukulele Hook", "es": "Gancho de Violín / Ukulele" }, "render_mode": 0, "color": "#c97b3c" },
+    { "id": "multi_hook", "label": { "en": "Double Hook", "es": "Gancho Doble" }, "render_mode": 0, "color": "#9a5116" }
+  ],
+  "parameter_groups": [
+    { "id": "neck", "label": { "en": "Neck Cradle", "es": "Cuna del Mástil" } },
+    { "id": "plate", "label": { "en": "Wall Plate", "es": "Placa de Pared" } }
+  ],
+  "parameters": [
+    {
+      "id": "neck_w", "type": "slider", "default": 52, "min": 18, "max": 90, "step": 1,
+      "group": "neck", "modes": ["guitar_hook", "violin_hook", "multi_hook"],
+      "label": { "en": "Neck Width (mm)", "es": "Ancho del Mástil (mm)" },
+      "tooltip": { "en": "Instrument neck width at the nut — sizes the cradle saddle", "es": "Ancho del mástil del instrumento en la cejuela — dimensiona la silla de la cuna" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "arm_gap", "type": "slider", "default": 32, "min": 18, "max": 70, "step": 1,
+      "group": "neck", "modes": ["guitar_hook", "violin_hook", "multi_hook"],
+      "label": { "en": "Neck Opening Height (mm)", "es": "Altura de Apertura del Mástil (mm)" },
+      "tooltip": { "en": "Vertical opening the neck sits in", "es": "Apertura vertical donde descansa el mástil" }
+    },
+    {
+      "id": "arm_thick", "type": "slider", "default": 12, "min": 6, "max": 22, "step": 0.5,
+      "group": "neck", "modes": ["guitar_hook", "violin_hook", "multi_hook"],
+      "label": { "en": "Arm Thickness (mm)", "es": "Grosor del Brazo (mm)" },
+      "tooltip": { "en": "Thickness of the cradle arms and lip", "es": "Grosor de los brazos y el labio de la cuna" }
+    },
+    {
+      "id": "reach", "type": "slider", "default": 55, "min": 30, "max": 110, "step": 1,
+      "group": "neck", "modes": ["guitar_hook", "violin_hook", "multi_hook"],
+      "label": { "en": "Cradle Reach (mm)", "es": "Alcance de la Cuna (mm)" },
+      "tooltip": { "en": "How far the cradle projects from the wall", "es": "Cuánto sobresale la cuna de la pared" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 70, "min": 40, "max": 260, "step": 1,
+      "group": "plate", "modes": ["guitar_hook", "multi_hook"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Back plate width (auto-widened for the double hook)", "es": "Ancho de la placa trasera (se ensancha automáticamente para el gancho doble)" }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 90, "min": 50, "max": 200, "step": 1,
+      "group": "plate", "modes": ["guitar_hook", "multi_hook"],
+      "label": { "en": "Plate Height (mm)", "es": "Alto de Placa (mm)" },
+      "tooltip": { "en": "Back plate height", "es": "Alto de la placa trasera" }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 8, "min": 5, "max": 16, "step": 0.5,
+      "group": "plate", "modes": ["guitar_hook", "violin_hook", "multi_hook"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Back plate thickness", "es": "Grosor de la placa trasera" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 5.0, "min": 3.0, "max": 9.0, "step": 0.5,
+      "group": "plate", "modes": ["guitar_hook", "violin_hook", "multi_hook"], "advanced": true,
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Diameter of the stud-screw clearance holes", "es": "Diámetro de los orificios de holgura para el tornillo al montante" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "electric_guitar", "mode": "guitar_hook",
+      "label": { "en": "Electric Guitar", "es": "Guitarra Eléctrica" },
+      "values": { "neck_w": 52, "arm_gap": 30, "reach": 55 }
+    },
+    {
+      "id": "bass_guitar", "mode": "guitar_hook",
+      "label": { "en": "Bass Guitar", "es": "Bajo" },
+      "values": { "neck_w": 62, "arm_gap": 34, "reach": 62, "arm_thick": 14 }
+    },
+    {
+      "id": "ukulele", "mode": "violin_hook",
+      "label": { "en": "Ukulele / Violin", "es": "Ukulele / Violín" },
+      "values": { "neck_w": 36, "arm_gap": 24 }
+    },
+    {
+      "id": "twin_guitars", "mode": "multi_hook",
+      "label": { "en": "Twin Guitar Rack", "es": "Soporte para Dos Guitarras" },
+      "values": { "neck_w": 52, "arm_gap": 30, "plate_h": 100 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "arm_gap >= 18",
+      "severity": "warning",
+      "message": { "en": "A very small opening may not accept the neck", "es": "Una apertura muy pequeña puede no aceptar el mástil" }
+    },
+    {
+      "expression": "plate_t >= 5",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 5 mm to hold a screw", "es": "La placa debe tener al menos 5 mm para sujetar un tornillo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 50] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "neck_cradle",
+        "label": { "en": "Neck Cradle", "es": "Cuna del Mástil" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["neck_w", "arm_gap", "arm_thick", "reach"]
+      },
+      {
+        "id": "stud_mount",
+        "label": { "en": "Stud Screw Mount", "es": "Montaje al Montante" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["plate_w", "plate_h", "plate_t", "screw_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Instrument wall storage sized to the exact neck, printable in a padding-friendly material, keeps guitars and violins off the floor and out of harm — replacing generic hardware-store hooks that dent finishes.",
+      "es": "Almacenamiento de instrumentos en pared dimensionado al mástil exacto, imprimible en material acolchable, mantiene guitarras y violines fuera del suelo y a salvo — reemplazando ganchos genéricos de ferretería que dañan los acabados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["guitar", "instrument", "hook", "hanger", "music", "commercial", "hyperobject", "commons"]
+}

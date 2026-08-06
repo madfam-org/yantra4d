@@ -1,0 +1,194 @@
+{
+  "project": {
+    "name": "Under-Shelf / Under-Desk Mount",
+    "slug": "undershelf-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Reclaims the dead space under a shelf, desk, or cabinet. A shelf-edge clamp grips over the surface (no tools, no drilling) or a screw plate fixes to the underside, carrying a payload that hangs below: a small bin, a router or power-strip cradle, or a hook. Set the surface thickness and the mount grips it exactly.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Recupera el espacio muerto bajo un estante, escritorio o gabinete. Una pinza de borde se sujeta sobre la superficie (sin herramientas ni taladro) o una placa de tornillos se fija a la parte inferior, sosteniendo una carga que cuelga debajo: un pequeño contenedor, una cuna para router o regleta, o un gancho. Define el grosor de la superficie y el soporte la sujeta con exactitud.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/undershelf-mount.webp",
+    "difficulty": "beginner",
+    "tags": ["under-shelf", "under-desk", "clamp", "mount", "bin", "cradle", "hook", "organizer", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clamp_bin",
+      "label": { "en": "Edge Clamp + Payload", "es": "Pinza de Borde + Carga" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clamp_bin"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "screw_cradle",
+      "label": { "en": "Screw Plate + Payload", "es": "Placa Atornillada + Carga" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["screw_cradle"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "edge_hook",
+      "label": { "en": "Edge Hook", "es": "Gancho de Borde" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["edge_hook"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "clamp_bin", "label": { "en": "Edge Clamp + Payload", "es": "Pinza de Borde + Carga" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "screw_cradle", "label": { "en": "Screw Plate + Payload", "es": "Placa Atornillada + Carga" }, "render_mode": 0, "color": "#8bb5cc" },
+    { "id": "edge_hook", "label": { "en": "Edge Hook", "es": "Gancho de Borde" }, "render_mode": 0, "color": "#a7d3c1" }
+  ],
+  "parameter_groups": [
+    { "id": "attach", "label": { "en": "Attachment", "es": "Fijación" } },
+    { "id": "surface", "label": { "en": "Surface & Clamp", "es": "Superficie y Pinza" } },
+    { "id": "payload", "label": { "en": "Hanging Payload", "es": "Carga Colgante" } }
+  ],
+  "parameters": [
+    {
+      "id": "payload", "type": "select", "default": "bin",
+      "group": "payload", "modes": ["clamp_bin", "screw_cradle"],
+      "label": { "en": "Payload", "es": "Carga" },
+      "tooltip": { "en": "What hangs below the mount. (Edge Hook mode always uses a hook.)", "es": "Qué cuelga bajo el soporte. (El modo Gancho de Borde siempre usa un gancho.)" },
+      "options": [
+        { "value": "bin", "label": { "en": "Bin (open tray)", "es": "Contenedor (bandeja)" } },
+        { "value": "router_cradle", "label": { "en": "Router cradle", "es": "Cuna para router" } },
+        { "value": "strip", "label": { "en": "Power-strip cradle", "es": "Cuna para regleta" } },
+        { "value": "hook", "label": { "en": "Hook", "es": "Gancho" } }
+      ]
+    },
+    {
+      "id": "surface_t", "type": "slider", "default": 25, "min": 6, "max": 60, "step": 1,
+      "group": "surface", "modes": ["clamp_bin", "edge_hook"],
+      "label": { "en": "Surface Thickness (mm)", "es": "Grosor de Superficie (mm)" },
+      "tooltip": { "en": "Thickness of the shelf / desk the clamp grips over", "es": "Grosor del estante / escritorio que sujeta la pinza" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip_len", "type": "slider", "default": 35.0, "min": 15.0, "max": 120.0, "step": 1.0,
+      "group": "surface", "modes": ["clamp_bin", "edge_hook"],
+      "label": { "en": "Clamp Reach (mm)", "es": "Alcance de la Pinza (mm)" },
+      "tooltip": { "en": "How far the clamp jaw reaches back over the surface top", "es": "Qué tanto alcanza la mordaza sobre la superficie" }
+    },
+    {
+      "id": "clamp_clear", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "surface", "modes": ["clamp_bin", "edge_hook"], "advanced": true,
+      "label": { "en": "Clamp Fit Gap (mm)", "es": "Holgura de la Pinza (mm)" },
+      "tooltip": { "en": "Play between the clamp and the surface for an easy slide-on fit", "es": "Juego entre la pinza y la superficie para un ajuste fácil" }
+    },
+    {
+      "id": "width", "type": "slider", "default": 70, "min": 30, "max": 250, "step": 1,
+      "group": "surface", "modes": ["clamp_bin", "screw_cradle", "edge_hook"],
+      "label": { "en": "Mount Width (mm)", "es": "Ancho del Soporte (mm)" },
+      "tooltip": { "en": "Width along the shelf edge (X)", "es": "Ancho a lo largo del borde del estante (X)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall_t", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "surface", "modes": ["clamp_bin", "screw_cradle", "edge_hook"],
+      "label": { "en": "Material Thickness (mm)", "es": "Grosor del Material (mm)" },
+      "tooltip": { "en": "Wall thickness of the clamp / plate / payload", "es": "Grosor de la pared de la pinza / placa / carga" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.2, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "attach", "modes": ["screw_cradle"],
+      "label": { "en": "Underside Screw Dia (mm)", "es": "Diámetro de Tornillo Inferior (mm)" },
+      "tooltip": { "en": "Clearance diameter for the four underside screws (#8 ≈ 4.2)", "es": "Diámetro de holgura para los cuatro tornillos inferiores (#8 ≈ 4.2)" }
+    },
+    {
+      "id": "payload_depth", "type": "slider", "default": 60.0, "min": 20.0, "max": 200.0, "step": 1.0,
+      "group": "payload", "modes": ["clamp_bin", "screw_cradle", "edge_hook"],
+      "label": { "en": "Payload Depth (mm)", "es": "Profundidad de la Carga (mm)" },
+      "tooltip": { "en": "How far the payload projects out from the edge (Y)", "es": "Qué tanto sobresale la carga del borde (Y)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "payload_height", "type": "slider", "default": 45.0, "min": 15.0, "max": 150.0, "step": 1.0,
+      "group": "payload", "modes": ["clamp_bin", "screw_cradle", "edge_hook"],
+      "label": { "en": "Payload Drop (mm)", "es": "Caída de la Carga (mm)" },
+      "tooltip": { "en": "How far the payload hangs below the mount (Z)", "es": "Qué tanto cuelga la carga bajo el soporte (Z)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "desk_clamp_bin", "mode": "clamp_bin",
+      "label": { "en": "Under-Desk Parts Bin", "es": "Contenedor Bajo Escritorio" },
+      "values": { "payload": "bin", "surface_t": 25, "width": 80, "grip_len": 35, "payload_depth": 60, "payload_height": 45 }
+    },
+    {
+      "id": "router_screw", "mode": "screw_cradle",
+      "label": { "en": "Under-Shelf Router Cradle", "es": "Cuna de Router Bajo Estante" },
+      "values": { "payload": "router_cradle", "width": 140, "wall_t": 4, "payload_depth": 40, "payload_height": 60, "screw_dia": 4.2 }
+    },
+    {
+      "id": "headphone_hook", "mode": "edge_hook",
+      "label": { "en": "Desk-Edge Headphone Hook", "es": "Gancho de Audífonos" },
+      "values": { "surface_t": 30, "width": 40, "grip_len": 40, "payload_depth": 45, "payload_height": 40 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall_t >= 2.5",
+      "severity": "error",
+      "message": { "en": "Material must be at least 2.5 mm thick", "es": "El material debe tener al menos 2.5 mm de grosor" }
+    },
+    {
+      "expression": "grip_len >= surface_t / 2",
+      "severity": "warning",
+      "message": { "en": "Clamp reach is short relative to the surface thickness", "es": "El alcance de la pinza es corto respecto al grosor de la superficie" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 280] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -280, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "shelf_edge_clamp",
+        "label": { "en": "Shelf-Edge Clamp", "es": "Pinza de Borde de Estante" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["surface_t", "grip_len", "clamp_clear", "width", "wall_t"]
+      },
+      {
+        "id": "underside_screw_plate",
+        "label": { "en": "Underside Screw Plate", "es": "Placa de Tornillos Inferior" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["screw_dia", "width", "payload_depth"]
+      },
+      {
+        "id": "payload_carrier",
+        "label": { "en": "Hanging Payload Carrier", "es": "Portador de Carga Colgante" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["payload", "payload_depth", "payload_height", "width", "wall_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns wasted under-surface space into storage without buying furniture — one parametric mount clamps or screws under any shelf or desk and carries the bin, cradle, or hook a workspace actually needs, sized to the real surface thickness.",
+      "es": "Convierte el espacio desperdiciado bajo las superficies en almacenamiento sin comprar muebles — un soporte paramétrico se sujeta o atornilla bajo cualquier estante o escritorio y lleva el contenedor, cuna o gancho que un espacio realmente necesita, dimensionado al grosor real de la superficie."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["under-shelf", "under-desk", "clamp", "mount", "bin", "cradle", "household", "hyperobject", "commons"]
+}

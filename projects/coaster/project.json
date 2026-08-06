@@ -1,0 +1,163 @@
+{
+  "project": {
+    "name": "Coaster / Trivet",
+    "slug": "coaster",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A patterned disc that protects a surface from a cold drink or a hot pot. Round, square, or hex outline; an optional raised edge lip catches condensation; and a top pattern (solid, grid cutout, concentric rings, or honeycomb) adds style while saving material. Coaster mode is a small drink rest; Trivet mode is a larger, thicker version for hot cookware.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un disco con patrón que protege la superficie de una bebida fría o una olla caliente. Contorno redondo, cuadrado o hexagonal; un borde elevado opcional atrapa la condensación; y un patrón superior (sólido, rejilla, anillos concéntricos o panal) aporta estilo mientras ahorra material. El modo Posavasos es un descanso pequeño para bebidas; el modo Salvamanteles es una versión más grande y gruesa para utensilios calientes.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/coaster.webp",
+    "difficulty": "beginner",
+    "tags": ["coaster", "trivet", "kitchen", "household", "condensation", "hot-pad", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "coaster",
+      "label": { "en": "Coaster", "es": "Posavasos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["coaster"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "trivet",
+      "label": { "en": "Trivet", "es": "Salvamanteles" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["trivet"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "coaster", "label": { "en": "Coaster", "es": "Posavasos" }, "render_mode": 0, "color": "#4f8a8b" },
+    { "id": "trivet", "label": { "en": "Trivet", "es": "Salvamanteles" }, "render_mode": 0, "color": "#7fb3b0" }
+  ],
+  "parameter_groups": [
+    { "id": "outline", "label": { "en": "Outline & Size", "es": "Contorno y Tamaño" } },
+    { "id": "lip", "label": { "en": "Edge Lip", "es": "Borde Elevado" } },
+    { "id": "pattern", "label": { "en": "Top Pattern", "es": "Patrón Superior" } }
+  ],
+  "parameters": [
+    {
+      "id": "diameter", "type": "slider", "default": 95, "min": 30, "max": 250, "step": 1,
+      "group": "outline", "modes": ["coaster", "trivet"],
+      "label": { "en": "Size (Ø / width, mm)", "es": "Tamaño (Ø / ancho, mm)" },
+      "tooltip": { "en": "Outer diameter (round) or width across flats (square / hex)", "es": "Diámetro exterior (redondo) o ancho entre caras (cuadrado / hexagonal)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 5.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "outline", "modes": ["coaster", "trivet"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Thickness of the solid disc below any pattern", "es": "Grosor del disco sólido bajo cualquier patrón" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "shape", "type": "select", "default": "round",
+      "group": "outline", "modes": ["coaster", "trivet"],
+      "label": { "en": "Outline Shape", "es": "Forma del Contorno" },
+      "tooltip": { "en": "Round, square, or hexagonal outline", "es": "Contorno redondo, cuadrado o hexagonal" },
+      "options": [
+        { "value": "round", "label": { "en": "Round", "es": "Redondo" } },
+        { "value": "square", "label": { "en": "Square", "es": "Cuadrado" } },
+        { "value": "hex", "label": { "en": "Hexagon", "es": "Hexágono" } }
+      ]
+    },
+    {
+      "id": "lip_height", "type": "slider", "default": 2.5, "min": 0.0, "max": 12.0, "step": 0.5,
+      "group": "lip", "modes": ["coaster", "trivet"],
+      "label": { "en": "Lip Height (mm)", "es": "Altura del Borde (mm)" },
+      "tooltip": { "en": "Raised rim to catch condensation runoff (0 = flat)", "es": "Borde elevado para atrapar la condensación (0 = plano)" }
+    },
+    {
+      "id": "lip_wall", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.5,
+      "group": "lip", "modes": ["coaster", "trivet"], "advanced": true,
+      "label": { "en": "Lip Wall (mm)", "es": "Grosor del Borde (mm)" },
+      "tooltip": { "en": "Thickness of the raised rim ring", "es": "Grosor del anillo del borde elevado" }
+    },
+    {
+      "id": "pattern", "type": "select", "default": "grid-cutout",
+      "group": "pattern", "modes": ["coaster", "trivet"],
+      "label": { "en": "Top Pattern", "es": "Patrón Superior" },
+      "tooltip": { "en": "Decorative pattern cut into the top face for style and material saving", "es": "Patrón decorativo grabado en la cara superior para estilo y ahorro de material" },
+      "options": [
+        { "value": "solid", "label": { "en": "Solid (no pattern)", "es": "Sólido (sin patrón)" } },
+        { "value": "grid-cutout", "label": { "en": "Grid Cutout", "es": "Rejilla" } },
+        { "value": "concentric-rings", "label": { "en": "Concentric Rings", "es": "Anillos Concéntricos" } },
+        { "value": "honeycomb", "label": { "en": "Honeycomb", "es": "Panal" } }
+      ]
+    },
+    {
+      "id": "pattern_depth", "type": "slider", "default": 2.0, "min": 0.0, "max": 8.0, "step": 0.5,
+      "group": "pattern", "modes": ["coaster", "trivet"],
+      "label": { "en": "Pattern Depth (mm)", "es": "Profundidad del Patrón (mm)" },
+      "tooltip": { "en": "How deep the pattern is cut in (auto-clamped to keep a solid floor)", "es": "Qué tan profundo se graba el patrón (limitado para mantener un piso sólido)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "round_grid_coaster", "mode": "coaster",
+      "label": { "en": "Round Grid Coaster", "es": "Posavasos Redondo con Rejilla" },
+      "values": { "diameter": 95, "thickness": 5, "shape": "round", "lip_height": 2.5, "pattern": "grid-cutout", "pattern_depth": 2.0 }
+    },
+    {
+      "id": "hex_honeycomb_coaster", "mode": "coaster",
+      "label": { "en": "Hex Honeycomb Coaster", "es": "Posavasos Hexagonal Panal" },
+      "values": { "diameter": 100, "thickness": 5, "shape": "hex", "lip_height": 3.0, "pattern": "honeycomb", "pattern_depth": 2.5 }
+    },
+    {
+      "id": "square_ring_trivet", "mode": "trivet",
+      "label": { "en": "Square Ring Trivet", "es": "Salvamanteles Cuadrado con Anillos" },
+      "values": { "diameter": 180, "thickness": 7, "shape": "square", "lip_height": 0, "pattern": "concentric-rings", "pattern_depth": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pattern_depth <= thickness - 1.5",
+      "severity": "warning",
+      "message": { "en": "Pattern depth is close to the base thickness; a solid floor is kept automatically", "es": "La profundidad del patrón se acerca al grosor base; se conserva un piso sólido automáticamente" }
+    },
+    {
+      "expression": "lip_wall <= diameter / 4",
+      "severity": "warning",
+      "message": { "en": "Lip wall is large relative to size", "es": "El borde es grueso respecto al tamaño" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "patterned_disc",
+        "label": { "en": "Patterned Disc", "es": "Disco con Patrón" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["diameter", "shape", "pattern", "pattern_depth", "lip_height"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A first-print staple that protects furniture from rings and heat damage. The patterned top turns a solid puck into a material-light object, and the same geometry scales from drink coaster to cookware trivet.",
+      "es": "Un imprimible básico que protege los muebles de marcas de humedad y calor. El patrón superior convierte un disco macizo en un objeto ligero en material, y la misma geometría escala de posavasos a salvamanteles de cocina."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["coaster", "trivet", "kitchen", "household", "hyperobject", "commons"]
+}

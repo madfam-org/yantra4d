@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Dovetail / Slide Joint",
+    "slug": "dovetail-joint",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A male + female dovetail slide connection for joining modular parts. The male is a trapezoidal rail (wider at its flare than its neck, so it cannot pull straight out); the female is a matching socket cut into a block. Because the socket is the same trapezoid inflated by the print clearance, the two halves slide together and mate. Straight-slide and locking (detent) variants.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una conexión deslizante de cola de milano macho + hembra para unir piezas modulares. El macho es un riel trapezoidal (más ancho en su ensanche que en su cuello, por lo que no se puede tirar hacia afuera); la hembra es un casquillo correspondiente cortado en un bloque. Como el casquillo es el mismo trapecio inflado por la holgura de impresión, ambas mitades se deslizan y encajan. Variantes de deslizamiento recto y con tope.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dovetail-joint.webp",
+    "difficulty": "intermediate",
+    "tags": ["dovetail", "slide", "joint", "rail", "modular", "connector", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "male",
+      "label": { "en": "Male Rail", "es": "Riel Macho" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["male"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "female",
+      "label": { "en": "Female Socket", "es": "Casquillo Hembra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["female"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "pair",
+      "label": { "en": "Matched Pair", "es": "Par Emparejado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pair"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "male", "label": { "en": "Male Rail", "es": "Riel Macho" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "female", "label": { "en": "Female Socket", "es": "Casquillo Hembra" }, "render_mode": 0, "color": "#b0764b" },
+    { "id": "pair", "label": { "en": "Matched Pair", "es": "Par Emparejado" }, "render_mode": 0, "color": "#6a8d73" }
+  ],
+  "parameter_groups": [
+    { "id": "dovetail", "label": { "en": "Dovetail", "es": "Cola de Milano" } },
+    { "id": "fit", "label": { "en": "Fit & Type", "es": "Ajuste y Tipo" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "joint_type", "type": "select", "default": "straight_slide",
+      "group": "fit", "modes": ["male", "female", "pair"],
+      "label": { "en": "Joint Type", "es": "Tipo de Unión" },
+      "tooltip": { "en": "straight_slide: open groove, slides through. locking: a detent stop clicks the rail in.", "es": "straight_slide: ranura abierta, se desliza a través. locking: un tope encaja el riel." },
+      "options": [
+        { "value": "straight_slide", "label": { "en": "Straight Slide", "es": "Deslizamiento Recto" } },
+        { "value": "locking", "label": { "en": "Locking (detent)", "es": "Con Tope (detent)" } }
+      ]
+    },
+    {
+      "id": "dt_width", "type": "slider", "default": 20.0, "min": 6.0, "max": 60.0, "step": 1.0,
+      "group": "dovetail", "modes": ["male", "female", "pair"],
+      "label": { "en": "Dovetail Width (mm)", "es": "Ancho de Cola de Milano (mm)" },
+      "tooltip": { "en": "Widest (flare) width of the tail; the neck is inset by the flank angle", "es": "Ancho más amplio (ensanche) de la cola; el cuello se estrecha según el ángulo de flanco" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "dt_depth", "type": "slider", "default": 8.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "dovetail", "modes": ["male", "female", "pair"],
+      "label": { "en": "Dovetail Depth (mm)", "es": "Profundidad de Cola de Milano (mm)" },
+      "tooltip": { "en": "Height of the rail / depth of the groove", "es": "Altura del riel / profundidad de la ranura" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "angle", "type": "slider", "default": 15.0, "min": 0.0, "max": 40.0, "step": 1.0,
+      "group": "dovetail", "modes": ["male", "female", "pair"],
+      "label": { "en": "Flank Angle (°)", "es": "Ángulo de Flanco (°)" },
+      "tooltip": { "en": "Undercut angle of the flanks (0 = a plain square rail; ~15° is a classic dovetail)", "es": "Ángulo de socavado de los flancos (0 = riel cuadrado; ~15° es cola de milano clásica)" }
+    },
+    {
+      "id": "length", "type": "slider", "default": 40.0, "min": 8.0, "max": 120.0, "step": 2.0,
+      "group": "dovetail", "modes": ["male", "female", "pair"],
+      "label": { "en": "Slide Length (mm)", "es": "Longitud de Deslizamiento (mm)" },
+      "tooltip": { "en": "Length of the rail / socket along the slide axis", "es": "Longitud del riel / casquillo a lo largo del eje de deslizamiento" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.2, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "fit", "modes": ["male", "female", "pair"],
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-flank gap so the printed rail slides in the socket (~0.2 mm typical)", "es": "Espacio por flanco para que el riel impreso deslice en el casquillo (~0.2 mm típico)" }
+    },
+    {
+      "id": "plate_thick", "type": "slider", "default": 4.0, "min": 1.5, "max": 12.0, "step": 0.5,
+      "group": "body", "modes": ["male", "female", "pair"], "advanced": true,
+      "label": { "en": "Plate / Base Thickness (mm)", "es": "Grosor de Placa / Base (mm)" },
+      "tooltip": { "en": "Backing plate under the male rail and floor under the female groove", "es": "Placa de respaldo bajo el riel macho y piso bajo la ranura hembra" }
+    },
+    {
+      "id": "block_extra", "type": "slider", "default": 8.0, "min": 3.0, "max": 30.0, "step": 1.0,
+      "group": "body", "modes": ["male", "female", "pair"], "advanced": true,
+      "label": { "en": "Side Material (mm)", "es": "Material Lateral (mm)" },
+      "tooltip": { "en": "Material on each side beyond the dovetail (plate width / socket walls)", "es": "Material a cada lado más allá de la cola de milano (ancho de placa / paredes)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "modular_rail_20", "mode": "pair",
+      "label": { "en": "Modular Rail 20 mm", "es": "Riel Modular 20 mm" },
+      "values": { "joint_type": "straight_slide", "dt_width": 20, "dt_depth": 8, "angle": 15, "length": 40, "clearance": 0.2 }
+    },
+    {
+      "id": "locking_tab", "mode": "pair",
+      "label": { "en": "Locking Tab Joint", "es": "Unión con Pestaña" },
+      "values": { "joint_type": "locking", "dt_width": 24, "dt_depth": 10, "angle": 18, "length": 50, "clearance": 0.25 }
+    },
+    {
+      "id": "fine_slide_male", "mode": "male",
+      "label": { "en": "Fine Slide Rail (male)", "es": "Riel Fino (macho)" },
+      "values": { "joint_type": "straight_slide", "dt_width": 12, "dt_depth": 5, "angle": 12, "length": 60, "clearance": 0.15 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "angle <= 40",
+      "severity": "warning",
+      "message": { "en": "Very steep flank angles weaken the neck", "es": "Ángulos de flanco muy pronunciados debilitan el cuello" }
+    },
+    {
+      "expression": "clearance <= 1",
+      "severity": "warning",
+      "message": { "en": "Large clearance makes a loose, rattly slide", "es": "Una holgura grande produce un deslizamiento flojo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "dovetail_slide",
+        "label": { "en": "Dovetail Slide", "es": "Deslizamiento de Cola de Milano" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["dt_width", "dt_depth", "angle", "length", "clearance", "joint_type"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A shared dovetail profile turns any two printed parts into a strong, tool-free, reconfigurable joint — the basis of modular fixtures, tool walls, furniture, and grid systems. One clearance value adapts the same joint to any printer or material.",
+      "es": "Un perfil de cola de milano compartido convierte dos piezas impresas en una unión fuerte, sin herramientas y reconfigurable — la base de plantillas modulares, paneles de herramientas, muebles y sistemas de rejilla. Un solo valor de holgura adapta la misma unión a cualquier impresora o material."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["dovetail", "slide", "joint", "modular", "connector", "industrial", "hyperobject", "commons"]
+}

@@ -1,0 +1,538 @@
+{
+  "project": {
+    "name": "D-Shaft Replacement Knob",
+    "slug": "knob-dshaft",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A right-to-repair replacement knob for a drawer, cabinet, appliance, or dial. Measure the broken shaft and pick the matching bore — round, single D-flat, double-D, or splined — then choose a cylindrical, knurled, or fluted grip. A pointer variant adds a raised indicator line for dials. An optional set-screw locks it on.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una perilla de repuesto de derecho a reparar para cajón, gabinete, electrodoméstico o dial. Mide el eje roto y elige el barreno correspondiente — redondo, D plano simple, doble D o estriado — luego elige un agarre cilíndrico, moleteado o estriado. Una variante con indicador agrega una línea en relieve para diales. Un prisionero opcional la fija.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/knob-dshaft.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "knob",
+      "d-shaft",
+      "repair",
+      "cabinet",
+      "appliance",
+      "dial",
+      "potentiometer",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "knob",
+      "label": {
+        "en": "Knob",
+        "es": "Perilla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "knob"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "pointer_knob",
+      "label": {
+        "en": "Pointer Knob",
+        "es": "Perilla con Indicador"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pointer_knob"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "knob",
+      "label": {
+        "en": "Knob",
+        "es": "Perilla"
+      },
+      "render_mode": 0,
+      "color": "#5f6f7a"
+    },
+    {
+      "id": "pointer_knob",
+      "label": {
+        "en": "Pointer Knob",
+        "es": "Perilla con Indicador"
+      },
+      "render_mode": 0,
+      "color": "#7c8b96"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "body",
+      "label": {
+        "en": "Knob Body",
+        "es": "Cuerpo de la Perilla"
+      }
+    },
+    {
+      "id": "bore",
+      "label": {
+        "en": "Shaft Bore",
+        "es": "Barreno del Eje"
+      }
+    },
+    {
+      "id": "lock",
+      "label": {
+        "en": "Set-Screw",
+        "es": "Prisionero"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "knob_dia",
+      "type": "slider",
+      "default": 30,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "Knob Diameter (mm)",
+        "es": "Diámetro de Perilla (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the knob body",
+        "es": "Diámetro exterior del cuerpo de la perilla"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "knob_height",
+      "type": "slider",
+      "default": 18,
+      "min": 6,
+      "max": 40,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "Knob Height (mm)",
+        "es": "Altura de Perilla (mm)"
+      },
+      "tooltip": {
+        "en": "Overall height of the knob",
+        "es": "Altura total de la perilla"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "default": "cylindrical",
+      "group": "body",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "Grip Style",
+        "es": "Estilo de Agarre"
+      },
+      "tooltip": {
+        "en": "Plain cylinder, coarse knurl facets, or fluted scallops",
+        "es": "Cilindro liso, facetas de moleteado grueso, o estrías acanaladas"
+      },
+      "options": [
+        {
+          "value": "cylindrical",
+          "label": {
+            "en": "Cylindrical (smooth)",
+            "es": "Cilíndrica (lisa)"
+          }
+        },
+        {
+          "value": "knurled",
+          "label": {
+            "en": "Knurled (faceted grip)",
+            "es": "Moleteada (agarre facetado)"
+          }
+        },
+        {
+          "value": "fluted",
+          "label": {
+            "en": "Fluted (scalloped)",
+            "es": "Acanalada (estriada)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "top_round",
+      "type": "checkbox",
+      "default": true,
+      "group": "body",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Round Top Edge",
+        "es": "Redondear Borde Superior"
+      },
+      "tooltip": {
+        "en": "Dome / soften the top edge for a finished feel",
+        "es": "Redondear el borde superior para un acabado agradable"
+      }
+    },
+    {
+      "id": "bore_type",
+      "type": "select",
+      "default": "D-flat",
+      "group": "bore",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "Bore Type",
+        "es": "Tipo de Barreno"
+      },
+      "tooltip": {
+        "en": "Match the broken shaft: round, one D-flat, two flats (double-D), or a splined post",
+        "es": "Coincide con el eje roto: redondo, un D plano, dos planos (doble D), o un poste estriado"
+      },
+      "options": [
+        {
+          "value": "round",
+          "label": {
+            "en": "Round",
+            "es": "Redondo"
+          }
+        },
+        {
+          "value": "D-flat",
+          "label": {
+            "en": "D-Flat (single)",
+            "es": "D Plano (simple)"
+          }
+        },
+        {
+          "value": "double-D",
+          "label": {
+            "en": "Double-D (two flats)",
+            "es": "Doble D (dos planos)"
+          }
+        },
+        {
+          "value": "splined",
+          "label": {
+            "en": "Splined (serrated post)",
+            "es": "Estriado (poste serrado)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "shaft_dia",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "bore",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "Shaft Diameter (mm)",
+        "es": "Diámetro del Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Measured across the round part of the shaft (6.0 mm is the common D-shaft)",
+        "es": "Medido en la parte redonda del eje (6.0 mm es el eje D común)"
+      }
+    },
+    {
+      "id": "flat_depth",
+      "type": "slider",
+      "default": 0.5,
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "bore",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "D-Flat Depth (mm)",
+        "es": "Profundidad del D Plano (mm)"
+      },
+      "tooltip": {
+        "en": "How far the flat is cut in from the shaft wall (D-flat / double-D only)",
+        "es": "Cuánto se corta el plano desde la pared del eje (solo D plano / doble D)"
+      }
+    },
+    {
+      "id": "bore_depth",
+      "type": "slider",
+      "default": 14.0,
+      "min": 3.0,
+      "max": 38.0,
+      "step": 0.5,
+      "group": "bore",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "Bore Depth (mm)",
+        "es": "Profundidad del Barreno (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the shaft socket goes (auto-clamped to keep a closed top cap)",
+        "es": "Qué tan profundo entra el eje (limitado para mantener una tapa superior cerrada)"
+      }
+    },
+    {
+      "id": "setscrew",
+      "type": "checkbox",
+      "default": false,
+      "group": "lock",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "label": {
+        "en": "Set-Screw Hole",
+        "es": "Orificio de Prisionero"
+      },
+      "tooltip": {
+        "en": "Radial hole through the wall into the bore to lock the knob on the shaft",
+        "es": "Orificio radial a través de la pared hacia el barreno para fijar la perilla al eje"
+      }
+    },
+    {
+      "id": "setscrew_dia",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.0,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "lock",
+      "modes": [
+        "knob",
+        "pointer_knob"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Set-Screw Clearance (mm)",
+        "es": "Holgura del Prisionero (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance-hole diameter (≈ M3 = 3.2 mm)",
+        "es": "Diámetro del orificio de holgura (≈ M3 = 3.2 mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cabinet_knob",
+      "mode": "knob",
+      "label": {
+        "en": "Cabinet Knob (round)",
+        "es": "Perilla de Gabinete (redonda)"
+      },
+      "values": {
+        "knob_dia": 32,
+        "knob_height": 20,
+        "style": "knurled",
+        "bore_type": "round",
+        "shaft_dia": 4.0,
+        "setscrew": true
+      }
+    },
+    {
+      "id": "appliance_dshaft",
+      "mode": "knob",
+      "label": {
+        "en": "Appliance D-Shaft 6 mm",
+        "es": "Eje D de Electrodoméstico 6 mm"
+      },
+      "values": {
+        "knob_dia": 28,
+        "knob_height": 16,
+        "style": "fluted",
+        "bore_type": "D-flat",
+        "shaft_dia": 6.0,
+        "flat_depth": 0.5
+      }
+    },
+    {
+      "id": "dial_pointer",
+      "mode": "pointer_knob",
+      "label": {
+        "en": "Dial Pointer (double-D)",
+        "es": "Indicador de Dial (doble D)"
+      },
+      "values": {
+        "knob_dia": 26,
+        "knob_height": 15,
+        "style": "cylindrical",
+        "bore_type": "double-D",
+        "shaft_dia": 6.0,
+        "flat_depth": 0.7
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "shaft_dia <= knob_dia - 4",
+      "severity": "error",
+      "message": {
+        "en": "Shaft bore leaves too thin a wall — increase knob diameter",
+        "es": "El barreno deja una pared muy delgada — aumenta el diámetro de la perilla"
+      }
+    },
+    {
+      "expression": "flat_depth <= shaft_dia / 2 - 0.6",
+      "severity": "warning",
+      "message": {
+        "en": "D-flat depth is close to the shaft centre",
+        "es": "La profundidad del D plano se acerca al centro del eje"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        60,
+        50
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        110
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -110,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "d_shaft_bore",
+        "label": {
+          "en": "D-Shaft Bore",
+          "es": "Barreno de Eje D"
+        },
+        "geometry_type": "socket",
+        "standard": "internal (D-shaft / spline)",
+        "parameters": [
+          "bore_type",
+          "shaft_dia",
+          "flat_depth",
+          "bore_depth",
+          "setscrew"
+        ],
+        "compatible_with": [
+          "spline-hub"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Restores a whole appliance, cabinet, or dial for pennies when a proprietary knob snaps and the manufacturer no longer sells it — the archetypal right-to-repair part, sized to a shaft the user measures rather than a part number they cannot find.",
+      "es": "Restaura un electrodoméstico, gabinete o dial completo por centavos cuando una perilla propietaria se rompe y el fabricante ya no la vende — la pieza arquetípica de derecho a reparar, dimensionada a un eje que el usuario mide en vez de un número de parte que no encuentra."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "knob",
+    "repair",
+    "cabinet",
+    "appliance",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

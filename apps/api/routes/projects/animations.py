@@ -12,22 +12,26 @@ import json
 import logging
 import os
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, Response, jsonify, request
 
 from config import Config
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.core.tier_service import resolve_tier, check_feature
-from services.engine.openscad import (
-    build_openscad_command,
-    run_render as run_openscad_render,
-)
+from services.core.implicit_engine import run_render as run_implicit_render
+from services.core.tier_service import check_feature, resolve_tier
 from services.engine.cadquery_engine import (
     build_cadquery_command,
+)
+from services.engine.cadquery_engine import (
     run_render as run_cadquery_render,
 )
-from services.core.implicit_engine import run_render as run_implicit_render
 from services.engine.format_converter import stl_to_glb
+from services.engine.openscad import (
+    build_openscad_command,
+)
+from services.engine.openscad import (
+    run_render as run_openscad_render,
+)
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
@@ -69,7 +73,7 @@ def _interpolate_params(from_state: dict, to_state: dict, t: float) -> dict:
             result[key] = from_val + (to_val - from_val) * t
             # Preserve int type if both sides were ints
             if isinstance(from_val, int) and isinstance(to_val, int):
-                result[key] = int(round(result[key]))
+                result[key] = round(result[key])
         else:
             # Non-numeric: snap halfway
             result[key] = to_val if t >= 0.5 else from_val
@@ -135,7 +139,7 @@ def render_animation(slug: str, animation_id: str):
 
     scad_path = str(allowed[scad_filename])
     mode_map = manifest.get_mode_map()
-    engine = manifest.engine
+    engine = manifest.mode_engine(mode_id)
 
     # Merge request-time base params (e.g., user's current slider state)
     data = request.get_json(silent=True) or {}

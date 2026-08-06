@@ -1,0 +1,190 @@
+{
+  "project": {
+    "name": "Worm & Worm-Wheel",
+    "slug": "worm-gear",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A high-reduction, potentially self-locking right-angle drive: a worm (a helical screw thread swept along a true helix, DIN 3975) meshing with a worm-wheel (a helical spur gear set to the worm's lead angle). Single- and multi-start worms are supported. The wheel is a helical-spur approximation of a throated wheel, kept printable and watertight.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una transmisión en ángulo recto de alta reducción, potencialmente autobloqueante: un tornillo sinfín (una rosca helicoidal barrida a lo largo de una hélice real, DIN 3975) que engrana con una corona (un engrane helicoidal ajustado al ángulo de avance del sinfín). Se admiten sinfines de una y varias entradas. La corona es una aproximación de engrane helicoidal de una corona con garganta, imprimible y hermética.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/worm-gear.webp",
+    "difficulty": "advanced",
+    "tags": ["gear", "worm", "worm-wheel", "screw", "reduction", "self-locking", "helical", "mechanism", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "worm",
+      "label": { "en": "Worm", "es": "Sinfín" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["worm"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "wheel",
+      "label": { "en": "Worm-Wheel", "es": "Corona" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wheel"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "pair",
+      "label": { "en": "Worm + Wheel Pair", "es": "Par Sinfín + Corona" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["worm", "wheel"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "worm", "label": { "en": "Worm", "es": "Sinfín" }, "render_mode": 0, "color": "#d9a64d" },
+    { "id": "wheel", "label": { "en": "Worm-Wheel", "es": "Corona" }, "render_mode": 0, "color": "#6b8fb0" }
+  ],
+  "parameter_groups": [
+    { "id": "gear", "label": { "en": "Gear Geometry", "es": "Geometría del Engrane" } },
+    { "id": "worm", "label": { "en": "Worm", "es": "Sinfín" } },
+    { "id": "wheel", "label": { "en": "Worm-Wheel", "es": "Corona" } }
+  ],
+  "parameters": [
+    {
+      "id": "m", "type": "slider", "default": 2.0, "min": 0.5, "max": 5.0, "step": 0.5,
+      "group": "gear", "modes": ["worm", "wheel", "pair"],
+      "label": { "en": "Module (mm)", "es": "Módulo (mm)" },
+      "tooltip": { "en": "Tooth size shared by the worm thread and the wheel.", "es": "Tamaño de diente compartido por la rosca del sinfín y la corona." }
+    },
+    {
+      "id": "pressure_angle", "type": "select", "default": 20,
+      "group": "gear", "modes": ["worm", "wheel", "pair"],
+      "label": { "en": "Pressure Angle", "es": "Ángulo de Presión" },
+      "tooltip": { "en": "Flank inclination standard. 20 deg is the modern default.", "es": "Estándar de inclinación del flanco. 20 grados es el valor moderno." },
+      "options": [
+        { "value": 14.5, "label": { "en": "14.5 deg (legacy)", "es": "14.5 grados (heredado)" } },
+        { "value": 20, "label": { "en": "20 deg (standard)", "es": "20 grados (estándar)" } },
+        { "value": 25, "label": { "en": "25 deg (high load)", "es": "25 grados (alta carga)" } }
+      ]
+    },
+    {
+      "id": "starts", "type": "slider", "default": 1, "min": 1, "max": 3, "step": 1,
+      "group": "worm", "modes": ["worm", "pair"],
+      "label": { "en": "Worm Starts", "es": "Entradas del Sinfín" },
+      "tooltip": { "en": "Thread starts. 1 = highest reduction / self-locking. More starts raise the lead angle.", "es": "Entradas de rosca. 1 = mayor reducción / autobloqueo. Más entradas aumentan el ángulo de avance." }
+    },
+    {
+      "id": "worm_dia", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "worm", "modes": ["worm", "pair"],
+      "label": { "en": "Worm Pitch Diameter (mm)", "es": "Diámetro de Paso del Sinfín (mm)" },
+      "tooltip": { "en": "Pitch diameter of the worm cylinder.", "es": "Diámetro de paso del cilindro del sinfín." }
+    },
+    {
+      "id": "worm_turns", "type": "slider", "default": 2.5, "min": 1.0, "max": 4.0, "step": 0.5,
+      "group": "worm", "modes": ["worm", "pair"],
+      "label": { "en": "Worm Turns", "es": "Vueltas del Sinfín" },
+      "tooltip": { "en": "Visible turns along the worm (auto-capped so starts x turns <= 3 for watertight geometry).", "es": "Vueltas visibles a lo largo del sinfín (limitadas automáticamente para que entradas x vueltas <= 3 y la geometría sea hermética)." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 6.28 }
+    },
+    {
+      "id": "worm_bore", "type": "slider", "default": 5.0, "min": 0.0, "max": 20.0, "step": 0.5,
+      "group": "worm", "modes": ["worm", "pair"],
+      "label": { "en": "Worm Bore (mm)", "es": "Barreno del Sinfín (mm)" },
+      "tooltip": { "en": "Central shaft bore through the worm (0 = solid).", "es": "Barreno central del eje a través del sinfín (0 = sólido)." }
+    },
+    {
+      "id": "teeth", "type": "slider", "default": 30, "min": 10, "max": 100, "step": 1,
+      "group": "wheel", "modes": ["wheel", "pair"],
+      "label": { "en": "Wheel Teeth", "es": "Dientes de la Corona" },
+      "tooltip": { "en": "Wheel tooth count; reduction ratio = teeth / starts.", "es": "Número de dientes de la corona; relación de reducción = dientes / entradas." }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 10.0, "min": 2.0, "max": 30.0, "step": 1.0,
+      "group": "wheel", "modes": ["wheel", "pair"],
+      "label": { "en": "Wheel Face Width (mm)", "es": "Ancho de Cara de la Corona (mm)" },
+      "tooltip": { "en": "Wheel thickness in Z.", "es": "Grosor de la corona en Z." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wheel_bore", "type": "slider", "default": 6.0, "min": 0.0, "max": 24.0, "step": 0.5,
+      "group": "wheel", "modes": ["wheel", "pair"],
+      "label": { "en": "Wheel Bore (mm)", "es": "Barreno de la Corona (mm)" },
+      "tooltip": { "en": "Central shaft bore through the wheel (0 = solid).", "es": "Barreno central del eje a través de la corona (0 = sólido)." }
+    },
+    {
+      "id": "flank_pts", "type": "slider", "default": 9, "min": 4, "max": 16, "step": 1,
+      "group": "wheel", "modes": ["wheel", "pair"], "advanced": true,
+      "label": { "en": "Flank Samples", "es": "Muestras de Flanco" },
+      "tooltip": { "en": "Involute samples per flank on the wheel (facet control).", "es": "Muestras de involuta por flanco en la corona (control de facetas)." }
+    }
+  ],
+  "presets": [
+    {
+      "id": "self_locking_30to1", "mode": "pair",
+      "label": { "en": "Self-Locking 30:1 Set", "es": "Conjunto Autobloqueante 30:1" },
+      "values": { "m": 2, "starts": 1, "worm_dia": 16, "worm_turns": 2.5, "teeth": 30, "thickness": 10, "pressure_angle": 20 }
+    },
+    {
+      "id": "two_start_15to1", "mode": "pair",
+      "label": { "en": "Two-Start 15:1 Set", "es": "Conjunto de Dos Entradas 15:1" },
+      "values": { "m": 2, "starts": 2, "worm_dia": 18, "worm_turns": 1.5, "teeth": 30, "thickness": 12, "pressure_angle": 20 }
+    },
+    {
+      "id": "printable_worm", "mode": "worm",
+      "label": { "en": "Printable Worm (M2)", "es": "Sinfín Imprimible (M2)" },
+      "values": { "m": 2, "starts": 1, "worm_dia": 16, "worm_turns": 3, "worm_bore": 5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "worm_bore < worm_dia / 2",
+      "severity": "warning",
+      "message": { "en": "Worm bore is large relative to the worm root", "es": "El barreno del sinfín es grande respecto a la raíz del sinfín" }
+    },
+    {
+      "expression": "m >= 0.5",
+      "severity": "error",
+      "message": { "en": "Module must be at least 0.5 mm", "es": "El módulo debe ser de al menos 0.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 64, "wasm_multiplier": 5, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "worm_thread_wheel",
+        "label": { "en": "Worm Thread + Wheel", "es": "Rosca de Sinfín + Corona" },
+        "geometry_type": "spline",
+        "standard": "DIN 3975",
+        "parameters": ["m", "starts", "teeth", "pressure_angle"]
+      },
+      {
+        "id": "worm_helix",
+        "label": { "en": "Worm Helical Thread", "es": "Rosca Helicoidal del Sinfín" },
+        "geometry_type": "thread",
+        "standard": "DIN 3975",
+        "parameters": ["m", "starts", "worm_dia", "worm_turns"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "High reduction and self-locking in one compact right-angle stage — lifts, clamps, tuners, and rotary tables that must hold position without a brake. A commons worm generator lets makers print matched worm-and-wheel sets at any module and ratio.",
+      "es": "Alta reducción y autobloqueo en una etapa compacta en ángulo recto — elevadores, sujetadores, clavijeros y mesas giratorias que deben mantener su posición sin freno. Un generador de sinfín del procomún permite imprimir conjuntos de sinfín y corona coincidentes en cualquier módulo y relación."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gear", "worm", "worm-wheel", "reduction", "self-locking", "industrial", "hyperobject", "commons"]
+}

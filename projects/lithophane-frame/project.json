@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Lithophane Frame",
+    "slug": "lithophane-frame",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Frames and lamp bodies that hold a printed lithophane panel — a thin relief that reveals an image when backlit. The frame has a slot the panel drops into and a light provision behind it. Sized by the panel width and height so any lithophane fits. Choose a standing desk frame, a tea-light lamp box, or a window-hanging frame.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Marcos y cuerpos de lámpara que sostienen un panel litofánico impreso — un relieve delgado que revela una imagen al iluminarse por detrás. El marco tiene una ranura donde entra el panel y una provisión de luz detrás. Se dimensiona por el ancho y alto del panel para que cualquier litofanía encaje. Elige un marco de escritorio, una caja de lámpara de vela o un marco colgante de ventana.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/lithophane-frame.webp",
+    "difficulty": "beginner",
+    "tags": ["lithophane", "frame", "lamp", "photo", "decor", "backlit", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "desk_frame",
+      "label": { "en": "Desk Frame", "es": "Marco de Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["desk_frame"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "lamp_body",
+      "label": { "en": "Tea-Light Lamp", "es": "Lámpara de Vela" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lamp_body"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "hanging_frame",
+      "label": { "en": "Hanging Frame", "es": "Marco Colgante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hanging_frame"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "desk_frame", "label": { "en": "Desk Frame", "es": "Marco de Escritorio" }, "render_mode": 0, "color": "#8f7f5f" },
+    { "id": "lamp_body", "label": { "en": "Tea-Light Lamp", "es": "Lámpara de Vela" }, "render_mode": 0, "color": "#a89a6a" },
+    { "id": "hanging_frame", "label": { "en": "Hanging Frame", "es": "Marco Colgante" }, "render_mode": 0, "color": "#c0b584" }
+  ],
+  "parameter_groups": [
+    { "id": "panel", "label": { "en": "Panel", "es": "Panel" } },
+    { "id": "frame", "label": { "en": "Frame", "es": "Marco" } },
+    { "id": "style", "label": { "en": "Style", "es": "Estilo" } }
+  ],
+  "parameters": [
+    {
+      "id": "panel_w", "type": "slider", "default": 100.0, "min": 30.0, "max": 250.0, "step": 1.0,
+      "group": "panel", "modes": ["desk_frame", "lamp_body", "hanging_frame"],
+      "label": { "en": "Panel Width (mm)", "es": "Ancho del Panel (mm)" },
+      "tooltip": { "en": "Lithophane panel width", "es": "Ancho del panel litofánico" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "panel_h", "type": "slider", "default": 70.0, "min": 30.0, "max": 250.0, "step": 1.0,
+      "group": "panel", "modes": ["desk_frame", "lamp_body", "hanging_frame"],
+      "label": { "en": "Panel Height (mm)", "es": "Alto del Panel (mm)" },
+      "tooltip": { "en": "Lithophane panel height", "es": "Alto del panel litofánico" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "panel_t", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.2,
+      "group": "panel", "modes": ["desk_frame", "lamp_body", "hanging_frame"],
+      "label": { "en": "Panel Thickness (mm)", "es": "Grosor del Panel (mm)" },
+      "tooltip": { "en": "Thickness of the lithophane (sets the slot width)", "es": "Grosor de la litofanía (define la ranura)" }
+    },
+    {
+      "id": "slot_fit", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "panel", "modes": ["desk_frame", "lamp_body", "hanging_frame"], "advanced": true,
+      "label": { "en": "Slot Fit (mm)", "es": "Ajuste de Ranura (mm)" },
+      "tooltip": { "en": "Slot oversize so the panel drops in", "es": "Sobredimensión de la ranura para que entre el panel" }
+    },
+    {
+      "id": "frame_w", "type": "slider", "default": 10.0, "min": 5.0, "max": 30.0, "step": 1.0,
+      "group": "frame", "modes": ["desk_frame", "lamp_body", "hanging_frame"],
+      "label": { "en": "Frame Border (mm)", "es": "Borde del Marco (mm)" },
+      "tooltip": { "en": "Border width around the panel", "es": "Ancho del borde alrededor del panel" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 12.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "frame", "modes": ["desk_frame", "lamp_body", "hanging_frame"],
+      "label": { "en": "Frame Depth (mm)", "es": "Profundidad del Marco (mm)" },
+      "tooltip": { "en": "Front-to-back body depth", "es": "Profundidad del cuerpo frente-atrás" }
+    },
+    {
+      "id": "reveal", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "frame", "modes": ["desk_frame", "lamp_body", "hanging_frame"], "advanced": true,
+      "label": { "en": "Front Reveal (mm)", "es": "Reborde Frontal (mm)" },
+      "tooltip": { "en": "Lip that overlaps the panel edge to retain it", "es": "Labio que traslapa el borde del panel para retenerlo" }
+    },
+    {
+      "id": "style", "type": "select", "default": "desk-frame",
+      "group": "style", "modes": ["desk_frame", "lamp_body", "hanging_frame"],
+      "label": { "en": "Style", "es": "Estilo" },
+      "tooltip": { "en": "Presentation style (matches the mode)", "es": "Estilo de presentación (coincide con el modo)" },
+      "options": [
+        { "value": "desk-frame", "label": { "en": "Desk Frame", "es": "Marco de Escritorio" } },
+        { "value": "tea-light-lamp", "label": { "en": "Tea-Light Lamp", "es": "Lámpara de Vela" } },
+        { "value": "hanging", "label": { "en": "Hanging", "es": "Colgante" } }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "photo_4x6", "mode": "desk_frame",
+      "label": { "en": "4×6 Photo Frame", "es": "Marco Foto 4×6" },
+      "values": { "panel_w": 152, "panel_h": 101, "frame_w": 10 }
+    },
+    {
+      "id": "square_lamp", "mode": "lamp_body",
+      "label": { "en": "Square Night Lamp", "es": "Lámpara Nocturna Cuadrada" },
+      "values": { "panel_w": 90, "panel_h": 90, "depth": 16 }
+    },
+    {
+      "id": "window_hang", "mode": "hanging_frame",
+      "label": { "en": "Window Suncatcher", "es": "Atrapasol de Ventana" },
+      "values": { "panel_w": 80, "panel_h": 120, "depth": 10 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "reveal <= frame_w - 1",
+      "severity": "warning",
+      "message": { "en": "Reveal is large relative to the frame border", "es": "El reborde es grande respecto al borde del marco" }
+    },
+    {
+      "expression": "panel_t >= 1.5",
+      "severity": "error",
+      "message": { "en": "Panel thinner than 1.5 mm is too fragile to seat", "es": "Un panel menor a 1.5 mm es muy frágil para asentar" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 200, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "lithophane_panel_slot",
+        "label": { "en": "Lithophane Panel Slot", "es": "Ranura para Panel Litofánico" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["panel_w", "panel_h", "panel_t", "slot_fit", "reveal"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turns a printed photo into a lit keepsake, lamp, or suncatcher — a frame anyone can size to their own lithophane, keeping memories tangible without a photo lab.",
+      "es": "Convierte una foto impresa en un recuerdo iluminado, lámpara o atrapasol — un marco que cualquiera dimensiona a su propia litofanía, manteniendo los recuerdos tangibles sin un laboratorio fotográfico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["lithophane", "frame", "lamp", "decor", "household", "hyperobject", "commons"]
+}

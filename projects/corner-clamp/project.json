@@ -1,0 +1,170 @@
+{
+  "project": {
+    "name": "Corner Assembly Clamp",
+    "slug": "corner-clamp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 90° clamp that holds two workpieces square while glue or fasteners set. Choose a rigid right-angle jaw, an adjustable strap-clamp corner block, or a 45° picture-frame miter cradle. Sized by the material thickness and width it holds.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una prensa a 90° que mantiene dos piezas a escuadra mientras fragua el pegamento o se colocan los tornillos. Elige una mordaza rígida en ángulo recto, un bloque de esquina ajustable con fleje, o una cuna de inglete a 45° para marcos. Se dimensiona por el grosor y ancho del material que sujeta.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/corner-clamp.webp",
+    "difficulty": "intermediate",
+    "tags": ["clamp", "corner", "assembly", "frame", "right-angle", "woodworking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "corner_clamp",
+      "label": { "en": "Right-Angle Jaw", "es": "Mordaza en Ángulo Recto" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_clamp"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "band_corner",
+      "label": { "en": "Strap-Clamp Corner", "es": "Esquina con Fleje" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["band_corner"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "picture_frame",
+      "label": { "en": "Miter Corner", "es": "Esquina de Inglete" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["picture_frame"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "corner_clamp", "label": { "en": "Right-Angle Jaw", "es": "Mordaza en Ángulo Recto" }, "render_mode": 0, "color": "#c05a3b" },
+    { "id": "band_corner", "label": { "en": "Strap-Clamp Corner", "es": "Esquina con Fleje" }, "render_mode": 0, "color": "#d0774a" },
+    { "id": "picture_frame", "label": { "en": "Miter Corner", "es": "Esquina de Inglete" }, "render_mode": 0, "color": "#a84a30" }
+  ],
+  "parameter_groups": [
+    { "id": "material", "label": { "en": "Material Held", "es": "Material Sujetado" } },
+    { "id": "body", "label": { "en": "Clamp Body", "es": "Cuerpo de la Prensa" } },
+    { "id": "screw", "label": { "en": "Clamp Screw", "es": "Tornillo de Prensa" } },
+    { "id": "band", "label": { "en": "Strap", "es": "Fleje" } }
+  ],
+  "parameters": [
+    {
+      "id": "mat_thick", "type": "slider", "default": 18.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "material", "modes": ["corner_clamp", "band_corner", "picture_frame"],
+      "label": { "en": "Material Thickness (mm)", "es": "Grosor del Material (mm)" },
+      "tooltip": { "en": "Thickness of the boards being clamped", "es": "Grosor de las tablas que se sujetan" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "mat_width", "type": "slider", "default": 60.0, "min": 20.0, "max": 150.0, "step": 1.0,
+      "group": "material", "modes": ["corner_clamp", "band_corner", "picture_frame"],
+      "label": { "en": "Material Width / Leg (mm)", "es": "Ancho del Material / Brazo (mm)" },
+      "tooltip": { "en": "Width of the board face the jaw registers against", "es": "Ancho de la cara de la tabla contra la que registra la mordaza" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 3.0, "max": 15.0, "step": 0.5,
+      "group": "body", "modes": ["corner_clamp", "band_corner", "picture_frame"],
+      "label": { "en": "Body Wall (mm)", "es": "Pared del Cuerpo (mm)" },
+      "tooltip": { "en": "Wall thickness of the clamp body", "es": "Grosor de pared del cuerpo de la prensa" }
+    },
+    {
+      "id": "height", "type": "slider", "default": 40.0, "min": 15.0, "max": 90.0, "step": 1.0,
+      "group": "body", "modes": ["corner_clamp", "band_corner", "picture_frame"],
+      "label": { "en": "Clamp Height (mm)", "es": "Altura de la Prensa (mm)" },
+      "tooltip": { "en": "Height of the clamp along the joint", "es": "Altura de la prensa a lo largo de la junta" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "screw_bore", "type": "slider", "default": 6.5, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "screw", "modes": ["corner_clamp", "picture_frame"],
+      "label": { "en": "Clamp-Screw Bore (mm)", "es": "Barreno del Tornillo (mm)" },
+      "tooltip": { "en": "Through-bore for the bolt or clamp screw that pulls the joint tight", "es": "Barreno pasante para el perno o tornillo que aprieta la junta" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "band_w", "type": "slider", "default": 25.0, "min": 10.0, "max": 50.0, "step": 1.0,
+      "group": "band", "modes": ["band_corner"],
+      "label": { "en": "Strap Width (mm)", "es": "Ancho del Fleje (mm)" },
+      "tooltip": { "en": "Width of the strap that wraps the corner", "es": "Ancho del fleje que envuelve la esquina" }
+    },
+    {
+      "id": "band_t", "type": "slider", "default": 2.0, "min": 1.0, "max": 5.0, "step": 0.2,
+      "group": "band", "modes": ["band_corner"], "advanced": true,
+      "label": { "en": "Strap Slot Depth (mm)", "es": "Profundidad de Ranura del Fleje (mm)" },
+      "tooltip": { "en": "How deep the strap seats into the outer faces", "es": "Qué tan profundo se asienta el fleje en las caras exteriores" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cabinet_carcass", "mode": "corner_clamp",
+      "label": { "en": "Cabinet Carcass (18mm ply)", "es": "Cuerpo de Gabinete (contrachapado 18mm)" },
+      "values": { "mat_thick": 18.0, "mat_width": 70.0, "height": 45.0, "screw_bore": 6.5 }
+    },
+    {
+      "id": "drawer_box", "mode": "band_corner",
+      "label": { "en": "Drawer Box Strap Set", "es": "Juego con Fleje para Cajón" },
+      "values": { "mat_thick": 12.0, "mat_width": 50.0, "height": 40.0, "band_w": 25.0 }
+    },
+    {
+      "id": "photo_frame", "mode": "picture_frame",
+      "label": { "en": "Photo Frame Miter (20mm)", "es": "Inglete de Marco (20mm)" },
+      "values": { "mat_thick": 20.0, "mat_width": 45.0, "height": 30.0, "screw_bore": 5.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 3",
+      "severity": "error",
+      "message": { "en": "Body wall must be at least 3 mm", "es": "La pared del cuerpo debe ser de al menos 3 mm" }
+    },
+    {
+      "expression": "mat_width >= mat_thick + 2 * wall",
+      "severity": "warning",
+      "message": { "en": "Leg is short relative to material and wall", "es": "El brazo es corto respecto al material y la pared" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "right_angle_jaw",
+        "label": { "en": "90° Clamp Jaw", "es": "Mordaza de Prensa a 90°" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["mat_thick", "mat_width", "wall", "height"]
+      },
+      {
+        "id": "clamp_screw_bore",
+        "label": { "en": "Clamp-Screw Bore", "es": "Barreno del Tornillo de Prensa" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["screw_bore"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Square, repeatable assembly without buying a set of steel corner clamps — glue-ups stay at a true right angle for cabinets, boxes and frames.",
+      "es": "Ensamble a escuadra y repetible sin comprar un juego de prensas de esquina de acero — los encolados se mantienen en ángulo recto para gabinetes, cajas y marcos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["clamp", "corner", "assembly", "frame", "industrial", "hyperobject", "commons"]
+}

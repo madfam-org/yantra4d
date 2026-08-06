@@ -1,0 +1,621 @@
+{
+  "project": {
+    "name": "T-Slot 2020 Accessory Kit",
+    "slug": "tslot-2020",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The 'industrial LEGO' accessory ecosystem. On-demand T-nuts, corner brackets, and cable/panel clips that lock into standard aluminium T-slot extrusion (2020 / 3030 / 4040 series). The extrusion profile is the shared denominator every accessory fits.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El ecosistema de accesorios 'LEGO industrial'. Tuercas en T, escuadras y clips para cable/panel bajo demanda que se fijan en perfil de aluminio T-slot estándar (series 2020 / 3030 / 4040). El perfil de la extrusión es el denominador compartido que todo accesorio encaja.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tslot-2020.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "t-slot",
+      "extrusion",
+      "2020",
+      "aluminium",
+      "t-nut",
+      "bracket",
+      "cable-management",
+      "maker",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "industrial"
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "t_nut",
+      "label": {
+        "en": "T-Nut",
+        "es": "Tuerca en T"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "t_nut"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 1,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "corner_bracket",
+      "label": {
+        "en": "Corner Bracket",
+        "es": "Escuadra de Esquina"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "corner_bracket"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "cable_clip",
+      "label": {
+        "en": "Cable Clip",
+        "es": "Clip para Cable"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cable_clip"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 1,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "panel_clip",
+      "label": {
+        "en": "Panel Clip",
+        "es": "Clip para Panel"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "panel_clip"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 1,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "t_nut",
+      "label": {
+        "en": "T-Nut",
+        "es": "Tuerca en T"
+      },
+      "render_mode": 0,
+      "color": "#8a8f98"
+    },
+    {
+      "id": "corner_bracket",
+      "label": {
+        "en": "Corner Bracket",
+        "es": "Escuadra de Esquina"
+      },
+      "render_mode": 0,
+      "color": "#6b7280"
+    },
+    {
+      "id": "cable_clip",
+      "label": {
+        "en": "Cable Clip",
+        "es": "Clip para Cable"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "panel_clip",
+      "label": {
+        "en": "Panel Clip",
+        "es": "Clip para Panel"
+      },
+      "render_mode": 0,
+      "color": "#4a90d9"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "profile",
+      "label": {
+        "en": "Extrusion Profile",
+        "es": "Perfil de Extrusión"
+      }
+    },
+    {
+      "id": "fastener",
+      "label": {
+        "en": "Fastener",
+        "es": "Sujeción"
+      }
+    },
+    {
+      "id": "t_nut",
+      "label": {
+        "en": "T-Nut",
+        "es": "Tuerca en T"
+      }
+    },
+    {
+      "id": "bracket",
+      "label": {
+        "en": "Corner Bracket",
+        "es": "Escuadra"
+      }
+    },
+    {
+      "id": "cable",
+      "label": {
+        "en": "Cable Clip",
+        "es": "Clip para Cable"
+      }
+    },
+    {
+      "id": "panel",
+      "label": {
+        "en": "Panel Clip",
+        "es": "Clip para Panel"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "slot_series",
+      "type": "select",
+      "default": "2020",
+      "group": "profile",
+      "modes": [
+        "t_nut",
+        "corner_bracket",
+        "cable_clip",
+        "panel_clip"
+      ],
+      "options": [
+        {
+          "value": "2020",
+          "label": {
+            "en": "2020 (20 mm profile, 6 mm slot)",
+            "es": "2020 (perfil 20 mm, ranura 6 mm)"
+          }
+        },
+        {
+          "value": "3030",
+          "label": {
+            "en": "3030 (30 mm profile, 8 mm slot)",
+            "es": "3030 (perfil 30 mm, ranura 8 mm)"
+          }
+        },
+        {
+          "value": "4040",
+          "label": {
+            "en": "4040 (40 mm profile, 8 mm slot)",
+            "es": "4040 (perfil 40 mm, ranura 8 mm)"
+          }
+        }
+      ],
+      "label": {
+        "en": "Extrusion Series",
+        "es": "Serie de Extrusión"
+      },
+      "tooltip": {
+        "en": "Aluminium T-slot family the accessory locks into (Bosch Rexroth / OpenBuilds / Misumi HFS)",
+        "es": "Familia de perfil T-slot de aluminio en la que encaja el accesorio (Bosch Rexroth / OpenBuilds / Misumi HFS)"
+      }
+    },
+    {
+      "id": "slot_fit_clearance",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.0,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "profile",
+      "modes": [
+        "t_nut",
+        "corner_bracket",
+        "cable_clip",
+        "panel_clip"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Slot Fit Clearance (mm)",
+        "es": "Holgura de Ajuste (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap between the printed part and the slot for a workable fit (tune per printer/material)",
+        "es": "Espacio por lado entre la pieza impresa y la ranura para un ajuste funcional (ajustar por impresora/material)"
+      }
+    },
+    {
+      "id": "screw_size",
+      "type": "select",
+      "default": "M4",
+      "group": "fastener",
+      "modes": [
+        "t_nut",
+        "corner_bracket"
+      ],
+      "options": [
+        {
+          "value": "M3",
+          "label": {
+            "en": "M3 (clearance 3.4 mm)",
+            "es": "M3 (holgura 3.4 mm)"
+          }
+        },
+        {
+          "value": "M4",
+          "label": {
+            "en": "M4 (clearance 4.5 mm)",
+            "es": "M4 (holgura 4.5 mm)"
+          }
+        },
+        {
+          "value": "M5",
+          "label": {
+            "en": "M5 (clearance 5.5 mm)",
+            "es": "M5 (holgura 5.5 mm)"
+          }
+        }
+      ],
+      "label": {
+        "en": "Screw Size",
+        "es": "Tamaño de Tornillo"
+      },
+      "tooltip": {
+        "en": "Metric screw the hole is sized for (2020 typically M5, 3030/4040 M6-class fits use M5 here)",
+        "es": "Tornillo métrico para el que se dimensiona el agujero (2020 normalmente M5; 3030/4040 usan M5 aquí)"
+      }
+    },
+    {
+      "id": "nut_length",
+      "type": "slider",
+      "default": 12,
+      "min": 6,
+      "max": 40,
+      "step": 1,
+      "group": "t_nut",
+      "modes": [
+        "t_nut"
+      ],
+      "label": {
+        "en": "T-Nut Length (mm)",
+        "es": "Largo de Tuerca (mm)"
+      },
+      "tooltip": {
+        "en": "Length along the slot axis. Short = drop-in and quarter-turn; long = slide in from the end for more grip",
+        "es": "Largo a lo largo del eje de la ranura. Corto = insertar y girar un cuarto; largo = deslizar desde el extremo para más agarre"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0,
+        "affected_parts": [
+          "t_nut"
+        ]
+      }
+    },
+    {
+      "id": "tapped",
+      "type": "checkbox",
+      "default": false,
+      "group": "t_nut",
+      "modes": [
+        "t_nut"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Tapped / Heat-Set Bore",
+        "es": "Barreno Roscado / Inserto"
+      },
+      "tooltip": {
+        "en": "Use a smaller bore for a self-tapping screw or brass heat-set insert instead of a clearance hole",
+        "es": "Usa un barreno más pequeño para tornillo autorroscante o inserto de latón en vez de agujero pasante"
+      }
+    },
+    {
+      "id": "bracket_leg",
+      "type": "slider",
+      "default": 30,
+      "min": 15,
+      "max": 80,
+      "step": 1,
+      "group": "bracket",
+      "modes": [
+        "corner_bracket"
+      ],
+      "label": {
+        "en": "Bracket Leg Length (mm)",
+        "es": "Largo de Brazo (mm)"
+      },
+      "tooltip": {
+        "en": "Length of each arm of the angle bracket",
+        "es": "Largo de cada brazo de la escuadra"
+      }
+    },
+    {
+      "id": "bracket_thick",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "bracket",
+      "modes": [
+        "corner_bracket"
+      ],
+      "label": {
+        "en": "Bracket Thickness (mm)",
+        "es": "Grosor de Escuadra (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the bracket legs",
+        "es": "Grosor de pared de los brazos de la escuadra"
+      }
+    },
+    {
+      "id": "bracket_gusset",
+      "type": "checkbox",
+      "default": true,
+      "group": "bracket",
+      "modes": [
+        "corner_bracket"
+      ],
+      "label": {
+        "en": "Stiffening Gusset",
+        "es": "Refuerzo Triangular"
+      },
+      "tooltip": {
+        "en": "Add a triangular gusset across the corner for rigidity",
+        "es": "Añade un refuerzo triangular en la esquina para rigidez"
+      }
+    },
+    {
+      "id": "cable_dia",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "cable",
+      "modes": [
+        "cable_clip"
+      ],
+      "label": {
+        "en": "Cable Diameter (mm)",
+        "es": "Diámetro de Cable (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the wire bundle or pneumatic line the clip routes",
+        "es": "Diámetro exterior del haz de cables o línea neumática que enruta el clip"
+      }
+    },
+    {
+      "id": "panel_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "panel",
+      "modes": [
+        "panel_clip"
+      ],
+      "label": {
+        "en": "Panel Thickness (mm)",
+        "es": "Grosor de Panel (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the acrylic / plywood panel edge the clip retains",
+        "es": "Grosor del borde de panel de acrílico / madera que retiene el clip"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "m5_tnut_2020",
+      "mode": "t_nut",
+      "label": {
+        "en": "M5 T-Nut for 2020",
+        "es": "Tuerca M5 para 2020"
+      },
+      "values": {
+        "slot_series": "2020",
+        "screw_size": "M5",
+        "nut_length": 12
+      }
+    },
+    {
+      "id": "slide_tnut_4040",
+      "mode": "t_nut",
+      "label": {
+        "en": "Long Slide-In T-Nut (4040)",
+        "es": "Tuerca Deslizante Larga (4040)"
+      },
+      "values": {
+        "slot_series": "4040",
+        "screw_size": "M5",
+        "nut_length": 30,
+        "tapped": false
+      }
+    },
+    {
+      "id": "corner_2020",
+      "mode": "corner_bracket",
+      "label": {
+        "en": "2020 Corner Bracket",
+        "es": "Escuadra 2020"
+      },
+      "values": {
+        "slot_series": "2020",
+        "screw_size": "M5",
+        "bracket_leg": 30,
+        "bracket_gusset": true
+      }
+    },
+    {
+      "id": "cable_route_2020",
+      "mode": "cable_clip",
+      "label": {
+        "en": "6 mm Cable Clip (2020)",
+        "es": "Clip de Cable 6 mm (2020)"
+      },
+      "values": {
+        "slot_series": "2020",
+        "cable_dia": 6.0
+      }
+    },
+    {
+      "id": "acrylic_panel_2020",
+      "mode": "panel_clip",
+      "label": {
+        "en": "3 mm Acrylic Panel Clip (2020)",
+        "es": "Clip Panel Acrílico 3 mm (2020)"
+      },
+      "values": {
+        "slot_series": "2020",
+        "panel_t": 3.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_fit_clearance <= 0.6",
+      "severity": "warning",
+      "message": {
+        "en": "Large clearance may leave the part loose in the slot",
+        "es": "Una holgura grande puede dejar la pieza floja en la ranura"
+      }
+    },
+    {
+      "expression": "bracket_thick >= 3",
+      "severity": "warning",
+      "message": {
+        "en": "Brackets thinner than 3 mm may flex under load",
+        "es": "Escuadras de menos de 3 mm pueden flexionarse bajo carga"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        120
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -120,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 6,
+    "per_unit": 1,
+    "per_part": 6,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "tslot_extrusion_profile",
+        "label": {
+          "en": "T-Slot Extrusion Profile",
+          "es": "Perfil de Extrusión T-Slot"
+        },
+        "geometry_type": "profile",
+        "standard": "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+        "parameters": [
+          "slot_series",
+          "slot_fit_clearance",
+          "screw_size"
+        ],
+        "compatible_with": [
+          "extrusion-hyperobject",
+          "framing-hyperobject",
+          "roller-bracket",
+          "seed-tray"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Frees maker-space and industrial framing from proprietary hardware: any accessory that shares the T-slot profile can be printed on demand, so a broken bracket or a missing T-nut never stalls a build. One global denominator, an open ecosystem of fittings.",
+      "es": "Libera el armado industrial y de maker-space del hardware propietario: cualquier accesorio que comparta el perfil T-slot puede imprimirse bajo demanda, de modo que una escuadra rota o una tuerca faltante nunca detienen un montaje. Un denominador global, un ecosistema abierto de accesorios."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "t-slot",
+    "extrusion",
+    "t-nut",
+    "bracket",
+    "cable-management",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

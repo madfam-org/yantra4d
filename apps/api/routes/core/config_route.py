@@ -11,6 +11,7 @@ Deprecation timeline:
   - Successor: GET /api/manifest
 """
 from flask import Blueprint, jsonify, make_response, request
+
 from manifest import get_manifest
 
 config_bp = Blueprint('config', __name__)

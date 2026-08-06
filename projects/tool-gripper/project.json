@@ -1,0 +1,171 @@
+{
+  "project": {
+    "name": "Broom / Tool Wall Gripper",
+    "slug": "tool-gripper",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A sprung-jaw gripper that holds a cylindrical tool handle (broom, mop, rake) by friction against a wall. The jaw mouth is slightly narrower than the handle, so pushing the handle in flexes the compliant arms and their springback grips it. Build a single gripper or a strip of them on one shared plate.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un sujetador de mordaza elástica que sostiene un mango cilíndrico (escoba, trapeador, rastrillo) por fricción contra la pared. La boca de la mordaza es un poco más estrecha que el mango, así que al empujarlo flexiona los brazos elásticos y su recuperación lo agarra. Crea un sujetador individual o una tira de varios en una placa compartida.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tool-gripper.webp",
+    "difficulty": "beginner",
+    "tags": ["broom", "mop", "tool", "gripper", "wall mount", "holder", "garage", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "gripper",
+      "label": { "en": "Single Gripper", "es": "Sujetador Individual" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gripper"],
+      "estimate": { "base_time": 7, "per_unit": 1, "per_part": 9 }
+    },
+    {
+      "id": "gripper_strip",
+      "label": { "en": "Gripper Strip", "es": "Tira de Sujetadores" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gripper_strip"],
+      "estimate": { "base_time": 10, "per_unit": 4, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "gripper", "label": { "en": "Single Gripper", "es": "Sujetador Individual" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "gripper_strip", "label": { "en": "Gripper Strip", "es": "Tira de Sujetadores" }, "render_mode": 0, "color": "#4b9f7a" }
+  ],
+  "parameter_groups": [
+    { "id": "handle", "label": { "en": "Handle & Jaw", "es": "Mango y Mordaza" } },
+    { "id": "plate", "label": { "en": "Wall Plate", "es": "Placa de Pared" } },
+    { "id": "strip", "label": { "en": "Strip", "es": "Tira" } }
+  ],
+  "parameters": [
+    {
+      "id": "handle_dia", "type": "slider", "default": 25.0, "min": 6.0, "max": 50.0, "step": 1.0,
+      "group": "handle", "modes": ["gripper", "gripper_strip"],
+      "label": { "en": "Handle Diameter (mm)", "es": "Diámetro del Mango (mm)" },
+      "tooltip": { "en": "Diameter of the round tool handle the jaw grips", "es": "Diámetro del mango redondo que agarra la mordaza" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "mouth_factor", "type": "slider", "default": 0.78, "min": 0.5, "max": 0.95, "step": 0.02,
+      "group": "handle", "modes": ["gripper", "gripper_strip"],
+      "label": { "en": "Mouth Opening (× handle)", "es": "Abertura de Boca (× mango)" },
+      "tooltip": { "en": "Jaw mouth width as a fraction of the handle diameter; below 1 the arms must flex to admit the handle (the grip)", "es": "Ancho de la boca como fracción del diámetro del mango; por debajo de 1 los brazos deben flexionar para admitir el mango (el agarre)" }
+    },
+    {
+      "id": "jaw_wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "handle", "modes": ["gripper", "gripper_strip"],
+      "label": { "en": "Jaw Arm Thickness (mm)", "es": "Grosor del Brazo de Mordaza (mm)" },
+      "tooltip": { "en": "Thickness of the compliant arms — thinner flexes more (softer grip)", "es": "Grosor de los brazos elásticos — más delgado flexiona más (agarre más suave)" }
+    },
+    {
+      "id": "jaw_depth", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "handle", "modes": ["gripper", "gripper_strip"],
+      "label": { "en": "Jaw Depth (mm)", "es": "Profundidad de Mordaza (mm)" },
+      "tooltip": { "en": "How much of the handle the jaw wraps along its axis", "es": "Cuánto del mango envuelve la mordaza a lo largo de su eje" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plate_thick", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "plate", "modes": ["gripper", "gripper_strip"],
+      "label": { "en": "Wall Plate Thickness (mm)", "es": "Grosor de Placa de Pared (mm)" },
+      "tooltip": { "en": "Thickness of the plate that screws to the wall", "es": "Grosor de la placa que se atornilla a la pared" }
+    },
+    {
+      "id": "plate_margin", "type": "slider", "default": 8.0, "min": 4.0, "max": 20.0, "step": 1.0,
+      "group": "plate", "modes": ["gripper", "gripper_strip"], "advanced": true,
+      "label": { "en": "Plate Margin (mm)", "es": "Margen de Placa (mm)" },
+      "tooltip": { "en": "Material around the jaw / screw holes", "es": "Material alrededor de la mordaza / orificios de tornillo" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "plate", "modes": ["gripper", "gripper_strip"], "advanced": true,
+      "label": { "en": "Screw Hole Diameter (mm)", "es": "Diámetro de Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Wall-screw clearance hole diameter", "es": "Diámetro del orificio de paso para el tornillo de pared" }
+    },
+    {
+      "id": "count", "type": "slider", "default": 3, "min": 2, "max": 8, "step": 1,
+      "group": "strip", "modes": ["gripper_strip"],
+      "label": { "en": "Grippers in Strip", "es": "Sujetadores en la Tira" },
+      "tooltip": { "en": "Number of grippers on one shared plate", "es": "Número de sujetadores en una placa compartida" }
+    },
+    {
+      "id": "spacing", "type": "slider", "default": 70.0, "min": 40.0, "max": 90.0, "step": 1.0,
+      "group": "strip", "modes": ["gripper_strip"],
+      "label": { "en": "Gripper Spacing (mm)", "es": "Separación de Sujetadores (mm)" },
+      "tooltip": { "en": "Centre-to-centre distance between grippers", "es": "Distancia de centro a centro entre sujetadores" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "broom_gripper", "mode": "gripper",
+      "label": { "en": "Broom Gripper (25 mm)", "es": "Sujetador de Escoba (25 mm)" },
+      "values": { "handle_dia": 25, "mouth_factor": 0.78, "jaw_wall": 3.0, "jaw_depth": 16 }
+    },
+    {
+      "id": "thin_handle_gripper", "mode": "gripper",
+      "label": { "en": "Thin Handle (16 mm)", "es": "Mango Delgado (16 mm)" },
+      "values": { "handle_dia": 16, "mouth_factor": 0.8, "jaw_wall": 2.4 }
+    },
+    {
+      "id": "garage_rail_3", "mode": "gripper_strip",
+      "label": { "en": "Garage Rail (3 tools)", "es": "Riel de Garaje (3 herramientas)" },
+      "values": { "count": 3, "handle_dia": 25, "spacing": 75 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "mouth_factor < 1",
+      "severity": "error",
+      "message": { "en": "Mouth must be narrower than the handle to grip", "es": "La boca debe ser más estrecha que el mango para agarrar" }
+    },
+    {
+      "expression": "jaw_wall >= 1.6",
+      "severity": "warning",
+      "message": { "en": "Very thin arms may be too weak to hold the tool", "es": "Brazos muy delgados pueden ser demasiado débiles para sostener la herramienta" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "sprung_handle_jaw",
+        "label": { "en": "Sprung Handle Jaw", "es": "Mordaza Elástica de Mango" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["handle_dia", "mouth_factor", "jaw_wall", "jaw_depth"]
+      },
+      {
+        "id": "wall_screw_mount",
+        "label": { "en": "Wall Screw Mount", "es": "Montaje con Tornillos de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["plate_thick", "screw_dia", "plate_margin"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Long-handled tools slump into a corner and get damaged when there is nowhere to hang them. A friction jaw tuned to the exact handle keeps brooms, mops, and rakes off the floor with no hooks or hardware beyond two screws, printable to any handle a home already has.",
+      "es": "Las herramientas de mango largo se amontonan en un rincón y se dañan cuando no hay dónde colgarlas. Una mordaza de fricción ajustada al mango exacto mantiene escobas, trapeadores y rastrillos fuera del piso sin ganchos ni herrajes más allá de dos tornillos, imprimible para cualquier mango que ya tenga un hogar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["broom", "tool", "gripper", "household", "hyperobject", "commons"]
+}

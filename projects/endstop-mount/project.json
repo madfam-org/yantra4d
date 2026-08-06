@@ -1,0 +1,178 @@
+{
+  "project": {
+    "name": "Endstop Mount",
+    "slug": "endstop-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holds a limit switch at a repeatable position on a motion axis. The switch face carries the Omron-style microswitch footprint — two M2 holes on ~9.5 mm centres for a ~20 x 6 mm subminiature switch (SS / D2F family) — and adjustment slots dial in the trigger point. Choose a slotted switch bracket, an optical-endstop board mount, or a 2020 extrusion foot.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sujeta un interruptor de limite en una posicion repetible sobre un eje de movimiento. La cara del interruptor lleva la huella tipo Omron — dos agujeros M2 a ~9.5 mm entre centros para un microinterruptor subminiatura de ~20 x 6 mm (familia SS / D2F) — y las ranuras de ajuste calibran el punto de disparo. Elige un soporte ranurado, un montaje para placa de endstop optico o un pie para extrusion 2020.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/endstop-mount.webp",
+    "difficulty": "beginner",
+    "tags": ["endstop", "limit-switch", "microswitch", "omron", "optical", "3d-printer", "cnc", "robotics", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "switch_bracket",
+      "label": { "en": "Switch Bracket", "es": "Soporte de Interruptor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["switch_bracket"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "optical_endstop",
+      "label": { "en": "Optical Endstop", "es": "Endstop Optico" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["optical_endstop"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "extrusion_endstop",
+      "label": { "en": "2020 Extrusion Endstop", "es": "Endstop para Extrusion 2020" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["extrusion_endstop"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "switch_bracket", "label": { "en": "Switch Bracket", "es": "Soporte de Interruptor" }, "render_mode": 0, "color": "#4a7a5c" },
+    { "id": "optical_endstop", "label": { "en": "Optical Endstop", "es": "Endstop Optico" }, "render_mode": 0, "color": "#3f6b50" },
+    { "id": "extrusion_endstop", "label": { "en": "2020 Extrusion Endstop", "es": "Endstop para Extrusion 2020" }, "render_mode": 0, "color": "#5c8f6b" }
+  ],
+  "parameter_groups": [
+    { "id": "switch", "label": { "en": "Switch", "es": "Interruptor" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "hole_span", "type": "slider", "default": 9.5, "min": 4.0, "max": 16.0, "step": 0.1,
+      "group": "switch", "modes": ["switch_bracket", "extrusion_endstop"],
+      "label": { "en": "Switch Hole Spacing (mm)", "es": "Separacion de Agujeros (mm)" },
+      "tooltip": { "en": "Microswitch bolt centres (Omron SS/D2F ≈ 9.5 mm)", "es": "Centros de tornillos del microinterruptor (Omron SS/D2F ≈ 9.5 mm)" }
+    },
+    {
+      "id": "switch_hole", "type": "slider", "default": 2.2, "min": 1.6, "max": 4.0, "step": 0.1,
+      "group": "switch", "modes": ["switch_bracket", "extrusion_endstop"],
+      "label": { "en": "Switch Bolt (mm)", "es": "Tornillo de Interruptor (mm)" },
+      "tooltip": { "en": "Microswitch bolt clearance (2.2 = M2)", "es": "Holgura del tornillo del microinterruptor (2.2 = M2)" }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.5,
+      "group": "plate", "modes": ["switch_bracket", "optical_endstop", "extrusion_endstop"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Bracket plate thickness", "es": "Grosor de la placa del soporte" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 14.0, "min": 10.0, "max": 24.0, "step": 0.5,
+      "group": "plate", "modes": ["switch_bracket", "optical_endstop", "extrusion_endstop"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Plate width across the switch", "es": "Ancho de la placa a lo ancho del interruptor" }
+    },
+    {
+      "id": "slot_len", "type": "slider", "default": 12.0, "min": 4.0, "max": 30.0, "step": 1,
+      "group": "mount", "modes": ["switch_bracket"],
+      "label": { "en": "Adjust Slot (mm)", "es": "Ranura de Ajuste (mm)" },
+      "tooltip": { "en": "Adjustment slot travel to set the trigger point", "es": "Recorrido de la ranura de ajuste para fijar el punto de disparo" }
+    },
+    {
+      "id": "mount_d", "type": "slider", "default": 5.2, "min": 3.0, "max": 6.5, "step": 0.1,
+      "group": "mount", "modes": ["switch_bracket", "extrusion_endstop"],
+      "label": { "en": "Frame Bolt (mm)", "es": "Tornillo de Marco (mm)" },
+      "tooltip": { "en": "Frame / extrusion bolt clearance (5.2 = M5 T-nut)", "es": "Holgura del tornillo de marco / extrusion (5.2 = tuerca T M5)" }
+    },
+    {
+      "id": "board_len", "type": "slider", "default": 33.0, "min": 16.0, "max": 50.0, "step": 1,
+      "group": "plate", "modes": ["optical_endstop"],
+      "label": { "en": "Board Length (mm)", "es": "Largo de Placa PCB (mm)" },
+      "tooltip": { "en": "Optical-endstop PCB length (hole spacing)", "es": "Largo del PCB del endstop optico (separacion de agujeros)" }
+    },
+    {
+      "id": "board_hole", "type": "slider", "default": 3.2, "min": 2.0, "max": 4.5, "step": 0.1,
+      "group": "plate", "modes": ["optical_endstop"], "advanced": true,
+      "label": { "en": "Board Bolt (mm)", "es": "Tornillo de PCB (mm)" },
+      "tooltip": { "en": "Optical PCB bolt clearance (3.2 = M3)", "es": "Holgura del tornillo del PCB optico (3.2 = M3)" }
+    },
+    {
+      "id": "foot_len", "type": "slider", "default": 28.0, "min": 20.0, "max": 60.0, "step": 1,
+      "group": "mount", "modes": ["extrusion_endstop"],
+      "label": { "en": "Foot Length (mm)", "es": "Largo de Pie (mm)" },
+      "tooltip": { "en": "Extrusion foot length (T-nut holes on 20 mm centres)", "es": "Largo del pie de extrusion (agujeros de tuerca T a 20 mm)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "omron_switch", "mode": "switch_bracket",
+      "label": { "en": "Omron Microswitch", "es": "Microinterruptor Omron" },
+      "values": { "hole_span": 9.5, "switch_hole": 2.2, "slot_len": 14 }
+    },
+    {
+      "id": "optical_board", "mode": "optical_endstop",
+      "label": { "en": "Optical PCB", "es": "PCB Optico" },
+      "values": { "board_len": 33, "board_hole": 3.2, "plate_w": 14 }
+    },
+    {
+      "id": "endstop_2020", "mode": "extrusion_endstop",
+      "label": { "en": "2020 Endstop Foot", "es": "Pie Endstop 2020" },
+      "values": { "foot_len": 40, "hole_span": 9.5, "mount_d": 5.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_t >= 2",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 2 mm thick", "es": "La placa debe tener al menos 2 mm de grosor" }
+    },
+    {
+      "expression": "plate_w >= 10",
+      "severity": "warning",
+      "message": { "en": "A plate under 10 mm wide crowds the switch holes", "es": "Una placa de menos de 10 mm de ancho aprieta los agujeros del interruptor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [45, 45, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 70] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -70, 12] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "microswitch_mount",
+        "label": { "en": "Microswitch Mount", "es": "Montaje de Microinterruptor" },
+        "geometry_type": "bolt_pattern",
+        "standard": "Omron SS/D2F",
+        "parameters": ["hole_span", "switch_hole"]
+      },
+      {
+        "id": "frame_mount",
+        "label": { "en": "Frame Mount", "es": "Montaje de Marco" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_d", "slot_len", "foot_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Every 3D printer, CNC and robot axis needs its endstop held at exactly the right spot, and the OEM bracket rarely fits a modified frame. A printed mount cut to the standard Omron microswitch footprint, with adjustment slots, lets any salvaged limit switch home a machine precisely.",
+      "es": "Cada eje de impresora 3D, CNC y robot necesita su endstop sujeto en el punto exacto, y el soporte original rara vez encaja en un marco modificado. Un montaje impreso cortado a la huella estandar del microinterruptor Omron, con ranuras de ajuste, permite que cualquier interruptor de limite rescatado ubique una maquina con precision."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["endstop", "limit-switch", "microswitch", "omron", "robotics", "industrial", "hyperobject", "commons"]
+}

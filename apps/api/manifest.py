@@ -7,6 +7,7 @@ import copy
 import json
 import logging
 from pathlib import Path
+from typing import ClassVar
 
 from config import Config
 
@@ -32,7 +33,7 @@ class ProjectManifest:
     def slug(self) -> str:
         return self._data["project"]["slug"]
 
-    KNOWN_ENGINES = {"openscad", "cadquery", "implicit"}
+    KNOWN_ENGINES: ClassVar[set[str]] = {"openscad", "cadquery", "implicit"}
 
     @property
     def engine(self) -> str:
@@ -59,6 +60,44 @@ class ProjectManifest:
             return "openscad"
 
         return explicit
+
+    def mode_engine(self, mode_id: str | None) -> str:
+        """Resolve the rendering engine for a specific mode.
+
+        Enables dual-engine cartridges where individual modes render with a
+        different kernel than the project default (e.g. legacy OpenSCAD modes
+        alongside new CadQuery modes in one manifest).
+
+        Resolution order (highest priority first):
+        1. An explicit ``"engine"`` on the mode object, if it is a known engine.
+        2. Inference from the mode's ``scad_file`` extension: a ``.py`` / ``.cq``
+           primary file implies the ``cadquery`` engine.
+        3. Fall back to the project-level engine (``self.engine``).
+
+        A project whose ``engine`` is ``implicit`` always renders every mode with
+        the implicit engine — implicit fields are a whole-project concern and are
+        not overridden per mode.
+        """
+        project_engine = self.engine
+        if project_engine == "implicit":
+            return project_engine
+
+        if mode_id:
+            mode = next((m for m in self._data.get("modes", []) if m.get("id") == mode_id), None)
+            if mode:
+                explicit = mode.get("engine")
+                if explicit in self.KNOWN_ENGINES:
+                    return explicit
+                if explicit is not None:
+                    logger.warning(
+                        f"Unknown engine '{explicit}' on mode '{mode_id}' in {self.slug}; "
+                        f"inferring from scad_file / project engine instead."
+                    )
+                primary = str(mode.get("scad_file", ""))
+                if primary.endswith((".py", ".cq")):
+                    return "cadquery"
+
+        return project_engine
 
     @property
     def modes(self) -> list:
@@ -101,7 +140,7 @@ class ProjectManifest:
         """Returns {part_id: absolute_path} for parts with static_stl defined."""
         result = {}
         for p in self.parts:
-            if "static_stl" in p and p["static_stl"]:
+            if p.get("static_stl"):
                 result[p["id"]] = self.project_dir / p["static_stl"]
         return result
 
@@ -181,7 +220,7 @@ class ManifestService:
     """Service for managing project manifests."""
 
     def __init__(self):
-        self._manifest_cache: dict[str, "ProjectManifest"] = {}
+        self._manifest_cache: dict[str, ProjectManifest] = {}
 
     def discover_projects(self) -> list[dict]:
         """Scan all CARTRIDGES_DIRS for projects, return metadata list."""
@@ -196,7 +235,7 @@ class ManifestService:
                 manifest_path = child / "project.json"
                 if child.is_dir() and manifest_path.exists():
                     try:
-                        with open(manifest_path, "r") as f:
+                        with open(manifest_path) as f:
                             data = json.load(f)
                             
                         self._validate_manifest_strictness(data, manifest_path)
@@ -223,7 +262,7 @@ class ManifestService:
             manifest_path = Config.SCAD_DIR / "project.json"
             if manifest_path.exists():
                 try:
-                    with open(manifest_path, "r") as f:
+                    with open(manifest_path) as f:
                         data = json.load(f)
                         
                     self._validate_manifest_strictness(data, manifest_path)
@@ -310,7 +349,7 @@ class ManifestService:
         logger.info(f"Loading project manifest from {manifest_path}")
 
         try:
-            with open(manifest_path, "r") as f:
+            with open(manifest_path) as f:
                 data = json.load(f)
         except FileNotFoundError:
             logger.error(f"Manifest not found: {manifest_path}")

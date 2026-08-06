@@ -1,0 +1,293 @@
+{
+  "project": {
+    "name": "Door Strike Plate",
+    "slug": "strike-plate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "description": {
+      "en": "The door strike plate — the flat jamb-mortised plate that a latch bolt or deadbolt seats into. Build a full-lip spring-latch strike, the classic round-corner 1 in (25.4 mm) deadbolt strike, or a high-security box strike / reinforcer with four long screws into the stud. Dimensions follow ANSI/BHMA A156.2 residential strike hardware (1-1/8 x 2-1/4 in body).\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "La placa de cerradero de puerta — la placa plana embutida en el marco donde se aloja el pestillo o el cerrojo. Genera un cerradero de labio completo para pestillo de resorte, el clásico cerradero de cerrojo de esquinas redondeadas de 1 in (25.4 mm), o un cerradero de caja de alta seguridad con cuatro tornillos largos hacia el montante. Dimensiones según hardware residencial ANSI/BHMA A156.2 (cuerpo de 1-1/8 x 2-1/4 in).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/strike-plate.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "strike-plate",
+      "door",
+      "deadbolt",
+      "latch",
+      "security",
+      "reinforcement",
+      "ansi-a156",
+      "locksmith",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "latch_strike",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Full-Lip Latch Strike",
+        "es": "Cerradero de Labio (Pestillo)"
+      },
+      "description": {
+        "en": "A full-lip spring-latch strike: a curved latch mouth open to the jamb edge, a radiused return lip the bolt ramps over, and two countersunk screws on the vertical centreline."
+      },
+      "parts": ["latch_strike"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "deadbolt_strike",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Round-Corner Deadbolt Strike",
+        "es": "Cerradero de Cerrojo Redondeado"
+      },
+      "description": {
+        "en": "The classic deadbolt strike: a 1 in (25.4 mm) bolt bore through a 1-1/8 x 2-1/4 in round-corner plate with two countersunk screws."
+      },
+      "parts": ["deadbolt_strike"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "box_strike",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "High-Security Box Strike",
+        "es": "Cerradero de Caja (Alta Seguridad)"
+      },
+      "description": {
+        "en": "A box strike / reinforcer: a thicker plate with a recessed bolt pocket open to the jamb and four long screw bores that reach past the jamb into the wall stud."
+      },
+      "parts": ["box_strike"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "latch_strike",
+      "label": { "en": "Full-Lip Latch Strike", "es": "Cerradero de Labio" },
+      "render_mode": 0,
+      "color": "#9aa5b1"
+    },
+    {
+      "id": "deadbolt_strike",
+      "label": { "en": "Deadbolt Strike", "es": "Cerradero de Cerrojo" },
+      "render_mode": 0,
+      "color": "#7b8794"
+    },
+    {
+      "id": "box_strike",
+      "label": { "en": "Box Strike / Reinforcer", "es": "Cerradero de Caja" },
+      "render_mode": 0,
+      "color": "#616e7c"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "plate_w",
+      "type": "slider",
+      "default": 28.58,
+      "min": 20.0,
+      "max": 60.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": ["latch_strike", "deadbolt_strike", "box_strike"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": {
+        "en": "Plate width across the jamb face. ANSI residential strike is 1-1/8 in (28.58 mm).",
+        "es": "Ancho de la placa en la cara del marco. El estándar residencial ANSI es 1-1/8 in (28.58 mm)."
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plate_h",
+      "type": "slider",
+      "default": 57.15,
+      "min": 40.0,
+      "max": 130.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": ["latch_strike", "deadbolt_strike", "box_strike"],
+      "label": { "en": "Plate Height (mm)", "es": "Alto de Placa (mm)" },
+      "tooltip": {
+        "en": "Plate height along the jamb. ANSI residential strike is 2-1/4 in (57.15 mm); the two screws are spaced from this length.",
+        "es": "Alto de la placa a lo largo del marco. El estándar residencial ANSI es 2-1/4 in (57.15 mm); los dos tornillos se espacian a partir de esta longitud."
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.6,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": ["latch_strike", "deadbolt_strike", "box_strike"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": {
+        "en": "Plate thickness. The box strike adds 2 mm for the recessed pocket.",
+        "es": "Grosor de la placa. El cerradero de caja añade 2 mm para el bolsillo rebajado."
+      }
+    },
+    {
+      "id": "bolt_bore_d",
+      "type": "slider",
+      "default": 25.40,
+      "min": 10.0,
+      "max": 40.0,
+      "step": 0.1,
+      "group": "bore",
+      "modes": ["deadbolt_strike", "box_strike"],
+      "label": { "en": "Deadbolt Bore (mm)", "es": "Perforación de Cerrojo (mm)" },
+      "tooltip": {
+        "en": "Deadbolt bolt bore diameter. The standard deadbolt strike bore is 1 in (25.40 mm).",
+        "es": "Diámetro de la perforación del cerrojo. La perforación estándar es 1 in (25.40 mm)."
+      }
+    },
+    {
+      "id": "latch_bore_w",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 28.0,
+      "step": 0.1,
+      "group": "bore",
+      "modes": ["latch_strike"],
+      "label": { "en": "Latch Mouth Width (mm)", "es": "Ancho de Boca del Pestillo (mm)" },
+      "tooltip": {
+        "en": "Width of the spring-latch mouth that opens to the jamb edge.",
+        "es": "Ancho de la boca del pestillo de resorte que se abre al borde del marco."
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "screws",
+      "modes": ["latch_strike", "deadbolt_strike"],
+      "label": { "en": "Screw Shank (mm)", "es": "Vástago de Tornillo (mm)" },
+      "tooltip": {
+        "en": "Wood-screw shank clearance. #8/#10 screws are ~4.2 mm.",
+        "es": "Holgura del vástago del tornillo para madera. Los tornillos #8/#10 son ~4.2 mm."
+      }
+    },
+    {
+      "id": "screw_head_d",
+      "type": "slider",
+      "default": 8.4,
+      "min": 5.0,
+      "max": 14.0,
+      "step": 0.1,
+      "group": "screws",
+      "modes": ["latch_strike", "deadbolt_strike"],
+      "label": { "en": "Countersink Head (mm)", "es": "Cabeza Avellanada (mm)" },
+      "tooltip": {
+        "en": "Countersink diameter at the top face for a flush flat-head screw.",
+        "es": "Diámetro del avellanado en la cara superior para un tornillo de cabeza plana a ras."
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 3.2,
+      "min": 1.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": ["latch_strike", "deadbolt_strike", "box_strike"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": {
+        "en": "Rounded corner radius. Deadbolt strikes typically use ~1/8 in (3.2 mm).",
+        "es": "Radio de esquina redondeada. Los cerraderos de cerrojo suelen usar ~1/8 in (3.2 mm)."
+      }
+    },
+    {
+      "id": "box_screw_d",
+      "type": "slider",
+      "default": 4.8,
+      "min": 3.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "screws",
+      "modes": ["box_strike"],
+      "label": { "en": "Box Screw Shank (mm)", "es": "Vástago de Tornillo de Caja (mm)" },
+      "tooltip": {
+        "en": "Long anchoring-screw clearance for the box strike (into the stud).",
+        "es": "Holgura del tornillo de anclaje largo para el cerradero de caja (hacia el montante)."
+      }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "plate", "label": { "en": "Plate Body", "es": "Cuerpo de la Placa" } },
+    { "id": "bore", "label": { "en": "Bolt / Latch Bore", "es": "Perforación de Cerrojo / Pestillo" } },
+    { "id": "screws", "label": { "en": "Mounting Screws", "es": "Tornillos de Montaje" } }
+  ],
+  "presets": [
+    {
+      "id": "ansi_deadbolt",
+      "label": { "en": "ANSI Deadbolt Strike (1 in bore)", "es": "Cerradero de Cerrojo ANSI (1 in)" },
+      "values": { "plate_w": 28.58, "plate_h": 57.15, "plate_t": 3.0, "bolt_bore_d": 25.40, "corner_r": 3.2 }
+    },
+    {
+      "id": "full_lip_latch",
+      "label": { "en": "Full-Lip Latch Strike", "es": "Cerradero de Labio Completo" },
+      "values": { "plate_w": 28.58, "plate_h": 57.15, "plate_t": 3.0, "latch_bore_w": 16.0, "corner_r": 3.2 }
+    },
+    {
+      "id": "hd_box_reinforcer",
+      "label": { "en": "Heavy-Duty Box Reinforcer", "es": "Refuerzo de Caja Reforzado" },
+      "values": { "plate_w": 44.0, "plate_h": 90.0, "plate_t": 4.0, "bolt_bore_d": 25.40, "box_screw_d": 4.8, "corner_r": 4.0 }
+    }
+  ],
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "deadbolt_bore",
+        "label": { "en": "Deadbolt Bolt Bore", "es": "Perforación de Cerrojo" },
+        "geometry_type": "socket",
+        "standard": "ANSI/BHMA A156.2 deadbolt strike, 1 in bore",
+        "parameters": ["bolt_bore_d"]
+      },
+      {
+        "id": "strike_screw_pattern",
+        "label": { "en": "Strike Screw Pattern", "es": "Patrón de Tornillos del Cerradero" },
+        "geometry_type": "bolt_pattern",
+        "standard": "standard strike (#8/#10 wood screw, ANSI A156.2 body)",
+        "parameters": ["plate_h", "screw_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Reinforced strike plates are the single cheapest upgrade against door kick-ins, yet retail hardware often uses short screws and thin steel. Printing a box-strike reinforcer with long-screw geometry lets anyone harden a door jamb for the cost of filament, extending door security to renters and low-income households.",
+      "es": "Los cerraderos reforzados son la mejora más barata contra las patadas a la puerta, pero el hardware comercial suele usar tornillos cortos y acero delgado. Imprimir un refuerzo de caja con geometría de tornillos largos permite reforzar el marco por el costo del filamento, extendiendo la seguridad a inquilinos y hogares de bajos ingresos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

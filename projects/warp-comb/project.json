@@ -1,0 +1,149 @@
+{
+  "project": {
+    "name": "Loom / Warp Comb",
+    "slug": "warp-comb",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Weaving tools whose functional interface is the dent spacing — the pitch of teeth/slots that hold warp threads evenly. Pitch is derived from dents-per-inch: pitch = 25.4 / dpi (rigid-heddle looms use 7.5, 8, 10, 12 dpi). Build a rigid-heddle reed (alternating drilled holes and open slots that open the shed), a spreading raddle with pegs, or a flat pick-up stick / weaving sword.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herramientas de telar cuya interfaz funcional es el espaciado de dientes — el paso de dientes/ranuras que sostienen los hilos de urdimbre uniformemente. El paso se deriva de dientes-por-pulgada: paso = 25.4 / dpi (los telares de peine rígido usan 7.5, 8, 10, 12 dpi). Genera un peine rígido (orificios perforados y ranuras abiertas alternados que abren la calada), un separador (raddle) con postes, o una espada de tejido plana.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/warp-comb.webp",
+    "tags": ["loom", "weaving", "warp", "reed", "rigid-heddle", "raddle", "textile", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "rigid_heddle",
+      "label": { "en": "Rigid Heddle", "es": "Peine Rígido" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rigid_heddle"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "raddle",
+      "label": { "en": "Raddle", "es": "Separador (Raddle)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["raddle"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "pickup_stick",
+      "label": { "en": "Pick-up Stick", "es": "Espada de Tejido" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pickup_stick"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "rigid_heddle", "label": { "en": "Rigid Heddle", "es": "Peine Rígido" }, "render_mode": 0, "color": "#5b7a8f" },
+    { "id": "raddle", "label": { "en": "Raddle", "es": "Separador (Raddle)" }, "render_mode": 0, "color": "#6f8fa3" },
+    { "id": "pickup_stick", "label": { "en": "Pick-up Stick", "es": "Espada de Tejido" }, "render_mode": 0, "color": "#8aa3bf" }
+  ],
+  "parameter_groups": [
+    { "id": "spacing", "label": { "en": "Dent Spacing", "es": "Espaciado de Dientes" } },
+    { "id": "frame", "label": { "en": "Frame / Body", "es": "Marco / Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "dpi", "type": "slider", "default": 8.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "spacing", "modes": ["rigid_heddle", "raddle", "pickup_stick"],
+      "label": { "en": "Dents per Inch", "es": "Dientes por Pulgada" },
+      "tooltip": { "en": "Warp threads per inch; pitch = 25.4 / dpi. Rigid heddle: 7.5-12 dpi", "es": "Hilos de urdimbre por pulgada; paso = 25.4 / dpi. Peine rígido: 7.5-12 dpi" }
+    },
+    {
+      "id": "width_in", "type": "slider", "default": 6.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "spacing", "modes": ["rigid_heddle", "raddle", "pickup_stick"],
+      "label": { "en": "Working Width (in)", "es": "Ancho de Trabajo (pulg)" },
+      "tooltip": { "en": "Weaving width in inches (capped to a printable dent count)", "es": "Ancho de tejido en pulgadas (limitado a un número imprimible de dientes)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 25.4 }
+    },
+    {
+      "id": "frame_h", "type": "slider", "default": 60.0, "min": 30.0, "max": 120.0, "step": 1,
+      "group": "frame", "modes": ["rigid_heddle"],
+      "label": { "en": "Heddle Height (mm)", "es": "Altura del Peine (mm)" },
+      "tooltip": { "en": "Overall height of the rigid-heddle frame", "es": "Altura total del marco del peine rígido" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 4.0, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "frame", "modes": ["rigid_heddle", "raddle", "pickup_stick"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Plate / bar thickness", "es": "Grosor de placa / barra" }
+    },
+    {
+      "id": "hole_d", "type": "slider", "default": 2.5, "min": 1.0, "max": 5.0, "step": 0.25,
+      "group": "spacing", "modes": ["rigid_heddle"], "advanced": true,
+      "label": { "en": "Thread Eye (mm)", "es": "Ojo de Hilo (mm)" },
+      "tooltip": { "en": "Diameter of the drilled thread eyes (auto-clamped below the bar width)", "es": "Diámetro de los ojos de hilo perforados (auto-limitado bajo el ancho de barra)" }
+    },
+    {
+      "id": "peg_h", "type": "slider", "default": 20.0, "min": 10.0, "max": 40.0, "step": 1,
+      "group": "frame", "modes": ["raddle"],
+      "label": { "en": "Raddle Peg Height (mm)", "es": "Altura de Poste (mm)" },
+      "tooltip": { "en": "Height of the spreading pegs on the raddle", "es": "Altura de los postes separadores del raddle" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "heddle_8dpi", "mode": "rigid_heddle",
+      "label": { "en": "8-Dent Rigid Heddle", "es": "Peine Rígido 8 Dientes" },
+      "values": { "dpi": 8.0, "width_in": 6.0, "frame_h": 60.0, "thick": 4.0, "hole_d": 2.5 }
+    },
+    {
+      "id": "warp_raddle", "mode": "raddle",
+      "label": { "en": "Warp Raddle", "es": "Separador de Urdimbre" },
+      "values": { "dpi": 8.0, "width_in": 8.0, "thick": 5.0, "peg_h": 20.0 }
+    },
+    {
+      "id": "weaving_sword", "mode": "pickup_stick",
+      "label": { "en": "Weaving Sword", "es": "Espada de Tejido" },
+      "values": { "dpi": 8.0, "width_in": 6.0, "thick": 5.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "dpi <= 16",
+      "severity": "warning",
+      "message": { "en": "Very fine dents print fragile teeth — 7.5-12 dpi is the practical range", "es": "Dientes muy finos imprimen frágiles — 7.5-12 dpi es el rango práctico" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 120, 130] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "dent_spacing_teeth",
+        "label": { "en": "Dent Spacing Teeth", "es": "Dientes de Espaciado" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["dpi", "width_in", "hole_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A weaving reed's whole job is to space warp threads at an exact, repeatable pitch — dents per inch — so cloth comes out even. Rigid-heddle reeds, raddles and pick-up sticks are otherwise expensive per-width purchases. Deriving the tooth pitch from dpi (25.4 / dpi) lets a weaver print a reed at any sett and any width they need, making a floor or rigid-heddle loom usable without a drawer full of bought reeds.",
+      "es": "El trabajo entero de un peine de tejido es espaciar los hilos de urdimbre a un paso exacto y repetible — dientes por pulgada — para que la tela salga uniforme. Los peines rígidos, separadores y espadas son compras caras por ancho. Derivar el paso del diente desde dpi (25.4 / dpi) permite al tejedor imprimir un peine con cualquier densidad y ancho que necesite, haciendo utilizable un telar de piso o de peine rígido sin un cajón lleno de peines comprados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["loom", "weaving", "warp", "reed", "rigid-heddle", "raddle", "textile", "household", "hyperobject", "commons"]
+}

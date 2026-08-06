@@ -1,0 +1,409 @@
+{
+  "project": {
+    "name": "Wire Nut / Terminal Cover",
+    "slug": "terminal-cover",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Insulating covers, guards and barriers for terminals and busbars on a DIN rail. The footprint follows DIN rail (TS35, EN 60715) and DIN feed-through terminal-block dimensions, so a printed hood drops over a real block row and a finger guard shrouds a busbar. Pick the block pitch and pole count and the cover spans the row with wire-entry slots. Includes a clip-over block cover, an IP20 comb busbar guard, and a rail-clip end barrier.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Cubiertas, guardas y barreras aislantes para terminales y barras colectoras en riel DIN. La huella sigue las dimensiones del riel DIN (TS35, EN 60715) y de los bloques de terminales pasantes DIN, así que una cubierta impresa cae sobre una fila de bloques real y una guarda protege una barra. Elige el paso y número de polos y la cubierta abarca la fila con ranuras de entrada de cable. Incluye cubierta de bloque, guarda peine IP20 y barrera de extremo con clip al riel.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/terminal-cover.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "terminal-block",
+      "din-rail",
+      "cover",
+      "guard",
+      "busbar",
+      "insulator",
+      "electrical",
+      "power",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "block_cover",
+      "label": {
+        "en": "Block Cover",
+        "es": "Cubierta de Bloque"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "block_cover"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "busbar_guard",
+      "label": {
+        "en": "Busbar Comb Guard",
+        "es": "Guarda Peine de Barra"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "busbar_guard"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 9
+      }
+    },
+    {
+      "id": "end_barrier",
+      "label": {
+        "en": "End Barrier",
+        "es": "Barrera de Extremo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "end_barrier"
+      ],
+      "estimate": {
+        "base_time": 5,
+        "per_unit": 1,
+        "per_part": 7
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "block_cover",
+      "label": {
+        "en": "Block Cover",
+        "es": "Cubierta de Bloque"
+      },
+      "render_mode": 0,
+      "color": "#8a4a2a"
+    },
+    {
+      "id": "busbar_guard",
+      "label": {
+        "en": "Busbar Guard",
+        "es": "Guarda de Barra"
+      },
+      "render_mode": 0,
+      "color": "#9a5a3a"
+    },
+    {
+      "id": "end_barrier",
+      "label": {
+        "en": "End Barrier",
+        "es": "Barrera"
+      },
+      "render_mode": 0,
+      "color": "#aa6a4a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "row",
+      "label": {
+        "en": "Terminal Row",
+        "es": "Fila de Terminales"
+      }
+    },
+    {
+      "id": "cover",
+      "label": {
+        "en": "Cover",
+        "es": "Cubierta"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "pole_count",
+      "type": "slider",
+      "default": 6,
+      "min": 1,
+      "max": 24,
+      "step": 1,
+      "group": "row",
+      "modes": [
+        "block_cover",
+        "busbar_guard"
+      ],
+      "label": {
+        "en": "Pole Count",
+        "es": "Número de Polos"
+      },
+      "tooltip": {
+        "en": "Number of terminal poles in the row",
+        "es": "Número de polos en la fila"
+      }
+    },
+    {
+      "id": "pitch",
+      "type": "slider",
+      "default": 6.2,
+      "min": 3.5,
+      "max": 16.0,
+      "step": 0.1,
+      "group": "row",
+      "modes": [
+        "block_cover",
+        "busbar_guard"
+      ],
+      "label": {
+        "en": "Block Pitch (mm)",
+        "es": "Paso de Bloque (mm)"
+      },
+      "tooltip": {
+        "en": "Center-to-center spacing of DIN terminal blocks",
+        "es": "Distancia centro a centro de los bloques DIN"
+      }
+    },
+    {
+      "id": "height",
+      "type": "slider",
+      "default": 34.0,
+      "min": 10.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "cover",
+      "modes": [
+        "block_cover",
+        "busbar_guard",
+        "end_barrier"
+      ],
+      "label": {
+        "en": "Cover Height (mm)",
+        "es": "Altura de Cubierta (mm)"
+      },
+      "tooltip": {
+        "en": "Height above the rail",
+        "es": "Altura sobre el riel"
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 40.0,
+      "min": 12.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "cover",
+      "modes": [
+        "block_cover",
+        "busbar_guard",
+        "end_barrier"
+      ],
+      "label": {
+        "en": "Cover Depth (mm)",
+        "es": "Profundidad de Cubierta (mm)"
+      },
+      "tooltip": {
+        "en": "Depth across the terminal block",
+        "es": "Profundidad a través del bloque"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "cover",
+      "modes": [
+        "block_cover",
+        "busbar_guard",
+        "end_barrier"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Shell / plate wall thickness",
+        "es": "Grosor de la pared del cascarón"
+      }
+    },
+    {
+      "id": "slot_w",
+      "type": "slider",
+      "default": 10.0,
+      "min": 3.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "cover",
+      "modes": [
+        "block_cover"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Wire Slot Width (mm)",
+        "es": "Ancho de Ranura de Cable (mm)"
+      },
+      "tooltip": {
+        "en": "Wire-entry slot width at each end",
+        "es": "Ancho de la ranura de entrada de cable en cada extremo"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "six_pole_cover",
+      "mode": "block_cover",
+      "label": {
+        "en": "6-Pole Block Cover",
+        "es": "Cubierta 6 Polos"
+      },
+      "values": {
+        "pole_count": 6,
+        "pitch": 6.2
+      }
+    },
+    {
+      "id": "comb_guard",
+      "mode": "busbar_guard",
+      "label": {
+        "en": "8-Pole Comb Guard",
+        "es": "Guarda Peine 8 Polos"
+      },
+      "values": {
+        "pole_count": 8,
+        "pitch": 6.2
+      }
+    },
+    {
+      "id": "end_plate",
+      "mode": "end_barrier",
+      "label": {
+        "en": "DIN End Barrier",
+        "es": "Barrera de Extremo DIN"
+      },
+      "values": {}
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.2 mm",
+        "es": "La pared debe ser de al menos 1.2 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        110,
+        110,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 24,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "terminal_pocket",
+        "label": {
+          "en": "Terminal Block Pocket",
+          "es": "Alojamiento de Bloque de Terminales"
+        },
+        "geometry_type": "pocket",
+        "standard": "DIN terminal",
+        "parameters": [
+          "pole_count",
+          "pitch",
+          "depth",
+          "height"
+        ],
+        "compatible_with": [
+          "busbar-support",
+          "outlet-plate"
+        ]
+      },
+      {
+        "id": "din_rail_seat",
+        "label": {
+          "en": "DIN Rail Seat",
+          "es": "Asiento de Riel DIN"
+        },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715",
+        "parameters": [
+          "wall"
+        ],
+        "compatible_with": [
+          "busbar-support",
+          "devboard-tray",
+          "din-module",
+          "din-rail-clip"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Exposed terminals and busbars are a live-contact and debris hazard in field panels, junction boxes and hobby power builds. Printed hoods, IP20 comb guards and end barriers sized to DIN rail and block pitch restore touch-safe finger protection where the original covers are lost or were never fitted, making home, workshop and off-grid electrical work safer and tidier.",
+      "es": "Los terminales y barras expuestos son un riesgo de contacto vivo y de suciedad en tableros de campo, cajas de conexión y montajes de energía caseros. Las cubiertas impresas, guardas peine IP20 y barreras de extremo dimensionadas al riel DIN y al paso de bloque restauran la protección de dedos a prueba de contacto donde las cubiertas originales se perdieron o nunca se colocaron, haciendo el trabajo eléctrico de casa, taller y fuera de red más seguro y ordenado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "terminal-block",
+    "din-rail",
+    "cover",
+    "guard",
+    "busbar",
+    "electrical",
+    "infrastructure",
+    "hyperobject",
+    "commons"
+  ]
+}

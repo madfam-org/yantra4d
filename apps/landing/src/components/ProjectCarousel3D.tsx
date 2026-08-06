@@ -261,6 +261,7 @@ function CarouselUIOverlay({ project, index, total, lang }: { project: any, t?: 
 export default function ProjectCarousel3D({
     lang = 'es',
     projects,
+    carouselNote,
     searchQuery,
     setSearchQuery,
     activeCategory,
@@ -271,6 +272,7 @@ export default function ProjectCarousel3D({
     lang?: string,
     t?: Translations,
     projects: any[],
+    carouselNote?: string,
     searchQuery: string,
     setSearchQuery: (val: string) => void,
     activeCategory: string,
@@ -351,6 +353,12 @@ export default function ProjectCarousel3D({
                     </div>
 
                 </div>
+
+                {carouselNote && carouselProjects.length > 0 && (
+                    <div className="pointer-events-none self-start bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 shadow-lg">
+                        <span className="text-xs text-zinc-300 font-medium">{carouselNote}</span>
+                    </div>
+                )}
             </div>
 
             <Canvas

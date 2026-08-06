@@ -1,12 +1,12 @@
 """Shared Flask extensions (initialized in app factory)."""
-import os
 import logging
+import os
 
 from flask import request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 # Database
 db = SQLAlchemy()

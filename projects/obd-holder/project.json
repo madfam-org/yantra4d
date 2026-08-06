@@ -1,0 +1,185 @@
+{
+  "project": {
+    "name": "OBD-II / Fuse Tap Holder",
+    "slug": "obd-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Under-dash organisers for vehicle electronics: a cradle that holds an OBD-II diagnostic dongle out of the footwell, a block that stores spare blade fuses and fuse taps, and a panel bracket with the trapezoidal SAE J1962 connector opening for relocating the diagnostic port. Sized to real OBD-II and ATO/ATC/Mini blade-fuse footprints.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Organizadores bajo el tablero para electrónica del vehículo: una cuna que sostiene un dongle de diagnóstico OBD-II fuera del área de los pies, un bloque que guarda fusibles de cuchilla y derivadores, y un soporte de panel con la abertura trapezoidal del conector SAE J1962 para reubicar el puerto de diagnóstico. Dimensionado a las huellas reales de OBD-II y fusibles ATO/ATC/Mini.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/obd-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["obd", "obd2", "fuse", "fuse-tap", "automotive", "dongle", "j1962", "commercial", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dongle_holder",
+      "label": { "en": "Dongle Cradle", "es": "Cuna de Dongle" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dongle_holder"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "fuse_organizer",
+      "label": { "en": "Fuse Organizer", "es": "Organizador de Fusibles" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["fuse_organizer"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "obd_bracket",
+      "label": { "en": "OBD Panel Bracket", "es": "Soporte de Panel OBD" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["obd_bracket"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "dongle_holder", "label": { "en": "Dongle Cradle", "es": "Cuna de Dongle" }, "render_mode": 0, "color": "#ea580c" },
+    { "id": "fuse_organizer", "label": { "en": "Fuse Organizer", "es": "Organizador de Fusibles" }, "render_mode": 0, "color": "#f97316" },
+    { "id": "obd_bracket", "label": { "en": "OBD Panel Bracket", "es": "Soporte de Panel OBD" }, "render_mode": 0, "color": "#fb923c" }
+  ],
+  "parameter_groups": [
+    { "id": "dongle", "label": { "en": "OBD Dongle", "es": "Dongle OBD" } },
+    { "id": "fuse", "label": { "en": "Fuses", "es": "Fusibles" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "dongle_w", "type": "slider", "default": 48.0, "min": 25.0, "max": 90.0, "step": 1.0,
+      "group": "dongle", "modes": ["dongle_holder"],
+      "label": { "en": "Dongle Width (mm)", "es": "Ancho del Dongle (mm)" },
+      "tooltip": { "en": "OBD-II dongle body width. ELM327-class dongles are ~48 mm (varies by maker)", "es": "Ancho del cuerpo del dongle OBD-II. Los dongles tipo ELM327 miden ~48 mm (varía)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "dongle_h", "type": "slider", "default": 25.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "dongle", "modes": ["dongle_holder"],
+      "label": { "en": "Dongle Height (mm)", "es": "Altura del Dongle (mm)" },
+      "tooltip": { "en": "OBD-II dongle body height", "es": "Altura del cuerpo del dongle OBD-II" }
+    },
+    {
+      "id": "dongle_d", "type": "slider", "default": 24.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "dongle", "modes": ["dongle_holder"],
+      "label": { "en": "Dongle Depth (mm)", "es": "Profundidad del Dongle (mm)" },
+      "tooltip": { "en": "OBD-II dongle body depth", "es": "Profundidad del cuerpo del dongle OBD-II" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.6, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "dongle", "modes": ["dongle_holder", "fuse_organizer", "obd_bracket"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Cradle / block wall thickness", "es": "Grosor de pared de la cuna / bloque" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.5, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "dongle", "modes": ["dongle_holder", "fuse_organizer"], "advanced": true,
+      "label": { "en": "Pocket Clearance (mm)", "es": "Holgura de Bolsillo (mm)" },
+      "tooltip": { "en": "Per-side slip gap in the dongle and fuse pockets", "es": "Espacio por lado en los bolsillos del dongle y fusibles" }
+    },
+    {
+      "id": "obd_w", "type": "slider", "default": 25.0, "min": 18.0, "max": 40.0, "step": 0.5,
+      "group": "mount", "modes": ["obd_bracket"],
+      "label": { "en": "Connector Face Width (mm)", "es": "Ancho de Cara del Conector (mm)" },
+      "tooltip": { "en": "SAE J1962 trapezoid width (~25 mm at the wide side)", "es": "Ancho del trapecio SAE J1962 (~25 mm en el lado ancho)" }
+    },
+    {
+      "id": "obd_h", "type": "slider", "default": 13.0, "min": 9.0, "max": 25.0, "step": 0.5,
+      "group": "mount", "modes": ["obd_bracket"],
+      "label": { "en": "Connector Face Height (mm)", "es": "Altura de Cara del Conector (mm)" },
+      "tooltip": { "en": "SAE J1962 trapezoid height (~13 mm)", "es": "Altura del trapecio SAE J1962 (~13 mm)" }
+    },
+    {
+      "id": "ato_count", "type": "slider", "default": 4.0, "min": 1.0, "max": 10.0, "step": 1.0,
+      "group": "fuse", "modes": ["fuse_organizer"],
+      "label": { "en": "ATO/ATC Pockets", "es": "Bolsillos ATO/ATC" },
+      "tooltip": { "en": "Number of standard blade-fuse pockets (body 19.1 mm, blade pitch 9.5 mm)", "es": "Número de bolsillos de fusible estándar (cuerpo 19.1 mm, paso 9.5 mm)" }
+    },
+    {
+      "id": "mini_count", "type": "slider", "default": 4.0, "min": 0.0, "max": 10.0, "step": 1.0,
+      "group": "fuse", "modes": ["fuse_organizer"],
+      "label": { "en": "Mini Pockets", "es": "Bolsillos Mini" },
+      "tooltip": { "en": "Number of Mini (APM/ATM) blade-fuse pockets (body 10.9 mm, pitch 5.1 mm)", "es": "Número de bolsillos de fusible Mini (APM/ATM) (cuerpo 10.9 mm, paso 5.1 mm)" }
+    },
+    {
+      "id": "screw_d", "type": "slider", "default": 4.2, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "mount", "modes": ["dongle_holder", "obd_bracket"],
+      "label": { "en": "Screw Hole (mm)", "es": "Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting screw clearance (M4 ~4.2 mm)", "es": "Holgura de tornillo de montaje (M4 ~4.2 mm)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "elm327_cradle", "mode": "dongle_holder",
+      "label": { "en": "ELM327 Dongle Cradle", "es": "Cuna de Dongle ELM327" },
+      "values": { "dongle_w": 48, "dongle_h": 25, "dongle_d": 24 }
+    },
+    {
+      "id": "mixed_fuse_box", "mode": "fuse_organizer",
+      "label": { "en": "ATO + Mini Fuse Box", "es": "Caja de Fusibles ATO + Mini" },
+      "values": { "ato_count": 4, "mini_count": 4 }
+    },
+    {
+      "id": "obd_relocate", "mode": "obd_bracket",
+      "label": { "en": "OBD-II Relocation Bracket", "es": "Soporte de Reubicación OBD-II" },
+      "values": { "obd_w": 25, "obd_h": 13, "screw_d": 4.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "obd_w > obd_h",
+      "severity": "warning",
+      "message": { "en": "The OBD-II connector face is wider than it is tall", "es": "La cara del conector OBD-II es más ancha que alta" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "warning",
+      "message": { "en": "Thin pocket walls can split around a snug fuse", "es": "Paredes delgadas de bolsillo pueden partirse alrededor de un fusible ajustado" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 25] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "obd_connector_pocket",
+        "label": { "en": "OBD-II Connector Pocket", "es": "Bolsillo del Conector OBD-II" },
+        "geometry_type": "pocket",
+        "standard": "SAE J1962",
+        "parameters": ["obd_w", "obd_h", "dongle_w", "dongle_d"]
+      },
+      {
+        "id": "blade_fuse_pocket",
+        "label": { "en": "Blade Fuse Pocket", "es": "Bolsillo de Fusible" },
+        "geometry_type": "pocket",
+        "standard": "ISO 8820-3 ATO/Mini",
+        "parameters": ["ato_count", "mini_count"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A dangling OBD-II dongle and loose spare fuses are a footwell hazard and a lost-part waiting to happen. A cradle sized to the exact dongle and a fuse box sized to the ISO blade-fuse footprints tidy a vehicle's diagnostic and electrical kit from printed parts, extend the useful life of a scan tool, and standardise on the same OBD-II connector geometry every car since 1996 already shares.",
+      "es": "Un dongle OBD-II colgando y fusibles de repuesto sueltos son un peligro en el área de los pies y una pieza perdida en potencia. Una cuna dimensionada al dongle exacto y una caja dimensionada a las huellas ISO de fusibles ordenan el kit eléctrico y de diagnóstico del vehículo con piezas impresas, extienden la vida útil de un escáner y estandarizan la misma geometría del conector OBD-II que todo auto desde 1996 ya comparte."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["obd", "obd2", "fuse", "fuse-tap", "automotive", "dongle", "j1962", "commercial", "hyperobject", "commons"]
+}

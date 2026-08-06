@@ -2,8 +2,9 @@
 Materials Blueprint
 Handles /api/materials endpoints for returning nanoscale properties.
 """
-from flask import Blueprint, jsonify
 import logging
+
+from flask import Blueprint, jsonify
 
 from services.core.material_service import discover_materials, get_material
 from utils.route_helpers import error_response

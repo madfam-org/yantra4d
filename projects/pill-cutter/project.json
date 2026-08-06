@@ -1,0 +1,148 @@
+{
+  "project": {
+    "name": "Pill Cutter & Crusher",
+    "slug": "pill-cutter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A home kit for managing solid medication: a splitter that centres a tablet in a V-pocket under a razor-blade slot for a clean half, a crusher cup with a domed grinding floor, and a graduated dosing cup for liquid medicine. Printable everyday medication-handling aids, not certified medical devices.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un kit casero para manejar medicación sólida: un partidor que centra la tableta en un canal en V bajo una ranura para navaja para una mitad limpia, un vaso triturador con piso de molienda abovedado y un vaso dosificador graduado para medicina líquida. Ayudas imprimibles para el manejo diario de medicación, no dispositivos médicos certificados.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pill-cutter.webp",
+    "difficulty": "intermediate",
+    "tags": ["pill", "tablet", "splitter", "crusher", "dosing", "medication", "assistive", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "splitter",
+      "label": { "en": "Pill Splitter", "es": "Partidor de Pastillas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["splitter"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "crusher",
+      "label": { "en": "Pill Crusher", "es": "Triturador de Pastillas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["crusher"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "dosing_cup",
+      "label": { "en": "Dosing Cup", "es": "Vaso Dosificador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dosing_cup"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "splitter", "label": { "en": "Pill Splitter", "es": "Partidor de Pastillas" }, "render_mode": 0, "color": "#7c3aed" },
+    { "id": "crusher", "label": { "en": "Pill Crusher", "es": "Triturador de Pastillas" }, "render_mode": 0, "color": "#8b5cf6" },
+    { "id": "dosing_cup", "label": { "en": "Dosing Cup", "es": "Vaso Dosificador" }, "render_mode": 0, "color": "#a78bfa" }
+  ],
+  "parameter_groups": [
+    { "id": "tablet", "label": { "en": "Tablet", "es": "Tableta" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } },
+    { "id": "dosing", "label": { "en": "Dosing", "es": "Dosificación" } }
+  ],
+  "parameters": [
+    {
+      "id": "pill_dia", "type": "slider", "default": 12.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "tablet", "modes": ["splitter", "crusher"],
+      "label": { "en": "Tablet Diameter (mm)", "es": "Diámetro de Tableta (mm)" },
+      "tooltip": { "en": "Diameter of the tablet to split or crush", "es": "Diámetro de la tableta a partir o triturar" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pill_th", "type": "slider", "default": 5.0, "min": 1.5, "max": 14.0, "step": 0.5,
+      "group": "tablet", "modes": ["splitter", "crusher"],
+      "label": { "en": "Tablet Thickness (mm)", "es": "Grosor de Tableta (mm)" },
+      "tooltip": { "en": "Thickness of the tablet (sets pocket depth)", "es": "Grosor de la tableta (define la profundidad del hueco)" }
+    },
+    {
+      "id": "blade_slot", "type": "slider", "default": 1.2, "min": 0.6, "max": 3.0, "step": 0.1,
+      "group": "tablet", "modes": ["splitter"],
+      "label": { "en": "Blade Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Width of the razor-blade guide slot (match your blade thickness)", "es": "Ancho de la ranura guía para la navaja (según el grosor de tu hoja)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "body", "modes": ["splitter", "crusher", "dosing_cup"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body / cup wall thickness", "es": "Grosor de pared del cuerpo / vaso" }
+    },
+    {
+      "id": "cup_ml", "type": "slider", "default": 30.0, "min": 5.0, "max": 60.0, "step": 1.0,
+      "group": "dosing", "modes": ["dosing_cup"],
+      "label": { "en": "Cup Volume (mL)", "es": "Volumen del Vaso (mL)" },
+      "tooltip": { "en": "Target interior volume of the dosing cup", "es": "Volumen interior objetivo del vaso dosificador" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_tablet", "mode": "splitter",
+      "label": { "en": "Standard Round Tablet", "es": "Tableta Redonda Estándar" },
+      "values": { "pill_dia": 12, "pill_th": 5, "blade_slot": 1.2 }
+    },
+    {
+      "id": "large_tablet_crusher", "mode": "crusher",
+      "label": { "en": "Large Tablet Crusher", "es": "Triturador de Tableta Grande" },
+      "values": { "pill_dia": 20, "pill_th": 9, "wall": 4 }
+    },
+    {
+      "id": "liquid_30ml", "mode": "dosing_cup",
+      "label": { "en": "30 mL Dosing Cup", "es": "Vaso Dosificador 30 mL" },
+      "values": { "cup_ml": 30, "wall": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "blade_slot <= 3.0",
+      "severity": "warning",
+      "message": { "en": "A wide blade slot gives a less clean split", "es": "Una ranura ancha da un corte menos limpio" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 55] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 100] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -100, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "pill_pocket",
+        "label": { "en": "Pill Pocket", "es": "Hueco de Pastilla" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["pill_dia", "pill_th", "blade_slot"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Prescribed dose adjustments often require halving or crushing tablets, and commercial cutters rarely fit every pill. A pocket sized to the exact tablet gives a repeatable, clean split and a simple crusher for those who cannot swallow whole tablets.",
+      "es": "Los ajustes de dosis a menudo requieren partir o triturar tabletas, y los partidores comerciales rara vez sirven para cada pastilla. Un hueco dimensionado a la tableta exacta da un corte limpio y repetible y un triturador simple para quienes no pueden tragar tabletas enteras."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pill", "tablet", "splitter", "crusher", "medication", "medical", "hyperobject", "commons"]
+}

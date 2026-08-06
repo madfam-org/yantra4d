@@ -1,0 +1,244 @@
+{
+  "project": {
+    "name": "Pipette / Tip Stand",
+    "slug": "pipette-stand",
+    "version": "1.0.0",
+    "description": {
+      "en": "Bench organization hyperobject for liquid handling: a round carousel that cradles single-channel micropipettes upright, a pipette-tip rack on the real 9 mm SBS/ANSI-SLAS microplate pitch, and a wall-mount single-pipette hook. Keep pipettes drip-free and tips ready.",
+      "es": "Hiperobjeto de organización de mesa para manejo de líquidos: un carrusel redondo que sostiene micropipetas de un canal en vertical, una gradilla de puntas con el paso real de 9 mm SBS/ANSI-SLAS, y un colgador de pared para una pipeta. Mantén las pipetas sin goteo y las puntas listas."
+    },
+    "thumbnail": "/projects/pipette-stand.webp",
+    "tags": ["pipette", "tip-rack", "liquid-handling", "lab", "medical", "sbs", "hyperobject", "commons"],
+    "difficulty": "beginner",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Cradle bores use +0.6 mm clearance around the pipette body; PLA is fine for benchtop use, PETG if the stand is autoclave-adjacent (not autoclavable).",
+        "es": "Los alojamientos usan +0.6 mm de holgura alrededor del cuerpo de la pipeta; PLA sirve para mesa, PETG si el soporte está cerca de autoclave (no autoclavable)."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "pipette_cradle",
+        "label": {
+          "en": "Pipette Body Cradle",
+          "es": "Alojamiento del Cuerpo de Pipeta"
+        },
+        "geometry_type": "socket",
+        "standard": "single-channel micropipette (Ø3.8-6.0 mm shaft)",
+        "parameters": ["body_diameter", "pipette_slots"]
+      },
+      {
+        "id": "tip_grid",
+        "label": {
+          "en": "Tip Grid (9 mm SBS pitch)",
+          "es": "Rejilla de Puntas (paso 9 mm SBS)"
+        },
+        "geometry_type": "grid",
+        "standard": "ANSI-SLAS microplate 9 mm pitch",
+        "parameters": ["tip_cols", "tip_rows", "tip_hole"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Replaces disposable and proprietary pipette organizers with reprintable, recycled-filament-friendly benchware, cutting waste in teaching and clinical labs.",
+      "es": "Reemplaza organizadores de pipetas desechables y propietarios con soportes reimprimibles y compatibles con filamento reciclado, reduciendo residuos en laboratorios docentes y clínicos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "carousel",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Pipette Carousel",
+        "es": "Carrusel de Pipetas"
+      },
+      "description": {
+        "en": "Round bench stand that cradles N pipettes upright, each cradle with a finger-relief slot and a solid central label boss."
+      },
+      "parts": ["carousel"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "tip_rack",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Pipette-Tip Rack",
+        "es": "Gradilla de Puntas"
+      },
+      "description": {
+        "en": "Tray drilled with a grid of tip holes on the true 9 mm SBS pitch, with a hollow shelf for drainage and airflow under the tips."
+      },
+      "parts": ["tip_rack"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "wall_hook",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Wall Pipette Hook",
+        "es": "Colgador de Pared"
+      },
+      "description": {
+        "en": "Wall plate with a keyhole mounting slot and a C-cradle arm that holds one pipette by its body, dropping in from the front."
+      },
+      "parts": ["wall_hook"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "carousel",
+      "render_mode": 0,
+      "label": {
+        "en": "Pipette Carousel",
+        "es": "Carrusel de Pipetas"
+      },
+      "default_color": "#2f855a"
+    },
+    {
+      "id": "tip_rack",
+      "render_mode": 0,
+      "label": {
+        "en": "Pipette-Tip Rack",
+        "es": "Gradilla de Puntas"
+      },
+      "default_color": "#38a169"
+    },
+    {
+      "id": "wall_hook",
+      "render_mode": 0,
+      "label": {
+        "en": "Wall Pipette Hook",
+        "es": "Colgador de Pared"
+      },
+      "default_color": "#276749"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "pipette_slots",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": {
+        "en": "Pipette Slots",
+        "es": "Ranuras de Pipeta"
+      },
+      "group": "carousel"
+    },
+    {
+      "id": "body_diameter",
+      "type": "slider",
+      "default": 22,
+      "min": 14,
+      "max": 30,
+      "step": 0.5,
+      "label": {
+        "en": "Pipette Body Diameter (mm)",
+        "es": "Diámetro del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Widest diameter of the pipette body the cradle should hold.",
+        "es": "Diámetro más ancho del cuerpo de la pipeta que debe sostener el alojamiento."
+      },
+      "group": "carousel"
+    },
+    {
+      "id": "tip_cols",
+      "type": "slider",
+      "default": 8,
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": {
+        "en": "Tip Columns",
+        "es": "Columnas de Puntas"
+      },
+      "group": "tips"
+    },
+    {
+      "id": "tip_rows",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": {
+        "en": "Tip Rows",
+        "es": "Filas de Puntas"
+      },
+      "group": "tips"
+    },
+    {
+      "id": "tip_hole",
+      "type": "slider",
+      "default": 6.5,
+      "min": 3,
+      "max": 9,
+      "step": 0.1,
+      "label": {
+        "en": "Tip Hole Diameter (mm)",
+        "es": "Diámetro del Agujero de Punta (mm)"
+      },
+      "tooltip": {
+        "en": "Sized so a tip seats by its shoulder; ~6.5 mm suits common 200 µL tips.",
+        "es": "Dimensionado para que la punta se asiente por su hombro; ~6.5 mm sirve para puntas comunes de 200 µL."
+      },
+      "group": "tips"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "carousel",
+      "label": {
+        "en": "Carousel",
+        "es": "Carrusel"
+      }
+    },
+    {
+      "id": "tips",
+      "label": {
+        "en": "Tip Rack",
+        "es": "Gradilla de Puntas"
+      }
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

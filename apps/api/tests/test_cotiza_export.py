@@ -27,7 +27,6 @@ from routes.integrations.cotiza_export import (
     _send_to_cotiza,
 )
 
-
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
@@ -439,6 +438,7 @@ class TestExtractGeometryMetrics:
         # We need to patch the import inside the function.  Since _extract_geometry_metrics
         # does `import trimesh` at function scope, we mock it via sys.modules.
         import numpy as np
+
         from routes.integrations.cotiza_export import _extract_geometry_metrics
 
         mock_mesh = MagicMock()
@@ -492,6 +492,7 @@ class TestExtractGeometryMetrics:
     def test_non_watertight_mesh_uses_zero_volume(self):
         """When mesh.is_volume is False, volume should be 0."""
         import numpy as np
+
         from routes.integrations.cotiza_export import _extract_geometry_metrics
 
         mock_mesh = MagicMock()

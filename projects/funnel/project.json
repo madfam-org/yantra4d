@@ -1,0 +1,152 @@
+{
+  "project": {
+    "name": "Funnel",
+    "slug": "funnel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A hollow funnel: a wide conical mouth tapering into a narrow spout tube, built as a single surface of revolution so it prints watertight. Options include an anti-glug vent tube for smooth pouring and a nesting rim so funnels stack. Funnel mode is the everyday shape; Long Neck mode extends and slims the spout to reach into bottles.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un embudo hueco: una boca cónica ancha que se estrecha en un pico tubular, construido como una única superficie de revolución para que se imprima hermético. Incluye un tubo de ventilación anti-gorgoteo para verter suave y un borde apilable. El modo Embudo es la forma cotidiana; el modo Cuello Largo alarga y adelgaza el pico para llegar dentro de botellas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/funnel.webp",
+    "difficulty": "beginner",
+    "tags": ["funnel", "pouring", "kitchen", "garage", "decant", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "funnel",
+      "label": { "en": "Funnel", "es": "Embudo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["funnel"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "long_neck",
+      "label": { "en": "Long Neck", "es": "Cuello Largo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["long_neck"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "funnel", "label": { "en": "Funnel", "es": "Embudo" }, "render_mode": 0, "color": "#6b7fd0" },
+    { "id": "long_neck", "label": { "en": "Long Neck", "es": "Cuello Largo" }, "render_mode": 0, "color": "#93a3e0" }
+  ],
+  "parameter_groups": [
+    { "id": "shape", "label": { "en": "Funnel Shape", "es": "Forma del Embudo" } },
+    { "id": "spout", "label": { "en": "Spout", "es": "Pico" } },
+    { "id": "options", "label": { "en": "Options", "es": "Opciones" } }
+  ],
+  "parameters": [
+    {
+      "id": "top_dia", "type": "slider", "default": 90, "min": 30, "max": 250, "step": 1,
+      "group": "shape", "modes": ["funnel", "long_neck"],
+      "label": { "en": "Mouth Diameter (mm)", "es": "Diámetro de Boca (mm)" },
+      "tooltip": { "en": "Wide inlet (mouth) diameter", "es": "Diámetro de la boca (entrada) ancha" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "total_h", "type": "slider", "default": 85, "min": 40, "max": 300, "step": 1,
+      "group": "shape", "modes": ["funnel", "long_neck"],
+      "label": { "en": "Total Height (mm)", "es": "Altura Total (mm)" },
+      "tooltip": { "en": "Overall height including the spout", "es": "Altura total incluyendo el pico" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 4.0, "step": 0.2,
+      "group": "shape", "modes": ["funnel", "long_neck"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shell wall thickness", "es": "Grosor de la pared del casco" }
+    },
+    {
+      "id": "spout_dia", "type": "slider", "default": 12, "min": 5, "max": 50, "step": 1,
+      "group": "spout", "modes": ["funnel", "long_neck"],
+      "label": { "en": "Spout Diameter (mm)", "es": "Diámetro del Pico (mm)" },
+      "tooltip": { "en": "Outer diameter of the spout (auto-clamped to keep an open bore)", "es": "Diámetro exterior del pico (limitado para mantener el conducto abierto)" }
+    },
+    {
+      "id": "spout_len", "type": "slider", "default": 30, "min": 8, "max": 160, "step": 1,
+      "group": "spout", "modes": ["funnel", "long_neck"],
+      "label": { "en": "Spout Length (mm)", "es": "Longitud del Pico (mm)" },
+      "tooltip": { "en": "Length of the straight spout tube", "es": "Longitud del tubo recto del pico" }
+    },
+    {
+      "id": "vent", "type": "checkbox", "default": false,
+      "group": "options", "modes": ["funnel", "long_neck"],
+      "label": { "en": "Anti-Glug Vent", "es": "Ventilación Anti-Gorgoteo" },
+      "tooltip": { "en": "Add a small air tube so liquid pours smoothly without gulping", "es": "Añade un tubo de aire para que el líquido fluya sin borbotear" }
+    },
+    {
+      "id": "nesting_rim", "type": "checkbox", "default": true,
+      "group": "options", "modes": ["funnel", "long_neck"],
+      "label": { "en": "Nesting Rim", "es": "Borde Apilable" },
+      "tooltip": { "en": "A rim at the mouth so funnels stack and rest on jars", "es": "Un borde en la boca para apilar embudos y apoyarlos en frascos" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "kitchen_funnel", "mode": "funnel",
+      "label": { "en": "Kitchen Funnel", "es": "Embudo de Cocina" },
+      "values": { "top_dia": 90, "total_h": 85, "spout_dia": 14, "spout_len": 30, "vent": false, "nesting_rim": true }
+    },
+    {
+      "id": "wide_dry_goods_funnel", "mode": "funnel",
+      "label": { "en": "Wide Dry-Goods Funnel", "es": "Embudo Ancho para Granos" },
+      "values": { "top_dia": 160, "total_h": 120, "spout_dia": 40, "spout_len": 35, "nesting_rim": true }
+    },
+    {
+      "id": "bottle_long_neck", "mode": "long_neck",
+      "label": { "en": "Bottle Long-Neck", "es": "Cuello Largo para Botella" },
+      "values": { "top_dia": 80, "total_h": 140, "spout_dia": 10, "spout_len": 80, "vent": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "spout_dia <= top_dia * 0.6",
+      "severity": "warning",
+      "message": { "en": "Spout is large relative to the mouth", "es": "El pico es grande respecto a la boca" }
+    },
+    {
+      "expression": "total_h >= spout_len + 20",
+      "severity": "error",
+      "message": { "en": "Total height must leave room for the cone above the spout", "es": "La altura total debe dejar espacio para el cono sobre el pico" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "funnel_taper",
+        "label": { "en": "Funnel Taper", "es": "Cono del Embudo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["top_dia", "spout_dia", "total_h", "spout_len", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A funnel sized to your exact bottle or jar makes decanting liquids and dry goods clean and spill-free, and printing one on demand replaces a drawer of mismatched plastic funnels.",
+      "es": "Un embudo a la medida exacta de tu botella o frasco hace que trasvasar líquidos y granos sea limpio y sin derrames, e imprimir uno bajo demanda reemplaza un cajón de embudos de plástico dispares."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["funnel", "pouring", "kitchen", "household", "hyperobject", "commons"]
+}

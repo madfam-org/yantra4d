@@ -30,3 +30,4 @@ opentelemetry-sdk~=1.25
 opentelemetry-instrumentation-flask~=0.46b0
 opentelemetry-exporter-otlp~=1.25
 flask-sock~=0.7
+reportlab~=4.2

@@ -8,20 +8,20 @@ import os
 import time
 from pathlib import Path
 
-from flask import Blueprint, jsonify, request, Response
+from flask import Blueprint, Response, jsonify, request
 from sqlalchemy import desc, func
 
 from config import Config
 from extensions import db
 from manifest import discover_projects, get_manifest
-from middleware.auth import require_role, optional_auth
+from middleware.auth import optional_auth, require_role
+from models.analytics import AnalyticsEvent
 from services.engine.render_orchestrator import (
     ACTIVE_RENDER_JOBS_KEY,
     ACTIVE_RENDER_META_PREFIX,
     RENDER_QUEUE,
     r,
 )
-from models.analytics import AnalyticsEvent
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 

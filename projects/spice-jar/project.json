@@ -1,0 +1,209 @@
+{
+  "project": {
+    "name": "Refillable Spice Jar",
+    "slug": "spice-jar",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A refillable spice jar with a real screw thread and matching lids: shaker (ring of holes), pour spout, or sealed solid. Jar and lid threads share one nominal envelope, so any lid fits any jar of the same mouth size.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un frasco de especias recargable con rosca real y tapas a juego: espolvoreador (anillo de agujeros), vertedor o sellado sólido. Las roscas del frasco y la tapa comparten un mismo envolvente nominal, así cualquier tapa encaja en cualquier frasco de la misma boca.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/spice-jar.webp",
+    "difficulty": "intermediate",
+    "tags": ["jar", "spice", "shaker", "kitchen", "threaded", "refillable", "screw-lid", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "jar",
+      "label": { "en": "Jar", "es": "Frasco" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["jar"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "shaker_lid",
+      "label": { "en": "Shaker Lid", "es": "Tapa Espolvoreadora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shaker_lid"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "pour_lid",
+      "label": { "en": "Pour Lid", "es": "Tapa Vertedora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pour_lid"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "jar", "label": { "en": "Jar", "es": "Frasco" }, "render_mode": 0, "color": "#b5c9a4" },
+    { "id": "shaker_lid", "label": { "en": "Shaker Lid", "es": "Tapa Espolvoreadora" }, "render_mode": 0, "color": "#c98b5b" },
+    { "id": "pour_lid", "label": { "en": "Pour Lid", "es": "Tapa Vertedora" }, "render_mode": 0, "color": "#c9a05b" }
+  ],
+  "parameter_groups": [
+    { "id": "body", "label": { "en": "Jar Body", "es": "Cuerpo del Frasco" } },
+    { "id": "thread", "label": { "en": "Mouth & Thread", "es": "Boca y Rosca" } },
+    { "id": "lid", "label": { "en": "Lid", "es": "Tapa" } }
+  ],
+  "parameters": [
+    {
+      "id": "jar_dia", "type": "slider", "default": 45, "min": 24, "max": 120, "step": 1,
+      "group": "body", "modes": ["jar"],
+      "label": { "en": "Jar Diameter (mm)", "es": "Diámetro del Frasco (mm)" },
+      "tooltip": { "en": "Outer body diameter", "es": "Diámetro exterior del cuerpo" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "jar_h", "type": "slider", "default": 70, "min": 30, "max": 200, "step": 1,
+      "group": "body", "modes": ["jar"],
+      "label": { "en": "Jar Height (mm)", "es": "Altura del Frasco (mm)" },
+      "tooltip": { "en": "Total jar height", "es": "Altura total del frasco" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "body", "modes": ["jar", "shaker_lid", "pour_lid"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body and lid wall thickness", "es": "Grosor de pared del cuerpo y la tapa" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "body", "modes": ["jar"], "advanced": true,
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Jar bottom thickness", "es": "Grosor del fondo del frasco" }
+    },
+    {
+      "id": "mouth_dia", "type": "slider", "default": 34, "min": 16, "max": 90, "step": 1,
+      "group": "thread", "modes": ["jar", "shaker_lid", "pour_lid"],
+      "label": { "en": "Mouth Diameter (mm)", "es": "Diámetro de Boca (mm)" },
+      "tooltip": { "en": "Thread major diameter — set the SAME on jar and lid so they mate", "es": "Diámetro mayor de rosca — igual en frasco y tapa para que encajen" }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.1,
+      "group": "thread", "modes": ["jar", "shaker_lid", "pour_lid"], "advanced": true,
+      "label": { "en": "Thread Pitch (mm)", "es": "Paso de Rosca (mm)" },
+      "tooltip": { "en": "Distance per thread turn (match jar and lid)", "es": "Distancia por vuelta de rosca (igual en frasco y tapa)" }
+    },
+    {
+      "id": "turns", "type": "slider", "default": 1.6, "min": 1.0, "max": 2.5, "step": 0.1,
+      "group": "thread", "modes": ["jar", "shaker_lid", "pour_lid"], "advanced": true,
+      "label": { "en": "Thread Turns", "es": "Vueltas de Rosca" },
+      "tooltip": { "en": "Engagement length in turns", "es": "Longitud de agarre en vueltas" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "thread", "modes": ["shaker_lid", "pour_lid"], "advanced": true,
+      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Per-side fit slop for a printable screw fit", "es": "Holgura por lado para un enroscado imprimible" }
+    },
+    {
+      "id": "lid_h", "type": "slider", "default": 14.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "lid", "modes": ["shaker_lid", "pour_lid"],
+      "label": { "en": "Lid Height (mm)", "es": "Altura de Tapa (mm)" },
+      "tooltip": { "en": "Lid skirt height", "es": "Altura del faldón de la tapa" }
+    },
+    {
+      "id": "lid_type", "type": "select", "default": "auto",
+      "group": "lid", "modes": ["shaker_lid", "pour_lid"],
+      "label": { "en": "Lid Opening", "es": "Apertura de Tapa" },
+      "tooltip": { "en": "Auto follows the mode; or force shaker / pour / solid", "es": "Auto sigue el modo; o forzar espolvoreador / vertedor / sólido" },
+      "options": [
+        { "value": "auto", "label": { "en": "Auto (by mode)", "es": "Auto (por modo)" } },
+        { "value": "shaker-holes", "label": { "en": "Shaker Holes", "es": "Agujeros Espolvoreador" } },
+        { "value": "pour-spout", "label": { "en": "Pour Spout", "es": "Vertedor" } },
+        { "value": "solid", "label": { "en": "Solid (sealed)", "es": "Sólido (sellado)" } }
+      ]
+    },
+    {
+      "id": "hole_dia", "type": "slider", "default": 3.5, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "lid", "modes": ["shaker_lid"],
+      "label": { "en": "Shaker Hole Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Diameter of each shaker hole", "es": "Diámetro de cada agujero espolvoreador" }
+    },
+    {
+      "id": "hole_ring", "type": "slider", "default": 7, "min": 3, "max": 16, "step": 1,
+      "group": "lid", "modes": ["shaker_lid"],
+      "label": { "en": "Shaker Hole Count", "es": "Cantidad de Agujeros" },
+      "tooltip": { "en": "Number of holes in the ring", "es": "Número de agujeros en el anillo" }
+    },
+    {
+      "id": "spout_dia", "type": "slider", "default": 12.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "lid", "modes": ["pour_lid"],
+      "label": { "en": "Pour Opening (mm)", "es": "Apertura de Vertido (mm)" },
+      "tooltip": { "en": "Diameter of the pour spout opening", "es": "Diámetro de la apertura del vertedor" }
+    },
+    {
+      "id": "knurl", "type": "checkbox", "default": true,
+      "group": "lid", "modes": ["shaker_lid", "pour_lid"],
+      "label": { "en": "Grip Flutes", "es": "Estrías de Agarre" },
+      "tooltip": { "en": "Add vertical grip flutes to the lid", "es": "Agregar estrías verticales de agarre a la tapa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_spice_jar", "mode": "jar",
+      "label": { "en": "Standard Spice Jar", "es": "Frasco de Especias Estándar" },
+      "values": { "jar_dia": 45, "jar_h": 70, "mouth_dia": 34, "pitch": 3.0 }
+    },
+    {
+      "id": "shaker_top", "mode": "shaker_lid",
+      "label": { "en": "Fine Shaker Top", "es": "Tapa Espolvoreadora Fina" },
+      "values": { "mouth_dia": 34, "hole_dia": 3.0, "hole_ring": 7, "lid_h": 14 }
+    },
+    {
+      "id": "pour_top", "mode": "pour_lid",
+      "label": { "en": "Pour Top", "es": "Tapa Vertedora" },
+      "values": { "mouth_dia": 34, "spout_dia": 14, "lid_h": 14 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "mouth_dia <= jar_dia",
+      "severity": "error",
+      "message": { "en": "Mouth diameter cannot exceed the jar diameter", "es": "El diámetro de boca no puede exceder el del frasco" }
+    },
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Large clearance may make the lid loose", "es": "Una holgura grande puede aflojar la tapa" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 170] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -170, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "jar_screw_thread",
+        "label": { "en": "Jar Screw Thread", "es": "Rosca de Frasco" },
+        "geometry_type": "thread",
+        "standard": "internal",
+        "parameters": ["mouth_dia", "pitch", "turns", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A refillable, print-at-home spice container replaces single-use jars and lets any lid mate with any jar of the same mouth size, standardizing the kitchen shelf on one open thread instead of dozens of proprietary caps.",
+      "es": "Un recipiente de especias recargable e imprimible en casa reemplaza los frascos de un solo uso y permite que cualquier tapa encaje en cualquier frasco de la misma boca, estandarizando la despensa en una sola rosca abierta en vez de decenas de tapas propietarias."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["jar", "spice", "threaded", "kitchen", "household", "hyperobject", "commons"]
+}

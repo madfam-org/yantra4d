@@ -1,0 +1,192 @@
+{
+  "project": {
+    "name": "Sanding / Router Template",
+    "slug": "router-template",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A flat template a router follows with a guide bushing or bearing to reproduce a shape exactly. The opening is offset from the finished size by the bushing-to-bit offset so the routed part comes out on-size. Circle, rectangle, and slot shapes.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una plantilla plana que un router sigue con un buje guía o rodamiento para reproducir una forma con exactitud. La abertura se compensa respecto al tamaño final por el desfase buje-a-fresa para que la pieza salga a medida. Formas círculo, rectángulo y ranura.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/router-template.webp",
+    "difficulty": "intermediate",
+    "tags": ["router", "template", "woodworking", "jig", "guide-bushing", "pattern", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "circle_template",
+      "label": { "en": "Circle Template", "es": "Plantilla Círculo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["circle_template"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "rect_template",
+      "label": { "en": "Rectangle Template", "es": "Plantilla Rectángulo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rect_template"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "slot_template",
+      "label": { "en": "Slot Template", "es": "Plantilla Ranura" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["slot_template"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "circle_template", "label": { "en": "Circle Template", "es": "Plantilla Círculo" }, "render_mode": 0, "color": "#7a9b57" },
+    { "id": "rect_template", "label": { "en": "Rectangle Template", "es": "Plantilla Rectángulo" }, "render_mode": 0, "color": "#8fb06a" },
+    { "id": "slot_template", "label": { "en": "Slot Template", "es": "Plantilla Ranura" }, "render_mode": 0, "color": "#657f47" }
+  ],
+  "parameter_groups": [
+    { "id": "shape", "label": { "en": "Opening Shape", "es": "Forma de la Abertura" } },
+    { "id": "offset", "label": { "en": "Bushing Offset", "es": "Desfase del Buje" } },
+    { "id": "plate", "label": { "en": "Plate & Mounting", "es": "Placa y Fijación" } }
+  ],
+  "parameters": [
+    {
+      "id": "radius", "type": "slider", "default": 40.0, "min": 8.0, "max": 150.0, "step": 1.0,
+      "group": "shape", "modes": ["circle_template"],
+      "label": { "en": "Circle Radius (mm)", "es": "Radio del Círculo (mm)" },
+      "tooltip": { "en": "Finished radius of the routed circle", "es": "Radio final del círculo fresado" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "rect_w", "type": "slider", "default": 80.0, "min": 15.0, "max": 250.0, "step": 1.0,
+      "group": "shape", "modes": ["rect_template"],
+      "label": { "en": "Rectangle Width (mm)", "es": "Ancho del Rectángulo (mm)" },
+      "tooltip": { "en": "Finished routed width (X)", "es": "Ancho final fresado (X)" }
+    },
+    {
+      "id": "rect_d", "type": "slider", "default": 50.0, "min": 15.0, "max": 250.0, "step": 1.0,
+      "group": "shape", "modes": ["rect_template"],
+      "label": { "en": "Rectangle Depth (mm)", "es": "Profundidad del Rectángulo (mm)" },
+      "tooltip": { "en": "Finished routed depth (Y)", "es": "Profundidad final fresada (Y)" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 8.0, "min": 0.0, "max": 40.0, "step": 0.5,
+      "group": "shape", "modes": ["rect_template"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Finished corner radius (0 = sharp; a bit leaves its own radius)", "es": "Radio de esquina final (0 = recto; la fresa deja su propio radio)" }
+    },
+    {
+      "id": "slot_len", "type": "slider", "default": 70.0, "min": 20.0, "max": 250.0, "step": 1.0,
+      "group": "shape", "modes": ["slot_template"],
+      "label": { "en": "Slot Length (mm)", "es": "Longitud de la Ranura (mm)" },
+      "tooltip": { "en": "Finished slot length end-to-end", "es": "Longitud final de la ranura de extremo a extremo" }
+    },
+    {
+      "id": "slot_w", "type": "slider", "default": 18.0, "min": 6.0, "max": 80.0, "step": 1.0,
+      "group": "shape", "modes": ["slot_template"],
+      "label": { "en": "Slot Width (mm)", "es": "Ancho de la Ranura (mm)" },
+      "tooltip": { "en": "Finished slot width", "es": "Ancho final de la ranura" }
+    },
+    {
+      "id": "bushing_offset", "type": "slider", "default": 3.0, "min": 0.0, "max": 12.0, "step": 0.1,
+      "group": "offset", "modes": ["circle_template", "rect_template", "slot_template"],
+      "label": { "en": "Bushing-to-Bit Offset (mm)", "es": "Desfase Buje-a-Fresa (mm)" },
+      "tooltip": { "en": "Radial offset = (bushing OD − bit diameter) / 2. Use 0 for a flush-trim bearing bit.", "es": "Desfase radial = (Ø exterior del buje − Ø de la fresa) / 2. Usa 0 para fresa con rodamiento a ras." }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 6.0, "min": 3.0, "max": 18.0, "step": 0.5,
+      "group": "plate", "modes": ["circle_template", "rect_template", "slot_template"],
+      "label": { "en": "Template Thickness (mm)", "es": "Grosor de la Plantilla (mm)" },
+      "tooltip": { "en": "Plate thickness — must clear the bushing collar", "es": "Grosor de la placa — debe librar el collar del buje" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "border", "type": "slider", "default": 25.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "plate", "modes": ["circle_template", "rect_template", "slot_template"],
+      "label": { "en": "Border Margin (mm)", "es": "Margen del Borde (mm)" },
+      "tooltip": { "en": "Plate material around the opening (bushing bears here)", "es": "Material de la placa alrededor de la abertura (el buje apoya aquí)" }
+    },
+    {
+      "id": "mount_holes", "type": "checkbox", "default": true,
+      "group": "plate", "modes": ["circle_template", "rect_template", "slot_template"],
+      "label": { "en": "Fixing Holes", "es": "Agujeros de Fijación" },
+      "tooltip": { "en": "Screw/pin holes to fix the template to the work", "es": "Agujeros para tornillo/pasador para fijar la plantilla a la pieza" }
+    },
+    {
+      "id": "mount_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "plate", "modes": ["circle_template", "rect_template", "slot_template"], "advanced": true,
+      "label": { "en": "Fixing Hole Ø (mm)", "es": "Ø de Agujero de Fijación (mm)" },
+      "tooltip": { "en": "Diameter of the fixing holes", "es": "Diámetro de los agujeros de fijación" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "speaker_cutout", "mode": "circle_template",
+      "label": { "en": "Speaker Cutout (Ø100)", "es": "Recorte de Altavoz (Ø100)" },
+      "values": { "radius": 50.0, "bushing_offset": 3.15, "plate_t": 6.0, "border": 25.0, "mount_holes": true }
+    },
+    {
+      "id": "inlay_pocket", "mode": "rect_template",
+      "label": { "en": "Inlay Pocket (80×50)", "es": "Cajera de Incrustación (80×50)" },
+      "values": { "rect_w": 80.0, "rect_d": 50.0, "corner_r": 6.0, "bushing_offset": 3.15, "plate_t": 6.0 }
+    },
+    {
+      "id": "hinge_mortise", "mode": "slot_template",
+      "label": { "en": "Hinge Mortise Slot", "es": "Ranura para Bisagra" },
+      "values": { "slot_len": 90.0, "slot_w": 25.0, "bushing_offset": 3.15, "plate_t": 6.0, "mount_holes": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "border >= 10",
+      "severity": "error",
+      "message": { "en": "Border must be at least 10 mm so the bushing has bearing surface", "es": "El borde debe ser de al menos 10 mm para que el buje tenga superficie de apoyo" }
+    },
+    {
+      "expression": "plate_t >= 3",
+      "severity": "warning",
+      "message": { "en": "Very thin templates flex — 4–6 mm is typical", "es": "Las plantillas muy delgadas se flexionan — 4–6 mm es lo típico" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "router_template_opening",
+        "label": { "en": "Router Template Opening", "es": "Abertura de Plantilla de Router" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["radius", "rect_w", "rect_d", "corner_r", "slot_len", "slot_w", "bushing_offset"]
+      },
+      {
+        "id": "template_mount_pattern",
+        "label": { "en": "Template Mount Pattern", "es": "Patrón de Fijación de Plantilla" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_holes", "mount_dia", "border"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Reproducible woodworking without a CNC — a printed template lets a hand router cut the same on-size shape any number of times, encoding the guide-bushing offset so beginners get repeatable results.",
+      "es": "Carpintería reproducible sin CNC — una plantilla impresa permite que un router manual corte la misma forma a medida cuantas veces se quiera, codificando el desfase del buje guía para que los principiantes obtengan resultados repetibles."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["router", "template", "woodworking", "jig", "industrial", "hyperobject", "commons"]
+}

@@ -1,8 +1,9 @@
-import numpy as np
-from skimage.measure import marching_cubes
-import trimesh
-import logging
 import json
+import logging
+
+import numpy as np
+import trimesh
+from skimage.measure import marching_cubes
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +94,7 @@ def run_render(output_path: str, config: dict, params: dict):
 
         # 5. Extract Zero-Level Set (Isosurface)
         # Use level=0.0 to find the boundary
-        verts, faces, normals, values = marching_cubes(volume, level=0.0, spacing=(
+        verts, faces, _normals, _values = marching_cubes(volume, level=0.0, spacing=(
             (2*domain_size)/resolution,
             (2*domain_size)/resolution,
             (2*domain_size)/resolution)
@@ -115,7 +116,7 @@ def run_render(output_path: str, config: dict, params: dict):
 
         return True, ""
     except Exception as e:
-        logger.error(f"Implicit Engine Failed: {e}", exc_info=True)
+        logger.exception("Implicit Engine Failed")
         return False, str(e)
 
 def stream_render(output_path: str, config: dict, params: dict, part_name: str, base_prog: float, weight: float, idx: int, total: int):

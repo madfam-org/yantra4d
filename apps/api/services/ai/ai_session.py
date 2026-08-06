@@ -3,15 +3,14 @@ In-memory or Redis-backed per-session conversation store.
 Auto-expires after 1 hour. Includes circuit breaker for Redis resilience,
 schema validation, distributed locking, and per-user session limits.
 """
-import time
-import uuid
+import json
 import logging
 import os
-import json
-from dataclasses import dataclass, field, asdict
+import time
+import uuid
+from dataclasses import asdict, dataclass, field
 
 import redis
-
 
 logger = logging.getLogger(__name__)
 
@@ -99,12 +98,10 @@ class SessionData:
 
 def _redis_available() -> bool:
     """Check if Redis should be attempted (circuit breaker check)."""
-    global _redis_failure_count, _redis_circuit_open_until
     if not redis_client:
         return False
-    if time.time() < _redis_circuit_open_until:
-        return False
-    return True
+    # Circuit is closed (Redis usable) once the cooldown window has elapsed.
+    return time.time() >= _redis_circuit_open_until
 
 
 def _redis_success() -> None:

@@ -1,10 +1,11 @@
 """Tests for CadQuery runner sandbox security features."""
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 from services.engine.cq_runner import (
-    _SAFE_BUILTINS,
     _BLOCKED_MODULES,
+    _SAFE_BUILTINS,
     _restricted_import,
     _safe_type,
     run_cadquery_script,

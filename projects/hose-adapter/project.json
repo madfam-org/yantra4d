@@ -1,0 +1,489 @@
+{
+  "project": {
+    "name": "Hose / Faucet Thread Adapter",
+    "slug": "hose-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Bridges the mismatched threads people fight with every summer: garden-hose thread (GHT 3/4\"), faucet-aerator threads (M22 / M24), and plain hose barbs. Each end carries a real helical thread or a barbed nozzle, so a hose reaches a sink, a filter, or another hose.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Une las roscas incompatibles que todos peleamos cada verano: rosca de manguera de jardín (GHT 3/4\"), roscas de aireador de grifo (M22 / M24) y espigas de manguera. Cada extremo lleva una rosca helicoidal real o una boquilla con púas, para que una manguera llegue a un fregadero, un filtro u otra manguera.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hose-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "hose",
+      "adapter",
+      "thread",
+      "garden",
+      "faucet",
+      "aerator",
+      "barb",
+      "ght",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ght_to_barb",
+      "label": {
+        "en": "Garden Hose → Barb",
+        "es": "Manguera → Espiga"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "ght_to_barb"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "faucet_to_ght",
+      "label": {
+        "en": "Faucet → Garden Hose",
+        "es": "Grifo → Manguera"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "faucet_to_ght"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "coupler",
+      "label": {
+        "en": "Hose Coupler (GHT both ends)",
+        "es": "Acople de Manguera (GHT ambos extremos)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "coupler"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 16
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "ght_to_barb",
+      "label": {
+        "en": "Garden Hose → Barb",
+        "es": "Manguera → Espiga"
+      },
+      "render_mode": 0,
+      "color": "#4a9d6a"
+    },
+    {
+      "id": "faucet_to_ght",
+      "label": {
+        "en": "Faucet → Garden Hose",
+        "es": "Grifo → Manguera"
+      },
+      "render_mode": 0,
+      "color": "#5aad7a"
+    },
+    {
+      "id": "coupler",
+      "label": {
+        "en": "Hose Coupler",
+        "es": "Acople de Manguera"
+      },
+      "render_mode": 0,
+      "color": "#3d8d5d"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "threads",
+      "label": {
+        "en": "Thread Standards",
+        "es": "Estándares de Rosca"
+      }
+    },
+    {
+      "id": "flow",
+      "label": {
+        "en": "Flow & Barb",
+        "es": "Flujo y Espiga"
+      }
+    },
+    {
+      "id": "fit",
+      "label": {
+        "en": "Fit & Grip",
+        "es": "Ajuste y Agarre"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "thread_a",
+      "type": "select",
+      "default": "GHT_3/4",
+      "group": "threads",
+      "modes": [
+        "ght_to_barb"
+      ],
+      "label": {
+        "en": "Threaded End",
+        "es": "Extremo Roscado"
+      },
+      "tooltip": {
+        "en": "Thread standard for the non-barb end",
+        "es": "Estándar de rosca para el extremo sin espiga"
+      },
+      "options": [
+        {
+          "value": "GHT_3/4",
+          "label": {
+            "en": "Garden Hose 3/4\" (GHT)",
+            "es": "Manguera de Jardín 3/4\" (GHT)"
+          }
+        },
+        {
+          "value": "M24",
+          "label": {
+            "en": "M24 aerator (female)",
+            "es": "Aireador M24 (hembra)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "thread_b",
+      "type": "select",
+      "default": "barb",
+      "group": "threads",
+      "modes": [
+        "ght_to_barb"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Second End",
+        "es": "Segundo Extremo"
+      },
+      "tooltip": {
+        "en": "Barb nozzle or a thread on the second end",
+        "es": "Boquilla con púas o una rosca en el segundo extremo"
+      },
+      "options": [
+        {
+          "value": "barb",
+          "label": {
+            "en": "Hose barb",
+            "es": "Espiga de manguera"
+          }
+        },
+        {
+          "value": "GHT_3/4",
+          "label": {
+            "en": "Garden Hose 3/4\" (GHT)",
+            "es": "Manguera de Jardín 3/4\" (GHT)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bore_dia",
+      "type": "slider",
+      "default": 12.0,
+      "min": 3,
+      "max": 24,
+      "step": 0.5,
+      "group": "flow",
+      "modes": [
+        "ght_to_barb",
+        "faucet_to_ght",
+        "coupler"
+      ],
+      "label": {
+        "en": "Through Bore (mm)",
+        "es": "Barreno Pasante (mm)"
+      },
+      "tooltip": {
+        "en": "Central fluid channel diameter",
+        "es": "Diámetro del canal central de fluido"
+      }
+    },
+    {
+      "id": "barb_dia",
+      "type": "slider",
+      "default": 13.0,
+      "min": 6,
+      "max": 24,
+      "step": 0.5,
+      "group": "flow",
+      "modes": [
+        "ght_to_barb"
+      ],
+      "label": {
+        "en": "Barb OD (mm)",
+        "es": "DE de Espiga (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal hose inner diameter the barb grips",
+        "es": "Diámetro interior nominal de manguera que sujeta la espiga"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 0.5
+      }
+    },
+    {
+      "id": "barb_count",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "flow",
+      "modes": [
+        "ght_to_barb"
+      ],
+      "label": {
+        "en": "Barb Ridges",
+        "es": "Anillos de Espiga"
+      },
+      "tooltip": {
+        "en": "Number of gripping ridges on the barb",
+        "es": "Número de anillos de agarre en la espiga"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.6,
+      "min": 1.6,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "fit",
+      "modes": [
+        "ght_to_barb",
+        "faucet_to_ght",
+        "coupler"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Side wall around the threads and bore",
+        "es": "Pared lateral alrededor de las roscas y el barreno"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "fit",
+      "modes": [
+        "ght_to_barb",
+        "faucet_to_ght",
+        "coupler"
+      ],
+      "label": {
+        "en": "Thread Clearance (mm)",
+        "es": "Holgura de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side thread fit slop for a printable thread",
+        "es": "Holgura por lado para una rosca imprimible"
+      }
+    },
+    {
+      "id": "grip_knurl",
+      "type": "checkbox",
+      "default": true,
+      "group": "fit",
+      "modes": [
+        "ght_to_barb",
+        "faucet_to_ght",
+        "coupler"
+      ],
+      "label": {
+        "en": "Grip Flutes",
+        "es": "Estrías de Agarre"
+      },
+      "tooltip": {
+        "en": "Vertical flutes around the middle for hand grip",
+        "es": "Estrías verticales en el centro para agarre manual"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "hose_to_half_barb",
+      "mode": "ght_to_barb",
+      "label": {
+        "en": "Garden Hose → 1/2\" Barb",
+        "es": "Manguera → Espiga 1/2\""
+      },
+      "values": {
+        "thread_a": "GHT_3/4",
+        "thread_b": "barb",
+        "barb_dia": 13,
+        "bore_dia": 11
+      }
+    },
+    {
+      "id": "tap_to_hose",
+      "mode": "faucet_to_ght",
+      "label": {
+        "en": "Kitchen Tap → Hose",
+        "es": "Grifo de Cocina → Manguera"
+      },
+      "values": {
+        "bore_dia": 14,
+        "wall": 2.8,
+        "clearance": 0.4
+      }
+    },
+    {
+      "id": "hose_join",
+      "mode": "coupler",
+      "label": {
+        "en": "Hose-to-Hose Join",
+        "es": "Unión Manguera-Manguera"
+      },
+      "values": {
+        "bore_dia": 14,
+        "wall": 3.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bore_dia < barb_dia",
+      "severity": "warning",
+      "message": {
+        "en": "Through bore should be smaller than the barb OD",
+        "es": "El barreno debe ser menor que el DE de la espiga"
+      }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.6 mm",
+        "es": "La pared debe ser de al menos 1.6 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        70
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        130
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -130,
+        10
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 4,
+    "per_part": 16,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "garden_hose_thread",
+        "label": {
+          "en": "Garden Hose Thread",
+          "es": "Rosca de Manguera de Jardín"
+        },
+        "geometry_type": "thread",
+        "standard": "GHT 3/4 / M22-M24 aerator",
+        "parameters": [
+          "thread_a",
+          "thread_b",
+          "clearance",
+          "wall"
+        ],
+        "compatible_with": [
+          "sprinkler-adapter",
+          "thread-adapter-kit"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Water-access adapters on demand: connect a hose to a tap, a filter, or bare tubing without buying a drawer of brass adapters, extending reach for garden watering, rain-barrel use, and off-grid supply.",
+      "es": "Adaptadores de acceso al agua bajo demanda: conecte una manguera a un grifo, un filtro o tubería sin comprar un cajón de adaptadores de latón, ampliando el alcance para riego de jardín, uso de barril de lluvia y suministro fuera de red."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "hose",
+    "adapter",
+    "thread",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

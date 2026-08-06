@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Watch Band Adapters & Stands",
+    "slug": "watch-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Watch-lug hardware for the standard 18 / 20 / 22 mm lug widths, all built around one spring-bar lug interface. A lug-to-strap adapter, an angled watch display stand, and a charger dock.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de asa de reloj para los anchos estándar de 18 / 20 / 22 mm, construidos alrededor de una interfaz de barra de resorte. Un adaptador de asa a correa, un soporte de exhibición angulado y una base de carga.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/watch-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": ["watch", "lug", "band", "strap", "adapter", "stand", "charger", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "band_adapter",
+      "label": { "en": "Band Adapter", "es": "Adaptador de Correa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["band_adapter"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "watch_stand",
+      "label": { "en": "Watch Stand", "es": "Soporte de Reloj" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["watch_stand"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "charger_dock",
+      "label": { "en": "Charger Dock", "es": "Base de Carga" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["charger_dock"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "band_adapter", "label": { "en": "Band Adapter", "es": "Adaptador de Correa" }, "render_mode": 0, "color": "#4d5a63" },
+    { "id": "watch_stand", "label": { "en": "Watch Stand", "es": "Soporte de Reloj" }, "render_mode": 0, "color": "#6d7a83" },
+    { "id": "charger_dock", "label": { "en": "Charger Dock", "es": "Base de Carga" }, "render_mode": 0, "color": "#8d9aa3" }
+  ],
+  "parameter_groups": [
+    { "id": "lug", "label": { "en": "Watch Lug", "es": "Asa de Reloj" } },
+    { "id": "strap", "label": { "en": "Strap", "es": "Correa" } },
+    { "id": "stand", "label": { "en": "Stand & Dock", "es": "Soporte y Base" } },
+    { "id": "build", "label": { "en": "Build", "es": "Construcción" } }
+  ],
+  "parameters": [
+    {
+      "id": "lug_width", "type": "select", "default": "20mm",
+      "group": "lug", "modes": ["band_adapter", "watch_stand", "charger_dock"],
+      "label": { "en": "Lug Width", "es": "Ancho de Asa" },
+      "tooltip": { "en": "Standard watch lug width (the ear gap)", "es": "Ancho de asa de reloj estándar (la separación entre orejas)" },
+      "options": [
+        { "value": "18mm", "label": { "en": "18 mm", "es": "18 mm" } },
+        { "value": "20mm", "label": { "en": "20 mm", "es": "20 mm" } },
+        { "value": "22mm", "label": { "en": "22 mm", "es": "22 mm" } }
+      ]
+    },
+    {
+      "id": "pin_dia", "type": "slider", "default": 1.6, "min": 1.0, "max": 2.5, "step": 0.1,
+      "group": "lug", "modes": ["band_adapter", "watch_stand", "charger_dock"], "advanced": true,
+      "label": { "en": "Spring-Bar Diameter (mm)", "es": "Diámetro de Barra (mm)" },
+      "tooltip": { "en": "Quick-release spring-bar / pin diameter the ear bores seat", "es": "Diámetro de la barra de resorte / pin de liberación rápida que alojan las orejas" }
+    },
+    {
+      "id": "ear_h", "type": "slider", "default": 8.0, "min": 5.0, "max": 16.0, "step": 0.5,
+      "group": "lug", "modes": ["band_adapter", "watch_stand", "charger_dock"],
+      "label": { "en": "Lug Ear Height (mm)", "es": "Altura de Oreja (mm)" },
+      "tooltip": { "en": "Height of the lug ears carrying the pin bores", "es": "Altura de las orejas que llevan los orificios del pin" }
+    },
+    {
+      "id": "strap_t", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.1,
+      "group": "strap", "modes": ["band_adapter"],
+      "label": { "en": "Strap Thickness (mm)", "es": "Grosor de Correa (mm)" },
+      "tooltip": { "en": "Thickness of the strap the adapter slot accepts", "es": "Grosor de la correa que acepta la ranura del adaptador" }
+    },
+    {
+      "id": "watch_dia", "type": "slider", "default": 44.0, "min": 30.0, "max": 60.0, "step": 1.0,
+      "group": "stand", "modes": ["watch_stand", "charger_dock"],
+      "label": { "en": "Watch Diameter (mm)", "es": "Diámetro de Reloj (mm)" },
+      "tooltip": { "en": "Watch head diameter the stand cradle / dock well fits", "es": "Diámetro de la caja del reloj para la cuna / hueco de la base" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "stand_angle", "type": "slider", "default": 55.0, "min": 30.0, "max": 75.0, "step": 1.0,
+      "group": "stand", "modes": ["watch_stand"],
+      "label": { "en": "Stand Angle (deg)", "es": "Ángulo de Soporte (grados)" },
+      "tooltip": { "en": "Lean angle of the display cradle", "es": "Ángulo de inclinación de la cuna de exhibición" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "build", "modes": ["band_adapter", "watch_stand", "charger_dock"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall / ear thickness", "es": "Grosor de pared / oreja" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "adapter_20mm", "mode": "band_adapter",
+      "label": { "en": "20 mm Strap Adapter", "es": "Adaptador de Correa 20 mm" },
+      "values": { "lug_width": "20mm", "strap_t": 3.0, "ear_h": 8 }
+    },
+    {
+      "id": "display_stand_44", "mode": "watch_stand",
+      "label": { "en": "44 mm Display Stand", "es": "Soporte de Exhibición 44 mm" },
+      "values": { "lug_width": "22mm", "watch_dia": 44, "stand_angle": 55 }
+    },
+    {
+      "id": "night_dock", "mode": "charger_dock",
+      "label": { "en": "Nightstand Charger Dock", "es": "Base de Carga de Buró" },
+      "values": { "lug_width": "20mm", "watch_dia": 41, "wall": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    },
+    {
+      "expression": "pin_dia <= wall",
+      "severity": "warning",
+      "message": { "en": "Spring-bar bore is large relative to the ear wall", "es": "El orificio de la barra es grande respecto a la pared de la oreja" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "watch_lug",
+        "label": { "en": "Watch Lug", "es": "Asa de Reloj" },
+        "geometry_type": "socket",
+        "standard": "18/20/22mm lug",
+        "parameters": ["lug_width", "pin_dia", "ear_h", "wall"]
+      },
+      {
+        "id": "strap_slot",
+        "label": { "en": "Strap Slot", "es": "Ranura de Correa" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["lug_width", "strap_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Standard-lug adapters and stands let one watch head move between straps, a display cradle, and a charger without proprietary accessories — decoupling a long-lived timepiece from single-vendor band ecosystems.",
+      "es": "Adaptadores y soportes de asa estándar permiten que una caja de reloj pase entre correas, una cuna de exhibición y un cargador sin accesorios propietarios — desacoplando un reloj duradero de los ecosistemas de correa de un solo proveedor."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["watch", "lug", "band", "strap", "wearable", "hyperobject", "commons"]
+}

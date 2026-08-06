@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Board Wall Rack",
+    "slug": "board-rack",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A wall bracket that holds a ski, snowboard, or SUP paddle by cradling it in a horizontal slot sized to the board thickness. Print a pair and mount them apart to carry a board flat against the wall. Ski, snowboard, and paddle variants.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de pared que sostiene un esquí, tabla de snowboard o remo de SUP acunándolo en una ranura horizontal dimensionada al grosor de la tabla. Imprime un par y móntalos separados para llevar una tabla plana contra la pared. Variantes de esquí, snowboard y remo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/board-rack.webp",
+    "difficulty": "intermediate",
+    "tags": ["ski", "snowboard", "sup", "paddle", "rack", "wall", "sports", "storage", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ski_rack",
+      "label": { "en": "Ski Rack", "es": "Rack de Esquís" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ski_rack"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "snowboard_rack",
+      "label": { "en": "Snowboard Rack", "es": "Rack de Snowboard" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["snowboard_rack"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "paddle_rack",
+      "label": { "en": "Paddle Rack", "es": "Rack de Remo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["paddle_rack"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "ski_rack", "label": { "en": "Ski Rack", "es": "Rack de Esquís" }, "render_mode": 0, "color": "#0891b2" },
+    { "id": "snowboard_rack", "label": { "en": "Snowboard Rack", "es": "Rack de Snowboard" }, "render_mode": 0, "color": "#06b6d4" },
+    { "id": "paddle_rack", "label": { "en": "Paddle Rack", "es": "Rack de Remo" }, "render_mode": 0, "color": "#0e7490" }
+  ],
+  "parameter_groups": [
+    { "id": "board", "label": { "en": "Board Slot", "es": "Ranura de Tabla" } },
+    { "id": "mount", "label": { "en": "Bracket & Mount", "es": "Soporte y Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "slot_w", "type": "slider", "default": 28, "min": 8, "max": 90, "step": 1,
+      "group": "board", "modes": ["ski_rack", "snowboard_rack", "paddle_rack"],
+      "label": { "en": "Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Board/shaft thickness the slot cradles", "es": "Grosor de la tabla/mango que sostiene la ranura" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "arm_len", "type": "slider", "default": 90, "min": 45, "max": 220, "step": 5,
+      "group": "board", "modes": ["ski_rack", "snowboard_rack", "paddle_rack"],
+      "label": { "en": "Arm Reach (mm)", "es": "Alcance del Brazo (mm)" },
+      "tooltip": { "en": "How far the arm projects from the wall", "es": "Cuánto se proyecta el brazo desde la pared" }
+    },
+    {
+      "id": "arm_w", "type": "slider", "default": 40, "min": 20, "max": 120, "step": 2,
+      "group": "board", "modes": ["ski_rack", "snowboard_rack", "paddle_rack"],
+      "label": { "en": "Arm Width (mm)", "es": "Ancho del Brazo (mm)" },
+      "tooltip": { "en": "Width of the arm along the wall", "es": "Ancho del brazo a lo largo de la pared" }
+    },
+    {
+      "id": "lip_h", "type": "slider", "default": 22, "min": 10, "max": 60, "step": 1,
+      "group": "board", "modes": ["ski_rack", "snowboard_rack", "paddle_rack"],
+      "label": { "en": "Front Lip Height (mm)", "es": "Altura del Labio Frontal (mm)" },
+      "tooltip": { "en": "Up-turned lip that stops the board sliding off", "es": "Labio levantado que evita que la tabla se deslice" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 4.0, "max": 12.0, "step": 0.5,
+      "group": "mount", "modes": ["ski_rack", "snowboard_rack", "paddle_rack"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Bracket wall thickness (strength)", "es": "Grosor de pared del soporte (resistencia)" }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 90, "min": 50, "max": 200, "step": 5,
+      "group": "mount", "modes": ["ski_rack", "snowboard_rack", "paddle_rack"],
+      "label": { "en": "Plate Height (mm)", "es": "Alto de Placa (mm)" },
+      "tooltip": { "en": "Height of the wall mount plate", "es": "Alto de la placa de montaje en pared" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 5.0, "min": 3.5, "max": 10.0, "step": 0.5,
+      "group": "mount", "modes": ["ski_rack", "snowboard_rack", "paddle_rack"], "advanced": true,
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Diameter of the wall screw holes", "es": "Diámetro de los orificios de tornillo de pared" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "alpine_skis", "mode": "ski_rack",
+      "label": { "en": "Alpine Skis (pair)", "es": "Esquís Alpinos (par)" },
+      "values": { "slot_w": 28, "arm_len": 90 }
+    },
+    {
+      "id": "snowboard_flat", "mode": "snowboard_rack",
+      "label": { "en": "Snowboard (flat)", "es": "Snowboard (plano)" },
+      "values": { "slot_w": 30, "arm_len": 130 }
+    },
+    {
+      "id": "sup_paddle", "mode": "paddle_rack",
+      "label": { "en": "SUP Paddle", "es": "Remo de SUP" },
+      "values": { "slot_w": 32, "arm_len": 65 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "arm_len >= 45",
+      "severity": "warning",
+      "message": { "en": "A short arm may not clear the wall trim", "es": "Un brazo corto puede no librar el zócalo de la pared" }
+    },
+    {
+      "expression": "wall >= 4.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 4 mm to bear the load", "es": "La pared debe tener al menos 4 mm para soportar la carga" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "board_slot",
+        "label": { "en": "Board Slot", "es": "Ranura de Tabla" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["slot_w", "arm_len", "arm_w", "lip_h"]
+      },
+      {
+        "id": "wall_mount",
+        "label": { "en": "Wall Mount", "es": "Montaje de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["plate_h", "screw_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Sports-board storage is bulky retail hardware sized for one product; a printable slot bracket sized to any board or paddle lets households store seasonal gear on the wall, reclaiming floor space without buying board-specific racks.",
+      "es": "El almacenamiento de tablas deportivas es herraje voluminoso de tienda hecho para un solo producto; un soporte de ranura imprimible dimensionado a cualquier tabla o remo permite a los hogares guardar equipo estacional en la pared, recuperando espacio sin comprar racks específicos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["ski", "snowboard", "sup", "rack", "sports", "commercial", "hyperobject", "commons"]
+}

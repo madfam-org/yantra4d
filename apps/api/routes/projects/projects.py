@@ -6,17 +6,16 @@ import hashlib
 import json
 import logging
 import os
+import re
+import shutil
 import sqlite3
 import time
 
-import re
-import shutil
+from flask import Blueprint, abort, jsonify, make_response, request, send_from_directory
 
-from flask import Blueprint, jsonify, send_from_directory, abort, request, make_response
-
+import rate_limits
 from config import Config
 from extensions import limiter
-import rate_limits
 from manifest import discover_projects, get_manifest, invalidate_cache
 from middleware.auth import require_tier
 from utils.route_helpers import error_response, handle_exceptions
@@ -208,7 +207,7 @@ def update_assembly_steps(slug):
     if not data or "assembly_steps" not in data:
         return error_response("Missing assembly_steps", 400, error_code="missing_assembly_steps")
 
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         manifest_data = json.load(f)
 
     manifest_data["assembly_steps"] = data["assembly_steps"]

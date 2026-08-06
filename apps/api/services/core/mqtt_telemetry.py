@@ -4,12 +4,13 @@ Injects continuous temporal data into CadQuery/OpenSCAD
 parametric generation and Real-Time 3D Digital Twins.
 """
 import atexit
-import os
 import json
 import logging
+import os
 import threading
-import paho.mqtt.client as mqtt
 from queue import Queue
+
+import paho.mqtt.client as mqtt
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +87,7 @@ class MqttTelemetryService:
             self.connected = True
             # Re-subscribe to all registered topics
             with self._lock:
-                for topic in self.topic_callbacks.keys():
+                for topic in self.topic_callbacks:
                     self.client.subscribe(topic)
                     logger.info(f"Subscribed to topic: {topic}")
         else:

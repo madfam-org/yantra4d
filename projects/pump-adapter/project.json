@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Soap Dispenser / Pump Adapter",
+    "slug": "pump-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Refill and pump adapters for soap / lotion / sanitizer dispensers, built around the real SPI 410 continuous-thread bottle-neck finishes — 20-410, 24-410, 28-410 (major Ø 20 / 24 / 28 mm, 8-TPI → 3.175 mm pitch). Threads are functional single-start helical ribs. Build a female pump collar, a 410-to-410 neck reducer, or a sealing travel cap.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Adaptadores de recarga y bomba para dispensadores de jabón / loción / gel, construidos alrededor de los acabados reales SPI 410 de rosca continua — 20-410, 24-410, 28-410 (Ø mayor 20 / 24 / 28 mm, 8-TPI → paso 3.175 mm). Las roscas son nervios helicoidales funcionales. Genera un collar de bomba hembra, un reductor de cuello 410-a-410, o una tapa de viaje selladora.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pump-adapter.webp",
+    "tags": ["soap", "dispenser", "pump", "bottle", "thread", "410", "refill", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "pump_collar",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Pump Collar", "es": "Collar de Bomba" },
+      "parts": ["pump_collar"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "neck_reducer",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Neck Reducer", "es": "Reductor de Cuello" },
+      "parts": ["neck_reducer"],
+      "estimate": { "base_time": 26, "per_unit": 5, "per_part": 26 }
+    },
+    {
+      "id": "travel_cap",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Travel Cap", "es": "Tapa de Viaje" },
+      "parts": ["travel_cap"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 18 }
+    }
+  ],
+  "parts": [
+    { "id": "pump_collar", "render_mode": 0, "label": { "en": "Pump Collar", "es": "Collar de Bomba" }, "default_color": "#5b8fb0" },
+    { "id": "neck_reducer", "render_mode": 0, "label": { "en": "Neck Reducer", "es": "Reductor de Cuello" }, "default_color": "#6fa3bf" },
+    { "id": "travel_cap", "render_mode": 0, "label": { "en": "Travel Cap", "es": "Tapa de Viaje" }, "default_color": "#4a7c8f" }
+  ],
+  "parameter_groups": [
+    { "id": "neck", "label": { "en": "Neck Finish", "es": "Acabado de Cuello" } },
+    { "id": "thread", "label": { "en": "Thread & Walls", "es": "Rosca y Paredes" } },
+    { "id": "pump", "label": { "en": "Pump Opening", "es": "Abertura de Bomba" } }
+  ],
+  "parameters": [
+    {
+      "id": "neck_a", "type": "select", "default": "28-410",
+      "options": [
+        { "value": "20-410", "label": { "en": "20-410 (20 mm)", "es": "20-410 (20 mm)" } },
+        { "value": "24-410", "label": { "en": "24-410 (24 mm)", "es": "24-410 (24 mm)" } },
+        { "value": "28-410", "label": { "en": "28-410 (28 mm)", "es": "28-410 (28 mm)" } }
+      ],
+      "group": "neck", "modes": ["pump_collar", "neck_reducer", "travel_cap"],
+      "label": { "en": "Bottle Neck (A)", "es": "Cuello de Botella (A)" },
+      "tooltip": { "en": "The 410 finish this part threads onto (bottom for the reducer)", "es": "El acabado 410 al que se enrosca esta pieza (inferior en el reductor)" }
+    },
+    {
+      "id": "neck_b", "type": "select", "default": "24-410",
+      "options": [
+        { "value": "20-410", "label": { "en": "20-410 (20 mm)", "es": "20-410 (20 mm)" } },
+        { "value": "24-410", "label": { "en": "24-410 (24 mm)", "es": "24-410 (24 mm)" } },
+        { "value": "28-410", "label": { "en": "28-410 (28 mm)", "es": "28-410 (28 mm)" } }
+      ],
+      "group": "neck", "modes": ["neck_reducer"],
+      "label": { "en": "Top Neck (B)", "es": "Cuello Superior (B)" },
+      "tooltip": { "en": "The 410 finish the reducer's male top presents (fits a pump / cap for that size)", "es": "El acabado 410 que presenta la parte superior macho del reductor" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "thread", "modes": ["pump_collar", "neck_reducer", "travel_cap"], "advanced": true,
+      "label": { "en": "Thread Fit Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Per-side printed-thread gap (0.3-0.5 typical)", "es": "Espacio de rosca impresa por lado (0.3-0.5 típico)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.6, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "thread", "modes": ["pump_collar", "neck_reducer", "travel_cap"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Radial wall around the thread", "es": "Pared radial alrededor de la rosca" }
+    },
+    {
+      "id": "top_th", "type": "slider", "default": 2.4, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "thread", "modes": ["pump_collar", "neck_reducer", "travel_cap"],
+      "label": { "en": "Shoulder / Top (mm)", "es": "Hombro / Tapa (mm)" },
+      "tooltip": { "en": "Cap top / reducer shoulder thickness", "es": "Grosor de la tapa / hombro del reductor" }
+    },
+    {
+      "id": "turns", "type": "slider", "default": 3.0, "min": 1.5, "max": 4.0, "step": 0.5,
+      "group": "thread", "modes": ["pump_collar", "neck_reducer", "travel_cap"], "advanced": true,
+      "label": { "en": "Thread Engagement (turns)", "es": "Enroscado (vueltas)" },
+      "tooltip": { "en": "Requested engagement turns; snapped to a half-integer and capped at 3.5 for a fast, well-conditioned helical sweep", "es": "Vueltas solicitadas; ajustadas a medio entero y limitadas a 3.5 para un barrido helicoidal rápido y estable" }
+    },
+    {
+      "id": "pump_bore", "type": "slider", "default": 20.0, "min": 6.0, "max": 34.0, "step": 0.5,
+      "group": "pump", "modes": ["pump_collar"],
+      "label": { "en": "Pump-Stem Opening Ø (mm)", "es": "Ø de Abertura de Bomba (mm)" },
+      "tooltip": { "en": "Diameter of the top opening for the pump stem", "es": "Diámetro de la abertura superior para el vástago de la bomba" }
+    },
+    {
+      "id": "knurl", "type": "checkbox", "default": true,
+      "group": "thread", "modes": ["pump_collar", "neck_reducer", "travel_cap"],
+      "label": { "en": "Grip Knurl", "es": "Estriado de Agarre" },
+      "tooltip": { "en": "Vertical grip flutes around the outside", "es": "Estrías verticales de agarre en el exterior" }
+    }
+  ],
+  "presets": [
+    { "id": "std_pump_collar", "mode": "pump_collar", "label": { "en": "Standard 28-410 Pump Collar", "es": "Collar de Bomba 28-410" }, "values": { "neck_a": "28-410", "pump_bore": 20.0 } },
+    { "id": "reduce_28_to_24", "mode": "neck_reducer", "label": { "en": "Reducer 28-410 → 24-410", "es": "Reductor 28-410 → 24-410" }, "values": { "neck_a": "28-410", "neck_b": "24-410" } },
+    { "id": "travel_seal", "mode": "travel_cap", "label": { "en": "24-410 Travel Cap", "es": "Tapa de Viaje 24-410" }, "values": { "neck_a": "24-410" } }
+  ],
+  "constraints": [
+    { "expression": "clearance <= 0.8", "severity": "warning", "message": { "en": "Large clearance loosens the screw fit", "es": "Una holgura grande afloja el ajuste de la rosca" } }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "front", "label": { "en": "Front (Section)", "es": "Frontal (Sección)" }, "position": [0, -140, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": { "base_time": 18, "per_unit": 4, "per_part": 18, "wasm_multiplier": 4, "warning_threshold_seconds": 90 },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "neck_thread_410",
+        "label": { "en": "SPI 410 Bottle-Neck Thread", "es": "Rosca de Cuello SPI 410" },
+        "geometry_type": "thread",
+        "standard": "SPI 20-410 / 24-410 / 28-410 (8 TPI)",
+        "parameters": ["neck_a", "neck_b", "clearance", "turns"],
+        "compatible_with": ["bottle-thread"]
+      },
+      {
+        "id": "pump_stem_opening",
+        "label": { "en": "Pump-Stem Opening", "es": "Abertura de Vástago de Bomba" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["pump_bore"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A working pump on an empty bottle is landfill the moment its refill uses a different neck. Threading to the real SPI 410 finishes lets anyone move a pump between bottles, adapt a 28-410 pump onto a 24-410 refill, or seal a dispenser for travel — keeping pumps and bottles in service across brands instead of discarding a whole dispenser per refill mismatch.",
+      "es": "Una bomba que funciona sobre una botella vacía es basura en cuanto su recambio usa otro cuello. Enroscar a los acabados reales SPI 410 permite mover una bomba entre botellas, adaptar una bomba 28-410 a un recambio 24-410, o sellar un dispensador para viajar — manteniendo bombas y botellas en servicio entre marcas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["soap", "dispenser", "pump", "bottle", "thread", "410", "refill", "household", "hyperobject", "commons"]
+}

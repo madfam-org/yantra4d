@@ -1,0 +1,181 @@
+{
+  "project": {
+    "name": "Vent Louvre",
+    "slug": "vent-louvre",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Airflow deflectors and vent inserts: a rectangular frame spanned by a bank of angled blades that steer or diffuse air. Choose a flat louvre insert that drops into a vent opening, a protruding deflector scoop that throws air away from a surface, or a fine straight-slat grille for a cover or intake screen. Sized by the opening and blade count.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Deflectores de aire e insertos de rejilla: un marco rectangular cruzado por un banco de aletas anguladas que dirigen o difunden el aire. Elige un inserto de rejilla plano que entra en una abertura de ventilación, un deflector saliente que aleja el aire de una superficie, o una rejilla de listones finos para una cubierta o pantalla de admisión. Dimensionado por la abertura y el número de aletas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vent-louvre.webp",
+    "difficulty": "beginner",
+    "tags": ["vent", "louvre", "deflector", "grille", "airflow", "automotive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "louvre_insert",
+      "label": { "en": "Louvre Insert", "es": "Inserto de Rejilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["louvre_insert"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "deflector",
+      "label": { "en": "Deflector", "es": "Deflector" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["deflector"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "grille",
+      "label": { "en": "Grille", "es": "Rejilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grille"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "louvre_insert", "label": { "en": "Louvre Insert", "es": "Inserto de Rejilla" }, "render_mode": 0, "color": "#4b5f74" },
+    { "id": "deflector", "label": { "en": "Deflector", "es": "Deflector" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "grille", "label": { "en": "Grille", "es": "Rejilla" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "opening", "label": { "en": "Opening", "es": "Abertura" } },
+    { "id": "blades", "label": { "en": "Blades", "es": "Aletas" } },
+    { "id": "extras", "label": { "en": "Frame Extras", "es": "Extras del Marco" } }
+  ],
+  "parameters": [
+    {
+      "id": "open_w", "type": "slider", "default": 80.0, "min": 20.0, "max": 200.0, "step": 1.0,
+      "group": "opening", "modes": ["louvre_insert", "deflector", "grille"],
+      "label": { "en": "Opening Width (mm)", "es": "Ancho de Abertura (mm)" },
+      "tooltip": { "en": "Clear opening width the blades span", "es": "Ancho libre de la abertura que cubren las aletas" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "open_h", "type": "slider", "default": 50.0, "min": 15.0, "max": 160.0, "step": 1.0,
+      "group": "opening", "modes": ["louvre_insert", "deflector", "grille"],
+      "label": { "en": "Opening Height (mm)", "es": "Alto de Abertura (mm)" },
+      "tooltip": { "en": "Clear opening height (blades stack over this)", "es": "Alto libre de la abertura (las aletas se apilan en este)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "frame_w", "type": "slider", "default": 5.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "opening", "modes": ["louvre_insert", "deflector", "grille"],
+      "label": { "en": "Frame Width (mm)", "es": "Ancho del Marco (mm)" },
+      "tooltip": { "en": "Border width around the opening", "es": "Ancho del borde alrededor de la abertura" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 1.0,
+      "group": "opening", "modes": ["louvre_insert", "deflector", "grille"],
+      "label": { "en": "Depth (mm)", "es": "Profundidad (mm)" },
+      "tooltip": { "en": "Frame and blade depth", "es": "Profundidad del marco y las aletas" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "blade_count", "type": "slider", "default": 6, "min": 1, "max": 20, "step": 1,
+      "group": "blades", "modes": ["louvre_insert", "deflector", "grille"],
+      "label": { "en": "Blade Count", "es": "Número de Aletas" },
+      "tooltip": { "en": "Number of blades across the opening height", "es": "Número de aletas a lo alto de la abertura" }
+    },
+    {
+      "id": "blade_angle", "type": "slider", "default": 35.0, "min": 0.0, "max": 75.0, "step": 1.0,
+      "group": "blades", "modes": ["louvre_insert", "deflector"],
+      "label": { "en": "Blade Angle (deg)", "es": "Ángulo de Aleta (grados)" },
+      "tooltip": { "en": "Blade tilt from vertical (0 = straight, higher = more deflection)", "es": "Inclinación de la aleta desde la vertical (0 = recta, mayor = más desvío)" }
+    },
+    {
+      "id": "blade_thick", "type": "slider", "default": 2.0, "min": 1.0, "max": 5.0, "step": 0.2,
+      "group": "blades", "modes": ["louvre_insert", "deflector", "grille"],
+      "label": { "en": "Blade Thickness (mm)", "es": "Grosor de Aleta (mm)" },
+      "tooltip": { "en": "Thickness of each blade / slat", "es": "Grosor de cada aleta / listón" }
+    },
+    {
+      "id": "rim_lip", "type": "slider", "default": 2.0, "min": 0.0, "max": 6.0, "step": 0.5,
+      "group": "extras", "modes": ["louvre_insert", "deflector", "grille"],
+      "label": { "en": "Front Locating Lip (mm)", "es": "Labio de Ubicación (mm)" },
+      "tooltip": { "en": "Wider front lip that locates the insert in the opening", "es": "Labio frontal más ancho que ubica el inserto en la abertura" }
+    },
+    {
+      "id": "hood_len", "type": "slider", "default": 22.0, "min": 6.0, "max": 50.0, "step": 1.0,
+      "group": "extras", "modes": ["deflector"],
+      "label": { "en": "Deflector Hood Length (mm)", "es": "Longitud del Deflector (mm)" },
+      "tooltip": { "en": "How far the deflector scoop projects forward", "es": "Qué tanto se proyecta el deflector hacia adelante" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "dash_vent_insert", "mode": "louvre_insert",
+      "label": { "en": "Dash Vent Insert", "es": "Inserto de Ventila" },
+      "values": { "open_w": 80, "open_h": 45, "blade_count": 6, "blade_angle": 35, "depth": 10 }
+    },
+    {
+      "id": "footwell_deflector", "mode": "deflector",
+      "label": { "en": "Footwell Deflector", "es": "Deflector de Piso" },
+      "values": { "open_w": 90, "open_h": 55, "blade_count": 5, "blade_angle": 45, "hood_len": 26 }
+    },
+    {
+      "id": "intake_grille", "mode": "grille",
+      "label": { "en": "Intake Grille", "es": "Rejilla de Admisión" },
+      "values": { "open_w": 100, "open_h": 60, "blade_count": 12, "blade_thick": 1.6, "depth": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "blade_thick <= depth - 1",
+      "severity": "warning",
+      "message": { "en": "Blades are nearly as deep as the frame", "es": "Las aletas son casi tan profundas como el marco" }
+    },
+    {
+      "expression": "frame_w >= 2",
+      "severity": "error",
+      "message": { "en": "Frame must be at least 2 mm wide", "es": "El marco debe tener al menos 2 mm de ancho" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "louvre_blade",
+        "label": { "en": "Louvre Blade", "es": "Aleta de Rejilla" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["blade_count", "blade_angle", "blade_thick", "depth"]
+      },
+      {
+        "id": "vent_opening",
+        "label": { "en": "Vent Opening Frame", "es": "Marco de Abertura" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["open_w", "open_h", "frame_w", "rim_lip"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Broken vent louvres and missing deflectors are unfixable OEM assemblies you normally replace whole; a parametric frame-and-blade insert sized to the opening restores or redirects airflow for the cost of a small print, and doubles as a general-purpose grille.",
+      "es": "Las aletas de ventilación rotas y los deflectores faltantes son conjuntos originales irreparables que normalmente reemplazas completos; un inserto paramétrico de marco y aletas dimensionado a la abertura restaura o redirige el flujo de aire por el costo de una pequeña impresión, y sirve además como rejilla de uso general."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["vent", "louvre", "deflector", "grille", "automotive", "commercial", "hyperobject", "commons"]
+}

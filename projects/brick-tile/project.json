@@ -1,0 +1,195 @@
+{
+  "project": {
+    "name": "Building-Brick Compatible Tile",
+    "slug": "brick-tile",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Plates, tiles and adapters that clutch with the ubiquitous construction-brick system — an 8 mm stud pitch with Ø4.8 mm studs and hollow underside tubes — so a printed part snaps onto any brick from the same family. Build a studded plate, a smooth finishing tile, or a base adapter that bolts brick builds to a wall or desk.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Placas, tejas y adaptadores que encajan con el ubicuo sistema de ladrillos de construcción — un paso de tetones de 8 mm con tetones de Ø4.8 mm y tubos huecos inferiores — para que una pieza impresa se acople a cualquier ladrillo de la misma familia. Genera una placa con tetones, una teja lisa de acabado, o un adaptador base que atornilla construcciones a una pared o escritorio.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/brick-tile.webp",
+    "difficulty": "intermediate",
+    "tags": ["brick", "tile", "construction", "stud", "education", "kids", "kit", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "stud_plate",
+      "label": { "en": "Studded Plate", "es": "Placa con Tetones" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["stud_plate"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "smooth_tile",
+      "label": { "en": "Smooth Tile", "es": "Teja Lisa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["smooth_tile"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "base_adapter",
+      "label": { "en": "Base Adapter", "es": "Adaptador Base" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["base_adapter"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "stud_plate", "label": { "en": "Studded Plate", "es": "Placa con Tetones" }, "render_mode": 0, "color": "#c0392b" },
+    { "id": "smooth_tile", "label": { "en": "Smooth Tile", "es": "Teja Lisa" }, "render_mode": 0, "color": "#e67e22" },
+    { "id": "base_adapter", "label": { "en": "Base Adapter", "es": "Adaptador Base" }, "render_mode": 0, "color": "#d35400" }
+  ],
+  "parameter_groups": [
+    { "id": "footprint", "label": { "en": "Footprint", "es": "Huella" } },
+    { "id": "brick", "label": { "en": "Brick Geometry", "es": "Geometría de Ladrillo" } },
+    { "id": "adapter", "label": { "en": "Base Adapter", "es": "Adaptador Base" } }
+  ],
+  "parameters": [
+    {
+      "id": "cols", "type": "slider", "default": 4, "min": 1, "max": 16, "step": 1,
+      "group": "footprint", "modes": ["stud_plate", "smooth_tile", "base_adapter"],
+      "label": { "en": "Studs Wide (X)", "es": "Tetones de Ancho (X)" },
+      "tooltip": { "en": "Number of studs along X", "es": "Número de tetones a lo largo de X" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 8.0 }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 2, "min": 1, "max": 16, "step": 1,
+      "group": "footprint", "modes": ["stud_plate", "smooth_tile", "base_adapter"],
+      "label": { "en": "Studs Deep (Y)", "es": "Tetones de Fondo (Y)" },
+      "tooltip": { "en": "Number of studs along Y", "es": "Número de tetones a lo largo de Y" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 8.0 }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 8.0, "min": 6.0, "max": 16.0, "step": 0.1,
+      "group": "brick", "modes": ["stud_plate", "smooth_tile", "base_adapter"], "advanced": true,
+      "label": { "en": "Stud Pitch (mm)", "es": "Paso de Tetones (mm)" },
+      "tooltip": { "en": "Stud-to-stud spacing. Construction-brick standard is 8 mm", "es": "Separación entre tetones. El estándar de ladrillo de construcción es 8 mm" }
+    },
+    {
+      "id": "stud_dia", "type": "slider", "default": 4.8, "min": 2.0, "max": 9.0, "step": 0.1,
+      "group": "brick", "modes": ["stud_plate", "base_adapter"], "advanced": true,
+      "label": { "en": "Stud Diameter (mm)", "es": "Diámetro de Tetón (mm)" },
+      "tooltip": { "en": "Diameter of the top studs. Construction-brick standard is 4.8 mm", "es": "Diámetro de los tetones superiores. El estándar de ladrillo de construcción es 4.8 mm" }
+    },
+    {
+      "id": "stud_h", "type": "slider", "default": 1.8, "min": 1.0, "max": 6.0, "step": 0.1,
+      "group": "brick", "modes": ["stud_plate", "base_adapter"], "advanced": true,
+      "label": { "en": "Stud Height (mm)", "es": "Altura de Tetón (mm)" },
+      "tooltip": { "en": "How far the studs rise above the top face (~1.8 mm)", "es": "Cuánto sobresalen los tetones de la cara superior (~1.8 mm)" }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 3.2, "min": 2.0, "max": 12.0, "step": 0.1,
+      "group": "brick", "modes": ["stud_plate", "smooth_tile"],
+      "label": { "en": "Plate Height (mm)", "es": "Altura de Placa (mm)" },
+      "tooltip": { "en": "Body height. One plate = 3.2 mm; a full brick = 9.6 mm", "es": "Altura del cuerpo. Una placa = 3.2 mm; un ladrillo completo = 9.6 mm" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.5, "min": 0.8, "max": 3.0, "step": 0.1,
+      "group": "brick", "modes": ["stud_plate", "smooth_tile"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and top thickness of the hollow shell", "es": "Grosor de pared y techo del casco hueco" }
+    },
+    {
+      "id": "tube_od", "type": "slider", "default": 6.5, "min": 5.0, "max": 13.0, "step": 0.1,
+      "group": "brick", "modes": ["stud_plate", "smooth_tile"], "advanced": true,
+      "label": { "en": "Clutch Tube OD (mm)", "es": "Diámetro Ext. de Tubo (mm)" },
+      "tooltip": { "en": "Outer diameter of the underside clutch tubes (~6.5 mm)", "es": "Diámetro exterior de los tubos de sujeción inferiores (~6.5 mm)" }
+    },
+    {
+      "id": "tube_id", "type": "slider", "default": 4.9, "min": 3.0, "max": 11.0, "step": 0.1,
+      "group": "brick", "modes": ["stud_plate", "smooth_tile"], "advanced": true,
+      "label": { "en": "Clutch Tube ID (mm)", "es": "Diámetro Int. de Tubo (mm)" },
+      "tooltip": { "en": "Inner diameter of the clutch tubes — grips the studs of the brick below (~4.9 mm)", "es": "Diámetro interior de los tubos — agarra los tetones del ladrillo inferior (~4.9 mm)" }
+    },
+    {
+      "id": "adapter_h", "type": "slider", "default": 6.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "adapter", "modes": ["base_adapter"],
+      "label": { "en": "Adapter Height (mm)", "es": "Altura de Adaptador (mm)" },
+      "tooltip": { "en": "Slab height of the base adapter", "es": "Altura de la placa del adaptador base" }
+    },
+    {
+      "id": "mount_dia", "type": "slider", "default": 4.2, "min": 2.0, "max": 8.0, "step": 0.1,
+      "group": "adapter", "modes": ["base_adapter"],
+      "label": { "en": "Mount Hole (mm)", "es": "Orificio de Montaje (mm)" },
+      "tooltip": { "en": "Countersunk mount hole diameter (M4 clearance ~4.2 mm)", "es": "Diámetro del orificio de montaje avellanado (holgura M4 ~4.2 mm)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "plate_4x2", "mode": "stud_plate",
+      "label": { "en": "4x2 Studded Plate", "es": "Placa con Tetones 4x2" },
+      "values": { "cols": 4, "rows": 2, "plate_h": 3.2 }
+    },
+    {
+      "id": "tile_4x2", "mode": "smooth_tile",
+      "label": { "en": "4x2 Smooth Tile", "es": "Teja Lisa 4x2" },
+      "values": { "cols": 4, "rows": 2, "plate_h": 3.2 }
+    },
+    {
+      "id": "wall_adapter", "mode": "base_adapter",
+      "label": { "en": "4x2 Wall Adapter", "es": "Adaptador de Pared 4x2" },
+      "values": { "cols": 4, "rows": 2, "adapter_h": 6.0, "mount_dia": 4.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "stud_dia < pitch",
+      "severity": "error",
+      "message": { "en": "Stud diameter must be smaller than the stud pitch", "es": "El diámetro del tetón debe ser menor que el paso de tetones" }
+    },
+    {
+      "expression": "tube_id > stud_dia",
+      "severity": "warning",
+      "message": { "en": "Clutch tubes must be wider than the studs they grip", "es": "Los tubos de sujeción deben ser más anchos que los tetones que agarran" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "bottom", "label": { "en": "Underside", "es": "Parte Inferior" }, "position": [0, 0, -180] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "stud_grid",
+        "label": { "en": "8 mm Stud Grid", "es": "Rejilla de Tetones 8 mm" },
+        "geometry_type": "grid",
+        "standard": "construction brick 8mm",
+        "parameters": ["pitch", "stud_dia", "stud_h"]
+      },
+      {
+        "id": "clutch_tube",
+        "label": { "en": "Underside Clutch Tube", "es": "Tubo de Sujeción Inferior" },
+        "geometry_type": "socket",
+        "standard": "construction brick 8mm",
+        "parameters": ["tube_od", "tube_id"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The 8 mm stud grid is the most widely owned construction toy interface on Earth. Printable brick-compatible plates, tiles and adapters let families repair, extend and remix builds — replacing a lost baseplate, mounting a build to a wall, or blanking a tile for custom lettering — from open files, keeping expensive sets in play instead of landfill and letting learners design their own compatible parts.",
+      "es": "La rejilla de tetones de 8 mm es la interfaz de juguete de construcción más difundida del planeta. Placas, tejas y adaptadores compatibles imprimibles permiten a las familias reparar, ampliar y remezclar construcciones — reemplazar una placa base perdida, montar una construcción en una pared o dejar una teja en blanco para letras personalizadas — desde archivos abiertos, manteniendo en uso sets costosos en vez de en la basura y dejando que quien aprende diseñe sus propias piezas compatibles."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["brick", "tile", "construction", "stud", "education", "kids", "kit", "commercial", "hyperobject", "commons"]
+}

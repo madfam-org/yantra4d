@@ -1,0 +1,696 @@
+{
+  "project": {
+    "name": "GoPro-Style Mount Fingers",
+    "slug": "gopro-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The de-facto action-cam mount standard: interlocking two-prong and three-prong \"finger\" clevis joints joined by a thumbscrew through 5 mm knuckle holes. Build the female (2-prong) and male (3-prong) prongs, a flat screw/adhesive mounting plate, and the ubiquitous 1/4-20 tripod adapter. All fingers share the GoPro pitch so any two prongs interleave.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El estándar de facto para monturas de cámaras de acción: uniones tipo horquilla de dos y tres \"dedos\" entrelazados, unidas por un tornillo de mano a través de orificios de nudillo de 5 mm. Genera las horquillas hembra (2 dedos) y macho (3 dedos), una placa de montaje plana para tornillos o adhesivo, y el ubicuo adaptador de trípode 1/4-20. Todos los dedos comparten el paso GoPro para que cualquier par de horquillas se entrelace.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gopro-mount.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "gopro",
+      "action-cam",
+      "mount",
+      "clevis",
+      "finger",
+      "adapter",
+      "tripod",
+      "quarter20",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "commercial"
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dual",
+      "label": {
+        "en": "2-Prong (Female)",
+        "es": "2 Dedos (Hembra)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "dual"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "triple",
+      "label": {
+        "en": "3-Prong (Male)",
+        "es": "3 Dedos (Macho)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "triple"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "base_plate",
+      "label": {
+        "en": "Base Plate",
+        "es": "Placa Base"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "base_plate"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "quarter20_adapter",
+      "label": {
+        "en": "1/4-20 Tripod Adapter",
+        "es": "Adaptador Trípode 1/4-20"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "quarter20_adapter"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "dual",
+      "label": {
+        "en": "2-Prong",
+        "es": "2 Dedos"
+      },
+      "render_mode": 0,
+      "color": "#3f6f8f"
+    },
+    {
+      "id": "triple",
+      "label": {
+        "en": "3-Prong",
+        "es": "3 Dedos"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "base_plate",
+      "label": {
+        "en": "Base Plate",
+        "es": "Placa Base"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    },
+    {
+      "id": "quarter20_adapter",
+      "label": {
+        "en": "1/4-20 Adapter",
+        "es": "Adaptador 1/4-20"
+      },
+      "render_mode": 0,
+      "color": "#8bb5cc"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "finger",
+      "label": {
+        "en": "Finger Clevis",
+        "es": "Horquilla de Dedos"
+      }
+    },
+    {
+      "id": "base",
+      "label": {
+        "en": "Base",
+        "es": "Base"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Mounting Plate",
+        "es": "Placa de Montaje"
+      }
+    },
+    {
+      "id": "adapter",
+      "label": {
+        "en": "1/4-20 Adapter",
+        "es": "Adaptador 1/4-20"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "finger_thick",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "finger",
+      "modes": [
+        "dual",
+        "triple",
+        "base_plate",
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Finger Thickness (mm)",
+        "es": "Grosor de Dedo (mm)"
+      },
+      "tooltip": {
+        "en": "Single finger thickness. GoPro standard is 3.0 mm",
+        "es": "Grosor de un dedo. El estándar GoPro es 3.0 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "finger_gap",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.0,
+      "max": 4.5,
+      "step": 0.1,
+      "group": "finger",
+      "modes": [
+        "dual",
+        "triple",
+        "base_plate",
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Finger Gap (mm)",
+        "es": "Separación de Dedos (mm)"
+      },
+      "tooltip": {
+        "en": "Gap between fingers. Must be >= thickness so a mating prong interleaves (GoPro std 3.2 mm)",
+        "es": "Separación entre dedos. Debe ser >= grosor para que una horquilla acople (estándar GoPro 3.2 mm)"
+      }
+    },
+    {
+      "id": "knuckle_d",
+      "type": "slider",
+      "default": 15.0,
+      "min": 12.0,
+      "max": 22.0,
+      "step": 0.5,
+      "group": "finger",
+      "modes": [
+        "dual",
+        "triple",
+        "base_plate",
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Knuckle Diameter (mm)",
+        "es": "Diámetro de Nudillo (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the rounded pivot knuckle. GoPro standard is ~15 mm",
+        "es": "Diámetro del nudillo de pivote redondeado. El estándar GoPro es ~15 mm"
+      }
+    },
+    {
+      "id": "bolt_hole_d",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "finger",
+      "modes": [
+        "dual",
+        "triple",
+        "base_plate",
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Axle Bolt Hole (mm)",
+        "es": "Orificio del Perno de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Through-hole for the pivot thumbscrew. GoPro uses an M5 (5.0 mm)",
+        "es": "Orificio pasante para el tornillo de mano de pivote. GoPro usa M5 (5.0 mm)"
+      }
+    },
+    {
+      "id": "reach",
+      "type": "slider",
+      "default": 18.0,
+      "min": 10.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "finger",
+      "modes": [
+        "dual",
+        "triple",
+        "base_plate",
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Finger Reach (mm)",
+        "es": "Alcance del Dedo (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the knuckle centre above the base top",
+        "es": "Altura del centro del nudillo sobre la parte superior de la base"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "base_thick",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "dual",
+        "triple",
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Base Thickness (mm)",
+        "es": "Grosor de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the slab the fingers grow from",
+        "es": "Grosor de la losa de la que crecen los dedos"
+      }
+    },
+    {
+      "id": "base_len",
+      "type": "slider",
+      "default": 30.0,
+      "min": 18.0,
+      "max": 60.0,
+      "step": 1,
+      "group": "base",
+      "modes": [
+        "dual",
+        "triple",
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Base Length (mm)",
+        "es": "Longitud de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the base along the reach (Y) direction",
+        "es": "Longitud de la base en la dirección del alcance (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "base_margin",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "dual",
+        "triple",
+        "quarter20_adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Base Overhang (mm)",
+        "es": "Voladizo de Base (mm)"
+      },
+      "tooltip": {
+        "en": "How far the base extends beyond the finger span",
+        "es": "Cuánto se extiende la base más allá del ancho de los dedos"
+      }
+    },
+    {
+      "id": "plate_len",
+      "type": "slider",
+      "default": 40.0,
+      "min": 25.0,
+      "max": 80.0,
+      "step": 1,
+      "group": "plate",
+      "modes": [
+        "base_plate"
+      ],
+      "label": {
+        "en": "Plate Length (mm)",
+        "es": "Longitud de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Flat mounting-plate length (Y)",
+        "es": "Longitud de la placa de montaje plana (Y)"
+      }
+    },
+    {
+      "id": "plate_width",
+      "type": "slider",
+      "default": 40.0,
+      "min": 25.0,
+      "max": 80.0,
+      "step": 1,
+      "group": "plate",
+      "modes": [
+        "base_plate"
+      ],
+      "label": {
+        "en": "Plate Width (mm)",
+        "es": "Ancho de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Flat mounting-plate width (X)",
+        "es": "Ancho de la placa de montaje plana (X)"
+      }
+    },
+    {
+      "id": "screw_holes",
+      "type": "checkbox",
+      "default": true,
+      "group": "plate",
+      "modes": [
+        "base_plate"
+      ],
+      "label": {
+        "en": "Corner Screw Holes",
+        "es": "Orificios de Tornillo en Esquinas"
+      },
+      "tooltip": {
+        "en": "Add four corner screw holes for surface mounting",
+        "es": "Añadir cuatro orificios de tornillo en las esquinas para montaje en superficie"
+      }
+    },
+    {
+      "id": "screw_hole_d",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "base_plate"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Screw Hole Diameter (mm)",
+        "es": "Diámetro de Orificio de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Corner screw clearance hole (M4 clearance ~4.2 mm)",
+        "es": "Orificio de holgura para tornillo de esquina (holgura M4 ~4.2 mm)"
+      }
+    },
+    {
+      "id": "adapter_prongs",
+      "type": "select",
+      "default": "triple",
+      "group": "adapter",
+      "modes": [
+        "quarter20_adapter"
+      ],
+      "label": {
+        "en": "Adapter Prongs",
+        "es": "Dedos del Adaptador"
+      },
+      "tooltip": {
+        "en": "Which prong set sits on top of the 1/4-20 puck",
+        "es": "Qué juego de dedos va sobre el disco 1/4-20"
+      },
+      "options": [
+        {
+          "value": "triple",
+          "label": {
+            "en": "3-Prong (Male)",
+            "es": "3 Dedos (Macho)"
+          }
+        },
+        {
+          "value": "dual",
+          "label": {
+            "en": "2-Prong (Female)",
+            "es": "2 Dedos (Hembra)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "quarter20_d",
+      "type": "slider",
+      "default": 5.5,
+      "min": 5.0,
+      "max": 7.0,
+      "step": 0.1,
+      "group": "adapter",
+      "modes": [
+        "quarter20_adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "1/4-20 Socket Diameter (mm)",
+        "es": "Diámetro de Casquillo 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "Plain socket for the 1/4-20 screw. ~5.5 mm tapping / ~6.35 mm clearance",
+        "es": "Casquillo liso para el tornillo 1/4-20. ~5.5 mm para roscar / ~6.35 mm de holgura"
+      }
+    },
+    {
+      "id": "quarter20_depth",
+      "type": "slider",
+      "default": 8.0,
+      "min": 5.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "adapter",
+      "modes": [
+        "quarter20_adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "1/4-20 Socket Depth (mm)",
+        "es": "Profundidad de Casquillo 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the 1/4-20 socket bores from the underside",
+        "es": "Qué tan profundo penetra el casquillo 1/4-20 desde la parte inferior"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_3prong",
+      "mode": "triple",
+      "label": {
+        "en": "Standard 3-Prong",
+        "es": "3 Dedos Estándar"
+      },
+      "values": {
+        "finger_thick": 3.0,
+        "finger_gap": 3.2,
+        "knuckle_d": 15.0,
+        "bolt_hole_d": 5.0,
+        "reach": 18.0
+      }
+    },
+    {
+      "id": "adhesive_pad_mount",
+      "mode": "base_plate",
+      "label": {
+        "en": "Adhesive Pad Mount",
+        "es": "Montura con Adhesivo"
+      },
+      "values": {
+        "plate_width": 40,
+        "plate_len": 40,
+        "screw_holes": false,
+        "reach": 16.0
+      }
+    },
+    {
+      "id": "tripod_adapter",
+      "mode": "quarter20_adapter",
+      "label": {
+        "en": "Tripod Adapter (3-Prong)",
+        "es": "Adaptador de Trípode (3 Dedos)"
+      },
+      "values": {
+        "adapter_prongs": "triple",
+        "quarter20_d": 5.5,
+        "quarter20_depth": 8.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "finger_gap >= finger_thick",
+      "severity": "error",
+      "message": {
+        "en": "Finger gap must be >= finger thickness, or a mating prong cannot interleave",
+        "es": "La separación de dedos debe ser >= grosor, o una horquilla no puede acoplar"
+      }
+    },
+    {
+      "expression": "bolt_hole_d <= knuckle_d - 2.4",
+      "severity": "warning",
+      "message": {
+        "en": "Bolt hole is large relative to the knuckle; the pivot wall gets thin",
+        "es": "El orificio del perno es grande respecto al nudillo; la pared del pivote queda delgada"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        80
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 11,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "gopro_finger_clevis",
+        "label": {
+          "en": "GoPro Finger Clevis",
+          "es": "Horquilla de Dedos GoPro"
+        },
+        "geometry_type": "snap",
+        "standard": "GoPro action-cam mount",
+        "parameters": [
+          "finger_thick",
+          "finger_gap",
+          "knuckle_d",
+          "bolt_hole_d"
+        ]
+      },
+      {
+        "id": "quarter_20_unc",
+        "label": {
+          "en": "1/4-20 UNC Tripod Thread",
+          "es": "Rosca de Trípode 1/4-20 UNC"
+        },
+        "geometry_type": "thread",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "quarter20_d",
+          "quarter20_depth"
+        ],
+        "compatible_with": [
+          "ball-socket",
+          "camera-quarter-twenty",
+          "sensor-mount-plate",
+          "spigot-adapter"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The action-cam mount is a planet-spanning interface standard — millions of cameras, lights and accessories clip to the same finger clevis. On-demand printing of prongs, plates and 1/4-20 adapters keeps gear mountable to anything without buying single-use brackets, and repairs a snapped finger instead of replacing the whole rig.",
+      "es": "La montura de cámara de acción es un estándar de interfaz a escala planetaria — millones de cámaras, luces y accesorios se acoplan a la misma horquilla de dedos. La impresión bajo demanda de horquillas, placas y adaptadores 1/4-20 mantiene el equipo montable en cualquier cosa sin comprar soportes de un solo uso, y repara un dedo roto en vez de reemplazar todo el conjunto."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "gopro",
+    "action-cam",
+    "mount",
+    "clevis",
+    "adapter",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

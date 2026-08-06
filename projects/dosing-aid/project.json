@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Syringe / Dosing Aid",
+    "slug": "dosing-aid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Aids for precise medication dosing: a plunger stop that clips onto a syringe plunger to cap the drawn volume, a stand that holds a syringe upright between doses, or a small graduated measuring cup whose inner volume is solved from the millilitres you enter. Sized to the syringe barrel (Luer-style).\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Ayudas para dosificación precisa de medicamentos: un tope de émbolo que se sujeta al émbolo de una jeringa para limitar el volumen extraído, un soporte que mantiene la jeringa vertical entre dosis, o una pequeña taza medidora graduada cuyo volumen interior se calcula a partir de los mililitros que ingresa. Dimensionado al barril de la jeringa (tipo Luer).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dosing-aid.webp",
+    "difficulty": "intermediate",
+    "tags": ["syringe", "dosing", "medication", "measuring-cup", "assistive", "medical", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "plunger_stop",
+      "label": { "en": "Plunger Stop", "es": "Tope de Émbolo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["plunger_stop"],
+      "estimate": { "base_time": 8, "per_unit": 1, "per_part": 10 }
+    },
+    {
+      "id": "syringe_holder",
+      "label": { "en": "Syringe Holder", "es": "Soporte de Jeringa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["syringe_holder"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "med_cup",
+      "label": { "en": "Measuring Cup", "es": "Taza Medidora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["med_cup"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "plunger_stop", "label": { "en": "Plunger Stop", "es": "Tope de Émbolo" }, "render_mode": 0, "color": "#b05f8f" },
+    { "id": "syringe_holder", "label": { "en": "Syringe Holder", "es": "Soporte" }, "render_mode": 0, "color": "#c473a3" },
+    { "id": "med_cup", "label": { "en": "Measuring Cup", "es": "Taza Medidora" }, "render_mode": 0, "color": "#d787b7" }
+  ],
+  "parameter_groups": [
+    { "id": "aid", "label": { "en": "Aid Type", "es": "Tipo de Ayuda" } },
+    { "id": "syringe", "label": { "en": "Syringe", "es": "Jeringa" } },
+    { "id": "cup", "label": { "en": "Measuring Cup", "es": "Taza Medidora" } },
+    { "id": "build", "label": { "en": "Build", "es": "Construcción" } }
+  ],
+  "parameters": [
+    {
+      "id": "aid_type", "type": "select", "default": "plunger_stop",
+      "group": "aid", "modes": ["plunger_stop", "syringe_holder", "med_cup"],
+      "label": { "en": "Aid Type", "es": "Tipo de Ayuda" },
+      "tooltip": { "en": "Which dosing aid to build (also selectable via mode)", "es": "Qué ayuda de dosificación construir (también seleccionable por modo)" },
+      "options": [
+        { "value": "plunger_stop", "label": { "en": "Plunger Stop", "es": "Tope de Émbolo" } },
+        { "value": "syringe_holder", "label": { "en": "Syringe Holder", "es": "Soporte de Jeringa" } },
+        { "value": "med_cup", "label": { "en": "Measuring Cup", "es": "Taza Medidora" } }
+      ]
+    },
+    {
+      "id": "barrel_dia", "type": "slider", "default": 20.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "syringe", "modes": ["syringe_holder", "plunger_stop"],
+      "label": { "en": "Barrel Diameter (mm)", "es": "Diámetro del Barril (mm)" },
+      "tooltip": { "en": "Outer diameter of the syringe barrel", "es": "Diámetro exterior del barril de la jeringa" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "shaft_dia", "type": "slider", "default": 7.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "syringe", "modes": ["plunger_stop"],
+      "label": { "en": "Plunger Shaft Diameter (mm)", "es": "Diámetro del Vástago (mm)" },
+      "tooltip": { "en": "Diameter of the plunger shaft the stop clips onto", "es": "Diámetro del vástago del émbolo donde se sujeta el tope" }
+    },
+    {
+      "id": "stop_depth", "type": "slider", "default": 15.0, "min": 3.0, "max": 80.0, "step": 1.0,
+      "group": "syringe", "modes": ["plunger_stop", "syringe_holder"],
+      "label": { "en": "Stop Height / Socket Depth (mm)", "es": "Altura del Tope / Profundidad (mm)" },
+      "tooltip": { "en": "Plunger stop height (caps volume); also sets holder socket depth", "es": "Altura del tope del émbolo (limita el volumen); también fija la profundidad del soporte" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cup_ml", "type": "slider", "default": 30.0, "min": 2.0, "max": 120.0, "step": 1.0,
+      "group": "cup", "modes": ["med_cup"],
+      "label": { "en": "Cup Volume (mL)", "es": "Volumen de la Taza (mL)" },
+      "tooltip": { "en": "Target inner volume; cup dimensions are solved from this", "es": "Volumen interior objetivo; las dimensiones de la taza se calculan a partir de esto" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "build", "modes": ["plunger_stop", "syringe_holder", "med_cup"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Ring / wall thickness", "es": "Grosor del anillo / pared" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.5, "min": 0.1, "max": 1.5, "step": 0.05,
+      "group": "build", "modes": ["plunger_stop", "syringe_holder"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Radial gap over the shaft/barrel", "es": "Espacio radial sobre el vástago/barril" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "oral_10ml_stop", "mode": "plunger_stop",
+      "label": { "en": "10 mL Oral Syringe Stop", "es": "Tope de Jeringa Oral 10 mL" },
+      "values": { "barrel_dia": 17, "shaft_dia": 6, "stop_depth": 12, "clearance": 0.5 }
+    },
+    {
+      "id": "upright_holder", "mode": "syringe_holder",
+      "label": { "en": "Upright Holder (20 mm)", "es": "Soporte Vertical (20 mm)" },
+      "values": { "barrel_dia": 20, "stop_depth": 25, "wall": 3.0 }
+    },
+    {
+      "id": "cup_30ml", "mode": "med_cup",
+      "label": { "en": "30 mL Measuring Cup", "es": "Taza Medidora 30 mL" },
+      "values": { "cup_ml": 30, "wall": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "shaft_dia < barrel_dia",
+      "severity": "warning",
+      "message": { "en": "Plunger shaft should be smaller than the barrel", "es": "El vástago del émbolo debe ser menor que el barril" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "syringe_barrel_fit",
+        "label": { "en": "Syringe Barrel Fit", "es": "Ajuste del Barril de Jeringa" },
+        "geometry_type": "socket",
+        "standard": "Luer barrel",
+        "parameters": ["barrel_dia", "shaft_dia", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Dosing errors are a leading cause of paediatric and elder medication harm. A printed plunger stop, upright holder, or volume-solved cup makes a repeatable dose achievable by carers at home, matched to the exact syringe on hand.",
+      "es": "Los errores de dosificación son una causa principal de daño por medicamentos en niños y personas mayores. Un tope de émbolo impreso, un soporte vertical o una taza con volumen calculado hace que una dosis repetible sea alcanzable por cuidadores en casa, a la medida de la jeringa exacta disponible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["syringe", "dosing", "medication", "measuring-cup", "medical", "hyperobject", "commons"]
+}

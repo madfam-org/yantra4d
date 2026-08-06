@@ -1,0 +1,191 @@
+{
+  "project": {
+    "name": "Pill Organizer",
+    "slug": "pill-organizer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A compartmentalized pill box. Lay out compartments as a 7-day week, a 7-day AM/PM (14) grid, or a custom cols x rows arrangement. Print the open tray, add a sliding lid that seals every compartment, or a single-compartment travel box.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un pastillero compartimentado. Organice los compartimentos como una semana de 7 días, una cuadrícula de 7 días AM/PM (14) o una disposición personalizada de columnas x filas. Imprima la bandeja abierta, agregue una tapa deslizante que sella cada compartimento, o una caja de viaje de un solo compartimento.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pill-organizer.webp",
+    "difficulty": "beginner",
+    "tags": ["pill", "organizer", "medication", "weekly", "assistive", "daily-living", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "label": { "en": "Tray (open)", "es": "Bandeja (abierta)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "tray_lidded",
+      "label": { "en": "Tray + Sliding Lid", "es": "Bandeja + Tapa Deslizante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray_lidded"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 14 }
+    },
+    {
+      "id": "single_day",
+      "label": { "en": "Single Travel Box", "es": "Caja de Viaje Individual" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_day"],
+      "estimate": { "base_time": 8, "per_unit": 1, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "tray", "label": { "en": "Tray", "es": "Bandeja" }, "render_mode": 0, "color": "#7b9e57" },
+    { "id": "tray_lidded", "label": { "en": "Tray + Lid", "es": "Bandeja + Tapa" }, "render_mode": 0, "color": "#8fb168" },
+    { "id": "single_day", "label": { "en": "Travel Box", "es": "Caja de Viaje" }, "render_mode": 0, "color": "#a3c47c" }
+  ],
+  "parameter_groups": [
+    { "id": "schedule", "label": { "en": "Schedule", "es": "Horario" } },
+    { "id": "compartment", "label": { "en": "Compartment", "es": "Compartimento" } },
+    { "id": "closure", "label": { "en": "Closure", "es": "Cierre" } }
+  ],
+  "parameters": [
+    {
+      "id": "days", "type": "select", "default": "7day",
+      "group": "schedule", "modes": ["tray", "tray_lidded"],
+      "label": { "en": "Schedule", "es": "Horario" },
+      "tooltip": { "en": "Compartment layout for the week", "es": "Disposición de compartimentos para la semana" },
+      "options": [
+        { "value": "7day", "label": { "en": "7-Day (1x7)", "es": "7 Días (1x7)" } },
+        { "value": "7day_2x", "label": { "en": "7-Day AM/PM (2x7)", "es": "7 Días AM/PM (2x7)" } },
+        { "value": "custom", "label": { "en": "Custom Grid", "es": "Cuadrícula Personalizada" } }
+      ]
+    },
+    {
+      "id": "custom_cols", "type": "slider", "default": 4, "min": 1, "max": 10, "step": 1,
+      "group": "schedule", "modes": ["tray", "tray_lidded"],
+      "label": { "en": "Custom Columns", "es": "Columnas Personalizadas" },
+      "tooltip": { "en": "Columns when schedule is Custom", "es": "Columnas cuando el horario es Personalizado" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 28.0 }
+    },
+    {
+      "id": "custom_rows", "type": "slider", "default": 2, "min": 1, "max": 6, "step": 1,
+      "group": "schedule", "modes": ["tray", "tray_lidded"],
+      "label": { "en": "Custom Rows", "es": "Filas Personalizadas" },
+      "tooltip": { "en": "Rows when schedule is Custom", "es": "Filas cuando el horario es Personalizado" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 28.0 }
+    },
+    {
+      "id": "cell", "type": "slider", "default": 26, "min": 10, "max": 60, "step": 1,
+      "group": "compartment", "modes": ["tray", "tray_lidded", "single_day"],
+      "label": { "en": "Compartment Size (mm)", "es": "Tamaño de Compartimento (mm)" },
+      "tooltip": { "en": "Inner width/depth of each square compartment", "es": "Ancho/profundidad interior de cada compartimento cuadrado" }
+    },
+    {
+      "id": "cell_depth", "type": "slider", "default": 18, "min": 6, "max": 60, "step": 1,
+      "group": "compartment", "modes": ["tray", "tray_lidded", "single_day"],
+      "label": { "en": "Compartment Depth (mm)", "es": "Profundidad de Compartimento (mm)" },
+      "tooltip": { "en": "How deep each compartment is", "es": "Qué tan profundo es cada compartimento" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "compartment", "modes": ["tray", "tray_lidded", "single_day"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Walls between and around compartments", "es": "Paredes entre y alrededor de los compartimentos" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "compartment", "modes": ["tray", "tray_lidded", "single_day"], "advanced": true,
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Thickness of the tray floor", "es": "Grosor del piso de la bandeja" }
+    },
+    {
+      "id": "lid", "type": "select", "default": "sliding",
+      "group": "closure", "modes": ["tray_lidded"],
+      "label": { "en": "Lid Type", "es": "Tipo de Tapa" },
+      "tooltip": { "en": "How the tray is closed", "es": "Cómo se cierra la bandeja" },
+      "options": [
+        { "value": "sliding", "label": { "en": "Sliding Lid", "es": "Tapa Deslizante" } },
+        { "value": "individual", "label": { "en": "Individual Caps", "es": "Tapas Individuales" } },
+        { "value": "none", "label": { "en": "No Lid", "es": "Sin Tapa" } }
+      ]
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "closure", "modes": ["tray_lidded", "single_day"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Gap for the sliding lid or friction cap", "es": "Espacio para la tapa deslizante o tapa a fricción" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "weekly", "mode": "tray",
+      "label": { "en": "Classic Weekly (1x7)", "es": "Semanal Clásico (1x7)" },
+      "values": { "days": "7day", "cell": 26, "cell_depth": 18 }
+    },
+    {
+      "id": "am_pm", "mode": "tray_lidded",
+      "label": { "en": "AM/PM Lidded (2x7)", "es": "AM/PM con Tapa (2x7)" },
+      "values": { "days": "7day_2x", "cell": 22, "cell_depth": 16, "lid": "sliding" }
+    },
+    {
+      "id": "travel", "mode": "single_day",
+      "label": { "en": "Travel Box", "es": "Caja de Viaje" },
+      "values": { "cell": 30, "cell_depth": 22, "clearance": 0.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cell >= 10",
+      "severity": "warning",
+      "message": { "en": "Very small compartments are hard to load", "es": "Compartimentos muy pequeños son difíciles de llenar" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 180, 150] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "compartment_grid",
+        "label": { "en": "Compartment Grid", "es": "Cuadrícula de Compartimentos" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["days", "custom_cols", "custom_rows", "cell", "wall"]
+      },
+      {
+        "id": "sliding_lid_rail",
+        "label": { "en": "Sliding Lid Rail", "es": "Riel de Tapa Deslizante" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["clearance", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Medication adherence is a daily-living challenge for older and disabled people; an organizer sized to the user's own pill count and grip needs supports independent, correct dosing without buying whatever the pharmacy stocks.",
+      "es": "La adherencia a la medicación es un reto de la vida diaria para personas mayores y con discapacidad; un organizador dimensionado al número de pastillas y necesidades de agarre del usuario apoya una dosificación independiente y correcta sin depender de lo que venda la farmacia."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pill", "organizer", "medication", "assistive", "medical", "hyperobject", "commons"]
+}

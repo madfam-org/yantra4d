@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Solar Panel Mount",
+    "slug": "solar-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Brackets and tilt legs for framed solar panels on a boat, RV, van, or ground setup. A corner bracket clamps the panel's aluminium edge frame and bolts down, a tilt leg props the panel at a chosen angle, and a low-profile Z-bracket fixes it flat to a roof. Sized by the panel edge (frame) thickness to fit common 25–40 mm frames.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Soportes y patas de inclinación para paneles solares con marco en bote, casa rodante, van o instalación en suelo. Un soporte de esquina sujeta el marco de aluminio del panel y se atornilla, una pata inclina el panel a un ángulo elegido, y un soporte Z de bajo perfil lo fija plano al techo. Se dimensiona por el grosor del borde (marco) para adaptarse a marcos comunes de 25–40 mm.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/solar-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["solar", "panel", "mount", "bracket", "tilt", "marine", "rv", "van", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "corner_bracket",
+      "label": { "en": "Corner Bracket", "es": "Soporte de Esquina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_bracket"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "tilt_leg",
+      "label": { "en": "Tilt Leg", "es": "Pata de Inclinación" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tilt_leg"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 15 }
+    },
+    {
+      "id": "z_bracket",
+      "label": { "en": "Z-Bracket", "es": "Soporte Z" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["z_bracket"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "corner_bracket", "label": { "en": "Corner Bracket", "es": "Soporte de Esquina" }, "render_mode": 0, "color": "#2a5f8f" },
+    { "id": "tilt_leg", "label": { "en": "Tilt Leg", "es": "Pata de Inclinación" }, "render_mode": 0, "color": "#3a7fb0" },
+    { "id": "z_bracket", "label": { "en": "Z-Bracket", "es": "Soporte Z" }, "render_mode": 0, "color": "#5b9fce" }
+  ],
+  "parameter_groups": [
+    { "id": "panel", "label": { "en": "Panel Frame", "es": "Marco del Panel" } },
+    { "id": "bracket", "label": { "en": "Bracket", "es": "Soporte" } },
+    { "id": "tilt", "label": { "en": "Tilt", "es": "Inclinación" } }
+  ],
+  "parameters": [
+    {
+      "id": "edge_t", "type": "slider", "default": 35.0, "min": 15.0, "max": 50.0, "step": 1.0,
+      "group": "panel", "modes": ["corner_bracket", "tilt_leg", "z_bracket"],
+      "label": { "en": "Frame Thickness (mm)", "es": "Grosor del Marco (mm)" },
+      "tooltip": { "en": "Thickness of the panel's aluminium edge frame", "es": "Grosor del marco de aluminio del panel" }
+    },
+    {
+      "id": "grip_depth", "type": "slider", "default": 14.0, "min": 6.0, "max": 30.0, "step": 1.0,
+      "group": "panel", "modes": ["corner_bracket", "tilt_leg", "z_bracket"],
+      "label": { "en": "Grip Depth (mm)", "es": "Profundidad de Sujeción (mm)" },
+      "tooltip": { "en": "How far the cap wraps over the panel face", "es": "Cuánto envuelve la tapa sobre la cara del panel" }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "panel", "modes": ["corner_bracket", "tilt_leg", "z_bracket"], "advanced": true,
+      "label": { "en": "Frame Fit (mm)", "es": "Ajuste del Marco (mm)" },
+      "tooltip": { "en": "Clearance so the frame slides into the grip", "es": "Holgura para que el marco entre en la sujeción" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "bracket", "modes": ["corner_bracket", "tilt_leg", "z_bracket"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Bracket wall thickness", "es": "Grosor de pared del soporte" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "bracket", "modes": ["corner_bracket", "tilt_leg", "z_bracket"],
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting bolt hole diameter (M5 ≈ 5.0)", "es": "Diámetro del orificio del tornillo (M5 ≈ 5.0)" }
+    },
+    {
+      "id": "leg_len", "type": "slider", "default": 120.0, "min": 50.0, "max": 260.0, "step": 5.0,
+      "group": "tilt", "modes": ["tilt_leg"],
+      "label": { "en": "Strut Length (mm)", "es": "Longitud del Puntal (mm)" },
+      "tooltip": { "en": "Length of the tilt strut — sets panel lift", "es": "Longitud del puntal — define la elevación del panel" }
+    },
+    {
+      "id": "tilt_angle", "type": "slider", "default": 30.0, "min": 5.0, "max": 60.0, "step": 1.0,
+      "group": "tilt", "modes": ["tilt_leg"],
+      "label": { "en": "Tilt Angle (deg)", "es": "Ángulo de Inclinación (°)" },
+      "tooltip": { "en": "Prop angle from horizontal (aim at the sun)", "es": "Ángulo del puntal desde la horizontal (apunta al sol)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_corner", "mode": "corner_bracket",
+      "label": { "en": "35 mm Frame Corner", "es": "Esquina Marco 35 mm" },
+      "values": { "edge_t": 35, "grip_depth": 14 }
+    },
+    {
+      "id": "winter_tilt", "mode": "tilt_leg",
+      "label": { "en": "Winter Tilt (45°)", "es": "Inclinación Invierno (45°)" },
+      "values": { "edge_t": 35, "tilt_angle": 45, "leg_len": 150 }
+    },
+    {
+      "id": "roof_flush", "mode": "z_bracket",
+      "label": { "en": "Roof Flush Mount", "es": "Montaje al Ras de Techo" },
+      "values": { "edge_t": 30, "grip_depth": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 3",
+      "severity": "error",
+      "message": { "en": "Bracket wall must be at least 3 mm for outdoor load", "es": "La pared debe ser de al menos 3 mm para carga exterior" }
+    },
+    {
+      "expression": "grip_depth <= edge_t",
+      "severity": "warning",
+      "message": { "en": "Grip depth is large relative to the frame", "es": "La profundidad de sujeción es grande respecto al marco" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "panel_edge_grip",
+        "label": { "en": "Panel Edge Grip", "es": "Sujeción de Borde de Panel" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["edge_t", "grip_depth", "fit", "wall"]
+      },
+      {
+        "id": "surface_bolt_pattern",
+        "label": { "en": "Surface Bolt Pattern", "es": "Patrón de Tornillos de Superficie" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["bolt_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Mounts and tilts off-grid solar panels with printable brackets sized to the panel on hand, cutting the cost of proprietary racking for boats, vans, and RVs.",
+      "es": "Monta e inclina paneles solares fuera de red con soportes imprimibles dimensionados al panel disponible, reduciendo el costo del racking propietario para botes, vans y casas rodantes."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["solar", "panel", "mount", "tilt", "marine", "rv", "hybrid", "hyperobject", "commons"]
+}

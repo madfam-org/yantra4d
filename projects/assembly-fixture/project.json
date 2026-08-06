@@ -1,0 +1,253 @@
+{
+  "project": {
+    "name": "Assembly / Welding Fixture",
+    "slug": "assembly-fixture",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A positioning aid that holds parts in a repeatable location during assembly, welding, gluing, or drilling. A base plate carries locating pins in a selectable pattern, optional raised stops forming a corner reference, or a V-groove for round stock, plus mounting holes to bolt it down.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una ayuda de posicionamiento que sujeta piezas en una ubicación repetible durante ensamble, soldadura, pegado o taladrado. Una placa base lleva pernos localizadores en un patrón seleccionable, topes elevados opcionales que forman una referencia de esquina, o una ranura en V para material redondo, más agujeros de montaje para fijarla.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/assembly-fixture.webp",
+    "difficulty": "advanced",
+    "tags": ["fixture", "jig", "welding", "assembly", "locating-pin", "v-block", "workholding", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pin_plate",
+      "label": { "en": "Pin Plate", "es": "Placa de Pernos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pin_plate"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "stop_fixture",
+      "label": { "en": "Stop Fixture (L-corner)", "es": "Fijación con Topes (esquina L)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stop_fixture"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "v_block",
+      "label": { "en": "V-Block", "es": "Bloque en V" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["v_block"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "pin_plate", "label": { "en": "Pin Plate", "es": "Placa de Pernos" }, "render_mode": 0, "color": "#5a6b7b" },
+    { "id": "stop_fixture", "label": { "en": "Stop Fixture", "es": "Fijación con Topes" }, "render_mode": 0, "color": "#6b7c8c" },
+    { "id": "v_block", "label": { "en": "V-Block", "es": "Bloque en V" }, "render_mode": 0, "color": "#7c8d9c" }
+  ],
+  "parameter_groups": [
+    { "id": "plate", "label": { "en": "Base Plate", "es": "Placa Base" } },
+    { "id": "pins", "label": { "en": "Locating Pins", "es": "Pernos Localizadores" } },
+    { "id": "stops", "label": { "en": "Stops & Fences", "es": "Topes y Guías" } },
+    { "id": "vgroove", "label": { "en": "V-Groove", "es": "Ranura en V" } },
+    { "id": "mounting", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "base_w", "type": "slider", "default": 120, "min": 40, "max": 300, "step": 1,
+      "group": "plate", "modes": ["pin_plate", "stop_fixture", "v_block"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Base plate X dimension", "es": "Dimensión X de la placa base" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "base_d", "type": "slider", "default": 90, "min": 40, "max": 300, "step": 1,
+      "group": "plate", "modes": ["pin_plate", "stop_fixture", "v_block"],
+      "label": { "en": "Plate Depth (mm)", "es": "Profundidad de Placa (mm)" },
+      "tooltip": { "en": "Base plate Y dimension", "es": "Dimensión Y de la placa base" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "base_t", "type": "slider", "default": 10, "min": 3, "max": 30, "step": 0.5,
+      "group": "plate", "modes": ["pin_plate", "stop_fixture", "v_block"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Base plate Z thickness", "es": "Grosor Z de la placa base" }
+    },
+    {
+      "id": "pin_pattern", "type": "select", "default": "corners",
+      "group": "pins", "modes": ["pin_plate"],
+      "label": { "en": "Pin Pattern", "es": "Patrón de Pernos" },
+      "tooltip": { "en": "Layout of the locating pins", "es": "Disposición de los pernos localizadores" },
+      "options": [
+        { "value": "corners", "label": { "en": "4 Corners", "es": "4 Esquinas" } },
+        { "value": "grid", "label": { "en": "Grid (rows × cols)", "es": "Rejilla (filas × columnas)" } },
+        { "value": "linear", "label": { "en": "Linear Row", "es": "Fila Lineal" } }
+      ]
+    },
+    {
+      "id": "pin_dia", "type": "slider", "default": 8.0, "min": 2.0, "max": 25.0, "step": 0.5,
+      "group": "pins", "modes": ["pin_plate"],
+      "label": { "en": "Pin Diameter (mm)", "es": "Diámetro de Perno (mm)" },
+      "tooltip": { "en": "Diameter of each locating pin", "es": "Diámetro de cada perno localizador" }
+    },
+    {
+      "id": "pin_height", "type": "slider", "default": 18.0, "min": 4.0, "max": 60.0, "step": 1.0,
+      "group": "pins", "modes": ["pin_plate"],
+      "label": { "en": "Pin Height (mm)", "es": "Altura de Perno (mm)" },
+      "tooltip": { "en": "How far each pin stands above the plate", "es": "Cuánto sobresale cada perno de la placa" }
+    },
+    {
+      "id": "pin_inset", "type": "slider", "default": 15.0, "min": 4.0, "max": 60.0, "step": 1.0,
+      "group": "pins", "modes": ["pin_plate"], "advanced": true,
+      "label": { "en": "Pin Edge Inset (mm)", "es": "Margen de Perno al Borde (mm)" },
+      "tooltip": { "en": "Distance of the pin pattern from the plate edge", "es": "Distancia del patrón de pernos al borde de la placa" }
+    },
+    {
+      "id": "grid_cols", "type": "slider", "default": 3, "min": 1, "max": 12, "step": 1,
+      "group": "pins", "modes": ["pin_plate"],
+      "label": { "en": "Grid Columns", "es": "Columnas de Rejilla" },
+      "tooltip": { "en": "Pins across X (grid pattern only)", "es": "Pernos en X (solo patrón de rejilla)" }
+    },
+    {
+      "id": "grid_rows", "type": "slider", "default": 2, "min": 1, "max": 12, "step": 1,
+      "group": "pins", "modes": ["pin_plate"],
+      "label": { "en": "Grid Rows", "es": "Filas de Rejilla" },
+      "tooltip": { "en": "Pins across Y (grid pattern only)", "es": "Pernos en Y (solo patrón de rejilla)" }
+    },
+    {
+      "id": "pin_count", "type": "slider", "default": 4, "min": 1, "max": 20, "step": 1,
+      "group": "pins", "modes": ["pin_plate"],
+      "label": { "en": "Linear Pin Count", "es": "Cantidad de Pernos Lineales" },
+      "tooltip": { "en": "Number of pins in a row (linear pattern only)", "es": "Número de pernos en una fila (solo patrón lineal)" }
+    },
+    {
+      "id": "stops", "type": "checkbox", "default": true,
+      "group": "stops", "modes": ["stop_fixture"],
+      "label": { "en": "Enable Stops/Fences", "es": "Habilitar Topes/Guías" },
+      "tooltip": { "en": "Raised edge fences forming a corner reference", "es": "Guías elevadas que forman una referencia de esquina" }
+    },
+    {
+      "id": "stop_h", "type": "slider", "default": 15.0, "min": 4.0, "max": 60.0, "step": 1.0,
+      "group": "stops", "modes": ["stop_fixture"],
+      "label": { "en": "Stop Height (mm)", "es": "Altura de Tope (mm)" },
+      "tooltip": { "en": "Height of the edge fences", "es": "Altura de las guías de borde" }
+    },
+    {
+      "id": "stop_t", "type": "slider", "default": 8.0, "min": 3.0, "max": 25.0, "step": 0.5,
+      "group": "stops", "modes": ["stop_fixture", "v_block"],
+      "label": { "en": "Stop Thickness (mm)", "es": "Grosor de Tope (mm)" },
+      "tooltip": { "en": "Thickness of the edge fences", "es": "Grosor de las guías de borde" }
+    },
+    {
+      "id": "v_angle", "type": "slider", "default": 90.0, "min": 30.0, "max": 120.0, "step": 5.0,
+      "group": "vgroove", "modes": ["v_block"],
+      "label": { "en": "V-Groove Angle (°)", "es": "Ángulo de Ranura en V (°)" },
+      "tooltip": { "en": "Included angle of the V-groove", "es": "Ángulo incluido de la ranura en V" }
+    },
+    {
+      "id": "v_stock_dia", "type": "slider", "default": 25.0, "min": 6.0, "max": 80.0, "step": 1.0,
+      "group": "vgroove", "modes": ["v_block"],
+      "label": { "en": "Round Stock Diameter (mm)", "es": "Diámetro del Material Redondo (mm)" },
+      "tooltip": { "en": "Nominal diameter of the round stock the V cradles", "es": "Diámetro nominal del material redondo que sujeta la V" }
+    },
+    {
+      "id": "mount_holes", "type": "checkbox", "default": true,
+      "group": "mounting", "modes": ["pin_plate", "stop_fixture", "v_block"],
+      "label": { "en": "Mounting Holes", "es": "Agujeros de Montaje" },
+      "tooltip": { "en": "Corner bolt-down holes to fix the fixture to a bench", "es": "Agujeros de esquina para fijar la fijación a un banco" }
+    },
+    {
+      "id": "mount_dia", "type": "slider", "default": 6.5, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "mounting", "modes": ["pin_plate", "stop_fixture", "v_block"], "advanced": true,
+      "label": { "en": "Mounting Hole Diameter (mm)", "es": "Diámetro de Agujero de Montaje (mm)" },
+      "tooltip": { "en": "Clearance diameter for the bolt-down holes", "es": "Diámetro de holgura para los agujeros de fijación" }
+    },
+    {
+      "id": "mount_inset", "type": "slider", "default": 10.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "mounting", "modes": ["pin_plate", "stop_fixture", "v_block"], "advanced": true,
+      "label": { "en": "Mounting Hole Inset (mm)", "es": "Margen de Agujero de Montaje (mm)" },
+      "tooltip": { "en": "Distance of mounting holes from the plate edge", "es": "Distancia de los agujeros de montaje al borde de la placa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "corner_locator", "mode": "pin_plate",
+      "label": { "en": "Corner Locator Plate", "es": "Placa Localizadora de Esquinas" },
+      "values": { "base_w": 120, "base_d": 90, "base_t": 10, "pin_pattern": "corners", "pin_dia": 8, "pin_height": 18 }
+    },
+    {
+      "id": "grid_bed", "mode": "pin_plate",
+      "label": { "en": "Grid Locating Bed (4×3)", "es": "Cama Localizadora en Rejilla (4×3)" },
+      "values": { "base_w": 200, "base_d": 150, "base_t": 12, "pin_pattern": "grid", "grid_cols": 4, "grid_rows": 3, "pin_dia": 6, "pin_height": 15 }
+    },
+    {
+      "id": "weld_corner", "mode": "stop_fixture",
+      "label": { "en": "Welding Corner Jig", "es": "Plantilla de Esquina para Soldadura" },
+      "values": { "base_w": 150, "base_d": 150, "base_t": 12, "stop_h": 20, "stop_t": 10 }
+    },
+    {
+      "id": "pipe_vblock", "mode": "v_block",
+      "label": { "en": "Pipe V-Block (Ø25)", "es": "Bloque en V para Tubo (Ø25)" },
+      "values": { "base_w": 100, "base_d": 80, "base_t": 12, "v_angle": 90, "v_stock_dia": 25 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pin_dia < base_w / 3",
+      "severity": "warning",
+      "message": { "en": "Pin diameter is large relative to the plate", "es": "El diámetro del perno es grande respecto a la placa" }
+    },
+    {
+      "expression": "base_t >= 3",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 3 mm thick", "es": "La placa debe tener al menos 3 mm de grosor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "locator_pin_pattern",
+        "label": { "en": "Locator Pin Pattern", "es": "Patrón de Pernos Localizadores" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["pin_pattern", "pin_dia", "pin_inset", "grid_cols", "grid_rows", "pin_count"]
+      },
+      {
+        "id": "bench_mount_pattern",
+        "label": { "en": "Bench Mounting Pattern", "es": "Patrón de Montaje a Banco" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_dia", "mount_inset"]
+      },
+      {
+        "id": "v_stock_seat",
+        "label": { "en": "Round-Stock V-Seat", "es": "Asiento en V para Material Redondo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["v_angle", "v_stock_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Repeatable workholding for makers and small shops — locating pins, corner stops, and V-blocks let one person weld, glue, or drill parts in exactly the same place every time, without buying dedicated tooling.",
+      "es": "Sujeción repetible para creadores y talleres pequeños — pernos localizadores, topes de esquina y bloques en V permiten a una persona soldar, pegar o taladrar piezas exactamente en el mismo lugar cada vez, sin comprar herramental dedicado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["fixture", "jig", "welding", "workholding", "industrial", "hyperobject", "commons"]
+}

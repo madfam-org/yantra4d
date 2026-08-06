@@ -177,6 +177,15 @@
             "type": "string",
             "pattern": "\\.py$"
           },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "openscad",
+              "cadquery",
+              "implicit"
+            ],
+            "description": "Optional per-mode rendering engine override for dual-engine cartridges. When omitted, the engine is inferred from this mode's scad_file extension (.py/.cq imply cadquery) and otherwise falls back to project.engine. Ignored when project.engine is 'implicit'."
+          },
           "label": {
             "$ref": "#/$defs/i18nString"
           },

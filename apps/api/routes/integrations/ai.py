@@ -4,18 +4,18 @@ AI Chat Blueprint — session creation and SSE streaming chat.
 import json
 import logging
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, Response, jsonify, request
 
+import rate_limits
 from config import Config
 from extensions import limiter
-import rate_limits
 from middleware.auth import require_tier
-from utils.route_helpers import error_response, require_json_body
-from services.core.tier_service import resolve_tier, get_tier_limits
-from services.ai.ai_session import create_session, get_session
-from services.ai.ai_configurator import stream_response as stream_configurator
 from services.ai.ai_code_editor import stream_response as stream_code_editor
+from services.ai.ai_configurator import stream_response as stream_configurator
+from services.ai.ai_session import create_session, get_session
 from services.ai.ai_synthesizer import stream_synthesis_response
+from services.core.tier_service import get_tier_limits, resolve_tier
+from utils.route_helpers import error_response, require_json_body
 
 logger = logging.getLogger(__name__)
 

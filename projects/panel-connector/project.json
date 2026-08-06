@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "Panel Connector Frame",
+    "slug": "panel-connector",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A panel-mount frame that carries the correct cutout for a chosen connector, so a bare enclosure wall gets a clean, sized opening plus the connector's own fixing holes. Pick the connector (XT60, USB-A, RJ45, GX16 aviation) and the plate gets the right window and screw pattern; bolt the frame into a rectangular panel aperture, or use it as a drilling template. Single, dual and blank-plate variants.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un marco de montaje en panel que lleva el recorte correcto para un conector elegido, para que una pared de gabinete tenga una abertura limpia y dimensionada más los orificios de fijación del conector. Elige el conector (XT60, USB-A, RJ45, GX16 aviación) y la placa obtiene la ventana y el patrón de tornillos correctos; atornilla el marco en una abertura rectangular o úsalo como plantilla de taladrado. Variantes sencilla, doble y placa ciega.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/panel-connector.webp",
+    "difficulty": "intermediate",
+    "tags": ["panel-mount", "connector", "xt60", "usb", "rj45", "gx16", "enclosure", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "single_cutout",
+      "label": { "en": "Single Cutout", "es": "Recorte Sencillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_cutout"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "dual_cutout",
+      "label": { "en": "Dual Cutout", "es": "Recorte Doble" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dual_cutout"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "blank_plate",
+      "label": { "en": "Blank Plate", "es": "Placa Ciega" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["blank_plate"],
+      "estimate": { "base_time": 8, "per_unit": 1, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "single_cutout", "label": { "en": "Single Cutout", "es": "Recorte Sencillo" }, "render_mode": 0, "color": "#3f4c6b" },
+    { "id": "dual_cutout", "label": { "en": "Dual Cutout", "es": "Recorte Doble" }, "render_mode": 0, "color": "#4f5f83" },
+    { "id": "blank_plate", "label": { "en": "Blank Plate", "es": "Placa Ciega" }, "render_mode": 0, "color": "#5f719b" }
+  ],
+  "parameter_groups": [
+    { "id": "connector", "label": { "en": "Connector", "es": "Conector" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } }
+  ],
+  "parameters": [
+    {
+      "id": "connector", "type": "select", "default": "XT60",
+      "group": "connector", "modes": ["single_cutout", "dual_cutout", "blank_plate"],
+      "label": { "en": "Connector", "es": "Conector" },
+      "tooltip": { "en": "Connector whose panel cutout and fixing pattern to use", "es": "Conector cuyo recorte y patrón de fijación se usa" },
+      "options": [
+        { "value": "XT60", "label": { "en": "XT60 Power", "es": "XT60 Potencia" } },
+        { "value": "USB-A", "label": { "en": "USB-A Coupler", "es": "Acoplador USB-A" } },
+        { "value": "RJ45", "label": { "en": "RJ45 Ethernet", "es": "RJ45 Ethernet" } },
+        { "value": "GX16-aviation", "label": { "en": "GX16 Aviation", "es": "GX16 Aviación" } }
+      ]
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "plate", "modes": ["single_cutout", "dual_cutout", "blank_plate"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Frame plate thickness", "es": "Grosor de la placa del marco" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 6.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "plate", "modes": ["single_cutout", "dual_cutout", "blank_plate"],
+      "label": { "en": "Plate Border (mm)", "es": "Borde de Placa (mm)" },
+      "tooltip": { "en": "Material past the connector footprint", "es": "Material más allá del conector" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 3.0, "min": 0.0, "max": 8.0, "step": 0.5,
+      "group": "plate", "modes": ["single_cutout", "dual_cutout", "blank_plate"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Plate corner rounding (0 = sharp)", "es": "Redondeo de esquina (0 = recto)" }
+    },
+    {
+      "id": "mount_bore", "type": "slider", "default": 3.4, "min": 2.7, "max": 6.0, "step": 0.1,
+      "group": "plate", "modes": ["single_cutout", "dual_cutout", "blank_plate"], "advanced": true,
+      "label": { "en": "Corner Mount Bore (mm)", "es": "Barreno de Montaje (mm)" },
+      "tooltip": { "en": "Clearance bore in the plate corners (M3=3.4)", "es": "Barreno en las esquinas (M3=3.4)" }
+    },
+    {
+      "id": "pair_gap", "type": "slider", "default": 10.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "plate", "modes": ["dual_cutout"],
+      "label": { "en": "Gap Between Cutouts (mm)", "es": "Separación entre Recortes (mm)" },
+      "tooltip": { "en": "Space between the two dual cutouts", "es": "Espacio entre los dos recortes" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "power_in", "mode": "single_cutout",
+      "label": { "en": "XT60 Power Inlet", "es": "Entrada XT60" },
+      "values": { "connector": "XT60", "plate_t": 3 }
+    },
+    {
+      "id": "data_pair", "mode": "dual_cutout",
+      "label": { "en": "USB + Ethernet Pair", "es": "Par USB + Ethernet" },
+      "values": { "connector": "RJ45", "pair_gap": 12 }
+    },
+    {
+      "id": "blank_bay", "mode": "blank_plate",
+      "label": { "en": "Blank Bay Cover", "es": "Tapa de Bahía Ciega" },
+      "values": { "connector": "XT60", "plate_t": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "margin >= 4",
+      "severity": "warning",
+      "message": { "en": "A small border leaves thin plate around the cutout", "es": "Un borde pequeño deja placa delgada alrededor del recorte" }
+    },
+    {
+      "expression": "plate_t >= 2",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 2 mm", "es": "La placa debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "connector_cutout",
+        "label": { "en": "Connector Cutout", "es": "Recorte de Conector" },
+        "geometry_type": "pocket",
+        "standard": "XT60/USB/RJ45/GX16",
+        "parameters": ["connector", "plate_t"]
+      },
+      {
+        "id": "panel_mount_holes",
+        "label": { "en": "Panel Mount Holes", "es": "Orificios de Montaje" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_bore", "margin"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Gives any project box a professional, sealed connector opening without a machine shop. Named cutouts for the connectors makers actually use (power, USB, Ethernet, aviation) mean a bolt-in frame or an accurate drilling template, so enclosures get finished and connections stay reliable.",
+      "es": "Da a cualquier caja de proyecto una abertura de conector profesional y sellada sin un taller. Recortes nombrados para los conectores que los makers realmente usan (potencia, USB, Ethernet, aviación) significan un marco atornillable o una plantilla de taladrado precisa, para que los gabinetes se terminen y las conexiones sean confiables."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["panel-mount", "connector", "xt60", "usb", "rj45", "gx16", "industrial", "hyperobject", "commons"]
+}

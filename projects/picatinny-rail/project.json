@@ -1,0 +1,163 @@
+{
+  "project": {
+    "name": "Picatinny / M-LOK Accessory Rail",
+    "slug": "picatinny-rail",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The universal accessory-mounting interface for optics, lights, cameras, and gear. Models the MIL-STD-1913 (Picatinny) rail cross-section — the trapezoidal profile with a flat top, 45° clamping flanks, and transverse recoil grooves on the 10 mm standard pitch — plus the M-LOK negative-slot standard. Print rail sections, M-LOK slot strips, or a small bolt-down rail adapter.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La interfaz universal de montaje de accesorios para ópticas, luces, cámaras y equipo. Modela la sección transversal del riel MIL-STD-1913 (Picatinny) — el perfil trapezoidal con parte superior plana, flancos de sujeción a 45° y ranuras de retroceso transversales con el paso estándar de 10 mm — más el estándar de ranura negativa M-LOK. Imprime secciones de riel, tiras de ranura M-LOK o un pequeño adaptador de riel atornillable.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/picatinny-rail.webp",
+    "difficulty": "advanced",
+    "tags": ["picatinny", "mlok", "rail", "mount", "1913", "accessory", "optics", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rail_section",
+      "label": { "en": "Rail Section", "es": "Sección de Riel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rail_section"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "mlok_strip",
+      "label": { "en": "M-LOK Slot Strip", "es": "Tira de Ranura M-LOK" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["mlok_strip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "rail_adapter",
+      "label": { "en": "Rail Adapter", "es": "Adaptador de Riel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rail_adapter"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "rail_section", "label": { "en": "Rail Section", "es": "Sección de Riel" }, "render_mode": 0, "color": "#3f4a55" },
+    { "id": "mlok_strip", "label": { "en": "M-LOK Slot Strip", "es": "Tira de Ranura M-LOK" }, "render_mode": 0, "color": "#556070" },
+    { "id": "rail_adapter", "label": { "en": "Rail Adapter", "es": "Adaptador de Riel" }, "render_mode": 0, "color": "#6b7684" }
+  ],
+  "parameter_groups": [
+    { "id": "interface", "label": { "en": "Rail Standard", "es": "Estándar de Riel" } },
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } },
+    { "id": "mounting", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "standard", "type": "select", "default": "picatinny",
+      "group": "interface", "modes": ["rail_section"],
+      "label": { "en": "Rail Standard", "es": "Estándar de Riel" },
+      "tooltip": { "en": "MIL-STD-1913 Picatinny rail profile, or the M-LOK negative-slot standard", "es": "Perfil de riel Picatinny MIL-STD-1913, o el estándar de ranura negativa M-LOK" },
+      "options": [
+        { "value": "picatinny", "label": { "en": "Picatinny (MIL-STD-1913)", "es": "Picatinny (MIL-STD-1913)" } },
+        { "value": "mlok", "label": { "en": "M-LOK (negative slots)", "es": "M-LOK (ranuras negativas)" } }
+      ]
+    },
+    {
+      "id": "slots", "type": "slider", "default": 5, "min": 1, "max": 40, "step": 1,
+      "group": "size", "modes": ["rail_section", "mlok_strip", "rail_adapter"],
+      "label": { "en": "Slots / Grooves", "es": "Ranuras" },
+      "tooltip": { "en": "Number of recoil grooves (Picatinny) or M-LOK slots — sets the length", "es": "Número de ranuras de retroceso (Picatinny) o ranuras M-LOK — define el largo" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 10.0 }
+    },
+    {
+      "id": "base_th", "type": "slider", "default": 4.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "size", "modes": ["rail_section", "mlok_strip", "rail_adapter"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Thickness of the substrate under the rail / strip", "es": "Grosor del sustrato bajo el riel / tira" }
+    },
+    {
+      "id": "extra_w", "type": "slider", "default": 0.0, "min": 0.0, "max": 40.0, "step": 1.0,
+      "group": "size", "modes": ["rail_section", "mlok_strip", "rail_adapter"], "advanced": true,
+      "label": { "en": "Extra Base Width (mm)", "es": "Ancho de Base Extra (mm)" },
+      "tooltip": { "en": "Widen the substrate beyond the 21.2 mm rail footprint", "es": "Ensancha el sustrato más allá de la huella de riel de 21.2 mm" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.2, "min": 0.0, "max": 10.0, "step": 0.2,
+      "group": "mounting", "modes": ["mlok_strip", "rail_adapter"],
+      "label": { "en": "Bolt Hole Diameter (mm)", "es": "Diámetro de Perno (mm)" },
+      "tooltip": { "en": "Clearance-hole diameter for the bolt-down holes (0 = none, 5.2 ≈ M5)", "es": "Diámetro de agujero de holgura para los pernos (0 = ninguno, 5.2 ≈ M5)" }
+    },
+    {
+      "id": "bolt_count", "type": "slider", "default": 2, "min": 0, "max": 12, "step": 1,
+      "group": "mounting", "modes": ["mlok_strip", "rail_adapter"],
+      "label": { "en": "Bolt Holes", "es": "Agujeros de Perno" },
+      "tooltip": { "en": "Number of bolt-down holes along the base centreline", "es": "Número de agujeros de fijación a lo largo del eje de la base" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "short_rail", "mode": "rail_section",
+      "label": { "en": "Short 5-Slot Rail", "es": "Riel Corto de 5 Ranuras" },
+      "values": { "standard": "picatinny", "slots": 5, "base_th": 4 }
+    },
+    {
+      "id": "long_optic_rail", "mode": "rail_section",
+      "label": { "en": "Long Optic Rail (13-slot)", "es": "Riel Largo para Óptica (13 ranuras)" },
+      "values": { "standard": "picatinny", "slots": 13, "base_th": 5 }
+    },
+    {
+      "id": "mlok_handguard_strip", "mode": "mlok_strip",
+      "label": { "en": "M-LOK Handguard Strip", "es": "Tira M-LOK para Guardamanos" },
+      "values": { "slots": 4, "base_th": 6, "bolt_dia": 5.2, "bolt_count": 2 }
+    },
+    {
+      "id": "accessory_adapter", "mode": "rail_adapter",
+      "label": { "en": "Accessory Adapter Base", "es": "Base Adaptadora de Accesorio" },
+      "values": { "slots": 3, "base_th": 5, "bolt_dia": 5.2, "bolt_count": 2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "base_th >= 2",
+      "severity": "error",
+      "message": { "en": "Base must be at least 2 mm to print reliably", "es": "La base debe ser de al menos 2 mm para imprimir bien" }
+    },
+    {
+      "expression": "slots <= 30",
+      "severity": "warning",
+      "message": { "en": "Very long rails may exceed the print bed", "es": "Rieles muy largos pueden exceder la cama de impresión" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "picatinny_1913_rail",
+        "label": { "en": "Picatinny 1913 Rail", "es": "Riel Picatinny 1913" },
+        "geometry_type": "rail",
+        "standard": "MIL-STD-1913 / M-LOK",
+        "parameters": ["standard", "slots"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The Picatinny and M-LOK rails are the most widely-adopted open accessory-mounting standards. A dimensionally-real, printable rail interface lets makers fabricate mounts, adapters, and brackets for cameras, lights, and gear on demand instead of buying single-purpose hardware.",
+      "es": "Los rieles Picatinny y M-LOK son los estándares abiertos de montaje de accesorios más adoptados. Una interfaz de riel imprimible y dimensionalmente real permite fabricar monturas, adaptadores y soportes para cámaras, luces y equipo bajo demanda en vez de comprar hardware de un solo uso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["picatinny", "mlok", "rail", "mount", "commercial", "hyperobject", "commons"]
+}

@@ -1,0 +1,190 @@
+{
+  "project": {
+    "name": "Curtain / Blind Bracket",
+    "slug": "curtain-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A wall bracket that holds a curtain or blind rod at a set projection from the wall. The cradle is an open-top C (drop the rod in) or a closed ring (thread the rod through), sized to the rod diameter. Build a standard bracket, an end bracket that caps the rod, or a mid-span center support for long rods.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de pared que sostiene una barra de cortina o persiana a una proyección fija desde la pared. La cuna es una C abierta por arriba (se deja caer la barra) o un anillo cerrado (se enhebra la barra), dimensionada al diámetro de la barra. Crea un soporte estándar, un soporte de extremo que tapa la barra, o un soporte central de vano medio para barras largas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/curtain-bracket.webp",
+    "difficulty": "beginner",
+    "tags": ["curtain", "blind", "rod", "bracket", "wall mount", "window", "support", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bracket",
+      "label": { "en": "Wall Bracket", "es": "Soporte de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bracket"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "end_bracket",
+      "label": { "en": "End Bracket", "es": "Soporte de Extremo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["end_bracket"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "center_support",
+      "label": { "en": "Center Support", "es": "Soporte Central" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["center_support"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "bracket", "label": { "en": "Wall Bracket", "es": "Soporte de Pared" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "end_bracket", "label": { "en": "End Bracket", "es": "Soporte de Extremo" }, "render_mode": 0, "color": "#4b9f7a" },
+    { "id": "center_support", "label": { "en": "Center Support", "es": "Soporte Central" }, "render_mode": 0, "color": "#b0865b" }
+  ],
+  "parameter_groups": [
+    { "id": "rod", "label": { "en": "Rod & Cradle", "es": "Barra y Cuna" } },
+    { "id": "arm", "label": { "en": "Projection & Arm", "es": "Proyección y Brazo" } },
+    { "id": "mount", "label": { "en": "Wall Mount", "es": "Montaje de Pared" } }
+  ],
+  "parameters": [
+    {
+      "id": "rod_dia", "type": "slider", "default": 19.0, "min": 6.0, "max": 38.0, "step": 1.0,
+      "group": "rod", "modes": ["bracket", "end_bracket", "center_support"],
+      "label": { "en": "Rod Diameter (mm)", "es": "Diámetro de Barra (mm)" },
+      "tooltip": { "en": "Diameter of the curtain / blind rod the cradle holds", "es": "Diámetro de la barra de cortina / persiana que sostiene la cuna" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cradle_style", "type": "select", "default": "open",
+      "group": "rod", "modes": ["bracket", "end_bracket"],
+      "label": { "en": "Cradle Style", "es": "Estilo de Cuna" },
+      "tooltip": { "en": "Open-top C (drop the rod in) or a closed ring (thread the rod through)", "es": "C abierta por arriba (dejar caer la barra) o anillo cerrado (enhebrar la barra)" },
+      "options": [
+        { "value": "open", "label": { "en": "Open-top C", "es": "C abierta" } },
+        { "value": "closed", "label": { "en": "Closed ring", "es": "Anillo cerrado" } }
+      ]
+    },
+    {
+      "id": "cradle_wall", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "rod", "modes": ["bracket", "end_bracket", "center_support"], "advanced": true,
+      "label": { "en": "Cradle Wall (mm)", "es": "Pared de Cuna (mm)" },
+      "tooltip": { "en": "Wall thickness of the cradle ring / C", "es": "Grosor de pared del anillo / C de la cuna" }
+    },
+    {
+      "id": "projection", "type": "slider", "default": 70.0, "min": 30.0, "max": 140.0, "step": 1.0,
+      "group": "arm", "modes": ["bracket", "end_bracket", "center_support"],
+      "label": { "en": "Projection (mm)", "es": "Proyección (mm)" },
+      "tooltip": { "en": "Rod centre distance from the wall — set it clear of the window trim", "es": "Distancia del centro de la barra a la pared — deja espacio libre del marco de la ventana" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "arm_w", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "arm", "modes": ["bracket", "end_bracket", "center_support"], "advanced": true,
+      "label": { "en": "Arm Width (mm)", "es": "Ancho del Brazo (mm)" },
+      "tooltip": { "en": "Width of the support arm (also the cradle length)", "es": "Ancho del brazo de soporte (también la longitud de la cuna)" }
+    },
+    {
+      "id": "arm_thick", "type": "slider", "default": 10.0, "min": 4.0, "max": 18.0, "step": 0.5,
+      "group": "arm", "modes": ["bracket", "end_bracket", "center_support"],
+      "label": { "en": "Arm Thickness (mm)", "es": "Grosor del Brazo (mm)" },
+      "tooltip": { "en": "Thickness of the support arm — thicker carries more load / longer projection", "es": "Grosor del brazo de soporte — más grueso soporta más carga / mayor proyección" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 32.0, "min": 20.0, "max": 60.0, "step": 1.0,
+      "group": "mount", "modes": ["bracket", "end_bracket", "center_support"], "advanced": true,
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Width of the wall plate", "es": "Ancho de la placa de pared" }
+    },
+    {
+      "id": "plate_thick", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "mount", "modes": ["bracket", "end_bracket", "center_support"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Thickness of the wall plate", "es": "Grosor de la placa de pared" }
+    },
+    {
+      "id": "hole_spacing", "type": "slider", "default": 40.0, "min": 16.0, "max": 80.0, "step": 1.0,
+      "group": "mount", "modes": ["bracket", "end_bracket", "center_support"],
+      "label": { "en": "Mount Hole Spacing (mm)", "es": "Separación de Orificios (mm)" },
+      "tooltip": { "en": "Vertical distance between the two screw holes", "es": "Distancia vertical entre los dos orificios de tornillo" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["bracket", "end_bracket", "center_support"], "advanced": true,
+      "label": { "en": "Screw Hole Diameter (mm)", "es": "Diámetro de Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Screw clearance hole diameter", "es": "Diámetro del orificio de paso del tornillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_curtain", "mode": "bracket",
+      "label": { "en": "Standard Curtain Rod (19 mm)", "es": "Barra Estándar (19 mm)" },
+      "values": { "rod_dia": 19, "projection": 70, "cradle_style": "open", "arm_thick": 10 }
+    },
+    {
+      "id": "end_stop_closed", "mode": "end_bracket",
+      "label": { "en": "End Bracket (closed 25 mm)", "es": "Soporte de Extremo (cerrado 25 mm)" },
+      "values": { "rod_dia": 25, "projection": 80, "cradle_style": "closed" }
+    },
+    {
+      "id": "long_rod_center", "mode": "center_support",
+      "label": { "en": "Long-Rod Center Support", "es": "Soporte Central Barra Larga" },
+      "values": { "rod_dia": 25, "projection": 80, "arm_thick": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "projection >= rod_dia",
+      "severity": "warning",
+      "message": { "en": "Projection is small relative to the rod diameter", "es": "La proyección es pequeña respecto al diámetro de la barra" }
+    },
+    {
+      "expression": "arm_thick >= 4",
+      "severity": "error",
+      "message": { "en": "Arm must be at least 4 mm thick to carry the rod", "es": "El brazo debe tener al menos 4 mm de grosor para soportar la barra" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "rod_cradle",
+        "label": { "en": "Rod Cradle", "es": "Cuna de Barra" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["rod_dia", "projection", "cradle_style", "cradle_wall"]
+      },
+      {
+        "id": "wall_screw_mount",
+        "label": { "en": "Wall Screw Mount", "es": "Montaje con Tornillos de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["hole_spacing", "screw_dia", "plate_thick", "plate_w"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Curtain brackets are lost, mismatched, or the wrong projection for the window trim more often than any other window part. One parametric cradle sized to the rod and set clear of the trim outfits a whole house — end brackets and center supports included — instead of hunting a hardware aisle for a discontinued size.",
+      "es": "Los soportes de cortina se pierden, no coinciden o tienen la proyección equivocada para el marco de la ventana más que cualquier otra pieza. Una cuna paramétrica dimensionada a la barra y con espacio libre del marco equipa una casa entera — con soportes de extremo y centrales incluidos — en vez de buscar en la ferretería una medida descontinuada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["curtain", "blind", "rod", "bracket", "household", "hyperobject", "commons"]
+}

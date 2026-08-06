@@ -1,0 +1,219 @@
+{
+  "project": {
+    "name": "Miniature Base",
+    "slug": "mini-base",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Wargame and RPG miniature bases in the standard tabletop footprints (25/32/40/50/60 mm round, 25/50 mm square). Beveled top edge, optional rim lip and light texture, optional 6x2 mm magnet pocket underneath, plus a movement tray that holds a grid of minis as one unit.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Bases para miniaturas de wargame y rol en los tamaños estándar de mesa (25/32/40/50/60 mm redondas, 25/50 mm cuadradas). Borde biselado, reborde y textura ligera opcionales, cavidad para imán de 6x2 mm en la parte inferior, y una bandeja de movimiento que sostiene una cuadrícula de miniaturas como una unidad.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mini-base.webp",
+    "difficulty": "beginner",
+    "tags": ["miniature", "base", "wargame", "rpg", "tabletop", "movement-tray", "magnet", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "round_base",
+      "label": { "en": "Round Base", "es": "Base Redonda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["round_base"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "square_base",
+      "label": { "en": "Square Base", "es": "Base Cuadrada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["square_base"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "movement_tray",
+      "label": { "en": "Movement Tray", "es": "Bandeja de Movimiento" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["movement_tray"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "round_base", "label": { "en": "Round Base", "es": "Base Redonda" }, "render_mode": 0, "color": "#6b7b8c" },
+    { "id": "square_base", "label": { "en": "Square Base", "es": "Base Cuadrada" }, "render_mode": 0, "color": "#7c8b9c" },
+    { "id": "movement_tray", "label": { "en": "Movement Tray", "es": "Bandeja de Movimiento" }, "render_mode": 0, "color": "#5b6b7c" }
+  ],
+  "parameter_groups": [
+    { "id": "footprint", "label": { "en": "Footprint", "es": "Tamaño" } },
+    { "id": "profile", "label": { "en": "Profile & Top", "es": "Perfil y Cara" } },
+    { "id": "magnet", "label": { "en": "Magnet", "es": "Imán" } },
+    { "id": "tray", "label": { "en": "Movement Tray", "es": "Bandeja" } }
+  ],
+  "parameters": [
+    {
+      "id": "base_size", "type": "select", "default": "32mm",
+      "group": "footprint", "modes": ["round_base", "square_base", "movement_tray"],
+      "label": { "en": "Base Size", "es": "Tamaño de Base" },
+      "tooltip": { "en": "Standard tabletop base footprint", "es": "Tamaño estándar de base de mesa" },
+      "options": [
+        { "value": "25mm", "label": { "en": "25 mm round", "es": "25 mm redonda" } },
+        { "value": "32mm", "label": { "en": "32 mm round", "es": "32 mm redonda" } },
+        { "value": "40mm", "label": { "en": "40 mm round", "es": "40 mm redonda" } },
+        { "value": "50mm", "label": { "en": "50 mm round", "es": "50 mm redonda" } },
+        { "value": "60mm", "label": { "en": "60 mm round", "es": "60 mm redonda" } },
+        { "value": "25sq", "label": { "en": "25 mm square", "es": "25 mm cuadrada" } },
+        { "value": "50sq", "label": { "en": "50 mm square", "es": "50 mm cuadrada" } }
+      ]
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "profile", "modes": ["round_base", "square_base", "movement_tray"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Base plate thickness", "es": "Grosor de la placa" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bevel", "type": "slider", "default": 1.0, "min": 0.0, "max": 4.0, "step": 0.2,
+      "group": "profile", "modes": ["round_base", "square_base"],
+      "label": { "en": "Top Bevel (mm)", "es": "Bisel Superior (mm)" },
+      "tooltip": { "en": "Chamfer on the top edge (0 = sharp)", "es": "Chaflán en el borde superior (0 = recto)" }
+    },
+    {
+      "id": "lip", "type": "checkbox", "default": false,
+      "group": "profile", "modes": ["round_base", "square_base"],
+      "label": { "en": "Raised Rim Lip", "es": "Reborde Elevado" },
+      "tooltip": { "en": "Add a raised rim around the top", "es": "Añadir un reborde elevado alrededor de la cara" }
+    },
+    {
+      "id": "lip_h", "type": "slider", "default": 1.0, "min": 0.4, "max": 4.0, "step": 0.2,
+      "group": "profile", "modes": ["round_base", "square_base"], "advanced": true,
+      "label": { "en": "Lip Height (mm)", "es": "Altura del Reborde (mm)" },
+      "tooltip": { "en": "Height of the raised rim", "es": "Altura del reborde elevado" }
+    },
+    {
+      "id": "textured", "type": "checkbox", "default": false,
+      "group": "profile", "modes": ["round_base", "square_base"],
+      "label": { "en": "Textured Top", "es": "Cara Texturizada" },
+      "tooltip": { "en": "Light recessed dimple ring on the top", "es": "Anillo ligero de hendiduras en la cara" }
+    },
+    {
+      "id": "magnet", "type": "checkbox", "default": false,
+      "group": "magnet", "modes": ["round_base", "square_base"],
+      "label": { "en": "Magnet Pocket", "es": "Cavidad para Imán" },
+      "tooltip": { "en": "Recess a magnet into the underside", "es": "Alojar un imán en la parte inferior" }
+    },
+    {
+      "id": "magnet_d", "type": "slider", "default": 6.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "magnet", "modes": ["round_base", "square_base"], "advanced": true,
+      "label": { "en": "Magnet Diameter (mm)", "es": "Diámetro del Imán (mm)" },
+      "tooltip": { "en": "Diameter of the magnet pocket", "es": "Diámetro de la cavidad" }
+    },
+    {
+      "id": "magnet_h", "type": "slider", "default": 2.0, "min": 0.8, "max": 5.0, "step": 0.2,
+      "group": "magnet", "modes": ["round_base", "square_base"], "advanced": true,
+      "label": { "en": "Magnet Depth (mm)", "es": "Profundidad del Imán (mm)" },
+      "tooltip": { "en": "Depth of the magnet pocket", "es": "Profundidad de la cavidad" }
+    },
+    {
+      "id": "tray_cols", "type": "slider", "default": 2, "min": 1, "max": 6, "step": 1,
+      "group": "tray", "modes": ["movement_tray"],
+      "label": { "en": "Seats Across", "es": "Asientos a lo Ancho" },
+      "tooltip": { "en": "Number of base seats along X", "es": "Número de asientos en X" }
+    },
+    {
+      "id": "tray_rows", "type": "slider", "default": 2, "min": 1, "max": 6, "step": 1,
+      "group": "tray", "modes": ["movement_tray"],
+      "label": { "en": "Seats Deep", "es": "Asientos a lo Profundo" },
+      "tooltip": { "en": "Number of base seats along Y", "es": "Número de asientos en Y" }
+    },
+    {
+      "id": "tray_gap", "type": "slider", "default": 2.0, "min": 0.6, "max": 8.0, "step": 0.2,
+      "group": "tray", "modes": ["movement_tray"], "advanced": true,
+      "label": { "en": "Wall Between Seats (mm)", "es": "Pared entre Asientos (mm)" },
+      "tooltip": { "en": "Thickness of the walls separating seats", "es": "Grosor de las paredes entre asientos" }
+    },
+    {
+      "id": "tray_wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.2,
+      "group": "tray", "modes": ["movement_tray"], "advanced": true,
+      "label": { "en": "Rim Wall (mm)", "es": "Pared del Borde (mm)" },
+      "tooltip": { "en": "Outer rim wall thickness", "es": "Grosor de la pared exterior" }
+    },
+    {
+      "id": "tray_seat_h", "type": "slider", "default": 2.0, "min": 0.8, "max": 6.0, "step": 0.2,
+      "group": "tray", "modes": ["movement_tray"], "advanced": true,
+      "label": { "en": "Seat Depth (mm)", "es": "Profundidad del Asiento (mm)" },
+      "tooltip": { "en": "How deep minis sit into the tray", "es": "Qué tan profundo se asientan las miniaturas" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "infantry_25", "mode": "round_base",
+      "label": { "en": "25 mm Infantry (magnetized)", "es": "Infantería 25 mm (imantada)" },
+      "values": { "base_size": "25mm", "magnet": true, "textured": true }
+    },
+    {
+      "id": "hero_50", "mode": "round_base",
+      "label": { "en": "50 mm Hero (lipped)", "es": "Héroe 50 mm (con reborde)" },
+      "values": { "base_size": "50mm", "lip": true, "bevel": 1.5, "magnet": true }
+    },
+    {
+      "id": "unit_tray", "mode": "movement_tray",
+      "label": { "en": "5x2 Movement Tray (25 mm)", "es": "Bandeja 5x2 (25 mm)" },
+      "values": { "base_size": "25mm", "tray_cols": 5, "tray_rows": 2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "magnet_h <= thickness - 0.8",
+      "severity": "warning",
+      "message": { "en": "Magnet pocket is deep relative to base thickness", "es": "La cavidad del imán es profunda respecto al grosor de la base" }
+    },
+    {
+      "expression": "thickness >= 1.5",
+      "severity": "error",
+      "message": { "en": "Base must be at least 1.5 mm thick", "es": "La base debe tener al menos 1.5 mm de grosor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 6,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "base_footprint",
+        "label": { "en": "Base Footprint", "es": "Huella de Base" },
+        "geometry_type": "profile",
+        "standard": "tabletop base sizes",
+        "parameters": ["base_size"]
+      },
+      {
+        "id": "magnet_pocket",
+        "label": { "en": "Magnet Pocket", "es": "Cavidad para Imán" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["magnet", "magnet_d", "magnet_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Standard-footprint bases let hobbyists rebase, magnetize and movement-tray any miniature without buying proprietary sprues — extending the life of models across game systems.",
+      "es": "Bases con huella estándar permiten rebasar, imantar y agrupar cualquier miniatura sin comprar bebederos propietarios — extendiendo la vida de los modelos entre sistemas de juego."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["miniature", "base", "wargame", "tabletop", "commercial", "hyperobject", "commons"]
+}

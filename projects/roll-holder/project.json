@@ -1,0 +1,171 @@
+{
+  "project": {
+    "name": "Paper-Towel Roll Holder",
+    "slug": "roll-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holds a paper-towel or wrap roll on a spindle sized to the roll's cardboard core. Mount it three ways: a wall plate, an under-cabinet L-bracket, or a weighted countertop stand for one-handed tear-off.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sostiene un rollo de papel o film en un eje dimensionado al tubo de cartón del rollo. Móntalo de tres formas: placa de pared, soporte en L bajo gabinete, o base con peso para encimera para cortar con una mano.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/roll-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["holder", "paper-towel", "roll", "spindle", "kitchen", "mount", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "wall_holder",
+      "label": { "en": "Wall Holder", "es": "Soporte de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_holder"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "under_cabinet",
+      "label": { "en": "Under-Cabinet", "es": "Bajo Gabinete" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["under_cabinet"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 15 }
+    },
+    {
+      "id": "counter_stand",
+      "label": { "en": "Counter Stand", "es": "Base de Encimera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["counter_stand"],
+      "estimate": { "base_time": 14, "per_unit": 5, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "wall_holder", "label": { "en": "Wall Holder", "es": "Soporte de Pared" }, "render_mode": 0, "color": "#5a8fa0" },
+    { "id": "under_cabinet", "label": { "en": "Under-Cabinet", "es": "Bajo Gabinete" }, "render_mode": 0, "color": "#6a9fb0" },
+    { "id": "counter_stand", "label": { "en": "Counter Stand", "es": "Base de Encimera" }, "render_mode": 0, "color": "#4a7f90" }
+  ],
+  "parameter_groups": [
+    { "id": "roll", "label": { "en": "Roll & Spindle", "es": "Rollo y Eje" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } },
+    { "id": "structure", "label": { "en": "Structure", "es": "Estructura" } }
+  ],
+  "parameters": [
+    {
+      "id": "core_dia", "type": "slider", "default": 44, "min": 20, "max": 80, "step": 1,
+      "group": "roll", "modes": ["wall_holder", "under_cabinet", "counter_stand"],
+      "label": { "en": "Roll Core Diameter (mm)", "es": "Diámetro del Tubo del Rollo (mm)" },
+      "tooltip": { "en": "INNER diameter of the roll's cardboard core (typ. 38-45 mm)", "es": "Diámetro INTERIOR del tubo de cartón del rollo (típ. 38-45 mm)" }
+    },
+    {
+      "id": "spindle_len", "type": "slider", "default": 130, "min": 40, "max": 320, "step": 1,
+      "group": "roll", "modes": ["wall_holder", "under_cabinet", "counter_stand"],
+      "label": { "en": "Spindle Length (mm)", "es": "Largo del Eje (mm)" },
+      "tooltip": { "en": "Roll width the spindle spans", "es": "Ancho del rollo que abarca el eje" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.2, "max": 1.5, "step": 0.1,
+      "group": "roll", "modes": ["wall_holder", "under_cabinet", "counter_stand"], "advanced": true,
+      "label": { "en": "Spindle Clearance (mm)", "es": "Holgura del Eje (mm)" },
+      "tooltip": { "en": "Per-side gap so the roll spins freely on the spindle", "es": "Espacio por lado para que el rollo gire libre en el eje" }
+    },
+    {
+      "id": "mount", "type": "select", "default": "wall",
+      "group": "mount", "modes": ["wall_holder"],
+      "label": { "en": "Mount Type", "es": "Tipo de Montaje" },
+      "tooltip": { "en": "Reference mount style for this holder", "es": "Estilo de montaje de referencia para este soporte" },
+      "options": [
+        { "value": "wall", "label": { "en": "Wall Plate", "es": "Placa de Pared" } },
+        { "value": "under-cabinet", "label": { "en": "Under-Cabinet", "es": "Bajo Gabinete" } },
+        { "value": "countertop-weighted", "label": { "en": "Countertop (Weighted)", "es": "Encimera (con Peso)" } }
+      ]
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["wall_holder", "under_cabinet"],
+      "label": { "en": "Screw Hole (mm)", "es": "Agujero de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting screw clearance hole diameter", "es": "Diámetro del agujero de paso del tornillo" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 60, "min": 30, "max": 160, "step": 1,
+      "group": "structure", "modes": ["wall_holder", "under_cabinet", "counter_stand"],
+      "label": { "en": "Plate / Base Width (mm)", "es": "Ancho de Placa / Base (mm)" },
+      "tooltip": { "en": "Back-plate width, or base diameter for the counter stand", "es": "Ancho de la placa trasera, o diámetro de la base para la encimera" }
+    },
+    {
+      "id": "post_h", "type": "slider", "default": 180, "min": 80, "max": 400, "step": 5,
+      "group": "structure", "modes": ["counter_stand"],
+      "label": { "en": "Post Height (mm)", "es": "Altura del Poste (mm)" },
+      "tooltip": { "en": "Height of the counter-stand post", "es": "Altura del poste de la base de encimera" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "structure", "modes": ["wall_holder", "under_cabinet", "counter_stand"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Structural wall thickness", "es": "Grosor de pared estructural" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "kitchen_wall_roll", "mode": "wall_holder",
+      "label": { "en": "Kitchen Wall Roll", "es": "Rollo de Pared de Cocina" },
+      "values": { "core_dia": 44, "spindle_len": 130, "plate_w": 60 }
+    },
+    {
+      "id": "under_shelf_roll", "mode": "under_cabinet",
+      "label": { "en": "Under-Shelf Roll", "es": "Rollo Bajo Estante" },
+      "values": { "core_dia": 44, "spindle_len": 130, "plate_w": 70 }
+    },
+    {
+      "id": "counter_tear_stand", "mode": "counter_stand",
+      "label": { "en": "Counter Tear Stand", "es": "Base de Corte de Encimera" },
+      "values": { "core_dia": 44, "spindle_len": 130, "plate_w": 120, "post_h": 190 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance < core_dia / 4",
+      "severity": "warning",
+      "message": { "en": "Clearance is large relative to the core — the roll may wobble", "es": "La holgura es grande respecto al tubo — el rollo puede bambolearse" }
+    },
+    {
+      "expression": "plate_w >= core_dia",
+      "severity": "warning",
+      "message": { "en": "A narrow base may tip under a full roll", "es": "Una base angosta puede volcar con un rollo lleno" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 200, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -300, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "roll_core_spindle",
+        "label": { "en": "Roll Core Spindle", "es": "Eje de Tubo de Rollo" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["core_dia", "spindle_len", "clearance", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "One spindle interface fits every household roll measured at the core, and swapping only the mount adapts the same holder to wall, cabinet, or counter — replacing three separate bought products with one printable family.",
+      "es": "Una interfaz de eje encaja en cada rollo del hogar medido en el tubo, y cambiar solo el montaje adapta el mismo soporte a pared, gabinete o encimera — reemplazando tres productos comprados por separado con una familia imprimible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["holder", "paper-towel", "roll", "kitchen", "household", "hyperobject", "commons"]
+}

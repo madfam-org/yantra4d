@@ -1,0 +1,651 @@
+{
+  "project": {
+    "name": "VESA Mount Adapter Plate",
+    "slug": "vesa-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric VESA mounting adapter plate — the canonical monitor / TV / mount interoperability object. Generates a flat plate with a VESA FDMI bolt pattern (75, 100, 200, or 200×100). In Plate mode it is a display- or wall-side mounting plate, spacer, or riser; in Adapter mode it bridges two different VESA squares so a monitor of one size bolts onto a mount of another. Optional counterbores, rounded corners, and a center cable/lightening cutout.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una placa adaptadora de montaje VESA paramétrica — el objeto canónico de interoperabilidad entre monitores, TVs y soportes. Genera una placa plana con patrón de tornillos VESA FDMI (75, 100, 200 o 200×100). En modo Placa es una placa de montaje del lado de pantalla o pared, separador o elevador; en modo Adaptador une dos cuadrados VESA distintos para que un monitor de un tamaño se atornille a un soporte de otro. Avellanados, esquinas redondeadas y corte central para cable o aligerado opcionales.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vesa-mount.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "vesa",
+      "mount",
+      "adapter",
+      "monitor",
+      "tv",
+      "bracket",
+      "fdmi",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "plate"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "adapter",
+      "label": {
+        "en": "Adapter",
+        "es": "Adaptador"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "adapter"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      },
+      "render_mode": 0,
+      "color": "#4b5f74"
+    },
+    {
+      "id": "adapter",
+      "label": {
+        "en": "Adapter",
+        "es": "Adaptador"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "pattern",
+      "label": {
+        "en": "VESA Pattern",
+        "es": "Patrón VESA"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "holes",
+      "label": {
+        "en": "Holes & Recesses",
+        "es": "Orificios y Rebajes"
+      }
+    },
+    {
+      "id": "cutout",
+      "label": {
+        "en": "Center Cutout",
+        "es": "Corte Central"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "mode",
+      "type": "select",
+      "default": "plate",
+      "group": "pattern",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "Mode",
+        "es": "Modo"
+      },
+      "tooltip": {
+        "en": "Single-pattern plate, or an adapter bridging two VESA squares",
+        "es": "Placa de un patrón, o adaptador que une dos cuadrados VESA"
+      },
+      "options": [
+        {
+          "value": "plate",
+          "label": {
+            "en": "Plate (single pattern)",
+            "es": "Placa (un patrón)"
+          }
+        },
+        {
+          "value": "adapter",
+          "label": {
+            "en": "Adapter (source → destination)",
+            "es": "Adaptador (origen → destino)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vesa_size",
+      "type": "select",
+      "default": "100",
+      "group": "pattern",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "VESA Size (source)",
+        "es": "Tamaño VESA (origen)"
+      },
+      "tooltip": {
+        "en": "Bolt pattern for the plate / monitor side. 75 & 100 use M4; 200 & 200×100 use M6.",
+        "es": "Patrón de tornillos para la placa / lado del monitor. 75 y 100 usan M4; 200 y 200×100 usan M6."
+      },
+      "options": [
+        {
+          "value": "75",
+          "label": {
+            "en": "75 × 75 (M4)",
+            "es": "75 × 75 (M4)"
+          }
+        },
+        {
+          "value": "100",
+          "label": {
+            "en": "100 × 100 (M4)",
+            "es": "100 × 100 (M4)"
+          }
+        },
+        {
+          "value": "200",
+          "label": {
+            "en": "200 × 200 (M6)",
+            "es": "200 × 200 (M6)"
+          }
+        },
+        {
+          "value": "200x100",
+          "label": {
+            "en": "200 × 100 (M6)",
+            "es": "200 × 100 (M6)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dest_vesa_size",
+      "type": "select",
+      "default": "200",
+      "group": "pattern",
+      "modes": [
+        "adapter"
+      ],
+      "label": {
+        "en": "VESA Size (destination)",
+        "es": "Tamaño VESA (destino)"
+      },
+      "tooltip": {
+        "en": "Destination bolt pattern (the mount side) — only used in Adapter mode",
+        "es": "Patrón de tornillos de destino (lado del soporte) — solo en modo Adaptador"
+      },
+      "options": [
+        {
+          "value": "75",
+          "label": {
+            "en": "75 × 75 (M4)",
+            "es": "75 × 75 (M4)"
+          }
+        },
+        {
+          "value": "100",
+          "label": {
+            "en": "100 × 100 (M4)",
+            "es": "100 × 100 (M4)"
+          }
+        },
+        {
+          "value": "200",
+          "label": {
+            "en": "200 × 200 (M6)",
+            "es": "200 × 200 (M6)"
+          }
+        },
+        {
+          "value": "200x100",
+          "label": {
+            "en": "200 × 100 (M6)",
+            "es": "200 × 100 (M6)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "plate_thick",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Overall plate thickness",
+        "es": "Grosor total de la placa"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "plate_margin",
+      "type": "slider",
+      "default": 12.0,
+      "min": 4.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "plate",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "Plate Margin (mm)",
+        "es": "Margen de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Material beyond the outermost bolt square, on every side",
+        "es": "Material más allá del cuadrado de tornillos exterior, en cada lado"
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 6.0,
+      "min": 0.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "Corner Radius (mm)",
+        "es": "Radio de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Outer corner rounding (0 = sharp)",
+        "es": "Redondeo de esquina exterior (0 = recto)"
+      }
+    },
+    {
+      "id": "countersink",
+      "type": "checkbox",
+      "default": false,
+      "group": "holes",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "Counterbore Screw Heads",
+        "es": "Rebajar Cabezas de Tornillo"
+      },
+      "tooltip": {
+        "en": "Recess a flat-bottomed pocket around each hole for a flush head",
+        "es": "Rebaja un rebaje de fondo plano alrededor de cada orificio para cabeza al ras"
+      }
+    },
+    {
+      "id": "cs_diameter",
+      "type": "slider",
+      "default": 9.0,
+      "min": 6.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "holes",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Head Recess Diameter (mm)",
+        "es": "Diámetro de Rebaje (mm)"
+      },
+      "tooltip": {
+        "en": "Counterbore pocket diameter (screw head + clearance)",
+        "es": "Diámetro del rebaje (cabeza del tornillo + holgura)"
+      }
+    },
+    {
+      "id": "cs_depth",
+      "type": "slider",
+      "default": 2.5,
+      "min": 0.5,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "holes",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Head Recess Depth (mm)",
+        "es": "Profundidad de Rebaje (mm)"
+      },
+      "tooltip": {
+        "en": "Counterbore pocket depth (auto-clamped below plate thickness)",
+        "es": "Profundidad del rebaje (limitada bajo el grosor de la placa)"
+      }
+    },
+    {
+      "id": "extra_holes",
+      "type": "checkbox",
+      "default": false,
+      "group": "holes",
+      "modes": [
+        "plate"
+      ],
+      "label": {
+        "en": "Extra Corner Holes",
+        "es": "Orificios de Esquina Extra"
+      },
+      "tooltip": {
+        "en": "Add four generic mounting holes near the plate corners",
+        "es": "Agrega cuatro orificios de montaje genéricos cerca de las esquinas"
+      }
+    },
+    {
+      "id": "extra_hole_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "holes",
+      "modes": [
+        "plate"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Corner Hole Diameter (mm)",
+        "es": "Diámetro de Orificio de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the extra corner mounting holes",
+        "es": "Diámetro de los orificios de montaje de esquina extra"
+      }
+    },
+    {
+      "id": "center_hole",
+      "type": "checkbox",
+      "default": false,
+      "group": "cutout",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "Center Cutout",
+        "es": "Corte Central"
+      },
+      "tooltip": {
+        "en": "Cable pass-through / lightening hole in the plate center",
+        "es": "Paso de cables / aligerado en el centro de la placa"
+      }
+    },
+    {
+      "id": "center_hole_dia",
+      "type": "slider",
+      "default": 40.0,
+      "min": 6.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "cutout",
+      "modes": [
+        "plate",
+        "adapter"
+      ],
+      "label": {
+        "en": "Center Cutout Diameter (mm)",
+        "es": "Diámetro de Corte Central (mm)"
+      },
+      "tooltip": {
+        "en": "Auto-clamped so a ≥6 mm web remains around the nearest bolt",
+        "es": "Limitado para dejar un puente ≥6 mm alrededor del tornillo más cercano"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "monitor_100_plate",
+      "mode": "plate",
+      "label": {
+        "en": "Monitor Plate 100×100",
+        "es": "Placa Monitor 100×100"
+      },
+      "values": {
+        "mode": "plate",
+        "vesa_size": "100",
+        "plate_thick": 4.0,
+        "plate_margin": 12,
+        "corner_r": 6
+      }
+    },
+    {
+      "id": "adapter_75_to_100",
+      "mode": "adapter",
+      "label": {
+        "en": "Adapter 75 → 100",
+        "es": "Adaptador 75 → 100"
+      },
+      "values": {
+        "mode": "adapter",
+        "vesa_size": "75",
+        "dest_vesa_size": "100",
+        "plate_thick": 5.0,
+        "countersink": true
+      }
+    },
+    {
+      "id": "tv_adapter_200_to_100",
+      "mode": "adapter",
+      "label": {
+        "en": "TV Adapter 200×100 → 100",
+        "es": "Adaptador TV 200×100 → 100"
+      },
+      "values": {
+        "mode": "adapter",
+        "vesa_size": "200x100",
+        "dest_vesa_size": "100",
+        "plate_thick": 6.0,
+        "plate_margin": 15,
+        "center_hole": true,
+        "center_hole_dia": 60
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_thick >= 2",
+      "severity": "error",
+      "message": {
+        "en": "Plate must be at least 2 mm thick",
+        "es": "La placa debe tener al menos 2 mm de grosor"
+      }
+    },
+    {
+      "expression": "cs_depth <= plate_thick - 0.8",
+      "severity": "warning",
+      "message": {
+        "en": "Head recess depth is close to the plate thickness",
+        "es": "La profundidad del rebaje se acerca al grosor de la placa"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        180,
+        180,
+        140
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        280
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -280,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "vesa_fdmi_source",
+        "label": {
+          "en": "VESA FDMI (source)",
+          "es": "VESA FDMI (origen)"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "VESA MIS-D/E/F (FDMI)",
+        "parameters": [
+          "vesa_size",
+          "plate_thick",
+          "countersink",
+          "cs_diameter",
+          "cs_depth"
+        ],
+        "compatible_with": [
+          "framing-hyperobject",
+          "vesa-arm-extender"
+        ]
+      },
+      {
+        "id": "vesa_fdmi_destination",
+        "label": {
+          "en": "VESA FDMI (destination)",
+          "es": "VESA FDMI (destino)"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "VESA MIS-D/E/F (FDMI)",
+        "parameters": [
+          "dest_vesa_size",
+          "plate_thick",
+          "countersink",
+          "cs_diameter",
+          "cs_depth"
+        ],
+        "compatible_with": [
+          "framing-hyperobject",
+          "vesa-arm-extender"
+        ]
+      },
+      {
+        "id": "cable_passthrough",
+        "label": {
+          "en": "Center Cable / Lightening Cutout",
+          "es": "Corte Central de Cable / Aligerado"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "center_hole",
+          "center_hole_dia"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "VESA FDMI is the universal display-mount interface; this adapter lets any monitor or TV bolt to any mount regardless of pattern size, keeping working hardware in service and diverting proprietary brackets from landfill.",
+      "es": "VESA FDMI es la interfaz universal de montaje de pantallas; este adaptador permite atornillar cualquier monitor o TV a cualquier soporte sin importar el tamaño del patrón, manteniendo hardware útil en servicio y evitando que soportes propietarios lleguen al vertedero."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "vesa",
+    "mount",
+    "adapter",
+    "monitor",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Locker Latch",
+    "slug": "locker-latch",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Positive latches for RV and boat cabinet doors that stay shut under motion — a cammed or sprung catch, not a friction magnet. The body screws to the frame; a hooked catch engages the door so vibration and heel can't pop it open. Choose a quarter-turn cam, a snap-over spring latch, or a low-profile push catch.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Pestillos positivos para puertas de gabinete de casa rodante y bote que permanecen cerradas en movimiento — un cierre de leva o de resorte, no un imán de fricción. El cuerpo se atornilla al marco; un gancho engancha la puerta para que la vibración y la escora no la abran. Elige leva de cuarto de vuelta, pestillo de resorte a presión o cierre de empuje de bajo perfil.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/locker-latch.webp",
+    "difficulty": "intermediate",
+    "tags": ["latch", "cabinet", "locker", "marine", "boat", "rv", "catch", "motion-proof", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cam_latch",
+      "label": { "en": "Quarter-Turn Cam", "es": "Leva de Cuarto de Vuelta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cam_latch"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "spring_latch",
+      "label": { "en": "Snap Spring Latch", "es": "Pestillo de Resorte" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spring_latch"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "push_latch",
+      "label": { "en": "Push Catch", "es": "Cierre de Empuje" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["push_latch"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "cam_latch", "label": { "en": "Quarter-Turn Cam", "es": "Leva de Cuarto de Vuelta" }, "render_mode": 0, "color": "#8f6f2a" },
+    { "id": "spring_latch", "label": { "en": "Snap Spring Latch", "es": "Pestillo de Resorte" }, "render_mode": 0, "color": "#a8893a" },
+    { "id": "push_latch", "label": { "en": "Push Catch", "es": "Cierre de Empuje" }, "render_mode": 0, "color": "#c0a24a" }
+  ],
+  "parameter_groups": [
+    { "id": "fit", "label": { "en": "Door Fit", "es": "Ajuste de Puerta" } },
+    { "id": "body", "label": { "en": "Body & Mount", "es": "Cuerpo y Montaje" } },
+    { "id": "mech", "label": { "en": "Mechanism", "es": "Mecanismo" } }
+  ],
+  "parameters": [
+    {
+      "id": "door_gap", "type": "slider", "default": 4.0, "min": 1.0, "max": 12.0, "step": 0.5,
+      "group": "fit", "modes": ["cam_latch", "spring_latch", "push_latch"],
+      "label": { "en": "Door Gap (mm)", "es": "Holgura de Puerta (mm)" },
+      "tooltip": { "en": "Gap between the door edge and the frame", "es": "Espacio entre el borde de la puerta y el marco" }
+    },
+    {
+      "id": "catch_hook", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "fit", "modes": ["cam_latch", "spring_latch", "push_latch"],
+      "label": { "en": "Catch Engagement (mm)", "es": "Enganche del Cierre (mm)" },
+      "tooltip": { "en": "How deep the hook grabs behind the door/strike", "es": "Qué tan profundo agarra el gancho tras la puerta/hembra" }
+    },
+    {
+      "id": "body_w", "type": "slider", "default": 36.0, "min": 20.0, "max": 80.0, "step": 1.0,
+      "group": "body", "modes": ["cam_latch", "spring_latch", "push_latch"],
+      "label": { "en": "Body Width (mm)", "es": "Ancho del Cuerpo (mm)" },
+      "tooltip": { "en": "Latch body length along the door edge", "es": "Longitud del cuerpo a lo largo del borde" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "body_h", "type": "slider", "default": 22.0, "min": 14.0, "max": 50.0, "step": 1.0,
+      "group": "body", "modes": ["cam_latch", "spring_latch", "push_latch"],
+      "label": { "en": "Body Height (mm)", "es": "Alto del Cuerpo (mm)" },
+      "tooltip": { "en": "Latch body height / depth", "es": "Altura / profundidad del cuerpo" }
+    },
+    {
+      "id": "base_t", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "body", "modes": ["cam_latch", "spring_latch", "push_latch"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Mounting base thickness", "es": "Grosor de la base de montaje" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "body", "modes": ["cam_latch", "spring_latch", "push_latch"], "advanced": true,
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting screw hole diameter", "es": "Diámetro del orificio del tornillo de montaje" }
+    },
+    {
+      "id": "hub_dia", "type": "slider", "default": 8.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "mech", "modes": ["cam_latch"],
+      "label": { "en": "Spindle Bore (mm)", "es": "Barreno del Eje (mm)" },
+      "tooltip": { "en": "Square drive size for the cam spindle", "es": "Tamaño del cuadro del eje de la leva" }
+    },
+    {
+      "id": "cam_reach", "type": "slider", "default": 16.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "mech", "modes": ["cam_latch"],
+      "label": { "en": "Cam Reach (mm)", "es": "Alcance de Leva (mm)" },
+      "tooltip": { "en": "How far the cam finger sweeps past the hub", "es": "Cuánto barre el dedo de la leva más allá del cubo" }
+    },
+    {
+      "id": "spring_t", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "mech", "modes": ["spring_latch", "push_latch"],
+      "label": { "en": "Spring Beam (mm)", "es": "Viga de Resorte (mm)" },
+      "tooltip": { "en": "Cantilever/flexure thickness — thinner is softer", "es": "Grosor de la viga flexible — más delgada es más suave" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "galley_cam", "mode": "cam_latch",
+      "label": { "en": "Galley Cam Latch", "es": "Leva de Cocina" },
+      "values": { "door_gap": 4, "hub_dia": 8, "cam_reach": 18 }
+    },
+    {
+      "id": "drawer_spring", "mode": "spring_latch",
+      "label": { "en": "Drawer Spring Latch", "es": "Pestillo de Cajón" },
+      "values": { "door_gap": 3, "catch_hook": 3, "spring_t": 2.2 }
+    },
+    {
+      "id": "locker_push", "mode": "push_latch",
+      "label": { "en": "Low-Profile Push", "es": "Empuje de Bajo Perfil" },
+      "values": { "door_gap": 5, "catch_hook": 2.5, "body_w": 44 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "spring_t >= 1.6",
+      "severity": "error",
+      "message": { "en": "Spring beam under 1.6 mm will snap", "es": "Una viga de resorte menor a 1.6 mm se romperá" }
+    },
+    {
+      "expression": "catch_hook <= door_gap + 2",
+      "severity": "warning",
+      "message": { "en": "Hook is deep relative to the door gap", "es": "El gancho es profundo respecto a la holgura de puerta" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "door_edge_catch",
+        "label": { "en": "Door Edge Catch", "es": "Enganche de Borde de Puerta" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["door_gap", "catch_hook", "spring_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps cabinets and lockers shut through vibration, heel, and rough roads — a printable positive latch that replaces failed magnetic catches on any moving home.",
+      "es": "Mantiene gabinetes y lockers cerrados ante vibración, escora y caminos ásperos — un pestillo positivo imprimible que reemplaza cierres magnéticos fallidos en cualquier hogar en movimiento."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["latch", "cabinet", "marine", "rv", "snap", "hybrid", "hyperobject", "commons"]
+}

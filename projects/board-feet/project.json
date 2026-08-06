@@ -1,0 +1,171 @@
+{
+  "project": {
+    "name": "Cutting-Board Non-Slip Feet",
+    "slug": "board-feet",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Clip-on feet that lift a cutting board off the counter and stop it sliding. Each foot is a C-clip sized to the board thickness with a textured pad underneath. Straight edge clip, corner-wrapping clip, or a taller riser for draining and airflow.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Patas de clip que elevan una tabla de cortar de la encimera y evitan que se deslice. Cada pata es un clip en C dimensionado al grosor de la tabla con una base texturizada. Clip de borde recto, clip que envuelve esquina, o un elevador más alto para escurrir y ventilar.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/board-feet.webp",
+    "difficulty": "beginner",
+    "tags": ["feet", "cutting-board", "non-slip", "clip", "kitchen", "riser", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip_foot",
+      "label": { "en": "Edge Clip Foot", "es": "Pata de Clip de Borde" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip_foot"],
+      "part_quantities": { "clip_foot": 4 },
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "corner_foot",
+      "label": { "en": "Corner Foot", "es": "Pata de Esquina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_foot"],
+      "part_quantities": { "corner_foot": 4 },
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "riser_set",
+      "label": { "en": "Riser Foot", "es": "Pata Elevadora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["riser_set"],
+      "part_quantities": { "riser_set": 4 },
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "clip_foot", "label": { "en": "Edge Clip Foot", "es": "Pata de Clip de Borde" }, "render_mode": 0, "color": "#7a9a6a" },
+    { "id": "corner_foot", "label": { "en": "Corner Foot", "es": "Pata de Esquina" }, "render_mode": 0, "color": "#8fae7d" },
+    { "id": "riser_set", "label": { "en": "Riser Foot", "es": "Pata Elevadora" }, "render_mode": 0, "color": "#6a8a5a" }
+  ],
+  "parameter_groups": [
+    { "id": "board", "label": { "en": "Board Fit", "es": "Ajuste a la Tabla" } },
+    { "id": "foot", "label": { "en": "Foot", "es": "Pata" } },
+    { "id": "clip", "label": { "en": "Clip", "es": "Clip" } }
+  ],
+  "parameters": [
+    {
+      "id": "board_t", "type": "slider", "default": 18, "min": 4, "max": 60, "step": 1,
+      "group": "board", "modes": ["clip_foot", "corner_foot", "riser_set"],
+      "label": { "en": "Board Thickness (mm)", "es": "Grosor de la Tabla (mm)" },
+      "tooltip": { "en": "Thickness of your cutting board — the channel is sized to this", "es": "Grosor de tu tabla de cortar — el canal se dimensiona a esto" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "board", "modes": ["clip_foot", "corner_foot", "riser_set"], "advanced": true,
+      "label": { "en": "Channel Clearance (mm)", "es": "Holgura del Canal (mm)" },
+      "tooltip": { "en": "Per-side gap so the clip slides on without forcing", "es": "Espacio por lado para que el clip entre sin forzar" }
+    },
+    {
+      "id": "grip_depth", "type": "slider", "default": 14, "min": 6, "max": 60, "step": 1,
+      "group": "board", "modes": ["clip_foot", "corner_foot", "riser_set"],
+      "label": { "en": "Grip Depth (mm)", "es": "Profundidad de Agarre (mm)" },
+      "tooltip": { "en": "How far the lips reach onto the board faces", "es": "Cuánto alcanzan los labios sobre las caras de la tabla" }
+    },
+    {
+      "id": "foot_h", "type": "slider", "default": 10, "min": 4, "max": 40, "step": 1,
+      "group": "foot", "modes": ["clip_foot", "corner_foot"],
+      "label": { "en": "Foot Height (mm)", "es": "Altura de la Pata (mm)" },
+      "tooltip": { "en": "How far the pad lifts the board off the counter", "es": "Cuánto eleva la base la tabla de la encimera" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "riser_h", "type": "slider", "default": 22, "min": 8, "max": 80, "step": 1,
+      "group": "foot", "modes": ["riser_set"],
+      "label": { "en": "Riser Height (mm)", "es": "Altura del Elevador (mm)" },
+      "tooltip": { "en": "Taller lift for draining and airflow", "es": "Elevación mayor para escurrir y ventilar" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pad_grip", "type": "checkbox", "default": true,
+      "group": "foot", "modes": ["clip_foot", "corner_foot", "riser_set"],
+      "label": { "en": "Anti-Slip Texture", "es": "Textura Antideslizante" },
+      "tooltip": { "en": "Grooves on the pad base to resist sliding", "es": "Ranuras en la base para resistir el deslizamiento" }
+    },
+    {
+      "id": "clip_len", "type": "slider", "default": 30, "min": 12, "max": 120, "step": 1,
+      "group": "clip", "modes": ["clip_foot", "corner_foot", "riser_set"],
+      "label": { "en": "Clip Length (mm)", "es": "Largo del Clip (mm)" },
+      "tooltip": { "en": "Length of the foot along the board edge", "es": "Largo de la pata a lo largo del borde" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "clip", "modes": ["clip_foot", "corner_foot", "riser_set"],
+      "label": { "en": "Clip Wall (mm)", "es": "Pared del Clip (mm)" },
+      "tooltip": { "en": "Wall thickness of the C-clip", "es": "Grosor de pared del clip en C" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_board_feet", "mode": "clip_foot",
+      "label": { "en": "Standard Board Feet", "es": "Patas Estándar" },
+      "values": { "board_t": 18, "foot_h": 10, "clip_len": 30, "grip_depth": 14 }
+    },
+    {
+      "id": "thick_board_corners", "mode": "corner_foot",
+      "label": { "en": "Thick Board Corners", "es": "Esquinas para Tabla Gruesa" },
+      "values": { "board_t": 30, "foot_h": 12, "clip_len": 40, "grip_depth": 18 }
+    },
+    {
+      "id": "drain_risers", "mode": "riser_set",
+      "label": { "en": "Draining Risers", "es": "Elevadores de Escurrido" },
+      "values": { "board_t": 18, "riser_h": 30, "clip_len": 35, "grip_depth": 14 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "grip_depth >= wall",
+      "severity": "warning",
+      "message": { "en": "Grip depth should exceed the wall for a secure hold", "es": "La profundidad de agarre debe superar la pared para sujetar bien" }
+    },
+    {
+      "expression": "board_t >= 4",
+      "severity": "error",
+      "message": { "en": "Board thickness must be at least 4 mm", "es": "El grosor de la tabla debe ser de al menos 4 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [120, 0, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "board_edge_clip",
+        "label": { "en": "Board Edge Clip", "es": "Clip de Borde de Tabla" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["board_t", "clearance", "grip_depth", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Print-at-home feet retrofit any existing cutting board with non-slip lift instead of replacing it, extending the life of boards households already own and improving kitchen hygiene by drying the underside.",
+      "es": "Patas imprimibles en casa adaptan cualquier tabla de cortar existente con elevación antideslizante en lugar de reemplazarla, extendiendo la vida de tablas que los hogares ya tienen y mejorando la higiene al secar el reverso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["feet", "cutting-board", "non-slip", "kitchen", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Edge Guard",
+    "slug": "edge-guard",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Child-safety corner and edge guards that clip onto the edge of a table, counter, or shelf to cushion sharp corners and edges. Each guard is a C-clip that grips the edge thickness with a rounded outer cushion. Sized by the edge thickness so it snaps onto whatever furniture is in the home. Choose an L-shaped corner cap, a straight edge strip, or a stick-on cushion bumper.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Protectores de esquina y borde de seguridad infantil que se enganchan al borde de una mesa, encimera o repisa para amortiguar esquinas y bordes filosos. Cada protector es un clip en C que agarra el grosor del borde con un cojín exterior redondeado. Se dimensiona por el grosor del borde para encajar en cualquier mueble del hogar. Elige una tapa de esquina en L, una tira de borde recta o un tope acolchado adhesivo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/edge-guard.webp",
+    "difficulty": "beginner",
+    "tags": ["edge-guard", "corner-guard", "child-safety", "cushion", "baby-proof", "furniture", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "corner_guard",
+      "label": { "en": "Corner Guard", "es": "Protector de Esquina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_guard"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "edge_strip",
+      "label": { "en": "Edge Strip", "es": "Tira de Borde" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["edge_strip"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 9 }
+    },
+    {
+      "id": "cushion_bumper",
+      "label": { "en": "Cushion Bumper", "es": "Tope Acolchado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cushion_bumper"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "corner_guard", "label": { "en": "Corner Guard", "es": "Protector de Esquina" }, "render_mode": 0, "color": "#4f8f7f" },
+    { "id": "edge_strip", "label": { "en": "Edge Strip", "es": "Tira de Borde" }, "render_mode": 0, "color": "#6aa89a" },
+    { "id": "cushion_bumper", "label": { "en": "Cushion Bumper", "es": "Tope Acolchado" }, "render_mode": 0, "color": "#84c0b4" }
+  ],
+  "parameter_groups": [
+    { "id": "edge", "label": { "en": "Edge Fit", "es": "Ajuste de Borde" } },
+    { "id": "cushion", "label": { "en": "Cushion", "es": "Cojín" } },
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } }
+  ],
+  "parameters": [
+    {
+      "id": "edge_t", "type": "slider", "default": 22.0, "min": 6.0, "max": 60.0, "step": 1.0,
+      "group": "edge", "modes": ["corner_guard", "edge_strip", "cushion_bumper"],
+      "label": { "en": "Edge Thickness (mm)", "es": "Grosor del Borde (mm)" },
+      "tooltip": { "en": "Thickness of the furniture edge the clip grips", "es": "Grosor del borde del mueble que agarra el clip" }
+    },
+    {
+      "id": "grip", "type": "slider", "default": 18.0, "min": 8.0, "max": 50.0, "step": 1.0,
+      "group": "edge", "modes": ["corner_guard", "edge_strip"],
+      "label": { "en": "Grip Depth (mm)", "es": "Profundidad de Agarre (mm)" },
+      "tooltip": { "en": "How far the clip reaches onto the top/bottom face", "es": "Cuánto abarca el clip sobre la cara superior/inferior" }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.2, "step": 0.05,
+      "group": "edge", "modes": ["corner_guard", "edge_strip"], "advanced": true,
+      "label": { "en": "Clip Fit (mm)", "es": "Ajuste del Clip (mm)" },
+      "tooltip": { "en": "Slot clearance so the guard slips on", "es": "Holgura de la ranura para que el protector entre" }
+    },
+    {
+      "id": "cushion", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 1.0,
+      "group": "cushion", "modes": ["corner_guard", "edge_strip", "cushion_bumper"],
+      "label": { "en": "Cushion Thickness (mm)", "es": "Grosor del Cojín (mm)" },
+      "tooltip": { "en": "Rounded cushion depth in front of the edge", "es": "Profundidad del cojín redondeado frente al borde" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "cushion", "modes": ["corner_guard", "edge_strip", "cushion_bumper"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Guard wall thickness", "es": "Grosor de pared del protector" }
+    },
+    {
+      "id": "length", "type": "slider", "default": 120.0, "min": 40.0, "max": 300.0, "step": 5.0,
+      "group": "size", "modes": ["edge_strip", "cushion_bumper"],
+      "label": { "en": "Length (mm)", "es": "Longitud (mm)" },
+      "tooltip": { "en": "Edge strip / bumper length", "es": "Longitud de la tira / tope" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "corner_arm", "type": "slider", "default": 55.0, "min": 30.0, "max": 120.0, "step": 1.0,
+      "group": "size", "modes": ["corner_guard"],
+      "label": { "en": "Corner Arm (mm)", "es": "Brazo de Esquina (mm)" },
+      "tooltip": { "en": "Length of each corner arm along the edge", "es": "Longitud de cada brazo de esquina a lo largo del borde" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "table_corner", "mode": "corner_guard",
+      "label": { "en": "Table Corner Guard", "es": "Protector de Esquina de Mesa" },
+      "values": { "edge_t": 22, "grip": 18, "cushion": 10, "corner_arm": 55 }
+    },
+    {
+      "id": "counter_edge", "mode": "edge_strip",
+      "label": { "en": "Counter Edge Strip", "es": "Tira de Borde de Encimera" },
+      "values": { "edge_t": 30, "grip": 20, "length": 200 }
+    },
+    {
+      "id": "wall_bumper", "mode": "cushion_bumper",
+      "label": { "en": "Stick-On Bumper", "es": "Tope Adhesivo" },
+      "values": { "edge_t": 20, "cushion": 12, "length": 80 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall under 2 mm will not hold the clip", "es": "Una pared menor a 2 mm no sostendrá el clip" }
+    },
+    {
+      "expression": "grip >= edge_t / 2",
+      "severity": "warning",
+      "message": { "en": "Shallow grip relative to the edge may pop off", "es": "Un agarre poco profundo respecto al borde puede soltarse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "edge_guard",
+        "label": { "en": "Edge Guard", "es": "Protector de Borde" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["edge_t", "grip", "fit", "cushion"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cushions sharp furniture corners and edges so a home is safer for small children and everyone — a printable guard sized to the exact edge, closing the Open Commons of Hyperobjects with the most human of objects: one that keeps a child from getting hurt.",
+      "es": "Amortigua esquinas y bordes filosos de los muebles para que un hogar sea más seguro para los niños pequeños y para todos — un protector imprimible dimensionado al borde exacto, que cierra el Common Abierto de Hiperobjetos con el más humano de los objetos: uno que evita que un niño se lastime."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["edge-guard", "corner-guard", "child-safety", "cushion", "household", "hyperobject", "commons"]
+}

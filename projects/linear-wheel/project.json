@@ -1,0 +1,508 @@
+{
+  "project": {
+    "name": "Linear Bushing / V-Wheel",
+    "slug": "linear-wheel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric OpenBuilds-style V-wheel that rolls in a V-slot aluminium extrusion rail, plus a plain flat idler variant. The running surface is a double-V of two 45° flanks (a 90°-included groove) that grips the rail's 45° slot edges; the wheel presses onto a standard 625 bearing (16 mm OD). Build a bearing V-wheel, a flat bearing wheel, or a bearingless solid wheel with a printed axle hole.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una rueda en V paramétrica estilo OpenBuilds que rueda en un riel de extrusión de aluminio con ranura en V, más una variante lisa de rueda tensora. La superficie de rodadura es una doble V de dos flancos de 45° (ranura de 90° incluidos) que agarra los bordes de 45° de la ranura del riel; la rueda se monta a presión sobre un rodamiento 625 estándar (16 mm DE). Construye una rueda en V con rodamiento, una rueda plana con rodamiento, o una rueda maciza sin rodamiento con agujero de eje impreso.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/linear-wheel.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "linear-wheel",
+      "v-wheel",
+      "openbuilds",
+      "v-slot",
+      "cnc",
+      "625-bearing",
+      "idler",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "vwheel",
+      "label": {
+        "en": "V-Wheel",
+        "es": "Rueda en V"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "vwheel"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "flat_wheel",
+      "label": {
+        "en": "Flat Wheel",
+        "es": "Rueda Plana"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "flat_wheel"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "solid_wheel",
+      "label": {
+        "en": "Solid Wheel",
+        "es": "Rueda Maciza"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "solid_wheel"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "vwheel",
+      "label": {
+        "en": "V-Wheel",
+        "es": "Rueda en V"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "flat_wheel",
+      "label": {
+        "en": "Flat Wheel",
+        "es": "Rueda Plana"
+      },
+      "render_mode": 0,
+      "color": "#8bb5cc"
+    },
+    {
+      "id": "solid_wheel",
+      "label": {
+        "en": "Solid Wheel",
+        "es": "Rueda Maciza"
+      },
+      "render_mode": 0,
+      "color": "#4b7f9c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "wheel",
+      "label": {
+        "en": "Wheel",
+        "es": "Rueda"
+      }
+    },
+    {
+      "id": "vprofile",
+      "label": {
+        "en": "V Profile",
+        "es": "Perfil en V"
+      }
+    },
+    {
+      "id": "bore",
+      "label": {
+        "en": "Bore",
+        "es": "Barreno"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "wheel_type",
+      "type": "select",
+      "default": "vslot",
+      "group": "wheel",
+      "modes": [
+        "vwheel",
+        "flat_wheel",
+        "solid_wheel"
+      ],
+      "label": {
+        "en": "Wheel Type",
+        "es": "Tipo de Rueda"
+      },
+      "tooltip": {
+        "en": "vslot is a double-V wheel for a V-slot rail; flat is a plain idler wheel.",
+        "es": "vslot es una rueda de doble V para riel con ranura en V; flat es una rueda tensora lisa."
+      },
+      "options": [
+        {
+          "value": "vslot",
+          "label": {
+            "en": "V-Slot (double-V)",
+            "es": "Ranura en V (doble V)"
+          }
+        },
+        {
+          "value": "flat",
+          "label": {
+            "en": "Flat idler",
+            "es": "Tensora plana"
+          }
+        }
+      ]
+    },
+    {
+      "id": "outer_dia",
+      "type": "slider",
+      "default": 24.0,
+      "min": 8.0,
+      "max": 62.0,
+      "step": 0.5,
+      "group": "wheel",
+      "modes": [
+        "vwheel",
+        "flat_wheel",
+        "solid_wheel"
+      ],
+      "label": {
+        "en": "Outer Diameter (mm)",
+        "es": "Diámetro Exterior (mm)"
+      },
+      "tooltip": {
+        "en": "Wheel outer diameter (OpenBuilds mini V-wheel ≈ 24 mm)",
+        "es": "Diámetro exterior de la rueda (mini rueda en V OpenBuilds ≈ 24 mm)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 0.5
+      }
+    },
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 10.9,
+      "min": 4.0,
+      "max": 24.0,
+      "step": 0.1,
+      "group": "wheel",
+      "modes": [
+        "vwheel",
+        "flat_wheel",
+        "solid_wheel"
+      ],
+      "label": {
+        "en": "Wheel Width (mm)",
+        "es": "Ancho de Rueda (mm)"
+      },
+      "tooltip": {
+        "en": "Axial width (OpenBuilds V-wheel ≈ 10.9 mm)",
+        "es": "Ancho axial (rueda en V OpenBuilds ≈ 10.9 mm)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "v_angle",
+      "type": "slider",
+      "default": 90.0,
+      "min": 60.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "vprofile",
+      "modes": [
+        "vwheel",
+        "solid_wheel"
+      ],
+      "label": {
+        "en": "V Included Angle (°)",
+        "es": "Ángulo Incluido en V (°)"
+      },
+      "tooltip": {
+        "en": "90° gives two 45° flanks matching a V-slot rail (auto-clamped to keep a solid core)",
+        "es": "90° da dos flancos de 45° que coinciden con un riel de ranura en V (limitado para conservar un núcleo sólido)"
+      }
+    },
+    {
+      "id": "bearing_bore",
+      "type": "slider",
+      "default": 16.0,
+      "min": 3.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "bore",
+      "modes": [
+        "vwheel",
+        "flat_wheel"
+      ],
+      "label": {
+        "en": "Bearing Bore (mm)",
+        "es": "Barreno de Rodamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Bearing OD press-fit seat (625 = 16, 608 = 22)",
+        "es": "Alojamiento a presión del DE del rodamiento (625 = 16, 608 = 22)"
+      }
+    },
+    {
+      "id": "counterbore",
+      "type": "checkbox",
+      "default": true,
+      "group": "bore",
+      "modes": [
+        "vwheel",
+        "flat_wheel"
+      ],
+      "label": {
+        "en": "Bearing Shoulder Recess",
+        "es": "Rebaje de Hombro de Rodamiento"
+      },
+      "tooltip": {
+        "en": "Recess each face slightly so the bearing shoulders sit flush",
+        "es": "Rebaja ligeramente cada cara para que los hombros del rodamiento queden al ras"
+      }
+    },
+    {
+      "id": "cb_depth",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.2,
+      "group": "bore",
+      "modes": [
+        "vwheel",
+        "flat_wheel"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Shoulder Recess Depth (mm)",
+        "es": "Profundidad de Rebaje (mm)"
+      },
+      "tooltip": {
+        "en": "Extra recess depth per face (0 = a light default recess)",
+        "es": "Profundidad extra de rebaje por cara (0 = rebaje ligero por defecto)"
+      }
+    },
+    {
+      "id": "axle_bore",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "bore",
+      "modes": [
+        "solid_wheel"
+      ],
+      "label": {
+        "en": "Axle Hole (mm)",
+        "es": "Agujero de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Plain axle hole for a bearingless solid wheel",
+        "es": "Agujero de eje simple para una rueda maciza sin rodamiento"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "mini_vwheel_625",
+      "mode": "vwheel",
+      "label": {
+        "en": "Mini V-Wheel (625)",
+        "es": "Mini Rueda en V (625)"
+      },
+      "values": {
+        "wheel_type": "vslot",
+        "outer_dia": 24,
+        "width": 10.9,
+        "v_angle": 90,
+        "bearing_bore": 16,
+        "counterbore": true
+      }
+    },
+    {
+      "id": "flat_idler_625",
+      "mode": "flat_wheel",
+      "label": {
+        "en": "Flat Idler (625)",
+        "es": "Tensora Plana (625)"
+      },
+      "values": {
+        "wheel_type": "flat",
+        "outer_dia": 24,
+        "width": 10.9,
+        "bearing_bore": 16
+      }
+    },
+    {
+      "id": "solid_vwheel",
+      "mode": "solid_wheel",
+      "label": {
+        "en": "Solid V-Wheel (5 mm axle)",
+        "es": "Rueda en V Maciza (eje 5 mm)"
+      },
+      "values": {
+        "wheel_type": "vslot",
+        "outer_dia": 24,
+        "width": 10.9,
+        "v_angle": 90,
+        "axle_bore": 5
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bearing_bore <= outer_dia - 4",
+      "severity": "error",
+      "message": {
+        "en": "Bearing bore must leave a rim around it",
+        "es": "El barreno del rodamiento debe dejar un aro alrededor"
+      }
+    },
+    {
+      "expression": "width >= 4",
+      "severity": "warning",
+      "message": {
+        "en": "A very narrow wheel may not track the rail well",
+        "es": "Una rueda muy angosta puede no seguir bien el riel"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        50,
+        50,
+        40
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        80
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -80,
+        8
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 48,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "vslot_wheel_groove",
+        "label": {
+          "en": "V-Slot Wheel Groove",
+          "es": "Ranura de Rueda en V"
+        },
+        "geometry_type": "profile",
+        "standard": "OpenBuilds V-slot",
+        "parameters": [
+          "wheel_type",
+          "outer_dia",
+          "width",
+          "v_angle"
+        ],
+        "compatible_with": [
+          "roller-bracket",
+          "seed-tray"
+        ]
+      },
+      {
+        "id": "bearing_bore",
+        "label": {
+          "en": "Bearing Bore",
+          "es": "Barreno de Rodamiento"
+        },
+        "geometry_type": "socket",
+        "standard": "ISO 15 (625/608)",
+        "parameters": [
+          "bearing_bore",
+          "counterbore",
+          "cb_depth"
+        ],
+        "compatible_with": [
+          "bearing-housing",
+          "roller-bracket",
+          "timing-pulley"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "V-wheels are the rolling interface of the OpenBuilds motion ecosystem used in CNC routers, laser cutters, and 3D printers. A printable V-wheel at the correct 45° profile keeps a gantry rolling when a wheel wears out or a rail needs a custom diameter.",
+      "es": "Las ruedas en V son la interfaz de rodadura del ecosistema de movimiento OpenBuilds usado en routers CNC, cortadoras láser e impresoras 3D. Una rueda en V imprimible con el perfil correcto de 45° mantiene un pórtico rodando cuando una rueda se desgasta o un riel necesita un diámetro a medida."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "linear-wheel",
+    "v-wheel",
+    "openbuilds",
+    "v-slot",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

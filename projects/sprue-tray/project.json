@@ -1,0 +1,229 @@
+{
+  "project": {
+    "name": "Sprue Tray",
+    "slug": "sprue-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A model-kit parts tray: a compartment grid to sort sprue-cut pieces during a build, a magnetized variant that clings to a steel bench, and a sorting lid whose underside carries a fine grid of small-parts pockets for screws, photo-etch and tiny bits.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bandeja para piezas de maqueta: una cuadrícula de compartimentos para clasificar piezas cortadas del bebedero durante el montaje, una variante imantada que se adhiere a una mesa de acero, y una tapa clasificadora cuyo reverso lleva una cuadrícula fina de alojamientos para tornillos, fotograbado y piezas diminutas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sprue-tray.webp",
+    "difficulty": "beginner",
+    "tags": ["sprue-tray", "model-kit", "parts-tray", "organizer", "hobby", "magnetic", "workshop", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "parts_tray",
+      "label": { "en": "Parts Tray", "es": "Bandeja de Piezas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["parts_tray"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "magnetic_tray",
+      "label": { "en": "Magnetic Tray", "es": "Bandeja Magnética" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["magnetic_tray"],
+      "estimate": { "base_time": 16, "per_unit": 3, "per_part": 18 }
+    },
+    {
+      "id": "sorting_lid",
+      "label": { "en": "Sorting Lid", "es": "Tapa Clasificadora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sorting_lid"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "parts_tray", "label": { "en": "Parts Tray", "es": "Bandeja de Piezas" }, "render_mode": 0, "color": "#8c6c5c" },
+    { "id": "magnetic_tray", "label": { "en": "Magnetic Tray", "es": "Bandeja Magnética" }, "render_mode": 0, "color": "#9c7c6c" },
+    { "id": "sorting_lid", "label": { "en": "Sorting Lid", "es": "Tapa Clasificadora" }, "render_mode": 0, "color": "#7c5c4c" }
+  ],
+  "parameter_groups": [
+    { "id": "tray", "label": { "en": "Tray Size", "es": "Tamaño de Bandeja" } },
+    { "id": "grid", "label": { "en": "Compartments", "es": "Compartimentos" } },
+    { "id": "magnet", "label": { "en": "Magnets", "es": "Imanes" } },
+    { "id": "lid", "label": { "en": "Sorting Lid", "es": "Tapa Clasificadora" } }
+  ],
+  "parameters": [
+    {
+      "id": "tray_w", "type": "slider", "default": 120, "min": 40, "max": 260, "step": 2,
+      "group": "tray", "modes": ["parts_tray", "magnetic_tray", "sorting_lid"],
+      "label": { "en": "Tray Width (mm)", "es": "Ancho de Bandeja (mm)" },
+      "tooltip": { "en": "Outer width", "es": "Ancho exterior" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tray_d", "type": "slider", "default": 80, "min": 40, "max": 200, "step": 2,
+      "group": "tray", "modes": ["parts_tray", "magnetic_tray", "sorting_lid"],
+      "label": { "en": "Tray Depth (mm)", "es": "Profundidad de Bandeja (mm)" },
+      "tooltip": { "en": "Outer depth", "es": "Profundidad exterior" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tray_h", "type": "slider", "default": 22, "min": 6, "max": 60, "step": 1,
+      "group": "tray", "modes": ["parts_tray", "magnetic_tray"],
+      "label": { "en": "Tray Depth / Height (mm)", "es": "Altura de Bandeja (mm)" },
+      "tooltip": { "en": "Interior compartment depth", "es": "Profundidad interior de los compartimentos" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "tray", "modes": ["parts_tray", "magnetic_tray", "sorting_lid"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Outer wall thickness", "es": "Grosor de la pared exterior" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 2.0, "min": 1.2, "max": 6.0, "step": 0.2,
+      "group": "tray", "modes": ["parts_tray", "magnetic_tray", "sorting_lid"],
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Floor thickness", "es": "Grosor del piso" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 3.0, "min": 0.0, "max": 15.0, "step": 0.5,
+      "group": "tray", "modes": ["parts_tray", "magnetic_tray", "sorting_lid"],
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Outer corner rounding (0 = sharp)", "es": "Redondeo de esquina exterior (0 = recto)" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 3, "min": 1, "max": 8, "step": 1,
+      "group": "grid", "modes": ["parts_tray", "magnetic_tray"],
+      "label": { "en": "Compartments Across", "es": "Compartimentos a lo Ancho" },
+      "tooltip": { "en": "Compartments along X", "es": "Compartimentos en X" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 2, "min": 1, "max": 8, "step": 1,
+      "group": "grid", "modes": ["parts_tray", "magnetic_tray"],
+      "label": { "en": "Compartments Deep", "es": "Compartimentos a lo Profundo" },
+      "tooltip": { "en": "Compartments along Y", "es": "Compartimentos en Y" }
+    },
+    {
+      "id": "div_th", "type": "slider", "default": 1.6, "min": 0.8, "max": 4.0, "step": 0.2,
+      "group": "grid", "modes": ["parts_tray", "magnetic_tray", "sorting_lid"], "advanced": true,
+      "label": { "en": "Divider Thickness (mm)", "es": "Grosor de Divisor (mm)" },
+      "tooltip": { "en": "Thickness of compartment walls", "es": "Grosor de las paredes de compartimento" }
+    },
+    {
+      "id": "magnet_d", "type": "slider", "default": 6.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "magnet", "modes": ["magnetic_tray"],
+      "label": { "en": "Magnet Diameter (mm)", "es": "Diámetro del Imán (mm)" },
+      "tooltip": { "en": "Disc magnet diameter", "es": "Diámetro del imán de disco" }
+    },
+    {
+      "id": "magnet_h", "type": "slider", "default": 2.0, "min": 0.8, "max": 4.0, "step": 0.2,
+      "group": "magnet", "modes": ["magnetic_tray"],
+      "label": { "en": "Magnet Depth (mm)", "es": "Profundidad del Imán (mm)" },
+      "tooltip": { "en": "Magnet pocket depth", "es": "Profundidad de la cavidad del imán" }
+    },
+    {
+      "id": "mag_n", "type": "slider", "default": 4, "min": 2, "max": 4, "step": 2,
+      "group": "magnet", "modes": ["magnetic_tray"],
+      "label": { "en": "Magnet Count", "es": "Número de Imanes" },
+      "tooltip": { "en": "2 (sides) or 4 (corners)", "es": "2 (lados) o 4 (esquinas)" }
+    },
+    {
+      "id": "fine_cols", "type": "slider", "default": 4, "min": 1, "max": 8, "step": 1,
+      "group": "lid", "modes": ["sorting_lid"],
+      "label": { "en": "Small Pockets Across", "es": "Alojamientos Pequeños a lo Ancho" },
+      "tooltip": { "en": "Fine small-parts pockets along X", "es": "Alojamientos finos en X" }
+    },
+    {
+      "id": "fine_rows", "type": "slider", "default": 3, "min": 1, "max": 8, "step": 1,
+      "group": "lid", "modes": ["sorting_lid"],
+      "label": { "en": "Small Pockets Deep", "es": "Alojamientos Pequeños a lo Profundo" },
+      "tooltip": { "en": "Fine small-parts pockets along Y", "es": "Alojamientos finos en Y" }
+    },
+    {
+      "id": "fine_depth", "type": "slider", "default": 8.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "lid", "modes": ["sorting_lid"],
+      "label": { "en": "Small Pocket Depth (mm)", "es": "Profundidad de Alojamiento (mm)" },
+      "tooltip": { "en": "Depth of the small-parts pockets", "es": "Profundidad de los alojamientos pequeños" }
+    },
+    {
+      "id": "lid_skirt", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "lid", "modes": ["sorting_lid"], "advanced": true,
+      "label": { "en": "Lid Skirt (mm)", "es": "Faldón de Tapa (mm)" },
+      "tooltip": { "en": "How deep the lid grips the tray", "es": "Qué tan profundo agarra la tapa la bandeja" }
+    },
+    {
+      "id": "lid_clear", "type": "slider", "default": 0.35, "min": 0.15, "max": 0.8, "step": 0.05,
+      "group": "lid", "modes": ["sorting_lid"], "advanced": true,
+      "label": { "en": "Lid Clearance (mm)", "es": "Holgura de Tapa (mm)" },
+      "tooltip": { "en": "Per-side gap for a printable friction fit", "es": "Espacio por lado para un ajuste imprimible" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "build_tray", "mode": "parts_tray",
+      "label": { "en": "Build Tray (3x2)", "es": "Bandeja de Montaje (3x2)" },
+      "values": { "tray_w": 120, "tray_d": 80, "cols": 3, "rows": 2 }
+    },
+    {
+      "id": "bench_magnet", "mode": "magnetic_tray",
+      "label": { "en": "Bench Magnetic Tray", "es": "Bandeja Magnética de Mesa" },
+      "values": { "tray_w": 140, "tray_d": 90, "cols": 4, "rows": 3, "floor": 3, "mag_n": 4 }
+    },
+    {
+      "id": "screw_lid", "mode": "sorting_lid",
+      "label": { "en": "Screw Sorting Lid", "es": "Tapa Clasificadora de Tornillos" },
+      "values": { "tray_w": 120, "tray_d": 80, "fine_cols": 5, "fine_rows": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "magnet_h <= floor - 0.4",
+      "severity": "warning",
+      "message": { "en": "Magnet pocket is deep relative to the floor", "es": "La cavidad del imán es profunda respecto al piso" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 3, "per_part": 16,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 100
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "parts_compartments",
+        "label": { "en": "Parts Compartments", "es": "Compartimentos de Piezas" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["cols", "rows", "div_th"]
+      },
+      {
+        "id": "tray_magnet",
+        "label": { "en": "Tray Magnet", "es": "Imán de Bandeja" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["magnet_d", "magnet_h", "mag_n"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A parts tray printed to the build in hand keeps small kit pieces from being lost, magnetizes to the bench so nothing spills, and sorts the tiniest bits under its own lid — one printed object replacing a drawer of mismatched containers.",
+      "es": "Una bandeja impresa para el montaje en curso evita que se pierdan piezas pequeñas, se imanta a la mesa para que nada se derrame y clasifica las piezas más diminutas bajo su propia tapa — un objeto impreso que reemplaza un cajón de recipientes dispares."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["sprue-tray", "model-kit", "organizer", "workshop", "household", "hyperobject", "commons"]
+}

@@ -1,9 +1,8 @@
 """PostHog analytics for Yantra4D — graceful no-op when API key is empty."""
 
 import os
-from typing import Optional
 
-_client: Optional[object] = None
+_client: object | None = None
 
 
 def init_posthog() -> None:
@@ -20,7 +19,7 @@ def init_posthog() -> None:
         pass
 
 
-def track(distinct_id: str, event: str, properties: Optional[dict] = None) -> None:
+def track(distinct_id: str, event: str, properties: dict | None = None) -> None:
     if _client is None:
         return
     try:

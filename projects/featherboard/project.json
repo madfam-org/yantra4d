@@ -1,0 +1,470 @@
+{
+  "project": {
+    "name": "Featherboard",
+    "slug": "featherboard",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An anti-kickback featherboard: a bank of angled, flexible fingers that press a workpiece against a fence or table and act as a one-way ratchet. Choose a T-slot / track version, a 3/4in miter-slot bar version, or a clamp-on version. Sized by finger count, kerf and rake angle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un peine anti-retroceso: un banco de dedos flexibles en ángulo que presionan la pieza contra un tope o mesa y actúan como trinquete de un solo sentido. Elige versión para ranura en T / riel, versión con barra para ranura de inglete de 3/4in, o versión de sujeción con prensa. Se dimensiona por número de dedos, kerf y ángulo de ataque.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/featherboard.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "featherboard",
+      "safety",
+      "anti-kickback",
+      "table-saw",
+      "router",
+      "fence",
+      "woodworking",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tslot_feather",
+      "label": {
+        "en": "T-Slot / Track",
+        "es": "Ranura en T / Riel"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tslot_feather"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    },
+    {
+      "id": "miter_feather",
+      "label": {
+        "en": "Miter-Slot Bar",
+        "es": "Barra de Ranura de Inglete"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "miter_feather"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    },
+    {
+      "id": "clamp_feather",
+      "label": {
+        "en": "Clamp-On",
+        "es": "De Sujeción"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "clamp_feather"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "tslot_feather",
+      "label": {
+        "en": "T-Slot / Track",
+        "es": "Ranura en T / Riel"
+      },
+      "render_mode": 0,
+      "color": "#3b7a5a"
+    },
+    {
+      "id": "miter_feather",
+      "label": {
+        "en": "Miter-Slot Bar",
+        "es": "Barra de Ranura de Inglete"
+      },
+      "render_mode": 0,
+      "color": "#4a8f6a"
+    },
+    {
+      "id": "clamp_feather",
+      "label": {
+        "en": "Clamp-On",
+        "es": "De Sujeción"
+      },
+      "render_mode": 0,
+      "color": "#316b4c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "fingers",
+      "label": {
+        "en": "Feather Fingers",
+        "es": "Dedos del Peine"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "feather_n",
+      "type": "slider",
+      "default": 12,
+      "min": 5,
+      "max": 24,
+      "step": 1,
+      "group": "fingers",
+      "modes": [
+        "tslot_feather",
+        "miter_feather",
+        "clamp_feather"
+      ],
+      "label": {
+        "en": "Finger Count",
+        "es": "Número de Dedos"
+      },
+      "tooltip": {
+        "en": "Number of flexible fingers in the bank",
+        "es": "Número de dedos flexibles del banco"
+      }
+    },
+    {
+      "id": "kerf",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "fingers",
+      "modes": [
+        "tslot_feather",
+        "miter_feather",
+        "clamp_feather"
+      ],
+      "label": {
+        "en": "Finger Kerf / Gap (mm)",
+        "es": "Kerf / Hueco entre Dedos (mm)"
+      },
+      "tooltip": {
+        "en": "Slot width between fingers — controls flex",
+        "es": "Ancho de ranura entre dedos — controla la flexión"
+      }
+    },
+    {
+      "id": "finger_ang",
+      "type": "slider",
+      "default": 30.0,
+      "min": 10.0,
+      "max": 50.0,
+      "step": 1.0,
+      "group": "fingers",
+      "modes": [
+        "tslot_feather",
+        "miter_feather",
+        "clamp_feather"
+      ],
+      "label": {
+        "en": "Rake Angle (deg)",
+        "es": "Ángulo de Ataque (°)"
+      },
+      "tooltip": {
+        "en": "Finger lean — the one-way grip direction",
+        "es": "Inclinación de los dedos — la dirección de agarre unidireccional"
+      }
+    },
+    {
+      "id": "finger_len",
+      "type": "slider",
+      "default": 35.0,
+      "min": 20.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "fingers",
+      "modes": [
+        "tslot_feather",
+        "miter_feather",
+        "clamp_feather"
+      ],
+      "label": {
+        "en": "Finger Length (mm)",
+        "es": "Largo de los Dedos (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the flexing fingers",
+        "es": "Largo de los dedos que flexan"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "body_w",
+      "type": "slider",
+      "default": 90.0,
+      "min": 50.0,
+      "max": 150.0,
+      "step": 1.0,
+      "group": "body",
+      "modes": [
+        "tslot_feather",
+        "miter_feather",
+        "clamp_feather"
+      ],
+      "label": {
+        "en": "Bank Width (mm)",
+        "es": "Ancho del Banco (mm)"
+      },
+      "tooltip": {
+        "en": "Overall width of the feather bank",
+        "es": "Ancho total del banco de dedos"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "body_len",
+      "type": "slider",
+      "default": 70.0,
+      "min": 40.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "body",
+      "modes": [
+        "tslot_feather",
+        "miter_feather",
+        "clamp_feather"
+      ],
+      "label": {
+        "en": "Body Length (mm)",
+        "es": "Largo del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the mounting body behind the fingers",
+        "es": "Largo del cuerpo de montaje detrás de los dedos"
+      }
+    },
+    {
+      "id": "thick",
+      "type": "slider",
+      "default": 9.0,
+      "min": 5.0,
+      "max": 18.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "tslot_feather",
+        "miter_feather",
+        "clamp_feather"
+      ],
+      "label": {
+        "en": "Board Thickness (mm)",
+        "es": "Grosor de la Tabla (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the featherboard",
+        "es": "Grosor del peine"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "table_saw_tslot",
+      "mode": "tslot_feather",
+      "label": {
+        "en": "Table-Saw Fence (T-Slot)",
+        "es": "Tope de Sierra (Ranura en T)"
+      },
+      "values": {
+        "feather_n": 12,
+        "kerf": 1.6,
+        "finger_ang": 30.0,
+        "body_w": 90.0
+      }
+    },
+    {
+      "id": "router_miter",
+      "mode": "miter_feather",
+      "label": {
+        "en": "Router Table Miter Bar",
+        "es": "Barra de Inglete para Router"
+      },
+      "values": {
+        "feather_n": 14,
+        "kerf": 1.4,
+        "finger_ang": 25.0,
+        "body_w": 100.0
+      }
+    },
+    {
+      "id": "bandsaw_clamp",
+      "mode": "clamp_feather",
+      "label": {
+        "en": "Band-Saw Clamp-On",
+        "es": "Sujeción para Sierra de Cinta"
+      },
+      "values": {
+        "feather_n": 10,
+        "kerf": 2.0,
+        "finger_ang": 35.0,
+        "body_w": 80.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "kerf < body_w / feather_n",
+      "severity": "error",
+      "message": {
+        "en": "Kerf is too wide — no material left for fingers",
+        "es": "El kerf es demasiado ancho — no queda material para los dedos"
+      }
+    },
+    {
+      "expression": "finger_ang <= 45",
+      "severity": "warning",
+      "message": {
+        "en": "Very steep rake may bind the workpiece",
+        "es": "Un ángulo de ataque muy pronunciado puede atascar la pieza"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        110
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        220
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -220,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 13,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "featherboard_fingers",
+        "label": {
+          "en": "Featherboard Fingers",
+          "es": "Dedos del Peine"
+        },
+        "geometry_type": "profile",
+        "standard": "T-slot / 3/4in miter",
+        "parameters": [
+          "feather_n",
+          "kerf",
+          "finger_ang",
+          "finger_len",
+          "thick"
+        ],
+        "compatible_with": [
+          "roller-bracket",
+          "seed-tray"
+        ]
+      },
+      {
+        "id": "machine_mount",
+        "label": {
+          "en": "Machine Mount",
+          "es": "Montaje a Máquina"
+        },
+        "geometry_type": "rail",
+        "standard": "3/4in x 3/8in miter slot; 19mm T-track",
+        "parameters": [
+          "body_len",
+          "thick"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cheap, replaceable machine safety — printable fingers hold stock down and stop kickback, keeping hands out of the blade on any saw or router table.",
+      "es": "Seguridad de máquina barata y reemplazable — dedos imprimibles sujetan el material y frenan el retroceso, manteniendo las manos lejos de la hoja en cualquier sierra o mesa de router."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "featherboard",
+    "safety",
+    "anti-kickback",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

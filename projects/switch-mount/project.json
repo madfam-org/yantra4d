@@ -1,0 +1,174 @@
+{
+  "project": {
+    "name": "Switch-Adapted Toy / AT Switch Mount",
+    "slug": "switch-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A mount that cradles a round assistive-technology switch at a reliable, repeatable position for single-switch access to toys, devices, and communication aids. The switch drops into a shallow recess; its 3.5 mm (1/8 in) mono cable exits a side channel. Choose a flat screw-down cradle, an inclined wedge that tilts the switch toward the user, or a strap mount for a tray edge or wheelchair armrest. Fit is user-specific — measure the switch and consult an OT.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte que sujeta un pulsador de tecnología de asistencia redondo en una posición fiable y repetible para el acceso por pulsador único a juguetes, dispositivos y ayudas de comunicación. El pulsador se coloca en un rebaje poco profundo; su cable mono de 3.5 mm (1/8 pulg) sale por un canal lateral. Elija una cuna plana atornillable, una cuña inclinada que orienta el pulsador hacia el usuario, o un soporte con correa para el borde de una bandeja o el reposabrazos de una silla de ruedas. El ajuste es específico del usuario — mida el pulsador y consulte a un terapeuta ocupacional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/switch-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["switch", "at-switch", "accessibility", "assistive", "adaptive", "single-switch", "mount", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "switch_cradle",
+      "label": { "en": "Screw-Down Cradle", "es": "Cuna Atornillable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["switch_cradle"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "switch_wedge",
+      "label": { "en": "Tilt Wedge", "es": "Cuña Inclinada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["switch_wedge"],
+      "estimate": { "base_time": 16, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "switch_strap_mount",
+      "label": { "en": "Strap Mount", "es": "Soporte con Correa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["switch_strap_mount"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "switch_cradle", "label": { "en": "Screw-Down Cradle", "es": "Cuna Atornillable" }, "render_mode": 0, "color": "#4a8f7c" },
+    { "id": "switch_wedge", "label": { "en": "Tilt Wedge", "es": "Cuña Inclinada" }, "render_mode": 0, "color": "#5fa08b" },
+    { "id": "switch_strap_mount", "label": { "en": "Strap Mount", "es": "Soporte con Correa" }, "render_mode": 0, "color": "#73b19d" }
+  ],
+  "parameter_groups": [
+    { "id": "switch", "label": { "en": "Switch Fit", "es": "Ajuste del Pulsador" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "switch_dia", "type": "slider", "default": 63.0, "min": 20.0, "max": 90.0, "step": 0.5,
+      "group": "switch", "modes": ["switch_cradle", "switch_wedge", "switch_strap_mount"],
+      "label": { "en": "Switch Diameter (mm)", "es": "Diámetro del Pulsador (mm)" },
+      "tooltip": { "en": "Body diameter of the round AT switch (e.g. Specs ~63 mm)", "es": "Diámetro del cuerpo del pulsador redondo (ej. Specs ~63 mm)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "recess_depth", "type": "slider", "default": 8.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "switch", "modes": ["switch_cradle", "switch_wedge", "switch_strap_mount"],
+      "label": { "en": "Recess Depth (mm)", "es": "Profundidad del Rebaje (mm)" },
+      "tooltip": { "en": "How deep the switch seats into the cradle", "es": "Cuánto se asienta el pulsador en la cuna" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.0, "max": 2.0, "step": 0.1,
+      "group": "switch", "modes": ["switch_cradle", "switch_wedge", "switch_strap_mount"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Radial gap around the switch (larger = looser)", "es": "Espacio radial alrededor del pulsador (mayor = más suelto)" }
+    },
+    {
+      "id": "cable_dia", "type": "slider", "default": 4.5, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "switch", "modes": ["switch_cradle", "switch_wedge", "switch_strap_mount"], "advanced": true,
+      "label": { "en": "Cable Channel (mm)", "es": "Canal del Cable (mm)" },
+      "tooltip": { "en": "Diameter of the 3.5 mm jack cable exit channel", "es": "Diámetro del canal de salida del cable jack de 3.5 mm" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "mount", "modes": ["switch_cradle", "switch_wedge", "switch_strap_mount"],
+      "label": { "en": "Wall / Floor (mm)", "es": "Pared / Base (mm)" },
+      "tooltip": { "en": "Cradle wall and floor thickness", "es": "Grosor de pared y base de la cuna" }
+    },
+    {
+      "id": "flange", "type": "slider", "default": 12.0, "min": 6.0, "max": 25.0, "step": 1.0,
+      "group": "mount", "modes": ["switch_cradle"],
+      "label": { "en": "Screw Flange (mm)", "es": "Pestaña de Tornillos (mm)" },
+      "tooltip": { "en": "Width of the screw-down flange around the cradle", "es": "Ancho de la pestaña atornillable alrededor de la cuna" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.2, "min": 2.5, "max": 6.0, "step": 0.1,
+      "group": "mount", "modes": ["switch_cradle"], "advanced": true,
+      "label": { "en": "Screw Hole (mm)", "es": "Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting screw clearance (#8 / M4 ~4.2 mm)", "es": "Holgura del tornillo de montaje (#8 / M4 ~4.2 mm)" }
+    },
+    {
+      "id": "tilt_ang", "type": "slider", "default": 20.0, "min": 5.0, "max": 35.0, "step": 1.0,
+      "group": "mount", "modes": ["switch_wedge"],
+      "label": { "en": "Tilt Angle (deg)", "es": "Ángulo de Inclinación (grados)" },
+      "tooltip": { "en": "Incline of the wedge toward the user", "es": "Inclinación de la cuña hacia el usuario" }
+    },
+    {
+      "id": "strap_w", "type": "slider", "default": 26.0, "min": 12.0, "max": 40.0, "step": 1.0,
+      "group": "mount", "modes": ["switch_strap_mount"],
+      "label": { "en": "Strap Slot Width (mm)", "es": "Ancho de Ranura para Correa (mm)" },
+      "tooltip": { "en": "Width of the hook-and-loop strap slots", "es": "Ancho de las ranuras para correa de gancho y bucle" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "specs_cradle", "mode": "switch_cradle",
+      "label": { "en": "Specs Switch Cradle (63mm)", "es": "Cuna para Pulsador Specs (63mm)" },
+      "values": { "switch_dia": 63.0, "recess_depth": 8.0, "wall": 4.0, "flange": 12.0 }
+    },
+    {
+      "id": "tilt_20", "mode": "switch_wedge",
+      "label": { "en": "20° Tilt Wedge", "es": "Cuña de 20°" },
+      "values": { "switch_dia": 63.0, "recess_depth": 8.0, "tilt_ang": 20.0 }
+    },
+    {
+      "id": "tray_strap", "mode": "switch_strap_mount",
+      "label": { "en": "Tray-Edge Strap Mount", "es": "Soporte con Correa para Bandeja" },
+      "values": { "switch_dia": 63.0, "recess_depth": 8.0, "strap_w": 26.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "recess_depth < switch_dia",
+      "severity": "error",
+      "message": { "en": "Recess depth must be smaller than the switch diameter", "es": "La profundidad del rebaje debe ser menor que el diámetro del pulsador" }
+    },
+    {
+      "expression": "wall >= 2.5",
+      "severity": "warning",
+      "message": { "en": "Thin walls may crack under repeated switch presses", "es": "Las paredes delgadas pueden agrietarse con pulsaciones repetidas" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "at_switch_recess",
+        "label": { "en": "AT Switch Recess", "es": "Rebaje para Pulsador AT" },
+        "geometry_type": "socket",
+        "standard": "3.5mm AT switch",
+        "parameters": ["switch_dia", "clearance", "cable_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Reliable, repeatable switch placement is the foundation of single-switch access — the primary route to play, communication, and environmental control for people with significant motor impairments. A mount sized to the exact switch and mounting surface, positioned by an OT or SLP, turns an inconsistent press into dependable cause-and-effect at near-zero cost, and can be reprinted as needs change.",
+      "es": "La colocación fiable y repetible del pulsador es la base del acceso por pulsador único — la vía principal al juego, la comunicación y el control del entorno para personas con discapacidades motoras significativas. Un soporte dimensionado al pulsador y la superficie exactos, posicionado por un terapeuta ocupacional o logopeda, convierte una pulsación inconsistente en una relación causa-efecto fiable a un costo casi nulo, y puede reimprimirse conforme cambian las necesidades."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["switch", "at-switch", "accessibility", "assistive", "adaptive", "medical", "hyperobject", "commons"]
+}

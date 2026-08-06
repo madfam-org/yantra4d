@@ -1,0 +1,547 @@
+{
+  "project": {
+    "name": "Fan Grill / Duct Adapter",
+    "slug": "fan-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "PC and printer fan accessories on the standard fan screw square. A fan table gives the correct corner-hole spacing for 40, 60, 80, 120, and 140 mm fans. Build a finger-guard grill (concentric rings and radial spokes over the fan bore), a tapered duct that adapts the fan face to a round outlet, or a shallow frame that clamps a filter over the fan.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Accesorios de ventilador para PC e impresoras sobre el cuadrado de tornillos estándar. Una tabla de ventiladores da la separación correcta de orificios de esquina para ventiladores de 40, 60, 80, 120 y 140 mm. Crea una rejilla protectora (anillos concéntricos y radios sobre el paso del ventilador), un ducto cónico que adapta la cara del ventilador a una salida redonda, o un marco poco profundo que sujeta un filtro sobre el ventilador.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/fan-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "fan",
+      "grill",
+      "duct",
+      "filter",
+      "cooling",
+      "pc-fan",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "grill",
+      "label": {
+        "en": "Finger Guard",
+        "es": "Rejilla Protectora"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "grill"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "duct",
+      "label": {
+        "en": "Duct Adapter",
+        "es": "Ducto Adaptador"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "duct"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "filter_frame",
+      "label": {
+        "en": "Filter Frame",
+        "es": "Marco de Filtro"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "filter_frame"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "grill",
+      "label": {
+        "en": "Finger Guard",
+        "es": "Rejilla Protectora"
+      },
+      "render_mode": 0,
+      "color": "#5a6b8a"
+    },
+    {
+      "id": "duct",
+      "label": {
+        "en": "Duct Adapter",
+        "es": "Ducto Adaptador"
+      },
+      "render_mode": 0,
+      "color": "#7f90c9"
+    },
+    {
+      "id": "filter_frame",
+      "label": {
+        "en": "Filter Frame",
+        "es": "Marco de Filtro"
+      },
+      "render_mode": 0,
+      "color": "#9aa8d6"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "fan",
+      "label": {
+        "en": "Fan Size",
+        "es": "Tamaño de Ventilador"
+      }
+    },
+    {
+      "id": "grill",
+      "label": {
+        "en": "Grill",
+        "es": "Rejilla"
+      }
+    },
+    {
+      "id": "duct",
+      "label": {
+        "en": "Duct",
+        "es": "Ducto"
+      }
+    },
+    {
+      "id": "filter",
+      "label": {
+        "en": "Filter",
+        "es": "Filtro"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "fan_size",
+      "type": "select",
+      "default": "120mm",
+      "group": "fan",
+      "modes": [
+        "grill",
+        "duct",
+        "filter_frame"
+      ],
+      "label": {
+        "en": "Fan Size",
+        "es": "Tamaño de Ventilador"
+      },
+      "tooltip": {
+        "en": "Sets the fan body and corner-hole spacing",
+        "es": "Define el cuerpo del ventilador y la separación de orificios de esquina"
+      },
+      "options": [
+        {
+          "value": "40mm",
+          "label": {
+            "en": "40 mm (32 mm holes)",
+            "es": "40 mm (orificios 32 mm)"
+          }
+        },
+        {
+          "value": "60mm",
+          "label": {
+            "en": "60 mm (50 mm holes)",
+            "es": "60 mm (orificios 50 mm)"
+          }
+        },
+        {
+          "value": "80mm",
+          "label": {
+            "en": "80 mm (71.5 mm holes)",
+            "es": "80 mm (orificios 71.5 mm)"
+          }
+        },
+        {
+          "value": "120mm",
+          "label": {
+            "en": "120 mm (105 mm holes)",
+            "es": "120 mm (orificios 105 mm)"
+          }
+        },
+        {
+          "value": "140mm",
+          "label": {
+            "en": "140 mm (124.5 mm holes)",
+            "es": "140 mm (orificios 124.5 mm)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "grill",
+      "modes": [
+        "grill",
+        "duct"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Grill guard and duct flange thickness",
+        "es": "Grosor de la rejilla y de la brida del ducto"
+      }
+    },
+    {
+      "id": "ring_count",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "group": "grill",
+      "modes": [
+        "grill"
+      ],
+      "label": {
+        "en": "Concentric Rings",
+        "es": "Anillos Concéntricos"
+      },
+      "tooltip": {
+        "en": "Number of rings between hub and rim",
+        "es": "Número de anillos entre el eje y el borde"
+      }
+    },
+    {
+      "id": "spoke_count",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "group": "grill",
+      "modes": [
+        "grill"
+      ],
+      "label": {
+        "en": "Radial Spokes",
+        "es": "Radios"
+      },
+      "tooltip": {
+        "en": "Number of radial spokes tying hub to rim",
+        "es": "Número de radios que unen el eje al borde"
+      }
+    },
+    {
+      "id": "bar_w",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "grill",
+      "modes": [
+        "grill",
+        "filter_frame"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Bar Width (mm)",
+        "es": "Ancho de Barra (mm)"
+      },
+      "tooltip": {
+        "en": "Ring and spoke bar width",
+        "es": "Ancho de las barras de anillo y radio"
+      }
+    },
+    {
+      "id": "duct_len",
+      "type": "slider",
+      "default": 40.0,
+      "min": 5.0,
+      "max": 150.0,
+      "step": 1.0,
+      "group": "duct",
+      "modes": [
+        "duct"
+      ],
+      "label": {
+        "en": "Duct Length (mm)",
+        "es": "Longitud de Ducto (mm)"
+      },
+      "tooltip": {
+        "en": "Axial length of the tapered duct",
+        "es": "Longitud axial del ducto cónico"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "outlet_dia",
+      "type": "slider",
+      "default": 80.0,
+      "min": 6.0,
+      "max": 200.0,
+      "step": 1.0,
+      "group": "duct",
+      "modes": [
+        "duct"
+      ],
+      "label": {
+        "en": "Outlet Diameter (mm)",
+        "es": "Diámetro de Salida (mm)"
+      },
+      "tooltip": {
+        "en": "Round outlet diameter at the far end of the duct",
+        "es": "Diámetro de la salida redonda al final del ducto"
+      }
+    },
+    {
+      "id": "duct_wall",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "duct",
+      "modes": [
+        "duct"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Duct Wall (mm)",
+        "es": "Pared de Ducto (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the duct tube",
+        "es": "Grosor de pared del tubo del ducto"
+      }
+    },
+    {
+      "id": "filter_depth",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "filter",
+      "modes": [
+        "filter_frame"
+      ],
+      "label": {
+        "en": "Filter Frame Depth (mm)",
+        "es": "Profundidad de Marco de Filtro (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the filter-media pocket",
+        "es": "Profundidad del bolsillo para el filtro"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "guard_120",
+      "mode": "grill",
+      "label": {
+        "en": "120 mm Finger Guard",
+        "es": "Rejilla 120 mm"
+      },
+      "values": {
+        "fan_size": "120mm",
+        "ring_count": 4,
+        "spoke_count": 6,
+        "thickness": 3.0
+      }
+    },
+    {
+      "id": "duct_80_to_60",
+      "mode": "duct",
+      "label": {
+        "en": "80 → 60 mm Duct",
+        "es": "Ducto 80 → 60 mm"
+      },
+      "values": {
+        "fan_size": "80mm",
+        "outlet_dia": 58,
+        "duct_len": 45
+      }
+    },
+    {
+      "id": "filter_140",
+      "mode": "filter_frame",
+      "label": {
+        "en": "140 mm Filter Frame",
+        "es": "Marco de Filtro 140 mm"
+      },
+      "values": {
+        "fan_size": "140mm",
+        "filter_depth": 8
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bar_w >= 1.2",
+      "severity": "error",
+      "message": {
+        "en": "Bar width must be at least 1.2 mm",
+        "es": "El ancho de barra debe ser de al menos 1.2 mm"
+      }
+    },
+    {
+      "expression": "outlet_dia <= 200",
+      "severity": "warning",
+      "message": {
+        "en": "Very large outlets may overhang the fan face",
+        "es": "Salidas muy grandes pueden sobresalir de la cara del ventilador"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        160,
+        160,
+        130
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        250
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -250,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "fan_screw_pattern",
+        "label": {
+          "en": "Fan Screw Pattern",
+          "es": "Patrón de Tornillos de Ventilador"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "PC fan 40-140mm",
+        "parameters": [
+          "fan_size",
+          "thickness"
+        ],
+        "compatible_with": [
+          "dust-shroud"
+        ]
+      },
+      {
+        "id": "duct_outlet_profile",
+        "label": {
+          "en": "Duct Outlet Profile",
+          "es": "Perfil de Salida del Ducto"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "outlet_dia",
+          "duct_len",
+          "duct_wall"
+        ]
+      },
+      {
+        "id": "filter_pocket",
+        "label": {
+          "en": "Filter Media Pocket",
+          "es": "Bolsillo para Filtro"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "fan_size",
+          "filter_depth"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The PC-fan screw square is a universal interface; on-demand guards, ducts, and filter frames keep fingers safe, direct airflow where it is needed, and add filtration to hardware never designed for it — extending the life of fans and the machines they cool.",
+      "es": "El cuadrado de tornillos del ventilador de PC es una interfaz universal; rejillas, ductos y marcos de filtro bajo demanda protegen los dedos, dirigen el flujo de aire donde se necesita y añaden filtración a equipos que nunca se diseñaron para ello — extendiendo la vida de los ventiladores y las máquinas que enfrían."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "fan",
+    "grill",
+    "duct",
+    "filter",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,588 @@
+{
+  "project": {
+    "name": "Sensor Mount Plate",
+    "slug": "sensor-mount-plate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A universal base for a security camera, motion sensor, dashcam, or small enclosure. Every mode is a flat base that fixes to a surface (adhesive pad or screws) and presents a device-fixing interface on top. Quarter-20 Base carries a dimensionally-correct ASME 1/4-20 boss stud (6.35 mm major diameter, the universal camera/tripod interface — modelled as a chamfered cylinder, not a slow swept helix); Screw Base is a 2/4-hole plate with a central device screw; Adhesive Puck is a round disc with a flat underside for a VHB pad. Optional cosmetic thread groove.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una base universal para una cámara de seguridad, sensor de movimiento, cámara de tablero o pequeño gabinete. Cada modo es una base plana que se fija a una superficie (almohadilla adhesiva o tornillos) y presenta una interfaz de fijación de dispositivo arriba. La Base Quarter-20 lleva un poste roscado ASME 1/4-20 dimensionalmente correcto (6.35 mm de diámetro mayor, la interfaz universal de cámara/trípode — modelado como cilindro achaflanado, no una hélice barrida lenta); la Base con Tornillos es una placa de 2/4 orificios con tornillo central de dispositivo; el Disco Adhesivo es un disco redondo con parte inferior plana para una almohadilla VHB. Ranura de rosca cosmética opcional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sensor-mount-plate.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "sensor",
+      "camera",
+      "mount",
+      "base",
+      "quarter-20",
+      "dashcam",
+      "tripod",
+      "security",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "quarter20_base",
+      "label": {
+        "en": "1/4-20 Base",
+        "es": "Base 1/4-20"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "quarter20_base"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "screw_base",
+      "label": {
+        "en": "Screw Base",
+        "es": "Base con Tornillos"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "screw_base"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "adhesive_puck",
+      "label": {
+        "en": "Adhesive Puck",
+        "es": "Disco Adhesivo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "adhesive_puck"
+      ],
+      "estimate": {
+        "base_time": 5,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "quarter20_base",
+      "label": {
+        "en": "1/4-20 Base",
+        "es": "Base 1/4-20"
+      },
+      "render_mode": 0,
+      "color": "#4b5f74"
+    },
+    {
+      "id": "screw_base",
+      "label": {
+        "en": "Screw Base",
+        "es": "Base con Tornillos"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "adhesive_puck",
+      "label": {
+        "en": "Adhesive Puck",
+        "es": "Disco Adhesivo"
+      },
+      "render_mode": 0,
+      "color": "#8bb5cc"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "base",
+      "label": {
+        "en": "Base",
+        "es": "Base"
+      }
+    },
+    {
+      "id": "boss",
+      "label": {
+        "en": "1/4-20 Boss",
+        "es": "Poste 1/4-20"
+      }
+    },
+    {
+      "id": "screws",
+      "label": {
+        "en": "Screws",
+        "es": "Tornillos"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "base_w",
+      "type": "slider",
+      "default": 40,
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "group": "base",
+      "modes": [
+        "quarter20_base",
+        "screw_base"
+      ],
+      "label": {
+        "en": "Base Width (mm)",
+        "es": "Ancho de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Rectangular base width (X)",
+        "es": "Ancho de la base rectangular (X)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "base_d",
+      "type": "slider",
+      "default": 40,
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "group": "base",
+      "modes": [
+        "quarter20_base",
+        "screw_base"
+      ],
+      "label": {
+        "en": "Base Depth (mm)",
+        "es": "Profundidad de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Rectangular base depth (Y)",
+        "es": "Profundidad de la base rectangular (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "base_dia",
+      "type": "slider",
+      "default": 45,
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "group": "base",
+      "modes": [
+        "adhesive_puck"
+      ],
+      "label": {
+        "en": "Disc Diameter (mm)",
+        "es": "Diámetro del Disco (mm)"
+      },
+      "tooltip": {
+        "en": "Round puck diameter (Adhesive Puck)",
+        "es": "Diámetro del disco redondo (Disco Adhesivo)"
+      }
+    },
+    {
+      "id": "base_thick",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.5,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "quarter20_base",
+        "screw_base",
+        "adhesive_puck"
+      ],
+      "label": {
+        "en": "Base Thickness (mm)",
+        "es": "Grosor de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the base plate / disc",
+        "es": "Grosor de la placa base / disco"
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 4.0,
+      "min": 0.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "quarter20_base",
+        "screw_base"
+      ],
+      "label": {
+        "en": "Corner Radius (mm)",
+        "es": "Radio de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Rounding of the rectangular base corners (0 = sharp)",
+        "es": "Redondeo de las esquinas de la base rectangular (0 = recto)"
+      }
+    },
+    {
+      "id": "boss_h",
+      "type": "slider",
+      "default": 8.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "boss",
+      "modes": [
+        "quarter20_base"
+      ],
+      "label": {
+        "en": "1/4-20 Stud Height (mm)",
+        "es": "Altura del Poste 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the 1/4-20 boss above the base (6.35 mm major diameter)",
+        "es": "Altura del poste 1/4-20 sobre la base (6.35 mm de diámetro mayor)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "thread_relief",
+      "type": "checkbox",
+      "default": true,
+      "group": "boss",
+      "modes": [
+        "quarter20_base"
+      ],
+      "label": {
+        "en": "Cosmetic Thread Groove",
+        "es": "Ranura de Rosca Cosmética"
+      },
+      "tooltip": {
+        "en": "Shallow ring grooves at the 1/4-20 pitch (cosmetic — not a functional swept thread)",
+        "es": "Ranuras anulares poco profundas al paso 1/4-20 (cosmético — no una rosca barrida funcional)"
+      }
+    },
+    {
+      "id": "screw_holes",
+      "type": "select",
+      "default": 4,
+      "group": "screws",
+      "modes": [
+        "quarter20_base",
+        "screw_base"
+      ],
+      "label": {
+        "en": "Surface Screw Holes",
+        "es": "Orificios de Tornillo de Superficie"
+      },
+      "tooltip": {
+        "en": "Number of holes fixing the base to the surface",
+        "es": "Número de orificios que fijan la base a la superficie"
+      },
+      "options": [
+        {
+          "value": 2,
+          "label": {
+            "en": "2 holes",
+            "es": "2 orificios"
+          }
+        },
+        {
+          "value": 4,
+          "label": {
+            "en": "4 holes",
+            "es": "4 orificios"
+          }
+        }
+      ]
+    },
+    {
+      "id": "screw_dia",
+      "type": "slider",
+      "default": 4.5,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "screws",
+      "modes": [
+        "quarter20_base",
+        "screw_base"
+      ],
+      "label": {
+        "en": "Surface Screw Diameter (mm)",
+        "es": "Diámetro de Tornillo de Superficie (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance hole for the surface-fixing screws (M4 ≈ 4.5)",
+        "es": "Orificio de holgura para los tornillos de fijación a superficie (M4 ≈ 4.5)"
+      }
+    },
+    {
+      "id": "screw_inset",
+      "type": "slider",
+      "default": 7.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "screws",
+      "modes": [
+        "quarter20_base",
+        "screw_base"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Screw Inset (mm)",
+        "es": "Margen de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Distance of the surface screws from the base edge",
+        "es": "Distancia de los tornillos de superficie al borde de la base"
+      }
+    },
+    {
+      "id": "device_screw",
+      "type": "slider",
+      "default": 4.5,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "screws",
+      "modes": [
+        "screw_base",
+        "adhesive_puck"
+      ],
+      "label": {
+        "en": "Device Screw Diameter (mm)",
+        "es": "Diámetro de Tornillo del Dispositivo (mm)"
+      },
+      "tooltip": {
+        "en": "Central hole for the screw that fixes the device to the base",
+        "es": "Orificio central para el tornillo que fija el dispositivo a la base"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "camera_quarter20",
+      "mode": "quarter20_base",
+      "label": {
+        "en": "Camera 1/4-20 Base",
+        "es": "Base 1/4-20 de Cámara"
+      },
+      "values": {
+        "base_w": 40,
+        "base_d": 40,
+        "base_thick": 5,
+        "boss_h": 8,
+        "screw_holes": 4,
+        "screw_dia": 4.5,
+        "thread_relief": true
+      }
+    },
+    {
+      "id": "sensor_screw_2",
+      "mode": "screw_base",
+      "label": {
+        "en": "Sensor 2-Screw Base",
+        "es": "Base de Sensor 2 Tornillos"
+      },
+      "values": {
+        "base_w": 35,
+        "base_d": 25,
+        "base_thick": 4,
+        "screw_holes": 2,
+        "screw_dia": 3.5,
+        "device_screw": 3.5
+      }
+    },
+    {
+      "id": "dashcam_puck",
+      "mode": "adhesive_puck",
+      "label": {
+        "en": "Dashcam Adhesive Puck",
+        "es": "Disco Adhesivo de Dashcam"
+      },
+      "values": {
+        "base_dia": 45,
+        "base_thick": 5,
+        "device_screw": 4.5
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "base_thick >= 2.5",
+      "severity": "error",
+      "message": {
+        "en": "Base must be at least 2.5 mm thick",
+        "es": "La base debe tener al menos 2.5 mm de grosor"
+      }
+    },
+    {
+      "expression": "screw_inset >= screw_dia",
+      "severity": "warning",
+      "message": {
+        "en": "Screw inset is small relative to the screw diameter",
+        "es": "El margen del tornillo es pequeño respecto al diámetro del tornillo"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        80
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -150,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 9,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "quarter20_stud",
+        "label": {
+          "en": "1/4-20 Camera Stud",
+          "es": "Poste 1/4-20 de Cámara"
+        },
+        "geometry_type": "thread",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "boss_h",
+          "thread_relief"
+        ],
+        "compatible_with": [
+          "arca-plate",
+          "ball-socket",
+          "camera-quarter-twenty",
+          "gopro-mount",
+          "nato-rail",
+          "optical-post",
+          "rod-rig-clamp",
+          "shoe-mount",
+          "spigot-adapter"
+        ]
+      },
+      {
+        "id": "sensor_base_pattern",
+        "label": {
+          "en": "Sensor Base Pattern",
+          "es": "Patrón de Base de Sensor"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ASME 1/4-20",
+        "parameters": [
+          "screw_holes",
+          "screw_dia",
+          "screw_inset",
+          "device_screw",
+          "base_w",
+          "base_d"
+        ],
+        "compatible_with": [
+          "arca-plate",
+          "ball-socket",
+          "camera-quarter-twenty",
+          "gopro-mount",
+          "nato-rail",
+          "optical-post",
+          "rod-rig-clamp",
+          "shoe-mount",
+          "spigot-adapter"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cameras, sensors, and dashcams each ship with their own proprietary bracket; a single printable base that presents the universal 1/4-20 stud or a plain screw pattern lets one device move between wall, dash, and desk without buying a new mount each time.",
+      "es": "Cámaras, sensores y dashcams se venden cada uno con su propio soporte propietario; una única base imprimible que presenta el poste universal 1/4-20 o un patrón de tornillos simple permite que un dispositivo se mueva entre pared, tablero y escritorio sin comprar un soporte nuevo cada vez."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "sensor",
+    "camera",
+    "mount",
+    "quarter-20",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

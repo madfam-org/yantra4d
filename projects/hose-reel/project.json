@@ -1,0 +1,179 @@
+{
+  "project": {
+    "name": "Hose & Cord Reel",
+    "slug": "hose-reel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric winder for garden hose, extension cord, trimmer line, or rope. A hollow-core drum with lightened flanges holds the coil; the core hub accepts an axle or a printed crank. Bare reel, wall-mounted reel, or hand winder.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un enrollador paramétrico para manguera de jardín, extensión eléctrica, hilo de desbrozadora o cuerda. Un tambor de núcleo hueco con bridas aligeradas sostiene el rollo; el cubo central acepta un eje o una manivela impresa. Carrete simple, carrete de pared o enrollador manual.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hose-reel.webp",
+    "difficulty": "intermediate",
+    "tags": ["hose", "reel", "cord", "winder", "garden", "storage", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "reel",
+      "label": { "en": "Reel", "es": "Carrete" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["reel"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "wall_reel",
+      "label": { "en": "Wall Reel", "es": "Carrete de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_reel"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "hand_winder",
+      "label": { "en": "Hand Winder", "es": "Enrollador Manual" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hand_winder"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "reel", "label": { "en": "Reel Drum", "es": "Tambor" }, "render_mode": 0, "color": "#3f7d5c" },
+    { "id": "wall_reel", "label": { "en": "Wall Reel", "es": "Carrete de Pared" }, "render_mode": 0, "color": "#4f8f6c" },
+    { "id": "hand_winder", "label": { "en": "Hand Winder", "es": "Enrollador Manual" }, "render_mode": 0, "color": "#5fa07c" }
+  ],
+  "parameter_groups": [
+    { "id": "drum", "label": { "en": "Drum & Hub", "es": "Tambor y Cubo" } },
+    { "id": "flanges", "label": { "en": "Flanges", "es": "Bridas" } },
+    { "id": "mount", "label": { "en": "Mount & Crank", "es": "Montaje y Manivela" } }
+  ],
+  "parameters": [
+    {
+      "id": "hub_dia", "type": "slider", "default": 40, "min": 20, "max": 120, "step": 1,
+      "group": "drum", "modes": ["reel", "wall_reel", "hand_winder"],
+      "label": { "en": "Core Hub Diameter (mm)", "es": "Diámetro del Cubo (mm)" },
+      "tooltip": { "en": "Barrel the coil winds onto — bigger = gentler hose bend", "es": "Barril donde se enrolla — mayor = curva más suave" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "axle_dia", "type": "slider", "default": 12, "min": 4, "max": 30, "step": 0.5,
+      "group": "drum", "modes": ["reel", "wall_reel", "hand_winder"],
+      "label": { "en": "Axle Bore (mm)", "es": "Barreno del Eje (mm)" },
+      "tooltip": { "en": "Central hole for the axle or crank shaft", "es": "Orificio central para el eje o la manivela" }
+    },
+    {
+      "id": "drum_width", "type": "slider", "default": 90, "min": 25, "max": 300, "step": 1,
+      "group": "drum", "modes": ["reel", "wall_reel", "hand_winder"],
+      "label": { "en": "Winding Width (mm)", "es": "Ancho de Enrollado (mm)" },
+      "tooltip": { "en": "Distance between flanges — how much line it holds", "es": "Distancia entre bridas — cuánta línea sostiene" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "hub_wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.2,
+      "group": "drum", "modes": ["reel", "wall_reel", "hand_winder"], "advanced": true,
+      "label": { "en": "Barrel Wall (mm)", "es": "Pared del Barril (mm)" },
+      "tooltip": { "en": "Drum barrel wall thickness", "es": "Grosor de la pared del barril" }
+    },
+    {
+      "id": "flange_dia", "type": "slider", "default": 150, "min": 60, "max": 400, "step": 2,
+      "group": "flanges", "modes": ["reel", "wall_reel", "hand_winder"],
+      "label": { "en": "Flange Diameter (mm)", "es": "Diámetro de Brida (mm)" },
+      "tooltip": { "en": "Retaining disk size — must exceed the coil", "es": "Tamaño del disco retenedor — mayor que el rollo" }
+    },
+    {
+      "id": "flange_th", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "flanges", "modes": ["reel", "wall_reel", "hand_winder"],
+      "label": { "en": "Flange Thickness (mm)", "es": "Grosor de Brida (mm)" },
+      "tooltip": { "en": "Flange plate thickness", "es": "Grosor de la placa de brida" }
+    },
+    {
+      "id": "spokes", "type": "slider", "default": 6, "min": 0, "max": 10, "step": 1,
+      "group": "flanges", "modes": ["reel", "wall_reel", "hand_winder"],
+      "label": { "en": "Lightening Holes", "es": "Orificios de Aligeramiento" },
+      "tooltip": { "en": "Cut-outs per flange to save filament (0 = solid)", "es": "Recortes por brida para ahorrar filamento (0 = sólido)" }
+    },
+    {
+      "id": "crank_len", "type": "slider", "default": 70, "min": 30, "max": 160, "step": 1,
+      "group": "mount", "modes": ["hand_winder"],
+      "label": { "en": "Crank Length (mm)", "es": "Largo de Manivela (mm)" },
+      "tooltip": { "en": "Crank arm reach — longer = more leverage", "es": "Alcance del brazo — mayor = más palanca" }
+    },
+    {
+      "id": "crank_th", "type": "slider", "default": 10.0, "min": 6.0, "max": 20.0, "step": 0.5,
+      "group": "mount", "modes": ["hand_winder"],
+      "label": { "en": "Crank Thickness (mm)", "es": "Grosor de Manivela (mm)" },
+      "tooltip": { "en": "Crank arm and knob thickness", "es": "Grosor del brazo y la perilla" }
+    },
+    {
+      "id": "mount_gap", "type": "slider", "default": 28, "min": 16, "max": 120, "step": 1,
+      "group": "mount", "modes": ["wall_reel"], "advanced": true,
+      "label": { "en": "Keyhole Spacing (mm)", "es": "Separación de Ojales (mm)" },
+      "tooltip": { "en": "Vertical gap reference for the wall keyholes", "es": "Separación vertical de referencia para los ojales" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "garden_hose", "mode": "wall_reel",
+      "label": { "en": "Garden Hose (wall)", "es": "Manguera de Jardín (pared)" },
+      "values": { "hub_dia": 60, "drum_width": 140, "flange_dia": 220, "axle_dia": 12 }
+    },
+    {
+      "id": "extension_cord", "mode": "hand_winder",
+      "label": { "en": "Extension Cord Winder", "es": "Enrollador de Extensión" },
+      "values": { "hub_dia": 45, "drum_width": 70, "flange_dia": 140, "crank_len": 80 }
+    },
+    {
+      "id": "trimmer_line", "mode": "reel",
+      "label": { "en": "Trimmer Line Spool", "es": "Bobina de Hilo" },
+      "values": { "hub_dia": 30, "drum_width": 40, "flange_dia": 90, "spokes": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "flange_dia > hub_dia",
+      "severity": "error",
+      "message": { "en": "Flange must be larger than the hub", "es": "La brida debe ser mayor que el cubo" }
+    },
+    {
+      "expression": "axle_dia <= hub_dia - 6",
+      "severity": "warning",
+      "message": { "en": "Axle bore is large relative to the hub wall", "es": "El barreno es grande respecto a la pared del cubo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [220, 220, 180] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "reel_core_hub",
+        "label": { "en": "Reel Core Hub", "es": "Cubo del Carrete" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["hub_dia", "axle_dia", "hub_wall", "drum_width"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Kinked hoses and tangled cords are a leading cause of premature replacement. A print-on-demand reel sized to the exact hose or cord extends its life and tidies the shed or garden wall.",
+      "es": "Mangueras dobladas y cables enredados son causa principal de reemplazo prematuro. Un carrete impreso a la medida exacta prolonga su vida y ordena el cobertizo o el muro del jardín."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hose", "reel", "cord", "winder", "garden", "household", "hyperobject", "commons"]
+}

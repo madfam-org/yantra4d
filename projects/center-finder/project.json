@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Center Finder / Marking Gauge",
+    "slug": "center-finder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Layout tools that scribe or find a reference line. A 90° vee registers on a round or square end so a slot down its bisector marks dead centre. Choose a center finder, a fenced marking gauge, or a mortise gauge with two parallel scribe lines.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herramientas de trazado que marcan o encuentran una línea de referencia. Una uve a 90° registra en un extremo redondo o cuadrado para que una ranura en su bisectriz marque el centro exacto. Elige un buscador de centros, un gramil con tope, o un gramil de mortaja con dos líneas paralelas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/center-finder.webp",
+    "difficulty": "intermediate",
+    "tags": ["center-finder", "marking-gauge", "mortise-gauge", "layout", "scribe", "woodworking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "center_finder",
+      "label": { "en": "Center Finder", "es": "Buscador de Centros" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["center_finder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "marking_gauge",
+      "label": { "en": "Marking Gauge", "es": "Gramil" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["marking_gauge"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "mortise_gauge",
+      "label": { "en": "Mortise Gauge", "es": "Gramil de Mortaja" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["mortise_gauge"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "center_finder", "label": { "en": "Center Finder", "es": "Buscador de Centros" }, "render_mode": 0, "color": "#5a7a8a" },
+    { "id": "marking_gauge", "label": { "en": "Marking Gauge", "es": "Gramil" }, "render_mode": 0, "color": "#6a8b9c" },
+    { "id": "mortise_gauge", "label": { "en": "Mortise Gauge", "es": "Gramil de Mortaja" }, "render_mode": 0, "color": "#4a6674" }
+  ],
+  "parameter_groups": [
+    { "id": "stock", "label": { "en": "Stock & Body", "es": "Material y Cuerpo" } },
+    { "id": "scribe", "label": { "en": "Scribe", "es": "Trazador" } },
+    { "id": "gauge", "label": { "en": "Gauge Beam & Fence", "es": "Barra y Tope del Gramil" } }
+  ],
+  "parameters": [
+    {
+      "id": "stock_max", "type": "slider", "default": 50.0, "min": 15.0, "max": 120.0, "step": 1.0,
+      "group": "stock", "modes": ["center_finder"],
+      "label": { "en": "Max Stock Size (mm)", "es": "Tamaño Máx. del Material (mm)" },
+      "tooltip": { "en": "Largest round/square stock the vee accepts", "es": "Mayor material redondo/cuadrado que acepta la uve" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 12.0, "min": 6.0, "max": 25.0, "step": 0.5,
+      "group": "stock", "modes": ["center_finder", "marking_gauge", "mortise_gauge"],
+      "label": { "en": "Tool Thickness (mm)", "es": "Grosor de la Herramienta (mm)" },
+      "tooltip": { "en": "Thickness of the tool body", "es": "Grosor del cuerpo de la herramienta" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "scribe_w", "type": "slider", "default": 1.6, "min": 0.6, "max": 4.0, "step": 0.1,
+      "group": "scribe", "modes": ["center_finder", "marking_gauge", "mortise_gauge"],
+      "label": { "en": "Scribe Slot Width (mm)", "es": "Ancho de Ranura del Trazador (mm)" },
+      "tooltip": { "en": "Width of the pencil / scribe-pin slot", "es": "Ancho de la ranura para el lápiz / punta de trazar" }
+    },
+    {
+      "id": "beam_len", "type": "slider", "default": 90.0, "min": 50.0, "max": 180.0, "step": 1.0,
+      "group": "gauge", "modes": ["marking_gauge", "mortise_gauge"],
+      "label": { "en": "Beam Length (mm)", "es": "Largo de la Barra (mm)" },
+      "tooltip": { "en": "Reach of the gauge beam (max scribe distance)", "es": "Alcance de la barra del gramil (distancia máx. de trazado)" }
+    },
+    {
+      "id": "fence_h", "type": "slider", "default": 30.0, "min": 15.0, "max": 55.0, "step": 1.0,
+      "group": "gauge", "modes": ["marking_gauge", "mortise_gauge"],
+      "label": { "en": "Fence Height (mm)", "es": "Altura del Tope (mm)" },
+      "tooltip": { "en": "Height of the edge fence", "es": "Altura del tope de borde" }
+    },
+    {
+      "id": "mortise_gap", "type": "slider", "default": 8.0, "min": 3.0, "max": 25.0, "step": 0.5,
+      "group": "gauge", "modes": ["mortise_gauge"],
+      "label": { "en": "Mortise Line Spacing (mm)", "es": "Separación de Líneas de Mortaja (mm)" },
+      "tooltip": { "en": "Distance between the two scribe lines (chisel/mortise width)", "es": "Distancia entre las dos líneas de trazado (ancho de formón/mortaja)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "dowel_center", "mode": "center_finder",
+      "label": { "en": "Dowel Center Finder", "es": "Buscador de Centros de Espiga" },
+      "values": { "stock_max": 40.0, "thick": 12.0, "scribe_w": 1.2 }
+    },
+    {
+      "id": "edge_gauge", "mode": "marking_gauge",
+      "label": { "en": "Edge Marking Gauge", "es": "Gramil de Borde" },
+      "values": { "thick": 12.0, "scribe_w": 1.6, "beam_len": 100.0, "fence_h": 32.0 }
+    },
+    {
+      "id": "tenon_gauge", "mode": "mortise_gauge",
+      "label": { "en": "Tenon Mortise Gauge (8mm)", "es": "Gramil de Mortaja (8mm)" },
+      "values": { "thick": 12.0, "scribe_w": 1.2, "beam_len": 100.0, "mortise_gap": 8.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "scribe_w < thick",
+      "severity": "error",
+      "message": { "en": "Scribe slot cannot be wider than the tool thickness", "es": "La ranura del trazador no puede ser más ancha que el grosor de la herramienta" }
+    },
+    {
+      "expression": "mortise_gap < beam_len / 2",
+      "severity": "warning",
+      "message": { "en": "Line spacing is large relative to the beam", "es": "La separación de líneas es grande respecto a la barra" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "vee_register",
+        "label": { "en": "Vee Register", "es": "Registro en Uve" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["stock_max", "thick"]
+      },
+      {
+        "id": "scribe_slot",
+        "label": { "en": "Scribe Slot", "es": "Ranura de Trazado" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["scribe_w", "beam_len", "mortise_gap"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Accurate layout without a machinist's set — find the centre of any round or square stock and scribe repeatable edge and mortise lines with printed gauges tuned to your pencil or knife.",
+      "es": "Trazado preciso sin un juego de maquinista — encuentra el centro de cualquier material redondo o cuadrado y traza líneas de borde y mortaja repetibles con gramiles impresos ajustados a tu lápiz o cuchilla."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["center-finder", "marking-gauge", "layout", "industrial", "hyperobject", "commons"]
+}

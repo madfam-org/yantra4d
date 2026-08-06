@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Aquarium Frag / Coral Plug",
+    "slug": "frag-plug",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Coral propagation hardware for a reef tank: a mushroom-shaped frag plug whose stem pushes into a rack, a rack that stands a grid of plugs on the sand bed, and a stemless gluing disc for mounting frags straight onto live rock. Sized by the 25 mm disc / 6 mm stem reef-hobby convention.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de propagación de coral para un acuario de arrecife: un plug de coral en forma de hongo cuyo vástago se inserta en un soporte, un soporte que sostiene una cuadrícula de plugs sobre la arena, y un disco sin vástago para pegar frags directamente a la roca viva. Dimensionado según la convención de disco de 25 mm / vástago de 6 mm.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/frag-plug.webp",
+    "difficulty": "beginner",
+    "tags": ["frag-plug", "coral", "reef", "aquarium", "propagation", "rack", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "frag_plug",
+      "label": { "en": "Frag Plug", "es": "Plug de Coral" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["frag_plug"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "frag_rack",
+      "label": { "en": "Frag Rack", "es": "Soporte de Plugs" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["frag_rack"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "frag_disc",
+      "label": { "en": "Gluing Disc", "es": "Disco de Pegado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["frag_disc"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "frag_plug", "label": { "en": "Frag Plug", "es": "Plug de Coral" }, "render_mode": 0, "color": "#0891b2" },
+    { "id": "frag_rack", "label": { "en": "Frag Rack", "es": "Soporte de Plugs" }, "render_mode": 0, "color": "#06b6d4" },
+    { "id": "frag_disc", "label": { "en": "Gluing Disc", "es": "Disco de Pegado" }, "render_mode": 0, "color": "#22d3ee" }
+  ],
+  "parameter_groups": [
+    { "id": "plug", "label": { "en": "Plug", "es": "Plug" } },
+    { "id": "rack", "label": { "en": "Rack", "es": "Soporte" } }
+  ],
+  "parameters": [
+    {
+      "id": "disc_dia", "type": "slider", "default": 25.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "plug", "modes": ["frag_plug", "frag_disc"],
+      "label": { "en": "Disc Diameter (mm)", "es": "Diámetro del Disco (mm)" },
+      "tooltip": { "en": "Top disc diameter. Standard reef plug is 25 mm (mini 15-18, large 35-40)", "es": "Diámetro del disco superior. El plug estándar es 25 mm (mini 15-18, grande 35-40)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "disc_h", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "plug", "modes": ["frag_plug", "frag_disc"],
+      "label": { "en": "Disc Thickness (mm)", "es": "Grosor del Disco (mm)" },
+      "tooltip": { "en": "Thickness of the top disc", "es": "Grosor del disco superior" }
+    },
+    {
+      "id": "stem_dia", "type": "slider", "default": 6.0, "min": 3.0, "max": 16.0, "step": 0.5,
+      "group": "plug", "modes": ["frag_plug"],
+      "label": { "en": "Stem Diameter (mm)", "es": "Diámetro del Vástago (mm)" },
+      "tooltip": { "en": "Stem diameter. Typical 6 mm; heavy plugs 8-10 mm", "es": "Diámetro del vástago. Típico 6 mm; plugs pesados 8-10 mm" }
+    },
+    {
+      "id": "stem_h", "type": "slider", "default": 18.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "plug", "modes": ["frag_plug"],
+      "label": { "en": "Stem Length (mm)", "es": "Longitud del Vástago (mm)" },
+      "tooltip": { "en": "Length of the push-in stem below the disc", "es": "Longitud del vástago de inserción bajo el disco" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "hole_dia", "type": "slider", "default": 6.4, "min": 3.0, "max": 16.0, "step": 0.2,
+      "group": "rack", "modes": ["frag_rack"],
+      "label": { "en": "Rack Hole Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Stem hole diameter in the rack. 6.4 mm clears a 6 mm stem", "es": "Diámetro del agujero del vástago en el soporte. 6.4 mm libera un vástago de 6 mm" }
+    },
+    {
+      "id": "rack_cols", "type": "slider", "default": 4.0, "min": 1.0, "max": 8.0, "step": 1.0,
+      "group": "rack", "modes": ["frag_rack"],
+      "label": { "en": "Holes per Row", "es": "Agujeros por Fila" },
+      "tooltip": { "en": "Number of plug holes across each row", "es": "Número de agujeros de plug por fila" }
+    },
+    {
+      "id": "rack_rows", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 1.0,
+      "group": "rack", "modes": ["frag_rack"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Number of rows of plug holes", "es": "Número de filas de agujeros" }
+    },
+    {
+      "id": "rack_pitch", "type": "slider", "default": 22.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "rack", "modes": ["frag_rack"],
+      "label": { "en": "Hole Spacing (mm)", "es": "Separación de Agujeros (mm)" },
+      "tooltip": { "en": "Center-to-center spacing between plug holes", "es": "Separación centro a centro entre agujeros de plug" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_plug", "mode": "frag_plug",
+      "label": { "en": "Standard Plug (25/6 mm)", "es": "Plug Estándar (25/6 mm)" },
+      "values": { "disc_dia": 25, "disc_h": 4, "stem_dia": 6, "stem_h": 18 }
+    },
+    {
+      "id": "eight_up_rack", "mode": "frag_rack",
+      "label": { "en": "8-Up Frag Rack", "es": "Soporte de 8 Plugs" },
+      "values": { "hole_dia": 6.4, "rack_cols": 4, "rack_rows": 2, "rack_pitch": 22 }
+    },
+    {
+      "id": "glue_disc", "mode": "frag_disc",
+      "label": { "en": "Gluing Disc (25 mm)", "es": "Disco de Pegado (25 mm)" },
+      "values": { "disc_dia": 25, "disc_h": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hole_dia > stem_dia",
+      "severity": "warning",
+      "message": { "en": "Rack hole should clear the plug stem (add ~0.4 mm)", "es": "El agujero del soporte debe librar el vástago del plug (añade ~0.4 mm)" }
+    },
+    {
+      "expression": "rack_pitch > disc_dia",
+      "severity": "warning",
+      "message": { "en": "Spacing narrower than the disc will let neighbouring frags touch", "es": "Una separación menor que el disco hará que los frags vecinos se toquen" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 70] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 25] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 40, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "plug_stem_socket",
+        "label": { "en": "Plug Stem / Rack Socket", "es": "Vástago / Zócalo de Soporte" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["stem_dia", "stem_h", "hole_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Fragging spreads corals sustainably and reduces wild harvest, but plugs and racks are sold in bulk packs sized to no particular tank. Printing a plug whose stem exactly matches a grower's rack — and a rack sized to their tank footprint — lets a reefer or a frag-swap club propagate coral in aquarium-safe filament for cents apiece and standardise on one stem diameter across the whole system.",
+      "es": "El fragging propaga corales de forma sostenible y reduce la extracción silvestre, pero los plugs y soportes se venden en paquetes a granel de ninguna medida en particular. Imprimir un plug cuyo vástago coincida exactamente con el soporte del cultivador — y un soporte del tamaño de su acuario — permite a un aficionado o a un club de intercambio propagar coral en filamento apto para acuario por centavos y estandarizar un solo diámetro de vástago en todo el sistema."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["frag-plug", "coral", "reef", "aquarium", "propagation", "rack", "household", "hyperobject", "commons"]
+}

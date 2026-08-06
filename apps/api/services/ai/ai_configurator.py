@@ -6,7 +6,7 @@ Maps user intent to manifest parameter adjustments with validation.
 import json
 import logging
 import re
-from typing import Iterator
+from collections.abc import Iterator
 
 from services.ai.ai_provider import stream_chat
 from services.ai.ai_session import append_message, get_messages

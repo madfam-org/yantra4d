@@ -1,0 +1,152 @@
+{
+  "project": {
+    "name": "Carabiner / Quick-Link (Utility)",
+    "slug": "carabiner",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A utility clip for keys, gear, bags, and organisation — NOT load-rated and NOT for climbing or any life-safety use. A flat racetrack body with a choice of gate: a printed sprung gate, a screw-sleeve link (real threaded post), or an open S-hook.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un clip utilitario para llaves, equipo, bolsas y organización — NO clasificado para carga y NO para escalada ni ningún uso de seguridad. Un cuerpo plano tipo pista con elección de compuerta: una compuerta con resorte impresa, un eslabón con manguito roscado (poste roscado real), o un gancho en S abierto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/carabiner.webp",
+    "difficulty": "intermediate",
+    "tags": ["carabiner", "quick-link", "clip", "keychain", "s-hook", "utility", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "spring_carabiner",
+      "label": { "en": "Spring Carabiner", "es": "Carabinero con Resorte" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spring_carabiner"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "screw_link",
+      "label": { "en": "Screw Link", "es": "Eslabón Roscado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["screw_link"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "s_hook",
+      "label": { "en": "S-Hook", "es": "Gancho en S" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["s_hook"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "spring_carabiner", "label": { "en": "Spring Carabiner", "es": "Carabinero con Resorte" }, "render_mode": 0, "color": "#4a5568" },
+    { "id": "screw_link", "label": { "en": "Screw Link", "es": "Eslabón Roscado" }, "render_mode": 0, "color": "#718096" },
+    { "id": "s_hook", "label": { "en": "S-Hook", "es": "Gancho en S" }, "render_mode": 0, "color": "#a0aec0" }
+  ],
+  "parameter_groups": [
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } },
+    { "id": "gate", "label": { "en": "Gate", "es": "Compuerta" } }
+  ],
+  "parameters": [
+    {
+      "id": "length", "type": "slider", "default": 60.0, "min": 30.0, "max": 140.0, "step": 1.0,
+      "group": "body", "modes": ["spring_carabiner", "screw_link", "s_hook"],
+      "label": { "en": "Overall Length (mm)", "es": "Longitud Total (mm)" },
+      "tooltip": { "en": "End-to-end length of the clip", "es": "Longitud total del clip" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "spine", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5,
+      "group": "body", "modes": ["spring_carabiner", "screw_link", "s_hook"],
+      "label": { "en": "Spine / Stock (mm)", "es": "Espina / Material (mm)" },
+      "tooltip": { "en": "Cross-section size of the rail (thicker = stronger)", "es": "Tamaño de sección del riel (más grueso = más fuerte)" }
+    },
+    {
+      "id": "inner_w", "type": "slider", "default": 20.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "body", "modes": ["spring_carabiner", "screw_link", "s_hook"],
+      "label": { "en": "Interior Width (mm)", "es": "Ancho Interior (mm)" },
+      "tooltip": { "en": "Width of the loop opening", "es": "Ancho de la abertura del lazo" }
+    },
+    {
+      "id": "gate_type", "type": "select", "default": "spring_gate",
+      "group": "gate", "modes": ["spring_carabiner"],
+      "label": { "en": "Gate Type", "es": "Tipo de Compuerta" },
+      "tooltip": { "en": "Gate style (informational — each mode builds its matching gate)", "es": "Estilo de compuerta (informativo — cada modo construye su compuerta)" },
+      "options": [
+        { "value": "spring_gate", "label": { "en": "Printed sprung gate", "es": "Compuerta con resorte impresa" } },
+        { "value": "screw_gate", "label": { "en": "Screw sleeve (see Screw Link)", "es": "Manguito roscado (ver Eslabón Roscado)" } },
+        { "value": "simple_hook", "label": { "en": "Open hook (see S-Hook)", "es": "Gancho abierto (ver Gancho en S)" } }
+      ]
+    },
+    {
+      "id": "opening", "type": "slider", "default": 12.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "gate", "modes": ["spring_carabiner", "screw_link", "s_hook"],
+      "label": { "en": "Gate Opening (mm)", "es": "Abertura de Compuerta (mm)" },
+      "tooltip": { "en": "Size of the gate / hook opening", "es": "Tamaño de la abertura de la compuerta / gancho" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "keychain_clip", "mode": "spring_carabiner",
+      "label": { "en": "Keychain Clip", "es": "Clip de Llavero" },
+      "values": { "length": 55, "spine": 5, "inner_w": 18, "opening": 10 }
+    },
+    {
+      "id": "gear_screw_link", "mode": "screw_link",
+      "label": { "en": "Gear Screw Link", "es": "Eslabón de Equipo" },
+      "values": { "length": 60, "spine": 7, "inner_w": 22, "opening": 14 }
+    },
+    {
+      "id": "utility_s_hook", "mode": "s_hook",
+      "label": { "en": "Utility S-Hook", "es": "Gancho en S Utilitario" },
+      "values": { "length": 70, "spine": 6, "inner_w": 24, "opening": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "spine >= 3",
+      "severity": "error",
+      "message": { "en": "Spine must be at least 3 mm", "es": "La espina debe ser de al menos 3 mm" }
+    },
+    {
+      "expression": "opening <= inner_w",
+      "severity": "warning",
+      "message": { "en": "A very large opening weakens the body", "es": "Una abertura muy grande debilita el cuerpo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "utility_gate",
+        "label": { "en": "Utility Gate", "es": "Compuerta Utilitaria" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["gate_type", "opening", "spine"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "An everyday utility clip printed on demand in any size — for keys, bags, cables, and shop organisation. Explicitly a non-safety gear clip, sized to the task instead of bought as fixed hardware.",
+      "es": "Un clip utilitario cotidiano impreso bajo demanda en cualquier tamaño — para llaves, bolsas, cables y organización de taller. Explícitamente un clip de equipo sin función de seguridad, dimensionado a la tarea en vez de comprado como hardware fijo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["carabiner", "clip", "keychain", "s-hook", "utility", "household", "hyperobject", "commons"]
+}

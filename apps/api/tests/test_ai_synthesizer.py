@@ -1,11 +1,13 @@
 import json
-
-import pytest
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
+
 from config import Config
-from services.ai.ai_synthesizer import parse_synthesis, build_synthesis_prompt
+from services.ai.ai_synthesizer import build_synthesis_prompt, parse_synthesis
+
 
 @pytest.fixture
 def mock_projects_dir(monkeypatch):

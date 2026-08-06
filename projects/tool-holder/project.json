@@ -1,0 +1,235 @@
+{
+  "project": {
+    "name": "Tool Holder (CNC / Lathe)",
+    "slug": "tool-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A shop organizer that holds cutting tools by their shank. A block carries an array of correctly-sized bores or pockets for the selected tool family — straight-shank end mills, ER collets, indexable lathe inserts, or a graduated drill index — and can be freestanding, wall-mounted, or dropped into a drawer as a low tray.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un organizador de taller que sujeta herramientas de corte por su vástago. Un bloque lleva un arreglo de orificios o cavidades del tamaño correcto para la familia de herramienta seleccionada — fresas de vástago recto, boquillas ER, insertos de torno o un índice graduado de brocas — y puede ser independiente, montado en pared o colocado en un cajón como bandeja baja.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tool-holder.webp",
+    "difficulty": "intermediate",
+    "tags": ["tool-holder", "cnc", "lathe", "end-mill", "er-collet", "drill-index", "shop-organization", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "block",
+      "label": { "en": "Block (freestanding)", "es": "Bloque (independiente)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["block"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "wall_rack",
+      "label": { "en": "Wall Rack", "es": "Estante de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_rack"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "drawer_insert",
+      "label": { "en": "Drawer Insert", "es": "Inserto de Cajón" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["drawer_insert"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "block", "label": { "en": "Block", "es": "Bloque" }, "render_mode": 0, "color": "#7c6b5b" },
+    { "id": "wall_rack", "label": { "en": "Wall Rack", "es": "Estante de Pared" }, "render_mode": 0, "color": "#8c7b6b" },
+    { "id": "drawer_insert", "label": { "en": "Drawer Insert", "es": "Inserto de Cajón" }, "render_mode": 0, "color": "#9c8b7b" }
+  ],
+  "parameter_groups": [
+    { "id": "tool", "label": { "en": "Tool", "es": "Herramienta" } },
+    { "id": "array", "label": { "en": "Array", "es": "Arreglo" } },
+    { "id": "block", "label": { "en": "Block", "es": "Bloque" } },
+    { "id": "mounting", "label": { "en": "Wall Mount", "es": "Montaje en Pared" } }
+  ],
+  "parameters": [
+    {
+      "id": "tool_type", "type": "select", "default": "end_mill",
+      "group": "tool", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Tool Type", "es": "Tipo de Herramienta" },
+      "tooltip": { "en": "Which cutting-tool family the openings are sized for", "es": "Para qué familia de herramienta de corte se dimensionan los orificios" },
+      "options": [
+        { "value": "end_mill", "label": { "en": "End Mill (straight shank)", "es": "Fresa (vástago recto)" } },
+        { "value": "er_collet", "label": { "en": "ER Collet", "es": "Boquilla ER" } },
+        { "value": "lathe_insert", "label": { "en": "Lathe Insert (tray)", "es": "Inserto de Torno (bandeja)" } },
+        { "value": "drill_index", "label": { "en": "Drill Index (graduated)", "es": "Índice de Brocas (graduado)" } }
+      ]
+    },
+    {
+      "id": "shank_dia", "type": "slider", "default": 6.0, "min": 1.0, "max": 40.0, "step": 0.5,
+      "group": "tool", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Shank Diameter (mm)", "es": "Diámetro de Vástago (mm)" },
+      "tooltip": { "en": "Straight shank diameter (end mill family)", "es": "Diámetro de vástago recto (familia de fresas)" }
+    },
+    {
+      "id": "er_series", "type": "select", "default": "ER20",
+      "group": "tool", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "ER Collet Series", "es": "Serie de Boquilla ER" },
+      "tooltip": { "en": "ER collet series (sets the bore diameter for the ER family)", "es": "Serie de boquilla ER (define el diámetro para la familia ER)" },
+      "options": [
+        { "value": "ER11", "label": { "en": "ER11", "es": "ER11" } },
+        { "value": "ER16", "label": { "en": "ER16", "es": "ER16" } },
+        { "value": "ER20", "label": { "en": "ER20", "es": "ER20" } },
+        { "value": "ER25", "label": { "en": "ER25", "es": "ER25" } },
+        { "value": "ER32", "label": { "en": "ER32", "es": "ER32" } }
+      ]
+    },
+    {
+      "id": "insert_w", "type": "slider", "default": 14.0, "min": 4.0, "max": 40.0, "step": 0.5,
+      "group": "tool", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Insert Pocket Size (mm)", "es": "Tamaño de Cavidad de Inserto (mm)" },
+      "tooltip": { "en": "Square pocket size for indexable inserts (lathe insert family)", "es": "Tamaño de cavidad cuadrada para insertos indexables (familia de torno)" }
+    },
+    {
+      "id": "drill_min", "type": "slider", "default": 2.0, "min": 0.6, "max": 20.0, "step": 0.1,
+      "group": "tool", "modes": ["block", "wall_rack", "drawer_insert"], "advanced": true,
+      "label": { "en": "Smallest Drill (mm)", "es": "Broca Más Pequeña (mm)" },
+      "tooltip": { "en": "Diameter of the first drill in the index", "es": "Diámetro de la primera broca del índice" }
+    },
+    {
+      "id": "drill_step", "type": "slider", "default": 1.0, "min": 0.1, "max": 5.0, "step": 0.1,
+      "group": "tool", "modes": ["block", "wall_rack", "drawer_insert"], "advanced": true,
+      "label": { "en": "Drill Increment (mm)", "es": "Incremento de Broca (mm)" },
+      "tooltip": { "en": "Size step between successive drills in the index", "es": "Paso de tamaño entre brocas sucesivas del índice" }
+    },
+    {
+      "id": "slots", "type": "slider", "default": 8, "min": 1, "max": 24, "step": 1,
+      "group": "array", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Tools per Row", "es": "Herramientas por Fila" },
+      "tooltip": { "en": "Number of tool openings in each row", "es": "Número de orificios de herramienta en cada fila" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 1, "min": 1, "max": 8, "step": 1,
+      "group": "array", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Number of rows of tools", "es": "Número de filas de herramientas" }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 25.0, "min": 6.0, "max": 80.0, "step": 1.0,
+      "group": "array", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Spacing (mm)", "es": "Separación (mm)" },
+      "tooltip": { "en": "Centre-to-centre spacing between tool openings", "es": "Separación centro a centro entre orificios de herramienta" }
+    },
+    {
+      "id": "bore_depth", "type": "slider", "default": 22.0, "min": 4.0, "max": 100.0, "step": 1.0,
+      "group": "block", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Bore Depth (mm)", "es": "Profundidad de Orificio (mm)" },
+      "tooltip": { "en": "How deep each bore / pocket goes", "es": "Qué tan profundo llega cada orificio / cavidad" }
+    },
+    {
+      "id": "block_h", "type": "slider", "default": 30.0, "min": 8.0, "max": 120.0, "step": 1.0,
+      "group": "block", "modes": ["block", "wall_rack", "drawer_insert"],
+      "label": { "en": "Block Height (mm)", "es": "Altura del Bloque (mm)" },
+      "tooltip": { "en": "Overall block height (tray is capped lower)", "es": "Altura total del bloque (la bandeja se limita más baja)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 12.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "block", "modes": ["block", "wall_rack", "drawer_insert"], "advanced": true,
+      "label": { "en": "Edge Margin (mm)", "es": "Margen de Borde (mm)" },
+      "tooltip": { "en": "Material around the array", "es": "Material alrededor del arreglo" }
+    },
+    {
+      "id": "wall_mount", "type": "checkbox", "default": false,
+      "group": "mounting", "modes": ["block"],
+      "label": { "en": "Wall Mount Back Plate", "es": "Placa Trasera de Pared" },
+      "tooltip": { "en": "Informational — use the Wall Rack mode for a back plate + screw holes", "es": "Informativo — usa el modo Estante de Pared para placa trasera + agujeros" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "mounting", "modes": ["wall_rack"], "advanced": true,
+      "label": { "en": "Wall Screw Diameter (mm)", "es": "Diámetro de Tornillo de Pared (mm)" },
+      "tooltip": { "en": "Clearance diameter for the wall screws", "es": "Diámetro de holgura para los tornillos de pared" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "endmill_6mm", "mode": "block",
+      "label": { "en": "6 mm End Mill Block (8)", "es": "Bloque de Fresas 6 mm (8)" },
+      "values": { "tool_type": "end_mill", "shank_dia": 6, "slots": 8, "pitch": 22, "bore_depth": 25 }
+    },
+    {
+      "id": "er20_rack", "mode": "wall_rack",
+      "label": { "en": "ER20 Collet Wall Rack", "es": "Estante ER20 de Pared" },
+      "values": { "tool_type": "er_collet", "er_series": "ER20", "slots": 6, "pitch": 30, "bore_depth": 26 }
+    },
+    {
+      "id": "drill_index_13", "mode": "block",
+      "label": { "en": "Drill Index 2–14 mm", "es": "Índice de Brocas 2–14 mm" },
+      "values": { "tool_type": "drill_index", "slots": 13, "drill_min": 2, "drill_step": 1, "pitch": 18, "bore_depth": 30 }
+    },
+    {
+      "id": "insert_tray", "mode": "drawer_insert",
+      "label": { "en": "Lathe Insert Drawer Tray", "es": "Bandeja de Insertos de Torno" },
+      "values": { "tool_type": "lathe_insert", "insert_w": 14, "slots": 6, "rows": 2, "pitch": 22, "bore_depth": 8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pitch > shank_dia",
+      "severity": "warning",
+      "message": { "en": "Spacing is tight relative to the tool diameter", "es": "La separación es ajustada respecto al diámetro de la herramienta" }
+    },
+    {
+      "expression": "block_h > bore_depth",
+      "severity": "error",
+      "message": { "en": "Block must be taller than the bore depth", "es": "El bloque debe ser más alto que la profundidad del orificio" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 160, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 280] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "tool_shank_bore",
+        "label": { "en": "Tool Shank Bore", "es": "Orificio del Vástago de Herramienta" },
+        "geometry_type": "socket",
+        "standard": "ER / straight-shank",
+        "parameters": ["tool_type", "shank_dia", "er_series", "bore_depth"]
+      },
+      {
+        "id": "tool_array_grid",
+        "label": { "en": "Tool Array Grid", "es": "Rejilla del Arreglo de Herramientas" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["slots", "rows", "pitch"]
+      },
+      {
+        "id": "wall_screw_pattern",
+        "label": { "en": "Wall Screw Pattern", "es": "Patrón de Tornillos de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["screw_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Shank-sized organization for machinists and hobby shops — one holder family sizes bores to end mills, ER collets, lathe inserts, or a graduated drill set, so cutting tools are protected and instantly found without buying dedicated trays per tool.",
+      "es": "Organización a medida del vástago para maquinistas y talleres — una familia de soportes dimensiona orificios para fresas, boquillas ER, insertos de torno o un juego graduado de brocas, protegiendo las herramientas de corte y encontrándolas al instante sin comprar bandejas dedicadas por herramienta."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["tool-holder", "cnc", "lathe", "shop-organization", "industrial", "hyperobject", "commons"]
+}

@@ -1,0 +1,204 @@
+{
+  "project": {
+    "name": "Cup-Holder Caddy Adapter",
+    "slug": "cupholder-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Turns a car cup holder into a useful caddy. A tapered stem drops into the cup-holder well (sized to your holder diameter, with a gentle draft so it self-centres and wedges) and a platform on top carries a phone slot, a multi-well coin tray, or a combo organiser with side pockets and pen bores.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Convierte el portavasos del auto en un organizador útil. Un vástago cónico se inserta en el hueco del portavasos (dimensionado al diámetro de tu portavasos, con un ángulo de salida suave para que se centre y se cuñe) y una plataforma superior lleva una ranura para teléfono, una bandeja de monedas de varios compartimentos o un organizador combinado con bolsillos laterales y orificios para plumas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cupholder-adapter.webp",
+    "difficulty": "beginner",
+    "tags": ["cupholder", "car", "caddy", "phone", "organizer", "automotive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "phone_caddy",
+      "label": { "en": "Phone Caddy", "es": "Soporte de Teléfono" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["phone_caddy"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "coin_tray",
+      "label": { "en": "Coin Tray", "es": "Bandeja de Monedas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["coin_tray"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "multi_caddy",
+      "label": { "en": "Multi Caddy", "es": "Organizador Múltiple" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_caddy"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "phone_caddy", "label": { "en": "Phone Caddy", "es": "Soporte de Teléfono" }, "render_mode": 0, "color": "#4b5f74" },
+    { "id": "coin_tray", "label": { "en": "Coin Tray", "es": "Bandeja de Monedas" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "multi_caddy", "label": { "en": "Multi Caddy", "es": "Organizador Múltiple" }, "render_mode": 0, "color": "#8bb5cc" }
+  ],
+  "parameter_groups": [
+    { "id": "fit", "label": { "en": "Cup-Holder Fit", "es": "Ajuste al Portavasos" } },
+    { "id": "platform", "label": { "en": "Platform", "es": "Plataforma" } },
+    { "id": "phone", "label": { "en": "Phone Slot", "es": "Ranura de Teléfono" } },
+    { "id": "tray", "label": { "en": "Tray & Pockets", "es": "Bandeja y Bolsillos" } }
+  ],
+  "parameters": [
+    {
+      "id": "holder_dia", "type": "slider", "default": 74.0, "min": 40.0, "max": 100.0, "step": 0.5,
+      "group": "fit", "modes": ["phone_caddy", "coin_tray", "multi_caddy"],
+      "label": { "en": "Cup-Holder Diameter (mm)", "es": "Diámetro del Portavasos (mm)" },
+      "tooltip": { "en": "Inner diameter of the cup-holder well the stem drops into", "es": "Diámetro interior del hueco del portavasos donde entra el vástago" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "stem_depth", "type": "slider", "default": 45.0, "min": 20.0, "max": 80.0, "step": 1.0,
+      "group": "fit", "modes": ["phone_caddy", "coin_tray", "multi_caddy"],
+      "label": { "en": "Stem Depth (mm)", "es": "Profundidad del Vástago (mm)" },
+      "tooltip": { "en": "How deep the tapered stem sits inside the well", "es": "Qué tan profundo se asienta el vástago cónico en el hueco" }
+    },
+    {
+      "id": "taper", "type": "slider", "default": 2.5, "min": 0.0, "max": 8.0, "step": 0.5,
+      "group": "fit", "modes": ["phone_caddy", "coin_tray", "multi_caddy"],
+      "label": { "en": "Taper per Side (mm)", "es": "Conicidad por Lado (mm)" },
+      "tooltip": { "en": "Draft over the stem depth so it self-centres and wedges", "es": "Ángulo de salida sobre la profundidad para que se centre y se cuñe" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "fit", "modes": ["phone_caddy", "coin_tray", "multi_caddy"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Generic wall / rib thickness", "es": "Grosor genérico de pared / nervadura" }
+    },
+    {
+      "id": "base_dia", "type": "slider", "default": 0.0, "min": 0.0, "max": 140.0, "step": 1.0,
+      "group": "platform", "modes": ["phone_caddy", "coin_tray", "multi_caddy"],
+      "label": { "en": "Platform Diameter (mm, 0=auto)", "es": "Diámetro de Plataforma (mm, 0=auto)" },
+      "tooltip": { "en": "Top platform diameter; 0 auto-sizes to rest on the well rim", "es": "Diámetro de la plataforma superior; 0 se autoajusta para apoyar en el borde" }
+    },
+    {
+      "id": "base_thick", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "platform", "modes": ["phone_caddy", "coin_tray", "multi_caddy"],
+      "label": { "en": "Platform Thickness (mm)", "es": "Grosor de Plataforma (mm)" },
+      "tooltip": { "en": "Thickness of the platform slab", "es": "Grosor de la losa de la plataforma" }
+    },
+    {
+      "id": "phone_thick", "type": "slider", "default": 14.0, "min": 6.0, "max": 30.0, "step": 0.5,
+      "group": "phone", "modes": ["phone_caddy", "multi_caddy"],
+      "label": { "en": "Device Slot Width (mm)", "es": "Ancho de Ranura del Dispositivo (mm)" },
+      "tooltip": { "en": "Phone/device thickness including case", "es": "Grosor del teléfono/dispositivo incluyendo la funda" }
+    },
+    {
+      "id": "phone_len", "type": "slider", "default": 82.0, "min": 40.0, "max": 120.0, "step": 1.0,
+      "group": "phone", "modes": ["phone_caddy", "multi_caddy"],
+      "label": { "en": "Device Slot Length (mm)", "es": "Largo de Ranura del Dispositivo (mm)" },
+      "tooltip": { "en": "Phone/device width that the slot cradles", "es": "Ancho del teléfono/dispositivo que sostiene la ranura" }
+    },
+    {
+      "id": "slot_height", "type": "slider", "default": 40.0, "min": 15.0, "max": 60.0, "step": 1.0,
+      "group": "phone", "modes": ["phone_caddy", "multi_caddy"],
+      "label": { "en": "Slot Wall Height (mm)", "es": "Altura de Pared de Ranura (mm)" },
+      "tooltip": { "en": "How tall the upright device walls rise", "es": "Qué tan alto suben las paredes verticales del dispositivo" }
+    },
+    {
+      "id": "coin_wells", "type": "slider", "default": 3, "min": 1, "max": 6, "step": 1,
+      "group": "tray", "modes": ["coin_tray"],
+      "label": { "en": "Tray Compartments", "es": "Compartimentos de Bandeja" },
+      "tooltip": { "en": "Number of divided compartments in the coin tray", "es": "Número de compartimentos divididos en la bandeja" }
+    },
+    {
+      "id": "tray_depth", "type": "slider", "default": 22.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "tray", "modes": ["coin_tray"],
+      "label": { "en": "Tray Depth (mm)", "es": "Profundidad de Bandeja (mm)" },
+      "tooltip": { "en": "Depth of the coin/change compartments", "es": "Profundidad de los compartimentos de monedas" }
+    },
+    {
+      "id": "pen_holes", "type": "slider", "default": 2, "min": 0, "max": 4, "step": 1,
+      "group": "tray", "modes": ["multi_caddy"],
+      "label": { "en": "Pen Bores", "es": "Orificios para Plumas" },
+      "tooltip": { "en": "Number of pen/stylus holes on the combo caddy", "es": "Número de orificios para plumas/lápices en el organizador combinado" }
+    },
+    {
+      "id": "pen_dia", "type": "slider", "default": 12.0, "min": 6.0, "max": 20.0, "step": 0.5,
+      "group": "tray", "modes": ["multi_caddy"], "advanced": true,
+      "label": { "en": "Pen Bore Diameter (mm)", "es": "Diámetro de Orificio de Pluma (mm)" },
+      "tooltip": { "en": "Diameter of each pen/stylus bore", "es": "Diámetro de cada orificio para pluma/lápiz" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_phone", "mode": "phone_caddy",
+      "label": { "en": "Standard Phone Dock", "es": "Base de Teléfono Estándar" },
+      "values": { "holder_dia": 74, "stem_depth": 45, "phone_thick": 14, "phone_len": 82, "slot_height": 40 }
+    },
+    {
+      "id": "change_tray", "mode": "coin_tray",
+      "label": { "en": "Coins & Change Tray", "es": "Bandeja de Monedas y Cambio" },
+      "values": { "holder_dia": 78, "stem_depth": 40, "coin_wells": 3, "tray_depth": 24 }
+    },
+    {
+      "id": "console_organizer", "mode": "multi_caddy",
+      "label": { "en": "Console Organizer", "es": "Organizador de Consola" },
+      "values": { "holder_dia": 80, "stem_depth": 42, "phone_thick": 16, "pen_holes": 3, "pen_dia": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "taper <= holder_dia / 2 - 6",
+      "severity": "warning",
+      "message": { "en": "Taper is large relative to the holder diameter", "es": "La conicidad es grande respecto al diámetro del portavasos" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.2 mm", "es": "La pared debe ser de al menos 1.2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "cup_holder_taper",
+        "label": { "en": "Cup-Holder Taper", "es": "Cono de Portavasos" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["holder_dia", "stem_depth", "taper", "wall"]
+      },
+      {
+        "id": "device_platform",
+        "label": { "en": "Device Platform", "es": "Plataforma de Dispositivo" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["base_dia", "base_thick", "phone_thick", "phone_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cup holders are the one near-universal fixture in every car; a tapered adapter converts that wasted well into a phone dock, coin tray, or organiser sized to the exact holder, replacing throwaway retail caddies that never quite fit.",
+      "es": "Los portavasos son el accesorio casi universal en todo auto; un adaptador cónico convierte ese hueco desaprovechado en base de teléfono, bandeja de monedas u organizador dimensionado al portavasos exacto, reemplazando organizadores comerciales desechables que nunca ajustan bien."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cupholder", "car", "caddy", "automotive", "commercial", "hyperobject", "commons"]
+}

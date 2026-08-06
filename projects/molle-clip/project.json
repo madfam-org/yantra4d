@@ -1,0 +1,462 @@
+{
+  "project": {
+    "name": "MOLLE / Webbing Clip",
+    "slug": "molle-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Attachment hardware for the MOLLE / PALS webbing grid — the open military standard (MIL-W-17337 / A-A-55301) of 1 in webbing rows spaced 1 in apart and bartacked at 1.5 in columns. One PALS-pitch interface builds a serpentine MOLLE clip that weaves the grid, a rigid printable PALS field to attach onto, and a MALICE-style single-column clip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Hardware de fijación para la rejilla de cincha MOLLE / PALS — el estándar militar abierto (MIL-W-17337 / A-A-55301) de filas de cincha de 1 pulg espaciadas 1 pulg y cosidas cada 1.5 pulg. Una sola interfaz de paso PALS construye un clip MOLLE serpenteante que teje la rejilla, un campo PALS rígido imprimible para fijarse, y un clip de columna única estilo MALICE.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/molle-clip.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "molle",
+      "pals",
+      "webbing",
+      "clip",
+      "tactical",
+      "attachment",
+      "commercial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "molle_clip",
+      "label": {
+        "en": "MOLLE Weave Clip",
+        "es": "Clip Tejido MOLLE"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "molle_clip"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "pals_panel",
+      "label": {
+        "en": "PALS Field Panel",
+        "es": "Panel de Campo PALS"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "pals_panel"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 4,
+        "per_part": 18
+      }
+    },
+    {
+      "id": "malice_clip",
+      "label": {
+        "en": "MALICE-Style Clip",
+        "es": "Clip Estilo MALICE"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "malice_clip"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "molle_clip",
+      "label": {
+        "en": "MOLLE Weave Clip",
+        "es": "Clip Tejido MOLLE"
+      },
+      "render_mode": 0,
+      "color": "#4b5320"
+    },
+    {
+      "id": "pals_panel",
+      "label": {
+        "en": "PALS Field Panel",
+        "es": "Panel de Campo PALS"
+      },
+      "render_mode": 0,
+      "color": "#5a642a"
+    },
+    {
+      "id": "malice_clip",
+      "label": {
+        "en": "MALICE-Style Clip",
+        "es": "Clip Estilo MALICE"
+      },
+      "render_mode": 0,
+      "color": "#697534"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "pals",
+      "label": {
+        "en": "PALS Grid",
+        "es": "Rejilla PALS"
+      }
+    },
+    {
+      "id": "clip",
+      "label": {
+        "en": "Clip",
+        "es": "Clip"
+      }
+    },
+    {
+      "id": "panel",
+      "label": {
+        "en": "Panel",
+        "es": "Panel"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "row_h",
+      "type": "slider",
+      "default": 25.4,
+      "min": 18.0,
+      "max": 32.0,
+      "step": 0.1,
+      "group": "pals",
+      "modes": [
+        "molle_clip",
+        "pals_panel",
+        "malice_clip"
+      ],
+      "label": {
+        "en": "Webbing Width (mm)",
+        "es": "Ancho de Cincha (mm)"
+      },
+      "tooltip": {
+        "en": "PALS row height / webbing width. Standard is 1 in = 25.4 mm",
+        "es": "Altura de fila PALS / ancho de cincha. El estándar es 1 pulg = 25.4 mm"
+      }
+    },
+    {
+      "id": "row_pitch",
+      "type": "slider",
+      "default": 25.4,
+      "min": 18.0,
+      "max": 40.0,
+      "step": 0.1,
+      "group": "pals",
+      "modes": [
+        "molle_clip",
+        "pals_panel",
+        "malice_clip"
+      ],
+      "label": {
+        "en": "Row Pitch (mm)",
+        "es": "Paso de Fila (mm)"
+      },
+      "tooltip": {
+        "en": "Row-to-row vertical spacing. Standard is 1 in = 25.4 mm",
+        "es": "Espaciado vertical entre filas. El estándar es 1 pulg = 25.4 mm"
+      }
+    },
+    {
+      "id": "col_pitch",
+      "type": "slider",
+      "default": 38.1,
+      "min": 28.0,
+      "max": 50.0,
+      "step": 0.1,
+      "group": "pals",
+      "modes": [
+        "pals_panel"
+      ],
+      "label": {
+        "en": "Bartack Column Pitch (mm)",
+        "es": "Paso de Columna (mm)"
+      },
+      "tooltip": {
+        "en": "Bartack column spacing. Standard is 1.5 in = 38.1 mm",
+        "es": "Espaciado de columnas cosidas. El estándar es 1.5 pulg = 38.1 mm"
+      }
+    },
+    {
+      "id": "strap_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "clip",
+      "modes": [
+        "molle_clip",
+        "pals_panel",
+        "malice_clip"
+      ],
+      "label": {
+        "en": "Material Thickness (mm)",
+        "es": "Grosor de Material (mm)"
+      },
+      "tooltip": {
+        "en": "Clip / strap / bar material thickness",
+        "es": "Grosor del material del clip / correa / barra"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.1,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "clip",
+      "modes": [
+        "molle_clip",
+        "pals_panel",
+        "malice_clip"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Weave Clearance (mm)",
+        "es": "Holgura de Tejido (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance for threading through webbing rows",
+        "es": "Holgura para pasar a través de las filas de cincha"
+      }
+    },
+    {
+      "id": "weave_rows",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "group": "clip",
+      "modes": [
+        "molle_clip"
+      ],
+      "label": {
+        "en": "Rows Woven",
+        "es": "Filas Tejidas"
+      },
+      "tooltip": {
+        "en": "How many PALS rows the clip weaves through",
+        "es": "Cuántas filas PALS teje el clip"
+      }
+    },
+    {
+      "id": "panel_rows",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "panel",
+      "modes": [
+        "pals_panel"
+      ],
+      "label": {
+        "en": "Panel Rows",
+        "es": "Filas del Panel"
+      },
+      "tooltip": {
+        "en": "Number of PALS rows in the field",
+        "es": "Número de filas PALS en el campo"
+      }
+    },
+    {
+      "id": "panel_cols",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "panel",
+      "modes": [
+        "pals_panel"
+      ],
+      "label": {
+        "en": "Panel Columns",
+        "es": "Columnas del Panel"
+      },
+      "tooltip": {
+        "en": "Number of bartack columns in the field",
+        "es": "Número de columnas cosidas en el campo"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "two_row_clip",
+      "mode": "molle_clip",
+      "label": {
+        "en": "2-Row Weave Clip",
+        "es": "Clip Tejido de 2 Filas"
+      },
+      "values": {
+        "row_h": 25.4,
+        "row_pitch": 25.4,
+        "weave_rows": 2,
+        "strap_t": 2.4
+      }
+    },
+    {
+      "id": "three_by_three_field",
+      "mode": "pals_panel",
+      "label": {
+        "en": "3x3 PALS Field",
+        "es": "Campo PALS 3x3"
+      },
+      "values": {
+        "row_h": 25.4,
+        "row_pitch": 25.4,
+        "col_pitch": 38.1,
+        "panel_rows": 3,
+        "panel_cols": 3
+      }
+    },
+    {
+      "id": "malice_two_row",
+      "mode": "malice_clip",
+      "label": {
+        "en": "2-Row MALICE Clip",
+        "es": "Clip MALICE de 2 Filas"
+      },
+      "values": {
+        "row_h": 25.4,
+        "row_pitch": 25.4,
+        "strap_t": 2.4
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "col_pitch > row_h",
+      "severity": "warning",
+      "message": {
+        "en": "Bartack column pitch should exceed the webbing width (PALS is 1.5 in vs 1 in)",
+        "es": "El paso de columna debe superar el ancho de cincha (PALS es 1.5 pulg vs 1 pulg)"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        130,
+        130,
+        110
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -200,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "pals_grid",
+        "label": {
+          "en": "PALS / MOLLE Grid",
+          "es": "Rejilla PALS / MOLLE"
+        },
+        "geometry_type": "snap",
+        "standard": "MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
+        "parameters": [
+          "row_h",
+          "row_pitch",
+          "col_pitch"
+        ]
+      },
+      {
+        "id": "weave_strap",
+        "label": {
+          "en": "Weave Strap Profile",
+          "es": "Perfil de Correa Tejida"
+        },
+        "geometry_type": "profile",
+        "standard": "25mm webbing",
+        "parameters": [
+          "row_h",
+          "strap_t",
+          "weave_rows"
+        ],
+        "compatible_with": [
+          "pet-hardware",
+          "strap-buckle"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "MOLLE / PALS is the open interoperable attachment grid that every pack, plate carrier and pouch maker shares, but a single lost or broken clip strands a pouch. Printable clips and a rigid PALS field sized to the 1 in / 1.5 in standard let anyone attach, repair or extend a load-out from printed parts instead of buying proprietary hardware, and add MOLLE to gear that never had it.",
+      "es": "MOLLE / PALS es la rejilla de fijación abierta e interoperable que comparten todos los fabricantes de mochilas, chalecos y bolsas, pero un solo clip perdido o roto inutiliza una bolsa. Clips imprimibles y un campo PALS rígido ajustados al estándar de 1 pulg / 1.5 pulg permiten fijar, reparar o ampliar un equipo con piezas impresas en vez de comprar hardware propietario, y añadir MOLLE a equipo que nunca lo tuvo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "molle",
+    "pals",
+    "webbing",
+    "clip",
+    "tactical",
+    "attachment",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

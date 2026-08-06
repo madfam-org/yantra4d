@@ -1,0 +1,159 @@
+{
+  "project": {
+    "name": "Opener Aid",
+    "slug": "opener-aid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Grip aids that give leverage and a non-slip hold to hands with limited strength. A stepped cone drops over round jar and bottle lids across a range of diameters, a lever pries crown caps, and a small hook lifts stubborn can tabs. Printable everyday-living aids, not certified medical devices.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Ayudas de agarre que dan palanca y sujeción antideslizante a manos con poca fuerza. Un cono escalonado cae sobre tapas redondas de frascos y botellas en un rango de diámetros, una palanca abre corcholatas y un pequeño gancho levanta anillas de lata difíciles. Ayudas imprimibles para la vida diaria, no dispositivos médicos certificados.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/opener-aid.webp",
+    "difficulty": "beginner",
+    "tags": ["opener", "jar", "bottle", "arthritis", "grip", "assistive", "accessibility", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "jar_opener",
+      "label": { "en": "Jar Opener", "es": "Abridor de Frascos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["jar_opener"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "bottle_opener",
+      "label": { "en": "Bottle Opener", "es": "Abridor de Botellas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bottle_opener"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "tab_opener",
+      "label": { "en": "Can-Tab Opener", "es": "Abridor de Anillas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tab_opener"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "jar_opener", "label": { "en": "Jar Opener", "es": "Abridor de Frascos" }, "render_mode": 0, "color": "#b45309" },
+    { "id": "bottle_opener", "label": { "en": "Bottle Opener", "es": "Abridor de Botellas" }, "render_mode": 0, "color": "#d97706" },
+    { "id": "tab_opener", "label": { "en": "Can-Tab Opener", "es": "Abridor de Anillas" }, "render_mode": 0, "color": "#f59e0b" }
+  ],
+  "parameter_groups": [
+    { "id": "lids", "label": { "en": "Lid Range", "es": "Rango de Tapas" } },
+    { "id": "body", "label": { "en": "Body & Grip", "es": "Cuerpo y Agarre" } },
+    { "id": "lever", "label": { "en": "Lever", "es": "Palanca" } }
+  ],
+  "parameters": [
+    {
+      "id": "lid_min", "type": "slider", "default": 40.0, "min": 20.0, "max": 120.0, "step": 1.0,
+      "group": "lids", "modes": ["jar_opener"],
+      "label": { "en": "Smallest Lid (mm)", "es": "Tapa Más Pequeña (mm)" },
+      "tooltip": { "en": "Smallest lid diameter the cone should grip (top step)", "es": "Diámetro de tapa más pequeño que el cono debe agarrar (escalón superior)" }
+    },
+    {
+      "id": "lid_max", "type": "slider", "default": 85.0, "min": 30.0, "max": 160.0, "step": 1.0,
+      "group": "lids", "modes": ["jar_opener"],
+      "label": { "en": "Largest Lid (mm)", "es": "Tapa Más Grande (mm)" },
+      "tooltip": { "en": "Largest lid diameter the cone should grip (bottom step)", "es": "Diámetro de tapa más grande que el cono debe agarrar (escalón inferior)" }
+    },
+    {
+      "id": "steps", "type": "slider", "default": 4, "min": 2, "max": 6, "step": 1,
+      "group": "lids", "modes": ["jar_opener"],
+      "label": { "en": "Grip Steps", "es": "Escalones de Agarre" },
+      "tooltip": { "en": "Number of internal lid-diameter steps", "es": "Número de escalones internos de diámetro de tapa" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.2,
+      "group": "body", "modes": ["jar_opener", "bottle_opener", "tab_opener"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall of the cone / thickness of the lever tools", "es": "Pared del cono / grosor de las herramientas de palanca" }
+    },
+    {
+      "id": "grip_h", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "body", "modes": ["jar_opener"],
+      "label": { "en": "Step Height (mm)", "es": "Altura de Escalón (mm)" },
+      "tooltip": { "en": "Height of each grip step (how deep the lid seats)", "es": "Altura de cada escalón de agarre (qué tan profundo se asienta la tapa)" }
+    },
+    {
+      "id": "flutes", "type": "slider", "default": 12, "min": 0, "max": 40, "step": 1,
+      "group": "body", "modes": ["jar_opener", "tab_opener"],
+      "label": { "en": "Hand-Grip Flutes", "es": "Estrías de Agarre" },
+      "tooltip": { "en": "Vertical flutes cut into the outer wall for a non-slip hold (0 = smooth)", "es": "Estrías verticales en la pared exterior para sujeción antideslizante (0 = liso)" }
+    },
+    {
+      "id": "lever_len", "type": "slider", "default": 95.0, "min": 50.0, "max": 160.0, "step": 1.0,
+      "group": "lever", "modes": ["bottle_opener", "tab_opener"],
+      "label": { "en": "Lever Length (mm)", "es": "Largo de Palanca (mm)" },
+      "tooltip": { "en": "Overall length of the bottle / tab lever — longer gives more leverage", "es": "Largo total de la palanca de botella / anilla — más largo da más apalancamiento" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "wide_range_jar", "mode": "jar_opener",
+      "label": { "en": "Wide-Range Jar Opener", "es": "Abridor de Frascos Amplio" },
+      "values": { "lid_min": 40, "lid_max": 90, "steps": 5, "flutes": 14 }
+    },
+    {
+      "id": "big_lids", "mode": "jar_opener",
+      "label": { "en": "Large Lids (mason/pickle)", "es": "Tapas Grandes (conserva)" },
+      "values": { "lid_min": 60, "lid_max": 120, "steps": 4 }
+    },
+    {
+      "id": "crown_lever", "mode": "bottle_opener",
+      "label": { "en": "Crown-Cap Lever", "es": "Palanca de Corcholata" },
+      "values": { "lever_len": 100, "wall": 5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "lid_max > lid_min",
+      "severity": "error",
+      "message": { "en": "Largest lid must exceed smallest lid", "es": "La tapa más grande debe superar a la más pequeña" }
+    },
+    {
+      "expression": "wall >= 2.5",
+      "severity": "warning",
+      "message": { "en": "Thin walls may flex under torque", "es": "Paredes delgadas pueden flexionarse bajo torque" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "lid_grip_socket",
+        "label": { "en": "Lid Grip", "es": "Agarre de Tapa" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["lid_min", "lid_max", "steps", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Opening a jar is a daily barrier for people with arthritis or reduced grip strength. A one-piece stepped opener that fits many lid sizes — printable in a grippy material — preserves kitchen independence without a drawer of single-size gadgets.",
+      "es": "Abrir un frasco es una barrera diaria para personas con artritis o fuerza de agarre reducida. Un abridor escalonado de una pieza que se ajusta a muchos tamaños de tapa — imprimible en material antideslizante — preserva la independencia en la cocina sin un cajón lleno de utensilios de un solo tamaño."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["opener", "jar", "bottle", "arthritis", "assistive", "medical", "hyperobject", "commons"]
+}

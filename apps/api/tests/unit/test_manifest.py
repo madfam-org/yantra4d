@@ -94,6 +94,61 @@ class TestProjectManifest:
         m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
         assert m.engine == "openscad"
 
+
+class TestModeEngine:
+    """Per-mode engine resolution — the dual-engine cartridge feature.
+
+    Precedence: explicit mode `engine` > inference from scad_file extension
+    (.py/.cq -> cadquery) > project-level engine. An `implicit` project always
+    renders every mode with the implicit engine.
+    """
+
+    def _dual(self, tmp_path):
+        # project.engine defaults to openscad; modes mix .scad and .py + explicit overrides
+        return _write_manifest(tmp_path, extra={
+            "modes": [
+                {"id": "scad_mode", "scad_file": "part.scad", "label": "S", "parts": ["a"], "estimate": {"base_units": 1}},
+                {"id": "cq_mode", "scad_file": "main.py", "label": "C", "parts": ["b"], "estimate": {"base_units": 1}},
+                {"id": "forced_cq", "scad_file": "x.scad", "engine": "cadquery", "label": "F", "parts": ["c"], "estimate": {"base_units": 1}},
+                {"id": "forced_scad", "scad_file": "main.py", "engine": "openscad", "label": "G", "parts": ["d"], "estimate": {"base_units": 1}},
+            ],
+        })
+
+    def test_mode_engine_fallback_to_project(self, tmp_path):
+        d = self._dual(tmp_path)
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.mode_engine("scad_mode") == "openscad"  # .scad + project default
+
+    def test_mode_engine_inferred_from_py(self, tmp_path):
+        d = self._dual(tmp_path)
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.mode_engine("cq_mode") == "cadquery"  # .py scad_file infers cadquery
+
+    def test_mode_engine_explicit_override_wins(self, tmp_path):
+        d = self._dual(tmp_path)
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.mode_engine("forced_cq") == "cadquery"    # explicit beats .scad
+        assert m.mode_engine("forced_scad") == "openscad"  # explicit beats .py inference
+
+    def test_mode_engine_none_returns_project_default(self, tmp_path):
+        d = self._dual(tmp_path)
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.mode_engine(None) == "openscad"
+
+    def test_mode_engine_unknown_mode_returns_project_default(self, tmp_path):
+        d = self._dual(tmp_path)
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        assert m.mode_engine("does_not_exist") == "openscad"
+
+    def test_mode_engine_implicit_project_overrides_all(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={
+            "project": {"thumbnail": "t.png", "tags": ["x"], "difficulty": "beginner", "name": "I", "slug": "i", "version": "1.0.0", "description": "d", "hyperobject": {"is_hyperobject": True, "implicit_field": {"type": "tpms"}}},
+            "modes": [{"id": "cq_mode", "scad_file": "main.py", "engine": "cadquery", "label": "C", "parts": ["b"], "estimate": {"base_units": 1}}],
+        })
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        # implicit projects render every mode with implicit, ignoring per-mode hints
+        assert m.mode_engine("cq_mode") == "implicit"
+
     def test_bom_hardware_structure(self, tmp_path):
         bom = {
             "hardware": [

@@ -47,8 +47,9 @@ Honest, code-verified snapshot. **Working today:**
 - **Dual rendering paths** — browser-side OpenSCAD **WASM** worker plus server-side native rendering, with automatic backend detection and a complexity **circuit breaker** that falls back between them.
 - **STL / mesh export** — server render pipeline produces STL/GLB/3MF artifacts.
 - **Geometry verification** — dedicated verify endpoint (`apps/api/routes/engine/verify.py`) and parity QA scripts (`scripts/qa/verify_parity.py`).
-- **Cartridge project system** — `project.json` manifests, 33 submodule projects, admin app, Janua-authenticated admin flows.
+- **Cartridge project system** — `project.json` manifests, 200-object CadQuery-first Commons catalog (plus curated art/misc projects), admin app, Janua-authenticated admin flows.
 - **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
+- **Per-mode engine resolution** — a single cartridge can mix OpenSCAD and CadQuery modes; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
 
 **Mocked or heuristic today (presented as roadmap, not shipped):**
 
@@ -58,19 +59,41 @@ Honest, code-verified snapshot. **Working today:**
 
 ---
 
-## 📦 The Commons Catalog (33 Projects — each an independent GitHub repo)
+## 📦 The Commons Catalog (200 hyperobjects, CadQuery-first)
 
-All 33 projects are public repos under `madfam-org`, licensed **CERN-OHL-W-2.0**. Every `projects/<slug>/` is a git submodule.
+The Commons is a demand-grounded catalog of **200 Bounded 4D Hyperobjects**, authored
+**CadQuery-first** (exact B-Rep, STEP export) and licensed **CERN-OHL-W-2.0**. Each
+`projects/<slug>/` is a self-contained cartridge (`main.py` + `project.json` + docs);
+the flagship interfaces are also published as independent `madfam-org` git submodules.
 
-| Ecosystem | Projects |
+Every cartridge is verified: all modes render **watertight** through the render sandbox
+and are **geometrically distinct** (each mode's `parts[]` id drives `target_part` dispatch).
+
+**The first 100 — ordered by Common Denominator Geometry leverage:**
+
+| Tier | Focus |
 | :--- | :--- |
-| **Storage & Enclosures** | Gridfinity · Multiboard · Rugged Box · Ultimate Box · YAPP Box · Portacosas |
-| **Precision Robotics** | Chronos-SCARA (Harmonic Drive) · Motor Mount · Gear Reducer · Gears · Fasteners · Parametric Connector |
-| **Generative Art** | Voronoi · Superformula · Torus Knot · Julia Vase · Maze · Spiral Planter · Relief |
-| **Medical & Bio** | Microscope Slide Holder 🔷 · Microscope Slide Hyperobject 🔷 · Glia Diagnostic · Prosthetic Socket |
-| **Hyperobjects** | Implicit Lattice (TPMS) · Extrusion · Framing · Custom MSH · Faircap Filter · DIN Rail Clip |
-| **Input Devices** | KeyV2 Keycaps · Soft Jaw |
-| **Construction** | STEMFIE · Tablaco (private) · PolyDice · CQ Hyperobject Test |
+| 1 · Universal Interfaces | Gridfinity, VESA, ¼-20, GoPro, bottle thread, DIN clip, T-slot, gears, fasteners, box |
+| 2 · Household Organization | dividers, pegboard/Multiboard, bins, hooks, shelf brackets |
+| 3 · Kitchen / Bath / Utility | coasters, tube squeezers, jar racks, funnels, knobs |
+| 4 · Mechanical & Kinematic | pulleys, bearings, gear trains, drag chain, springs, cams, lead-screw nuts |
+| 5 · Fastening & Joining | connectors, snap-fits, dovetails, threaded bosses, ball-sockets |
+| 6 · Electronics & Desk | enclosures, SBC cases, stands, risers, media caddies |
+| 7 · Jigs & Fixtures | soft jaws, drill guides, gauges, templates, handwheels |
+| 8 · Medical / Lab / Assistive | prosthetic sockets, slide holders, tube/pill racks, splints |
+| 9 · Filtration / Water / Garden | Faircap filter, pipe/hose fittings, planters, drip fittings |
+| 10 · Mobility / Automotive / EDC | Picatinny, bike/vent mounts, carabiners, keytags, French cleat |
+
+**The second 100 — deeper cuts plus new domains** (mounting systems, drone/FPV,
+automotive, kitchen, garden, workshop, electronics/maker, wearable/EDC, musical/studio,
+sports, marine/RV, pet, generative art, safety).
+
+**Dual-engine flagships** (CadQuery B-Rep modes + original OpenSCAD modes):
+Gridfinity · Gears · Fasteners · DIN Rail Clip · Soft Jaw · Faircap Filter ·
+Parametric Connector · Microscope Slide Holder · Prosthetic Socket.
+
+> See [`llms-full.txt`](./llms-full.txt) for the full machine-readable catalog with
+> per-object CDG interfaces, standards, and clone instructions.
 
 ---
 

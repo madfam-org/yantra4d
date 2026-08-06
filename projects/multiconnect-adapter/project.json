@@ -1,0 +1,205 @@
+{
+  "project": {
+    "name": "Multiconnect / GOEWS Adapter",
+    "slug": "multiconnect-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An accessory back that snaps into the popular Multiconnect (and GOEWS) wall-mount systems, so you can hang your own thing off a Multiconnect board. The back carries the male snap profile — a keyed, tapered snap tab that slides into the channel and locks. Three faces: a blank plate to build on, a J-hook, or a small open bin.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una parte trasera de accesorio que encaja en los populares sistemas de montaje de pared Multiconnect (y GOEWS), para colgar tu propio objeto de un tablero Multiconnect. La parte trasera lleva el perfil de encaje macho — una pestaña cónica con llave que se desliza en el canal y se bloquea. Tres caras: una placa en blanco para construir, un gancho en J, o un pequeño contenedor abierto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/multiconnect-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": ["multiconnect", "goews", "adapter", "wall", "snap", "hook", "bin", "organizer", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "blank_back",
+      "label": { "en": "Blank Back (base)", "es": "Placa Base" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["blank_back"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "hook_back",
+      "label": { "en": "Hook", "es": "Gancho" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_back"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "bin_back",
+      "label": { "en": "Bin", "es": "Contenedor" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bin_back"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "blank_back", "label": { "en": "Blank Back", "es": "Placa Base" }, "render_mode": 0, "color": "#6ea8fe" },
+    { "id": "hook_back", "label": { "en": "Hook", "es": "Gancho" }, "render_mode": 0, "color": "#f59e0b" },
+    { "id": "bin_back", "label": { "en": "Bin", "es": "Contenedor" }, "render_mode": 0, "color": "#34d399" }
+  ],
+  "parameter_groups": [
+    { "id": "system", "label": { "en": "Wall System", "es": "Sistema de Pared" } },
+    { "id": "plate", "label": { "en": "Accessory Plate", "es": "Placa del Accesorio" } },
+    { "id": "hook", "label": { "en": "Hook", "es": "Gancho" } },
+    { "id": "bin", "label": { "en": "Bin", "es": "Contenedor" } }
+  ],
+  "parameters": [
+    {
+      "id": "system", "type": "select", "default": "multiconnect",
+      "group": "system", "modes": ["blank_back", "hook_back", "bin_back"],
+      "label": { "en": "Wall System", "es": "Sistema de Pared" },
+      "tooltip": { "en": "Which channel system the snap back mates to.", "es": "A qué sistema de canal encaja la parte trasera." },
+      "options": [
+        { "value": "multiconnect", "label": { "en": "Multiconnect", "es": "Multiconnect" } },
+        { "value": "goews", "label": { "en": "GOEWS", "es": "GOEWS" } }
+      ]
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 50, "min": 20, "max": 150, "step": 1,
+      "group": "plate", "modes": ["blank_back", "hook_back", "bin_back"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Accessory plate width across the wall (X)", "es": "Ancho de la placa a lo largo de la pared (X)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 50, "min": 20, "max": 150, "step": 1,
+      "group": "plate", "modes": ["blank_back", "hook_back", "bin_back"],
+      "label": { "en": "Plate Height (mm)", "es": "Altura de Placa (mm)" },
+      "tooltip": { "en": "Accessory plate height up the wall (Z)", "es": "Altura de la placa sobre la pared (Z)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "plate", "modes": ["blank_back", "hook_back", "bin_back"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Thickness of the accessory plate", "es": "Grosor de la placa del accesorio" }
+    },
+    {
+      "id": "snap_rows", "type": "slider", "default": 2, "min": 1, "max": 8, "step": 1,
+      "group": "system", "modes": ["blank_back", "hook_back", "bin_back"],
+      "label": { "en": "Snap Rows", "es": "Filas de Encaje" },
+      "tooltip": { "en": "Number of snap tabs stacked up the back (at the system's slot pitch)", "es": "Número de pestañas de encaje apiladas en la parte trasera (al paso del sistema)" }
+    },
+    {
+      "id": "snap_w", "type": "slider", "default": 0, "min": 0, "max": 60, "step": 1,
+      "group": "system", "modes": ["blank_back", "hook_back", "bin_back"], "advanced": true,
+      "label": { "en": "Snap Width Override (mm)", "es": "Ancho de Encaje (mm)" },
+      "tooltip": { "en": "Override snap tab width for fit tuning (0 = system default)", "es": "Ajustar el ancho de la pestaña de encaje (0 = valor del sistema)" }
+    },
+    {
+      "id": "slot_pitch", "type": "slider", "default": 0, "min": 0, "max": 60, "step": 1,
+      "group": "system", "modes": ["blank_back", "hook_back", "bin_back"], "advanced": true,
+      "label": { "en": "Slot Pitch Override (mm)", "es": "Paso de Ranura (mm)" },
+      "tooltip": { "en": "Override vertical slot pitch (0 = system default, 25 mm)", "es": "Ajustar el paso vertical de ranuras (0 = valor del sistema, 25 mm)" }
+    },
+    {
+      "id": "hook_len", "type": "slider", "default": 35.0, "min": 10.0, "max": 120.0, "step": 1.0,
+      "group": "hook", "modes": ["hook_back"],
+      "label": { "en": "Hook Reach (mm)", "es": "Alcance del Gancho (mm)" },
+      "tooltip": { "en": "How far the hook projects forward from the plate", "es": "Qué tanto sobresale el gancho de la placa" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "hook_dia", "type": "slider", "default": 8.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "hook", "modes": ["hook_back"],
+      "label": { "en": "Hook Rod Diameter (mm)", "es": "Diámetro del Gancho (mm)" },
+      "tooltip": { "en": "Thickness of the hook rod", "es": "Grosor de la barra del gancho" }
+    },
+    {
+      "id": "bin_depth", "type": "slider", "default": 40.0, "min": 15.0, "max": 150.0, "step": 1.0,
+      "group": "bin", "modes": ["bin_back"],
+      "label": { "en": "Bin Depth (mm)", "es": "Profundidad del Contenedor (mm)" },
+      "tooltip": { "en": "How far the bin projects forward from the wall (Y)", "es": "Qué tanto sobresale el contenedor de la pared (Y)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "bin_height", "type": "slider", "default": 35.0, "min": 10.0, "max": 120.0, "step": 1.0,
+      "group": "bin", "modes": ["bin_back"],
+      "label": { "en": "Bin Height (mm)", "es": "Altura del Contenedor (mm)" },
+      "tooltip": { "en": "Bin wall height", "es": "Altura de las paredes del contenedor" }
+    },
+    {
+      "id": "bin_wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "bin", "modes": ["bin_back"], "advanced": true,
+      "label": { "en": "Bin Wall Thickness (mm)", "es": "Grosor de Pared del Contenedor (mm)" },
+      "tooltip": { "en": "Thickness of the bin walls and floor", "es": "Grosor de las paredes y el fondo del contenedor" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "mc_blank", "mode": "blank_back",
+      "label": { "en": "Multiconnect Blank (2 snaps)", "es": "Placa Base Multiconnect (2)" },
+      "values": { "system": "multiconnect", "plate_w": 50, "plate_h": 50, "plate_t": 4, "snap_rows": 2 }
+    },
+    {
+      "id": "mc_hook", "mode": "hook_back",
+      "label": { "en": "Multiconnect Hook", "es": "Gancho Multiconnect" },
+      "values": { "system": "multiconnect", "plate_w": 40, "plate_h": 60, "snap_rows": 2, "hook_len": 40, "hook_dia": 8 }
+    },
+    {
+      "id": "goews_bin", "mode": "bin_back",
+      "label": { "en": "GOEWS Parts Bin", "es": "Contenedor GOEWS" },
+      "values": { "system": "goews", "plate_w": 70, "plate_h": 70, "snap_rows": 3, "bin_depth": 50, "bin_height": 45 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_t >= 2.5",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 2.5 mm thick to hold the snap", "es": "La placa debe tener al menos 2.5 mm para sostener el encaje" }
+    },
+    {
+      "expression": "snap_w <= plate_w",
+      "severity": "warning",
+      "message": { "en": "Snap width override exceeds the plate width", "es": "El ancho de encaje excede el ancho de la placa" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "multiconnect_snap_back",
+        "label": { "en": "Multiconnect / GOEWS Back", "es": "Parte Trasera Multiconnect / GOEWS" },
+        "geometry_type": "snap",
+        "standard": "Multiconnect / GOEWS",
+        "parameters": ["system", "snap_rows", "snap_w", "slot_pitch", "plate_t"]
+      },
+      {
+        "id": "accessory_face",
+        "label": { "en": "Accessory Face", "es": "Cara del Accesorio" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["plate_w", "plate_h", "hook_len", "bin_depth", "bin_height"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Extends the open Multiconnect / GOEWS wall ecosystem — one adapter back turns any printable hook, bin, or holder into a snap-in accessory, so a shared community interface keeps growing without proprietary parts.",
+      "es": "Extiende el ecosistema abierto de pared Multiconnect / GOEWS — una parte trasera adaptadora convierte cualquier gancho, contenedor o soporte imprimible en un accesorio de encaje, para que una interfaz comunitaria compartida siga creciendo sin piezas propietarias."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["multiconnect", "goews", "adapter", "wall", "snap", "household", "hyperobject", "commons"]
+}

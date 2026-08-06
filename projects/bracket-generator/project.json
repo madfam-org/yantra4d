@@ -1,0 +1,203 @@
+{
+  "project": {
+    "name": "Universal Bracket Generator",
+    "slug": "bracket-generator",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The universal bracket generator — one cartridge, many bracket topologies. A single set of leg, width, thickness, and screw-pattern parameters drives four families: an angle (L) bracket at 90° or any angle, a flat mounting strap / mending plate, a T-bracket, and a three-axis 3D corner gusset. Every leg carries a real bolt pattern with an optional flat counterbore for flush heads.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El generador universal de soportes — un cartucho, muchas topologías. Un solo conjunto de parámetros de pata, ancho, grosor y patrón de tornillos impulsa cuatro familias: un soporte en ángulo (L) a 90° o cualquier ángulo, una placa o tira de fijación plana, un soporte en T y una escuadra 3D de esquina de tres ejes. Cada pata lleva un patrón de tornillos real con avellanado plano opcional para cabezas al ras.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bracket-generator.webp",
+    "difficulty": "beginner",
+    "tags": ["bracket", "generator", "L-bracket", "flat", "T-bracket", "corner", "gusset", "mount", "fastener", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "angle_bracket",
+      "label": { "en": "Angle (L) Bracket", "es": "Soporte en Ángulo (L)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["angle_bracket"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "flat_bracket",
+      "label": { "en": "Flat Strap / Plate", "es": "Tira / Placa Plana" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flat_bracket"],
+      "estimate": { "base_time": 5, "per_unit": 2, "per_part": 5 }
+    },
+    {
+      "id": "T_bracket",
+      "label": { "en": "T-Bracket", "es": "Soporte en T" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["T_bracket"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "corner_bracket_3d",
+      "label": { "en": "3D Corner Gusset", "es": "Escuadra 3D de Esquina" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_bracket_3d"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "angle_bracket", "label": { "en": "Angle (L) Bracket", "es": "Soporte en Ángulo (L)" }, "render_mode": 0, "color": "#6ea8fe" },
+    { "id": "flat_bracket", "label": { "en": "Flat Strap / Plate", "es": "Tira / Placa Plana" }, "render_mode": 0, "color": "#f59e0b" },
+    { "id": "T_bracket", "label": { "en": "T-Bracket", "es": "Soporte en T" }, "render_mode": 0, "color": "#34d399" },
+    { "id": "corner_bracket_3d", "label": { "en": "3D Corner Gusset", "es": "Escuadra 3D de Esquina" }, "render_mode": 0, "color": "#c084fc" }
+  ],
+  "parameter_groups": [
+    { "id": "type", "label": { "en": "Bracket Type", "es": "Tipo de Soporte" } },
+    { "id": "geometry", "label": { "en": "Geometry", "es": "Geometría" } },
+    { "id": "holes", "label": { "en": "Screw Pattern", "es": "Patrón de Tornillos" } },
+    { "id": "options", "label": { "en": "Options", "es": "Opciones" } }
+  ],
+  "parameters": [
+    {
+      "id": "bracket_type", "type": "select", "default": "angle_L",
+      "group": "type", "modes": ["angle_bracket", "flat_bracket", "T_bracket", "corner_bracket_3d"],
+      "label": { "en": "Bracket Type", "es": "Tipo de Soporte" },
+      "tooltip": { "en": "Bracket topology family. Also selectable from the mode switcher.", "es": "Familia de topología del soporte. También seleccionable desde el conmutador de modos." },
+      "options": [
+        { "value": "angle_L", "label": { "en": "Angle / L (2 legs)", "es": "Ángulo / L (2 patas)" } },
+        { "value": "flat", "label": { "en": "Flat strap / plate", "es": "Tira / placa plana" } },
+        { "value": "T", "label": { "en": "T-bracket", "es": "Soporte en T" } },
+        { "value": "corner_3d", "label": { "en": "3D corner gusset", "es": "Escuadra 3D de esquina" } }
+      ]
+    },
+    {
+      "id": "leg_a", "type": "slider", "default": 50, "min": 12, "max": 150, "step": 1,
+      "group": "geometry", "modes": ["angle_bracket", "flat_bracket", "T_bracket", "corner_bracket_3d"],
+      "label": { "en": "Leg A Length (mm)", "es": "Longitud de Pata A (mm)" },
+      "tooltip": { "en": "First leg length; strap length in Flat, base plate span in T.", "es": "Longitud de la primera pata; largo de la tira en Plana, base en T." },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "leg_b", "type": "slider", "default": 50, "min": 12, "max": 150, "step": 1,
+      "group": "geometry", "modes": ["angle_bracket", "T_bracket", "corner_bracket_3d"],
+      "label": { "en": "Leg B Length (mm)", "es": "Longitud de Pata B (mm)" },
+      "tooltip": { "en": "Second leg length; upright height in T.", "es": "Longitud de la segunda pata; altura del vertical en T." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "width", "type": "slider", "default": 30, "min": 8, "max": 80, "step": 1,
+      "group": "geometry", "modes": ["angle_bracket", "flat_bracket", "T_bracket", "corner_bracket_3d"],
+      "label": { "en": "Width (mm)", "es": "Ancho (mm)" },
+      "tooltip": { "en": "Bracket width across the legs", "es": "Ancho del soporte a lo largo de las patas" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 4.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "geometry", "modes": ["angle_bracket", "flat_bracket", "T_bracket", "corner_bracket_3d"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Material thickness of the legs / plate", "es": "Grosor del material de las patas / placa" }
+    },
+    {
+      "id": "angle", "type": "slider", "default": 90, "min": 30, "max": 160, "step": 1,
+      "group": "geometry", "modes": ["angle_bracket"],
+      "label": { "en": "Bend Angle (deg)", "es": "Ángulo de Doblez (grados)" },
+      "tooltip": { "en": "Angle between the two legs of the L-bracket", "es": "Ángulo entre las dos patas del soporte en L" }
+    },
+    {
+      "id": "holes_per_leg", "type": "slider", "default": 2, "min": 0, "max": 6, "step": 1,
+      "group": "holes", "modes": ["angle_bracket", "flat_bracket", "T_bracket", "corner_bracket_3d"],
+      "label": { "en": "Holes per Leg", "es": "Agujeros por Pata" },
+      "tooltip": { "en": "Screw holes on each leg (0 = none). 3D corner uses one per face.", "es": "Agujeros de tornillo por pata (0 = ninguno). La esquina 3D usa uno por cara." }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "holes", "modes": ["angle_bracket", "flat_bracket", "T_bracket", "corner_bracket_3d"],
+      "label": { "en": "Screw Hole Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Clearance hole diameter (M4 ≈ 4.5, M5 ≈ 5.5, M6 ≈ 6.5)", "es": "Diámetro de agujero de holgura (M4 ≈ 4.5, M5 ≈ 5.5, M6 ≈ 6.5)" }
+    },
+    {
+      "id": "counterbore", "type": "checkbox", "default": false,
+      "group": "options", "modes": ["angle_bracket", "flat_bracket", "T_bracket"],
+      "label": { "en": "Counterbore Heads", "es": "Rebajar Cabezas" },
+      "tooltip": { "en": "Add a flat counterbore so screw heads sit flush", "es": "Añadir un rebaje plano para que las cabezas queden al ras" }
+    },
+    {
+      "id": "gusset", "type": "checkbox", "default": false,
+      "group": "options", "modes": ["angle_bracket"],
+      "label": { "en": "Add Gusset Brace", "es": "Añadir Refuerzo" },
+      "tooltip": { "en": "Add a triangular brace across the corner for stiffness (L only)", "es": "Añadir un refuerzo triangular en la esquina para rigidez (solo L)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shelf_l", "mode": "angle_bracket",
+      "label": { "en": "Shelf L-Bracket (M4)", "es": "Soporte de Repisa (M4)" },
+      "values": { "bracket_type": "angle_L", "leg_a": 50, "leg_b": 50, "width": 30, "thickness": 4, "holes_per_leg": 2, "screw_dia": 4.5 }
+    },
+    {
+      "id": "mending_plate", "mode": "flat_bracket",
+      "label": { "en": "Mending Plate (M5)", "es": "Placa de Unión (M5)" },
+      "values": { "bracket_type": "flat", "leg_a": 90, "width": 25, "thickness": 5, "holes_per_leg": 4, "screw_dia": 5.5, "counterbore": true }
+    },
+    {
+      "id": "box_corner", "mode": "corner_bracket_3d",
+      "label": { "en": "3D Box Corner (M4)", "es": "Esquina 3D de Caja (M4)" },
+      "values": { "bracket_type": "corner_3d", "leg_a": 45, "leg_b": 45, "width": 22, "thickness": 4, "holes_per_leg": 1, "screw_dia": 4.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness >= 2",
+      "severity": "error",
+      "message": { "en": "Thickness must be at least 2 mm", "es": "El grosor debe ser de al menos 2 mm" }
+    },
+    {
+      "expression": "screw_dia <= width - 3",
+      "severity": "warning",
+      "message": { "en": "Screw holes are large relative to the width", "es": "Los agujeros son grandes respecto al ancho" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 7,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "bracket_screw_pattern",
+        "label": { "en": "Bracket Screw Pattern", "es": "Patrón de Tornillos del Soporte" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["holes_per_leg", "screw_dia", "counterbore", "leg_a", "leg_b", "width"]
+      },
+      {
+        "id": "leg_face",
+        "label": { "en": "Leg Mounting Face", "es": "Cara de Montaje de Pata" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["leg_a", "leg_b", "width", "thickness", "angle"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The single most-requested functional generator after storage bins — one parametric cartridge replaces the whole blister-pack wall of fixed stamped brackets, sized to the exact boards, screws, angle, and topology a repair or build actually needs.",
+      "es": "El generador funcional más solicitado después de los contenedores — un cartucho paramétrico reemplaza toda la pared de soportes estampados fijos en blíster, dimensionado a las tablas, tornillos, ángulo y topología exactos que una reparación o construcción realmente necesita."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bracket", "generator", "L-bracket", "flat", "T-bracket", "corner", "industrial", "hyperobject", "commons"]
+}

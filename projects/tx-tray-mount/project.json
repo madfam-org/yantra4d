@@ -1,0 +1,192 @@
+{
+  "project": {
+    "name": "TX Tray Mount",
+    "slug": "tx-tray-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A tray / stand for an RC transmitter. The radio's lower body drops into a cradle sized to its footprint; a neck-strap loop takes the weight off your hands, and the whole thing tilts for comfortable viewing. Choose a hand tray with a strap loop, an angled desk stand, or a tray with an added phone clip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bandeja / soporte para un transmisor RC. El cuerpo inferior de la radio entra en una cuna dimensionada a su huella; un lazo para correa de cuello quita el peso de las manos, y todo se inclina para ver comodamente. Elige una bandeja de mano con lazo, un soporte de escritorio inclinado o una bandeja con clip para telefono.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tx-tray-mount.webp",
+    "difficulty": "beginner",
+    "tags": ["rc", "transmitter", "radio", "tray", "stand", "phone-mount", "drone", "fpv", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "label": { "en": "Hand Tray", "es": "Bandeja de Mano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tray"],
+      "estimate": { "base_time": 10, "per_unit": 4, "per_part": 12 }
+    },
+    {
+      "id": "desk_stand",
+      "label": { "en": "Desk Stand", "es": "Soporte de Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["desk_stand"],
+      "estimate": { "base_time": 11, "per_unit": 4, "per_part": 13 }
+    },
+    {
+      "id": "phone_mount",
+      "label": { "en": "Phone Mount", "es": "Montura con Telefono" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["phone_mount"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "tray", "label": { "en": "Hand Tray", "es": "Bandeja de Mano" }, "render_mode": 0, "color": "#4a7ab0" },
+    { "id": "desk_stand", "label": { "en": "Desk Stand", "es": "Soporte de Escritorio" }, "render_mode": 0, "color": "#356095" },
+    { "id": "phone_mount", "label": { "en": "Phone Mount", "es": "Montura con Telefono" }, "render_mode": 0, "color": "#6a9ad0" }
+  ],
+  "parameter_groups": [
+    { "id": "radio", "label": { "en": "Radio", "es": "Radio" } },
+    { "id": "comfort", "label": { "en": "Tilt & Strap", "es": "Inclinacion y Correa" } },
+    { "id": "extras", "label": { "en": "Stand / Phone", "es": "Soporte / Telefono" } }
+  ],
+  "parameters": [
+    {
+      "id": "radio_w", "type": "slider", "default": 160.0, "min": 90.0, "max": 220.0, "step": 1,
+      "group": "radio", "modes": ["tray", "desk_stand", "phone_mount"],
+      "label": { "en": "Radio Width (mm)", "es": "Ancho de Radio (mm)" },
+      "tooltip": { "en": "Transmitter body width", "es": "Ancho del cuerpo del transmisor" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "radio_d", "type": "slider", "default": 45.0, "min": 25.0, "max": 70.0, "step": 1,
+      "group": "radio", "modes": ["tray", "desk_stand", "phone_mount"],
+      "label": { "en": "Radio Depth (mm)", "es": "Profundidad de Radio (mm)" },
+      "tooltip": { "en": "Transmitter body depth (front to back)", "es": "Profundidad del transmisor (de frente a atras)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cradle_h", "type": "slider", "default": 30.0, "min": 12.0, "max": 50.0, "step": 1,
+      "group": "radio", "modes": ["tray", "desk_stand", "phone_mount"],
+      "label": { "en": "Cradle Height (mm)", "es": "Altura de Cuna (mm)" },
+      "tooltip": { "en": "How high the cradle walls hold the radio", "es": "Que tan alto sostienen las paredes la radio" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.5,
+      "group": "radio", "modes": ["tray", "desk_stand", "phone_mount"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Cradle wall thickness", "es": "Grosor de la pared de la cuna" }
+    },
+    {
+      "id": "radio_clear", "type": "slider", "default": 1.0, "min": 0.3, "max": 3.0, "step": 0.1,
+      "group": "radio", "modes": ["tray", "desk_stand", "phone_mount"], "advanced": true,
+      "label": { "en": "Radio Clearance (mm)", "es": "Holgura de Radio (mm)" },
+      "tooltip": { "en": "Per-side gap around the radio body", "es": "Espacio por lado alrededor del cuerpo de la radio" }
+    },
+    {
+      "id": "tilt", "type": "slider", "default": 20.0, "min": 0.0, "max": 45.0, "step": 1,
+      "group": "comfort", "modes": ["tray", "desk_stand", "phone_mount"],
+      "label": { "en": "Viewing Tilt (deg)", "es": "Inclinacion de Vista (grados)" },
+      "tooltip": { "en": "Tilt angle toward the pilot", "es": "Angulo de inclinacion hacia el piloto" }
+    },
+    {
+      "id": "strap_loop", "type": "checkbox", "default": true,
+      "group": "comfort", "modes": ["tray", "phone_mount"],
+      "label": { "en": "Neck-Strap Loop", "es": "Lazo para Correa" },
+      "tooltip": { "en": "Add a loop for a neck strap", "es": "Agregar un lazo para correa de cuello" }
+    },
+    {
+      "id": "loop_w", "type": "slider", "default": 25.0, "min": 12.0, "max": 45.0, "step": 1,
+      "group": "comfort", "modes": ["tray", "phone_mount"],
+      "label": { "en": "Loop Width (mm)", "es": "Ancho de Lazo (mm)" },
+      "tooltip": { "en": "Strap loop opening width", "es": "Ancho de la abertura del lazo" }
+    },
+    {
+      "id": "stand_depth", "type": "slider", "default": 70.0, "min": 40.0, "max": 120.0, "step": 1,
+      "group": "extras", "modes": ["desk_stand"],
+      "label": { "en": "Stand Foot Depth (mm)", "es": "Profundidad del Pie (mm)" },
+      "tooltip": { "en": "Desk-stand wedge foot depth", "es": "Profundidad del pie en cuna del soporte" }
+    },
+    {
+      "id": "phone_w", "type": "slider", "default": 78.0, "min": 55.0, "max": 100.0, "step": 1,
+      "group": "extras", "modes": ["phone_mount"],
+      "label": { "en": "Phone Width (mm)", "es": "Ancho de Telefono (mm)" },
+      "tooltip": { "en": "Phone width the clip grips", "es": "Ancho del telefono que sujeta el clip" }
+    },
+    {
+      "id": "phone_t", "type": "slider", "default": 12.0, "min": 6.0, "max": 20.0, "step": 0.5,
+      "group": "extras", "modes": ["phone_mount"],
+      "label": { "en": "Phone Thickness (mm)", "es": "Grosor de Telefono (mm)" },
+      "tooltip": { "en": "Phone thickness (with case)", "es": "Grosor del telefono (con funda)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "radiomaster_tray", "mode": "tray",
+      "label": { "en": "Full-Size Tray", "es": "Bandeja Tamano Completo" },
+      "values": { "radio_w": 160, "radio_d": 45, "tilt": 20, "strap_loop": true, "loop_w": 25 }
+    },
+    {
+      "id": "sim_desk", "mode": "desk_stand",
+      "label": { "en": "Simulator Desk Stand", "es": "Soporte Simulador" },
+      "values": { "radio_w": 160, "radio_d": 45, "tilt": 25, "stand_depth": 75 }
+    },
+    {
+      "id": "telemetry_phone", "mode": "phone_mount",
+      "label": { "en": "Telemetry Phone Tray", "es": "Bandeja Telefono Telemetria" },
+      "values": { "radio_w": 160, "radio_d": 45, "tilt": 20, "phone_w": 78, "phone_t": 12 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "radio_d >= 25",
+      "severity": "warning",
+      "message": { "en": "Very shallow cradle may not hold the radio", "es": "Una cuna muy poco profunda puede no sostener la radio" }
+    },
+    {
+      "expression": "wall >= 1.5",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.5 mm", "es": "La pared debe ser de al menos 1.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [180, 180, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -300, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 4, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "radio_cradle",
+        "label": { "en": "Radio Cradle", "es": "Cuna de Radio" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["radio_w", "radio_d", "radio_clear", "wall"]
+      },
+      {
+        "id": "phone_clip",
+        "label": { "en": "Phone Clip", "es": "Clip de Telefono" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["phone_w", "phone_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Long flying and simulator sessions strain wrists, and OEM trays cost more than the plastic they use. An on-demand tray sized to the exact radio carries the weight on a strap, angles the screen, and holds a telemetry phone.",
+      "es": "Las sesiones largas de vuelo y simulador cansan las munecas, y las bandejas originales cuestan mas que el plastico que usan. Una bandeja bajo demanda dimensionada a la radio exacta carga el peso en una correa, angula la pantalla y sostiene un telefono de telemetria."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["rc", "transmitter", "radio", "tray", "commercial", "hyperobject", "commons"]
+}

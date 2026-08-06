@@ -1,0 +1,199 @@
+{
+  "project": {
+    "name": "Power Supply / PSU Mount",
+    "slug": "psu-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Mounts an enclosed switching PSU of the Meanwell LRS / RS family to a panel or a 2020 aluminium extrusion. Pick LRS-50, LRS-100, or LRS-350 for real case footprints and bottom mounting-hole pitch, or Custom to dial in any enclosed supply. Three strategies: L-feet bolted to the PSU's own holes, a 2020 T-slot extrusion mount, or an open band strap that needs no case access.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Monta una fuente conmutada cerrada de la familia Meanwell LRS / RS a un panel o a un perfil de aluminio 2020. Elige LRS-50, LRS-100 o LRS-350 para huellas de caja reales y el paso de agujeros inferiores, o Personalizado para cualquier fuente cerrada. Tres estrategias: pies en L atornillados a los propios agujeros de la fuente, un montaje 2020 con ranura en T, o una banda abierta que no requiere acceso a la caja.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/psu-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["psu", "power-supply", "meanwell", "lrs", "mount", "2020", "extrusion", "din", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "foot_bracket",
+      "label": { "en": "Panel Feet", "es": "Pies de Panel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["foot_bracket"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "extrusion_mount",
+      "label": { "en": "2020 Extrusion Mount", "es": "Montaje 2020" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["extrusion_mount"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "strap",
+      "label": { "en": "Band Strap", "es": "Banda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strap"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "foot_bracket", "label": { "en": "Panel Feet", "es": "Pies de Panel" }, "render_mode": 0, "color": "#6ea8fe" },
+    { "id": "extrusion_mount", "label": { "en": "2020 Extrusion Mount", "es": "Montaje 2020" }, "render_mode": 0, "color": "#f59e0b" },
+    { "id": "strap", "label": { "en": "Band Strap", "es": "Banda" }, "render_mode": 0, "color": "#34d399" }
+  ],
+  "parameter_groups": [
+    { "id": "psu", "label": { "en": "PSU Model", "es": "Modelo de Fuente" } },
+    { "id": "custom", "label": { "en": "Custom Footprint", "es": "Huella Personalizada" } },
+    { "id": "bracket", "label": { "en": "Bracket", "es": "Soporte" } },
+    { "id": "mounting", "label": { "en": "Panel Mounting", "es": "Fijación a Panel" } }
+  ],
+  "parameters": [
+    {
+      "id": "psu_size", "type": "select", "default": "LRS-100",
+      "group": "psu", "modes": ["foot_bracket", "extrusion_mount", "strap"],
+      "label": { "en": "PSU Model", "es": "Modelo de Fuente" },
+      "tooltip": { "en": "Meanwell LRS/RS footprint with real case size and hole pitch, or Custom.", "es": "Huella Meanwell LRS/RS con tamaño de caja y paso de agujeros reales, o Personalizado." },
+      "options": [
+        { "value": "LRS-50", "label": { "en": "LRS-50 (99×82×30)", "es": "LRS-50 (99×82×30)" } },
+        { "value": "LRS-100", "label": { "en": "LRS-100 (129×97×30)", "es": "LRS-100 (129×97×30)" } },
+        { "value": "LRS-350", "label": { "en": "LRS-350 (215×115×30)", "es": "LRS-350 (215×115×30)" } },
+        { "value": "custom", "label": { "en": "Custom (set below)", "es": "Personalizado (abajo)" } }
+      ]
+    },
+    {
+      "id": "custom_w", "type": "slider", "default": 129, "min": 40, "max": 300, "step": 1,
+      "group": "custom", "modes": ["foot_bracket", "extrusion_mount", "strap"], "advanced": true,
+      "label": { "en": "Custom Case Width (mm)", "es": "Ancho de Caja Personalizado (mm)" },
+      "tooltip": { "en": "Enclosure width across the mounting feet (used when PSU = Custom)", "es": "Ancho de la caja a lo largo de los pies (cuando Fuente = Personalizado)" }
+    },
+    {
+      "id": "custom_d", "type": "slider", "default": 97, "min": 30, "max": 200, "step": 1,
+      "group": "custom", "modes": ["foot_bracket", "extrusion_mount", "strap"], "advanced": true,
+      "label": { "en": "Custom Case Depth (mm)", "es": "Profundidad de Caja Personalizada (mm)" },
+      "tooltip": { "en": "Enclosure depth (used when PSU = Custom)", "es": "Profundidad de la caja (cuando Fuente = Personalizado)" }
+    },
+    {
+      "id": "custom_px", "type": "slider", "default": 124, "min": 20, "max": 290, "step": 1,
+      "group": "custom", "modes": ["foot_bracket", "extrusion_mount"], "advanced": true,
+      "label": { "en": "Custom Hole Pitch X (mm)", "es": "Paso de Agujeros X Personalizado (mm)" },
+      "tooltip": { "en": "On-centre distance between the two mounting-hole columns", "es": "Distancia entre centros de las dos columnas de agujeros" }
+    },
+    {
+      "id": "custom_py", "type": "slider", "default": 50, "min": 10, "max": 180, "step": 1,
+      "group": "custom", "modes": ["foot_bracket", "extrusion_mount"], "advanced": true,
+      "label": { "en": "Custom Hole Pitch Y (mm)", "es": "Paso de Agujeros Y Personalizado (mm)" },
+      "tooltip": { "en": "On-centre distance between the two holes within a column", "es": "Distancia entre centros de los dos agujeros de una columna" }
+    },
+    {
+      "id": "case_screw_dia", "type": "slider", "default": 3.4, "min": 2.5, "max": 6.0, "step": 0.1,
+      "group": "custom", "modes": ["foot_bracket", "extrusion_mount"], "advanced": true,
+      "label": { "en": "Custom Case Screw (mm)", "es": "Tornillo de Caja Personalizado (mm)" },
+      "tooltip": { "en": "Clearance diameter for the PSU case screws (M3 ≈ 3.4, M4 ≈ 4.5)", "es": "Diámetro de holgura para los tornillos de la caja (M3 ≈ 3.4, M4 ≈ 4.5)" }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "bracket", "modes": ["foot_bracket", "extrusion_mount", "strap"],
+      "label": { "en": "Bracket Thickness (mm)", "es": "Grosor del Soporte (mm)" },
+      "tooltip": { "en": "Material thickness of the feet / band", "es": "Grosor del material de los pies / banda" }
+    },
+    {
+      "id": "foot_h", "type": "slider", "default": 22.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "bracket", "modes": ["foot_bracket", "extrusion_mount"],
+      "label": { "en": "Foot Height (mm)", "es": "Altura del Pie (mm)" },
+      "tooltip": { "en": "How far the vertical web rises up the PSU side", "es": "Qué tanto sube la cara vertical por el lado de la fuente" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "strap_gap", "type": "slider", "default": 0.8, "min": 0.0, "max": 2.0, "step": 0.1,
+      "group": "bracket", "modes": ["strap"], "advanced": true,
+      "label": { "en": "Strap Clearance (mm)", "es": "Holgura de Banda (mm)" },
+      "tooltip": { "en": "Per-side gap between the band and the PSU case", "es": "Espacio por lado entre la banda y la caja de la fuente" }
+    },
+    {
+      "id": "panel_screw", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "mounting", "modes": ["foot_bracket", "strap"],
+      "label": { "en": "Panel Screw Diameter (mm)", "es": "Diámetro de Tornillo de Panel (mm)" },
+      "tooltip": { "en": "Clearance diameter for the panel screws (M4 ≈ 4.5). Extrusion mode uses fixed M5 T-slot.", "es": "Diámetro de holgura para los tornillos del panel (M4 ≈ 4.5). El modo 2020 usa ranura en T M5 fija." }
+    }
+  ],
+  "presets": [
+    {
+      "id": "lrs100_panel", "mode": "foot_bracket",
+      "label": { "en": "LRS-100 on Panel", "es": "LRS-100 en Panel" },
+      "values": { "psu_size": "LRS-100", "thickness": 4, "foot_h": 22, "panel_screw": 4.5 }
+    },
+    {
+      "id": "lrs350_2020", "mode": "extrusion_mount",
+      "label": { "en": "LRS-350 on 2020", "es": "LRS-350 en 2020" },
+      "values": { "psu_size": "LRS-350", "thickness": 5, "foot_h": 26 }
+    },
+    {
+      "id": "lrs50_strap", "mode": "strap",
+      "label": { "en": "LRS-50 Band Strap", "es": "Banda LRS-50" },
+      "values": { "psu_size": "LRS-50", "thickness": 4, "strap_gap": 0.8, "panel_screw": 4.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness >= 2",
+      "severity": "error",
+      "message": { "en": "Bracket must be at least 2 mm thick", "es": "El soporte debe tener al menos 2 mm de grosor" }
+    },
+    {
+      "expression": "custom_px <= custom_w",
+      "severity": "warning",
+      "message": { "en": "Custom hole pitch X is wider than the case width", "es": "El paso de agujeros X es mayor que el ancho de la caja" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 200, 150] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -320, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "psu_mount_holes",
+        "label": { "en": "PSU Mount Holes", "es": "Agujeros de Montaje de la Fuente" },
+        "geometry_type": "bolt_pattern",
+        "standard": "Meanwell LRS/RS",
+        "parameters": ["psu_size", "custom_px", "custom_py", "case_screw_dia"]
+      },
+      {
+        "id": "extrusion_tslot",
+        "label": { "en": "2020 T-Slot Pattern", "es": "Patrón de Ranura en T 2020" },
+        "geometry_type": "bolt_pattern",
+        "standard": "20mm T-slot (2020)",
+        "parameters": ["thickness"]
+      },
+      {
+        "id": "panel_face",
+        "label": { "en": "Panel Mounting Face", "es": "Cara de Montaje al Panel" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["thickness", "foot_h", "panel_screw"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Keeps salvaged and off-the-shelf industrial power supplies serviceable — a printable mount that matches the real Meanwell LRS/RS hole pattern lets any panel or 2020 build reuse a PSU without a proprietary chassis or drilling jig.",
+      "es": "Mantiene útiles las fuentes industriales recuperadas y estándar — un soporte imprimible que coincide con el patrón real de agujeros Meanwell LRS/RS permite que cualquier panel o estructura 2020 reutilice una fuente sin chasis propietario ni plantilla de taladrado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["psu", "power-supply", "meanwell", "mount", "2020", "extrusion", "industrial", "hyperobject", "commons"]
+}

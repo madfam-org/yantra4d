@@ -1,0 +1,193 @@
+{
+  "project": {
+    "name": "Universal Device Wall Mount",
+    "slug": "wall-device-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A fit-anything wall cradle for any rectangular device — remote, router, network switch, hub, or handset. Enter the device width, depth, and height and the mount wraps it with a printer-clearance gap and a wall-screw (or adhesive) backplate. Three styles: an open cradle shelf, a deeper four-wall pocket, or a minimal strap band.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de pared que se adapta a cualquier dispositivo rectangular — control remoto, router, switch de red, hub o teléfono. Ingresa el ancho, la profundidad y la altura del dispositivo y el soporte lo envuelve con una holgura de impresión y una placa de tornillos (o adhesivo) para la pared. Tres estilos: una repisa abierta, un bolsillo de cuatro paredes más profundo o una banda mínima.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/wall-device-mount.webp",
+    "difficulty": "beginner",
+    "tags": ["wall", "mount", "cradle", "holder", "remote", "router", "device", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cradle_mount",
+      "label": { "en": "Cradle (open shelf)", "es": "Cuna (repisa abierta)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cradle_mount"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "pocket_mount",
+      "label": { "en": "Pocket (deep wrap)", "es": "Bolsillo (envoltura profunda)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pocket_mount"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "strap_mount",
+      "label": { "en": "Strap (band)", "es": "Banda (correa)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strap_mount"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "cradle_mount", "label": { "en": "Cradle Mount", "es": "Soporte Cuna" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "pocket_mount", "label": { "en": "Pocket Mount", "es": "Soporte Bolsillo" }, "render_mode": 0, "color": "#8bb5cc" },
+    { "id": "strap_mount", "label": { "en": "Strap Mount", "es": "Soporte Banda" }, "render_mode": 0, "color": "#a7d3c1" }
+  ],
+  "parameter_groups": [
+    { "id": "style", "label": { "en": "Style", "es": "Estilo" } },
+    { "id": "device", "label": { "en": "Device Size", "es": "Tamaño del Dispositivo" } },
+    { "id": "shell", "label": { "en": "Shell & Fit", "es": "Carcasa y Ajuste" } },
+    { "id": "mounting", "label": { "en": "Wall Mounting", "es": "Fijación a Pared" } }
+  ],
+  "parameters": [
+    {
+      "id": "style", "type": "select", "default": "cradle",
+      "group": "style", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Mount Style", "es": "Estilo de Soporte" },
+      "tooltip": { "en": "Cradle shelf, deep pocket, or minimal strap. Also selectable from the mode switcher.", "es": "Repisa, bolsillo profundo o banda mínima. También seleccionable desde el conmutador de modos." },
+      "options": [
+        { "value": "cradle", "label": { "en": "Cradle (open shelf)", "es": "Cuna (repisa abierta)" } },
+        { "value": "pocket", "label": { "en": "Pocket (deep wrap)", "es": "Bolsillo (profundo)" } },
+        { "value": "strap", "label": { "en": "Strap (band)", "es": "Banda" } }
+      ]
+    },
+    {
+      "id": "dev_w", "type": "slider", "default": 60, "min": 15, "max": 200, "step": 1,
+      "group": "device", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Device Width (mm)", "es": "Ancho del Dispositivo (mm)" },
+      "tooltip": { "en": "The object's width across the wall (X)", "es": "El ancho del objeto a lo largo de la pared (X)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "dev_d", "type": "slider", "default": 25, "min": 6, "max": 80, "step": 1,
+      "group": "device", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Device Depth (mm)", "es": "Profundidad del Dispositivo (mm)" },
+      "tooltip": { "en": "How far the object stands off the wall (Y)", "es": "Qué tanto sobresale el objeto de la pared (Y)" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "dev_h", "type": "slider", "default": 110, "min": 15, "max": 250, "step": 1,
+      "group": "device", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Device Height (mm)", "es": "Altura del Dispositivo (mm)" },
+      "tooltip": { "en": "The object's height up the wall (Z)", "es": "La altura del objeto sobre la pared (Z)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall_t", "type": "slider", "default": 3.0, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "shell", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Shell Thickness (mm)", "es": "Grosor de Carcasa (mm)" },
+      "tooltip": { "en": "Wall / backplate thickness", "es": "Grosor de pared / placa trasera" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 4.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "shell", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Side Margin (mm)", "es": "Margen Lateral (mm)" },
+      "tooltip": { "en": "Extra material beyond the device on each side", "es": "Material extra más allá del dispositivo por cada lado" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.0, "max": 1.5, "step": 0.05,
+      "group": "shell", "modes": ["cradle_mount", "pocket_mount", "strap_mount"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap around the device for a printable fit", "es": "Espacio por lado alrededor del dispositivo para un ajuste imprimible" }
+    },
+    {
+      "id": "lip_h", "type": "slider", "default": 14.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "shell", "modes": ["cradle_mount", "strap_mount"],
+      "label": { "en": "Lip / Band Height (mm)", "es": "Altura de Labio / Banda (mm)" },
+      "tooltip": { "en": "Height of the front lip (cradle) or the retaining band (strap)", "es": "Altura del labio frontal (cuna) o de la banda de retención (banda)" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.2, "min": 2.0, "max": 8.0, "step": 0.1,
+      "group": "mounting", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Wall Screw Diameter (mm)", "es": "Diámetro de Tornillo de Pared (mm)" },
+      "tooltip": { "en": "Clearance diameter for the two wall screws (#8 ≈ 4.2)", "es": "Diámetro de holgura para los dos tornillos de pared (#8 ≈ 4.2)" }
+    },
+    {
+      "id": "adhesive", "type": "checkbox", "default": false,
+      "group": "mounting", "modes": ["cradle_mount", "pocket_mount", "strap_mount"],
+      "label": { "en": "Adhesive Pad (no screws)", "es": "Almohadilla Adhesiva (sin tornillos)" },
+      "tooltip": { "en": "Skip the wall screw holes for a flat adhesive backplate", "es": "Omitir los agujeros de tornillo para una placa adhesiva plana" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "tv_remote", "mode": "cradle_mount",
+      "label": { "en": "TV Remote Shelf", "es": "Repisa de Control Remoto" },
+      "values": { "style": "cradle", "dev_w": 48, "dev_d": 22, "dev_h": 165, "wall_t": 2.4, "lip_h": 18 }
+    },
+    {
+      "id": "router_pocket", "mode": "pocket_mount",
+      "label": { "en": "Router Pocket", "es": "Bolsillo de Router" },
+      "values": { "style": "pocket", "dev_w": 120, "dev_d": 30, "dev_h": 130, "wall_t": 3.0, "margin": 6 }
+    },
+    {
+      "id": "hub_strap", "mode": "strap_mount",
+      "label": { "en": "USB Hub Strap (adhesive)", "es": "Banda de Hub USB (adhesivo)" },
+      "values": { "style": "strap", "dev_w": 70, "dev_d": 18, "dev_h": 40, "wall_t": 2.4, "lip_h": 12, "adhesive": true }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall_t >= 1.6",
+      "severity": "error",
+      "message": { "en": "Shell must be at least 1.6 mm thick", "es": "La carcasa debe tener al menos 1.6 mm de grosor" }
+    },
+    {
+      "expression": "lip_h <= dev_h",
+      "severity": "warning",
+      "message": { "en": "Lip / band is taller than the device", "es": "El labio / banda es más alto que el dispositivo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 90] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "device_cradle",
+        "label": { "en": "Device Cradle", "es": "Cuna del Dispositivo" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["dev_w", "dev_d", "dev_h", "clearance", "wall_t"]
+      },
+      {
+        "id": "wall_screw_pattern",
+        "label": { "en": "Wall Screw Pattern", "es": "Patrón de Tornillos de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["screw_dia", "adhesive", "dev_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Reclaims wall space and tidies the home — one parametric cradle fits any remote, router, or hub exactly, replacing per-product proprietary holders and the clutter of loose devices on desks and counters.",
+      "es": "Recupera espacio de pared y ordena el hogar — una cuna paramétrica se ajusta exactamente a cualquier control, router o hub, reemplazando soportes propietarios por producto y el desorden de dispositivos sueltos en escritorios y mesadas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["wall", "mount", "cradle", "holder", "device", "household", "hyperobject", "commons"]
+}

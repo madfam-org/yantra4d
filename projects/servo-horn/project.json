@@ -1,0 +1,194 @@
+{
+  "project": {
+    "name": "Servo Horn",
+    "slug": "servo-horn",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A replacement servo arm with a real splined bore. The bore is cut with N internal teeth matching the servo output spline standard: 24T (~5.8 mm, Futaba / Savox) or 25T (~6.0 mm, Spektrum / Hitec). Linkage holes sit at a chosen radius. Choose a single arm, a double two-sided arm, or a round wheel horn.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un brazo de servo de repuesto con barreno estriado real. El barreno se corta con N dientes internos que coinciden con el estandar del estriado del servo: 24T (~5.8 mm, Futaba / Savox) o 25T (~6.0 mm, Spektrum / Hitec). Los agujeros de varillaje van a un radio elegido. Elige un brazo simple, un brazo doble o un horn de rueda.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/servo-horn.webp",
+    "difficulty": "advanced",
+    "tags": ["servo", "horn", "spline", "rc", "linkage", "futaba", "spektrum", "drone", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "single_arm",
+      "label": { "en": "Single Arm", "es": "Brazo Simple" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_arm"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "double_arm",
+      "label": { "en": "Double Arm", "es": "Brazo Doble" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["double_arm"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 17 }
+    },
+    {
+      "id": "wheel_horn",
+      "label": { "en": "Wheel Horn", "es": "Horn de Rueda" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wheel_horn"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 17 }
+    }
+  ],
+  "parts": [
+    { "id": "single_arm", "label": { "en": "Single Arm", "es": "Brazo Simple" }, "render_mode": 0, "color": "#b0663f" },
+    { "id": "double_arm", "label": { "en": "Double Arm", "es": "Brazo Doble" }, "render_mode": 0, "color": "#95502a" },
+    { "id": "wheel_horn", "label": { "en": "Wheel Horn", "es": "Horn de Rueda" }, "render_mode": 0, "color": "#d0885c" }
+  ],
+  "parameter_groups": [
+    { "id": "spline", "label": { "en": "Servo Spline", "es": "Estriado del Servo" } },
+    { "id": "arm", "label": { "en": "Arm & Holes", "es": "Brazo y Agujeros" } },
+    { "id": "wheel", "label": { "en": "Wheel", "es": "Rueda" } }
+  ],
+  "parameters": [
+    {
+      "id": "spline", "type": "select", "default": "24T",
+      "group": "spline", "modes": ["single_arm", "double_arm", "wheel_horn"],
+      "label": { "en": "Servo Spline", "es": "Estriado del Servo" },
+      "tooltip": { "en": "Output spline standard (24T Futaba/Savox, 25T Spektrum/Hitec)", "es": "Estandar del estriado (24T Futaba/Savox, 25T Spektrum/Hitec)" },
+      "options": [
+        { "value": "24T", "label": { "en": "24T (Futaba / Savox, ~5.8 mm)", "es": "24T (Futaba / Savox, ~5.8 mm)" } },
+        { "value": "25T", "label": { "en": "25T (Spektrum / Hitec, ~6.0 mm)", "es": "25T (Spektrum / Hitec, ~6.0 mm)" } }
+      ]
+    },
+    {
+      "id": "hub_d", "type": "slider", "default": 10.0, "min": 7.0, "max": 16.0, "step": 0.5,
+      "group": "spline", "modes": ["single_arm", "double_arm", "wheel_horn"],
+      "label": { "en": "Hub Diameter (mm)", "es": "Diametro del Cubo (mm)" },
+      "tooltip": { "en": "Boss diameter around the splined bore", "es": "Diametro del cubo alrededor del barreno estriado" }
+    },
+    {
+      "id": "horn_t", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "spline", "modes": ["single_arm", "double_arm", "wheel_horn"],
+      "label": { "en": "Horn Thickness (mm)", "es": "Grosor del Horn (mm)" },
+      "tooltip": { "en": "Overall horn thickness", "es": "Grosor total del horn" }
+    },
+    {
+      "id": "screw_d", "type": "slider", "default": 2.5, "min": 1.5, "max": 4.0, "step": 0.1,
+      "group": "spline", "modes": ["single_arm", "double_arm", "wheel_horn"], "advanced": true,
+      "label": { "en": "Retaining Screw (mm)", "es": "Tornillo de Retencion (mm)" },
+      "tooltip": { "en": "Central servo screw clearance", "es": "Holgura del tornillo central del servo" }
+    },
+    {
+      "id": "tooth_h", "type": "slider", "default": 0.35, "min": 0.15, "max": 0.8, "step": 0.05,
+      "group": "spline", "modes": ["single_arm", "double_arm", "wheel_horn"], "advanced": true,
+      "label": { "en": "Spline Tooth Depth (mm)", "es": "Profundidad de Diente (mm)" },
+      "tooltip": { "en": "Depth of the internal spline ridges (fit tuning)", "es": "Profundidad de los dientes internos (ajuste de encaje)" }
+    },
+    {
+      "id": "arm_len", "type": "slider", "default": 22.0, "min": 10.0, "max": 40.0, "step": 1,
+      "group": "arm", "modes": ["single_arm", "double_arm"],
+      "label": { "en": "Arm Length (mm)", "es": "Largo del Brazo (mm)" },
+      "tooltip": { "en": "Centre to arm tip", "es": "Del centro a la punta del brazo" }
+    },
+    {
+      "id": "arm_w", "type": "slider", "default": 7.0, "min": 4.0, "max": 14.0, "step": 0.5,
+      "group": "arm", "modes": ["single_arm", "double_arm"],
+      "label": { "en": "Arm Width (mm)", "es": "Ancho del Brazo (mm)" },
+      "tooltip": { "en": "Arm width at the tip", "es": "Ancho del brazo en la punta" }
+    },
+    {
+      "id": "hole_d", "type": "slider", "default": 2.0, "min": 1.0, "max": 4.0, "step": 0.1,
+      "group": "arm", "modes": ["single_arm", "double_arm", "wheel_horn"],
+      "label": { "en": "Linkage Hole (mm)", "es": "Agujero de Varillaje (mm)" },
+      "tooltip": { "en": "Diameter of the linkage / clevis holes", "es": "Diametro de los agujeros de varillaje / clevis" }
+    },
+    {
+      "id": "hole_count", "type": "slider", "default": 4, "min": 1, "max": 10, "step": 1,
+      "group": "arm", "modes": ["single_arm", "double_arm", "wheel_horn"],
+      "label": { "en": "Hole Count", "es": "Numero de Agujeros" },
+      "tooltip": { "en": "Linkage holes along the arm (x2 around the wheel)", "es": "Agujeros de varillaje a lo largo del brazo (x2 alrededor de la rueda)" }
+    },
+    {
+      "id": "hole_pitch", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.5,
+      "group": "arm", "modes": ["single_arm", "double_arm"], "advanced": true,
+      "label": { "en": "Hole Pitch (mm)", "es": "Paso de Agujeros (mm)" },
+      "tooltip": { "en": "Spacing between linkage holes", "es": "Separacion entre agujeros de varillaje" }
+    },
+    {
+      "id": "wheel_d", "type": "slider", "default": 32.0, "min": 16.0, "max": 50.0, "step": 1,
+      "group": "wheel", "modes": ["wheel_horn"],
+      "label": { "en": "Wheel Diameter (mm)", "es": "Diametro de Rueda (mm)" },
+      "tooltip": { "en": "Wheel-horn disc diameter", "es": "Diametro del disco del horn de rueda" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "futaba_single", "mode": "single_arm",
+      "label": { "en": "Futaba 24T Single", "es": "Futaba 24T Simple" },
+      "values": { "spline": "24T", "arm_len": 22, "arm_w": 7, "hole_count": 4 }
+    },
+    {
+      "id": "spektrum_double", "mode": "double_arm",
+      "label": { "en": "Spektrum 25T Double", "es": "Spektrum 25T Doble" },
+      "values": { "spline": "25T", "arm_len": 20, "arm_w": 7, "hole_count": 3 }
+    },
+    {
+      "id": "steering_wheel", "mode": "wheel_horn",
+      "label": { "en": "Steering Wheel 24T", "es": "Rueda de Direccion 24T" },
+      "values": { "spline": "24T", "wheel_d": 36, "hole_count": 4, "hole_d": 2.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hub_d >= 7",
+      "severity": "warning",
+      "message": { "en": "Hub smaller than 7 mm leaves thin walls around the spline", "es": "Un cubo menor a 7 mm deja paredes delgadas alrededor del estriado" }
+    },
+    {
+      "expression": "horn_t >= 2",
+      "severity": "error",
+      "message": { "en": "Horn must be at least 2 mm thick", "es": "El horn debe tener al menos 2 mm de grosor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [55, 55, 45] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 12] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "servo_spline",
+        "label": { "en": "Servo Spline", "es": "Estriado del Servo" },
+        "geometry_type": "spline",
+        "standard": "24T Futaba / 25T Spektrum",
+        "parameters": ["spline", "tooth_h", "hub_d"]
+      },
+      {
+        "id": "linkage_holes",
+        "label": { "en": "Linkage Holes", "es": "Agujeros de Varillaje" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["hole_d", "hole_count", "hole_pitch"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Servo horns snap and strip, and the OEM part is proprietary and often unavailable. An on-demand horn cut to the correct 24T/25T spline restores a servo on any craft or machine, and the tooth-depth control tunes the grip fit per printer.",
+      "es": "Los horns de servo se rompen y barren, y la pieza original es propietaria y a menudo no disponible. Un horn bajo demanda cortado al estriado 24T/25T correcto restaura un servo en cualquier equipo o maquina, y el control de profundidad de diente ajusta el encaje por impresora."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["servo", "horn", "spline", "rc", "industrial", "hyperobject", "commons"]
+}

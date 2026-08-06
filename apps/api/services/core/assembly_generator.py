@@ -94,7 +94,7 @@ def _topological_sort(graph: dict[str, list[dict]]) -> list[str]:
             all_nodes.add(d["child"])
 
     in_degree: dict[str, int] = {n: 0 for n in all_nodes}
-    for parent, children in graph.items():
+    for children in graph.values():
         for dep in children:
             in_degree[dep["child"]] = in_degree.get(dep["child"], 0) + 1
 

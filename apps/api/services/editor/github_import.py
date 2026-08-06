@@ -44,7 +44,7 @@ def check_repo_exists(repo_url: str, github_token: str | None = None) -> bool:
     try:
         result = subprocess.run(
             ["git", "ls-remote", "--exit-code", clone_url],
-            capture_output=True, timeout=15,
+            capture_output=True, timeout=15, check=False,
         )
         return result.returncode == 0
     except (subprocess.TimeoutExpired, FileNotFoundError):
@@ -67,7 +67,7 @@ def clone_repo(repo_url: str, dest: Path, github_token: str | None = None, shall
     cmd += [clone_url, str(dest)]
 
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120, check=False)
         if result.returncode != 0:
             import re
             safe_stderr = re.sub(r"https://[^@]+@", "https://***@", result.stderr)
@@ -79,7 +79,7 @@ def clone_repo(repo_url: str, dest: Path, github_token: str | None = None, shall
             clean_url = _clean_repo_url(repo_url)
             subprocess.run(
                 ["git", "remote", "set-url", "origin", clean_url],
-                cwd=str(dest), capture_output=True, timeout=10,
+                cwd=str(dest), capture_output=True, timeout=10, check=False,
             )
 
         return True

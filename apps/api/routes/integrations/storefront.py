@@ -59,9 +59,8 @@ def _sanitize_for_storefront(manifest: dict, mode_id: str | None = None) -> dict
         if p.get("hidden"):
             continue
         # Filter by mode if requested
-        if mode_id and "visible_in_modes" in p:
-            if mode_id not in p["visible_in_modes"]:
-                continue
+        if mode_id and "visible_in_modes" in p and mode_id not in p["visible_in_modes"]:
+            continue
         # Strip developer-only fields
         clean = {k: v for k, v in p.items() if k not in _STRIP_PARAM_FIELDS}
         filtered_params.append(clean)

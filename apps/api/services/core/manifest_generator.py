@@ -120,9 +120,8 @@ def generate_manifest(directory: Path, slug: str | None = None) -> dict:
         warnings.append("No parameterizable variables detected.")
 
     for param in parameters:
-        if param["type"] == "slider":
-            if param["min"] == param["max"]:
-                warnings.append(f"Parameter '{param['id']}': min equals max — review range.")
+        if param["type"] == "slider" and param["min"] == param["max"]:
+            warnings.append(f"Parameter '{param['id']}': min equals max — review range.")
 
     if not any(f.get("render_modes") for f in analysis["files"].values()):
         warnings.append("No render_mode patterns found in any file. Parts cannot be rendered independently.")

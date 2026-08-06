@@ -53,9 +53,8 @@ def _openscad_env(scad_path: str | None = None):
         paths.insert(0, project_dir)
         
         local_fonts = os.path.join(project_dir, "fonts")
-        if os.path.isdir(local_fonts):
-            if local_fonts not in fonts_dirs:
-                fonts_dirs.append(local_fonts)
+        if os.path.isdir(local_fonts) and local_fonts not in fonts_dirs:
+            fonts_dirs.append(local_fonts)
                 
     if fonts_dirs:
         cache_key = ":".join(fonts_dirs)

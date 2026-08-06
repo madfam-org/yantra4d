@@ -73,7 +73,7 @@ def _interpolate_params(from_state: dict, to_state: dict, t: float) -> dict:
             result[key] = from_val + (to_val - from_val) * t
             # Preserve int type if both sides were ints
             if isinstance(from_val, int) and isinstance(to_val, int):
-                result[key] = int(round(result[key]))
+                result[key] = round(result[key])
         else:
             # Non-numeric: snap halfway
             result[key] = to_val if t >= 0.5 else from_val

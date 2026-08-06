@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-RENDER_TIMEOUT_S = int(os.getenv("RENDER_TIMEOUT_S", 300))
+RENDER_TIMEOUT_S = int(os.getenv("RENDER_TIMEOUT_S", "300"))
 
 
 @dataclass

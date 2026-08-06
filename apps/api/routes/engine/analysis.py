@@ -84,8 +84,8 @@ def analyze_thickness(slug: str):
         return error_response("Render file disappeared during analysis", 404)
     except Exception as e:
         logger.exception(
-            "Thickness analysis failed for %s [request_id=%s]: %s",
-            slug, getattr(g, "request_id", None), e,
+            "Thickness analysis failed for %s [request_id=%s]",
+            slug, getattr(g, "request_id", None),
         )
         return error_response(f"Analysis failed: {e!s}", 500)
 
@@ -138,8 +138,8 @@ def analyze_overhang(slug: str):
         return error_response("Render file disappeared during analysis", 404)
     except Exception as e:
         logger.exception(
-            "Overhang analysis failed for %s [request_id=%s]: %s",
-            slug, getattr(g, "request_id", None), e,
+            "Overhang analysis failed for %s [request_id=%s]",
+            slug, getattr(g, "request_id", None),
         )
         return error_response(f"Analysis failed: {e!s}", 500)
 

@@ -73,7 +73,7 @@ def verify_design():
         logger.info(f"Verifying {part}: {' '.join(cmd[:3])}...")
 
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120, check=False)
             output = result.stdout + result.stderr
 
             # Parse structured output (look for ===JSON=== marker)

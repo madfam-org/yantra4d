@@ -73,8 +73,7 @@ def _stream_anthropic(messages: list[dict], system: str, max_tokens: int) -> Ite
         system=system,
         messages=messages,
     ) as stream:
-        for text in stream.text_stream:
-            yield text
+        yield from stream.text_stream
 
 
 def _stream_openai(messages: list[dict], system: str, max_tokens: int) -> Iterator[str]:

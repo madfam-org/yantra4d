@@ -27,9 +27,9 @@ def _pick_parameter_name(params: dict[str, Any]) -> str:
 
     preferred = [key for key in numeric_keys if "thickness" in key.lower()]
     if preferred:
-        return sorted(preferred)[0]
+        return min(preferred)
 
-    return sorted(numeric_keys)[0]
+    return min(numeric_keys)
 
 
 def _infer_bounds(parameter_name: str, value: float) -> tuple[float, float]:

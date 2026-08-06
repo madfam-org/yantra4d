@@ -98,12 +98,10 @@ class SessionData:
 
 def _redis_available() -> bool:
     """Check if Redis should be attempted (circuit breaker check)."""
-    global _redis_failure_count, _redis_circuit_open_until
     if not redis_client:
         return False
-    if time.time() < _redis_circuit_open_until:
-        return False
-    return True
+    # Circuit is closed (Redis usable) once the cooldown window has elapsed.
+    return time.time() >= _redis_circuit_open_until
 
 
 def _redis_success() -> None:

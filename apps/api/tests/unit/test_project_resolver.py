@@ -72,6 +72,6 @@ class TestResolveProjectDir:
 
         monkeypatch.setattr("services.editor.git_operations.git_init", mock_git_init)
 
-        project_dir, err = resolve_project_dir(slug, auto_git=True)
+        _project_dir, err = resolve_project_dir(slug, auto_git=True)
         assert err is None
         assert len(called) == 1

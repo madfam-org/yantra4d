@@ -167,8 +167,8 @@ def main():
             passed = geometric_regression(proj, rtol=args.tolerance)
             if not passed:
                 overall_pass = False
-        except Exception as e:
-            logger.exception(f"Exception during testing {proj}: {e}")
+        except Exception:
+            logger.exception(f"Exception during testing {proj}")
             overall_pass = False
 
     if not overall_pass:

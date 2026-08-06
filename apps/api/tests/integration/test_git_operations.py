@@ -325,7 +325,7 @@ class TestGitPushPullWithRemote:
         return proj, bare
 
     def test_push_to_bare_remote(self, repo_with_bare_remote):
-        proj, bare = repo_with_bare_remote
+        proj, _bare = repo_with_bare_remote
         (proj / "main.scad").write_text("cube(20);")
         git_commit(proj, "Update cube", ["main.scad"])
         # Push with empty token (local bare remote doesn't need auth)

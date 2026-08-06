@@ -39,6 +39,7 @@ class TestBOSL2Smoke:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                check=False,
                 env={
                     "PATH": shutil.os.environ.get("PATH", ""),
                     "OPENSCADPATH": str(LIBS_DIR),

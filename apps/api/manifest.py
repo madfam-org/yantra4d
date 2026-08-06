@@ -7,6 +7,7 @@ import copy
 import json
 import logging
 from pathlib import Path
+from typing import ClassVar
 
 from config import Config
 
@@ -32,7 +33,7 @@ class ProjectManifest:
     def slug(self) -> str:
         return self._data["project"]["slug"]
 
-    KNOWN_ENGINES = {"openscad", "cadquery", "implicit"}
+    KNOWN_ENGINES: ClassVar[set[str]] = {"openscad", "cadquery", "implicit"}
 
     @property
     def engine(self) -> str:

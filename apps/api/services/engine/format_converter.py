@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 TRIMESH_EXPORT_FORMATS = {'stl', 'glb', 'gltf', '3mf', 'off', 'obj', 'ply'}
 
 
-def convert_mesh(input_path: str, output_path: str, input_type: str = None, output_type: str = None) -> bool:
+def convert_mesh(input_path: str, output_path: str, input_type: str | None = None, output_type: str | None = None) -> bool:
     """Convert between any trimesh-supported mesh formats.
 
     Returns True on success, False on failure.

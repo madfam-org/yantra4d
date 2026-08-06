@@ -87,7 +87,7 @@ class MqttTelemetryService:
             self.connected = True
             # Re-subscribe to all registered topics
             with self._lock:
-                for topic in self.topic_callbacks.keys():
+                for topic in self.topic_callbacks:
                     self.client.subscribe(topic)
                     logger.info(f"Subscribed to topic: {topic}")
         else:

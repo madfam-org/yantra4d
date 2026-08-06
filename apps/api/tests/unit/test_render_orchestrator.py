@@ -42,17 +42,25 @@ class TestPostRenderConvert:
         stl_prefix = "pfx_"
         part = "body"
 
+        def fake_stl_to_glb(src, dst):
+            if not stl_to_glb_succeeds:
+                return False
+            with open(dst, "w") as f:
+                f.write("GLB")
+            return True
+
+        def fake_convert_mesh(src, dst):
+            if not convert_mesh_succeeds:
+                return False
+            with open(dst, "w") as f:
+                f.write("CONV")
+            return True
+
         with patch("services.engine.render_orchestrator.stl_to_glb") as mock_glb, \
              patch("services.engine.render_orchestrator.convert_mesh") as mock_conv:
 
-            mock_glb.side_effect = lambda src, dst: (
-                (open(dst, "w").write("GLB"), True)[1]
-                if stl_to_glb_succeeds else False
-            )
-            mock_conv.side_effect = lambda src, dst: (
-                (open(dst, "w").write("CONV"), True)[1]
-                if convert_mesh_succeeds else False
-            )
+            mock_glb.side_effect = fake_stl_to_glb
+            mock_conv.side_effect = fake_convert_mesh
 
             result = _post_render_convert(
                 output_path, output_filename, part, stl_prefix,
@@ -63,7 +71,7 @@ class TestPostRenderConvert:
 
     def test_stl_request_returns_stl_url_not_glb(self, tmp_path):
         """Core fix: when export_format='stl', url must point to the .stl file."""
-        serve_path, serve_filename, viewer_filename = self._call(
+        _serve_path, serve_filename, _viewer_filename = self._call(
             tmp_path,
             output_filename="pfx_body.stl",
             actual_format="stl",
@@ -109,7 +117,7 @@ class TestPostRenderConvert:
             mock_glb.return_value = True
 
             from services.engine.render_orchestrator import _post_render_convert
-            serve_path, serve_filename, viewer_filename = _post_render_convert(
+            _serve_path, _serve_filename, viewer_filename = _post_render_convert(
                 str(tmp_path / output_filename), output_filename, "body",
                 "pfx_", "3mf", "3mf",
             )

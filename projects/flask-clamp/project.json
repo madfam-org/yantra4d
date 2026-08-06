@@ -1,0 +1,245 @@
+{
+  "project": {
+    "name": "Beaker / Flask Clamp",
+    "slug": "flask-clamp",
+    "version": "1.0.0",
+    "description": {
+      "en": "Lab-glassware support hyperobject: an open C-ring clamp that hugs an Erlenmeyer or beaker body and locks onto a ring-stand rod, an inverted-neck drying holder sized to standard 34 mm flask necks, and a weighted rod-stand base. Sized to real borosilicate glassware and 12 mm support rods.",
+      "es": "Hiperobjeto de soporte para material de vidrio: una abrazadera en C abierta que sujeta un matraz Erlenmeyer o vaso y se fija a una varilla de soporte, un soporte de secado por cuello invertido para cuellos estándar de 34 mm, y una base con peso para varilla. Dimensionado a vidrio borosilicato real y varillas de 12 mm."
+    },
+    "thumbnail": "/projects/flask-clamp.webp",
+    "tags": ["flask", "beaker", "clamp", "ring-stand", "glassware", "lab", "medical", "hyperobject", "commons"],
+    "difficulty": "intermediate",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Ring bore uses +1.0 mm clearance around the vessel; print the clamp in PETG for heat and solvent resistance near hotplates.",
+        "es": "El anillo usa +1.0 mm de holgura alrededor del recipiente; imprime la abrazadera en PETG para resistencia al calor y solventes cerca de placas calientes."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "vessel_ring",
+        "label": {
+          "en": "Vessel Body Ring",
+          "es": "Anillo del Cuerpo del Recipiente"
+        },
+        "geometry_type": "socket",
+        "standard": "Erlenmeyer/beaker body Ø70-108 mm",
+        "parameters": ["vessel_diameter"]
+      },
+      {
+        "id": "rod_mount",
+        "label": {
+          "en": "Ring-Stand Rod Mount",
+          "es": "Montaje de Varilla de Soporte"
+        },
+        "geometry_type": "socket",
+        "standard": "12 mm / 1/2 in support rod",
+        "parameters": ["rod_diameter"]
+      },
+      {
+        "id": "neck_socket",
+        "label": {
+          "en": "Flask Neck Socket",
+          "es": "Alojamiento de Cuello de Matraz"
+        },
+        "geometry_type": "socket",
+        "standard": "34 mm flask neck OD (250/500 mL)",
+        "parameters": ["neck_diameter", "neck_holes"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Replaces cast-iron clamps and rings with reprintable supports so field and teaching labs can hold glassware safely without heavy proprietary hardware.",
+      "es": "Reemplaza abrazaderas y anillos de hierro fundido con soportes reimprimibles para que laboratorios de campo y docentes sostengan vidrio de forma segura sin hardware pesado propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "ring_clamp",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Rod-Mounted C-Ring Clamp",
+        "es": "Abrazadera en C para Varilla"
+      },
+      "description": {
+        "en": "Open C-ring that hugs a flask/beaker body and clamps onto a ring-stand rod via a slit clamp and cross screw bore."
+      },
+      "parts": ["ring_clamp"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "neck_holder",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Inverted-Neck Drying Holder",
+        "es": "Soporte de Secado por Cuello"
+      },
+      "description": {
+        "en": "Raised plate with keyed neck cutouts so flasks sit inverted to drain and dry, lifted on four corner legs for airflow."
+      },
+      "parts": ["neck_holder"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "rod_stand_base",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Weighted Rod-Stand Base",
+        "es": "Base con Peso para Varilla"
+      },
+      "description": {
+        "en": "Heavy footed base with a rear vertical rod socket and underside weight pockets, so glassware overhangs the front."
+      },
+      "parts": ["rod_stand_base"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "ring_clamp",
+      "render_mode": 0,
+      "label": {
+        "en": "Rod-Mounted C-Ring Clamp",
+        "es": "Abrazadera en C para Varilla"
+      },
+      "default_color": "#c05621"
+    },
+    {
+      "id": "neck_holder",
+      "render_mode": 0,
+      "label": {
+        "en": "Inverted-Neck Drying Holder",
+        "es": "Soporte de Secado por Cuello"
+      },
+      "default_color": "#dd6b20"
+    },
+    {
+      "id": "rod_stand_base",
+      "render_mode": 0,
+      "label": {
+        "en": "Weighted Rod-Stand Base",
+        "es": "Base con Peso para Varilla"
+      },
+      "default_color": "#9c4221"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "vessel_diameter",
+      "type": "slider",
+      "default": 84,
+      "min": 40,
+      "max": 120,
+      "step": 1,
+      "label": {
+        "en": "Vessel Body Diameter (mm)",
+        "es": "Diámetro del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Erlenmeyer body: 125 mL ~70, 250 mL ~84, 500 mL ~108 mm. Beaker 250 mL ~70 mm.",
+        "es": "Cuerpo Erlenmeyer: 125 mL ~70, 250 mL ~84, 500 mL ~108 mm. Vaso 250 mL ~70 mm."
+      },
+      "group": "clamp"
+    },
+    {
+      "id": "rod_diameter",
+      "type": "slider",
+      "default": 12,
+      "min": 8,
+      "max": 16,
+      "step": 0.1,
+      "label": {
+        "en": "Support Rod Diameter (mm)",
+        "es": "Diámetro de la Varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Standard lab ring-stand rod is 12 mm; 1/2 in = 12.7 mm.",
+        "es": "La varilla estándar de soporte es 12 mm; 1/2 in = 12.7 mm."
+      },
+      "group": "clamp"
+    },
+    {
+      "id": "neck_diameter",
+      "type": "slider",
+      "default": 34,
+      "min": 20,
+      "max": 45,
+      "step": 0.5,
+      "label": {
+        "en": "Flask Neck OD (mm)",
+        "es": "Diámetro Exterior del Cuello (mm)"
+      },
+      "tooltip": {
+        "en": "250/500 mL Erlenmeyer neck OD is 34 mm; 125 mL is ~30 mm.",
+        "es": "El cuello de Erlenmeyer 250/500 mL es 34 mm; 125 mL es ~30 mm."
+      },
+      "group": "drying"
+    },
+    {
+      "id": "neck_holes",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "label": {
+        "en": "Drying Positions",
+        "es": "Posiciones de Secado"
+      },
+      "group": "drying"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "clamp",
+      "label": {
+        "en": "Ring Clamp & Rod",
+        "es": "Abrazadera y Varilla"
+      }
+    },
+    {
+      "id": "drying",
+      "label": {
+        "en": "Neck Drying Holder",
+        "es": "Soporte de Secado"
+      }
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

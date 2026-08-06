@@ -1,0 +1,178 @@
+{
+  "project": {
+    "name": "Engine Bay / Hose Clip",
+    "slug": "engine-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Under-hood routing that tidies vacuum hoses, fuel lines and wire looms so they don't chafe, rattle or melt on hot parts. Snap a hose three ways: a screw-down clip, a push-on sheet-metal edge clip, and a routing comb for a loom bundle. Sized to real split-loom and hose outer diameters (1/4\"-3/4\", ~10-25 mm).\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Enrutamiento bajo el capó que ordena mangueras de vacío, líneas de combustible y arneses para que no se rocen, vibren ni se derritan en partes calientes. Sujeta una manguera de tres formas: un clip atornillado, un clip de presión para borde de lámina, y un peine de enrutamiento para un arnés. Dimensionado a diámetros reales de arnés y manguera (1/4\"-3/4\", ~10-25 mm).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/engine-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["engine-bay", "hose-clip", "loom", "wire", "automotive", "routing", "snap", "commercial", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "hose_clip",
+      "label": { "en": "Screw Clip", "es": "Clip Atornillado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hose_clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "edge_clip",
+      "label": { "en": "Edge Clip", "es": "Clip de Borde" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["edge_clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "loom_rail",
+      "label": { "en": "Loom Comb", "es": "Peine de Arnés" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["loom_rail"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "hose_clip", "label": { "en": "Screw Clip", "es": "Clip Atornillado" }, "render_mode": 0, "color": "#b91c1c" },
+    { "id": "edge_clip", "label": { "en": "Edge Clip", "es": "Clip de Borde" }, "render_mode": 0, "color": "#dc2626" },
+    { "id": "loom_rail", "label": { "en": "Loom Comb", "es": "Peine de Arnés" }, "render_mode": 0, "color": "#ef4444" }
+  ],
+  "parameter_groups": [
+    { "id": "hose", "label": { "en": "Hose / Loom", "es": "Manguera / Arnés" } },
+    { "id": "edge", "label": { "en": "Edge Grip", "es": "Agarre de Borde" } },
+    { "id": "rail", "label": { "en": "Loom Comb", "es": "Peine de Arnés" } }
+  ],
+  "parameters": [
+    {
+      "id": "hose_od", "type": "slider", "default": 13.0, "min": 4.0, "max": 40.0, "step": 0.5,
+      "group": "hose", "modes": ["hose_clip", "edge_clip", "loom_rail"],
+      "label": { "en": "Hose / Loom OD (mm)", "es": "OD Manguera / Arnés (mm)" },
+      "tooltip": { "en": "Outer diameter. 1/4\" loom ~10, 3/8\" ~13, 1/2\" ~17, 3/4\" ~25 mm; vacuum hose 6-13 mm", "es": "Diámetro exterior. Arnés 1/4\" ~10, 3/8\" ~13, 1/2\" ~17, 3/4\" ~25 mm; manguera de vacío 6-13 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.6, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "hose", "modes": ["hose_clip", "edge_clip", "loom_rail"],
+      "label": { "en": "Clip Wall (mm)", "es": "Pared del Clip (mm)" },
+      "tooltip": { "en": "Wall thickness of the clip C-section", "es": "Grosor de pared de la sección C del clip" }
+    },
+    {
+      "id": "clip_w", "type": "slider", "default": 10.0, "min": 5.0, "max": 30.0, "step": 0.5,
+      "group": "hose", "modes": ["hose_clip", "edge_clip", "loom_rail"],
+      "label": { "en": "Clip Width (mm)", "es": "Ancho del Clip (mm)" },
+      "tooltip": { "en": "Width of the clip along the hose", "es": "Ancho del clip a lo largo de la manguera" }
+    },
+    {
+      "id": "mouth", "type": "slider", "default": 0.8, "min": 0.55, "max": 0.92, "step": 0.01,
+      "group": "hose", "modes": ["hose_clip", "edge_clip", "loom_rail"], "advanced": true,
+      "label": { "en": "Snap Mouth (× OD)", "es": "Boca de Encaje (× OD)" },
+      "tooltip": { "en": "Mouth opening as a fraction of hose OD. Smaller grips harder", "es": "Abertura de la boca como fracción del OD. Menor agarra más fuerte" }
+    },
+    {
+      "id": "edge_th", "type": "slider", "default": 2.0, "min": 0.8, "max": 8.0, "step": 0.2,
+      "group": "edge", "modes": ["edge_clip"],
+      "label": { "en": "Panel Thickness (mm)", "es": "Grosor del Panel (mm)" },
+      "tooltip": { "en": "Sheet-metal edge / flange thickness the clip grips (~1-3 mm typical)", "es": "Grosor del borde / brida de lámina que agarra el clip (~1-3 mm típico)" }
+    },
+    {
+      "id": "edge_reach", "type": "slider", "default": 12.0, "min": 6.0, "max": 30.0, "step": 1.0,
+      "group": "edge", "modes": ["edge_clip"],
+      "label": { "en": "Edge Reach (mm)", "es": "Alcance de Borde (mm)" },
+      "tooltip": { "en": "How far the grip reaches onto the panel", "es": "Qué tanto alcanza el agarre sobre el panel" }
+    },
+    {
+      "id": "screw_d", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "hose", "modes": ["hose_clip", "loom_rail"],
+      "label": { "en": "Screw Hole (mm)", "es": "Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Fastening screw clearance", "es": "Holgura del tornillo de fijación" }
+    },
+    {
+      "id": "n_clips", "type": "slider", "default": 3.0, "min": 1.0, "max": 8.0, "step": 1.0,
+      "group": "rail", "modes": ["loom_rail"],
+      "label": { "en": "Number of Clips", "es": "Número de Clips" },
+      "tooltip": { "en": "How many clips on the loom comb", "es": "Cuántos clips en el peine de arnés" }
+    },
+    {
+      "id": "clip_pitch", "type": "slider", "default": 20.0, "min": 8.0, "max": 50.0, "step": 1.0,
+      "group": "rail", "modes": ["loom_rail"],
+      "label": { "en": "Clip Spacing (mm)", "es": "Separación de Clips (mm)" },
+      "tooltip": { "en": "Center-to-center spacing of clips on the comb", "es": "Separación centro a centro de los clips en el peine" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "hose", "modes": ["hose_clip", "edge_clip", "loom_rail"], "advanced": true,
+      "label": { "en": "Slip Clearance (mm)", "es": "Holgura (mm)" },
+      "tooltip": { "en": "Per-side gap on the hose bore and the edge slot", "es": "Espacio por lado en el orificio de la manguera y la ranura del borde" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "vac_hose_clip", "mode": "hose_clip",
+      "label": { "en": "Vacuum-Hose Clip (10 mm)", "es": "Clip de Manguera de Vacío (10 mm)" },
+      "values": { "hose_od": 10, "wall": 2.6, "clip_w": 10 }
+    },
+    {
+      "id": "fender_edge", "mode": "edge_clip",
+      "label": { "en": "Fender-Edge Hose Clip", "es": "Clip de Manguera para Borde" },
+      "values": { "hose_od": 13, "edge_th": 2, "edge_reach": 12 }
+    },
+    {
+      "id": "loom_comb_4", "mode": "loom_rail",
+      "label": { "en": "4-Way Loom Comb", "es": "Peine de Arnés de 4" },
+      "values": { "hose_od": 13, "n_clips": 4, "clip_pitch": 20 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "mouth < 1",
+      "severity": "error",
+      "message": { "en": "Mouth must be narrower than the hose so the clip retains it", "es": "La boca debe ser más estrecha que la manguera para que el clip la retenga" }
+    },
+    {
+      "expression": "edge_reach > edge_th",
+      "severity": "warning",
+      "message": { "en": "Edge reach should exceed the panel thickness for a stable grip", "es": "El alcance de borde debe superar el grosor del panel para un agarre estable" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 60] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 15] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 130] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 40, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "hose_snap_clip",
+        "label": { "en": "Hose Snap Clip", "es": "Clip de Encaje de Manguera" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["hose_od", "wall", "mouth", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Original hose and loom clips break and disappear from parts catalogues, leaving lines to chafe against sharp brackets or sag onto the exhaust — a real fire and reliability risk. A clip printed to the exact hose or loom, mounted by screw, panel edge or a shared comb, keeps an engine bay tidy and safe from durable printed parts and lets a mechanic standardise routing across a repair instead of hunting a discontinued OEM clip.",
+      "es": "Los clips originales de manguera y arnés se rompen y desaparecen de los catálogos, dejando las líneas rozando contra soportes filosos o cayendo sobre el escape — un riesgo real de incendio y fiabilidad. Un clip impreso a la manguera o arnés exacto, montado con tornillo, borde de panel o un peine compartido, mantiene el compartimiento del motor ordenado y seguro con piezas impresas duraderas y permite a un mecánico estandarizar el enrutamiento en una reparación en vez de buscar un clip OEM descontinuado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["engine-bay", "hose-clip", "loom", "wire", "automotive", "routing", "snap", "commercial", "hyperobject", "commons"]
+}

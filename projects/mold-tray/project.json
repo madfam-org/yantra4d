@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Ice / Chocolate / Casting Mold Tray",
+    "slug": "mold-tray",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A tray of cavities you can pour into directly (ice, chocolate, wax, resin) or use as a master to cast a flexible silicone mold. Pick a cavity shape — cube, half-sphere, bar, or a rounded custom pocket — and a grid count.\n\nFood-contact note: direct-pour food use touches the print. Geometry only — food-safe filament/resin and hygiene are the maker's responsibility; casting a silicone mold sidesteps direct print-to-food contact.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una bandeja de cavidades para vaciar directamente (hielo, chocolate, cera, resina) o usar como maestro para colar un molde de silicona flexible. Elige la forma de la cavidad — cubo, media esfera, barra o una cavidad personalizada redondeada — y una cuadrícula.\n\nNota de contacto con alimentos: el vaciado directo de alimentos toca la impresión. Solo geometría — el filamento/resina apto para alimentos y la higiene son responsabilidad del fabricante; colar un molde de silicona evita el contacto directo impresión-alimento.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mold-tray.webp",
+    "difficulty": "intermediate",
+    "tags": ["mold", "ice", "chocolate", "casting", "silicone", "kitchen", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cavity_tray",
+      "label": { "en": "Cavity Tray", "es": "Bandeja de Cavidades" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cavity_tray"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "bar_mold",
+      "label": { "en": "Bar Mold", "es": "Molde de Barras" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bar_mold"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "single_large",
+      "label": { "en": "Single Large", "es": "Cavidad Grande" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_large"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "cavity_tray", "label": { "en": "Cavity Tray", "es": "Bandeja de Cavidades" }, "render_mode": 0, "color": "#8a6db0" },
+    { "id": "bar_mold", "label": { "en": "Bar Mold", "es": "Molde de Barras" }, "render_mode": 0, "color": "#a98bc7" },
+    { "id": "single_large", "label": { "en": "Single Large", "es": "Cavidad Grande" }, "render_mode": 0, "color": "#7a5b9e" }
+  ],
+  "parameter_groups": [
+    { "id": "cavity", "label": { "en": "Cavity", "es": "Cavidad" } },
+    { "id": "grid", "label": { "en": "Grid", "es": "Cuadrícula" } },
+    { "id": "tray", "label": { "en": "Tray", "es": "Bandeja" } }
+  ],
+  "parameters": [
+    {
+      "id": "cavity", "type": "select", "default": "cube",
+      "group": "cavity", "modes": ["cavity_tray", "single_large"],
+      "label": { "en": "Cavity Shape", "es": "Forma de Cavidad" },
+      "tooltip": { "en": "Shape of each cavity", "es": "Forma de cada cavidad" },
+      "options": [
+        { "value": "cube", "label": { "en": "Cube", "es": "Cubo" } },
+        { "value": "sphere_half", "label": { "en": "Half-Sphere", "es": "Media Esfera" } },
+        { "value": "bar", "label": { "en": "Bar", "es": "Barra" } },
+        { "value": "custom", "label": { "en": "Round Pocket", "es": "Cavidad Redonda" } }
+      ]
+    },
+    {
+      "id": "cavity_sz", "type": "slider", "default": 28, "min": 8, "max": 80, "step": 1,
+      "group": "cavity", "modes": ["cavity_tray", "bar_mold", "single_large"],
+      "label": { "en": "Cavity Size (mm)", "es": "Tamaño de Cavidad (mm)" },
+      "tooltip": { "en": "Nominal cavity size", "es": "Tamaño nominal de la cavidad" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 22, "min": 4, "max": 60, "step": 1,
+      "group": "cavity", "modes": ["cavity_tray", "bar_mold", "single_large"],
+      "label": { "en": "Cavity Depth (mm)", "es": "Profundidad de Cavidad (mm)" },
+      "tooltip": { "en": "How deep each cavity goes", "es": "Qué tan profunda es cada cavidad" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "draft", "type": "slider", "default": 1.5, "min": 0.0, "max": 4.0, "step": 0.5,
+      "group": "cavity", "modes": ["cavity_tray", "bar_mold", "single_large"], "advanced": true,
+      "label": { "en": "Release Draft (mm)", "es": "Ángulo de Desmolde (mm)" },
+      "tooltip": { "en": "Taper (mouth wider than base) for easy release", "es": "Conicidad (boca más ancha que base) para desmoldar fácil" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 3, "min": 1, "max": 8, "step": 1,
+      "group": "grid", "modes": ["cavity_tray", "bar_mold"],
+      "label": { "en": "Columns", "es": "Columnas" },
+      "tooltip": { "en": "Cavities across (bar mold uses this as the count)", "es": "Cavidades a lo ancho (el molde de barras lo usa como conteo)" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 2, "min": 1, "max": 8, "step": 1,
+      "group": "grid", "modes": ["cavity_tray"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Cavities deep", "es": "Cavidades a lo profundo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "tray", "modes": ["cavity_tray", "bar_mold", "single_large"],
+      "label": { "en": "Wall Between (mm)", "es": "Pared Entre Cavidades (mm)" },
+      "tooltip": { "en": "Tray wall / spacing between cavities", "es": "Pared de la bandeja / separación entre cavidades" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 3.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "tray", "modes": ["cavity_tray", "bar_mold", "single_large"], "advanced": true,
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Solid floor kept under every cavity", "es": "Piso sólido bajo cada cavidad" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "ice_cube_tray", "mode": "cavity_tray",
+      "label": { "en": "Ice Cube Tray (4×3)", "es": "Cubetera (4×3)" },
+      "values": { "cavity": "cube", "cavity_sz": 28, "depth": 24, "cols": 4, "rows": 3 }
+    },
+    {
+      "id": "sphere_ice", "mode": "cavity_tray",
+      "label": { "en": "Sphere Ice (2×2)", "es": "Hielo Esférico (2×2)" },
+      "values": { "cavity": "sphere_half", "cavity_sz": 45, "depth": 40, "cols": 2, "rows": 2 }
+    },
+    {
+      "id": "chocolate_bars", "mode": "bar_mold",
+      "label": { "en": "Chocolate Bars", "es": "Barras de Chocolate" },
+      "values": { "cavity_sz": 30, "depth": 10, "cols": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "floor >= 2",
+      "severity": "error",
+      "message": { "en": "Floor must be at least 2 mm", "es": "El piso debe ser de al menos 2 mm" }
+    },
+    {
+      "expression": "draft <= cavity_sz / 4",
+      "severity": "warning",
+      "message": { "en": "Draft is large relative to the cavity", "es": "El desmolde es grande respecto a la cavidad" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "mold_cavity_array",
+        "label": { "en": "Mold Cavity Array", "es": "Arreglo de Cavidades" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["cavity", "cavity_sz", "cols", "rows"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Any shape and count of mold on demand — for ice, chocolate, wax, soap, or resin, or as a printed master for silicone casting — lets households and small makers produce custom forms without commissioning tooling.",
+      "es": "Cualquier forma y cantidad de molde bajo demanda — para hielo, chocolate, cera, jabón o resina, o como maestro impreso para colar silicona — permite a hogares y pequeños fabricantes producir formas personalizadas sin encargar herramental."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["mold", "ice", "chocolate", "casting", "silicone", "household", "hyperobject", "commons"]
+}

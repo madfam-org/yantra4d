@@ -1,0 +1,426 @@
+{
+  "project": {
+    "name": "Cabinet Cam-Lock Cam",
+    "slug": "lock-cam",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "description": {
+      "en": "The flat steel cam that bolts to the back of a cabinet cam-lock cylinder and swings to catch behind the frame. Build a straight cam for a 16 mm-body lock, a straight cam for a 19 mm-body lock, or a cranked offset cam for deep-set doors. Sized to the two dominant furniture cam-lock body diameters (16/19 mm) with a slotted tailpiece socket and fixing screw.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "La leva plana de acero que se atornilla detrás del cilindro de una cerradura de leva de gabinete y gira para engancharse tras el marco. Genera una leva recta para cerradura de cuerpo de 16 mm, una para cuerpo de 19 mm, o una leva acodada con desfase para puertas profundas. Dimensionada a los dos diámetros de cuerpo dominantes (16/19 mm) con alojamiento de espiga ranurado y tornillo de fijación.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/lock-cam.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "cam-lock",
+      "cabinet",
+      "drawer",
+      "furniture",
+      "lock",
+      "cam",
+      "16mm",
+      "19mm",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "cam_16mm",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "16 mm Cam (Straight)",
+        "es": "Leva 16 mm (Recta)"
+      },
+      "description": {
+        "en": "Straight cam plate for a 16 mm-body cam lock — the smaller of the two standard furniture cam locks. A collar bores the 16 mm body, a slotted socket keys the tailpiece, and a screw fixes the cam."
+      },
+      "parts": [
+        "cam_16mm"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "cam_19mm",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "19 mm Cam (Straight)",
+        "es": "Leva 19 mm (Recta)"
+      },
+      "description": {
+        "en": "Straight cam plate for a 19 mm-body cam lock — the larger standard. The collar bore and outer diameter grow to the 19 mm body, giving a genuinely different part."
+      },
+      "parts": [
+        "cam_19mm"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "offset_cam",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Cranked Offset Cam",
+        "es": "Leva Acodada con Desfase"
+      },
+      "description": {
+        "en": "A stepped cam whose catch face is raised in Z by a ramp, for deep-set doors where a flat cam would not reach the frame."
+      },
+      "parts": [
+        "offset_cam"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "cam_16mm",
+      "label": {
+        "en": "16 mm Cam",
+        "es": "Leva 16 mm"
+      },
+      "render_mode": 0,
+      "color": "#8a8f99"
+    },
+    {
+      "id": "cam_19mm",
+      "label": {
+        "en": "19 mm Cam",
+        "es": "Leva 19 mm"
+      },
+      "render_mode": 0,
+      "color": "#6f757f"
+    },
+    {
+      "id": "offset_cam",
+      "label": {
+        "en": "Offset Cam",
+        "es": "Leva con Desfase"
+      },
+      "render_mode": 0,
+      "color": "#565c66"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "body_d",
+      "type": "slider",
+      "default": 16.0,
+      "min": 10.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "cam_16mm",
+        "cam_19mm",
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Lock Body Ø (mm)",
+        "es": "Ø del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Cam-lock threaded body diameter. Furniture standards are 16 mm and 19 mm. The 19 mm mode enforces at least 19 mm.",
+        "es": "Diámetro del cuerpo roscado de la cerradura. Los estándares de mobiliario son 16 mm y 19 mm. El modo de 19 mm fuerza al menos 19 mm."
+      }
+    },
+    {
+      "id": "cam_reach",
+      "type": "slider",
+      "default": 43.0,
+      "min": 20.0,
+      "max": 80.0,
+      "step": 0.5,
+      "group": "cam",
+      "modes": [
+        "cam_16mm",
+        "cam_19mm",
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Cam Reach (mm)",
+        "es": "Alcance de la Leva (mm)"
+      },
+      "tooltip": {
+        "en": "Arm length from the lock axis to the catch tip. ~43 mm is typical for cabinet cams.",
+        "es": "Longitud del brazo desde el eje de la cerradura hasta la punta. ~43 mm es típico."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "cam_w",
+      "type": "slider",
+      "default": 14.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "cam",
+      "modes": [
+        "cam_16mm",
+        "cam_19mm",
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Cam Width (mm)",
+        "es": "Ancho de la Leva (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the cam arm.",
+        "es": "Ancho del brazo de la leva."
+      }
+    },
+    {
+      "id": "cam_t",
+      "type": "slider",
+      "default": 2.5,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "cam",
+      "modes": [
+        "cam_16mm",
+        "cam_19mm",
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Cam Thickness (mm)",
+        "es": "Grosor de la Leva (mm)"
+      },
+      "tooltip": {
+        "en": "Plate thickness. Steel cams are ~2 mm; print thicker for strength.",
+        "es": "Grosor de la placa. Las levas de acero son ~2 mm; imprima más grueso para resistencia."
+      }
+    },
+    {
+      "id": "tail_w",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.1,
+      "group": "drive",
+      "modes": [
+        "cam_16mm",
+        "cam_19mm",
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Tailpiece Slot Width (mm)",
+        "es": "Ancho de Ranura de Espiga (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the keyed tailpiece drive socket.",
+        "es": "Ancho del alojamiento ranurado de la espiga de accionamiento."
+      }
+    },
+    {
+      "id": "tail_len",
+      "type": "slider",
+      "default": 9.0,
+      "min": 4.0,
+      "max": 26.0,
+      "step": 0.1,
+      "group": "drive",
+      "modes": [
+        "cam_16mm",
+        "cam_19mm",
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Tailpiece Slot Length (mm)",
+        "es": "Largo de Ranura de Espiga (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the keyed tailpiece drive socket.",
+        "es": "Largo del alojamiento ranurado de la espiga de accionamiento."
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 3.4,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "drive",
+      "modes": [
+        "cam_16mm",
+        "cam_19mm",
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Fixing Screw Ø (mm)",
+        "es": "Ø del Tornillo de Fijación (mm)"
+      },
+      "tooltip": {
+        "en": "Axial fixing-screw clearance (M3-ish) that pins the cam to the tailpiece.",
+        "es": "Holgura del tornillo axial de fijación (tipo M3) que fija la leva a la espiga."
+      }
+    },
+    {
+      "id": "offset_z",
+      "type": "slider",
+      "default": 8.0,
+      "min": 3.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "cam",
+      "modes": [
+        "offset_cam"
+      ],
+      "label": {
+        "en": "Catch Z-Offset (mm)",
+        "es": "Desfase Z del Enganche (mm)"
+      },
+      "tooltip": {
+        "en": "How far the catch end of the cranked cam is raised in Z for deep-set doors.",
+        "es": "Cuánto se eleva en Z el extremo de enganche de la leva acodada para puertas profundas."
+      }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "body",
+      "label": {
+        "en": "Lock Body",
+        "es": "Cuerpo de la Cerradura"
+      }
+    },
+    {
+      "id": "cam",
+      "label": {
+        "en": "Cam Plate",
+        "es": "Placa de la Leva"
+      }
+    },
+    {
+      "id": "drive",
+      "label": {
+        "en": "Tailpiece Drive",
+        "es": "Accionamiento de Espiga"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_16",
+      "label": {
+        "en": "Standard 16 mm Cam",
+        "es": "Leva Estándar 16 mm"
+      },
+      "values": {
+        "body_d": 16.0,
+        "cam_reach": 43.0,
+        "cam_w": 14.0,
+        "cam_t": 2.5
+      }
+    },
+    {
+      "id": "std_19",
+      "label": {
+        "en": "Standard 19 mm Cam",
+        "es": "Leva Estándar 19 mm"
+      },
+      "values": {
+        "body_d": 19.0,
+        "cam_reach": 43.0,
+        "cam_w": 14.0,
+        "cam_t": 2.5
+      }
+    },
+    {
+      "id": "deep_offset",
+      "label": {
+        "en": "Deep-Door Offset Cam",
+        "es": "Leva con Desfase para Puerta Profunda"
+      },
+      "values": {
+        "body_d": 19.0,
+        "cam_reach": 50.0,
+        "cam_w": 16.0,
+        "cam_t": 3.0,
+        "offset_z": 12.0
+      }
+    }
+  ],
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "cam_body_socket",
+        "label": {
+          "en": "Cam-Lock Body Socket",
+          "es": "Alojamiento del Cuerpo de Leva"
+        },
+        "geometry_type": "socket",
+        "standard": "16/19mm cam lock (furniture)",
+        "parameters": [
+          "body_d"
+        ],
+        "compatible_with": [
+          "bench-dog"
+        ]
+      },
+      {
+        "id": "tailpiece_drive",
+        "label": {
+          "en": "Tailpiece Drive Key",
+          "es": "Llave de Accionamiento de Espiga"
+        },
+        "geometry_type": "socket",
+        "standard": "slotted cam-lock tailpiece",
+        "parameters": [
+          "tail_w",
+          "tail_len"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Cam-lock cams are a frequent point of failure and are rarely stocked as spares — a snapped cam usually forces replacement of the whole lock or cabinet. A parametric cam sized to the 16/19 mm standards lets anyone reprint the exact catch geometry, keeping mailboxes, lockers, tool chests and cabinets in service instead of landfilled.",
+      "es": "Las levas de cerradura fallan con frecuencia y rara vez se venden como repuesto — una leva rota suele obligar a reemplazar toda la cerradura o el mueble. Una leva paramétrica dimensionada a los estándares 16/19 mm permite reimprimir la geometría exacta, manteniendo buzones, casilleros, cajas de herramientas y gabinetes en servicio en vez de desecharlos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 7,
+    "per_unit": 2,
+    "per_part": 7,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

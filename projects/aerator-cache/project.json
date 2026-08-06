@@ -1,0 +1,281 @@
+{
+    "project": {
+        "name": "Faucet Aerator / Cache",
+        "slug": "aerator-cache",
+        "version": "1.0.0",
+        "description": {
+            "en": "A faucet-aerator housing that screws onto a standard tap, a matching screw-together stash capsule (the cache), and a knurled body you can grip by hand. The family shares real aerator thread standards - M22x1 male and M24x1 female - so the parts interchange and also mate with the companion hose-adapter cartridge. Threads are printed as helical ribs fused into the wall, so every part comes off the bed as a single watertight body.",
+            "es": "Una carcasa de aireador de grifo que se enrosca en una llave estandar, una capsula de guardado que se enrosca a juego (el cache) y un cuerpo moleteado para agarrar con la mano. La familia comparte estandares reales de rosca de aireador - M22x1 macho y M24x1 hembra - por lo que las piezas son intercambiables y tambien encajan con el cartucho complementario hose-adapter. Las roscas se imprimen como nervaduras helicoidales fusionadas a la pared, de modo que cada pieza sale de la cama como un solo cuerpo hermetico."
+        },
+        "thumbnail": "/projects/aerator-cache.webp",
+        "tags": [
+            "faucet",
+            "aerator",
+            "plumbing",
+            "thread",
+            "m22",
+            "m24",
+            "cache",
+            "hyperobject",
+            "commons"
+        ],
+        "difficulty": "intermediate",
+        "hyperobject": {
+            "is_hyperobject": true
+        },
+        "attribution": {
+            "author": "Yantra4D",
+            "license": "CERN-OHL-W-2.0"
+        },
+        "force_backend": true,
+        "engine": "cadquery"
+    },
+    "modes": [
+        {
+            "id": "aerator_housing",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Aerator Housing",
+                "es": "Carcasa de Aireador"
+            },
+            "description": {
+                "en": "The threaded aerator cap. In female mode it screws down over a male tap spout to hold a screen; in male mode it presents an external spigot thread to screw into a female tap."
+            },
+            "parts": ["aerator_housing"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "cache_cup",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Cache Cup",
+                "es": "Vaso del Cache"
+            },
+            "description": {
+                "en": "A closed-bottom stash cup with an external thread at its mouth so the lid screws on. The cavity opens only to the top face - no sealed void."
+            },
+            "parts": ["cache_cup"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "cache_lid",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Cache Lid",
+                "es": "Tapa del Cache"
+            },
+            "description": {
+                "en": "A shallow knurled cap with an internal thread that screws onto the cup mouth to seal the stash."
+            },
+            "parts": ["cache_lid"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "aerator_housing",
+            "label": {
+                "en": "Aerator Housing",
+                "es": "Carcasa de Aireador"
+            },
+            "default_color": "#94a3b8"
+        },
+        {
+            "id": "cache_cup",
+            "label": {
+                "en": "Cache Cup",
+                "es": "Vaso del Cache"
+            },
+            "default_color": "#94a3b8"
+        },
+        {
+            "id": "cache_lid",
+            "label": {
+                "en": "Cache Lid",
+                "es": "Tapa del Cache"
+            },
+            "default_color": "#64748b"
+        }
+    ],
+    "parameters": [
+        {
+            "id": "thread_std",
+            "type": "select",
+            "default": "M24",
+            "options": [
+                { "value": "M22", "label": "M22 x 1 (aerator male, 22.0 mm)" },
+                { "value": "M24", "label": "M24 x 1 (aerator female, 24.0 mm)" }
+            ],
+            "label": {
+                "en": "Aerator Thread Standard",
+                "es": "Estandar de Rosca del Aireador"
+            },
+            "group": "thread"
+        },
+        {
+            "id": "thread_mode",
+            "type": "select",
+            "default": "female",
+            "options": [
+                { "value": "female", "label": "Female (cap over a male spout)" },
+                { "value": "male", "label": "Male (spigot into a female tap)" }
+            ],
+            "label": {
+                "en": "Housing Thread Direction",
+                "es": "Direccion de Rosca de la Carcasa"
+            },
+            "tooltip": {
+                "en": "Whether the aerator housing carries its thread on the inside (female cap) or the outside (male spigot).",
+                "es": "Si la carcasa lleva su rosca por dentro (tapa hembra) o por fuera (espiga macho)."
+            },
+            "group": "thread"
+        },
+        {
+            "id": "clearance",
+            "type": "slider",
+            "default": 0.35,
+            "min": 0.1,
+            "max": 0.7,
+            "step": 0.05,
+            "label": {
+                "en": "Thread Fit Clearance (mm)",
+                "es": "Holgura de Ajuste de Rosca (mm)"
+            },
+            "tooltip": {
+                "en": "Per-side slop applied to printed threads so they mate without a tap. 0.3-0.4 mm suits most FDM printers.",
+                "es": "Holgura por lado aplicada a las roscas impresas para que encajen sin macho de roscar. 0.3-0.4 mm sirve para la mayoria de impresoras FDM."
+            },
+            "group": "thread"
+        },
+        {
+            "id": "wall",
+            "type": "slider",
+            "default": 2.4,
+            "min": 1.6,
+            "max": 5.0,
+            "step": 0.2,
+            "label": {
+                "en": "Wall Thickness (mm)",
+                "es": "Espesor de Pared (mm)"
+            },
+            "tooltip": {
+                "en": "Wall around the bore/cavity. 2.0-3.0 mm prints strong and watertight.",
+                "es": "Pared alrededor del barreno/cavidad. 2.0-3.0 mm imprime resistente y hermetico."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "housing_h",
+            "type": "slider",
+            "default": 20,
+            "min": 10,
+            "max": 40,
+            "step": 1,
+            "label": {
+                "en": "Housing Height (mm)",
+                "es": "Altura de la Carcasa (mm)"
+            },
+            "tooltip": {
+                "en": "Overall height of the aerator housing. Taller housings give more thread engagement.",
+                "es": "Altura total de la carcasa del aireador. Carcasas mas altas dan mas agarre de rosca."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "cache_depth",
+            "type": "slider",
+            "default": 22,
+            "min": 8,
+            "max": 45,
+            "step": 1,
+            "label": {
+                "en": "Cache Cavity Depth (mm)",
+                "es": "Profundidad de la Cavidad del Cache (mm)"
+            },
+            "tooltip": {
+                "en": "Inner stash depth of the cache cup. Only affects the cup mode.",
+                "es": "Profundidad interior de guardado del vaso del cache. Solo afecta el modo del vaso."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "knurl",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Knurled Grip",
+                "es": "Agarre Moleteado"
+            },
+            "tooltip": {
+                "en": "Adds axial grip flutes around the outside for finger torque.",
+                "es": "Agrega estrias axiales de agarre alrededor del exterior para torque con los dedos."
+            },
+            "group": "geometry"
+        }
+    ],
+    "parameter_groups": [
+        {
+            "id": "thread",
+            "label": {
+                "en": "Aerator Thread",
+                "es": "Rosca del Aireador"
+            }
+        },
+        {
+            "id": "geometry",
+            "label": {
+                "en": "Geometry",
+                "es": "Geometria"
+            }
+        }
+    ],
+    "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+    "estimate_constants": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10,
+        "wasm_multiplier": 3,
+        "warning_threshold_seconds": 60
+    },
+    "hyperobject": {
+        "domain": "household",
+        "cdg_interfaces": [
+            {
+                "id": "aerator_thread",
+                "label": {
+                    "en": "M22 / M24 Aerator Thread",
+                    "es": "Rosca de Aireador M22 / M24"
+                },
+                "geometry_type": "thread",
+                "standard": "M22x1 / M24x1 aerator",
+                "parameters": ["thread_std", "thread_mode", "clearance"],
+                "compatible_with": ["hose-adapter"]
+            }
+        ],
+        "material_awareness": {
+            "shrinkage_compensation": false,
+            "recycled_material_toggle": false,
+            "tolerance_by_material": true
+        },
+        "societal_benefit": {
+            "en": "Restores flow-restricting aerators and lets people print a replacement housing or a tap-thread stash instead of discarding a whole faucet over a cracked plastic cap, and standardizes on the same M22/M24 threads the rest of the commons uses.",
+            "es": "Recupera aireadores que restringen el flujo y permite imprimir una carcasa de repuesto o un guardado con rosca de grifo en lugar de descartar toda una llave por una tapa de plastico agrietada, y estandariza en las mismas roscas M22/M24 que usa el resto del procomun."
+        },
+        "commons_license": "CERN-OHL-W-2.0"
+    }
+}

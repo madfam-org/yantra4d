@@ -1,0 +1,161 @@
+{
+  "project": {
+    "name": "Outlet / Switch Plate",
+    "slug": "outlet-plate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Wall cover plates for device boxes whose mounting-screw pattern lands on the real device-box standard. US single-gang boxes put the two 6-32 screws 3.28 in (83.34 mm) apart on the vertical centerline; EU round boxes use 60 mm spacing. Pick the device opening (duplex outlet, toggle, rocker/Decora, or round) and the plate cuts the matching window over a screw pattern that fits the box. Includes a US single-gang plate, a solid blank, and an EU round cover.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Placas de pared para cajas de dispositivos cuyo patrón de tornillos coincide con el estándar real de la caja. Las cajas americanas de un módulo colocan los dos tornillos 6-32 a 3.28 in (83.34 mm) en la línea central vertical; las cajas redondas europeas usan 60 mm. Elige la abertura del dispositivo (tomacorriente dúplex, apagador, rocker/Decora o redonda) y la placa corta la ventana correspondiente sobre un patrón de tornillos que ajusta a la caja. Incluye placa americana de un módulo, tapa ciega y cubierta redonda europea.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/outlet-plate.webp",
+    "difficulty": "beginner",
+    "tags": ["outlet", "switch-plate", "wall-plate", "cover", "device-box", "electrical", "power", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "single_gang",
+      "label": { "en": "Single-Gang Plate", "es": "Placa de Un Módulo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_gang"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "blank_plate",
+      "label": { "en": "Blank Plate", "es": "Tapa Ciega" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["blank_plate"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "eu_round",
+      "label": { "en": "EU Round Cover", "es": "Cubierta Redonda EU" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["eu_round"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "single_gang", "label": { "en": "Single-Gang Plate", "es": "Placa de Un Módulo" }, "render_mode": 0, "color": "#e8e4dc" },
+    { "id": "blank_plate", "label": { "en": "Blank Plate", "es": "Tapa Ciega" }, "render_mode": 0, "color": "#d8d4cc" },
+    { "id": "eu_round", "label": { "en": "EU Round Cover", "es": "Cubierta Redonda" }, "render_mode": 0, "color": "#c8c4bc" }
+  ],
+  "parameter_groups": [
+    { "id": "device", "label": { "en": "Device", "es": "Dispositivo" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "device", "type": "select", "default": "duplex",
+      "group": "device", "modes": ["single_gang"],
+      "label": { "en": "Device Opening", "es": "Abertura del Dispositivo" },
+      "tooltip": { "en": "Which device the window fits", "es": "Qué dispositivo ajusta la ventana" },
+      "options": [
+        { "value": "duplex", "label": { "en": "Duplex Outlet", "es": "Tomacorriente Dúplex" } },
+        { "value": "toggle", "label": { "en": "Toggle Switch", "es": "Apagador de Palanca" } },
+        { "value": "rocker", "label": { "en": "Rocker / Decora", "es": "Rocker / Decora" } },
+        { "value": "round", "label": { "en": "Round Device", "es": "Dispositivo Redondo" } }
+      ]
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "plate", "modes": ["single_gang", "blank_plate", "eu_round"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Cover plate thickness", "es": "Grosor de la placa" }
+    },
+    {
+      "id": "oversize", "type": "slider", "default": 0.0, "min": 0.0, "max": 20.0, "step": 1.0,
+      "group": "plate", "modes": ["single_gang", "blank_plate"],
+      "label": { "en": "Jumbo Oversize (mm)", "es": "Sobredimensión Jumbo (mm)" },
+      "tooltip": { "en": "Add to width & height for oversize/jumbo plates", "es": "Agrega al ancho y alto para placas jumbo" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 5.0, "min": 0.0, "max": 10.0, "step": 0.5,
+      "group": "plate", "modes": ["single_gang", "blank_plate"], "advanced": true,
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Rounded corner radius", "es": "Radio de las esquinas redondeadas" }
+    },
+    {
+      "id": "eu_dia", "type": "slider", "default": 55.0, "min": 20.0, "max": 75.0, "step": 1.0,
+      "group": "device", "modes": ["eu_round"],
+      "label": { "en": "Round Window Ø (mm)", "es": "Ø de Ventana Redonda (mm)" },
+      "tooltip": { "en": "Central window diameter (EU round cover)", "es": "Diámetro de la ventana central (cubierta redonda EU)" }
+    },
+    {
+      "id": "countersink", "type": "checkbox", "default": true,
+      "group": "mount", "modes": ["single_gang", "blank_plate", "eu_round"],
+      "label": { "en": "Countersink Screws", "es": "Avellanar Tornillos" },
+      "tooltip": { "en": "Countersink the mounting screw holes", "es": "Avellana los agujeros de tornillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "duplex_us", "mode": "single_gang",
+      "label": { "en": "US Duplex Outlet", "es": "Tomacorriente Dúplex US" },
+      "values": { "device": "duplex" }
+    },
+    {
+      "id": "blank_us", "mode": "blank_plate",
+      "label": { "en": "US Blank Plate", "es": "Tapa Ciega US" },
+      "values": {}
+    },
+    {
+      "id": "eu_cover", "mode": "eu_round",
+      "label": { "en": "EU Round Cover", "es": "Cubierta Redonda EU" },
+      "values": { "eu_dia": 55.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thickness >= 1.6",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 1.6 mm thick", "es": "La placa debe tener al menos 1.6 mm de grosor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, 0, 220] },
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 120] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 24, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "box_screw_pattern",
+        "label": { "en": "Device Box Screw Pattern", "es": "Patrón de Tornillos de Caja" },
+        "geometry_type": "bolt_pattern",
+        "standard": "US/EU wall box",
+        "parameters": ["countersink"],
+        "compatible_with": ["terminal-cover"]
+      },
+      {
+        "id": "device_window",
+        "label": { "en": "Device Window", "es": "Ventana de Dispositivo" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["device", "eu_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "Broken or missing cover plates are a common shock and dust hazard, and odd device combinations often have no off-the-shelf plate. Printing a plate on the real 3.28 in (US) or 60 mm (EU) screw pattern restores a safe, finished wall opening for pennies, and blanks safely close off unused boxes. Custom windows accommodate mixed devices that retail plates do not.",
+      "es": "Las placas rotas o faltantes son un riesgo común de descarga y polvo, y las combinaciones raras de dispositivos a menudo no tienen placa comercial. Imprimir una placa con el patrón real de 3.28 in (US) o 60 mm (EU) restaura una abertura de pared segura y terminada por centavos, y las tapas ciegas cierran de forma segura cajas sin uso. Las ventanas personalizadas acomodan dispositivos mixtos que las placas comerciales no cubren."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["outlet", "switch-plate", "wall-plate", "cover", "device-box", "electrical", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,498 @@
+{
+  "project": {
+    "name": "Busbar / DIN Bus Support",
+    "slug": "busbar-support",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Insulated supports and spacers for rectangular copper busbars in panels. The bar slot lands on standard flat-bar cross-sections (12x2 up to 30x10 mm) and the base seats on a DIN rail (TS35, EN 60715) or bolts flat to the backplate. Pick the bar size and the support cradles it at the right centerline height. Includes an open standoff support, a captured-bar clamp with retaining lips, and a multi-phase spreader comb.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Soportes y separadores aislados para barras colectoras de cobre rectangulares en tableros. La ranura de la barra coincide con secciones estándar de solera plana (12x2 hasta 30x10 mm) y la base se asienta en riel DIN (TS35, EN 60715) o se atornilla al fondo. Elige el tamaño de barra y el soporte la sostiene a la altura de eje correcta. Incluye soporte abierto, abrazadera con labios de retención y peine separador multifase.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/busbar-support.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "busbar",
+      "din-rail",
+      "support",
+      "standoff",
+      "insulator",
+      "panel",
+      "electrical",
+      "power",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bar_support",
+      "label": {
+        "en": "Bar Support",
+        "es": "Soporte de Barra"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bar_support"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "bar_clamp",
+      "label": {
+        "en": "Captured Clamp",
+        "es": "Abrazadera Capturada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bar_clamp"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    },
+    {
+      "id": "spreader",
+      "label": {
+        "en": "Phase Spreader",
+        "es": "Separador de Fases"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "spreader"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "bar_support",
+      "label": {
+        "en": "Bar Support",
+        "es": "Soporte de Barra"
+      },
+      "render_mode": 0,
+      "color": "#2a3a5a"
+    },
+    {
+      "id": "bar_clamp",
+      "label": {
+        "en": "Captured Clamp",
+        "es": "Abrazadera"
+      },
+      "render_mode": 0,
+      "color": "#3a4a6a"
+    },
+    {
+      "id": "spreader",
+      "label": {
+        "en": "Phase Spreader",
+        "es": "Separador"
+      },
+      "render_mode": 0,
+      "color": "#4a5a7a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bar",
+      "label": {
+        "en": "Busbar",
+        "es": "Barra"
+      }
+    },
+    {
+      "id": "support",
+      "label": {
+        "en": "Support",
+        "es": "Soporte"
+      }
+    },
+    {
+      "id": "array",
+      "label": {
+        "en": "Array",
+        "es": "Arreglo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bar_size",
+      "type": "select",
+      "default": "20x5",
+      "group": "bar",
+      "modes": [
+        "bar_support",
+        "bar_clamp",
+        "spreader"
+      ],
+      "label": {
+        "en": "Bar Cross-Section",
+        "es": "Sección de Barra"
+      },
+      "tooltip": {
+        "en": "Copper flat-bar width x thickness (mm)",
+        "es": "Solera de cobre ancho x grosor (mm)"
+      },
+      "options": [
+        {
+          "value": "12x2",
+          "label": {
+            "en": "12 x 2 mm",
+            "es": "12 x 2 mm"
+          }
+        },
+        {
+          "value": "15x3",
+          "label": {
+            "en": "15 x 3 mm",
+            "es": "15 x 3 mm"
+          }
+        },
+        {
+          "value": "20x5",
+          "label": {
+            "en": "20 x 5 mm",
+            "es": "20 x 5 mm"
+          }
+        },
+        {
+          "value": "25x5",
+          "label": {
+            "en": "25 x 5 mm",
+            "es": "25 x 5 mm"
+          }
+        },
+        {
+          "value": "30x5",
+          "label": {
+            "en": "30 x 5 mm",
+            "es": "30 x 5 mm"
+          }
+        },
+        {
+          "value": "30x10",
+          "label": {
+            "en": "30 x 10 mm",
+            "es": "30 x 10 mm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.0,
+      "max": 1.2,
+      "step": 0.05,
+      "group": "bar",
+      "modes": [
+        "bar_support",
+        "bar_clamp",
+        "spreader"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Slot Clearance (mm)",
+        "es": "Holgura de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Gap per side around the bar",
+        "es": "Espacio por lado alrededor de la barra"
+      }
+    },
+    {
+      "id": "stand_h",
+      "type": "slider",
+      "default": 25.0,
+      "min": 6.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "support",
+      "modes": [
+        "bar_support",
+        "bar_clamp",
+        "spreader"
+      ],
+      "label": {
+        "en": "Centerline Height (mm)",
+        "es": "Altura de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Bar centerline height above the base",
+        "es": "Altura del eje de la barra sobre la base"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "support",
+      "modes": [
+        "bar_support",
+        "bar_clamp",
+        "spreader"
+      ],
+      "label": {
+        "en": "Insulator Wall (mm)",
+        "es": "Pared Aislante (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness around the slot",
+        "es": "Grosor de pared alrededor de la ranura"
+      }
+    },
+    {
+      "id": "base_w",
+      "type": "slider",
+      "default": 30.0,
+      "min": 12.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "support",
+      "modes": [
+        "bar_support",
+        "bar_clamp"
+      ],
+      "label": {
+        "en": "Base Width (mm)",
+        "es": "Ancho de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Footprint width",
+        "es": "Ancho de la huella"
+      }
+    },
+    {
+      "id": "screw_dia",
+      "type": "slider",
+      "default": 4.5,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "support",
+      "modes": [
+        "bar_support",
+        "bar_clamp",
+        "spreader"
+      ],
+      "label": {
+        "en": "Fixing Screw Ø (mm)",
+        "es": "Ø de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Backplate screw clearance diameter",
+        "es": "Diámetro de holgura del tornillo al fondo"
+      }
+    },
+    {
+      "id": "phases",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "group": "array",
+      "modes": [
+        "spreader"
+      ],
+      "label": {
+        "en": "Parallel Bars",
+        "es": "Barras Paralelas"
+      },
+      "tooltip": {
+        "en": "Number of parallel busbars",
+        "es": "Número de barras paralelas"
+      }
+    },
+    {
+      "id": "phase_pitch",
+      "type": "slider",
+      "default": 25.0,
+      "min": 12.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "array",
+      "modes": [
+        "spreader"
+      ],
+      "label": {
+        "en": "Phase Pitch (mm)",
+        "es": "Paso de Fase (mm)"
+      },
+      "tooltip": {
+        "en": "Center distance between parallel bars",
+        "es": "Distancia centro a centro entre barras"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_20x5",
+      "mode": "bar_support",
+      "label": {
+        "en": "20x5 Support",
+        "es": "Soporte 20x5"
+      },
+      "values": {
+        "bar_size": "20x5",
+        "stand_h": 25.0
+      }
+    },
+    {
+      "id": "clamp_30x10",
+      "mode": "bar_clamp",
+      "label": {
+        "en": "30x10 Captured Clamp",
+        "es": "Abrazadera 30x10"
+      },
+      "values": {
+        "bar_size": "30x10"
+      }
+    },
+    {
+      "id": "three_phase",
+      "mode": "spreader",
+      "label": {
+        "en": "3-Phase Spreader",
+        "es": "Separador 3 Fases"
+      },
+      "values": {
+        "bar_size": "20x5",
+        "phases": 3,
+        "phase_pitch": 25.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": {
+        "en": "Insulator wall must be at least 2.0 mm",
+        "es": "La pared aislante debe ser de al menos 2.0 mm"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        110,
+        110,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 24,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 70
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "busbar_profile",
+        "label": {
+          "en": "Busbar Profile Slot",
+          "es": "Ranura de Perfil de Barra"
+        },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715",
+        "parameters": [
+          "bar_size",
+          "clearance",
+          "stand_h"
+        ],
+        "compatible_with": [
+          "devboard-tray",
+          "din-module",
+          "din-rail-clip",
+          "terminal-cover"
+        ]
+      },
+      {
+        "id": "backplate_screw",
+        "label": {
+          "en": "Backplate Screw",
+          "es": "Tornillo al Fondo"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "screw_dia"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Solid busbar distribution is the backbone of battery banks, solar combiners and sub-panels, but proper insulated standoffs are pricey and size-specific. Printing supports sized to the exact bar cross-section lets off-grid and workshop builders route copper safely with correct clearances and phase spacing, instead of resting live bars on improvised blocks. Captured clamps and spreaders add mechanical retention and organized multi-phase layouts.",
+      "es": "La distribución con barra sólida es la columna de bancos de baterías, combinadores solares y subtableros, pero los soportes aislados adecuados son caros y específicos por tamaño. Imprimir soportes al corte exacto de la barra permite a constructores fuera de red y de taller enrutar cobre con seguridad, con holguras y separación de fase correctas, en lugar de apoyar barras vivas en bloques improvisados. Las abrazaderas y separadores agregan retención mecánica y disposiciones multifase ordenadas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "busbar",
+    "din-rail",
+    "support",
+    "standoff",
+    "panel",
+    "electrical",
+    "infrastructure",
+    "hyperobject",
+    "commons"
+  ]
+}

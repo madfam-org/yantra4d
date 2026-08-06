@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Business Card / Note Stand",
+    "slug": "card-stand",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A desk stand that holds business cards or note cards upright at a viewing angle, parametric on the card width and slot width. Choose an angled easel for a stack of cards, a heavy note clip that grips a single memo upright, or a terraced rack that fans several cards for display.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de escritorio que sostiene tarjetas de presentación o notas en posición vertical a un ángulo de visión, parametrizado según el ancho de la tarjeta y de la ranura. Elige un caballete inclinado para una pila de tarjetas, una pinza pesada que sostiene una sola nota, o un estante escalonado que despliega varias tarjetas para exhibir.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/card-stand.webp",
+    "difficulty": "beginner",
+    "tags": ["card", "business-card", "note", "memo", "stand", "holder", "easel", "desk", "office", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "card_stand",
+      "label": { "en": "Angled Card Easel", "es": "Caballete Inclinado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["card_stand"],
+      "estimate": { "base_time": 11, "per_unit": 4, "per_part": 13 }
+    },
+    {
+      "id": "note_clip",
+      "label": { "en": "Note / Memo Clip", "es": "Pinza para Notas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["note_clip"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "multi_slot",
+      "label": { "en": "Terraced Display Rack", "es": "Estante Escalonado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_slot"],
+      "estimate": { "base_time": 13, "per_unit": 5, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "card_stand", "label": { "en": "Angled Card Easel", "es": "Caballete Inclinado" }, "render_mode": 0, "color": "#805ad5" },
+    { "id": "note_clip", "label": { "en": "Note / Memo Clip", "es": "Pinza para Notas" }, "render_mode": 0, "color": "#9f7aea" },
+    { "id": "multi_slot", "label": { "en": "Terraced Display Rack", "es": "Estante Escalonado" }, "render_mode": 0, "color": "#b794f4" }
+  ],
+  "parameter_groups": [
+    { "id": "card", "label": { "en": "Card", "es": "Tarjeta" } },
+    { "id": "form", "label": { "en": "Stand Form", "es": "Forma del Soporte" } },
+    { "id": "walls", "label": { "en": "Walls", "es": "Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "card_w", "type": "slider", "default": 88.9, "min": 30.0, "max": 210.0, "step": 0.1,
+      "group": "card", "modes": ["card_stand", "note_clip", "multi_slot"],
+      "label": { "en": "Card Width (mm)", "es": "Ancho de Tarjeta (mm)" },
+      "tooltip": { "en": "Width of the card along the slot. A standard business card is 88.9 mm (3.5 in).", "es": "Ancho de la tarjeta a lo largo de la ranura. Una tarjeta de presentación estándar mide 88.9 mm (3.5 pulg)." },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "slot_w", "type": "slider", "default": 4.0, "min": 1.0, "max": 20.0, "step": 0.5,
+      "group": "card", "modes": ["card_stand", "note_clip", "multi_slot"],
+      "label": { "en": "Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Slot width. A single card is ~0.4 mm; 4 mm holds a small stack.", "es": "Ancho de la ranura. Una sola tarjeta es ~0.4 mm; 4 mm sostiene una pequeña pila." }
+    },
+    {
+      "id": "lean_deg", "type": "slider", "default": 18.0, "min": 0.0, "max": 45.0, "step": 1.0,
+      "group": "form", "modes": ["card_stand", "note_clip", "multi_slot"],
+      "label": { "en": "Card Lean (deg)", "es": "Inclinación de Tarjeta (grados)" },
+      "tooltip": { "en": "How far the card leans back from vertical", "es": "Cuánto se inclina la tarjeta hacia atrás desde la vertical" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 45.0, "min": 25.0, "max": 160.0, "step": 1.0,
+      "group": "form", "modes": ["card_stand", "note_clip"],
+      "label": { "en": "Base Depth (mm)", "es": "Profundidad de Base (mm)" },
+      "tooltip": { "en": "Front-to-back depth of the base (deeper = more stable)", "es": "Profundidad de adelante hacia atrás de la base (más profunda = más estable)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 40.0, "min": 18.0, "max": 120.0, "step": 1.0,
+      "group": "form", "modes": ["card_stand", "note_clip", "multi_slot"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Overall stand height at the back", "es": "Altura total del soporte en la parte trasera" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "slot_depth", "type": "slider", "default": 18.0, "min": 6.0, "max": 60.0, "step": 1.0,
+      "group": "form", "modes": ["card_stand", "multi_slot"],
+      "label": { "en": "Slot Depth (mm)", "es": "Profundidad de Ranura (mm)" },
+      "tooltip": { "en": "How deep the card sits into the slot (deeper = more secure)", "es": "Cuánto se asienta la tarjeta en la ranura (más profundo = más seguro)" }
+    },
+    {
+      "id": "slots", "type": "slider", "default": 3, "min": 1, "max": 8, "step": 1,
+      "group": "form", "modes": ["multi_slot"],
+      "label": { "en": "Slot Count", "es": "Número de Ranuras" },
+      "tooltip": { "en": "Number of terraced card slots", "es": "Número de ranuras escalonadas" }
+    },
+    {
+      "id": "step", "type": "slider", "default": 14.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "form", "modes": ["multi_slot"],
+      "label": { "en": "Terrace Step (mm)", "es": "Escalón (mm)" },
+      "tooltip": { "en": "Spacing between terraced slots", "es": "Espacio entre ranuras escalonadas" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 12.0, "step": 0.5,
+      "group": "walls", "modes": ["card_stand", "note_clip", "multi_slot"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Minimum wall and floor thickness", "es": "Grosor mínimo de pared y piso" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "business_card_easel", "mode": "card_stand",
+      "label": { "en": "Business Card Easel", "es": "Caballete de Tarjetas" },
+      "values": { "card_w": 88.9, "slot_w": 4, "lean_deg": 18, "height": 40 }
+    },
+    {
+      "id": "memo_clip", "mode": "note_clip",
+      "label": { "en": "Sticky-Note Memo Clip", "es": "Pinza para Notas Adhesivas" },
+      "values": { "card_w": 76, "slot_w": 3, "depth": 40, "height": 34 }
+    },
+    {
+      "id": "three_card_rack", "mode": "multi_slot",
+      "label": { "en": "3-Card Display Rack", "es": "Estante de 3 Tarjetas" },
+      "values": { "card_w": 88.9, "slots": 3, "step": 14, "slot_w": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_depth < height",
+      "severity": "error",
+      "message": { "en": "Slot depth must be less than the stand height", "es": "La profundidad de la ranura debe ser menor que la altura del soporte" }
+    },
+    {
+      "expression": "slot_w >= 1",
+      "severity": "warning",
+      "message": { "en": "A sub-1 mm slot is hard to print open", "es": "Una ranura de menos de 1 mm es difícil de imprimir abierta" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 120] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [220, 0, 60] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 4, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "card_slot_profile",
+        "label": { "en": "Card Slot Profile", "es": "Perfil de Ranura de Tarjeta" },
+        "geometry_type": "profile",
+        "standard": "business card",
+        "parameters": ["card_w", "slot_w", "lean_deg", "slot_depth"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A card stand printed to the exact card width and stack thickness gives a small business, a market stall, or a conference table a tidy way to present cards and notes without buying acrylic holders — the terraced rack turns a handful of filament into a display that would otherwise be a boxed retail purchase.",
+      "es": "Un soporte de tarjetas impreso al ancho exacto de la tarjeta y al grosor de la pila da a un pequeño negocio, un puesto de mercado o una mesa de conferencia una forma ordenada de presentar tarjetas y notas sin comprar soportes de acrílico — el estante escalonado convierte un puñado de filamento en un exhibidor que de otro modo sería una compra minorista."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

@@ -1,0 +1,446 @@
+{
+  "project": {
+    "name": "Paracord Buckle / Jig",
+    "slug": "paracord-jig",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Cord tooling for 550 paracord (7-strand nylon, ~4 mm outer diameter). One cord-diameter interface drives three print-ready parts: a single-piece side-release buckle, an adjustable bracelet weaving jig, and a friction barrel cord lock. Size them all to your cord and weave, buckle and finish in the field.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herramientas para paracord 550 (nylon de 7 hilos, ~4 mm de diámetro exterior). Una sola interfaz de diámetro de cordón impulsa tres piezas listas para imprimir: una hebilla de liberación lateral de una pieza, una plantilla ajustable para tejer pulseras y un tensor de cordón de barril por fricción. Ajústalos todos a tu cordón y teje, abrocha y remata en el campo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/paracord-jig.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "paracord",
+      "550",
+      "buckle",
+      "jig",
+      "cord",
+      "survival",
+      "edc",
+      "outdoor",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "side_buckle",
+      "label": {
+        "en": "Side-Release Buckle",
+        "es": "Hebilla de Liberación Lateral"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "side_buckle"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "bracelet_jig",
+      "label": {
+        "en": "Bracelet Weaving Jig",
+        "es": "Plantilla para Pulseras"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "bracelet_jig"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "cord_lock",
+      "label": {
+        "en": "Barrel Cord Lock",
+        "es": "Tensor de Cordón"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "cord_lock"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "side_buckle",
+      "label": {
+        "en": "Side-Release Buckle",
+        "es": "Hebilla de Liberación Lateral"
+      },
+      "render_mode": 0,
+      "color": "#3f6b4a"
+    },
+    {
+      "id": "bracelet_jig",
+      "label": {
+        "en": "Bracelet Weaving Jig",
+        "es": "Plantilla para Pulseras"
+      },
+      "render_mode": 0,
+      "color": "#4f7d58"
+    },
+    {
+      "id": "cord_lock",
+      "label": {
+        "en": "Barrel Cord Lock",
+        "es": "Tensor de Cordón"
+      },
+      "render_mode": 0,
+      "color": "#5f8f66"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "cord",
+      "label": {
+        "en": "Cord & Fit",
+        "es": "Cordón y Ajuste"
+      }
+    },
+    {
+      "id": "buckle",
+      "label": {
+        "en": "Buckle",
+        "es": "Hebilla"
+      }
+    },
+    {
+      "id": "jig",
+      "label": {
+        "en": "Jig",
+        "es": "Plantilla"
+      }
+    },
+    {
+      "id": "lock",
+      "label": {
+        "en": "Cord Lock",
+        "es": "Tensor"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cord_d",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "cord",
+      "modes": [
+        "side_buckle",
+        "bracelet_jig",
+        "cord_lock"
+      ],
+      "label": {
+        "en": "Cord Diameter (mm)",
+        "es": "Diámetro del Cordón (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the cord. 550 paracord is ~4 mm",
+        "es": "Diámetro exterior del cordón. El paracord 550 mide ~4 mm"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "cord",
+      "modes": [
+        "side_buckle",
+        "bracelet_jig",
+        "cord_lock"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Structural wall / part thickness",
+        "es": "Grosor estructural de la pieza"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "cord",
+      "modes": [
+        "side_buckle",
+        "bracelet_jig",
+        "cord_lock"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Fit Clearance (mm)",
+        "es": "Holgura de Ajuste (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side clearance for cord bores and snap fits",
+        "es": "Holgura por lado para orificios de cordón y encajes"
+      }
+    },
+    {
+      "id": "strap_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 12.0,
+      "max": 50.0,
+      "step": 1,
+      "group": "buckle",
+      "modes": [
+        "side_buckle"
+      ],
+      "label": {
+        "en": "Webbing Width (mm)",
+        "es": "Ancho de Cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Strap width the buckle wraps. 25 mm = 1 inch",
+        "es": "Ancho de la cincha que envuelve la hebilla. 25 mm = 1 pulgada"
+      }
+    },
+    {
+      "id": "jig_len",
+      "type": "slider",
+      "default": 120.0,
+      "min": 60.0,
+      "max": 260.0,
+      "step": 1,
+      "group": "jig",
+      "modes": [
+        "bracelet_jig"
+      ],
+      "label": {
+        "en": "Jig Length (mm)",
+        "es": "Longitud de Plantilla (mm)"
+      },
+      "tooltip": {
+        "en": "Overall board length; sets max bracelet size",
+        "es": "Longitud total del tablero; define el tamaño máximo de pulsera"
+      }
+    },
+    {
+      "id": "pin_count",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "group": "jig",
+      "modes": [
+        "bracelet_jig"
+      ],
+      "label": {
+        "en": "Length Pins",
+        "es": "Pines de Longitud"
+      },
+      "tooltip": {
+        "en": "Number of pins in the length-setting row",
+        "es": "Número de pines en la fila de ajuste de longitud"
+      }
+    },
+    {
+      "id": "lock_len",
+      "type": "slider",
+      "default": 22.0,
+      "min": 14.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "lock",
+      "modes": [
+        "cord_lock"
+      ],
+      "label": {
+        "en": "Barrel Length (mm)",
+        "es": "Longitud del Barril (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the cord-lock barrel",
+        "es": "Longitud del barril del tensor"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_550_buckle",
+      "mode": "side_buckle",
+      "label": {
+        "en": "Standard 550 Buckle (1 in)",
+        "es": "Hebilla 550 Estándar (1 pulg)"
+      },
+      "values": {
+        "cord_d": 4.0,
+        "strap_w": 25.0,
+        "wall": 3.0,
+        "clearance": 0.35
+      }
+    },
+    {
+      "id": "bracelet_jig_default",
+      "mode": "bracelet_jig",
+      "label": {
+        "en": "Bracelet Jig (6 pins)",
+        "es": "Plantilla de Pulsera (6 pines)"
+      },
+      "values": {
+        "cord_d": 4.0,
+        "jig_len": 120.0,
+        "pin_count": 6,
+        "wall": 3.0
+      }
+    },
+    {
+      "id": "double_cord_lock",
+      "mode": "cord_lock",
+      "label": {
+        "en": "Double-Cord Lock",
+        "es": "Tensor de Doble Cordón"
+      },
+      "values": {
+        "cord_d": 4.0,
+        "lock_len": 22.0,
+        "wall": 3.0,
+        "clearance": 0.35
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2",
+      "severity": "warning",
+      "message": {
+        "en": "Walls thinner than 2 mm may be fragile in the field",
+        "es": "Paredes de menos de 2 mm pueden ser frágiles en el campo"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        90
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        200
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cord_channel",
+        "label": {
+          "en": "550 Paracord Channel",
+          "es": "Canal de Paracord 550"
+        },
+        "geometry_type": "snap",
+        "standard": "550 paracord (~4mm)",
+        "parameters": [
+          "cord_d",
+          "clearance"
+        ]
+      },
+      {
+        "id": "webbing_slot",
+        "label": {
+          "en": "1 in Webbing Slot",
+          "es": "Ranura de Cincha 1 pulg"
+        },
+        "geometry_type": "profile",
+        "standard": "25mm webbing",
+        "parameters": [
+          "strap_w"
+        ],
+        "compatible_with": [
+          "pet-hardware",
+          "strap-buckle"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "550 paracord is the universal field cordage — one 4 mm cord tensions a shelter, splints a limb, or becomes a bracelet you unravel in an emergency. Printable buckles, jigs and cord locks sized to that same cord let anyone make and repair cord tools without buying proprietary hardware, keeping a survival kit self-sufficient.",
+      "es": "El paracord 550 es la cuerda de campo universal — un cordón de 4 mm tensa un refugio, entablilla un miembro o se convierte en una pulsera que se desteje en una emergencia. Hebillas, plantillas y tensores imprimibles ajustados a ese mismo cordón permiten fabricar y reparar herramientas de cordón sin comprar hardware propietario, manteniendo un kit de supervivencia autosuficiente."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "paracord",
+    "550",
+    "buckle",
+    "jig",
+    "cord",
+    "survival",
+    "edc",
+    "outdoor",
+    "hyperobject",
+    "commons"
+  ]
+}

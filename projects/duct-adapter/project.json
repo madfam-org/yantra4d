@@ -1,0 +1,304 @@
+{
+    "project": {
+        "name": "Duct / Vent Register Adapter",
+        "slug": "duct-adapter",
+        "version": "1.0.0",
+        "description": {
+            "en": "Parametric HVAC transition fittings that bridge the mismatches every residential duct run hits: a round branch meeting a rectangular register (a boot), a 6\" trunk necking down to a 4\" take-off, or one register size feeding another. Built on real US sheet-metal sizing (round 4/5/6\" IDs; rectangular openings 4x10, 4x12, 6x10, 6x12), each fitting prints as a single watertight hollow duct with straight collars for a slip fit and an optional register mounting flange.",
+            "es": "Accesorios de transición HVAC paramétricos que resuelven los desajustes de cualquier instalación de ductos residencial: un ramal redondo que llega a una rejilla rectangular (bota), un tronco de 6\" que se reduce a una toma de 4\", o una rejilla de un tamaño que alimenta otra. Basado en medidas reales de lámina US (redondo 4/5/6\"; aberturas rectangulares 4x10, 4x12, 6x10, 6x12); cada pieza se imprime como un ducto hueco hermético con collares rectos para ajuste deslizante y una brida de montaje opcional."
+        },
+        "thumbnail": "/projects/duct-adapter.webp",
+        "tags": [
+            "hvac",
+            "duct",
+            "vent",
+            "register",
+            "boot",
+            "reducer",
+            "plumbing",
+            "hyperobject",
+            "commons"
+        ],
+        "difficulty": "intermediate",
+        "hyperobject": {
+            "is_hyperobject": true
+        },
+        "attribution": {
+            "author": "Yantra4D",
+            "license": "CERN-OHL-W-2.0"
+        },
+        "force_backend": true,
+        "engine": "cadquery"
+    },
+    "modes": [
+        {
+            "id": "round_reducer",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Round-to-Round Reducer",
+                "es": "Reductor Redondo a Redondo"
+            },
+            "description": {
+                "en": "Concentric round reducer from a larger trunk to a smaller take-off, with a straight collar at each end for a slip fit into standard round duct."
+            },
+            "parts": ["round_reducer"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "register_boot",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Rectangular Register Boot",
+                "es": "Bota de Rejilla Rectangular"
+            },
+            "description": {
+                "en": "Straight boot lofting a rectangular register opening down to a round duct throat, with an optional flange to screw against the register frame."
+            },
+            "parts": ["register_boot"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "rect_reducer",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Rectangular-to-Rectangular Reducer",
+                "es": "Reductor Rectangular a Rectangular"
+            },
+            "description": {
+                "en": "Rectangular reducer between two register sizes, keeping a rounded-corner cross-section throughout for smoother airflow."
+            },
+            "parts": ["rect_reducer"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "round_reducer",
+            "label": {
+                "en": "Round Reducer Body",
+                "es": "Cuerpo del Reductor Redondo"
+            },
+            "default_color": "#9ca3af"
+        },
+        {
+            "id": "register_boot",
+            "label": {
+                "en": "Register Boot Body",
+                "es": "Cuerpo de la Bota de Rejilla"
+            },
+            "default_color": "#9ca3af"
+        },
+        {
+            "id": "rect_reducer",
+            "label": {
+                "en": "Rectangular Reducer Body",
+                "es": "Cuerpo del Reductor Rectangular"
+            },
+            "default_color": "#9ca3af"
+        }
+    ],
+    "parameters": [
+        {
+            "id": "round_a",
+            "type": "select",
+            "default": "6in",
+            "options": [
+                { "value": "4in", "label": "4 in (101.6 mm)" },
+                { "value": "5in", "label": "5 in (127.0 mm)" },
+                { "value": "6in", "label": "6 in (152.4 mm)" }
+            ],
+            "label": {
+                "en": "Round Port A (larger / inlet)",
+                "es": "Puerto Redondo A (mayor / entrada)"
+            },
+            "group": "ports"
+        },
+        {
+            "id": "round_b",
+            "type": "select",
+            "default": "4in",
+            "options": [
+                { "value": "4in", "label": "4 in (101.6 mm)" },
+                { "value": "5in", "label": "5 in (127.0 mm)" },
+                { "value": "6in", "label": "6 in (152.4 mm)" }
+            ],
+            "label": {
+                "en": "Round Port B (smaller / outlet)",
+                "es": "Puerto Redondo B (menor / salida)"
+            },
+            "group": "ports"
+        },
+        {
+            "id": "rect_size",
+            "type": "select",
+            "default": "6x10",
+            "options": [
+                { "value": "4x10", "label": "4 x 10 in" },
+                { "value": "4x12", "label": "4 x 12 in" },
+                { "value": "6x10", "label": "6 x 10 in" },
+                { "value": "6x12", "label": "6 x 12 in" }
+            ],
+            "label": {
+                "en": "Rectangular Register Opening",
+                "es": "Abertura de Rejilla Rectangular"
+            },
+            "group": "ports"
+        },
+        {
+            "id": "length",
+            "type": "slider",
+            "default": 90,
+            "min": 30,
+            "max": 200,
+            "step": 5,
+            "label": {
+                "en": "Transition Length (mm)",
+                "es": "Longitud de Transición (mm)"
+            },
+            "tooltip": {
+                "en": "Axial length of the tapered transition, between the two straight collars. Longer transitions reduce turbulence.",
+                "es": "Longitud axial de la transición cónica, entre los dos collares rectos. Transiciones más largas reducen la turbulencia."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "collar",
+            "type": "slider",
+            "default": 20,
+            "min": 6,
+            "max": 40,
+            "step": 1,
+            "label": {
+                "en": "End Collar Length (mm)",
+                "es": "Longitud del Collar (mm)"
+            },
+            "tooltip": {
+                "en": "Straight parallel section at each end for a slip fit into the mating duct.",
+                "es": "Sección recta paralela en cada extremo para el ajuste deslizante en el ducto."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "wall",
+            "type": "slider",
+            "default": 1.8,
+            "min": 1.0,
+            "max": 4.0,
+            "step": 0.1,
+            "label": {
+                "en": "Wall Thickness (mm)",
+                "es": "Espesor de Pared (mm)"
+            },
+            "tooltip": {
+                "en": "Duct wall thickness. 1.6-2.0 mm prints strong in PLA/PETG while staying light.",
+                "es": "Espesor de la pared del ducto. 1.6-2.0 mm imprime resistente en PLA/PETG manteniéndose ligero."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "corner_r",
+            "type": "slider",
+            "default": 8,
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "label": {
+                "en": "Rectangular Corner Radius (mm)",
+                "es": "Radio de Esquina Rectangular (mm)"
+            },
+            "tooltip": {
+                "en": "Fillet on rectangular openings. Larger radii ease airflow and printing.",
+                "es": "Redondeo en aberturas rectangulares. Radios mayores facilitan el flujo de aire y la impresión."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "flange",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Register Mounting Flange",
+                "es": "Brida de Montaje de Rejilla"
+            },
+            "tooltip": {
+                "en": "Adds a flat perimeter flange on the rectangular face to screw against a register frame.",
+                "es": "Agrega una brida perimetral plana en la cara rectangular para atornillar contra el marco de la rejilla."
+            },
+            "group": "geometry"
+        }
+    ],
+    "parameter_groups": [
+        {
+            "id": "ports",
+            "label": {
+                "en": "Port Sizes",
+                "es": "Tamaños de Puerto"
+            }
+        },
+        {
+            "id": "geometry",
+            "label": {
+                "en": "Geometry & Wall",
+                "es": "Geometría y Pared"
+            }
+        }
+    ],
+    "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+    "estimate_constants": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10,
+        "wasm_multiplier": 3,
+        "warning_threshold_seconds": 60
+    },
+    "hyperobject": {
+        "domain": "infrastructure",
+        "cdg_interfaces": [
+            {
+                "id": "round_duct_port",
+                "label": {
+                    "en": "Round Duct Slip Collar",
+                    "es": "Collar Deslizante de Ducto Redondo"
+                },
+                "geometry_type": "profile",
+                "standard": "US round duct 4/5/6 in",
+                "parameters": ["round_a", "round_b", "wall", "collar"]
+            },
+            {
+                "id": "rect_register_port",
+                "label": {
+                    "en": "Rectangular Register Opening",
+                    "es": "Abertura de Rejilla Rectangular"
+                },
+                "geometry_type": "profile",
+                "standard": "US register 4x10/4x12/6x10/6x12 in",
+                "parameters": ["rect_size", "corner_r", "flange"]
+            }
+        ],
+        "material_awareness": {
+            "shrinkage_compensation": false,
+            "recycled_material_toggle": false,
+            "tolerance_by_material": true
+        },
+        "societal_benefit": {
+            "en": "Lets homeowners and small HVAC shops fabricate odd-size and round-to-rectangular duct transitions on demand instead of hunting for discontinued sheet-metal fittings, cutting waste and improving airflow balance in retrofits.",
+            "es": "Permite a propietarios y talleres HVAC pequenos fabricar transiciones de ducto de tamano atipico y redondo-a-rectangular bajo demanda en lugar de buscar accesorios de lamina descontinuados, reduciendo desperdicio y mejorando el balance de flujo en remodelaciones."
+        },
+        "commons_license": "CERN-OHL-W-2.0"
+    }
+}

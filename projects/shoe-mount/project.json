@@ -1,0 +1,601 @@
+{
+  "project": {
+    "name": "Accessory Shoe Mount",
+    "slug": "shoe-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The ISO 518 camera accessory shoe — the ~18.7 mm rail with rounded-corner flanges that every on-camera light, microphone, monitor and flash slides onto. Build a male shoe foot with a 1/4-20 base, a female shoe socket that an accessory slides into, or a dual-shoe bar carrying two accessories.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La zapata de accesorios ISO 518 — el riel de ~18.7 mm con pestañas de esquinas redondeadas al que se acoplan luces, micrófonos, monitores y flashes de cámara. Genera un pie de zapata macho con base 1/4-20, un receptáculo hembra en el que desliza un accesorio, o una barra de doble zapata para dos accesorios.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shoe-mount.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "shoe",
+      "cold-shoe",
+      "hot-shoe",
+      "accessory",
+      "camera",
+      "mount",
+      "iso-518",
+      "flash",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cold_shoe_male",
+      "label": {
+        "en": "Cold Shoe (Male Foot)",
+        "es": "Zapata Fría (Pie Macho)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cold_shoe_male"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "shoe_socket",
+      "label": {
+        "en": "Shoe Socket (Female)",
+        "es": "Receptáculo de Zapata (Hembra)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "shoe_socket"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "dual_shoe_bar",
+      "label": {
+        "en": "Dual Shoe Bar",
+        "es": "Barra de Doble Zapata"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "dual_shoe_bar"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "cold_shoe_male",
+      "label": {
+        "en": "Male Shoe Foot",
+        "es": "Pie de Zapata Macho"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "shoe_socket",
+      "label": {
+        "en": "Shoe Socket",
+        "es": "Receptáculo"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "dual_shoe_bar",
+      "label": {
+        "en": "Dual Shoe Bar",
+        "es": "Barra Doble"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "shoe",
+      "label": {
+        "en": "Accessory Shoe",
+        "es": "Zapata de Accesorios"
+      }
+    },
+    {
+      "id": "base",
+      "label": {
+        "en": "Base & Fit",
+        "es": "Base y Ajuste"
+      }
+    },
+    {
+      "id": "bar",
+      "label": {
+        "en": "Dual Bar",
+        "es": "Barra Doble"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "shoe_type",
+      "type": "select",
+      "default": "male-shoe",
+      "group": "shoe",
+      "modes": [
+        "cold_shoe_male",
+        "shoe_socket"
+      ],
+      "label": {
+        "en": "Shoe Type",
+        "es": "Tipo de Zapata"
+      },
+      "tooltip": {
+        "en": "Male foot (slides into a socket) or female slot (receives a foot)",
+        "es": "Pie macho (entra en un receptáculo) o ranura hembra (recibe un pie)"
+      },
+      "options": [
+        {
+          "value": "male-shoe",
+          "label": {
+            "en": "Male Shoe",
+            "es": "Zapata Macho"
+          }
+        },
+        {
+          "value": "female-shoe-slot",
+          "label": {
+            "en": "Female Shoe Slot",
+            "es": "Ranura Hembra"
+          }
+        }
+      ]
+    },
+    {
+      "id": "foot_width",
+      "type": "slider",
+      "default": 18.7,
+      "min": 12.0,
+      "max": 30.0,
+      "step": 0.1,
+      "group": "shoe",
+      "modes": [
+        "cold_shoe_male",
+        "shoe_socket",
+        "dual_shoe_bar"
+      ],
+      "label": {
+        "en": "Shoe Width (mm)",
+        "es": "Ancho de Zapata (mm)"
+      },
+      "tooltip": {
+        "en": "ISO 518 outer shoe width. Standard is 18.7 mm",
+        "es": "Ancho exterior de la zapata ISO 518. El estándar es 18.7 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "channel_w",
+      "type": "slider",
+      "default": 14.9,
+      "min": 6.0,
+      "max": 26.0,
+      "step": 0.1,
+      "group": "shoe",
+      "modes": [
+        "cold_shoe_male",
+        "shoe_socket",
+        "dual_shoe_bar"
+      ],
+      "label": {
+        "en": "Channel Width (mm)",
+        "es": "Ancho de Canal (mm)"
+      },
+      "tooltip": {
+        "en": "Recessed tongue width the flanges frame. ISO 518 ~14.9 mm",
+        "es": "Ancho de la lengüeta recesada que enmarcan las pestañas. ISO 518 ~14.9 mm"
+      }
+    },
+    {
+      "id": "flange_th",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "shoe",
+      "modes": [
+        "cold_shoe_male",
+        "shoe_socket",
+        "dual_shoe_bar"
+      ],
+      "label": {
+        "en": "Flange Thickness (mm)",
+        "es": "Grosor de Pestaña (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flange lip the socket grips",
+        "es": "Grosor del labio de la pestaña que agarra el receptáculo"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "shoe_len",
+      "type": "slider",
+      "default": 20.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "shoe",
+      "modes": [
+        "cold_shoe_male",
+        "shoe_socket",
+        "dual_shoe_bar"
+      ],
+      "label": {
+        "en": "Shoe Length (mm)",
+        "es": "Longitud de Zapata (mm)"
+      },
+      "tooltip": {
+        "en": "Slide travel length along the shoe",
+        "es": "Longitud de deslizamiento a lo largo de la zapata"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 1.0,
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.1,
+      "group": "shoe",
+      "modes": [
+        "cold_shoe_male",
+        "shoe_socket",
+        "dual_shoe_bar"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Flange Corner Radius (mm)",
+        "es": "Radio de Esquina de Pestaña (mm)"
+      },
+      "tooltip": {
+        "en": "Rounding on the outer flange corners (ISO 518 ~1 mm)",
+        "es": "Redondeo de las esquinas exteriores de la pestaña (ISO 518 ~1 mm)"
+      }
+    },
+    {
+      "id": "base_th",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.5,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "cold_shoe_male",
+        "dual_shoe_bar"
+      ],
+      "label": {
+        "en": "Base Thickness (mm)",
+        "es": "Grosor de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the mounting base the foot stands on",
+        "es": "Grosor de la base de montaje sobre la que se apoya el pie"
+      }
+    },
+    {
+      "id": "base_pad",
+      "type": "slider",
+      "default": 5.0,
+      "min": 1.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "base",
+      "modes": [
+        "cold_shoe_male",
+        "dual_shoe_bar"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Base Overhang (mm)",
+        "es": "Voladizo de Base (mm)"
+      },
+      "tooltip": {
+        "en": "How far the base extends beyond the shoe footprint",
+        "es": "Cuánto se extiende la base más allá de la huella de la zapata"
+      }
+    },
+    {
+      "id": "quarter_d",
+      "type": "slider",
+      "default": 6.6,
+      "min": 5.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "base",
+      "modes": [
+        "cold_shoe_male",
+        "shoe_socket",
+        "dual_shoe_bar"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "1/4-20 Hole (mm)",
+        "es": "Orificio 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "1/4-20 clearance hole diameter (~6.6 mm clearance)",
+        "es": "Diámetro del orificio de holgura 1/4-20 (~6.6 mm)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.6,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "base",
+      "modes": [
+        "shoe_socket"
+      ],
+      "label": {
+        "en": "Socket Wall (mm)",
+        "es": "Pared del Receptáculo (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness around the socket channel and lips",
+        "es": "Grosor de pared alrededor del canal y los labios del receptáculo"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "base",
+      "modes": [
+        "shoe_socket"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Fit Clearance (mm)",
+        "es": "Holgura de Ajuste (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap between socket and foot for a sliding fit",
+        "es": "Espacio por lado entre receptáculo y pie para un ajuste deslizante"
+      }
+    },
+    {
+      "id": "bar_span",
+      "type": "slider",
+      "default": 70.0,
+      "min": 30.0,
+      "max": 200.0,
+      "step": 1,
+      "group": "bar",
+      "modes": [
+        "dual_shoe_bar"
+      ],
+      "label": {
+        "en": "Bar Length (mm)",
+        "es": "Longitud de Barra (mm)"
+      },
+      "tooltip": {
+        "en": "Overall length of the dual-shoe bar between the two feet",
+        "es": "Longitud total de la barra de doble zapata entre los dos pies"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_iso518",
+      "mode": "cold_shoe_male",
+      "label": {
+        "en": "Standard ISO 518 Foot",
+        "es": "Pie ISO 518 Estándar"
+      },
+      "values": {
+        "foot_width": 18.7,
+        "channel_w": 14.9,
+        "flange_th": 1.6,
+        "shoe_len": 20.0
+      }
+    },
+    {
+      "id": "camera_socket",
+      "mode": "shoe_socket",
+      "label": {
+        "en": "Camera-Side Socket",
+        "es": "Receptáculo de Cámara"
+      },
+      "values": {
+        "foot_width": 18.7,
+        "channel_w": 14.9,
+        "flange_th": 1.6,
+        "wall": 3.0,
+        "clearance": 0.35
+      }
+    },
+    {
+      "id": "twin_light_bar",
+      "mode": "dual_shoe_bar",
+      "label": {
+        "en": "Twin-Light Bar",
+        "es": "Barra de Doble Luz"
+      },
+      "values": {
+        "bar_span": 90,
+        "foot_width": 18.7,
+        "base_th": 6.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "channel_w <= foot_width - 2",
+      "severity": "error",
+      "message": {
+        "en": "Channel width must leave at least 1 mm flange on each side",
+        "es": "El ancho de canal debe dejar al menos 1 mm de pestaña por lado"
+      }
+    },
+    {
+      "expression": "foot_width >= 12",
+      "severity": "warning",
+      "message": {
+        "en": "Shoe narrower than 12 mm departs far from the ISO 518 standard",
+        "es": "Una zapata más estrecha de 12 mm se aleja mucho del estándar ISO 518"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        140
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -140,
+        25
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 11,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "iso_518_accessory_shoe",
+        "label": {
+          "en": "ISO 518 Accessory Shoe",
+          "es": "Zapata de Accesorios ISO 518"
+        },
+        "geometry_type": "rail",
+        "standard": "ISO 518",
+        "parameters": [
+          "foot_width",
+          "channel_w",
+          "flange_th",
+          "shoe_len",
+          "corner_r"
+        ]
+      },
+      {
+        "id": "quarter_20_unc",
+        "label": {
+          "en": "1/4-20 UNC Mounting Hole",
+          "es": "Orificio de Montaje 1/4-20 UNC"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "quarter_d"
+        ],
+        "compatible_with": [
+          "arca-plate",
+          "nato-rail",
+          "optical-post",
+          "rod-rig-clamp",
+          "sensor-mount-plate"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The accessory shoe is the single most universal camera interface — a century-old rail that every flash, light, mic and monitor clips to. On-demand shoe feet, sockets and dual bars keep any accessory mountable to any rig without buying single-use brackets, and repair a cracked plastic shoe instead of discarding the accessory it carries.",
+      "es": "La zapata de accesorios es la interfaz de cámara más universal — un riel centenario al que se acopla cada flash, luz, micrófono y monitor. Pies, receptáculos y barras dobles bajo demanda mantienen cualquier accesorio montable en cualquier equipo sin comprar soportes de un solo uso, y reparan una zapata de plástico agrietada en vez de desechar el accesorio que sostiene."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "shoe",
+    "cold-shoe",
+    "hot-shoe",
+    "accessory",
+    "camera",
+    "iso-518",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

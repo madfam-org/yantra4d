@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Filter Media / Bio-Ball Basket",
+    "slug": "media-basket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A perforated basket that holds aquarium biological media — bio-balls, ceramic rings, foam — in a sump or hang-on-back filter so water flows through while the media stays put. Build the basket, a snap grate lid that keeps floating media submerged, or a printable bio-media wheel. Complements the aquarium-fitting cartridge.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una canasta perforada que contiene medios biológicos de acuario — bio-balls, anillos cerámicos, esponja — en un sump o filtro de mochila para que el agua fluya mientras el medio permanece en su lugar. Genera la canasta, una tapa de rejilla que mantiene sumergido el medio flotante, o una rueda de bio-medio imprimible. Complementa el cartucho aquarium-fitting.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/media-basket.webp",
+    "difficulty": "intermediate",
+    "tags": ["media-basket", "aquarium", "filter", "bio-media", "sump", "bio-ball", "household", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "media_basket",
+      "label": { "en": "Media Basket", "es": "Canasta de Medios" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["media_basket"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "basket_lid",
+      "label": { "en": "Grate Lid", "es": "Tapa de Rejilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["basket_lid"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "bio_media",
+      "label": { "en": "Bio-Media Wheel", "es": "Rueda de Bio-Medio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bio_media"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "media_basket", "label": { "en": "Media Basket", "es": "Canasta de Medios" }, "render_mode": 0, "color": "#0d9488" },
+    { "id": "basket_lid", "label": { "en": "Grate Lid", "es": "Tapa de Rejilla" }, "render_mode": 0, "color": "#14b8a6" },
+    { "id": "bio_media", "label": { "en": "Bio-Media Wheel", "es": "Rueda de Bio-Medio" }, "render_mode": 0, "color": "#2dd4bf" }
+  ],
+  "parameter_groups": [
+    { "id": "box", "label": { "en": "Basket Box", "es": "Caja" } },
+    { "id": "flow", "label": { "en": "Flow Openings", "es": "Aberturas de Flujo" } },
+    { "id": "media", "label": { "en": "Bio-Media", "es": "Bio-Medio" } }
+  ],
+  "parameters": [
+    {
+      "id": "length", "type": "slider", "default": 90.0, "min": 30.0, "max": 200.0, "step": 1.0,
+      "group": "box", "modes": ["media_basket", "basket_lid"],
+      "label": { "en": "Length (mm)", "es": "Longitud (mm)" },
+      "tooltip": { "en": "Basket footprint along X — size to your filter chamber", "es": "Huella de la canasta en X — dimensiona a tu cámara de filtro" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "width", "type": "slider", "default": 70.0, "min": 30.0, "max": 200.0, "step": 1.0,
+      "group": "box", "modes": ["media_basket", "basket_lid"],
+      "label": { "en": "Width (mm)", "es": "Ancho (mm)" },
+      "tooltip": { "en": "Basket footprint along Y", "es": "Huella de la canasta en Y" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "height", "type": "slider", "default": 60.0, "min": 20.0, "max": 150.0, "step": 1.0,
+      "group": "box", "modes": ["media_basket"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Basket wall height", "es": "Altura de pared de la canasta" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "box", "modes": ["media_basket", "basket_lid"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and floor thickness", "es": "Grosor de pared y piso" }
+    },
+    {
+      "id": "hole_dia", "type": "slider", "default": 5.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "flow", "modes": ["media_basket", "basket_lid", "bio_media"],
+      "label": { "en": "Flow Hole Diameter (mm)", "es": "Diámetro de Agujero (mm)" },
+      "tooltip": { "en": "Perforation diameter. ~4 mm retains small ceramic media; 5-8 mm suits large bio-balls", "es": "Diámetro de perforación. ~4 mm retiene medios cerámicos pequeños; 5-8 mm para bio-balls grandes" }
+    },
+    {
+      "id": "hole_pitch", "type": "slider", "default": 10.0, "min": 5.0, "max": 30.0, "step": 0.5,
+      "group": "flow", "modes": ["media_basket", "basket_lid"],
+      "label": { "en": "Hole Spacing (mm)", "es": "Separación de Agujeros (mm)" },
+      "tooltip": { "en": "Center-to-center spacing of the perforation grid", "es": "Separación centro a centro de la cuadrícula de perforaciones" }
+    },
+    {
+      "id": "media_dia", "type": "slider", "default": 32.0, "min": 12.0, "max": 80.0, "step": 1.0,
+      "group": "media", "modes": ["bio_media"],
+      "label": { "en": "Bio-Media Diameter (mm)", "es": "Diámetro del Bio-Medio (mm)" },
+      "tooltip": { "en": "Diameter of the printable bio-media wheel. Bio-balls run 16 / 25 / 38 mm", "es": "Diámetro de la rueda de bio-medio imprimible. Los bio-balls miden 16 / 25 / 38 mm" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sump_tray", "mode": "media_basket",
+      "label": { "en": "Sump Media Tray", "es": "Bandeja de Sump" },
+      "values": { "length": 120, "width": 90, "height": 70, "hole_dia": 5, "hole_pitch": 10 }
+    },
+    {
+      "id": "fine_media", "mode": "media_basket",
+      "label": { "en": "Fine-Media Basket (4 mm)", "es": "Canasta de Medio Fino (4 mm)" },
+      "values": { "length": 90, "width": 70, "height": 60, "hole_dia": 4, "hole_pitch": 8 }
+    },
+    {
+      "id": "media_wheel", "mode": "bio_media",
+      "label": { "en": "Bio-Media Wheel (32 mm)", "es": "Rueda de Bio-Medio (32 mm)" },
+      "values": { "media_dia": 32, "hole_dia": 5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hole_pitch > hole_dia",
+      "severity": "error",
+      "message": { "en": "Hole spacing must exceed hole diameter or walls break up", "es": "La separación debe superar el diámetro del agujero o la pared se rompe" }
+    },
+    {
+      "expression": "wall >= 1.6",
+      "severity": "warning",
+      "message": { "en": "Thin walls perforated on all faces can warp", "es": "Paredes delgadas perforadas en todas las caras pueden deformarse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "media_flow_grid",
+        "label": { "en": "Media Flow Grid", "es": "Cuadrícula de Flujo" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["hole_dia", "hole_pitch", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Replacement media baskets for a specific sump or hang-on-back filter are expensive and often discontinued, stranding a working filter. A basket printed to the exact chamber — with a hole size chosen for the media a keeper actually runs — extends the life of aquarium equipment and lets a fishkeeper tune biological filtration in aquarium-safe filament instead of buying a whole new filter.",
+      "es": "Las canastas de medios de repuesto para un sump o filtro de mochila específico son caras y a menudo se descontinúan, dejando inservible un filtro que funciona. Una canasta impresa a la medida exacta de la cámara — con un tamaño de agujero elegido para el medio que realmente usa el aficionado — extiende la vida del equipo de acuario y permite ajustar la filtración biológica en filamento apto para acuario en vez de comprar un filtro nuevo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["media-basket", "aquarium", "filter", "bio-media", "sump", "bio-ball", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,174 @@
+{
+  "project": {
+    "name": "Parametric Cookie Cutter & Stamp",
+    "slug": "cookie-cutter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A press-and-cut cookie / fondant cutter with a thin cutting wall following your chosen outline (circle, star, heart, square, hexagon) and a wider top flange for pressing. Add an interior relief stamp that embosses a detail in the same press, or a linked double cutter that cuts a ring.\n\nFood-contact note: geometry only — food-safe filament and sealing are the maker's responsibility.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un cortador de galletas / fondant con una pared de corte delgada que sigue el contorno elegido (círculo, estrella, corazón, cuadrado, hexágono) y una brida superior más ancha para presionar. Agrega un sello de relieve interior que estampa un detalle en la misma presión, o un cortador doble que corta un anillo.\n\nNota de contacto con alimentos: solo geometría — el filamento apto para alimentos y el sellado son responsabilidad del fabricante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cookie-cutter.webp",
+    "difficulty": "beginner",
+    "tags": ["cookie", "cutter", "fondant", "baking", "kitchen", "stamp", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cutter",
+      "label": { "en": "Cutter", "es": "Cortador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cutter"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "cutter_stamp",
+      "label": { "en": "Cutter + Stamp", "es": "Cortador + Sello" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cutter_stamp"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "double_cutter",
+      "label": { "en": "Double Cutter", "es": "Cortador Doble" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["double_cutter"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "cutter", "label": { "en": "Cutter", "es": "Cortador" }, "render_mode": 0, "color": "#c98b5b" },
+    { "id": "cutter_stamp", "label": { "en": "Cutter + Stamp", "es": "Cortador + Sello" }, "render_mode": 0, "color": "#b0724f" },
+    { "id": "double_cutter", "label": { "en": "Double Cutter", "es": "Cortador Doble" }, "render_mode": 0, "color": "#a5643f" }
+  ],
+  "parameter_groups": [
+    { "id": "outline", "label": { "en": "Outline", "es": "Contorno" } },
+    { "id": "wall", "label": { "en": "Wall & Flange", "es": "Pared y Brida" } },
+    { "id": "detail", "label": { "en": "Stamp & Ring", "es": "Sello y Anillo" } }
+  ],
+  "parameters": [
+    {
+      "id": "shape", "type": "select", "default": "star",
+      "group": "outline", "modes": ["cutter", "cutter_stamp", "double_cutter"],
+      "label": { "en": "Shape", "es": "Forma" },
+      "tooltip": { "en": "Outline the cutter follows", "es": "Contorno que sigue el cortador" },
+      "options": [
+        { "value": "circle", "label": { "en": "Circle", "es": "Círculo" } },
+        { "value": "star", "label": { "en": "Star", "es": "Estrella" } },
+        { "value": "heart", "label": { "en": "Heart", "es": "Corazón" } },
+        { "value": "square", "label": { "en": "Square", "es": "Cuadrado" } },
+        { "value": "hex", "label": { "en": "Hexagon", "es": "Hexágono" } }
+      ]
+    },
+    {
+      "id": "size", "type": "slider", "default": 60, "min": 20, "max": 160, "step": 1,
+      "group": "outline", "modes": ["cutter", "cutter_stamp", "double_cutter"],
+      "label": { "en": "Size (mm)", "es": "Tamaño (mm)" },
+      "tooltip": { "en": "Widest span of the outline", "es": "Ancho máximo del contorno" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "cutter_h", "type": "slider", "default": 18, "min": 8, "max": 40, "step": 1,
+      "group": "wall", "modes": ["cutter", "cutter_stamp", "double_cutter"],
+      "label": { "en": "Cutter Height (mm)", "es": "Altura del Cortador (mm)" },
+      "tooltip": { "en": "How deep the cutting wall goes", "es": "Profundidad de la pared de corte" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 0.8, "min": 0.6, "max": 2.0, "step": 0.1,
+      "group": "wall", "modes": ["cutter", "cutter_stamp", "double_cutter"],
+      "label": { "en": "Cutting Edge (mm)", "es": "Filo de Corte (mm)" },
+      "tooltip": { "en": "Wall thickness — thinner cuts cleaner but is more fragile", "es": "Grosor de pared — más delgado corta mejor pero es más frágil" }
+    },
+    {
+      "id": "flange_w", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "wall", "modes": ["cutter", "cutter_stamp", "double_cutter"],
+      "label": { "en": "Press Flange (mm)", "es": "Brida de Presión (mm)" },
+      "tooltip": { "en": "Extra width of the top flange you press", "es": "Ancho extra de la brida superior que presionas" }
+    },
+    {
+      "id": "flange_h", "type": "slider", "default": 2.4, "min": 1.5, "max": 6.0, "step": 0.2,
+      "group": "wall", "modes": ["cutter", "cutter_stamp", "double_cutter"], "advanced": true,
+      "label": { "en": "Flange Height (mm)", "es": "Altura de Brida (mm)" },
+      "tooltip": { "en": "Thickness of the pressing flange", "es": "Grosor de la brida de presión" }
+    },
+    {
+      "id": "stamp_depth", "type": "slider", "default": 2.0, "min": 0.8, "max": 5.0, "step": 0.2,
+      "group": "detail", "modes": ["cutter_stamp"],
+      "label": { "en": "Stamp Relief (mm)", "es": "Relieve del Sello (mm)" },
+      "tooltip": { "en": "How far the embossing detail rises", "es": "Cuánto sobresale el detalle de estampado" }
+    },
+    {
+      "id": "gap", "type": "slider", "default": 8.0, "min": 4.0, "max": 30.0, "step": 1.0,
+      "group": "detail", "modes": ["double_cutter"],
+      "label": { "en": "Ring Gap (mm)", "es": "Ancho del Anillo (mm)" },
+      "tooltip": { "en": "Width of the dough ring the double cutter leaves", "es": "Ancho del anillo de masa que deja el cortador doble" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "gingerbread_star", "mode": "cutter",
+      "label": { "en": "Gingerbread Star", "es": "Estrella de Jengibre" },
+      "values": { "shape": "star", "size": 70, "cutter_h": 16, "wall": 0.8 }
+    },
+    {
+      "id": "fondant_heart_stamp", "mode": "cutter_stamp",
+      "label": { "en": "Fondant Heart + Stamp", "es": "Corazón de Fondant + Sello" },
+      "values": { "shape": "heart", "size": 50, "cutter_h": 12, "stamp_depth": 1.6 }
+    },
+    {
+      "id": "donut_ring", "mode": "double_cutter",
+      "label": { "en": "Donut Ring", "es": "Anillo de Dona" },
+      "values": { "shape": "circle", "size": 80, "gap": 14, "cutter_h": 18 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 0.6",
+      "severity": "error",
+      "message": { "en": "Cutting edge must be at least 0.6 mm", "es": "El filo debe ser de al menos 0.6 mm" }
+    },
+    {
+      "expression": "gap <= size / 2",
+      "severity": "warning",
+      "message": { "en": "Ring gap is large relative to the outline", "es": "El anillo es grande respecto al contorno" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cutter_outline",
+        "label": { "en": "Cutter Outline", "es": "Contorno del Cortador" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["shape", "size", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Any household can print a cutter in any shape and size on demand — replacing bought sets and enabling custom shapes for celebrations, learning, and small food businesses at near-zero material cost.",
+      "es": "Cualquier hogar puede imprimir un cortador de cualquier forma y tamaño bajo demanda — reemplazando juegos comprados y permitiendo formas personalizadas para celebraciones, aprendizaje y pequeños negocios de alimentos a un costo de material casi nulo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cookie", "cutter", "fondant", "baking", "kitchen", "household", "hyperobject", "commons"]
+}

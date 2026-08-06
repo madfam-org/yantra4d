@@ -1,0 +1,308 @@
+{
+  "project": {
+    "name": "Key Organizer / Bit Holder",
+    "slug": "key-organizer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "description": {
+      "en": "A Swiss-army-style key organizer: two side plates and a pivot bolt clamp a stack of house keys so they fan out like a pocket knife. Build the side plate (with a key-bow pocket and counterbored pivot), the inter-key spacer that sets the fan gap, or a 1/4 in hex-bit-holder variant. Pockets sized to standard house-key blanks (Kwikset KW1 / Schlage SC1).\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Un organizador de llaves estilo navaja suiza: dos placas laterales y un perno pivote sujetan una pila de llaves de casa para que se abran en abanico como una navaja. Genera la placa lateral (con bolsillo para el paletón y avellanado del pivote), el separador que fija el espacio del abanico, o una variante portabrocas hexagonal de 1/4 in. Bolsillos dimensionados a llaves de casa estándar (Kwikset KW1 / Schlage SC1).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/key-organizer.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "key-organizer",
+      "keychain",
+      "edc",
+      "bit-holder",
+      "keysmart",
+      "household",
+      "key",
+      "pivot",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "organizer_body",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Organizer Side Plate",
+        "es": "Placa Lateral del Organizador"
+      },
+      "description": {
+        "en": "A side plate with a counterbored pivot bolt hole at one end, a recessed key-bow pocket that captures the fanned keys, and a slotted tension tail for a thumb grip or lanyard."
+      },
+      "parts": ["organizer_body"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "spacer",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Inter-Key Spacer",
+        "es": "Separador entre Llaves"
+      },
+      "description": {
+        "en": "The inter-key spacer comb: a thinner, shorter plate with the pivot hole and a raised rib that sets the fan gap between stacked keys."
+      },
+      "parts": ["spacer"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "bit_holder",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Hex-Bit Holder",
+        "es": "Portabrocas Hexagonal"
+      },
+      "description": {
+        "en": "The same plate footprint carrying a row of 1/4 in hex sockets (6.35 mm across-flats) that open to the top face, plus the pivot bore so it stacks in the same organizer."
+      },
+      "parts": ["bit_holder"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "organizer_body",
+      "label": { "en": "Organizer Side Plate", "es": "Placa Lateral" },
+      "render_mode": 0,
+      "color": "#5b8a72"
+    },
+    {
+      "id": "spacer",
+      "label": { "en": "Inter-Key Spacer", "es": "Separador" },
+      "render_mode": 0,
+      "color": "#6f9b84"
+    },
+    {
+      "id": "bit_holder",
+      "label": { "en": "Hex-Bit Holder", "es": "Portabrocas" },
+      "render_mode": 0,
+      "color": "#4a7360"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "body_len",
+      "type": "slider",
+      "default": 62.0,
+      "min": 40.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "body",
+      "modes": ["organizer_body", "spacer", "bit_holder"],
+      "label": { "en": "Plate Length (mm)", "es": "Largo de Placa (mm)" },
+      "tooltip": {
+        "en": "Plate length along the keys. A house key is ~57 mm, so ~62 mm fits the bows.",
+        "es": "Largo de la placa a lo largo de las llaves. Una llave de casa mide ~57 mm, así que ~62 mm aloja los paletones."
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "body_w",
+      "type": "slider",
+      "default": 22.0,
+      "min": 14.0,
+      "max": 45.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": ["organizer_body", "spacer", "bit_holder"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": {
+        "en": "Plate width across the key stack.",
+        "es": "Ancho de la placa a lo ancho de la pila de llaves."
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "body",
+      "modes": ["organizer_body", "spacer", "bit_holder"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": {
+        "en": "Plate thickness. Deeper plates allow deeper hex sockets on the bit holder.",
+        "es": "Grosor de la placa. Placas más gruesas permiten alojamientos hexagonales más profundos."
+      }
+    },
+    {
+      "id": "pivot_d",
+      "type": "slider",
+      "default": 5.2,
+      "min": 3.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "pivot",
+      "modes": ["organizer_body", "spacer", "bit_holder"],
+      "label": { "en": "Pivot Bolt Ø (mm)", "es": "Ø del Perno Pivote (mm)" },
+      "tooltip": {
+        "en": "Pivot bolt clearance. Key organizers commonly use an M5 (5.2 mm) bolt.",
+        "es": "Holgura del perno pivote. Los organizadores suelen usar un perno M5 (5.2 mm)."
+      }
+    },
+    {
+      "id": "pivot_head_d",
+      "type": "slider",
+      "default": 9.5,
+      "min": 6.0,
+      "max": 16.0,
+      "step": 0.1,
+      "group": "pivot",
+      "modes": ["organizer_body", "bit_holder"],
+      "label": { "en": "Pivot Head Ø (mm)", "es": "Ø de la Cabeza del Pivote (mm)" },
+      "tooltip": {
+        "en": "Counterbore diameter for the pivot bolt head, sunk into the top face.",
+        "es": "Diámetro del avellanado para la cabeza del perno pivote, hundido en la cara superior."
+      }
+    },
+    {
+      "id": "key_blade_w",
+      "type": "slider",
+      "default": 8.5,
+      "min": 5.0,
+      "max": 20.0,
+      "step": 0.1,
+      "group": "keys",
+      "modes": ["organizer_body"],
+      "label": { "en": "Key Blade Width (mm)", "es": "Ancho del Paletón (mm)" },
+      "tooltip": {
+        "en": "Key blade width the bow pocket clears. Kwikset KW1 blade is 0.335 in (8.5 mm).",
+        "es": "Ancho del paletón que el bolsillo libera. El paletón Kwikset KW1 es de 0.335 in (8.5 mm)."
+      }
+    },
+    {
+      "id": "key_blade_t",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "keys",
+      "modes": ["organizer_body", "spacer"],
+      "label": { "en": "Key Blade Thickness (mm)", "es": "Grosor del Paletón (mm)" },
+      "tooltip": {
+        "en": "Key blade thickness. KW1 is ~2.0 mm; Schlage SC1 is ~2.2 mm (the pocket clears SC1).",
+        "es": "Grosor del paletón. KW1 es ~2.0 mm; Schlage SC1 es ~2.2 mm (el bolsillo libera SC1)."
+      }
+    },
+    {
+      "id": "key_count",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "group": "keys",
+      "modes": ["organizer_body"],
+      "label": { "en": "Key Count", "es": "Número de Llaves" },
+      "tooltip": {
+        "en": "How many keys the bow pocket is sized to fan. Lengthens the pocket.",
+        "es": "Cuántas llaves abanica el bolsillo. Alarga el bolsillo."
+      }
+    },
+    {
+      "id": "hex_af",
+      "type": "slider",
+      "default": 6.35,
+      "min": 4.0,
+      "max": 14.0,
+      "step": 0.05,
+      "group": "bits",
+      "modes": ["bit_holder"],
+      "label": { "en": "Hex Bit Across-Flats (mm)", "es": "Entrecaras Hexagonal (mm)" },
+      "tooltip": {
+        "en": "Hex socket size across flats. 1/4 in driver bits are 6.35 mm.",
+        "es": "Tamaño del alojamiento hexagonal entre caras. Las brocas de 1/4 in son de 6.35 mm."
+      }
+    },
+    {
+      "id": "bit_count",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "group": "bits",
+      "modes": ["bit_holder"],
+      "label": { "en": "Bit Socket Count", "es": "Número de Alojamientos" },
+      "tooltip": {
+        "en": "Number of hex sockets in the row (auto-capped to available length).",
+        "es": "Número de alojamientos hexagonales en la fila (limitado a la longitud disponible)."
+      }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "body", "label": { "en": "Plate Body", "es": "Cuerpo de la Placa" } },
+    { "id": "pivot", "label": { "en": "Pivot Bolt", "es": "Perno Pivote" } },
+    { "id": "keys", "label": { "en": "Key Stack", "es": "Pila de Llaves" } },
+    { "id": "bits", "label": { "en": "Hex Bits", "es": "Brocas Hexagonales" } }
+  ],
+  "presets": [
+    {
+      "id": "edc_4key",
+      "label": { "en": "4-Key EDC Organizer", "es": "Organizador EDC de 4 Llaves" },
+      "values": { "body_len": 62.0, "body_w": 22.0, "plate_t": 4.0, "pivot_d": 5.2, "key_count": 4 }
+    },
+    {
+      "id": "spacer_std",
+      "label": { "en": "Standard Spacer", "es": "Separador Estándar" },
+      "values": { "body_len": 62.0, "body_w": 22.0, "plate_t": 4.0, "pivot_d": 5.2, "key_blade_t": 2.2 }
+    },
+    {
+      "id": "bit_edc",
+      "label": { "en": "1/4 in Bit Holder", "es": "Portabrocas 1/4 in" },
+      "values": { "body_len": 62.0, "body_w": 22.0, "plate_t": 8.0, "pivot_d": 5.2, "hex_af": 6.35, "bit_count": 4 }
+    }
+  ],
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "key_blade_pocket",
+        "label": { "en": "Key Blade Stack + Pivot", "es": "Pila de Paletones + Pivote" },
+        "geometry_type": "pocket",
+        "standard": "standard key (Kwikset KW1 / Schlage SC1)",
+        "parameters": ["key_blade_w", "key_blade_t", "pivot_d"]
+      },
+      {
+        "id": "hex_bit_socket",
+        "label": { "en": "1/4 in Hex Bit Socket", "es": "Alojamiento de Broca Hexagonal 1/4 in" },
+        "geometry_type": "socket",
+        "standard": "1/4 in hex driver bit (6.35 mm A/F)",
+        "parameters": ["hex_af"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A key organizer silences jangling keys, protects pockets and phone screens, and is trivially printable — yet commercial ones cost far more than a few grams of filament. A parametric version fits any key set and doubles as a 1/4 in bit caddy, putting a genuinely useful everyday-carry tool within reach of anyone with a printer.",
+      "es": "Un organizador de llaves silencia el tintineo, protege bolsillos y pantallas, y es trivial de imprimir — pero los comerciales cuestan mucho más que unos gramos de filamento. Una versión paramétrica se adapta a cualquier juego de llaves y sirve además como portabrocas de 1/4 in."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

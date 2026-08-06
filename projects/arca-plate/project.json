@@ -1,0 +1,570 @@
+{
+  "project": {
+    "name": "Arca-Swiss QR Plate",
+    "slug": "arca-plate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The Arca-Swiss tripod quick-release standard — a 38 mm dovetail with ~45° flanks that most ball heads, plates and L-brackets share. Build an Arca QR plate with a 1/4-20 camera slot, a clamp jaw that grips the 38 mm dovetail, or an L-bracket for instant portrait mounting.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El estándar de liberación rápida de trípode Arca-Swiss — una cola de milano de 38 mm con flancos de ~45° que comparten la mayoría de rótulas, placas y soportes en L. Genera una placa QR Arca con ranura 1/4-20 para cámara, una mordaza que agarra la cola de milano de 38 mm, o un soporte en L para montaje vertical instantáneo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/arca-plate.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "arca-swiss",
+      "arca",
+      "plate",
+      "dovetail",
+      "quick-release",
+      "tripod",
+      "l-bracket",
+      "38mm",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "qr_plate",
+      "label": {
+        "en": "QR Plate",
+        "es": "Placa QR"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "qr_plate"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "arca_clamp",
+      "label": {
+        "en": "Arca Clamp",
+        "es": "Mordaza Arca"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "arca_clamp"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "l_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Soporte en L"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "l_bracket"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "qr_plate",
+      "label": {
+        "en": "QR Plate",
+        "es": "Placa QR"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "arca_clamp",
+      "label": {
+        "en": "Arca Clamp",
+        "es": "Mordaza Arca"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "l_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Soporte en L"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "dovetail",
+      "label": {
+        "en": "Arca Dovetail",
+        "es": "Cola de Milano Arca"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate & Slot",
+        "es": "Placa y Ranura"
+      }
+    },
+    {
+      "id": "clamp",
+      "label": {
+        "en": "Clamp",
+        "es": "Mordaza"
+      }
+    },
+    {
+      "id": "lbracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Soporte en L"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "plate_w",
+      "type": "slider",
+      "default": 38.0,
+      "min": 28.0,
+      "max": 60.0,
+      "step": 0.1,
+      "group": "dovetail",
+      "modes": [
+        "qr_plate",
+        "arca_clamp",
+        "l_bracket"
+      ],
+      "label": {
+        "en": "Plate Width (mm)",
+        "es": "Ancho de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Arca-Swiss dovetail platform width. Standard is 38 mm",
+        "es": "Ancho de la plataforma de cola de milano Arca-Swiss. El estándar es 38 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "flank_ang",
+      "type": "slider",
+      "default": 45.0,
+      "min": 30.0,
+      "max": 55.0,
+      "step": 1,
+      "group": "dovetail",
+      "modes": [
+        "qr_plate",
+        "arca_clamp",
+        "l_bracket"
+      ],
+      "label": {
+        "en": "Dovetail Flank Angle (deg)",
+        "es": "Ángulo de Flanco (grados)"
+      },
+      "tooltip": {
+        "en": "Undercut angle of the dovetail flanks. Arca-Swiss ~45°",
+        "es": "Ángulo de socavado de los flancos de la cola de milano. Arca-Swiss ~45°"
+      }
+    },
+    {
+      "id": "plate_h",
+      "type": "slider",
+      "default": 9.0,
+      "min": 5.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "dovetail",
+      "modes": [
+        "qr_plate",
+        "arca_clamp",
+        "l_bracket"
+      ],
+      "label": {
+        "en": "Plate Height (mm)",
+        "es": "Altura de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the dovetail block / plate thickness",
+        "es": "Altura del bloque de cola de milano / grosor de placa"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "plate_len",
+      "type": "slider",
+      "default": 60.0,
+      "min": 30.0,
+      "max": 140.0,
+      "step": 1,
+      "group": "plate",
+      "modes": [
+        "qr_plate"
+      ],
+      "label": {
+        "en": "Plate Length (mm)",
+        "es": "Longitud de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the plate along the dovetail (Y)",
+        "es": "Longitud de la placa a lo largo de la cola de milano (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "slot_w",
+      "type": "slider",
+      "default": 6.6,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "qr_plate",
+        "arca_clamp",
+        "l_bracket"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "1/4-20 Slot Width (mm)",
+        "es": "Ancho de Ranura 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the 1/4-20 camera slot (~6.6 mm clearance)",
+        "es": "Ancho de la ranura 1/4-20 para cámara (~6.6 mm de holgura)"
+      }
+    },
+    {
+      "id": "slot_len",
+      "type": "slider",
+      "default": 24.0,
+      "min": 8.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "plate",
+      "modes": [
+        "qr_plate",
+        "l_bracket"
+      ],
+      "label": {
+        "en": "1/4-20 Slot Length (mm)",
+        "es": "Longitud de Ranura 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "How far the camera can slide fore/aft along the slot",
+        "es": "Cuánto puede deslizar la cámara adelante/atrás por la ranura"
+      }
+    },
+    {
+      "id": "clamp_clear",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "clamp",
+      "modes": [
+        "arca_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Clamp Fit Clearance (mm)",
+        "es": "Holgura de Ajuste de Mordaza (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap between clamp jaw and plate dovetail",
+        "es": "Espacio por lado entre la mordaza y la cola de milano de la placa"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "arca_clamp"
+      ],
+      "label": {
+        "en": "Clamp Wall (mm)",
+        "es": "Pared de Mordaza (mm)"
+      },
+      "tooltip": {
+        "en": "Wall and jaw thickness of the clamp body",
+        "es": "Grosor de pared y mordaza del cuerpo de la mordaza"
+      }
+    },
+    {
+      "id": "clamp_bolt_d",
+      "type": "slider",
+      "default": 5.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "clamp",
+      "modes": [
+        "arca_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Clamp Bolt Hole (mm)",
+        "es": "Orificio del Perno de Mordaza (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance for the clamp bolt (M5 ~5.2 mm)",
+        "es": "Holgura para el perno de la mordaza (M5 ~5.2 mm)"
+      }
+    },
+    {
+      "id": "leg_h",
+      "type": "slider",
+      "default": 55.0,
+      "min": 20.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "lbracket",
+      "modes": [
+        "l_bracket"
+      ],
+      "label": {
+        "en": "Leg Height (mm)",
+        "es": "Altura de Pata (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the vertical portrait leg",
+        "es": "Altura de la pata vertical para retrato"
+      }
+    },
+    {
+      "id": "leg_len",
+      "type": "slider",
+      "default": 40.0,
+      "min": 20.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "lbracket",
+      "modes": [
+        "l_bracket"
+      ],
+      "label": {
+        "en": "Base Length (mm)",
+        "es": "Longitud de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the L-bracket base plate along the dovetail",
+        "es": "Longitud de la placa base del soporte en L a lo largo de la cola de milano"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_arca_plate",
+      "mode": "qr_plate",
+      "label": {
+        "en": "Standard Arca Plate (38mm)",
+        "es": "Placa Arca Estándar (38mm)"
+      },
+      "values": {
+        "plate_w": 38.0,
+        "flank_ang": 45.0,
+        "plate_h": 9.0,
+        "plate_len": 60.0,
+        "slot_len": 24.0
+      }
+    },
+    {
+      "id": "screw_knob_clamp",
+      "mode": "arca_clamp",
+      "label": {
+        "en": "Screw-Knob Clamp",
+        "es": "Mordaza de Perilla"
+      },
+      "values": {
+        "plate_w": 38.0,
+        "flank_ang": 45.0,
+        "plate_h": 9.0,
+        "wall": 5.0,
+        "clamp_clear": 0.35
+      }
+    },
+    {
+      "id": "portrait_l_bracket",
+      "mode": "l_bracket",
+      "label": {
+        "en": "Portrait L-Bracket",
+        "es": "Soporte en L para Retrato"
+      },
+      "values": {
+        "plate_w": 38.0,
+        "flank_ang": 45.0,
+        "plate_h": 9.0,
+        "leg_h": 55.0,
+        "leg_len": 40.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_w < plate_w",
+      "severity": "error",
+      "message": {
+        "en": "1/4-20 slot must be narrower than the plate",
+        "es": "La ranura 1/4-20 debe ser más estrecha que la placa"
+      }
+    },
+    {
+      "expression": "flank_ang >= 35",
+      "severity": "warning",
+      "message": {
+        "en": "Shallow flank angles reduce the Arca dovetail's holding security",
+        "es": "Ángulos de flanco poco profundos reducen la seguridad de sujeción de la cola de milano Arca"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        100,
+        100,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front (Cross-Section)",
+        "es": "Frontal (Sección)"
+      },
+      "position": [
+        0,
+        -180,
+        15
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        200
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "arca_swiss_dovetail",
+        "label": {
+          "en": "Arca-Swiss Dovetail",
+          "es": "Cola de Milano Arca-Swiss"
+        },
+        "geometry_type": "profile",
+        "standard": "Arca-Swiss 38mm",
+        "parameters": [
+          "plate_w",
+          "flank_ang",
+          "plate_h"
+        ]
+      },
+      {
+        "id": "quarter_20_slot",
+        "label": {
+          "en": "1/4-20 Camera Slot",
+          "es": "Ranura 1/4-20 para Cámara"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "slot_w",
+          "slot_len"
+        ],
+        "compatible_with": [
+          "nato-rail",
+          "optical-post",
+          "rod-rig-clamp",
+          "sensor-mount-plate",
+          "shoe-mount"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The Arca-Swiss 38 mm dovetail is the de-facto open tripod quick-release — plates, clamps and L-brackets from dozens of makers all interoperate on the same profile. On-demand Arca plates and clamps let a photographer fit any camera, lens foot or accessory to any head from printed parts, instead of buying a proprietary plate per body, and repair a lost or broken plate in the field.",
+      "es": "La cola de milano Arca-Swiss de 38 mm es la liberación rápida de trípode abierta de facto — placas, mordazas y soportes en L de docenas de fabricantes interoperan en el mismo perfil. Placas y mordazas Arca bajo demanda permiten a un fotógrafo adaptar cualquier cámara, pie de lente o accesorio a cualquier rótula con piezas impresas, en vez de comprar una placa propietaria por cuerpo, y reparar una placa perdida o rota en el campo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "arca-swiss",
+    "arca",
+    "plate",
+    "dovetail",
+    "quick-release",
+    "tripod",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

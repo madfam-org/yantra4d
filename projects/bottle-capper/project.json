@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Homebrew Crown-Cap Seat",
+    "slug": "bottle-capper",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Bottling tools for standard 26 mm crown caps: a hand-capper bell that crimps a cap onto a bottle finish, a bench seat that keeps the bottle aligned under a lever press, and a cap organizer tray. All share one 26 mm crown-cap seat interface.\n\nFood-contact note: geometry only — only the cap seat touches the bottle rim, but food-safe filament and hygiene are the maker's responsibility.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herramientas de embotellado para chapas corona estándar de 26 mm: una campana capsuladora manual que engarza una chapa en la boca de la botella, una base de banco que mantiene la botella alineada bajo una prensa de palanca, y una bandeja organizadora de chapas. Todas comparten una interfaz de asiento de chapa corona de 26 mm.\n\nNota de contacto con alimentos: solo geometría — únicamente el asiento toca el borde de la botella, pero el filamento apto para alimentos y la higiene son responsabilidad del fabricante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bottle-capper.webp",
+    "difficulty": "intermediate",
+    "tags": ["homebrew", "beer", "crown-cap", "bottling", "brewing", "kitchen", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cap_bell",
+      "label": { "en": "Capper Bell", "es": "Campana Capsuladora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cap_bell"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "bench_seat",
+      "label": { "en": "Bench Seat", "es": "Base de Banco" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bench_seat"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "cap_organizer",
+      "label": { "en": "Cap Organizer", "es": "Organizador de Chapas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cap_organizer"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    }
+  ],
+  "parts": [
+    { "id": "cap_bell", "label": { "en": "Capper Bell", "es": "Campana Capsuladora" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "bench_seat", "label": { "en": "Bench Seat", "es": "Base de Banco" }, "render_mode": 0, "color": "#8bb5cc" },
+    { "id": "cap_organizer", "label": { "en": "Cap Organizer", "es": "Organizador de Chapas" }, "render_mode": 0, "color": "#7aa3bd" }
+  ],
+  "parameter_groups": [
+    { "id": "cap", "label": { "en": "Cap & Fit", "es": "Chapa y Ajuste" } },
+    { "id": "bell", "label": { "en": "Bell & Seat", "es": "Campana y Asiento" } },
+    { "id": "organizer", "label": { "en": "Organizer", "es": "Organizador" } }
+  ],
+  "parameters": [
+    {
+      "id": "cap_dia", "type": "slider", "default": 32.1, "min": 24, "max": 40, "step": 0.1,
+      "group": "cap", "modes": ["cap_bell", "bench_seat", "cap_organizer"],
+      "label": { "en": "Crown-Cap OD (mm)", "es": "Diámetro de Chapa (mm)" },
+      "tooltip": { "en": "Outer diameter of an uncrimped crown cap (~32.1 mm)", "es": "Diámetro exterior de una chapa sin engarzar (~32.1 mm)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.5, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "cap", "modes": ["cap_bell", "bench_seat", "cap_organizer"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side printed-fit slop", "es": "Holgura de impresión por lado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "bell", "modes": ["cap_bell", "bench_seat", "cap_organizer"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body / bell wall — a striking tool needs it thick", "es": "Pared del cuerpo / campana — una herramienta de golpe la necesita gruesa" }
+    },
+    {
+      "id": "bell_h", "type": "slider", "default": 32.0, "min": 18.0, "max": 60.0, "step": 1.0,
+      "group": "bell", "modes": ["cap_bell"],
+      "label": { "en": "Bell Height (mm)", "es": "Altura de Campana (mm)" },
+      "tooltip": { "en": "Overall height of the capper bell", "es": "Altura total de la campana capsuladora" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "neck_dia", "type": "slider", "default": 28.0, "min": 20.0, "max": 40.0, "step": 0.5,
+      "group": "bell", "modes": ["cap_bell", "bench_seat"],
+      "label": { "en": "Bottle Neck OD (mm)", "es": "Diámetro de Cuello (mm)" },
+      "tooltip": { "en": "Outer diameter of the bottle finish to clear/locate", "es": "Diámetro exterior de la boca de la botella a librar/ubicar" }
+    },
+    {
+      "id": "seat_depth", "type": "slider", "default": 5.0, "min": 2.5, "max": 9.0, "step": 0.5,
+      "group": "bell", "modes": ["bench_seat"],
+      "label": { "en": "Cap Recess Depth (mm)", "es": "Profundidad del Asiento (mm)" },
+      "tooltip": { "en": "How deep the crown cap sits in the bench seat", "es": "Qué tan profundo se asienta la chapa en la base" }
+    },
+    {
+      "id": "grip_knurl", "type": "checkbox", "default": true,
+      "group": "bell", "modes": ["cap_bell"],
+      "label": { "en": "Grip Flutes", "es": "Estrías de Agarre" },
+      "tooltip": { "en": "Add vertical grip flutes to the bell", "es": "Agregar estrías verticales a la campana" }
+    },
+    {
+      "id": "count", "type": "slider", "default": 6, "min": 2, "max": 8, "step": 1,
+      "group": "organizer", "modes": ["cap_organizer"],
+      "label": { "en": "Recesses per Row", "es": "Cavidades por Fila" },
+      "tooltip": { "en": "Columns of cap recesses (rows derive from this)", "es": "Columnas de cavidades (las filas se derivan de esto)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_26mm_bell", "mode": "cap_bell",
+      "label": { "en": "Standard 26 mm Bell", "es": "Campana 26 mm Estándar" },
+      "values": { "cap_dia": 32.1, "bell_h": 32, "wall": 4.0, "neck_dia": 28 }
+    },
+    {
+      "id": "lever_bench_seat", "mode": "bench_seat",
+      "label": { "en": "Lever Press Seat", "es": "Base para Prensa de Palanca" },
+      "values": { "cap_dia": 32.1, "seat_depth": 5, "neck_dia": 28 }
+    },
+    {
+      "id": "cap_tray_48", "mode": "cap_organizer",
+      "label": { "en": "Cap Tray", "es": "Bandeja de Chapas" },
+      "values": { "cap_dia": 32.1, "count": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.5",
+      "severity": "error",
+      "message": { "en": "A striking tool needs at least 2.5 mm walls", "es": "Una herramienta de golpe necesita paredes de al menos 2.5 mm" }
+    },
+    {
+      "expression": "neck_dia < cap_dia",
+      "severity": "warning",
+      "message": { "en": "Neck OD should be smaller than the cap OD", "es": "El diámetro del cuello debe ser menor que el de la chapa" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 64, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "crown_cap_seat",
+        "label": { "en": "Crown Cap Seat", "es": "Asiento de Chapa Corona" },
+        "geometry_type": "socket",
+        "standard": "26mm crown cap",
+        "parameters": ["cap_dia", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Puts bottle-conditioning within reach of any home brewer without buying a dedicated capper — reusing returnable glass bottles and the ubiquitous 26 mm crown cap keeps a proven, low-waste packaging loop alive.",
+      "es": "Pone el acondicionado en botella al alcance de cualquier cervecero casero sin comprar una capsuladora dedicada — reutilizar botellas de vidrio retornables y la ubicua chapa corona de 26 mm mantiene vivo un ciclo de empaque probado y de bajo desperdicio."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["homebrew", "beer", "crown-cap", "bottling", "brewing", "household", "hyperobject", "commons"]
+}

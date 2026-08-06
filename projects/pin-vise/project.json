@@ -1,0 +1,149 @@
+{
+  "project": {
+    "name": "Precision Pin Vise",
+    "slug": "pin-vise",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "A parametric precision pin vise and small workholding family. The collet bore covers the classic 0–3 mm pin-vise capacity for micro-drills, taps, broaches and wire; the body carries a fluted grip and a hollow handle that clears long stock. Ships with the matching split draw-in collet and a V-groove bench block for holding round or square work while you file, drill or solder.",
+      "es": "Una familia paramétrica de berbiquí de precisión (pin vise) y sujeción pequeña. El alojamiento de la pinza cubre la capacidad clásica de 0–3 mm para micro-brocas, machos, escariadores y alambre; el cuerpo lleva un mango estriado y hueco que libera material largo. Incluye la pinza partida correspondiente y un bloque de banco con ranura en V para sujetar piezas redondas o cuadradas."
+    },
+    "thumbnail": "/projects/pin-vise.webp",
+    "difficulty": "advanced",
+    "tags": ["workholding", "pin-vise", "collet", "watchmaking", "precision", "socket", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "modes": [
+    {
+      "id": "pin_vise_body",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Pin Vise Body", "es": "Cuerpo del Berbiquí" },
+      "description": {
+        "en": "A fluted grip cylinder with a collet bore open to the top and a hollow handle cavity open to the bottom that clears long drills / stock.",
+        "es": "Un cilindro estriado con alojamiento de pinza abierto arriba y un mango hueco abierto abajo que libera brocas / material largo."
+      },
+      "parts": ["pin_vise_body"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "collet",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Split Draw-In Collet", "es": "Pinza Partida" },
+      "description": {
+        "en": "A truncated-cone collet with a through bore (manifold tube) and three relief slots from the small end so the jaws close on the tool.",
+        "es": "Una pinza cónica truncada con barreno pasante y tres ranuras de alivio desde el extremo pequeño para cerrar sobre la herramienta."
+      },
+      "parts": ["collet"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "bench_block_vise",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "V-Groove Bench Block", "es": "Bloque de Banco con Ranura en V" },
+      "description": {
+        "en": "A precision block with a through V-groove to cradle round or square stock, a cross clamp screw and two base mounting holes.",
+        "es": "Un bloque de precisión con ranura en V pasante para acunar material redondo o cuadrado, un tornillo de apriete transversal y dos agujeros de montaje."
+      },
+      "parts": ["bench_block_vise"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "pin_vise_body",    "render_mode": 0, "label": { "en": "Pin Vise Body",    "es": "Cuerpo del Berbiquí" }, "default_color": "#293241" },
+    { "id": "collet",           "render_mode": 0, "label": { "en": "Collet",           "es": "Pinza" }, "default_color": "#98a6ad" },
+    { "id": "bench_block_vise", "render_mode": 0, "label": { "en": "V-Groove Block",   "es": "Bloque en V" }, "default_color": "#ee6c4d" }
+  ],
+  "parameters": [
+    {
+      "id": "collet_bore", "type": "slider", "default": 3.0, "min": 0.3, "max": 6.0, "step": 0.1,
+      "label": { "en": "Collet Bore / Tool Capacity (mm)", "es": "Alojamiento de Pinza / Capacidad (mm)" },
+      "tooltip": {
+        "en": "Tool shank diameter the collet grips. Classic watchmaker pin vises span 0–3 mm; ER11 collets go 1–7 mm. Set to the shank you hold most.",
+        "es": "Diámetro del vástago que sujeta la pinza. Los berbiquíes clásicos abarcan 0–3 mm; las pinzas ER11 van de 1–7 mm."
+      },
+      "group": "collet"
+    },
+    {
+      "id": "body_dia", "type": "slider", "default": 12.0, "min": 8.0, "max": 20.0, "step": 0.5,
+      "label": { "en": "Body Diameter (mm)", "es": "Diámetro del Cuerpo (mm)" },
+      "tooltip": { "en": "Outer diameter of the grip body / collet cone stock.", "es": "Diámetro exterior del cuerpo / cono de la pinza." },
+      "group": "body"
+    },
+    {
+      "id": "body_length", "type": "slider", "default": 70.0, "min": 40.0, "max": 120.0, "step": 1.0,
+      "label": { "en": "Body Length (mm)", "es": "Longitud del Cuerpo (mm)" },
+      "tooltip": { "en": "Overall length of the pin-vise body.", "es": "Longitud total del cuerpo del berbiquí." },
+      "group": "body"
+    },
+    {
+      "id": "flute_count", "type": "slider", "default": 16, "min": 8, "max": 30, "step": 1,
+      "label": { "en": "Grip Flute Count", "es": "Número de Estrías" },
+      "tooltip": { "en": "Number of axial flutes forming the finger grip (a print-safe knurl).", "es": "Número de estrías axiales que forman el agarre (moleteado apto para impresión)." },
+      "group": "body"
+    },
+    {
+      "id": "handle_bore", "type": "slider", "default": 5.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "label": { "en": "Handle Pass-Through Bore (mm)", "es": "Barreno Pasante del Mango (mm)" },
+      "tooltip": { "en": "Rear cavity that clears long drills or wire poking out the back.", "es": "Cavidad trasera que libera brocas largas o alambre que sobresale." },
+      "group": "body"
+    },
+    {
+      "id": "jaw_opening", "type": "slider", "default": 8.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "label": { "en": "Bench Block V Capacity (mm)", "es": "Capacidad de la V del Bloque (mm)" },
+      "tooltip": { "en": "Nominal stock size the V-groove bench block cradles.", "es": "Tamaño nominal de pieza que acuna la ranura en V." },
+      "group": "block"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "collet", "label": { "en": "Collet",       "es": "Pinza" } },
+    { "id": "body",   "label": { "en": "Vise Body",    "es": "Cuerpo del Berbiquí" } },
+    { "id": "block",  "label": { "en": "Bench Block",  "es": "Bloque de Banco" } }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "collet_bore_socket",
+        "label": { "en": "0–3 mm Collet Bore", "es": "Alojamiento de Pinza 0–3 mm" },
+        "geometry_type": "socket",
+        "standard": "0–3 mm pin-vise collet",
+        "parameters": ["collet_bore", "body_dia"]
+      },
+      {
+        "id": "vgroove_workhold",
+        "label": { "en": "V-Groove Work Support", "es": "Soporte en V" },
+        "geometry_type": "socket",
+        "standard": "60° V-groove bench block",
+        "parameters": ["jaw_opening"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The collet slots need a stiff, slightly springy print — PETG or nylon close cleanly; brittle PLA can snap a jaw. Print the collet bore at the nominal shank and ream to a light slip fit. The fluted body prints without supports along its axis; a printed pin vise is a light-duty holder, not a substitute for a hardened-steel collet on a lathe.",
+        "es": "Las ranuras de la pinza necesitan una impresión rígida y algo elástica — PETG o nylon cierran limpiamente; el PLA frágil puede romper una mordaza. Un berbiquí impreso es un soporte ligero, no un sustituto de una pinza de acero templado."
+      }
+    },
+    "societal_benefit": {
+      "en": "A quality pin vise plus a collet set runs $20–$60; printing the body, a graduated set of collets and a V-block gives a hobbyist, jeweller or electronics tech a full micro-workholding kit for the cost of filament, sized to the exact shanks they use.",
+      "es": "Un buen berbiquí con juego de pinzas cuesta $20–$60; imprimir el cuerpo, un juego graduado de pinzas y un bloque en V da un kit completo de micro-sujeción por el costo del filamento."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0"
+}

@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Battery Terminal / Lug Cover",
+    "slug": "lug-cover",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Insulating covers and boots for battery terminals, threaded studs and bolted lug joints - the short-circuit and accidental-contact protection that keeps a dropped spanner off a live post. The pocket lands on standard post / stud / lug sizes (SAE automotive posts 17.5/15.9 mm, M8/M10 studs), so a printed boot seats over a real terminal and its ring lug with a cable-exit notch. Includes a snap post cover, a threaded-stud boot, and a bolted bus-link cover.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Cubiertas y botas aislantes para bornes de batería, esparragos roscados y uniones de zapata atornilladas - la protección contra cortocircuito y contacto accidental que mantiene una llave caida lejos de un borne vivo. El alojamiento coincide con tamaños estándar de borne / esparrago / zapata (bornes automotrices SAE 17.5/15.9 mm, esparragos M8/M10), así que una bota impresa se asienta sobre un borne real y su terminal de anillo con una muesca de salida de cable. Incluye cubierta de borne, bota de esparrago y cubierta de unión de barra.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/lug-cover.webp",
+    "difficulty": "beginner",
+    "tags": ["battery", "terminal", "lug", "boot", "cover", "insulator", "short-protection", "power", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "post_cover",
+      "label": { "en": "Post Cover", "es": "Cubierta de Borne" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["post_cover"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "stud_boot",
+      "label": { "en": "Stud Boot", "es": "Bota de Espárrago" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stud_boot"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "bar_boot",
+      "label": { "en": "Bus-Link Cover", "es": "Cubierta de Unión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bar_boot"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "post_cover", "label": { "en": "Post Cover", "es": "Cubierta de Borne" }, "render_mode": 0, "color": "#b02a2a" },
+    { "id": "stud_boot", "label": { "en": "Stud Boot", "es": "Bota de Espárrago" }, "render_mode": 0, "color": "#c03a3a" },
+    { "id": "bar_boot", "label": { "en": "Bus-Link Cover", "es": "Cubierta de Unión" }, "render_mode": 0, "color": "#2a2a2a" }
+  ],
+  "parameter_groups": [
+    { "id": "terminal", "label": { "en": "Terminal", "es": "Borne" } },
+    { "id": "cover", "label": { "en": "Cover", "es": "Cubierta" } }
+  ],
+  "parameters": [
+    {
+      "id": "terminal", "type": "select", "default": "positive",
+      "group": "terminal", "modes": ["post_cover"],
+      "label": { "en": "Post Polarity", "es": "Polaridad del Borne" },
+      "tooltip": { "en": "SAE automotive post (positive is larger)", "es": "Borne automotriz SAE (positivo es mayor)" },
+      "options": [
+        { "value": "positive", "label": { "en": "Positive (17.5 mm)", "es": "Positivo (17.5 mm)" } },
+        { "value": "negative", "label": { "en": "Negative (15.9 mm)", "es": "Negativo (15.9 mm)" } }
+      ]
+    },
+    {
+      "id": "stud", "type": "select", "default": "M8",
+      "group": "terminal", "modes": ["stud_boot", "bar_boot"],
+      "label": { "en": "Stud Size", "es": "Tamaño de Espárrago" },
+      "tooltip": { "en": "Threaded stud / ring-lug size", "es": "Tamaño del espárrago roscado / terminal de anillo" },
+      "options": [
+        { "value": "M8", "label": { "en": "M8 (lug Ø20)", "es": "M8 (zapata Ø20)" } },
+        { "value": "M10", "label": { "en": "M10 (lug Ø24)", "es": "M10 (zapata Ø24)" } }
+      ]
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.2, "max": 1.5, "step": 0.05,
+      "group": "cover", "modes": ["post_cover", "stud_boot", "bar_boot"], "advanced": true,
+      "label": { "en": "Pocket Clearance (mm)", "es": "Holgura de Alojamiento (mm)" },
+      "tooltip": { "en": "Gap per side over the terminal", "es": "Espacio por lado sobre el borne" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "cover", "modes": ["post_cover", "stud_boot", "bar_boot"],
+      "label": { "en": "Cover Wall (mm)", "es": "Pared de Cubierta (mm)" },
+      "tooltip": { "en": "Insulating wall thickness", "es": "Grosor de la pared aislante" }
+    },
+    {
+      "id": "cover_h", "type": "slider", "default": 26.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "cover", "modes": ["post_cover", "stud_boot", "bar_boot"],
+      "label": { "en": "Cover Height (mm)", "es": "Altura de Cubierta (mm)" },
+      "tooltip": { "en": "Overall height of the cover", "es": "Altura total de la cubierta" }
+    },
+    {
+      "id": "lug_len", "type": "slider", "default": 30.0, "min": 12.0, "max": 70.0, "step": 1.0,
+      "group": "cover", "modes": ["post_cover", "bar_boot"],
+      "label": { "en": "Lug Reach (mm)", "es": "Alcance de Zapata (mm)" },
+      "tooltip": { "en": "How far the ring-lug body reaches", "es": "Qué tanto alcanza el cuerpo de la zapata" }
+    },
+    {
+      "id": "notch_w", "type": "slider", "default": 12.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "cover", "modes": ["post_cover", "stud_boot", "bar_boot"],
+      "label": { "en": "Cable Notch Width (mm)", "es": "Ancho de Muesca de Cable (mm)" },
+      "tooltip": { "en": "Cable-exit notch width", "es": "Ancho de la muesca de salida de cable" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "positive_post", "mode": "post_cover",
+      "label": { "en": "Positive Post Cover", "es": "Cubierta Borne Positivo" },
+      "values": { "terminal": "positive" }
+    },
+    {
+      "id": "m8_boot", "mode": "stud_boot",
+      "label": { "en": "M8 Stud Boot", "es": "Bota Espárrago M8" },
+      "values": { "stud": "M8" }
+    },
+    {
+      "id": "m10_link", "mode": "bar_boot",
+      "label": { "en": "M10 Bus-Link Cover", "es": "Cubierta Unión M10" },
+      "values": { "stud": "M10" }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "terminal_pocket",
+        "label": { "en": "Terminal Post Pocket", "es": "Alojamiento de Borne" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["terminal", "stud", "clearance", "cover_h"]
+      },
+      {
+        "id": "cable_notch",
+        "label": { "en": "Cable Exit Notch", "es": "Muesca de Salida de Cable" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["notch_w", "lug_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "An uncovered battery terminal or bus lug is one dropped tool away from a high-current short that can weld metal, burn hands or vent a battery. Printed boots sized to real SAE posts and M8/M10 studs restore the touch-safe insulation that is routinely missing on DIY solar, EV-conversion and off-grid battery banks, cutting short-circuit and arc-flash risk for a few grams of filament. Cable-exit notches keep the boot seated with the lug installed.",
+      "es": "Un borne de batería o zapata de barra sin cubrir está a una herramienta caída de un cortocircuito de alta corriente que puede soldar metal, quemar manos o ventear una batería. Las botas impresas dimensionadas a bornes SAE reales y esparragos M8/M10 restauran el aislamiento a prueba de contacto que suele faltar en instalaciones solares caseras, conversiones EV y bancos de baterías fuera de red, reduciendo el riesgo de cortocircuito y arco por unos gramos de filamento. Las muescas de salida mantienen la bota asentada con la zapata instalada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["battery", "terminal", "lug", "boot", "cover", "short-protection", "electrical", "infrastructure", "hyperobject", "commons"]
+}

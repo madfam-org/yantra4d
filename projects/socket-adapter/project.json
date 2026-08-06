@@ -1,0 +1,170 @@
+{
+  "project": {
+    "name": "LED Bulb / Socket Adapter",
+    "slug": "socket-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Lamp socket adapters and bulb-base converters built around the real base standards. Edison screw bases E26 (26.05 mm, 7-TPI Edison) and E27 (26.4 mm) are modelled as functional helical threads; twist-lock bases GU10 (two pins, 10 mm span) and B22 bayonet as real pins. Build a male screw shell, an E26↔E27 base converter, or a bayonet twist-lock base.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Adaptadores de casquillo y convertidores de base de bombilla construidos alrededor de los estándares reales. Las bases de rosca Edison E26 (26.05 mm, 7-TPI) y E27 (26.4 mm) se modelan como roscas helicoidales funcionales; las bases de bayoneta GU10 (dos pines, 10 mm) y B22 con pines reales. Genera un casquillo de rosca macho, un convertidor E26↔E27, o una base de bayoneta.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/socket-adapter.webp",
+    "tags": ["lighting", "bulb", "socket", "edison", "e26", "e27", "gu10", "bayonet", "thread", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "screw_shell",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Screw Shell", "es": "Casquillo de Rosca" },
+      "parts": ["screw_shell"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "base_converter",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Base Converter", "es": "Convertidor de Base" },
+      "parts": ["base_converter"],
+      "estimate": { "base_time": 24, "per_unit": 5, "per_part": 24 }
+    },
+    {
+      "id": "bayonet_base",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Bayonet Base", "es": "Base de Bayoneta" },
+      "parts": ["bayonet_base"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "screw_shell", "render_mode": 0, "label": { "en": "Screw Shell", "es": "Casquillo de Rosca" }, "default_color": "#5b8fb0" },
+    { "id": "base_converter", "render_mode": 0, "label": { "en": "Base Converter", "es": "Convertidor de Base" }, "default_color": "#6fa3bf" },
+    { "id": "bayonet_base", "render_mode": 0, "label": { "en": "Bayonet Base", "es": "Base de Bayoneta" }, "default_color": "#4a7c8f" }
+  ],
+  "parameter_groups": [
+    { "id": "base", "label": { "en": "Base Standard", "es": "Estándar de Base" } },
+    { "id": "thread", "label": { "en": "Thread & Walls", "es": "Rosca y Paredes" } },
+    { "id": "body", "label": { "en": "Body & Bore", "es": "Cuerpo y Orificio" } }
+  ],
+  "parameters": [
+    {
+      "id": "edison_a", "type": "select", "default": "E26",
+      "options": [
+        { "value": "E26", "label": { "en": "E26 (medium, US)", "es": "E26 (mediana, EE.UU.)" } },
+        { "value": "E27", "label": { "en": "E27 (medium, EU)", "es": "E27 (mediana, UE)" } }
+      ],
+      "group": "base", "modes": ["screw_shell", "base_converter"],
+      "label": { "en": "Edison Base (A)", "es": "Base Edison (A)" },
+      "tooltip": { "en": "Screw base this part uses (bottom / female for the converter)", "es": "Base de rosca que usa esta pieza (inferior / hembra en el convertidor)" }
+    },
+    {
+      "id": "edison_b", "type": "select", "default": "E27",
+      "options": [
+        { "value": "E26", "label": { "en": "E26 (medium, US)", "es": "E26 (mediana, EE.UU.)" } },
+        { "value": "E27", "label": { "en": "E27 (medium, EU)", "es": "E27 (mediana, UE)" } }
+      ],
+      "group": "base", "modes": ["base_converter"],
+      "label": { "en": "Edison Base (B)", "es": "Base Edison (B)" },
+      "tooltip": { "en": "Screw base the converter's male top presents", "es": "Base de rosca que presenta la parte superior macho del convertidor" }
+    },
+    {
+      "id": "bayo", "type": "select", "default": "GU10",
+      "options": [
+        { "value": "GU10", "label": { "en": "GU10 (twist-lock, 10 mm pins)", "es": "GU10 (giro, pines 10 mm)" } },
+        { "value": "B22", "label": { "en": "B22 / BA22d (bayonet)", "es": "B22 / BA22d (bayoneta)" } }
+      ],
+      "group": "base", "modes": ["bayonet_base"],
+      "label": { "en": "Bayonet Standard", "es": "Estándar de Bayoneta" },
+      "tooltip": { "en": "Twist-lock base modelled with real pins", "es": "Base de giro modelada con pines reales" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "thread", "modes": ["screw_shell", "base_converter"], "advanced": true,
+      "label": { "en": "Thread Fit Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Per-side printed-thread gap", "es": "Espacio de rosca impresa por lado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "thread", "modes": ["screw_shell", "base_converter", "bayonet_base"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Shell / skirt wall thickness", "es": "Grosor de pared del casquillo / faldón" }
+    },
+    {
+      "id": "turns", "type": "slider", "default": 3.0, "min": 1.5, "max": 4.0, "step": 0.5,
+      "group": "thread", "modes": ["screw_shell", "base_converter"], "advanced": true,
+      "label": { "en": "Thread Engagement (turns)", "es": "Enroscado (vueltas)" },
+      "tooltip": { "en": "Snapped to a half-integer and capped at 3.5 for a fast, well-conditioned helical sweep", "es": "Ajustado a medio entero y limitado a 3.5 para un barrido helicoidal rápido y estable" }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 12.0, "min": 4.0, "max": 22.0, "step": 0.5,
+      "group": "body", "modes": ["screw_shell", "bayonet_base"],
+      "label": { "en": "Central Bore Ø (mm)", "es": "Ø del Orificio Central (mm)" },
+      "tooltip": { "en": "Central wire / device bore", "es": "Orificio central para cable / dispositivo" }
+    },
+    {
+      "id": "height", "type": "slider", "default": 22.0, "min": 12.0, "max": 40.0, "step": 1,
+      "group": "body", "modes": ["bayonet_base"],
+      "label": { "en": "Puck Height (mm)", "es": "Altura del Disco (mm)" },
+      "tooltip": { "en": "Body height of the bayonet puck", "es": "Altura del cuerpo del disco de bayoneta" }
+    }
+  ],
+  "presets": [
+    { "id": "e26_shell", "mode": "screw_shell", "label": { "en": "E26 Screw Shell", "es": "Casquillo E26" }, "values": { "edison_a": "E26", "bore": 12.0 } },
+    { "id": "e26_to_e27", "mode": "base_converter", "label": { "en": "E26 → E27 Converter", "es": "Convertidor E26 → E27" }, "values": { "edison_a": "E26", "edison_b": "E27" } },
+    { "id": "gu10_base", "mode": "bayonet_base", "label": { "en": "GU10 Twist-Lock Base", "es": "Base GU10" }, "values": { "bayo": "GU10", "height": 22.0 } }
+  ],
+  "constraints": [
+    { "expression": "clearance <= 0.8", "severity": "warning", "message": { "en": "Large clearance loosens the screw fit", "es": "Una holgura grande afloja el ajuste de la rosca" } }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "front", "label": { "en": "Front (Section)", "es": "Frontal (Sección)" }, "position": [0, -140, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": { "base_time": 18, "per_unit": 4, "per_part": 18, "wasm_multiplier": 4, "warning_threshold_seconds": 90 },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "edison_screw_thread",
+        "label": { "en": "Edison Screw Thread", "es": "Rosca Edison" },
+        "geometry_type": "thread",
+        "standard": "IEC 60061 E26 / E27 (7 TPI)",
+        "parameters": ["edison_a", "edison_b", "clearance", "turns"]
+      },
+      {
+        "id": "bayonet_twist_lock",
+        "label": { "en": "Bayonet Twist-Lock", "es": "Bayoneta de Giro" },
+        "geometry_type": "snap",
+        "standard": "GU10 / IEC 60061 B22d",
+        "parameters": ["bayo", "wall"]
+      },
+      {
+        "id": "central_bore",
+        "label": { "en": "Central Bore", "es": "Orificio Central" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["bore"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Bulb bases fragment the world into incompatible fixtures — an E27 lamp will not take an E26 bulb, a GU10 fitting rejects a screw base. A printed screw shell, base converter, or bayonet base lets anyone bridge the base they have to the fixture they own, keeping working bulbs and lamps in service across regions and standards instead of discarding them. (Printed adapters carry no live current — use with the mains fixture's own contacts.)",
+      "es": "Las bases de bombilla fragmentan el mundo en luminarias incompatibles — una lámpara E27 no acepta una bombilla E26, un portalámparas GU10 rechaza una base de rosca. Un casquillo, convertidor o base de bayoneta impresos permiten unir la base que tienes con la luminaria que posees, manteniendo bombillas y lámparas en servicio entre regiones y estándares. (Los adaptadores impresos no conducen corriente — use los contactos propios de la luminaria.)"
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["lighting", "bulb", "socket", "edison", "e26", "e27", "gu10", "bayonet", "thread", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,163 @@
+{
+  "project": {
+    "name": "Compass / Whistle Housing",
+    "slug": "compass-housing",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Housings and EDC bodies for button compasses and emergency whistles. Button compass capsules are sold as sealed liquid-filled buttons in two common diameters — 20 mm and 25 mm — that need a bezel to carry them. One capsule-diameter interface sockets that button into a clip-on bezel, a pealess emergency whistle body, or a pocket EDC storage pod.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Alojamientos y cuerpos EDC para brújulas de botón y silbatos de emergencia. Las cápsulas de brújula de botón se venden como botones sellados llenos de líquido en dos diámetros comunes — 20 mm y 25 mm — que necesitan un bisel para sostenerlas. Una sola interfaz de diámetro de cápsula encaja ese botón en un bisel con clip, un cuerpo de silbato de emergencia sin bolita, o una cápsula de bolsillo EDC.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/compass-housing.webp",
+    "difficulty": "beginner",
+    "tags": ["compass", "whistle", "button-compass", "edc", "survival", "outdoor", "housing", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "compass_housing",
+      "label": { "en": "Compass Bezel + Clip", "es": "Bisel de Brújula + Clip" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["compass_housing"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "whistle_body",
+      "label": { "en": "Emergency Whistle", "es": "Silbato de Emergencia" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["whistle_body"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "edc_capsule",
+      "label": { "en": "EDC Storage Pod", "es": "Cápsula EDC" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["edc_capsule"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "compass_housing", "label": { "en": "Compass Bezel + Clip", "es": "Bisel de Brújula + Clip" }, "render_mode": 0, "color": "#3a5f7d" },
+    { "id": "whistle_body", "label": { "en": "Emergency Whistle", "es": "Silbato de Emergencia" }, "render_mode": 0, "color": "#43708f" },
+    { "id": "edc_capsule", "label": { "en": "EDC Storage Pod", "es": "Cápsula EDC" }, "render_mode": 0, "color": "#4d80a0" }
+  ],
+  "parameter_groups": [
+    { "id": "capsule", "label": { "en": "Compass Capsule & Fit", "es": "Cápsula y Ajuste" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } },
+    { "id": "features", "label": { "en": "Clip & Holes", "es": "Clip y Orificios" } }
+  ],
+  "parameters": [
+    {
+      "id": "cap_d", "type": "slider", "default": 25.0, "min": 14.0, "max": 40.0, "step": 0.5,
+      "group": "capsule", "modes": ["compass_housing", "whistle_body", "edc_capsule"],
+      "label": { "en": "Capsule Diameter (mm)", "es": "Diámetro de Cápsula (mm)" },
+      "tooltip": { "en": "Button compass capsule diameter. Common sizes are 20 mm and 25 mm", "es": "Diámetro de la cápsula de brújula de botón. Los tamaños comunes son 20 mm y 25 mm" }
+    },
+    {
+      "id": "cap_depth", "type": "slider", "default": 9.0, "min": 5.0, "max": 16.0, "step": 0.5,
+      "group": "capsule", "modes": ["compass_housing", "edc_capsule"],
+      "label": { "en": "Capsule Seat Depth (mm)", "es": "Profundidad de Asiento (mm)" },
+      "tooltip": { "en": "How deep the capsule seats into the socket", "es": "Qué tan profundo se asienta la cápsula en el zócalo" }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.3, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "capsule", "modes": ["compass_housing", "edc_capsule"], "advanced": true,
+      "label": { "en": "Press-Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Added to the capsule diameter for a press fit", "es": "Se suma al diámetro de la cápsula para un ajuste a presión" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.5,
+      "group": "body", "modes": ["compass_housing", "whistle_body", "edc_capsule"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and floor thickness", "es": "Grosor de pared y fondo" }
+    },
+    {
+      "id": "store_depth", "type": "slider", "default": 26.0, "min": 12.0, "max": 60.0, "step": 1,
+      "group": "body", "modes": ["edc_capsule"],
+      "label": { "en": "Storage Bore Depth (mm)", "es": "Profundidad de Almacenamiento (mm)" },
+      "tooltip": { "en": "Depth of the storage cavity (tinder, matches, pills)", "es": "Profundidad de la cavidad de almacenamiento (yesca, cerillos, pastillas)" }
+    },
+    {
+      "id": "clip_w", "type": "slider", "default": 26.0, "min": 18.0, "max": 60.0, "step": 1,
+      "group": "features", "modes": ["compass_housing"],
+      "label": { "en": "Clip Mouth Width (mm)", "es": "Ancho de Boca del Clip (mm)" },
+      "tooltip": { "en": "Opening the C-clip springs over (belt, strap, pack edge)", "es": "Abertura sobre la que salta el clip en C (cinturón, correa, borde de mochila)" }
+    },
+    {
+      "id": "lanyard_d", "type": "slider", "default": 5.0, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "features", "modes": ["compass_housing", "whistle_body", "edc_capsule"],
+      "label": { "en": "Lanyard Hole (mm)", "es": "Orificio de Cordón (mm)" },
+      "tooltip": { "en": "Through hole for a lanyard or cord", "es": "Orificio pasante para un cordón" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "twenty_five_bezel", "mode": "compass_housing",
+      "label": { "en": "25 mm Compass Bezel", "es": "Bisel de Brújula 25 mm" },
+      "values": { "cap_d": 25.0, "cap_depth": 9.0, "wall": 3.0, "clip_w": 26.0 }
+    },
+    {
+      "id": "pealess_whistle", "mode": "whistle_body",
+      "label": { "en": "Pealess Whistle", "es": "Silbato Sin Bolita" },
+      "values": { "cap_d": 25.0, "wall": 3.0, "lanyard_d": 5.0 }
+    },
+    {
+      "id": "compass_edc_pod", "mode": "edc_capsule",
+      "label": { "en": "Compass EDC Pod (20 mm)", "es": "Cápsula EDC (20 mm)" },
+      "values": { "cap_d": 20.0, "cap_depth": 8.0, "store_depth": 26.0, "wall": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cap_depth < 20",
+      "severity": "warning",
+      "message": { "en": "Seat depths over ~16 mm exceed most button-compass capsules", "es": "Profundidades de asiento mayores a ~16 mm exceden la mayoría de las cápsulas de brújula de botón" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "compass_capsule_socket",
+        "label": { "en": "Button Compass Socket", "es": "Zócalo de Brújula de Botón" },
+        "geometry_type": "socket",
+        "standard": "20/25mm compass",
+        "parameters": ["cap_d", "cap_depth", "fit"]
+      },
+      {
+        "id": "lanyard_bore",
+        "label": { "en": "Lanyard Bore", "es": "Orificio de Cordón" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["lanyard_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A button compass and a whistle are the two lightest, most reliable navigation and signalling tools in any kit, but the bare capsule needs a bezel and the whistle is a separate purchase. A printable housing sized to the 20 mm / 25 mm capsule standard carries the compass, adds a loud pealess whistle, and turns a lost bezel into a five-minute reprint anywhere.",
+      "es": "Una brújula de botón y un silbato son las dos herramientas de navegación y señalización más ligeras y fiables de cualquier kit, pero la cápsula desnuda necesita un bisel y el silbato es una compra aparte. Un alojamiento imprimible ajustado al estándar de cápsula de 20 mm / 25 mm sostiene la brújula, añade un silbato ruidoso sin bolita y convierte un bisel perdido en una reimpresión de cinco minutos en cualquier lugar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["compass", "whistle", "button-compass", "edc", "survival", "outdoor", "housing", "hyperobject", "commons"]
+}

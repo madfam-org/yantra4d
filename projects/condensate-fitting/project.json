@@ -1,0 +1,295 @@
+{
+    "project": {
+        "name": "Sump / Condensate Fitting",
+        "slug": "condensate-fitting",
+        "version": "1.0.0",
+        "description": {
+            "en": "Fittings for AC condensate, dehumidifier, and sump discharge lines: a barb-to-barb coupler that joins or steps between two tube sizes, a 90-degree barbed elbow, and a barb-to-socket drain adapter. Barbs are sized to real vinyl and poly tube nominal sizes (3/8\", 1/2\", 5/8\", 3/4\") so push-on tubing grips and holds without a clamp, and each fitting prints as a single watertight body with one clean bore through.",
+            "es": "Accesorios para lineas de condensado de aire acondicionado, deshumidificador y descarga de sumidero: un acople de espiga a espiga que une o cambia entre dos tamanos de tubo, un codo de 90 grados con espiga y un adaptador de espiga a boca de drenaje. Las espigas se dimensionan a tamanos nominales reales de tubo de vinilo y poli (3/8\", 1/2\", 5/8\", 3/4\") para que la manguera a presion agarre y sostenga sin abrazadera, y cada accesorio se imprime como un solo cuerpo hermetico con un barreno limpio de paso."
+        },
+        "thumbnail": "/projects/condensate-fitting.webp",
+        "tags": [
+            "hvac",
+            "condensate",
+            "sump",
+            "barb",
+            "fitting",
+            "drain",
+            "plumbing",
+            "hyperobject",
+            "commons"
+        ],
+        "difficulty": "beginner",
+        "hyperobject": {
+            "is_hyperobject": true
+        },
+        "attribution": {
+            "author": "Yantra4D",
+            "license": "CERN-OHL-W-2.0"
+        },
+        "force_backend": true,
+        "engine": "cadquery"
+    },
+    "modes": [
+        {
+            "id": "barb_coupler",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Barb-to-Barb Coupler",
+                "es": "Acople de Espiga a Espiga"
+            },
+            "description": {
+                "en": "A straight coupler with a grip hub and a barbed nozzle on each end, to join two condensate tubes or step between two tube sizes."
+            },
+            "parts": ["barb_coupler"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "barb_elbow",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "90-Degree Barbed Elbow",
+                "es": "Codo de 90 Grados con Espiga"
+            },
+            "description": {
+                "en": "A right-angle elbow swept along a true centerline with a barbed nozzle at each end, to turn a condensate or sump line around a corner."
+            },
+            "parts": ["barb_elbow"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "drain_adapter",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Barb-to-Socket Drain Adapter",
+                "es": "Adaptador de Espiga a Boca de Drenaje"
+            },
+            "description": {
+                "en": "A barb on one end for push-on tube and a slip socket on the other that fits over a larger drain stub, with a shoulder flange between them."
+            },
+            "parts": ["drain_adapter"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "barb_coupler",
+            "label": {
+                "en": "Barb Coupler",
+                "es": "Acople de Espiga"
+            },
+            "default_color": "#b8bcc4"
+        },
+        {
+            "id": "barb_elbow",
+            "label": {
+                "en": "Barbed Elbow",
+                "es": "Codo con Espiga"
+            },
+            "default_color": "#b8bcc4"
+        },
+        {
+            "id": "drain_adapter",
+            "label": {
+                "en": "Drain Adapter",
+                "es": "Adaptador de Drenaje"
+            },
+            "default_color": "#b8bcc4"
+        }
+    ],
+    "parameters": [
+        {
+            "id": "tube_a",
+            "type": "select",
+            "default": "1/2",
+            "options": [
+                { "value": "3/8", "label": "3/8 in (9.53 mm)" },
+                { "value": "1/2", "label": "1/2 in (12.70 mm)" },
+                { "value": "5/8", "label": "5/8 in (15.88 mm)" },
+                { "value": "3/4", "label": "3/4 in (19.05 mm)" }
+            ],
+            "label": {
+                "en": "Tube Size A (barb end)",
+                "es": "Tamano de Tubo A (extremo de espiga)"
+            },
+            "group": "tube"
+        },
+        {
+            "id": "tube_b",
+            "type": "select",
+            "default": "3/8",
+            "options": [
+                { "value": "3/8", "label": "3/8 in (9.53 mm)" },
+                { "value": "1/2", "label": "1/2 in (12.70 mm)" },
+                { "value": "5/8", "label": "5/8 in (15.88 mm)" },
+                { "value": "3/4", "label": "3/4 in (19.05 mm)" }
+            ],
+            "label": {
+                "en": "Tube Size B (other barb end)",
+                "es": "Tamano de Tubo B (otro extremo de espiga)"
+            },
+            "group": "tube"
+        },
+        {
+            "id": "barb_count",
+            "type": "slider",
+            "default": 3,
+            "min": 1,
+            "max": 6,
+            "step": 1,
+            "label": {
+                "en": "Barb Ridge Count",
+                "es": "Numero de Anillos de Espiga"
+            },
+            "tooltip": {
+                "en": "Number of gripping ridges per barb. More ridges hold the tube more firmly.",
+                "es": "Numero de anillos de agarre por espiga. Mas anillos sostienen el tubo con mas firmeza."
+            },
+            "group": "tube"
+        },
+        {
+            "id": "wall",
+            "type": "slider",
+            "default": 2.2,
+            "min": 1.6,
+            "max": 4.0,
+            "step": 0.2,
+            "label": {
+                "en": "Wall Thickness (mm)",
+                "es": "Espesor de Pared (mm)"
+            },
+            "tooltip": {
+                "en": "Fitting wall around the bore. 2.0-2.5 mm prints watertight for low-pressure drainage.",
+                "es": "Pared del accesorio alrededor del barreno. 2.0-2.5 mm imprime hermetico para drenaje de baja presion."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "bend_radius",
+            "type": "slider",
+            "default": 22,
+            "min": 14,
+            "max": 45,
+            "step": 1,
+            "label": {
+                "en": "Elbow Bend Radius (mm)",
+                "es": "Radio del Codo (mm)"
+            },
+            "tooltip": {
+                "en": "Centerline radius of the 90-degree elbow. Larger radii ease flow; only affects the elbow.",
+                "es": "Radio en el eje del codo de 90 grados. Radios mayores facilitan el flujo; solo afecta el codo."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "socket_od",
+            "type": "select",
+            "default": "3/4",
+            "options": [
+                { "value": "1/2", "label": "over 1/2 in stub (12.70 mm)" },
+                { "value": "5/8", "label": "over 5/8 in stub (15.88 mm)" },
+                { "value": "3/4", "label": "over 3/4 in stub (19.05 mm)" }
+            ],
+            "label": {
+                "en": "Drain Stub Size (socket end)",
+                "es": "Tamano del Tocon de Drenaje (extremo de boca)"
+            },
+            "tooltip": {
+                "en": "Outside size of the drain stub the slip socket fits over. Only affects the drain adapter.",
+                "es": "Tamano exterior del tocon de drenaje sobre el que encaja la boca deslizante. Solo afecta el adaptador de drenaje."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "clearance",
+            "type": "slider",
+            "default": 0.4,
+            "min": 0.1,
+            "max": 0.8,
+            "step": 0.05,
+            "label": {
+                "en": "Socket Slip Clearance (mm)",
+                "es": "Holgura de la Boca Deslizante (mm)"
+            },
+            "tooltip": {
+                "en": "Radial gap between the slip socket and the drain stub. Only affects the drain adapter.",
+                "es": "Espacio radial entre la boca deslizante y el tocon de drenaje. Solo afecta el adaptador de drenaje."
+            },
+            "group": "geometry"
+        }
+    ],
+    "parameter_groups": [
+        {
+            "id": "tube",
+            "label": {
+                "en": "Tube & Barbs",
+                "es": "Tubo y Espigas"
+            }
+        },
+        {
+            "id": "geometry",
+            "label": {
+                "en": "Geometry",
+                "es": "Geometria"
+            }
+        }
+    ],
+    "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+    "estimate_constants": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 8,
+        "wasm_multiplier": 3,
+        "warning_threshold_seconds": 50
+    },
+    "hyperobject": {
+        "domain": "infrastructure",
+        "cdg_interfaces": [
+            {
+                "id": "tube_barb",
+                "label": {
+                    "en": "Push-On Tube Barb",
+                    "es": "Espiga de Tubo a Presion"
+                },
+                "geometry_type": "socket",
+                "standard": "3/8-3/4 in tube barb",
+                "parameters": ["tube_a", "tube_b", "barb_count"]
+            },
+            {
+                "id": "drain_slip_socket",
+                "label": {
+                    "en": "Drain Stub Slip Socket",
+                    "es": "Boca Deslizante de Tocon de Drenaje"
+                },
+                "geometry_type": "socket",
+                "standard": "1/2-3/4 in stub slip",
+                "parameters": ["socket_od", "clearance"]
+            }
+        ],
+        "material_awareness": {
+            "shrinkage_compensation": false,
+            "recycled_material_toggle": false,
+            "tolerance_by_material": true
+        },
+        "societal_benefit": {
+            "en": "Keeps AC and dehumidifier condensate flowing where an odd tube size or a corner would otherwise mean a hardware-store run or a kinked line and an overflow, by letting anyone print the exact barb, elbow, or stub adapter their line needs.",
+            "es": "Mantiene el condensado de aire acondicionado y deshumidificador fluyendo donde un tamano de tubo atipico o una esquina significarian una ida a la ferreteria o una linea doblada y un desborde, permitiendo imprimir la espiga, el codo o el adaptador de tocon exacto que necesita la linea."
+        },
+        "commons_license": "CERN-OHL-W-2.0"
+    }
+}

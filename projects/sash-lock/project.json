@@ -1,0 +1,294 @@
+{
+  "project": {
+    "name": "Window / Sash Lock Insert",
+    "slug": "sash-lock",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "description": {
+      "en": "Small window-security inserts that live in the sash channel of a sliding or double-hung window: a cantilever snap catch that clips into the channel, a sash stop / vent limiter that blocks the window past a set opening, and a friction wedge lock that jams the sash shut. Channel-fit dimensions are parametric (an internal reference — sash channels vary by manufacturer).\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Pequeños insertos de seguridad para ventanas que viven en el canal de la hoja de una ventana corrediza o de guillotina: un enganche de resorte en voladizo que se clipa al canal, un tope / limitador de ventilación que bloquea la ventana en una abertura fija, y una cuña de fricción que traba la hoja. Las dimensiones de ajuste al canal son paramétricas (referencia interna — los canales varían por fabricante).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sash-lock.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "sash-lock",
+      "window",
+      "security",
+      "child-safety",
+      "snap-fit",
+      "vent-stop",
+      "wedge",
+      "household",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "snap_catch",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Cantilever Snap Catch",
+        "es": "Enganche de Resorte (Voladizo)"
+      },
+      "description": {
+        "en": "A seating block with a cantilever snap arm that clips into the sash channel: the arm protrudes into free air (so its flex clearance is the surrounding void — no trapped cavity) and a barb hooks over the channel lip. One manifold body."
+      },
+      "parts": ["snap_catch"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "sash_stop",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Sash Stop / Vent Limiter",
+        "es": "Tope / Limitador de Ventilación"
+      },
+      "description": {
+        "en": "A channel-width block with a through pin/screw bore and a raised stop shoulder that blocks the sash from sliding past a set opening — a vent stop for child safety or ventilation."
+      },
+      "parts": ["sash_stop"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "wedge_lock",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Friction Wedge Lock",
+        "es": "Cuña de Fricción"
+      },
+      "description": {
+        "en": "A tapered friction wedge that slides into the sash gap and jams the window shut, with a thumb tab and a lanyard hole. Thin at the leading tip, rising to full height at the tab."
+      },
+      "parts": ["wedge_lock"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 7 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "snap_catch",
+      "label": { "en": "Cantilever Snap Catch", "es": "Enganche de Resorte" },
+      "render_mode": 0,
+      "color": "#7c6f9b"
+    },
+    {
+      "id": "sash_stop",
+      "label": { "en": "Sash Stop", "es": "Tope de Hoja" },
+      "render_mode": 0,
+      "color": "#8f84a8"
+    },
+    {
+      "id": "wedge_lock",
+      "label": { "en": "Friction Wedge", "es": "Cuña de Fricción" },
+      "render_mode": 0,
+      "color": "#655b7f"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "channel_w",
+      "type": "slider",
+      "default": 14.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.1,
+      "group": "fit",
+      "modes": ["snap_catch", "sash_stop", "wedge_lock"],
+      "label": { "en": "Channel Fit Width (mm)", "es": "Ancho de Ajuste al Canal (mm)" },
+      "tooltip": {
+        "en": "Insert width to fit the sash channel. ~14 mm suits common sliding-window channels; measure yours.",
+        "es": "Ancho del inserto para el canal de la hoja. ~14 mm sirve para canales corredizos comunes; mida el suyo."
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "body_len",
+      "type": "slider",
+      "default": 40.0,
+      "min": 24.0,
+      "max": 90.0,
+      "step": 1.0,
+      "group": "fit",
+      "modes": ["snap_catch", "sash_stop", "wedge_lock"],
+      "label": { "en": "Insert Length (mm)", "es": "Largo del Inserto (mm)" },
+      "tooltip": {
+        "en": "Overall insert length along the channel.",
+        "es": "Largo total del inserto a lo largo del canal."
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "body_h",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "fit",
+      "modes": ["snap_catch", "sash_stop", "wedge_lock"],
+      "label": { "en": "Insert Height (mm)", "es": "Alto del Inserto (mm)" },
+      "tooltip": {
+        "en": "Insert height (channel depth). Also sets the full height of the wedge tab.",
+        "es": "Alto del inserto (profundidad del canal). También fija la altura de la pestaña de la cuña."
+      }
+    },
+    {
+      "id": "arm_len",
+      "type": "slider",
+      "default": 22.0,
+      "min": 10.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "snap",
+      "modes": ["snap_catch"],
+      "label": { "en": "Snap Arm Length (mm)", "es": "Largo del Brazo de Resorte (mm)" },
+      "tooltip": {
+        "en": "Cantilever arm length. Longer arms flex more easily (lower insertion force).",
+        "es": "Largo del brazo en voladizo. Brazos más largos flexionan con menos fuerza."
+      }
+    },
+    {
+      "id": "arm_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "snap",
+      "modes": ["snap_catch"],
+      "label": { "en": "Snap Arm Thickness (mm)", "es": "Grosor del Brazo (mm)" },
+      "tooltip": {
+        "en": "Cantilever arm thickness. Thinner arms flex more but fatigue sooner.",
+        "es": "Grosor del brazo en voladizo. Más delgado flexiona más pero se fatiga antes."
+      }
+    },
+    {
+      "id": "snap_clear",
+      "type": "slider",
+      "default": 0.5,
+      "min": 0.3,
+      "max": 1.5,
+      "step": 0.05,
+      "group": "snap",
+      "modes": ["snap_catch"],
+      "label": { "en": "Flex Clearance (mm)", "es": "Holgura de Flexión (mm)" },
+      "tooltip": {
+        "en": "Design flex clearance for the cantilever (documented in the arm sizing).",
+        "es": "Holgura de flexión de diseño para el voladizo (documentada en el dimensionado del brazo)."
+      }
+    },
+    {
+      "id": "barb",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.6,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "snap",
+      "modes": ["snap_catch"],
+      "label": { "en": "Barb Undercut (mm)", "es": "Enganche del Diente (mm)" },
+      "tooltip": {
+        "en": "Hook engagement behind the channel lip. Larger barbs hold harder but resist removal more.",
+        "es": "Enganche del diente tras el labio del canal. Dientes mayores sujetan más pero cuesta más retirarlos."
+      }
+    },
+    {
+      "id": "pin_d",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "mount",
+      "modes": ["snap_catch", "sash_stop", "wedge_lock"],
+      "label": { "en": "Pin / Screw Bore (mm)", "es": "Perforación de Pin / Tornillo (mm)" },
+      "tooltip": {
+        "en": "Through pin/screw bore for the stop (and the snap seat); also sizes the wedge lanyard hole.",
+        "es": "Perforación pasante para el tope (y el asiento del enganche); también dimensiona el agujero del cordón de la cuña."
+      }
+    },
+    {
+      "id": "wedge_rise",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "wedge",
+      "modes": ["wedge_lock"],
+      "label": { "en": "Wedge Taper Rise (mm)", "es": "Elevación de la Cuña (mm)" },
+      "tooltip": {
+        "en": "How much the wedge rises from its leading tip to full height — the jamming taper.",
+        "es": "Cuánto se eleva la cuña desde su punta hasta la altura total — el ahusamiento de traba."
+      }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "fit", "label": { "en": "Channel Fit", "es": "Ajuste al Canal" } },
+    { "id": "snap", "label": { "en": "Cantilever Snap", "es": "Resorte en Voladizo" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } },
+    { "id": "wedge", "label": { "en": "Wedge", "es": "Cuña" } }
+  ],
+  "presets": [
+    {
+      "id": "snap_std",
+      "label": { "en": "Standard Snap Catch", "es": "Enganche Estándar" },
+      "values": { "channel_w": 14.0, "body_len": 40.0, "body_h": 12.0, "arm_len": 22.0, "arm_t": 2.4, "barb": 1.2 }
+    },
+    {
+      "id": "vent_stop",
+      "label": { "en": "Child-Safety Vent Stop", "es": "Tope de Ventilación Infantil" },
+      "values": { "channel_w": 14.0, "body_len": 40.0, "body_h": 14.0, "pin_d": 4.2 }
+    },
+    {
+      "id": "wedge_std",
+      "label": { "en": "Friction Wedge Lock", "es": "Cuña de Fricción" },
+      "values": { "channel_w": 16.0, "body_len": 45.0, "body_h": 12.0, "wedge_rise": 6.0 }
+    }
+  ],
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "sash_channel_catch",
+        "label": { "en": "Sash Channel + Catch", "es": "Canal de la Hoja + Enganche" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["channel_w", "arm_t", "barb"]
+      },
+      {
+        "id": "sash_stop_pin",
+        "label": { "en": "Sash Stop Pin", "es": "Pin del Tope de Hoja" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["pin_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Window sash locks and vent stops are frequently lost or broken, and replacements are hard to source for older or imported windows — leaving windows insecure or unable to be safely vented around children. A parametric insert lets anyone refit a window with a snap catch, a child-safety vent stop, or a friction wedge, restoring both security and safe ventilation cheaply.",
+      "es": "Los seguros y topes de ventana se pierden o rompen con frecuencia, y los repuestos son difíciles de conseguir para ventanas antiguas o importadas — dejando ventanas inseguras o imposibles de ventilar con niños. Un inserto paramétrico permite reacondicionar una ventana con enganche, tope de ventilación infantil o cuña de fricción."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

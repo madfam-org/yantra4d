@@ -1,0 +1,454 @@
+{
+  "project": {
+    "name": "Padlock Hasp & Shackle Guard",
+    "slug": "hasp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "description": {
+      "en": "The hardware that turns a padlock into a door or lid latch: a hinged hasp strap, the staple loop its slot drops over, and a shrouded guard that shields the padlock shackle from bolt-cutters. Modelled on the 4 in (100 mm) safety-pattern hasp family.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "El herraje que convierte un candado en un pestillo para puerta o tapa: una portezuela (hasp) con bisagra, el grillete (staple) por donde cae su ranura, y un guardián que protege el arco del candado de las cizallas. Basado en la familia de hasp de patrón de seguridad de 4 in (100 mm).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hasp.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "hasp",
+      "padlock",
+      "staple",
+      "shackle-guard",
+      "latch",
+      "security",
+      "gate",
+      "shed",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "safety_hasp",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Safety Hasp Strap",
+        "es": "Portezuela de Seguridad"
+      },
+      "description": {
+        "en": "The swinging hasp strap: a flat arm with a hinge barrel at one end and a staple slot at the other, plus countersunk screws behind the hinge (covered by the leaf when closed — the safety pattern)."
+      },
+      "parts": [
+        "safety_hasp"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 9
+      }
+    },
+    {
+      "id": "staple",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Staple Loop",
+        "es": "Grillete (Staple)"
+      },
+      "description": {
+        "en": "The staple loop the hasp slot drops over: a raised loop bar on a bolt-down base with a window the padlock shackle passes through, and two fixing screws."
+      },
+      "parts": [
+        "staple"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "shackle_guard",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "label": {
+        "en": "Shackle Guard Shroud",
+        "es": "Guardián de Arco"
+      },
+      "description": {
+        "en": "A U-shaped shroud that walls three sides of the padlock so bolt-cutters cannot reach the shackle, with a shackle-diameter slot in the front lip and a four-screw base."
+      },
+      "parts": [
+        "shackle_guard"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 2,
+        "per_part": 11
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "safety_hasp",
+      "label": {
+        "en": "Safety Hasp Strap",
+        "es": "Portezuela de Seguridad"
+      },
+      "render_mode": 0,
+      "color": "#94a3b8"
+    },
+    {
+      "id": "staple",
+      "label": {
+        "en": "Staple Loop",
+        "es": "Grillete"
+      },
+      "render_mode": 0,
+      "color": "#78889c"
+    },
+    {
+      "id": "shackle_guard",
+      "label": {
+        "en": "Shackle Guard",
+        "es": "Guardián de Arco"
+      },
+      "render_mode": 0,
+      "color": "#5b6a7e"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strap_len",
+      "type": "slider",
+      "default": 100.0,
+      "min": 50.0,
+      "max": 200.0,
+      "step": 1.0,
+      "group": "body",
+      "modes": [
+        "safety_hasp",
+        "shackle_guard"
+      ],
+      "label": {
+        "en": "Strap Length (mm)",
+        "es": "Largo de la Portezuela (mm)"
+      },
+      "tooltip": {
+        "en": "Hasp strap length. The 4 in safety-pattern hasp is ~100 mm.",
+        "es": "Largo de la portezuela. El hasp de patrón de seguridad de 4 in es ~100 mm."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "strap_w",
+      "type": "slider",
+      "default": 38.0,
+      "min": 20.0,
+      "max": 80.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "safety_hasp",
+        "staple",
+        "shackle_guard"
+      ],
+      "label": {
+        "en": "Strap / Base Width (mm)",
+        "es": "Ancho de Portezuela / Base (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the strap and bases. The 4 in safety hasp is ~38 mm wide.",
+        "es": "Ancho de la portezuela y las bases. El hasp de 4 in es de ~38 mm."
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "body",
+      "modes": [
+        "safety_hasp",
+        "staple",
+        "shackle_guard"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Plate thickness for the strap and bases.",
+        "es": "Grosor de la placa para la portezuela y las bases."
+      }
+    },
+    {
+      "id": "shackle_d",
+      "type": "slider",
+      "default": 9.0,
+      "min": 5.0,
+      "max": 20.0,
+      "step": 0.1,
+      "group": "shackle",
+      "modes": [
+        "safety_hasp",
+        "staple",
+        "shackle_guard"
+      ],
+      "label": {
+        "en": "Shackle Ø (mm)",
+        "es": "Ø del Arco (mm)"
+      },
+      "tooltip": {
+        "en": "Padlock shackle diameter. A 40-50 mm padlock uses an ~8-10 mm shackle.",
+        "es": "Diámetro del arco del candado. Un candado de 40-50 mm usa un arco de ~8-10 mm."
+      }
+    },
+    {
+      "id": "staple_bar",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.1,
+      "group": "shackle",
+      "modes": [
+        "safety_hasp",
+        "staple"
+      ],
+      "label": {
+        "en": "Staple Bar (mm)",
+        "es": "Barra del Grillete (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the staple loop bar (and the hasp slot sized to clear it).",
+        "es": "Grosor de la barra del grillete (y la ranura de la portezuela dimensionada a su medida)."
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "screws",
+      "modes": [
+        "safety_hasp",
+        "staple",
+        "shackle_guard"
+      ],
+      "label": {
+        "en": "Screw Shank (mm)",
+        "es": "Vástago de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Fixing-screw shank clearance (No.8 / M4 ~4.2 mm).",
+        "es": "Holgura del vástago del tornillo de fijación (No.8 / M4 ~4.2 mm)."
+      }
+    },
+    {
+      "id": "screw_head_d",
+      "type": "slider",
+      "default": 8.4,
+      "min": 5.0,
+      "max": 14.0,
+      "step": 0.1,
+      "group": "screws",
+      "modes": [
+        "safety_hasp",
+        "staple",
+        "shackle_guard"
+      ],
+      "label": {
+        "en": "Countersink Head (mm)",
+        "es": "Cabeza Avellanada (mm)"
+      },
+      "tooltip": {
+        "en": "Countersink diameter for a flush flat-head screw.",
+        "es": "Diámetro del avellanado para un tornillo de cabeza plana a ras."
+      }
+    },
+    {
+      "id": "hinge_d",
+      "type": "slider",
+      "default": 8.0,
+      "min": 6.0,
+      "max": 20.0,
+      "step": 0.1,
+      "group": "hinge",
+      "modes": [
+        "safety_hasp"
+      ],
+      "label": {
+        "en": "Hinge Barrel Ø (mm)",
+        "es": "Ø del Barril de Bisagra (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the hinge knuckle barrel at the strap's near end.",
+        "es": "Diámetro exterior del barril de la bisagra en el extremo cercano de la portezuela."
+      }
+    },
+    {
+      "id": "pin_d",
+      "type": "slider",
+      "default": 3.2,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "hinge",
+      "modes": [
+        "safety_hasp"
+      ],
+      "label": {
+        "en": "Hinge Pin Ø (mm)",
+        "es": "Ø del Pasador (mm)"
+      },
+      "tooltip": {
+        "en": "Hinge pin bore through the barrel.",
+        "es": "Perforación del pasador a través del barril de la bisagra."
+      }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "body",
+      "label": {
+        "en": "Strap / Base",
+        "es": "Portezuela / Base"
+      }
+    },
+    {
+      "id": "shackle",
+      "label": {
+        "en": "Shackle & Staple",
+        "es": "Arco y Grillete"
+      }
+    },
+    {
+      "id": "screws",
+      "label": {
+        "en": "Fixing Screws",
+        "es": "Tornillos de Fijación"
+      }
+    },
+    {
+      "id": "hinge",
+      "label": {
+        "en": "Hinge",
+        "es": "Bisagra"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "safety_100",
+      "label": {
+        "en": "4 in Safety Hasp",
+        "es": "Hasp de Seguridad 4 in"
+      },
+      "values": {
+        "strap_len": 100.0,
+        "strap_w": 38.0,
+        "plate_t": 4.0,
+        "shackle_d": 9.0,
+        "staple_bar": 8.0
+      }
+    },
+    {
+      "id": "staple_std",
+      "label": {
+        "en": "Standard Staple Loop",
+        "es": "Grillete Estándar"
+      },
+      "values": {
+        "strap_w": 38.0,
+        "plate_t": 4.0,
+        "shackle_d": 9.0,
+        "staple_bar": 8.0
+      }
+    },
+    {
+      "id": "guard_hd",
+      "label": {
+        "en": "Heavy Shackle Guard",
+        "es": "Guardián de Arco Reforzado"
+      },
+      "values": {
+        "strap_len": 110.0,
+        "strap_w": 46.0,
+        "plate_t": 5.0,
+        "shackle_d": 11.0
+      }
+    }
+  ],
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "shackle_staple",
+        "label": {
+          "en": "Shackle Ø + Staple",
+          "es": "Ø del Arco + Grillete"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "shackle_d",
+          "staple_bar"
+        ]
+      },
+      {
+        "id": "hasp_screw_pattern",
+        "label": {
+          "en": "Hasp Fixing Pattern",
+          "es": "Patrón de Fijación del Hasp"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "4 in safety-pattern hasp (No.8/M4 screws)",
+        "parameters": [
+          "strap_w",
+          "screw_d"
+        ],
+        "compatible_with": [
+          "bottle-bracket",
+          "dryer-holster",
+          "toiletry-holder"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A hasp plus any padlock is the most accessible lock there is, but a printed hasp lets people secure sheds, gates, tool chests, animal enclosures and disaster-relief storage where buying hardware is impractical. The shackle guard adds bolt-cutter resistance the cheapest commercial hasps lack, raising security for those who cannot afford a hardened lock.",
+      "es": "Un hasp más cualquier candado es el cierre más accesible que existe, y uno impreso permite asegurar cobertizos, portones, cajas de herramientas, corrales y almacenes de ayuda humanitaria donde comprar herrajes es poco práctico. El guardián de arco añade resistencia a las cizallas que los hasp comerciales más baratos no tienen."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 9,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

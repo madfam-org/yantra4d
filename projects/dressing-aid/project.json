@@ -1,0 +1,163 @@
+{
+  "project": {
+    "name": "Reacher / Button-Hook Dressing Aid",
+    "slug": "dressing-aid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Dressing aids that let a user fasten and reach clothing with limited hand function. A button hook catches a button through its buttonhole and pulls it through; a zipper-pull hook snags a zipper tab so a jacket can be closed one-handed; a reacher hook grabs a waistband, sock, or dropped item. Each is a printed hook on an enlarged, easy-to-grip handle. Fit is user-specific — consult an OT on hook size and handle shape.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Ayudas para vestirse que permiten a un usuario abrochar y alcanzar la ropa con función manual limitada. Un abrochador de botones engancha un botón a través del ojal y lo pasa; un gancho de cremallera atrapa el tirador para cerrar una chaqueta con una sola mano; un gancho alcanzador agarra una cintura, un calcetín o un objeto caído. Cada uno es un gancho impreso sobre un mango engrosado y fácil de sujetar. El ajuste es específico del usuario — consulte a un terapeuta ocupacional sobre el tamaño del gancho y la forma del mango.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/dressing-aid.webp",
+    "difficulty": "beginner",
+    "tags": ["dressing-aid", "button-hook", "reacher", "zipper", "accessibility", "assistive", "adaptive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "button_hook",
+      "label": { "en": "Button Hook", "es": "Abrochador de Botones" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["button_hook"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "zipper_hook",
+      "label": { "en": "Zipper Hook", "es": "Gancho de Cremallera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["zipper_hook"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    },
+    {
+      "id": "reacher_hook",
+      "label": { "en": "Reacher Hook", "es": "Gancho Alcanzador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["reacher_hook"],
+      "estimate": { "base_time": 12, "per_unit": 2, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "button_hook", "label": { "en": "Button Hook", "es": "Abrochador de Botones" }, "render_mode": 0, "color": "#8f5f4a" },
+    { "id": "zipper_hook", "label": { "en": "Zipper Hook", "es": "Gancho de Cremallera" }, "render_mode": 0, "color": "#a0705f" },
+    { "id": "reacher_hook", "label": { "en": "Reacher Hook", "es": "Gancho Alcanzador" }, "render_mode": 0, "color": "#b18173" }
+  ],
+  "parameter_groups": [
+    { "id": "handle", "label": { "en": "Handle", "es": "Mango" } },
+    { "id": "hook", "label": { "en": "Hook", "es": "Gancho" } }
+  ],
+  "parameters": [
+    {
+      "id": "handle_len", "type": "slider", "default": 100.0, "min": 50.0, "max": 180.0, "step": 1.0,
+      "group": "handle", "modes": ["button_hook", "zipper_hook", "reacher_hook"],
+      "label": { "en": "Handle Length (mm)", "es": "Longitud del Mango (mm)" },
+      "tooltip": { "en": "Length of the grip handle", "es": "Longitud del mango de agarre" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "handle_dia", "type": "slider", "default": 28.0, "min": 16.0, "max": 45.0, "step": 1.0,
+      "group": "handle", "modes": ["button_hook", "zipper_hook", "reacher_hook"],
+      "label": { "en": "Handle Diameter (mm)", "es": "Diámetro del Mango (mm)" },
+      "tooltip": { "en": "Diameter of the enlarged grip (bigger = easier to hold)", "es": "Diámetro del agarre engrosado (mayor = más fácil de sujetar)" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "loop_dia", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "handle", "modes": ["button_hook", "zipper_hook", "reacher_hook"], "advanced": true,
+      "label": { "en": "Finger Loop (mm)", "es": "Bucle para Dedo (mm)" },
+      "tooltip": { "en": "Opening of the finger loop near the handle end", "es": "Apertura del bucle para el dedo cerca del extremo del mango" }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "hook", "modes": ["button_hook", "zipper_hook", "reacher_hook"],
+      "label": { "en": "Hook Thickness (mm)", "es": "Grosor del Gancho (mm)" },
+      "tooltip": { "en": "Stock thickness of the hook and neck (strength)", "es": "Grosor del material del gancho y el cuello (resistencia)" }
+    },
+    {
+      "id": "hook_r", "type": "slider", "default": 9.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "hook", "modes": ["button_hook", "reacher_hook"],
+      "label": { "en": "Hook Radius (mm)", "es": "Radio del Gancho (mm)" },
+      "tooltip": { "en": "Inner radius of the hook curl", "es": "Radio interior de la curva del gancho" }
+    },
+    {
+      "id": "hook_open", "type": "slider", "default": 7.0, "min": 3.0, "max": 40.0, "step": 0.5,
+      "group": "hook", "modes": ["button_hook", "zipper_hook", "reacher_hook"], "advanced": true,
+      "label": { "en": "Hook Mouth (mm)", "es": "Boca del Gancho (mm)" },
+      "tooltip": { "en": "Opening the hook can slip over (button / tab / cloth)", "es": "Apertura sobre la que el gancho puede deslizarse (botón / tirador / tela)" }
+    },
+    {
+      "id": "reach", "type": "slider", "default": 45.0, "min": 15.0, "max": 160.0, "step": 1.0,
+      "group": "hook", "modes": ["button_hook", "zipper_hook", "reacher_hook"],
+      "label": { "en": "Reach / Neck Length (mm)", "es": "Alcance / Longitud del Cuello (mm)" },
+      "tooltip": { "en": "Distance from handle to the hook", "es": "Distancia del mango al gancho" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_button", "mode": "button_hook",
+      "label": { "en": "Standard Button Hook", "es": "Abrochador de Botones Estándar" },
+      "values": { "handle_len": 100, "handle_dia": 28, "thick": 6, "hook_r": 9, "hook_open": 7, "reach": 45 }
+    },
+    {
+      "id": "jacket_zip", "mode": "zipper_hook",
+      "label": { "en": "Jacket Zipper Hook", "es": "Gancho de Cremallera de Chaqueta" },
+      "values": { "handle_len": 85, "handle_dia": 28, "thick": 5, "hook_open": 5, "reach": 40 }
+    },
+    {
+      "id": "sock_reacher", "mode": "reacher_hook",
+      "label": { "en": "Sock / Waistband Reacher", "es": "Alcanzador de Calcetines / Cintura" },
+      "values": { "handle_len": 120, "handle_dia": 30, "thick": 7, "hook_r": 16, "hook_open": 12, "reach": 90 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "loop_dia <= handle_dia - 6",
+      "severity": "warning",
+      "message": { "en": "Finger loop too large for the handle wall; reduce it", "es": "El bucle para el dedo es demasiado grande para la pared del mango; redúzcalo" }
+    },
+    {
+      "expression": "thick >= 3",
+      "severity": "warning",
+      "message": { "en": "A thin hook may bend or snap under load", "es": "Un gancho delgado puede doblarse o romperse bajo carga" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 2, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "hook_handle_profile",
+        "label": { "en": "Hook + Handle Profile", "es": "Perfil de Gancho + Mango" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["hook_r", "hook_open", "thick", "reach"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Buttoning a shirt, closing a jacket, and pulling on socks are private, daily acts of independence that stroke, arthritis, a single working hand, or limited reach can quietly end — often forcing a wait for a carer. Printed dressing aids sized to the user's hand and clothing restore self-dressing at near-zero cost, and can be re-shaped and reprinted as ability changes, keeping a basic dignity in the user's own hands.",
+      "es": "Abrochar una camisa, cerrar una chaqueta y ponerse los calcetines son actos privados y diarios de independencia que un derrame, la artritis, una sola mano funcional o un alcance limitado pueden terminar silenciosamente — a menudo obligando a esperar a un cuidador. Las ayudas para vestirse impresas, dimensionadas a la mano y la ropa del usuario, restauran el vestirse solo a un costo casi nulo, y pueden rediseñarse y reimprimirse conforme cambia la capacidad, manteniendo una dignidad básica en manos del propio usuario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["dressing-aid", "button-hook", "reacher", "zipper", "accessibility", "assistive", "adaptive", "medical", "hyperobject", "commons"]
+}

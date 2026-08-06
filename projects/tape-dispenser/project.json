@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Label / Tape Dispenser",
+    "slug": "tape-dispenser",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A tape / label-roll dispenser parametric on the roll's core inner diameter. The roll slips over a printed spindle sized to the core. Choose a free-spin two-wall holder, a desktop dispenser with a saw-tooth tear edge, or a wall bracket with a single cantilevered spindle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un dispensador de cinta / rollos de etiquetas parametrizado según el diámetro interior del núcleo del rollo. El rollo se desliza sobre un eje impreso dimensionado al núcleo. Elige un soporte de dos paredes de giro libre, un dispensador de escritorio con borde dentado para cortar, o un soporte de pared con un solo eje en voladizo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tape-dispenser.webp",
+    "difficulty": "beginner",
+    "tags": ["tape", "label", "dispenser", "roll", "spindle", "office", "desk", "core", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "roll_holder",
+      "label": { "en": "Free-Spin Roll Holder", "es": "Soporte de Rollo Giratorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["roll_holder"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "desk_dispenser",
+      "label": { "en": "Desk Tear Dispenser", "es": "Dispensador de Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["desk_dispenser"],
+      "estimate": { "base_time": 14, "per_unit": 5, "per_part": 16 }
+    },
+    {
+      "id": "wall_spindle",
+      "label": { "en": "Wall Spindle Bracket", "es": "Soporte de Eje de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_spindle"],
+      "estimate": { "base_time": 11, "per_unit": 4, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "roll_holder", "label": { "en": "Free-Spin Roll Holder", "es": "Soporte Giratorio" }, "render_mode": 0, "color": "#b7791f" },
+    { "id": "desk_dispenser", "label": { "en": "Desk Tear Dispenser", "es": "Dispensador de Escritorio" }, "render_mode": 0, "color": "#d69e2e" },
+    { "id": "wall_spindle", "label": { "en": "Wall Spindle Bracket", "es": "Soporte de Eje de Pared" }, "render_mode": 0, "color": "#ecc94b" }
+  ],
+  "parameter_groups": [
+    { "id": "roll", "label": { "en": "Roll Dimensions", "es": "Dimensiones del Rollo" } },
+    { "id": "form", "label": { "en": "Dispenser Form", "es": "Forma del Dispensador" } },
+    { "id": "walls", "label": { "en": "Walls", "es": "Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "core_dia", "type": "slider", "default": 25.4, "min": 10.0, "max": 120.0, "step": 0.2,
+      "group": "roll", "modes": ["roll_holder", "desk_dispenser", "wall_spindle"],
+      "label": { "en": "Roll Core Inner Ø (mm)", "es": "Ø Interior del Núcleo (mm)" },
+      "tooltip": { "en": "Inner diameter of the roll core. Office tape = 1 in = 25.4 mm; big packing tape = 3 in = 76.2 mm.", "es": "Diámetro interior del núcleo del rollo. Cinta de oficina = 1 pulg = 25.4 mm; cinta de embalar grande = 3 pulg = 76.2 mm." }
+    },
+    {
+      "id": "roll_w", "type": "slider", "default": 25.0, "min": 6.0, "max": 120.0, "step": 1.0,
+      "group": "roll", "modes": ["roll_holder", "desk_dispenser", "wall_spindle"],
+      "label": { "en": "Roll Width (mm)", "es": "Ancho del Rollo (mm)" },
+      "tooltip": { "en": "Width of the roll along the spindle", "es": "Ancho del rollo a lo largo del eje" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "roll_od", "type": "slider", "default": 75.0, "min": 20.0, "max": 200.0, "step": 1.0,
+      "group": "roll", "modes": ["roll_holder", "desk_dispenser", "wall_spindle"],
+      "label": { "en": "Roll Outer Ø (mm)", "es": "Ø Exterior del Rollo (mm)" },
+      "tooltip": { "en": "Outer diameter of a full roll (sets how tall the walls stand so the roll clears the base)", "es": "Diámetro exterior de un rollo lleno (determina la altura de las paredes para que el rollo libre la base)" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.8, "min": 0.2, "max": 3.0, "step": 0.1,
+      "group": "roll", "modes": ["roll_holder", "desk_dispenser", "wall_spindle"],
+      "label": { "en": "Spindle Clearance (mm)", "es": "Holgura del Eje (mm)" },
+      "tooltip": { "en": "Gap under the core so the roll spins freely; spindle Ø = core Ø − clearance", "es": "Holgura bajo el núcleo para que el rollo gire libremente; Ø del eje = Ø del núcleo − holgura" }
+    },
+    {
+      "id": "base_len", "type": "slider", "default": 90.0, "min": 40.0, "max": 260.0, "step": 1.0,
+      "group": "form", "modes": ["roll_holder", "desk_dispenser"],
+      "label": { "en": "Base Length (mm)", "es": "Longitud de la Base (mm)" },
+      "tooltip": { "en": "Front-to-back length of the base (longer = more stable, room for a tear ramp)", "es": "Longitud de adelante hacia atrás de la base (más larga = más estable, espacio para la rampa de corte)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "blade_ramp", "type": "slider", "default": 30.0, "min": 12.0, "max": 80.0, "step": 1.0,
+      "group": "form", "modes": ["desk_dispenser"],
+      "label": { "en": "Tear Ramp Length (mm)", "es": "Longitud de la Rampa de Corte (mm)" },
+      "tooltip": { "en": "Length of the forward ramp leading to the tear teeth", "es": "Longitud de la rampa delantera que lleva a los dientes de corte" }
+    },
+    {
+      "id": "teeth", "type": "slider", "default": 9, "min": 3, "max": 30, "step": 1,
+      "group": "form", "modes": ["desk_dispenser"],
+      "label": { "en": "Tear Teeth", "es": "Dientes de Corte" },
+      "tooltip": { "en": "Number of saw teeth on the cutting edge", "es": "Número de dientes de sierra en el borde de corte" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "form", "modes": ["wall_spindle"],
+      "label": { "en": "Screw Clearance Ø (mm)", "es": "Ø de Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Diameter of the wall-mount screw holes", "es": "Diámetro de los orificios para tornillos de pared" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 12.0, "step": 0.5,
+      "group": "walls", "modes": ["roll_holder", "desk_dispenser", "wall_spindle"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Base, upright, and plate thickness", "es": "Grosor de base, pared vertical y placa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "office_tape", "mode": "roll_holder",
+      "label": { "en": "Office Tape (1 in core)", "es": "Cinta de Oficina (núcleo 1 pulg)" },
+      "values": { "core_dia": 25.4, "roll_w": 25, "roll_od": 75 }
+    },
+    {
+      "id": "desk_tape_dispenser", "mode": "desk_dispenser",
+      "label": { "en": "Desk Tape Dispenser", "es": "Dispensador de Cinta de Escritorio" },
+      "values": { "core_dia": 25.4, "roll_w": 19, "teeth": 11, "blade_ramp": 30 }
+    },
+    {
+      "id": "packing_tape_wall", "mode": "wall_spindle",
+      "label": { "en": "Packing Tape (3 in core)", "es": "Cinta de Embalar (núcleo 3 pulg)" },
+      "values": { "core_dia": 76.2, "roll_w": 48, "roll_od": 120, "screw_dia": 4.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "roll_od >= core_dia + 8",
+      "severity": "warning",
+      "message": { "en": "Roll outer Ø should exceed the core by a wrap of tape", "es": "El Ø exterior del rollo debe superar el núcleo por una vuelta de cinta" }
+    },
+    {
+      "expression": "clearance < core_dia / 4",
+      "severity": "error",
+      "message": { "en": "Clearance too large — the spindle would be flimsy", "es": "Holgura demasiado grande — el eje quedaría endeble" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [150, 150, 130] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [220, 0, 60] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "roll_core_socket",
+        "label": { "en": "Roll Core Spindle Socket", "es": "Alojamiento del Núcleo del Rollo" },
+        "geometry_type": "socket",
+        "standard": "tape core",
+        "parameters": ["core_dia", "clearance", "roll_w"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A dispenser sized to the exact roll core turns a bare tape roll into a one-handed desktop dispenser, and the wall spindle keeps big packing-tape and label rolls off the bench — printed to fit 1-inch or 3-inch cores rather than buying a separate dispenser for each roll size.",
+      "es": "Un dispensador dimensionado al núcleo exacto convierte un rollo de cinta desnudo en un dispensador de escritorio de una mano, y el eje de pared mantiene los rollos grandes de cinta de embalar y etiquetas fuera de la mesa — impreso para ajustarse a núcleos de 1 o 3 pulgadas en lugar de comprar un dispensador separado para cada tamaño de rollo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

@@ -1,0 +1,560 @@
+{
+  "project": {
+    "name": "15mm Rod Rig Clamp",
+    "slug": "rod-rig-clamp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The backbone of a cinema camera rig: the 15 mm LWS rod clamp. Rails run on 15 mm rods spaced 60 mm centre-to-centre; matte boxes, follow-focus, monitors and cages all clamp to them. Build a single-rod clamp with an accessory face, a dual-rod bridge spanning two rods at 60 mm, or a riser clamp that lifts an accessory above the rails.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La columna vertebral de un equipo de cámara de cine: la abrazadera de varilla LWS de 15 mm. Los rieles corren sobre varillas de 15 mm separadas 60 mm de centro a centro; mattes, follow-focus, monitores y jaulas se sujetan a ellas. Genera una abrazadera de una varilla con cara de accesorio, un puente de dos varillas a 60 mm, o una abrazadera elevadora.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/rod-rig-clamp.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "rod",
+      "15mm",
+      "lws",
+      "cinema",
+      "rig",
+      "clamp",
+      "rail",
+      "matte-box",
+      "follow-focus",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "single_clamp",
+      "label": {
+        "en": "Single Rod Clamp",
+        "es": "Abrazadera de una Varilla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "single_clamp"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "dual_rod_bridge",
+      "label": {
+        "en": "Dual Rod Bridge (60mm)",
+        "es": "Puente de Dos Varillas (60mm)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "dual_rod_bridge"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "riser_clamp",
+      "label": {
+        "en": "Riser Clamp",
+        "es": "Abrazadera Elevadora"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "riser_clamp"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "single_clamp",
+      "label": {
+        "en": "Single Clamp",
+        "es": "Abrazadera Simple"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "dual_rod_bridge",
+      "label": {
+        "en": "Dual Rod Bridge",
+        "es": "Puente Doble"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "riser_clamp",
+      "label": {
+        "en": "Riser Clamp",
+        "es": "Elevadora"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "rod",
+      "label": {
+        "en": "15mm Rod",
+        "es": "Varilla de 15mm"
+      }
+    },
+    {
+      "id": "clamp",
+      "label": {
+        "en": "Clamp Body",
+        "es": "Cuerpo de Abrazadera"
+      }
+    },
+    {
+      "id": "accessory",
+      "label": {
+        "en": "Accessory Face",
+        "es": "Cara de Accesorio"
+      }
+    },
+    {
+      "id": "riser",
+      "label": {
+        "en": "Riser",
+        "es": "Elevador"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "rod_d",
+      "type": "slider",
+      "default": 15.0,
+      "min": 6.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "rod",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "label": {
+        "en": "Rod Diameter (mm)",
+        "es": "Diámetro de Varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Rod bore diameter. LWS cinema standard is 15 mm",
+        "es": "Diámetro del alojamiento de la varilla. El estándar de cine LWS es 15 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "rod_clear",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.1,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "rod",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Rod Clearance (mm)",
+        "es": "Holgura de Varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap over the rod for a sliding clamp fit",
+        "es": "Espacio por lado sobre la varilla para un ajuste deslizante"
+      }
+    },
+    {
+      "id": "rod_spacing",
+      "type": "slider",
+      "default": 60.0,
+      "min": 20.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "rod",
+      "modes": [
+        "dual_rod_bridge"
+      ],
+      "label": {
+        "en": "Rod Spacing (mm)",
+        "es": "Separación de Varillas (mm)"
+      },
+      "tooltip": {
+        "en": "Centre-to-centre rod spacing. LWS 15 mm standard is 60 mm",
+        "es": "Separación de varillas centro a centro. El estándar LWS 15 mm es 60 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "body_th",
+      "type": "slider",
+      "default": 20.0,
+      "min": 8.0,
+      "max": 50.0,
+      "step": 1,
+      "group": "clamp",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "label": {
+        "en": "Clamp Length (mm)",
+        "es": "Longitud de Abrazadera (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the clamp block along the rod (Y)",
+        "es": "Longitud del bloque de abrazadera a lo largo de la varilla (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 15.0,
+      "step": 0.5,
+      "group": "clamp",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "label": {
+        "en": "Bore Wall (mm)",
+        "es": "Pared del Alojamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Material thickness around the rod bore",
+        "es": "Grosor de material alrededor del alojamiento de la varilla"
+      }
+    },
+    {
+      "id": "clamp_bolt_d",
+      "type": "slider",
+      "default": 5.2,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "clamp",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Pinch Bolt Hole (mm)",
+        "es": "Orificio del Perno de Apriete (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance for the pinch bolt that squeezes the slit (M5 ~5.2 mm)",
+        "es": "Holgura para el perno que aprieta la ranura (M5 ~5.2 mm)"
+      }
+    },
+    {
+      "id": "slit_w",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.8,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "clamp",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Pinch Slit Width (mm)",
+        "es": "Ancho de Ranura de Apriete (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the flex slit that lets the jaws close on the rod",
+        "es": "Ancho de la ranura flexible que permite a las mordazas cerrar sobre la varilla"
+      }
+    },
+    {
+      "id": "face_th",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 15.0,
+      "step": 0.5,
+      "group": "accessory",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "label": {
+        "en": "Accessory Face Thickness (mm)",
+        "es": "Grosor de Cara de Accesorio (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the accessory mounting face",
+        "es": "Grosor de la cara de montaje de accesorios"
+      }
+    },
+    {
+      "id": "face_hole_d",
+      "type": "slider",
+      "default": 6.6,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "accessory",
+      "modes": [
+        "single_clamp",
+        "dual_rod_bridge",
+        "riser_clamp"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Accessory Hole (mm)",
+        "es": "Orificio de Accesorio (mm)"
+      },
+      "tooltip": {
+        "en": "1/4-20 accessory hole (~6.6 mm clearance)",
+        "es": "Orificio de accesorio 1/4-20 (~6.6 mm de holgura)"
+      }
+    },
+    {
+      "id": "riser_h",
+      "type": "slider",
+      "default": 30.0,
+      "min": 10.0,
+      "max": 100.0,
+      "step": 1,
+      "group": "riser",
+      "modes": [
+        "riser_clamp"
+      ],
+      "label": {
+        "en": "Riser Height (mm)",
+        "es": "Altura del Elevador (mm)"
+      },
+      "tooltip": {
+        "en": "How far the riser column lifts the accessory face above the rod",
+        "es": "Cuánto eleva la columna la cara de accesorio sobre la varilla"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "monitor_clamp",
+      "mode": "single_clamp",
+      "label": {
+        "en": "Monitor Rod Clamp",
+        "es": "Abrazadera para Monitor"
+      },
+      "values": {
+        "rod_d": 15.0,
+        "body_th": 20.0,
+        "wall": 6.0,
+        "face_th": 6.0
+      }
+    },
+    {
+      "id": "lws_baseplate_bridge",
+      "mode": "dual_rod_bridge",
+      "label": {
+        "en": "LWS Baseplate Bridge (60mm)",
+        "es": "Puente de Placa Base LWS (60mm)"
+      },
+      "values": {
+        "rod_d": 15.0,
+        "rod_spacing": 60.0,
+        "body_th": 22.0,
+        "wall": 6.0
+      }
+    },
+    {
+      "id": "evf_riser",
+      "mode": "riser_clamp",
+      "label": {
+        "en": "EVF Riser",
+        "es": "Elevador de Visor"
+      },
+      "values": {
+        "rod_d": 15.0,
+        "riser_h": 40.0,
+        "body_th": 18.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clamp_bolt_d < rod_d + 2 * wall",
+      "severity": "error",
+      "message": {
+        "en": "Pinch bolt hole must fit within the clamp body width",
+        "es": "El orificio del perno debe caber dentro del ancho del cuerpo"
+      }
+    },
+    {
+      "expression": "rod_spacing >= rod_d + 2 * wall",
+      "severity": "warning",
+      "message": {
+        "en": "Rod spacing is tight relative to the clamp bodies; they may overlap",
+        "es": "La separación de varillas es ajustada respecto a los cuerpos; podrían solaparse"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        80
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -160,
+        30
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        180
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 13,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "lws_15mm_rod",
+        "label": {
+          "en": "15mm LWS Rod",
+          "es": "Varilla LWS de 15mm"
+        },
+        "geometry_type": "socket",
+        "standard": "15mm LWS rod",
+        "parameters": [
+          "rod_d",
+          "rod_clear",
+          "rod_spacing"
+        ]
+      },
+      {
+        "id": "quarter_20_accessory",
+        "label": {
+          "en": "1/4-20 Accessory Hole",
+          "es": "Orificio de Accesorio 1/4-20"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "face_hole_d"
+        ],
+        "compatible_with": [
+          "arca-plate",
+          "nato-rail",
+          "optical-post",
+          "sensor-mount-plate",
+          "shoe-mount"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The 15 mm LWS rod system is the open backbone of professional and indie filmmaking — every matte box, follow-focus and monitor clamps to the same 15 mm rods at 60 mm spacing. On-demand clamps, bridges and risers let a filmmaker build exactly the rig they need from stock rod and printed parts, instead of buying expensive single-purpose brackets, and repair a cracked clamp on location.",
+      "es": "El sistema de varilla LWS de 15 mm es la columna abierta del cine profesional e independiente — cada matte box, follow-focus y monitor se sujeta a las mismas varillas de 15 mm con separación de 60 mm. Abrazaderas, puentes y elevadores bajo demanda permiten construir exactamente el equipo necesario con varilla estándar y piezas impresas, en vez de comprar soportes costosos de un solo propósito, y reparar una abrazadera agrietada en locación."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "rod",
+    "15mm",
+    "lws",
+    "cinema",
+    "rig",
+    "clamp",
+    "rail",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

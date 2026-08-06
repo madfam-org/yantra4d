@@ -1,0 +1,212 @@
+{
+  "project": {
+    "name": "Lens & Filter Cap",
+    "slug": "lens-cap",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Front lens caps, rear body caps and step-up/step-down rings for the universal photographic filter-thread system (49/52/58/67/72/77/82 mm at a fine 0.75 mm pitch). Build a pinch/press snap cap sized to a filter OD, a step ring that threads one filter size to another, or a rear body-cap blank.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Tapas frontales de lente, tapas traseras de cuerpo y anillos escalonados para el sistema universal de rosca de filtro fotográfico (49/52/58/67/72/77/82 mm con paso fino de 0.75 mm). Genera una tapa a presión dimensionada al diámetro del filtro, un anillo escalonado que enrosca un tamaño de filtro a otro, o una tapa trasera de cuerpo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/lens-cap.webp",
+    "difficulty": "intermediate",
+    "tags": ["lens-cap", "filter", "step-ring", "body-cap", "photography", "thread", "camera", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "snap_cap",
+      "label": { "en": "Snap Cap", "es": "Tapa a Presión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["snap_cap"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "step_ring",
+      "label": { "en": "Step Ring", "es": "Anillo Escalonado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["step_ring"],
+      "estimate": { "base_time": 16, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "body_cap",
+      "label": { "en": "Body Cap Blank", "es": "Tapa de Cuerpo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["body_cap"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "snap_cap", "label": { "en": "Snap Cap", "es": "Tapa a Presión" }, "render_mode": 0, "color": "#4a7c8f" },
+    { "id": "step_ring", "label": { "en": "Step Ring", "es": "Anillo Escalonado" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "body_cap", "label": { "en": "Body Cap", "es": "Tapa de Cuerpo" }, "render_mode": 0, "color": "#6fa3bf" }
+  ],
+  "parameter_groups": [
+    { "id": "thread", "label": { "en": "Filter Thread", "es": "Rosca de Filtro" } },
+    { "id": "cap", "label": { "en": "Cap", "es": "Tapa" } },
+    { "id": "ring", "label": { "en": "Step Ring", "es": "Anillo Escalonado" } },
+    { "id": "body", "label": { "en": "Body Cap", "es": "Tapa de Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "filter_thread", "type": "select", "default": "58",
+      "group": "thread", "modes": ["snap_cap"],
+      "label": { "en": "Filter Thread (mm)", "es": "Rosca de Filtro (mm)" },
+      "tooltip": { "en": "Nominal filter-thread diameter the cap fits", "es": "Diámetro nominal de rosca de filtro al que ajusta la tapa" },
+      "options": [
+        { "value": "49", "label": { "en": "49 mm", "es": "49 mm" } },
+        { "value": "52", "label": { "en": "52 mm", "es": "52 mm" } },
+        { "value": "58", "label": { "en": "58 mm", "es": "58 mm" } },
+        { "value": "67", "label": { "en": "67 mm", "es": "67 mm" } },
+        { "value": "72", "label": { "en": "72 mm", "es": "72 mm" } },
+        { "value": "77", "label": { "en": "77 mm", "es": "77 mm" } },
+        { "value": "82", "label": { "en": "82 mm", "es": "82 mm" } }
+      ]
+    },
+    {
+      "id": "thread_a", "type": "select", "default": "58",
+      "group": "ring", "modes": ["step_ring"],
+      "label": { "en": "Thread A — Female (mm)", "es": "Rosca A — Hembra (mm)" },
+      "tooltip": { "en": "Bottom female thread — the size that screws ONTO the lens", "es": "Rosca hembra inferior — el tamaño que se enrosca EN la lente" },
+      "options": [
+        { "value": "49", "label": { "en": "49 mm", "es": "49 mm" } },
+        { "value": "52", "label": { "en": "52 mm", "es": "52 mm" } },
+        { "value": "58", "label": { "en": "58 mm", "es": "58 mm" } },
+        { "value": "67", "label": { "en": "67 mm", "es": "67 mm" } },
+        { "value": "72", "label": { "en": "72 mm", "es": "72 mm" } },
+        { "value": "77", "label": { "en": "77 mm", "es": "77 mm" } },
+        { "value": "82", "label": { "en": "82 mm", "es": "82 mm" } }
+      ]
+    },
+    {
+      "id": "thread_b", "type": "select", "default": "52",
+      "group": "ring", "modes": ["step_ring"],
+      "label": { "en": "Thread B — Male (mm)", "es": "Rosca B — Macho (mm)" },
+      "tooltip": { "en": "Top male thread — the size a filter screws ONTO", "es": "Rosca macho superior — el tamaño al que se enrosca un filtro" },
+      "options": [
+        { "value": "49", "label": { "en": "49 mm", "es": "49 mm" } },
+        { "value": "52", "label": { "en": "52 mm", "es": "52 mm" } },
+        { "value": "58", "label": { "en": "58 mm", "es": "58 mm" } },
+        { "value": "67", "label": { "en": "67 mm", "es": "67 mm" } },
+        { "value": "72", "label": { "en": "72 mm", "es": "72 mm" } },
+        { "value": "77", "label": { "en": "77 mm", "es": "77 mm" } },
+        { "value": "82", "label": { "en": "82 mm", "es": "82 mm" } }
+      ]
+    },
+    {
+      "id": "thread_turns", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "ring", "modes": ["step_ring"], "advanced": true,
+      "label": { "en": "Thread Engagement (turns)", "es": "Enganche de Rosca (vueltas)" },
+      "tooltip": { "en": "How many turns of thread on each side of the ring", "es": "Cuántas vueltas de rosca en cada lado del anillo" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "thread", "modes": ["snap_cap", "step_ring"], "advanced": true,
+      "label": { "en": "Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side thread/press fit slop for printed parts", "es": "Holgura por lado de rosca/presión para piezas impresas" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.1,
+      "group": "cap", "modes": ["snap_cap", "step_ring", "body_cap"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Side wall thickness", "es": "Grosor de la pared lateral" }
+    },
+    {
+      "id": "cap_depth", "type": "slider", "default": 7.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "cap", "modes": ["snap_cap"],
+      "label": { "en": "Cap Skirt Depth (mm)", "es": "Profundidad de Faldón (mm)" },
+      "tooltip": { "en": "How deep the snap cap's skirt reaches over the lens", "es": "Qué tan profundo llega el faldón de la tapa sobre la lente" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "top_th", "type": "slider", "default": 2.2, "min": 1.2, "max": 6.0, "step": 0.1,
+      "group": "cap", "modes": ["snap_cap", "step_ring", "body_cap"], "advanced": true,
+      "label": { "en": "Top/Web Thickness (mm)", "es": "Grosor de Tapa/Alma (mm)" },
+      "tooltip": { "en": "Thickness of the cap top or the step-ring web", "es": "Grosor de la parte superior de la tapa o el alma del anillo" }
+    },
+    {
+      "id": "grip_teeth", "type": "slider", "default": 0, "min": 0, "max": 80, "step": 1,
+      "group": "cap", "modes": ["snap_cap", "body_cap"], "advanced": true,
+      "label": { "en": "Grip Flutes", "es": "Estrías de Agarre" },
+      "tooltip": { "en": "Number of vertical grip flutes around the rim (0 = smooth)", "es": "Número de estrías verticales de agarre en el borde (0 = liso)" }
+    },
+    {
+      "id": "body_cap_d", "type": "slider", "default": 42.0, "min": 20.0, "max": 80.0, "step": 0.5,
+      "group": "body", "modes": ["body_cap"],
+      "label": { "en": "Body Cap Diameter (mm)", "es": "Diámetro de Tapa de Cuerpo (mm)" },
+      "tooltip": { "en": "Bayonet outer diameter of the rear body cap blank", "es": "Diámetro exterior de bayoneta de la tapa trasera" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cap_58", "mode": "snap_cap",
+      "label": { "en": "58 mm Lens Cap", "es": "Tapa de Lente 58 mm" },
+      "values": { "filter_thread": "58", "cap_depth": 7.0, "wall": 2.4 }
+    },
+    {
+      "id": "step_58_to_52", "mode": "step_ring",
+      "label": { "en": "58→52 Step-Down Ring", "es": "Anillo Reductor 58→52" },
+      "values": { "thread_a": "58", "thread_b": "52", "thread_turns": 4.0, "clearance": 0.3 }
+    },
+    {
+      "id": "step_67_to_77", "mode": "step_ring",
+      "label": { "en": "67→77 Step-Up Ring", "es": "Anillo Ampliador 67→77" },
+      "values": { "thread_a": "67", "thread_b": "77", "thread_turns": 4.0, "clearance": 0.3 }
+    },
+    {
+      "id": "body_cap_42", "mode": "body_cap",
+      "label": { "en": "42 mm Body Cap", "es": "Tapa de Cuerpo 42 mm" },
+      "values": { "body_cap_d": 42.0, "wall": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm for a printable cap", "es": "La pared debe ser de al menos 1.6 mm para una tapa imprimible" }
+    },
+    {
+      "expression": "clearance <= 0.6",
+      "severity": "warning",
+      "message": { "en": "Large clearance makes the thread/press fit loose", "es": "Una holgura grande hace flojo el ajuste de rosca/presión" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "filter_thread",
+        "label": { "en": "Filter Thread", "es": "Rosca de Filtro" },
+        "geometry_type": "thread",
+        "standard": "M49-M82 x 0.75",
+        "parameters": ["filter_thread", "thread_a", "thread_b", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The photographic filter thread is a decades-old open standard shared by every lens front and screw-in filter. Lost lens caps and missing step rings are a constant, wasteful expense; on-demand caps and step rings let a photographer replace a lost cap or bridge two filter sizes for pennies of filament, keeping filters and lenses in use instead of buying single-purpose accessories.",
+      "es": "La rosca de filtro fotográfico es un estándar abierto de décadas compartido por cada frente de lente y filtro roscado. Las tapas perdidas y los anillos escalonados faltantes son un gasto constante y derrochador; tapas y anillos bajo demanda permiten a un fotógrafo reemplazar una tapa perdida o unir dos tamaños de filtro por centavos de filamento, manteniendo filtros y lentes en uso en vez de comprar accesorios de un solo propósito."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["lens-cap", "filter", "step-ring", "body-cap", "photography", "thread", "commercial", "hyperobject", "commons"]
+}

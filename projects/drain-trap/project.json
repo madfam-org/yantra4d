@@ -1,0 +1,265 @@
+{
+    "project": {
+        "name": "P-Trap / Drain Fitting",
+        "slug": "drain-trap",
+        "version": "1.0.0",
+        "description": {
+            "en": "Under-sink tubular drainage parts built to real US slip-joint sizing: a straight tailpiece extension, a quarter-bend trap arm, and the P-trap U-bend itself. Every part carries slip-joint sockets bored for standard 1-1/4\" (1.66\" OD) and 1-1/2\" (1.90\" OD) drain tube, so it mates with off-the-shelf slip nuts and beveled washers. The curved runs are swept along a true centerline and printed as a single watertight body with a clean stepped bore.",
+            "es": "Piezas de drenaje tubular bajo el fregadero con medidas reales de junta deslizante US: una extension de cola recta, un brazo de trampa de cuarto de vuelta y la propia curva en U del sifon P. Cada pieza lleva bocas de junta deslizante para tubo de drenaje estandar de 1-1/4\" (1.66\" OD) y 1-1/2\" (1.90\" OD), compatible con tuercas deslizantes y arandelas biseladas comerciales. Los tramos curvos se barren sobre una linea central real y se imprimen como un solo cuerpo hermetico con un barreno escalonado limpio."
+        },
+        "thumbnail": "/projects/drain-trap.webp",
+        "tags": [
+            "plumbing",
+            "drain",
+            "p-trap",
+            "trap-arm",
+            "tailpiece",
+            "slip-joint",
+            "sink",
+            "hyperobject",
+            "commons"
+        ],
+        "difficulty": "advanced",
+        "hyperobject": {
+            "is_hyperobject": true
+        },
+        "attribution": {
+            "author": "Yantra4D",
+            "license": "CERN-OHL-W-2.0"
+        },
+        "force_backend": true,
+        "engine": "cadquery"
+    },
+    "modes": [
+        {
+            "id": "p_trap",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "P-Trap U-Bend",
+                "es": "Curva en U del Sifon P"
+            },
+            "description": {
+                "en": "The water-seal trap under a sink: two vertical legs joined by a 180-degree bottom bend, with a slip socket on top of each leg."
+            },
+            "parts": ["p_trap"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "trap_arm",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Quarter-Bend Trap Arm",
+                "es": "Brazo de Trampa de Cuarto de Vuelta"
+            },
+            "description": {
+                "en": "A straight run into a 90-degree elbow that carries the trap outlet across to the wall drain stub, slip socket on the inlet and a plain spigot outlet."
+            },
+            "parts": ["trap_arm"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "tailpiece",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Straight Tailpiece Extension",
+                "es": "Extension de Cola Recta"
+            },
+            "description": {
+                "en": "A straight vertical extension tube with a slip socket on top and a plain outlet below, to drop a sink strainer down to the trap."
+            },
+            "parts": ["tailpiece"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "p_trap",
+            "label": {
+                "en": "P-Trap Body",
+                "es": "Cuerpo del Sifon P"
+            },
+            "default_color": "#d1d5db"
+        },
+        {
+            "id": "trap_arm",
+            "label": {
+                "en": "Trap Arm Body",
+                "es": "Cuerpo del Brazo de Trampa"
+            },
+            "default_color": "#d1d5db"
+        },
+        {
+            "id": "tailpiece",
+            "label": {
+                "en": "Tailpiece Body",
+                "es": "Cuerpo de la Cola"
+            },
+            "default_color": "#d1d5db"
+        }
+    ],
+    "parameters": [
+        {
+            "id": "tube_size",
+            "type": "select",
+            "default": "1-1/2",
+            "options": [
+                { "value": "1-1/4", "label": "1-1/4 in (1.66\" / 42.16 mm OD)" },
+                { "value": "1-1/2", "label": "1-1/2 in (1.90\" / 48.26 mm OD)" }
+            ],
+            "label": {
+                "en": "Slip-Joint Tube Size",
+                "es": "Tamano de Tubo de Junta Deslizante"
+            },
+            "group": "fit"
+        },
+        {
+            "id": "clearance",
+            "type": "slider",
+            "default": 0.4,
+            "min": 0.1,
+            "max": 0.8,
+            "step": 0.05,
+            "label": {
+                "en": "Slip-Fit Clearance (mm)",
+                "es": "Holgura de Ajuste Deslizante (mm)"
+            },
+            "tooltip": {
+                "en": "Radial gap between the socket bore and the mating tube. 0.3-0.5 mm suits most printers; increase for a looser hand-fit.",
+                "es": "Espacio radial entre la boca y el tubo. 0.3-0.5 mm sirve para la mayoria de impresoras; aumente para un ajuste manual mas holgado."
+            },
+            "group": "fit"
+        },
+        {
+            "id": "socket_depth",
+            "type": "slider",
+            "default": 16,
+            "min": 8,
+            "max": 30,
+            "step": 1,
+            "label": {
+                "en": "Socket Depth (mm)",
+                "es": "Profundidad de la Boca (mm)"
+            },
+            "tooltip": {
+                "en": "How far the mating tube seats into each slip socket before butting the internal shoulder.",
+                "es": "Cuanto entra el tubo en cada boca deslizante antes de topar con el hombro interno."
+            },
+            "group": "fit"
+        },
+        {
+            "id": "wall",
+            "type": "slider",
+            "default": 3.0,
+            "min": 2.0,
+            "max": 6.0,
+            "step": 0.2,
+            "label": {
+                "en": "Pipe Wall Thickness (mm)",
+                "es": "Espesor de Pared del Tubo (mm)"
+            },
+            "tooltip": {
+                "en": "Wall around the flow bore. 2.5-3.5 mm prints watertight and rigid in PETG.",
+                "es": "Pared alrededor del barreno. 2.5-3.5 mm imprime hermetico y rigido en PETG."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "bend_radius",
+            "type": "slider",
+            "default": 32,
+            "min": 18,
+            "max": 60,
+            "step": 1,
+            "label": {
+                "en": "Centerline Bend Radius (mm)",
+                "es": "Radio de Curva en el Eje (mm)"
+            },
+            "tooltip": {
+                "en": "Radius of the trap and elbow bends measured at the pipe centerline. Larger radii ease flow; smaller radii fit tight cabinets.",
+                "es": "Radio de las curvas del sifon y del codo medido en el eje del tubo. Radios mayores facilitan el flujo; menores caben en gabinetes ajustados."
+            },
+            "group": "geometry"
+        },
+        {
+            "id": "leg",
+            "type": "slider",
+            "default": 55,
+            "min": 25,
+            "max": 120,
+            "step": 5,
+            "label": {
+                "en": "Leg / Run Length (mm)",
+                "es": "Longitud de Pierna / Tramo (mm)"
+            },
+            "tooltip": {
+                "en": "Straight length of the legs (P-trap), the run (trap arm), or the body (tailpiece).",
+                "es": "Longitud recta de las piernas (sifon P), del tramo (brazo) o del cuerpo (cola)."
+            },
+            "group": "geometry"
+        }
+    ],
+    "parameter_groups": [
+        {
+            "id": "fit",
+            "label": {
+                "en": "Slip-Joint Fit",
+                "es": "Ajuste de Junta Deslizante"
+            }
+        },
+        {
+            "id": "geometry",
+            "label": {
+                "en": "Geometry",
+                "es": "Geometria"
+            }
+        }
+    ],
+    "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+    "estimate_constants": {
+        "base_time": 14,
+        "per_unit": 2,
+        "per_part": 12,
+        "wasm_multiplier": 4,
+        "warning_threshold_seconds": 90
+    },
+    "hyperobject": {
+        "domain": "infrastructure",
+        "cdg_interfaces": [
+            {
+                "id": "slip_joint_socket",
+                "label": {
+                    "en": "Slip-Joint Tube Socket",
+                    "es": "Boca de Tubo de Junta Deslizante"
+                },
+                "geometry_type": "socket",
+                "standard": "US tubular 1-1/4 / 1-1/2 in slip",
+                "parameters": ["tube_size", "clearance", "socket_depth", "wall"]
+            }
+        ],
+        "material_awareness": {
+            "shrinkage_compensation": false,
+            "recycled_material_toggle": false,
+            "tolerance_by_material": true
+        },
+        "societal_benefit": {
+            "en": "Puts printable, chemical-tolerant drain fittings within reach for repairs and odd cabinet geometries where the standard rigid-kit angles will not fit, reducing the number of trips and the amount of PVC discarded on a simple under-sink fix.",
+            "es": "Pone accesorios de drenaje imprimibles y tolerantes a quimicos al alcance para reparaciones y geometrias de gabinete atipicas donde los angulos del kit rigido estandar no encajan, reduciendo viajes y el PVC desechado en un arreglo simple bajo el fregadero."
+        },
+        "commons_license": "CERN-OHL-W-2.0"
+    }
+}

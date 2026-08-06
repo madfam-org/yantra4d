@@ -1314,6 +1314,9 @@
           "grid_z"
         ],
         "compatible_with": [
+          "din-rail-clip",
+          "grid-hub",
+          "locking-mechanism-hyperobject",
           "multiboard"
         ]
       },
@@ -1328,6 +1331,11 @@
         "parameters": [
           "lip_enabled",
           "bp_thickness"
+        ],
+        "compatible_with": [
+          "din-rail-clip",
+          "grid-hub",
+          "locking-mechanism-hyperobject"
         ]
       },
       {
@@ -1342,6 +1350,11 @@
           "grid_x",
           "grid_y",
           "bp_thickness"
+        ],
+        "compatible_with": [
+          "din-rail-clip",
+          "grid-hub",
+          "locking-mechanism-hyperobject"
         ]
       },
       {

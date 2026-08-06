@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "Reed / Mouthpiece Cap",
+    "slug": "reed-cap",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Reed cases and mouthpiece caps for woodwinds. The functional interface is the mouthpiece socket — the cup that slides over the mouthpiece tip (reed and ligature on) to protect the fragile reed — sized to real instruments (Bb clarinet mouthpiece ~30 mm, alto sax ~33 mm, tenor ~36 mm). Build a protective cap with a ligature-clearance notch and reed-dry vent, a slotted reed case, or a split ligature band.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Estuches de cañas y tapas de boquilla para instrumentos de viento-madera. La interfaz funcional es el casquillo de la boquilla — la copa que se desliza sobre la punta de la boquilla (con caña y abrazadera) para proteger la caña frágil — dimensionada a instrumentos reales (boquilla de clarinete Sib ~30 mm, saxo alto ~33 mm, tenor ~36 mm). Genera una tapa protectora con muesca para la abrazadera y ventilación, un estuche de cañas ranurado, o una abrazadera dividida.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/reed-cap.webp",
+    "tags": ["reed", "mouthpiece", "cap", "clarinet", "saxophone", "ligature", "woodwind", "music", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "cap",
+      "label": { "en": "Mouthpiece Cap", "es": "Tapa de Boquilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cap"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "reed_case",
+      "label": { "en": "Reed Case", "es": "Estuche de Cañas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["reed_case"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "lig_band",
+      "label": { "en": "Ligature Band", "es": "Abrazadera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lig_band"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "cap", "label": { "en": "Mouthpiece Cap", "es": "Tapa de Boquilla" }, "render_mode": 0, "color": "#5b8f7a" },
+    { "id": "reed_case", "label": { "en": "Reed Case", "es": "Estuche de Cañas" }, "render_mode": 0, "color": "#6fa38f" },
+    { "id": "lig_band", "label": { "en": "Ligature Band", "es": "Abrazadera" }, "render_mode": 0, "color": "#8abfa3" }
+  ],
+  "parameter_groups": [
+    { "id": "mouthpiece", "label": { "en": "Mouthpiece", "es": "Boquilla" } },
+    { "id": "cap", "label": { "en": "Cap", "es": "Tapa" } },
+    { "id": "reed", "label": { "en": "Reed", "es": "Caña" } }
+  ],
+  "parameters": [
+    {
+      "id": "mp_type", "type": "select", "default": "clarinet",
+      "group": "mouthpiece", "modes": ["cap", "reed_case", "lig_band"],
+      "label": { "en": "Instrument", "es": "Instrumento" },
+      "tooltip": { "en": "Mouthpiece size: clarinet ~30 mm, alto sax ~33 mm, tenor sax ~36 mm", "es": "Tamaño de boquilla: clarinete ~30 mm, saxo alto ~33 mm, saxo tenor ~36 mm" },
+      "options": [
+        { "value": "clarinet", "label": { "en": "Bb Clarinet (~30 mm)", "es": "Clarinete Sib (~30 mm)" } },
+        { "value": "alto", "label": { "en": "Alto Sax (~33 mm)", "es": "Saxo Alto (~33 mm)" } },
+        { "value": "tenor", "label": { "en": "Tenor Sax (~36 mm)", "es": "Saxo Tenor (~36 mm)" } }
+      ]
+    },
+    {
+      "id": "cap_clear", "type": "slider", "default": 1.2, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "cap", "modes": ["cap", "lig_band"], "advanced": true,
+      "label": { "en": "Cap Fit Clearance (mm)", "es": "Holgura de la Tapa (mm)" },
+      "tooltip": { "en": "Per-side gap over the mouthpiece so the cap slides on — tune per printer", "es": "Espacio por lado sobre la boquilla para que la tapa entre — ajustar por impresora" }
+    },
+    {
+      "id": "cap_len", "type": "slider", "default": 55.0, "min": 30.0, "max": 90.0, "step": 1,
+      "group": "cap", "modes": ["cap"],
+      "label": { "en": "Cap Length (mm)", "es": "Longitud de la Tapa (mm)" },
+      "tooltip": { "en": "How far the cap covers down the mouthpiece", "es": "Cuánto cubre la tapa hacia abajo en la boquilla" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.2,
+      "group": "cap", "modes": ["cap", "reed_case", "lig_band"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Cap / case / band wall thickness", "es": "Grosor de pared de tapa / estuche / abrazadera" }
+    },
+    {
+      "id": "reed_ct", "type": "slider", "default": 4, "min": 1, "max": 8, "step": 1,
+      "group": "reed", "modes": ["reed_case"],
+      "label": { "en": "Reed Count", "es": "Número de Cañas" },
+      "tooltip": { "en": "How many reeds the case holds", "es": "Cuántas cañas guarda el estuche" }
+    },
+    {
+      "id": "reed_len", "type": "slider", "default": 70.0, "min": 45.0, "max": 85.0, "step": 1,
+      "group": "reed", "modes": ["reed_case"],
+      "label": { "en": "Reed Slot Length (mm)", "es": "Longitud de Ranura (mm)" },
+      "tooltip": { "en": "Reed slot length (clarinet ~68 mm, sax reeds longer)", "es": "Longitud de la ranura de caña (clarinete ~68 mm, saxo más largas)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "clarinet_cap", "mode": "cap",
+      "label": { "en": "Clarinet Mouthpiece Cap", "es": "Tapa de Clarinete" },
+      "values": { "mp_type": "clarinet", "cap_clear": 1.2, "cap_len": 55.0, "wall": 2.4 }
+    },
+    {
+      "id": "four_reed_case", "mode": "reed_case",
+      "label": { "en": "4-Reed Case", "es": "Estuche 4 Cañas" },
+      "values": { "mp_type": "clarinet", "reed_ct": 4, "reed_len": 70.0, "wall": 2.4 }
+    },
+    {
+      "id": "alto_ligature", "mode": "lig_band",
+      "label": { "en": "Alto Sax Ligature", "es": "Abrazadera Saxo Alto" },
+      "values": { "mp_type": "alto", "cap_clear": 1.2, "wall": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cap_clear <= 3",
+      "severity": "warning",
+      "message": { "en": "Too much clearance and the cap falls off the mouthpiece", "es": "Demasiada holgura y la tapa se cae de la boquilla" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 110] },
+    { "id": "front", "label": { "en": "Front (Cross-Section)", "es": "Frontal (Sección)" }, "position": [0, -160, 30] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "mouthpiece_socket",
+        "label": { "en": "Mouthpiece Socket", "es": "Casquillo de Boquilla" },
+        "geometry_type": "socket",
+        "standard": "clarinet / alto / tenor mouthpiece (~30-36 mm)",
+        "parameters": ["mp_type", "cap_clear", "cap_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A chipped reed tip is unplayable, and mouthpiece caps and reed cases are small, easily-lost accessories sold per instrument. Woodwind mouthpieces cluster into a few real sizes (clarinet, alto, tenor), so a printed cap sized to the mouthpiece protects the reed in a case or bag, a reed case keeps spares flat and unwarped, and a ligature band holds the reed to the table — all from parts a student can make instead of buying a proprietary set. Protecting the reed tip directly saves consumable cost over a player's life.",
+      "es": "Una punta de caña astillada es intocable, y las tapas de boquilla y estuches de cañas son accesorios pequeños y fáciles de perder que se venden por instrumento. Las boquillas de viento-madera se agrupan en unos pocos tamaños reales (clarinete, alto, tenor), así que una tapa impresa dimensionada a la boquilla protege la caña en el estuche, un estuche mantiene las cañas planas y sin deformar, y una abrazadera sujeta la caña a la mesa — todo con piezas que un estudiante hace en vez de comprar un juego propietario. Proteger la punta de la caña ahorra costo de consumibles durante la vida del músico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["reed", "mouthpiece", "cap", "clarinet", "saxophone", "ligature", "woodwind", "music", "commercial", "hyperobject", "commons"]
+}

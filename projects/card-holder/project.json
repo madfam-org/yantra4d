@@ -1,0 +1,499 @@
+{
+  "project": {
+    "name": "Card / Book Holder",
+    "slug": "card-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holders that present cards and pages hands-free for people with limited dexterity or grip. A card rack stands a fanned hand of playing cards upright so they can be seen and played one-handed; a book stand props a book or tablet at a reading angle; a page holder pins a single card or page open on a weighted base. Sized to the standard poker playing card (63 x 88 mm). Fit is user-specific — consider an OT's advice on angle and reach.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Soportes que presentan cartas y páginas con las manos libres para personas con destreza o agarre limitados. Un atril de cartas mantiene una mano de cartas en abanico en posición vertical para que se vean y jueguen con una sola mano; un atril de libros sostiene un libro o tableta en ángulo de lectura; un sujetapáginas fija una sola carta o página abierta sobre una base con peso. Dimensionado a la carta de póker estándar (63 x 88 mm). El ajuste es específico del usuario — considere el consejo de un terapeuta ocupacional sobre ángulo y alcance.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/card-holder.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "card-holder",
+      "playing-cards",
+      "book-stand",
+      "accessibility",
+      "assistive",
+      "adaptive",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "card_rack",
+      "label": {
+        "en": "Card Rack",
+        "es": "Atril de Cartas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "card_rack"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "book_stand",
+      "label": {
+        "en": "Book Stand",
+        "es": "Atril de Libros"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "book_stand"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "page_holder",
+      "label": {
+        "en": "Page Holder",
+        "es": "Sujetapáginas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "page_holder"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "card_rack",
+      "label": {
+        "en": "Card Rack",
+        "es": "Atril de Cartas"
+      },
+      "render_mode": 0,
+      "color": "#4a6f8f"
+    },
+    {
+      "id": "book_stand",
+      "label": {
+        "en": "Book Stand",
+        "es": "Atril de Libros"
+      },
+      "render_mode": 0,
+      "color": "#5f80a0"
+    },
+    {
+      "id": "page_holder",
+      "label": {
+        "en": "Page Holder",
+        "es": "Sujetapáginas"
+      },
+      "render_mode": 0,
+      "color": "#7391b1"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "base",
+      "label": {
+        "en": "Base",
+        "es": "Base"
+      }
+    },
+    {
+      "id": "hold",
+      "label": {
+        "en": "Card / Page Hold",
+        "es": "Sujeción de Carta / Página"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "base_len",
+      "type": "slider",
+      "default": 150.0,
+      "min": 60.0,
+      "max": 300.0,
+      "step": 1.0,
+      "group": "base",
+      "modes": [
+        "card_rack",
+        "book_stand",
+        "page_holder"
+      ],
+      "label": {
+        "en": "Length (mm)",
+        "es": "Longitud (mm)"
+      },
+      "tooltip": {
+        "en": "Overall length of the holder",
+        "es": "Longitud total del soporte"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "base_depth",
+      "type": "slider",
+      "default": 55.0,
+      "min": 30.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "base",
+      "modes": [
+        "card_rack",
+        "book_stand",
+        "page_holder"
+      ],
+      "label": {
+        "en": "Depth (mm)",
+        "es": "Profundidad (mm)"
+      },
+      "tooltip": {
+        "en": "Front-to-back depth (footprint stability)",
+        "es": "Profundidad de adelante hacia atrás (estabilidad de la base)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "base_h",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "base",
+      "modes": [
+        "card_rack",
+        "book_stand",
+        "page_holder"
+      ],
+      "label": {
+        "en": "Base Height (mm)",
+        "es": "Altura de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Height / mass of the base block",
+        "es": "Altura / masa del bloque base"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "card_t",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.4,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "hold",
+      "modes": [
+        "card_rack",
+        "page_holder"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Card / Page Thickness (mm)",
+        "es": "Grosor de Carta / Página (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of a single card or page (a poker card is ~0.3 mm; a fan is thicker)",
+        "es": "Grosor de una sola carta o página (una carta de póker es ~0.3 mm; un abanico es más grueso)"
+      }
+    },
+    {
+      "id": "groove_gap",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.5,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "hold",
+      "modes": [
+        "card_rack",
+        "page_holder"
+      ],
+      "label": {
+        "en": "Groove Width (mm)",
+        "es": "Ancho de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Slot width — a wider groove holds more cards",
+        "es": "Ancho de la ranura — una ranura más ancha sostiene más cartas"
+      }
+    },
+    {
+      "id": "groove_ang",
+      "type": "slider",
+      "default": 65.0,
+      "min": 45.0,
+      "max": 85.0,
+      "step": 1.0,
+      "group": "hold",
+      "modes": [
+        "card_rack"
+      ],
+      "label": {
+        "en": "Card Lean Angle (deg)",
+        "es": "Ángulo de Inclinación de Cartas (grados)"
+      },
+      "tooltip": {
+        "en": "How upright the cards stand (from horizontal)",
+        "es": "Cuán verticales quedan las cartas (desde la horizontal)"
+      }
+    },
+    {
+      "id": "n_grooves",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "hold",
+      "modes": [
+        "card_rack"
+      ],
+      "label": {
+        "en": "Number of Rows",
+        "es": "Número de Filas"
+      },
+      "tooltip": {
+        "en": "How many parallel card rows the rack has",
+        "es": "Cuántas filas paralelas de cartas tiene el atril"
+      }
+    },
+    {
+      "id": "lip_h",
+      "type": "slider",
+      "default": 12.0,
+      "min": 5.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "hold",
+      "modes": [
+        "book_stand",
+        "page_holder"
+      ],
+      "label": {
+        "en": "Front Ledge Height (mm)",
+        "es": "Altura del Reborde Frontal (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the ledge that stops the book/page sliding off",
+        "es": "Altura del reborde que evita que el libro/página se deslice"
+      }
+    },
+    {
+      "id": "stand_ang",
+      "type": "slider",
+      "default": 60.0,
+      "min": 35.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "hold",
+      "modes": [
+        "book_stand"
+      ],
+      "label": {
+        "en": "Easel Angle (deg)",
+        "es": "Ángulo del Atril (grados)"
+      },
+      "tooltip": {
+        "en": "Reading angle of the easel back",
+        "es": "Ángulo de lectura del respaldo del atril"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "poker_rack",
+      "mode": "card_rack",
+      "label": {
+        "en": "Playing-Card Rack",
+        "es": "Atril de Cartas de Juego"
+      },
+      "values": {
+        "base_len": 150,
+        "base_depth": 55,
+        "base_h": 16,
+        "groove_gap": 2.4,
+        "groove_ang": 65,
+        "n_grooves": 3
+      }
+    },
+    {
+      "id": "reading_stand",
+      "mode": "book_stand",
+      "label": {
+        "en": "Reading / Tablet Stand",
+        "es": "Atril de Lectura / Tableta"
+      },
+      "values": {
+        "base_len": 180,
+        "base_depth": 90,
+        "base_h": 16,
+        "stand_ang": 60,
+        "lip_h": 14
+      }
+    },
+    {
+      "id": "recipe_holder",
+      "mode": "page_holder",
+      "label": {
+        "en": "Recipe-Card Holder",
+        "es": "Sujetador de Recetas"
+      },
+      "values": {
+        "base_len": 120,
+        "base_depth": 45,
+        "base_h": 14,
+        "groove_gap": 3.0,
+        "lip_h": 14
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "groove_gap >= card_t",
+      "severity": "error",
+      "message": {
+        "en": "Groove must be at least as wide as the card/page it holds",
+        "es": "La ranura debe ser al menos tan ancha como la carta/página que sostiene"
+      }
+    },
+    {
+      "expression": "base_depth >= 30",
+      "severity": "warning",
+      "message": {
+        "en": "A shallow base may tip over when loaded",
+        "es": "Una base poco profunda puede volcarse al cargarse"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        180,
+        180,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -240,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        260
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 13,
+    "per_unit": 3,
+    "per_part": 13,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "card_page_groove",
+        "label": {
+          "en": "Card / Page Groove",
+          "es": "Ranura de Carta / Página"
+        },
+        "geometry_type": "profile",
+        "standard": "playing card 63x88mm",
+        "parameters": [
+          "card_t",
+          "groove_gap",
+          "groove_ang"
+        ],
+        "compatible_with": [
+          "deck-box"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Fanning and holding a hand of cards, or keeping a book or recipe open, are small pleasures and daily tasks that arthritis, tremor, hemiplegia, or a missing hand can take away. A holder sized to standard cards and common books lets someone play, read, and cook one-handed and unaided — a low-cost restoration of leisure and independence that can be reprinted and re-shared freely.",
+      "es": "Abanicar y sostener una mano de cartas, o mantener un libro o receta abiertos, son pequeños placeres y tareas diarias que la artritis, el temblor, la hemiplejía o la falta de una mano pueden quitar. Un soporte dimensionado a cartas estándar y libros comunes permite jugar, leer y cocinar con una sola mano y sin ayuda — una restauración de bajo costo del ocio y la independencia que puede reimprimirse y recompartirse libremente."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "card-holder",
+    "playing-cards",
+    "book-stand",
+    "accessibility",
+    "assistive",
+    "adaptive",
+    "medical",
+    "hyperobject",
+    "commons"
+  ]
+}

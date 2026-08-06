@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Solar MC4 / Connector Holder",
+    "slug": "mc4-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holders and strain reliefs that organize MC4 photovoltaic connectors. The socket bore lands on the real MC4 body / panel-cutout diameter (~16-17 mm, Staubli MC4 family), so a printed holder grips a standard MC4 coupling and dresses PV leads on a panel edge, combiner box or rail. Pick the socket count and pitch. Includes a single panel-mount collar, a multi-socket rail organizer, and a two-pole cable strain-relief block.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Soportes y aliviadores de tensión que organizan conectores fotovoltaicos MC4. El barreno del alojamiento coincide con el diámetro real del cuerpo / corte de panel MC4 (~16-17 mm, familia Staubli MC4), así que un soporte impreso sujeta un acople MC4 estándar y acomoda cables PV en el borde de un panel, caja combinadora o riel. Elige el número de alojamientos y el paso. Incluye collar de montaje en panel, organizador de riel multialojamiento y bloque aliviador de dos polos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mc4-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["mc4", "solar", "pv", "connector", "holder", "strain-relief", "electrical", "power", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "panel_mount",
+      "label": { "en": "Panel-Mount Collar", "es": "Collar de Panel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["panel_mount"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "rail_organizer",
+      "label": { "en": "Rail Organizer", "es": "Organizador de Riel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rail_organizer"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 11 }
+    },
+    {
+      "id": "strain_block",
+      "label": { "en": "Strain-Relief Block", "es": "Bloque Aliviador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strain_block"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "panel_mount", "label": { "en": "Panel-Mount Collar", "es": "Collar de Panel" }, "render_mode": 0, "color": "#1f2a24" },
+    { "id": "rail_organizer", "label": { "en": "Rail Organizer", "es": "Organizador" }, "render_mode": 0, "color": "#2f3a34" },
+    { "id": "strain_block", "label": { "en": "Strain Block", "es": "Bloque Aliviador" }, "render_mode": 0, "color": "#3f4a44" }
+  ],
+  "parameter_groups": [
+    { "id": "socket", "label": { "en": "Socket", "es": "Alojamiento" } },
+    { "id": "array", "label": { "en": "Array", "es": "Arreglo" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "socket_dia", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 0.5,
+      "group": "socket", "modes": ["panel_mount", "rail_organizer", "strain_block"],
+      "label": { "en": "MC4 Body Ø (mm)", "es": "Ø del Cuerpo MC4 (mm)" },
+      "tooltip": { "en": "Connector body bore diameter (MC4 ~16 mm)", "es": "Diámetro del barreno del conector (MC4 ~16 mm)" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "socket", "modes": ["panel_mount", "rail_organizer", "strain_block"], "advanced": true,
+      "label": { "en": "Socket Clearance (mm)", "es": "Holgura de Alojamiento (mm)" },
+      "tooltip": { "en": "Gap per side around the connector", "es": "Espacio por lado alrededor del conector" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "socket", "modes": ["panel_mount", "rail_organizer", "strain_block"],
+      "label": { "en": "Holder Wall (mm)", "es": "Pared del Soporte (mm)" },
+      "tooltip": { "en": "Wall around the socket bore", "es": "Pared alrededor del barreno" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 18.0, "min": 8.0, "max": 50.0, "step": 1.0,
+      "group": "socket", "modes": ["panel_mount", "rail_organizer", "strain_block"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad de Alojamiento (mm)" },
+      "tooltip": { "en": "How deep the connector seats", "es": "Qué tan profundo se asienta el conector" }
+    },
+    {
+      "id": "socket_count", "type": "slider", "default": 4, "min": 2, "max": 8, "step": 1,
+      "group": "array", "modes": ["rail_organizer"],
+      "label": { "en": "Socket Count", "es": "Número de Alojamientos" },
+      "tooltip": { "en": "Connectors on the rail", "es": "Conectores en el riel" }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 22.0, "min": 12.0, "max": 60.0, "step": 1.0,
+      "group": "array", "modes": ["rail_organizer", "strain_block"],
+      "label": { "en": "Socket Pitch (mm)", "es": "Paso de Alojamiento (mm)" },
+      "tooltip": { "en": "Center distance between sockets", "es": "Distancia centro a centro entre alojamientos" }
+    },
+    {
+      "id": "cable_dia", "type": "slider", "default": 6.5, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "mount", "modes": ["strain_block"],
+      "label": { "en": "PV Lead Ø (mm)", "es": "Ø de Cable PV (mm)" },
+      "tooltip": { "en": "Solar cable diameter (4-6 mm2 ~6.5 mm)", "es": "Diámetro del cable solar (4-6 mm2 ~6.5 mm)" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["rail_organizer", "strain_block"],
+      "label": { "en": "Mount Screw Ø (mm)", "es": "Ø de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting screw clearance diameter", "es": "Diámetro de holgura del tornillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "single_collar", "mode": "panel_mount",
+      "label": { "en": "MC4 Panel Collar", "es": "Collar de Panel MC4" },
+      "values": { "socket_dia": 16.0 }
+    },
+    {
+      "id": "quad_rail", "mode": "rail_organizer",
+      "label": { "en": "4-Socket Rail", "es": "Riel de 4 Alojamientos" },
+      "values": { "socket_count": 4, "pitch": 22.0 }
+    },
+    {
+      "id": "pm_strain", "mode": "strain_block",
+      "label": { "en": "Two-Pole Strain Block", "es": "Bloque Aliviador de Dos Polos" },
+      "values": { "socket_dia": 16.0, "cable_dia": 6.5 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.0 mm", "es": "La pared debe ser de al menos 2.0 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 150] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "mc4_socket",
+        "label": { "en": "MC4 Body Socket", "es": "Alojamiento de Cuerpo MC4" },
+        "geometry_type": "socket",
+        "standard": "MC4",
+        "parameters": ["socket_dia", "clearance", "depth"],
+        "compatible_with": ["cable-management", "conduit-clip"]
+      },
+      {
+        "id": "mount_rail",
+        "label": { "en": "Screw-Mount Rail", "es": "Riel de Montaje" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["pitch", "socket_count", "screw_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "PV leads left loose at a panel or combiner chafe, strain their connectors and are a fire and arc risk over time. Printed MC4 holders sized to the real connector body dress leads neatly, take the strain off the crimp, and organize combiner and string wiring for off-grid and rooftop solar builders who otherwise zip-tie connectors to the frame. Better mechanical support extends connector life and improves inspectability.",
+      "es": "Los cables PV sueltos en un panel o combinador se rozan, tensionan sus conectores y son un riesgo de incendio y arco con el tiempo. Los soportes MC4 impresos al cuerpo real del conector acomodan los cables, liberan la tensión del ponchado y organizan el cableado de combinadores y cadenas para instaladores solares fuera de red y de techo que de otro modo amarran conectores al marco. Mejor soporte mecánico alarga la vida del conector y mejora la inspección."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["mc4", "solar", "pv", "connector", "holder", "electrical", "infrastructure", "hyperobject", "commons"]
+}

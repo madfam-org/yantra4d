@@ -1,0 +1,149 @@
+{
+  "project": {
+    "name": "String Winder / Peg Aid",
+    "slug": "string-winder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "The peg winder every guitarist keeps in the case: a crank whose socket fits over the tuning-machine button so strings wind up fast, plus a notch that pops acoustic bridge pins. The functional interface is the tuner-button socket (a cupped slot gripping the button, tuner posts are ~6 mm and buttons ~14-19 mm) and the bridge-pin slot. Build a peg-winder crank, a standalone bridge-pin puller, or a multi-socket knob.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El enrollador de clavijas que todo guitarrista guarda en el estuche: una manivela cuyo casquillo encaja sobre el botón de la clavija para enrollar cuerdas rápido, más una muesca que saca los pines de puente acústicos. La interfaz funcional es el casquillo del botón (una ranura que agarra el botón; los postes miden ~6 mm y los botones ~14-19 mm) y la ranura del pin. Genera una manivela enrolladora, un extractor de pines, o un pomo multi-casquillo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/string-winder.webp",
+    "tags": ["guitar", "string-winder", "tuner", "peg", "bridge-pin", "luthier", "music", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "peg_winder",
+      "label": { "en": "Peg Winder", "es": "Enrollador de Clavijas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["peg_winder"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "pin_puller",
+      "label": { "en": "Bridge-Pin Puller", "es": "Extractor de Pines" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pin_puller"],
+      "estimate": { "base_time": 11, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "multi_socket",
+      "label": { "en": "Multi-Socket Knob", "es": "Pomo Multi-Casquillo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_socket"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "peg_winder", "label": { "en": "Peg Winder", "es": "Enrollador de Clavijas" }, "render_mode": 0, "color": "#8f7a4a" },
+    { "id": "pin_puller", "label": { "en": "Bridge-Pin Puller", "es": "Extractor de Pines" }, "render_mode": 0, "color": "#a3925b" },
+    { "id": "multi_socket", "label": { "en": "Multi-Socket Knob", "es": "Pomo Multi-Casquillo" }, "render_mode": 0, "color": "#bfae6f" }
+  ],
+  "parameter_groups": [
+    { "id": "socket", "label": { "en": "Button Socket", "es": "Casquillo del Botón" } },
+    { "id": "handle", "label": { "en": "Handle", "es": "Mango" } },
+    { "id": "pin", "label": { "en": "Bridge Pin", "es": "Pin de Puente" } }
+  ],
+  "parameters": [
+    {
+      "id": "button_w", "type": "slider", "default": 16.0, "min": 10.0, "max": 24.0, "step": 0.5,
+      "group": "socket", "modes": ["peg_winder", "multi_socket"],
+      "label": { "en": "Tuner Button Width (mm)", "es": "Ancho del Botón (mm)" },
+      "tooltip": { "en": "Width of the tuning-machine button across the flats (~14-19 mm typical)", "es": "Ancho del botón de la clavija en las caras planas (~14-19 mm típico)" }
+    },
+    {
+      "id": "socket_dep", "type": "slider", "default": 10.0, "min": 5.0, "max": 18.0, "step": 0.5,
+      "group": "socket", "modes": ["peg_winder", "multi_socket"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad del Casquillo (mm)" },
+      "tooltip": { "en": "How deep the button seats in the socket", "es": "Qué tan profundo asienta el botón en el casquillo" }
+    },
+    {
+      "id": "fit_clear", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "socket", "modes": ["peg_winder", "multi_socket"], "advanced": true,
+      "label": { "en": "Socket Fit Clearance (mm)", "es": "Holgura del Casquillo (mm)" },
+      "tooltip": { "en": "Per-side gap so the socket slips over the button — tune per printer", "es": "Espacio por lado para que el casquillo entre en el botón — ajustar por impresora" }
+    },
+    {
+      "id": "handle_len", "type": "slider", "default": 70.0, "min": 35.0, "max": 120.0, "step": 1,
+      "group": "handle", "modes": ["peg_winder", "pin_puller"],
+      "label": { "en": "Handle Length (mm)", "es": "Longitud del Mango (mm)" },
+      "tooltip": { "en": "Crank / lever handle length", "es": "Longitud del mango de manivela / palanca" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pin_slot", "type": "slider", "default": 5.5, "min": 3.0, "max": 9.0, "step": 0.25,
+      "group": "pin", "modes": ["peg_winder", "pin_puller"],
+      "label": { "en": "Bridge-Pin Slot (mm)", "es": "Ranura del Pin (mm)" },
+      "tooltip": { "en": "Slot that hooks under the acoustic bridge-pin head (~5-6 mm)", "es": "Ranura que engancha bajo la cabeza del pin de puente (~5-6 mm)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "handle", "modes": ["peg_winder", "pin_puller", "multi_socket"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Socket wall / body thickness", "es": "Grosor de pared del casquillo / cuerpo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "acoustic_winder", "mode": "peg_winder",
+      "label": { "en": "Acoustic Peg Winder", "es": "Enrollador Acústico" },
+      "values": { "button_w": 16.0, "socket_dep": 10.0, "fit_clear": 0.4, "handle_len": 70.0, "pin_slot": 5.5, "wall": 4.0 }
+    },
+    {
+      "id": "standalone_puller", "mode": "pin_puller",
+      "label": { "en": "Bridge-Pin Puller", "es": "Extractor de Pines" },
+      "values": { "handle_len": 70.0, "pin_slot": 5.5, "wall": 4.0 }
+    },
+    {
+      "id": "three_size_knob", "mode": "multi_socket",
+      "label": { "en": "Three-Size Socket Knob", "es": "Pomo de Tres Tamaños" },
+      "values": { "button_w": 16.0, "socket_dep": 10.0, "fit_clear": 0.4, "wall": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "fit_clear < 2",
+      "severity": "warning",
+      "message": { "en": "Too much clearance and the socket slips on the button", "es": "Demasiada holgura y el casquillo resbala en el botón" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "tuner_button_socket",
+        "label": { "en": "Tuner Button Socket", "es": "Casquillo del Botón" },
+        "geometry_type": "socket",
+        "standard": "standard tuner button (~14-19 mm), 6 mm post",
+        "parameters": ["button_w", "socket_dep", "fit_clear"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Changing a full set of strings by hand is slow and hard on the fingers, and a broken or lost peg winder means a gig-day scramble. The tuner button is a near-standard shape across guitar, bass and ukulele machine heads, so a printed winder socket fits almost any instrument, and the same tool pops acoustic bridge pins. On-demand winders keep a working musician's kit complete without a music-store trip.",
+      "es": "Cambiar un juego completo de cuerdas a mano es lento y duro para los dedos, y un enrollador roto o perdido significa un apuro el día del concierto. El botón de la clavija es una forma casi estándar en clavijeros de guitarra, bajo y ukulele, así que un casquillo impreso encaja en casi cualquier instrumento, y la misma herramienta saca los pines de puente acústicos. Enrolladores bajo demanda mantienen completo el kit del músico sin ir a la tienda."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["guitar", "string-winder", "tuner", "peg", "bridge-pin", "luthier", "music", "commercial", "hyperobject", "commons"]
+}

@@ -1,0 +1,153 @@
+{
+  "project": {
+    "name": "Sewing Machine Foot / Guide",
+    "slug": "sewing-guide",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Seam guides and simple presser-foot aids. The functional interface is the machine shank — low-shank machines sit 3/4 in (19 mm) from bar to needle plate, high-shank 1-1/4 in (32 mm). The guide either snaps onto the presser-bar shank via a screw-clamp collar, or bolts to the needle plate as an adjustable seam fence. Build a shank-clamp seam guide, a bed seam gauge, or a right-angle edge guide.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Guías de costura y ayudas simples de prensatelas. La interfaz funcional es el vástago (shank) de la máquina — las máquinas de vástago bajo miden 3/4 pulg (19 mm) de barra a placa de aguja, vástago alto 1-1/4 pulg (32 mm). La guía se acopla al vástago de la barra prensatelas mediante un collar de tornillo, o se atornilla a la placa de aguja como una guía de costura ajustable. Genera una guía de vástago, un medidor de costura de base, o una guía de borde en ángulo recto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sewing-guide.webp",
+    "tags": ["sewing", "seam-guide", "presser-foot", "shank", "quilting", "textile", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "shank_guide",
+      "label": { "en": "Shank Seam Guide", "es": "Guía de Vástago" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shank_guide"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "seam_gauge",
+      "label": { "en": "Bed Seam Gauge", "es": "Medidor de Costura" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["seam_gauge"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "edge_guide",
+      "label": { "en": "Edge Guide", "es": "Guía de Borde" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["edge_guide"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "shank_guide", "label": { "en": "Shank Seam Guide", "es": "Guía de Vástago" }, "render_mode": 0, "color": "#8f5b7a" },
+    { "id": "seam_gauge", "label": { "en": "Bed Seam Gauge", "es": "Medidor de Costura" }, "render_mode": 0, "color": "#a36f8f" },
+    { "id": "edge_guide", "label": { "en": "Edge Guide", "es": "Guía de Borde" }, "render_mode": 0, "color": "#bf8aa3" }
+  ],
+  "parameter_groups": [
+    { "id": "shank", "label": { "en": "Shank", "es": "Vástago" } },
+    { "id": "seam", "label": { "en": "Seam", "es": "Costura" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "shank_type", "type": "select", "default": "low",
+      "group": "shank", "modes": ["shank_guide"],
+      "label": { "en": "Shank Type", "es": "Tipo de Vástago" },
+      "tooltip": { "en": "Low shank = 3/4 in (19 mm) bar-to-plate; high shank = 1-1/4 in (32 mm)", "es": "Vástago bajo = 3/4 pulg (19 mm) barra-a-placa; vástago alto = 1-1/4 pulg (32 mm)" },
+      "options": [
+        { "value": "low", "label": { "en": "Low shank (19 mm)", "es": "Vástago bajo (19 mm)" } },
+        { "value": "high", "label": { "en": "High shank (32 mm)", "es": "Vástago alto (32 mm)" } }
+      ]
+    },
+    {
+      "id": "bar_clear", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "shank", "modes": ["shank_guide"], "advanced": true,
+      "label": { "en": "Shank Bore Clearance (mm)", "es": "Holgura del Vástago (mm)" },
+      "tooltip": { "en": "Per-side gap between clamp bore and presser bar — tune per printer", "es": "Espacio por lado entre el collar y la barra prensatelas — ajustar por impresora" }
+    },
+    {
+      "id": "seam_dist", "type": "slider", "default": 12.0, "min": 3.0, "max": 40.0, "step": 0.5,
+      "group": "seam", "modes": ["shank_guide", "seam_gauge", "edge_guide"],
+      "label": { "en": "Seam Distance (mm)", "es": "Distancia de Costura (mm)" },
+      "tooltip": { "en": "Distance from the needle line to the fabric-edge fence", "es": "Distancia de la línea de aguja a la guía del borde de tela" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "screw_d", "type": "slider", "default": 4.2, "min": 2.5, "max": 6.0, "step": 0.1,
+      "group": "body", "modes": ["shank_guide", "seam_gauge", "edge_guide"], "advanced": true,
+      "label": { "en": "Screw Hole (mm)", "es": "Orificio de Tornillo (mm)" },
+      "tooltip": { "en": "Set-screw / mount-bolt clearance hole", "es": "Orificio de holgura del tornillo de fijación / montaje" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "body", "modes": ["shank_guide", "seam_gauge", "edge_guide"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body / plate / fence wall thickness", "es": "Grosor de pared de cuerpo / placa / guía" }
+    },
+    {
+      "id": "fence_h", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 1,
+      "group": "seam", "modes": ["edge_guide"],
+      "label": { "en": "Fence Height (mm)", "es": "Altura de Guía (mm)" },
+      "tooltip": { "en": "Height of the edge-guide fence wall", "es": "Altura de la pared de la guía de borde" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "low_shank_guide", "mode": "shank_guide",
+      "label": { "en": "Low-Shank Seam Guide", "es": "Guía de Vástago Bajo" },
+      "values": { "shank_type": "low", "bar_clear": 0.3, "seam_dist": 12.0, "screw_d": 4.2, "wall": 4.0 }
+    },
+    {
+      "id": "quarter_inch_gauge", "mode": "seam_gauge",
+      "label": { "en": "Quarter-Inch Seam Gauge", "es": "Medidor 1/4 Pulgada" },
+      "values": { "seam_dist": 6.4, "screw_d": 4.2, "wall": 4.0 }
+    },
+    {
+      "id": "quilting_edge_guide", "mode": "edge_guide",
+      "label": { "en": "Quilting Edge Guide", "es": "Guía de Borde para Acolchado" },
+      "values": { "seam_dist": 12.0, "screw_d": 4.2, "wall": 4.0, "fence_h": 16.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "seam_dist >= 3",
+      "severity": "warning",
+      "message": { "en": "Very small seam distances collide with the presser foot", "es": "Distancias de costura muy pequeñas chocan con el prensatelas" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 100] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "shank_seam_interface",
+        "label": { "en": "Shank + Seam Guide", "es": "Vástago + Guía de Costura" },
+        "geometry_type": "snap",
+        "standard": "low / high shank (19 / 32 mm bar-to-plate)",
+        "parameters": ["shank_type", "bar_clear", "seam_dist"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Straight, even seam allowances are the difference between a garment that fits and one that doesn't, yet branded seam guides and specialty feet are sold per machine and per task. Low/high shank is a near-universal split across household machines, so a printed shank-clamp guide or a plate-bolted seam fence gives any sewist an adjustable, repeatable seam allowance without buying a foot for every width.",
+      "es": "Márgenes de costura rectos y uniformes son la diferencia entre una prenda que ajusta y una que no, pero las guías de costura y prensatelas especiales se venden por máquina y por tarea. Vástago bajo/alto es una división casi universal en máquinas domésticas, así que una guía de collar impresa o una guía de costura atornillada a la placa da a cualquier persona un margen de costura ajustable y repetible sin comprar un prensatelas por cada ancho."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["sewing", "seam-guide", "presser-foot", "shank", "quilting", "textile", "household", "hyperobject", "commons"]
+}

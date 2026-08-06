@@ -1,0 +1,176 @@
+{
+  "project": {
+    "name": "Conduit Clip / Spacer",
+    "slug": "conduit-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Snap clips and standoffs that hold electrical conduit to a surface. The cradle diameter lands on the real outside diameter of EMT (1/2\", 3/4\", 1\") or metric conduit (16/20/25 mm), and the snap mouth opens just under the OD so the tube clicks in and stays put. Flat-backed snap clip with screw ears, a standoff version that spaces the run off the wall, and a gang rail that routes several parallel runs.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Grapas de presión y separadores que sujetan conducto eléctrico a una superficie. El diámetro de la cuna coincide con el diámetro exterior real del EMT (1/2\", 3/4\", 1\") o conducto métrico (16/20/25 mm), y la boca de presión abre justo por debajo del diámetro para que el tubo entre a presión y quede fijo. Grapa de presión con orejas para tornillo, una versión con separador que aleja el tendido de la pared y un riel múltiple que enruta varios tendidos paralelos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/conduit-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["conduit", "emt", "clip", "snap", "standoff", "cable-management", "electrical", "power", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "snap_clip",
+      "label": { "en": "Snap Clip", "es": "Grapa de Presión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["snap_clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "standoff_clip",
+      "label": { "en": "Standoff Clip", "es": "Grapa con Separador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["standoff_clip"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "gang_clip",
+      "label": { "en": "Gang Rail", "es": "Riel Múltiple" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["gang_clip"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "snap_clip", "label": { "en": "Snap Clip", "es": "Grapa de Presión" }, "render_mode": 0, "color": "#31506b" },
+    { "id": "standoff_clip", "label": { "en": "Standoff Clip", "es": "Grapa con Separador" }, "render_mode": 0, "color": "#41607b" },
+    { "id": "gang_clip", "label": { "en": "Gang Rail", "es": "Riel Múltiple" }, "render_mode": 0, "color": "#51708b" }
+  ],
+  "parameter_groups": [
+    { "id": "conduit", "label": { "en": "Conduit", "es": "Conducto" } },
+    { "id": "clip", "label": { "en": "Clip", "es": "Grapa" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "conduit_size", "type": "select", "default": "EMT12",
+      "group": "conduit", "modes": ["snap_clip", "standoff_clip", "gang_clip"],
+      "label": { "en": "Conduit Size", "es": "Tamaño de Conducto" },
+      "tooltip": { "en": "EMT trade size or metric OD", "es": "Tamaño comercial EMT o diámetro métrico" },
+      "options": [
+        { "value": "EMT12", "label": { "en": "EMT 1/2\" (17.9 mm)", "es": "EMT 1/2\" (17.9 mm)" } },
+        { "value": "EMT34", "label": { "en": "EMT 3/4\" (23.4 mm)", "es": "EMT 3/4\" (23.4 mm)" } },
+        { "value": "EMT1", "label": { "en": "EMT 1\" (29.5 mm)", "es": "EMT 1\" (29.5 mm)" } },
+        { "value": "M16", "label": { "en": "Metric 16 mm", "es": "Métrico 16 mm" } },
+        { "value": "M20", "label": { "en": "Metric 20 mm", "es": "Métrico 20 mm" } },
+        { "value": "M25", "label": { "en": "Metric 25 mm", "es": "Métrico 25 mm" } }
+      ]
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.3, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "conduit", "modes": ["snap_clip", "standoff_clip", "gang_clip"], "advanced": true,
+      "label": { "en": "Cradle Clearance (mm)", "es": "Holgura de Cuna (mm)" },
+      "tooltip": { "en": "Radial gap around the conduit", "es": "Espacio radial alrededor del conducto" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.6, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "clip", "modes": ["snap_clip", "standoff_clip", "gang_clip"],
+      "label": { "en": "Clip Wall (mm)", "es": "Pared de Grapa (mm)" },
+      "tooltip": { "en": "Thickness of the cradle wall", "es": "Grosor de la pared de la cuna" }
+    },
+    {
+      "id": "width", "type": "slider", "default": 10.0, "min": 5.0, "max": 30.0, "step": 1.0,
+      "group": "clip", "modes": ["snap_clip", "standoff_clip", "gang_clip"],
+      "label": { "en": "Clip Width (mm)", "es": "Ancho de Grapa (mm)" },
+      "tooltip": { "en": "Width along the conduit axis", "es": "Ancho a lo largo del eje del conducto" }
+    },
+    {
+      "id": "mouth_frac", "type": "slider", "default": 0.62, "min": 0.45, "max": 0.85, "step": 0.01,
+      "group": "clip", "modes": ["snap_clip", "standoff_clip", "gang_clip"], "advanced": true,
+      "label": { "en": "Snap Mouth Fraction", "es": "Fracción de Boca" },
+      "tooltip": { "en": "Mouth opening as a fraction of OD (smaller grips harder)", "es": "Abertura de la boca como fracción del diámetro (menor agarra más)" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["snap_clip", "standoff_clip", "gang_clip"],
+      "label": { "en": "Screw Hole Ø (mm)", "es": "Ø de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting screw clearance diameter", "es": "Diámetro de holgura del tornillo" }
+    },
+    {
+      "id": "standoff", "type": "slider", "default": 8.0, "min": 2.0, "max": 40.0, "step": 1.0,
+      "group": "mount", "modes": ["standoff_clip"],
+      "label": { "en": "Standoff Height (mm)", "es": "Altura de Separador (mm)" },
+      "tooltip": { "en": "How far the conduit sits off the wall", "es": "Qué tanto se separa el conducto de la pared" }
+    },
+    {
+      "id": "gang_count", "type": "slider", "default": 3, "min": 2, "max": 8, "step": 1,
+      "group": "mount", "modes": ["gang_clip"],
+      "label": { "en": "Gang Cradles", "es": "Cunas del Riel" },
+      "tooltip": { "en": "Number of parallel cradles on the rail", "es": "Número de cunas paralelas en el riel" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "half_inch_snap", "mode": "snap_clip",
+      "label": { "en": "EMT 1/2\" Snap Clip", "es": "Grapa EMT 1/2\"" },
+      "values": { "conduit_size": "EMT12" }
+    },
+    {
+      "id": "three_quarter_standoff", "mode": "standoff_clip",
+      "label": { "en": "EMT 3/4\" Standoff", "es": "Separador EMT 3/4\"" },
+      "values": { "conduit_size": "EMT34", "standoff": 12.0 }
+    },
+    {
+      "id": "triple_run", "mode": "gang_clip",
+      "label": { "en": "Triple 1/2\" Run", "es": "Triple Tendido 1/2\"" },
+      "values": { "conduit_size": "EMT12", "gang_count": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -150, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "conduit_snap",
+        "label": { "en": "Conduit OD Snap", "es": "Encaje de Diámetro de Conducto" },
+        "geometry_type": "snap",
+        "standard": "EMT 1/2-1in / 16-25mm",
+        "parameters": ["conduit_size", "clearance", "mouth_frac"],
+        "compatible_with": ["cable-gland", "cable-management"]
+      },
+      {
+        "id": "screw_mount",
+        "label": { "en": "Screw Mount Pattern", "es": "Patrón de Tornillo" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["screw_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Neat, code-adjacent conduit support is often the missing piece in DIY and small-shop wiring; a strip of printed clips sized to the exact tube OD lets anyone dress a run cleanly instead of leaving cable draped or stapled. Standoff and gang variants keep runs off hot surfaces and organize multi-circuit routes, improving safety and serviceability for off-grid, workshop and outbuilding installs.",
+      "es": "El soporte ordenado de conducto suele ser la pieza faltante en instalaciones caseras y de taller; una tira de grapas impresas al diámetro exacto del tubo permite acomodar un tendido limpiamente en lugar de dejar el cable colgando o grapado. Las variantes con separador y riel mantienen los tendidos lejos de superficies calientes y organizan rutas multicircuito, mejorando la seguridad y el mantenimiento en instalaciones aisladas, de taller y anexos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["conduit", "emt", "clip", "snap", "standoff", "electrical", "infrastructure", "hyperobject", "commons"]
+}

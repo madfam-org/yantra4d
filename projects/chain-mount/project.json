@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Cable Drag-Chain Mount",
+    "slug": "chain-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Bolts the end bracket of a cable drag chain (energy chain / cable carrier) to a frame. The chain end is a small plate with two bolt holes on a known width; this mount presents those holes and carries its own surface-mounting holes so a drag-chain run can be anchored at its fixed and moving ends. Choose an end bracket, a 2020 extrusion bracket, or a slotted moving-end mount.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Atornilla el soporte de extremo de una cadena portacables (cadena de energia) a un marco. El extremo de la cadena es una placa pequena con dos agujeros de tornillo a un ancho conocido; este montaje presenta esos agujeros y lleva sus propios agujeros de fijacion a superficie para anclar un tramo de cadena en sus extremos fijo y movil. Elige un soporte de extremo, un soporte para extrusion 2020 o un montaje de extremo movil ranurado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/chain-mount.webp",
+    "difficulty": "beginner",
+    "tags": ["drag-chain", "cable-chain", "energy-chain", "cable-carrier", "bracket", "cnc", "3d-printer", "robotics", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "end_bracket",
+      "label": { "en": "End Bracket", "es": "Soporte de Extremo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["end_bracket"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "extrusion_bracket",
+      "label": { "en": "2020 Extrusion Bracket", "es": "Soporte para Extrusion 2020" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["extrusion_bracket"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "moving_end",
+      "label": { "en": "Moving End", "es": "Extremo Movil" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["moving_end"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "end_bracket", "label": { "en": "End Bracket", "es": "Soporte de Extremo" }, "render_mode": 0, "color": "#7a6b3f" },
+    { "id": "extrusion_bracket", "label": { "en": "2020 Extrusion Bracket", "es": "Soporte para Extrusion 2020" }, "render_mode": 0, "color": "#8f7a4a" },
+    { "id": "moving_end", "label": { "en": "Moving End", "es": "Extremo Movil" }, "render_mode": 0, "color": "#69592f" }
+  ],
+  "parameter_groups": [
+    { "id": "chain", "label": { "en": "Chain End", "es": "Extremo de Cadena" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "chain_w", "type": "slider", "default": 15.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "chain", "modes": ["end_bracket", "extrusion_bracket", "moving_end"],
+      "label": { "en": "Chain Bolt Width (mm)", "es": "Ancho de Tornillos de Cadena (mm)" },
+      "tooltip": { "en": "Chain-end bolt spacing across the chain width", "es": "Separacion de tornillos del extremo a lo ancho de la cadena" }
+    },
+    {
+      "id": "chain_h", "type": "slider", "default": 12.0, "min": 8.0, "max": 30.0, "step": 0.5,
+      "group": "chain", "modes": ["extrusion_bracket"],
+      "label": { "en": "Chain Plate Height (mm)", "es": "Altura de Placa de Cadena (mm)" },
+      "tooltip": { "en": "Chain-end mounting-plate height (upstand)", "es": "Altura de la placa de montaje del extremo (montante)" }
+    },
+    {
+      "id": "chain_hole", "type": "slider", "default": 3.4, "min": 2.0, "max": 6.0, "step": 0.1,
+      "group": "chain", "modes": ["end_bracket", "extrusion_bracket", "moving_end"],
+      "label": { "en": "Chain Bolt (mm)", "es": "Tornillo de Cadena (mm)" },
+      "tooltip": { "en": "Chain-end bolt clearance (3.4 = M3)", "es": "Holgura del tornillo del extremo (3.4 = M3)" }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "plate", "modes": ["end_bracket", "extrusion_bracket", "moving_end"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Bracket plate thickness", "es": "Grosor de la placa del soporte" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "plate", "modes": ["end_bracket", "extrusion_bracket", "moving_end"], "advanced": true,
+      "label": { "en": "Hole Margin (mm)", "es": "Margen de Agujeros (mm)" },
+      "tooltip": { "en": "Material margin around the holes", "es": "Margen de material alrededor de los agujeros" }
+    },
+    {
+      "id": "mount_d", "type": "slider", "default": 4.5, "min": 2.5, "max": 6.5, "step": 0.1,
+      "group": "mount", "modes": ["end_bracket", "extrusion_bracket", "moving_end"],
+      "label": { "en": "Mount Bolt (mm)", "es": "Tornillo de Montaje (mm)" },
+      "tooltip": { "en": "Surface / T-nut bolt clearance (4.5 = M4/M5)", "es": "Holgura del tornillo de superficie / tuerca T (4.5 = M4/M5)" }
+    },
+    {
+      "id": "slot_len", "type": "slider", "default": 14.0, "min": 4.0, "max": 30.0, "step": 1,
+      "group": "mount", "modes": ["moving_end"],
+      "label": { "en": "Adjust Slot (mm)", "es": "Ranura de Ajuste (mm)" },
+      "tooltip": { "en": "Moving-end adjustment slot travel", "es": "Recorrido de la ranura de ajuste del extremo movil" }
+    },
+    {
+      "id": "foot_len", "type": "slider", "default": 30.0, "min": 20.0, "max": 60.0, "step": 1,
+      "group": "mount", "modes": ["extrusion_bracket"],
+      "label": { "en": "Foot Length (mm)", "es": "Largo de Pie (mm)" },
+      "tooltip": { "en": "Extrusion foot length (T-nut holes on 20 mm centres)", "es": "Largo del pie de extrusion (agujeros de tuerca T a 20 mm)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "chain15_end", "mode": "end_bracket",
+      "label": { "en": "15 mm Chain End", "es": "Extremo Cadena 15 mm" },
+      "values": { "chain_w": 15, "chain_hole": 3.4, "plate_t": 4 }
+    },
+    {
+      "id": "chain18_2020", "mode": "extrusion_bracket",
+      "label": { "en": "18 mm Chain on 2020", "es": "Cadena 18 mm en 2020" },
+      "values": { "chain_w": 18, "foot_len": 40, "mount_d": 5.2 }
+    },
+    {
+      "id": "chain10_moving", "mode": "moving_end",
+      "label": { "en": "10 mm Moving End", "es": "Extremo Movil 10 mm" },
+      "values": { "chain_w": 10, "slot_len": 18, "plate_t": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_t >= 2.5",
+      "severity": "error",
+      "message": { "en": "Plate must be at least 2.5 mm thick", "es": "La placa debe tener al menos 2.5 mm de grosor" }
+    },
+    {
+      "expression": "chain_w >= 6",
+      "severity": "warning",
+      "message": { "en": "A chain width under 6 mm crowds the end bolt holes", "es": "Un ancho de cadena menor a 6 mm aprieta los agujeros de tornillo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [50, 50, 45] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 80] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -80, 12] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "drag_chain_end_mount",
+        "label": { "en": "Drag-Chain End Mount", "es": "Montaje de Extremo de Cadena" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["chain_w", "chain_h", "chain_hole"],
+        "compatible_with": ["drag-chain"]
+      },
+      {
+        "id": "surface_mount",
+        "label": { "en": "Surface Mount", "es": "Montaje a Superficie" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_d", "slot_len", "foot_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A cable drag chain protects the wiring on any moving axis, but its end brackets are vendor-specific and easily lost. A printed mount that presents the chain-end bolt holes and its own surface / extrusion mounting lets any drag-chain run be anchored on a printer, CNC or robot from parts on hand.",
+      "es": "Una cadena portacables protege el cableado en cualquier eje movil, pero sus soportes de extremo son especificos del fabricante y se pierden facil. Un montaje impreso que presenta los agujeros del extremo de la cadena y su propia fijacion a superficie / extrusion permite anclar cualquier tramo en una impresora, CNC o robot con piezas a la mano."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["drag-chain", "cable-carrier", "energy-chain", "bracket", "robotics", "industrial", "hyperobject", "commons"]
+}

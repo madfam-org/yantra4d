@@ -1,0 +1,151 @@
+{
+  "project": {
+    "name": "Watchmaker Movement Holder",
+    "slug": "movement-holder",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "Parametric holders and casing rings for servicing mechanical watch movements. Seat, protect and organize calibres on the bench during disassembly, oiling and hand-fitting. Movement pocket and stem relief are ligne-honest — defaults match the ETA 2824-2 (25.6 mm / 11.5 ligne), and the whole family scales to any calibre from a lady's 6¾ ligne to a pocket-watch 16.5 ligne ETA 6497.",
+      "es": "Soportes y anillos de encaje paramétricos para el servicio de movimientos mecánicos de reloj. Asientan, protegen y organizan calibres en el banco durante el desarme, el aceitado y la colocación de agujas. El alojamiento del movimiento y el alivio del tija respetan la línea: los valores por defecto coinciden con el ETA 2824-2 (25.6 mm / 11.5 líneas) y toda la familia escala a cualquier calibre."
+    },
+    "thumbnail": "/projects/movement-holder.webp",
+    "difficulty": "advanced",
+    "tags": ["horology", "watchmaking", "movement", "eta", "servicing", "holder", "socket", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "modes": [
+    {
+      "id": "movement_cup",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Single-Calibre Movement Cup", "es": "Copa de Movimiento (Un Calibre)" },
+      "description": {
+        "en": "One-up bench cup: a puck with a movement pocket bored from the top and a stem/crown relief bored from the bottom. Both bores open to a face.",
+        "es": "Copa de banco individual: un disco con alojamiento del movimiento perforado por arriba y alivio de tija por abajo."
+      },
+      "parts": ["movement_cup"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "multi_station",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Multi-Station Servicing Tray", "es": "Bandeja de Servicio Multi-Estación" },
+      "description": {
+        "en": "A bar carrying a row of identical movement pockets with a lengthwise finger-scoop, for batching several calibres of the same size through service.",
+        "es": "Una barra con una fila de alojamientos idénticos y un rebaje longitudinal para lotes de varios calibres del mismo tamaño."
+      },
+      "parts": ["multi_station"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "case_ring",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Movement Casing Ring", "es": "Anillo de Encaje del Movimiento" },
+      "description": {
+        "en": "An annulus that seats over the movement band to protect it during hand-fitting, with three caseback-tool grip notches in the outer wall. A manifold through-bore, open on both faces.",
+        "es": "Un anillo que se asienta sobre la banda del movimiento para protegerlo durante la colocación de agujas, con tres muescas de agarre en la pared exterior."
+      },
+      "parts": ["case_ring"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "movement_cup",  "render_mode": 0, "label": { "en": "Movement Cup",  "es": "Copa de Movimiento" }, "default_color": "#3d5a80" },
+    { "id": "multi_station", "render_mode": 0, "label": { "en": "Servicing Tray", "es": "Bandeja de Servicio" }, "default_color": "#98c1d9" },
+    { "id": "case_ring",     "render_mode": 0, "label": { "en": "Casing Ring",    "es": "Anillo de Encaje" }, "default_color": "#ee6c4d" }
+  ],
+  "parameters": [
+    {
+      "id": "movement_dia", "type": "slider", "default": 25.6, "min": 15.3, "max": 40.0, "step": 0.1,
+      "label": { "en": "Movement Diameter (mm)", "es": "Diámetro del Movimiento (mm)" },
+      "tooltip": {
+        "en": "Calibre diameter. 25.6 = ETA 2824-2 (11.5 ligne); 20.0 = ETA 2000; 36.6 = ETA 6497 (16.5 ligne). 1 ligne = 2.2558 mm.",
+        "es": "Diámetro del calibre. 25.6 = ETA 2824-2 (11.5 líneas); 36.6 = ETA 6497 (16.5 líneas). 1 línea = 2.2558 mm."
+      },
+      "group": "movement"
+    },
+    {
+      "id": "movement_height", "type": "slider", "default": 4.6, "min": 2.5, "max": 8.0, "step": 0.1,
+      "label": { "en": "Movement Height (mm)", "es": "Altura del Movimiento (mm)" },
+      "tooltip": {
+        "en": "Movement thickness that sets pocket depth. ETA 2824-2 = 4.6 mm; ETA 2892 = 3.6 mm; ETA 6497 = 4.5 mm.",
+        "es": "Espesor del movimiento que fija la profundidad del alojamiento. ETA 2824-2 = 4.6 mm."
+      },
+      "group": "movement"
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "label": { "en": "Wall Thickness (mm)", "es": "Espesor de Pared (mm)" },
+      "tooltip": { "en": "Radial wall around the movement pocket.", "es": "Pared radial alrededor del alojamiento." },
+      "group": "holder"
+    },
+    {
+      "id": "base_height", "type": "slider", "default": 10.0, "min": 5.0, "max": 25.0, "step": 0.5,
+      "label": { "en": "Base Height (mm)", "es": "Altura de la Base (mm)" },
+      "tooltip": { "en": "Solid base below the movement seat (cup mode).", "es": "Base sólida bajo el asiento del movimiento (modo copa)." },
+      "group": "holder"
+    },
+    {
+      "id": "stem_relief_dia", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "label": { "en": "Stem Relief Diameter (mm)", "es": "Diámetro del Alivio de Tija (mm)" },
+      "tooltip": { "en": "Bottom bore clearing the winding stem / setting lever.", "es": "Perforación inferior que libera la tija de cuerda." },
+      "group": "holder"
+    },
+    {
+      "id": "station_count", "type": "slider", "default": 3, "min": 2, "max": 8, "step": 1,
+      "label": { "en": "Station Count", "es": "Número de Estaciones" },
+      "tooltip": { "en": "Number of movement pockets in the multi-station tray.", "es": "Número de alojamientos en la bandeja multi-estación." },
+      "group": "holder"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "movement", "label": { "en": "Movement (Calibre)", "es": "Movimiento (Calibre)" } },
+    { "id": "holder",   "label": { "en": "Holder Body",        "es": "Cuerpo del Soporte" } }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "eta_movement_socket",
+        "label": { "en": "ETA Movement Seat", "es": "Asiento de Movimiento ETA" },
+        "geometry_type": "socket",
+        "standard": "ETA 2824-2 (25.6 mm / 11.5 ligne)",
+        "parameters": ["movement_dia", "movement_height"]
+      },
+      {
+        "id": "case_band_ring",
+        "label": { "en": "Case Band Protection Ring", "es": "Anillo Protector de Banda" },
+        "geometry_type": "socket",
+        "standard": "ETA/standard calibre band (ligne = 2.2558 mm)",
+        "parameters": ["movement_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Print the movement pocket 0.2–0.3 mm oversize; a snug movement rubbing the print can mark the movement band. PLA or PETG holds tolerance; avoid brittle resins that chip at the pocket lip.",
+        "es": "Imprime el alojamiento 0.2–0.3 mm sobredimensionado; un movimiento apretado puede marcar la banda. PLA o PETG mantiene la tolerancia."
+      }
+    },
+    "societal_benefit": {
+      "en": "Independent watchmakers and hobbyists rarely have a movement holder for every calibre they meet. A parametric family means one file covers the whole bench, printed on demand instead of buying a $30–$80 aluminium holder per movement.",
+      "es": "Los relojeros independientes rara vez tienen un soporte para cada calibre. Una familia paramétrica cubre todo el banco, impresa a demanda en lugar de comprar un soporte de aluminio por movimiento."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0"
+}

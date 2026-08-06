@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Feeler / Drill Gauge Organizer",
+    "slug": "gauge-organizer",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "Parametric organizers for feeler gauges, drill / tap sets and gauge leaves. Stand feeler blades upright in slots sized to the 12.7 mm (1/2 in) standard blade width, park a numbered drill / wire-gauge set in a graduated hole grid, or lay loose leaves flat in a tray. A blade you can see and grab is a blade you actually use.",
+      "es": "Organizadores paramétricos para galgas de espesores, juegos de brocas / machos y láminas de galga. Coloca las láminas de galga verticales en ranuras dimensionadas al ancho estándar de 12.7 mm (1/2 in), aparca un juego de brocas numeradas en una rejilla de agujeros graduados, o guarda láminas sueltas planas en una bandeja."
+    },
+    "thumbnail": "/projects/gauge-organizer.webp",
+    "difficulty": "beginner",
+    "tags": ["metrology", "feeler-gauge", "drill-index", "organizer", "workshop", "grid", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "modes": [
+    {
+      "id": "feeler_rack",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Upright Feeler-Blade Rack", "es": "Soporte Vertical de Láminas" },
+      "description": {
+        "en": "A block that stands N feeler blades upright, each in a thin obround slot open to the top face, matched to the 12.7 mm blade width.",
+        "es": "Un bloque que sostiene N láminas de galga verticales, cada una en una ranura fina abierta a la cara superior."
+      },
+      "parts": ["feeler_rack"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "drill_index",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Graduated Drill Index", "es": "Índice de Brocas Graduado" },
+      "description": {
+        "en": "A grid of blind holes whose diameters step from small to the set maximum, each open to the top face — a numbered drill / wire-gauge stand.",
+        "es": "Una rejilla de agujeros ciegos cuyos diámetros van de pequeño al máximo del juego, cada uno abierto a la cara superior."
+      },
+      "parts": ["drill_index"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "blade_tray",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Flat Blade Tray", "es": "Bandeja Plana de Láminas" },
+      "description": {
+        "en": "A shallow tray of parallel channels that store loose leaves flat, with a front finger cut-out to pick a blade out.",
+        "es": "Una bandeja poco profunda de canales paralelos que guardan láminas planas, con un rebaje frontal para tomar una lámina."
+      },
+      "parts": ["blade_tray"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "feeler_rack", "render_mode": 0, "label": { "en": "Feeler Rack", "es": "Soporte de Láminas" }, "default_color": "#22333b" },
+    { "id": "drill_index", "render_mode": 0, "label": { "en": "Drill Index", "es": "Índice de Brocas" }, "default_color": "#5e503f" },
+    { "id": "blade_tray",  "render_mode": 0, "label": { "en": "Blade Tray",  "es": "Bandeja de Láminas" }, "default_color": "#a9927d" }
+  ],
+  "parameters": [
+    {
+      "id": "blade_width", "type": "slider", "default": 12.7, "min": 8.0, "max": 20.0, "step": 0.1,
+      "label": { "en": "Feeler Blade Width (mm)", "es": "Ancho de la Lámina (mm)" },
+      "tooltip": {
+        "en": "Standard feeler-gauge blade width = 12.7 mm (1/2 in). Some narrow sets use ~10 mm. Sets the slot / channel length.",
+        "es": "Ancho estándar de lámina de galga = 12.7 mm (1/2 in). Algunos juegos estrechos usan ~10 mm."
+      },
+      "group": "feeler"
+    },
+    {
+      "id": "blade_count", "type": "slider", "default": 13, "min": 4, "max": 32, "step": 1,
+      "label": { "en": "Blade / Leaf Count", "es": "Número de Láminas" },
+      "tooltip": {
+        "en": "Number of blade slots. A standard metric feeler set is 13 blades (0.05–1.00 mm); 28-blade sets go to 0.05–1.00 finely stepped.",
+        "es": "Número de ranuras. Un juego métrico estándar tiene 13 láminas (0.05–1.00 mm)."
+      },
+      "group": "feeler"
+    },
+    {
+      "id": "slot_pitch", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "label": { "en": "Slot Pitch (mm)", "es": "Paso entre Ranuras (mm)" },
+      "tooltip": { "en": "Spacing between upright blade slots.", "es": "Separación entre ranuras verticales." },
+      "group": "feeler"
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "label": { "en": "Wall Thickness (mm)", "es": "Espesor de Pared (mm)" },
+      "tooltip": { "en": "Border material around the slot / hole field.", "es": "Material de borde alrededor del campo de ranuras / agujeros." },
+      "group": "body"
+    },
+    {
+      "id": "body_height", "type": "slider", "default": 22.0, "min": 12.0, "max": 45.0, "step": 1.0,
+      "label": { "en": "Body Height (mm)", "es": "Altura del Cuerpo (mm)" },
+      "tooltip": { "en": "Height of the rack / index body (sets how deep blades and bits are held).", "es": "Altura del cuerpo (fija qué tan profundo se sujetan láminas y brocas)." },
+      "group": "body"
+    },
+    {
+      "id": "index_cols", "type": "slider", "default": 10, "min": 3, "max": 20, "step": 1,
+      "label": { "en": "Drill Index Columns", "es": "Columnas del Índice" },
+      "tooltip": { "en": "Columns in the graduated hole grid.", "es": "Columnas en la rejilla graduada." },
+      "group": "index"
+    },
+    {
+      "id": "index_rows", "type": "slider", "default": 6, "min": 1, "max": 12, "step": 1,
+      "label": { "en": "Drill Index Rows", "es": "Filas del Índice" },
+      "tooltip": { "en": "Rows in the graduated hole grid (columns x rows = total sizes).", "es": "Filas en la rejilla graduada." },
+      "group": "index"
+    },
+    {
+      "id": "max_bit_dia", "type": "slider", "default": 6.5, "min": 3.0, "max": 13.0, "step": 0.5,
+      "label": { "en": "Largest Bit Diameter (mm)", "es": "Diámetro Máximo de Broca (mm)" },
+      "tooltip": {
+        "en": "Top of the graduated hole range. A #1–#60 wire-gauge set tops out at 5.79 mm (#1); a 1–13 mm index needs 13.",
+        "es": "Máximo del rango graduado. Un juego #1–#60 llega a 5.79 mm (#1)."
+      },
+      "group": "index"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "feeler", "label": { "en": "Feeler Blades",  "es": "Láminas de Galga" } },
+    { "id": "index",  "label": { "en": "Drill Index",    "es": "Índice de Brocas" } },
+    { "id": "body",   "label": { "en": "Body",           "es": "Cuerpo" } }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "feeler_blade_grid",
+        "label": { "en": "Feeler Blade Slot Grid", "es": "Rejilla de Ranuras de Lámina" },
+        "geometry_type": "grid",
+        "standard": "12.7 mm (1/2 in) feeler blade",
+        "parameters": ["blade_width", "blade_count", "slot_pitch"]
+      },
+      {
+        "id": "drill_gauge_grid",
+        "label": { "en": "Graduated Drill Index Grid", "es": "Rejilla de Índice Graduado" },
+        "geometry_type": "grid",
+        "standard": "#1–#60 wire-gauge drill set",
+        "parameters": ["index_cols", "index_rows", "max_bit_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Blade slots at 1.6–1.8 mm are wide enough to swallow a stack of feeler leaves without splitting a wall; if your printer over-extrudes, widen slot_pitch rather than the slot. Graduated holes are printed a touch undersize by nozzle rounding — chase them with the actual drills to seat the set. Recycled PETG is fine; this is a non-precision fixture.",
+        "es": "Las ranuras de 1.6–1.8 mm tragan una pila de láminas sin partir la pared; si tu impresora sobre-extruye, aumenta slot_pitch. Persigue los agujeros graduados con las brocas reales. El PETG reciclado sirve; es una utilería no de precisión."
+      }
+    },
+    "societal_benefit": {
+      "en": "A loose set of feeler leaves or numbered drills is a set half-lost. A printed, size-labelled organizer costs a few grams of filament and keeps a whole gauge set findable — the kind of quiet shop-floor upgrade nobody sells cheaply.",
+      "es": "Un juego suelto de láminas o brocas numeradas es un juego medio perdido. Un organizador impreso cuesta unos gramos de filamento y mantiene localizable todo el juego."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0"
+}

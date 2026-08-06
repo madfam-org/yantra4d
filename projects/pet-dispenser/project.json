@@ -10,146 +10,455 @@
     },
     "thumbnail": "/projects/pet-dispenser.webp",
     "difficulty": "intermediate",
-    "tags": ["pet", "dog", "cat", "bird", "dispenser", "water", "feeder", "gravity", "pet-bottle", "household", "hyperobject", "commons", "cdg"],
-    "hyperobject": { "is_hyperobject": true },
+    "tags": [
+      "pet",
+      "dog",
+      "cat",
+      "bird",
+      "dispenser",
+      "water",
+      "feeder",
+      "gravity",
+      "pet-bottle",
+      "household",
+      "hyperobject",
+      "commons",
+      "cdg"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
     "force_backend": true
   },
   "modes": [
     {
       "id": "water_base",
-      "label": { "en": "Water Base", "es": "Base de Agua" },
+      "label": {
+        "en": "Water Base",
+        "es": "Base de Agua"
+      },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["water_base"],
-      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+      "parts": [
+        "water_base"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
     },
     {
       "id": "feed_hopper",
-      "label": { "en": "Feed Hopper", "es": "Tolva de Alimento" },
+      "label": {
+        "en": "Feed Hopper",
+        "es": "Tolva de Alimento"
+      },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["feed_hopper"],
-      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+      "parts": [
+        "feed_hopper"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 14
+      }
     },
     {
       "id": "bird_dispenser",
-      "label": { "en": "Bird Dispenser", "es": "Dispensador para Aves" },
+      "label": {
+        "en": "Bird Dispenser",
+        "es": "Dispensador para Aves"
+      },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["bird_dispenser"],
-      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+      "parts": [
+        "bird_dispenser"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 3,
+        "per_part": 13
+      }
     }
   ],
   "parts": [
-    { "id": "water_base", "label": { "en": "Water Base", "es": "Base de Agua" }, "render_mode": 0, "color": "#0369a1" },
-    { "id": "feed_hopper", "label": { "en": "Feed Hopper", "es": "Tolva de Alimento" }, "render_mode": 0, "color": "#0284c7" },
-    { "id": "bird_dispenser", "label": { "en": "Bird Dispenser", "es": "Dispensador para Aves" }, "render_mode": 0, "color": "#38bdf8" }
+    {
+      "id": "water_base",
+      "label": {
+        "en": "Water Base",
+        "es": "Base de Agua"
+      },
+      "render_mode": 0,
+      "color": "#0369a1"
+    },
+    {
+      "id": "feed_hopper",
+      "label": {
+        "en": "Feed Hopper",
+        "es": "Tolva de Alimento"
+      },
+      "render_mode": 0,
+      "color": "#0284c7"
+    },
+    {
+      "id": "bird_dispenser",
+      "label": {
+        "en": "Bird Dispenser",
+        "es": "Dispensador para Aves"
+      },
+      "render_mode": 0,
+      "color": "#38bdf8"
+    }
   ],
   "parameter_groups": [
-    { "id": "interface", "label": { "en": "Bottle Neck", "es": "Cuello de Botella" } },
-    { "id": "pool", "label": { "en": "Trough / Pool", "es": "Bebedero / Pozo" } },
-    { "id": "fit", "label": { "en": "Thread Fit", "es": "Ajuste de Rosca" } }
+    {
+      "id": "interface",
+      "label": {
+        "en": "Bottle Neck",
+        "es": "Cuello de Botella"
+      }
+    },
+    {
+      "id": "pool",
+      "label": {
+        "en": "Trough / Pool",
+        "es": "Bebedero / Pozo"
+      }
+    },
+    {
+      "id": "fit",
+      "label": {
+        "en": "Thread Fit",
+        "es": "Ajuste de Rosca"
+      }
+    }
   ],
   "parameters": [
     {
-      "id": "neck_standard", "type": "select", "default": "PCO-1881",
-      "group": "interface", "modes": ["water_base", "feed_hopper", "bird_dispenser"],
-      "label": { "en": "Bottle Neck Standard", "es": "Estándar de Cuello" },
-      "tooltip": { "en": "Finish of the bottle neck the base threads onto (sets thread diameter + pitch)", "es": "Acabado del cuello de la botella al que se enrosca la base (define diámetro y paso de rosca)" },
+      "id": "neck_standard",
+      "type": "select",
+      "default": "PCO-1881",
+      "group": "interface",
+      "modes": [
+        "water_base",
+        "feed_hopper",
+        "bird_dispenser"
+      ],
+      "label": {
+        "en": "Bottle Neck Standard",
+        "es": "Estándar de Cuello"
+      },
+      "tooltip": {
+        "en": "Finish of the bottle neck the base threads onto (sets thread diameter + pitch)",
+        "es": "Acabado del cuello de la botella al que se enrosca la base (define diámetro y paso de rosca)"
+      },
       "options": [
-        { "value": "PCO-1881", "label": { "en": "PCO-1881 — soda/water (27.4 mm)", "es": "PCO-1881 — refresco/agua (27.4 mm)" } },
-        { "value": "PCO-1810", "label": { "en": "PCO-1810 — taller thread (27.4 mm)", "es": "PCO-1810 — rosca más alta (27.4 mm)" } },
-        { "value": "28-410", "label": { "en": "28-410 — spray/personal care (28 mm)", "es": "28-410 — spray/cuidado personal (28 mm)" } },
-        { "value": "38-400", "label": { "en": "38-400 — wide mouth (38 mm)", "es": "38-400 — boca ancha (38 mm)" } }
+        {
+          "value": "PCO-1881",
+          "label": {
+            "en": "PCO-1881 — soda/water (27.4 mm)",
+            "es": "PCO-1881 — refresco/agua (27.4 mm)"
+          }
+        },
+        {
+          "value": "PCO-1810",
+          "label": {
+            "en": "PCO-1810 — taller thread (27.4 mm)",
+            "es": "PCO-1810 — rosca más alta (27.4 mm)"
+          }
+        },
+        {
+          "value": "28-410",
+          "label": {
+            "en": "28-410 — spray/personal care (28 mm)",
+            "es": "28-410 — spray/cuidado personal (28 mm)"
+          }
+        },
+        {
+          "value": "38-400",
+          "label": {
+            "en": "38-400 — wide mouth (38 mm)",
+            "es": "38-400 — boca ancha (38 mm)"
+          }
+        }
       ]
     },
     {
-      "id": "trough_dia", "type": "slider", "default": 95.0, "min": 45.0, "max": 220.0, "step": 2.0,
-      "group": "pool", "modes": ["water_base", "feed_hopper", "bird_dispenser"],
-      "label": { "en": "Pool Diameter (mm)", "es": "Diámetro del Pozo (mm)" },
-      "tooltip": { "en": "Diameter of the drinking / feed pool (bird and hopper scale from this)", "es": "Diámetro del pozo de bebida / alimento (ave y tolva se escalan a partir de esto)" },
-      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+      "id": "trough_dia",
+      "type": "slider",
+      "default": 95.0,
+      "min": 45.0,
+      "max": 220.0,
+      "step": 2.0,
+      "group": "pool",
+      "modes": [
+        "water_base",
+        "feed_hopper",
+        "bird_dispenser"
+      ],
+      "label": {
+        "en": "Pool Diameter (mm)",
+        "es": "Diámetro del Pozo (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the drinking / feed pool (bird and hopper scale from this)",
+        "es": "Diámetro del pozo de bebida / alimento (ave y tolva se escalan a partir de esto)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
     },
     {
-      "id": "trough_h", "type": "slider", "default": 32.0, "min": 12.0, "max": 90.0, "step": 1.0,
-      "group": "pool", "modes": ["water_base", "feed_hopper", "bird_dispenser"],
-      "label": { "en": "Pool Wall Height (mm)", "es": "Altura de Pared del Pozo (mm)" },
-      "tooltip": { "en": "How high the pool wall stands", "es": "Qué tan alta es la pared del pozo" }
+      "id": "trough_h",
+      "type": "slider",
+      "default": 32.0,
+      "min": 12.0,
+      "max": 90.0,
+      "step": 1.0,
+      "group": "pool",
+      "modes": [
+        "water_base",
+        "feed_hopper",
+        "bird_dispenser"
+      ],
+      "label": {
+        "en": "Pool Wall Height (mm)",
+        "es": "Altura de Pared del Pozo (mm)"
+      },
+      "tooltip": {
+        "en": "How high the pool wall stands",
+        "es": "Qué tan alta es la pared del pozo"
+      }
     },
     {
-      "id": "gap", "type": "slider", "default": 9.0, "min": 4.0, "max": 30.0, "step": 0.5,
-      "group": "pool", "modes": ["water_base", "feed_hopper", "bird_dispenser"],
-      "label": { "en": "Gravity Gap (mm)", "es": "Espacio de Gravedad (mm)" },
-      "tooltip": { "en": "Gap under the bottle mouth that sets the refill level (higher = deeper pool refill)", "es": "Espacio bajo la boca de la botella que fija el nivel de rellenado (mayor = rellenado más profundo)" }
+      "id": "gap",
+      "type": "slider",
+      "default": 9.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "pool",
+      "modes": [
+        "water_base",
+        "feed_hopper",
+        "bird_dispenser"
+      ],
+      "label": {
+        "en": "Gravity Gap (mm)",
+        "es": "Espacio de Gravedad (mm)"
+      },
+      "tooltip": {
+        "en": "Gap under the bottle mouth that sets the refill level (higher = deeper pool refill)",
+        "es": "Espacio bajo la boca de la botella que fija el nivel de rellenado (mayor = rellenado más profundo)"
+      }
     },
     {
-      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
-      "group": "pool", "modes": ["water_base", "feed_hopper", "bird_dispenser"],
-      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
-      "tooltip": { "en": "Pool and socket wall thickness", "es": "Grosor de pared del pozo y del casquillo" }
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "pool",
+      "modes": [
+        "water_base",
+        "feed_hopper",
+        "bird_dispenser"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Pool and socket wall thickness",
+        "es": "Grosor de pared del pozo y del casquillo"
+      }
     },
     {
-      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
-      "group": "fit", "modes": ["water_base", "feed_hopper", "bird_dispenser"],
-      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)" },
-      "tooltip": { "en": "Per-side gap on the female thread for a printable screw fit", "es": "Espacio por lado en la rosca hembra para un ajuste imprimible" }
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "fit",
+      "modes": [
+        "water_base",
+        "feed_hopper",
+        "bird_dispenser"
+      ],
+      "label": {
+        "en": "Thread Clearance (mm)",
+        "es": "Holgura de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap on the female thread for a printable screw fit",
+        "es": "Espacio por lado en la rosca hembra para un ajuste imprimible"
+      }
     },
     {
-      "id": "extra_turns", "type": "slider", "default": 0.0, "min": 0.0, "max": 2.0, "step": 0.25,
-      "group": "fit", "modes": ["water_base", "feed_hopper", "bird_dispenser"], "advanced": true,
-      "label": { "en": "Extra Engagement Turns", "es": "Vueltas de Enrosque Extra" },
-      "tooltip": { "en": "Add thread turns for a deeper, more secure grip (slower render)", "es": "Añade vueltas de rosca para un agarre más profundo (render más lento)" }
+      "id": "extra_turns",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.25,
+      "group": "fit",
+      "modes": [
+        "water_base",
+        "feed_hopper",
+        "bird_dispenser"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Extra Engagement Turns",
+        "es": "Vueltas de Enrosque Extra"
+      },
+      "tooltip": {
+        "en": "Add thread turns for a deeper, more secure grip (slower render)",
+        "es": "Añade vueltas de rosca para un agarre más profundo (render más lento)"
+      }
     }
   ],
   "presets": [
     {
-      "id": "dog_water", "mode": "water_base",
-      "label": { "en": "Dog Water Station", "es": "Estación de Agua para Perro" },
-      "values": { "neck_standard": "PCO-1881", "trough_dia": 120, "trough_h": 35 }
+      "id": "dog_water",
+      "mode": "water_base",
+      "label": {
+        "en": "Dog Water Station",
+        "es": "Estación de Agua para Perro"
+      },
+      "values": {
+        "neck_standard": "PCO-1881",
+        "trough_dia": 120,
+        "trough_h": 35
+      }
     },
     {
-      "id": "kibble_hopper", "mode": "feed_hopper",
-      "label": { "en": "Kibble Hopper", "es": "Tolva de Croquetas" },
-      "values": { "neck_standard": "38-400", "trough_dia": 110, "gap": 14 }
+      "id": "kibble_hopper",
+      "mode": "feed_hopper",
+      "label": {
+        "en": "Kibble Hopper",
+        "es": "Tolva de Croquetas"
+      },
+      "values": {
+        "neck_standard": "38-400",
+        "trough_dia": 110,
+        "gap": 14
+      }
     },
     {
-      "id": "bird_cup", "mode": "bird_dispenser",
-      "label": { "en": "Bird Water Cup", "es": "Bebedero para Aves" },
-      "values": { "neck_standard": "PCO-1881", "trough_dia": 70, "trough_h": 20 }
+      "id": "bird_cup",
+      "mode": "bird_dispenser",
+      "label": {
+        "en": "Bird Water Cup",
+        "es": "Bebedero para Aves"
+      },
+      "values": {
+        "neck_standard": "PCO-1881",
+        "trough_dia": 70,
+        "trough_h": 20
+      }
     }
   ],
   "constraints": [
     {
       "expression": "gap >= 4",
       "severity": "warning",
-      "message": { "en": "A tiny gap can stall gravity flow", "es": "Un espacio muy pequeño puede detener el flujo por gravedad" }
+      "message": {
+        "en": "A tiny gap can stall gravity flow",
+        "es": "Un espacio muy pequeño puede detener el flujo por gravedad"
+      }
     },
     {
       "expression": "wall >= 2",
       "severity": "error",
-      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+      "message": {
+        "en": "Wall must be at least 2 mm",
+        "es": "La pared debe ser de al menos 2 mm"
+      }
     }
   ],
   "camera_views": [
-    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 110] },
-    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
-    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 50] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        110
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        240
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -240,
+        50
+      ]
+    }
   ],
-  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
   "estimate_constants": {
-    "base_time": 12, "per_unit": 3, "per_part": 14,
-    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 60
   },
   "hyperobject": {
     "domain": "household",
     "cdg_interfaces": [
       {
         "id": "pet_bottle_neck",
-        "label": { "en": "PET Bottle Neck", "es": "Cuello de Botella PET" },
+        "label": {
+          "en": "PET Bottle Neck",
+          "es": "Cuello de Botella PET"
+        },
         "geometry_type": "thread",
         "standard": "PCO 1881",
-        "parameters": ["neck_standard", "clearance", "wall", "extra_turns"],
-        "compatible_with": ["bottle-thread"]
+        "parameters": [
+          "neck_standard",
+          "clearance",
+          "wall",
+          "extra_turns"
+        ],
+        "compatible_with": [
+          "bird-feeder",
+          "bottle-thread",
+          "faircap-filter"
+        ]
       }
     ],
     "material_awareness": {
@@ -163,5 +472,14 @@
     },
     "commons_license": "CERN-OHL-W-2.0"
   },
-  "tags": ["pet", "dispenser", "water", "feeder", "pet-bottle", "household", "hyperobject", "commons"]
+  "tags": [
+    "pet",
+    "dispenser",
+    "water",
+    "feeder",
+    "pet-bottle",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
 }

@@ -1,0 +1,147 @@
+{
+  "project": {
+    "name": "Tweezers / Probe Stand",
+    "slug": "tweezer-stand",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "Parametric stands that hold tweezers, probes, fine screwdrivers and dental picks tip-up and findable. Choose a raked wedge stand, a radial carousel, or a rail-and-foot with a row of upright bores. Slots and bores are sized to fine-tool girth and keep delicate points off the bench so they stay sharp and clean.",
+      "es": "Soportes paramétricos que sostienen pinzas, sondas, destornilladores finos y exploradores con la punta hacia arriba y localizables. Elige un soporte en cuña inclinada, un carrusel radial, o un riel con pie y una fila de barrenos verticales. Las ranuras y barrenos se dimensionan al grosor de herramientas finas y mantienen las puntas delicadas fuera del banco."
+    },
+    "thumbnail": "/projects/tweezer-stand.webp",
+    "difficulty": "beginner",
+    "tags": ["organizer", "tweezers", "probe", "workshop", "electronics", "pocket", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "modes": [
+    {
+      "id": "angled_stand",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Raked Wedge Stand", "es": "Soporte en Cuña Inclinada" },
+      "description": {
+        "en": "A wedge block with a back-raked top face carrying a row of obround tool slots, so tweezers rest tip-up. Slots open to the raked face.",
+        "es": "Un bloque en cuña con cara superior inclinada hacia atrás y una fila de ranuras, para que las pinzas descansen con la punta arriba."
+      },
+      "parts": ["angled_stand"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "carousel",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Radial Carousel", "es": "Carrusel Radial" },
+      "description": {
+        "en": "A round base with tool slots arranged radially around the perimeter and a central finger well to lift it. Each slot is a pocket open to the top.",
+        "es": "Una base redonda con ranuras dispuestas radialmente y un hueco central para levantarla. Cada ranura abre a la cara superior."
+      },
+      "parts": ["carousel"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "probe_rail",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Probe Rail", "es": "Riel de Sondas" },
+      "description": {
+        "en": "A vertical rail on a foot with a row of upright bores to stand probes and fine drivers, plus two foot mounting holes.",
+        "es": "Un riel vertical sobre un pie con una fila de barrenos verticales para sondas y destornilladores finos, con dos agujeros de montaje."
+      },
+      "parts": ["probe_rail"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "angled_stand", "render_mode": 0, "label": { "en": "Wedge Stand", "es": "Soporte en Cuña" }, "default_color": "#1d3557" },
+    { "id": "carousel",     "render_mode": 0, "label": { "en": "Carousel",    "es": "Carrusel" }, "default_color": "#457b9d" },
+    { "id": "probe_rail",   "render_mode": 0, "label": { "en": "Probe Rail",  "es": "Riel de Sondas" }, "default_color": "#a8dadc" }
+  ],
+  "parameters": [
+    {
+      "id": "slot_count", "type": "slider", "default": 6, "min": 2, "max": 16, "step": 1,
+      "label": { "en": "Tool Slot Count", "es": "Número de Ranuras" },
+      "tooltip": { "en": "Number of tool positions.", "es": "Número de posiciones de herramienta." },
+      "group": "slots"
+    },
+    {
+      "id": "slot_length", "type": "slider", "default": 10.0, "min": 5.0, "max": 20.0, "step": 0.5,
+      "label": { "en": "Slot Length / Depth (mm)", "es": "Largo / Profundidad de Ranura (mm)" },
+      "tooltip": {
+        "en": "Obround slot length (wedge/carousel) and bore depth (rail). Long enough to steady a ~130 mm watchmaker tweezer without tipping.",
+        "es": "Largo de la ranura (cuña/carrusel) y profundidad del barreno (riel). Suficiente para estabilizar una pinza de relojero de ~130 mm."
+      },
+      "group": "slots"
+    },
+    {
+      "id": "slot_width", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "label": { "en": "Slot Width / Tool Girth (mm)", "es": "Ancho de Ranura / Grosor (mm)" },
+      "tooltip": { "en": "Width of each slot, matched to the tool's girth (tweezer body ~2–4 mm).", "es": "Ancho de cada ranura, al grosor de la herramienta (cuerpo de pinza ~2–4 mm)." },
+      "group": "slots"
+    },
+    {
+      "id": "slot_pitch", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "label": { "en": "Slot Pitch (mm)", "es": "Paso entre Ranuras (mm)" },
+      "tooltip": { "en": "Centre-to-centre spacing between tool positions.", "es": "Separación centro a centro entre posiciones." },
+      "group": "slots"
+    },
+    {
+      "id": "body_height", "type": "slider", "default": 40.0, "min": 20.0, "max": 80.0, "step": 1.0,
+      "label": { "en": "Body Height (mm)", "es": "Altura del Cuerpo (mm)" },
+      "tooltip": { "en": "Height of the stand / rail. Taller = tools held higher and steadier.", "es": "Altura del soporte / riel. Más alto = herramientas más estables." },
+      "group": "body"
+    },
+    {
+      "id": "wall", "type": "slider", "default": 5.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "label": { "en": "Wall Thickness (mm)", "es": "Espesor de Pared (mm)" },
+      "tooltip": { "en": "Border material around the slot field.", "es": "Material de borde alrededor del campo de ranuras." },
+      "group": "body"
+    },
+    {
+      "id": "rake_angle", "type": "slider", "default": 20.0, "min": 5.0, "max": 40.0, "step": 1.0,
+      "label": { "en": "Rake Angle (deg)", "es": "Ángulo de Inclinación (grados)" },
+      "tooltip": { "en": "Back-tilt of the wedge stand's top face so tools point tip-up.", "es": "Inclinación hacia atrás de la cara superior de la cuña para que las herramientas apunten con la punta arriba." },
+      "group": "body"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "slots", "label": { "en": "Tool Slots", "es": "Ranuras de Herramienta" } },
+    { "id": "body",  "label": { "en": "Body",       "es": "Cuerpo" } }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "tool_slot_pocket",
+        "label": { "en": "Fine-Tool Slot Array", "es": "Arreglo de Ranuras para Herramienta Fina" },
+        "geometry_type": "pocket",
+        "standard": "fine-tool slot array (tweezer/probe body 1.5–8 mm)",
+        "parameters": ["slot_count", "slot_length", "slot_width", "slot_pitch"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "A tweezer point that touches its neighbour goes blunt — print slot_width 0.3–0.5 mm over the tool girth so tools drop in without forcing. Any material works; recycled PLA/PETG is ideal for a bench organizer. A slightly grippy TPU top layer stops fine drivers rattling, but PLA holds shape best for the raked stand.",
+        "es": "Una punta de pinza que toca a su vecina se despunta — imprime slot_width 0.3–0.5 mm sobre el grosor de la herramienta. Cualquier material sirve; el PLA/PETG reciclado es ideal para un organizador de banco."
+      }
+    },
+    "societal_benefit": {
+      "en": "Fine tweezers and probes are expensive and easily ruined by a dropped or knocked point. A printed tip-up stand costs grams and protects a set worth many times more, laid out exactly for the tools on that bench — watchmaking, electronics rework, biology, dentistry.",
+      "es": "Las pinzas y sondas finas son caras y se arruinan fácilmente con una punta golpeada. Un soporte impreso cuesta gramos y protege un juego que vale mucho más, dispuesto exactamente para las herramientas de ese banco."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0"
+}

@@ -1,0 +1,183 @@
+{
+  "project": {
+    "name": "Pen / Stylus Holder & Grip",
+    "slug": "pen-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A desk pen station sized around a real writing-instrument barrel diameter. Choose an upright round cup for a fistful of pens, a rounded desk block with an array of angled bores, or an ergonomic grip sleeve that slides over a thin pen to fatten the barrel for an easier hold.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una estación de bolígrafos de escritorio dimensionada según el diámetro real del barril de un instrumento de escritura. Elige un vaso redondo vertical para un puñado de bolígrafos, un bloque de escritorio redondeado con una matriz de orificios inclinados, o una funda ergonómica que se desliza sobre un bolígrafo delgado para engrosar el barril y facilitar el agarre.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pen-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["pen", "pencil", "stylus", "holder", "cup", "desk", "office", "grip", "assistive", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pen_cup",
+      "label": { "en": "Round Pen Cup", "es": "Vaso Redondo para Bolígrafos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pen_cup"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "pen_block",
+      "label": { "en": "Angled Desk Block", "es": "Bloque de Escritorio Inclinado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pen_block"],
+      "estimate": { "base_time": 14, "per_unit": 5, "per_part": 16 }
+    },
+    {
+      "id": "grip_enlarger",
+      "label": { "en": "Ergonomic Grip Sleeve", "es": "Funda de Agarre Ergonómica" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["grip_enlarger"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "pen_cup", "label": { "en": "Round Pen Cup", "es": "Vaso Redondo" }, "render_mode": 0, "color": "#3a6ea5" },
+    { "id": "pen_block", "label": { "en": "Angled Desk Block", "es": "Bloque Inclinado" }, "render_mode": 0, "color": "#4a7fb5" },
+    { "id": "grip_enlarger", "label": { "en": "Ergonomic Grip Sleeve", "es": "Funda de Agarre" }, "render_mode": 0, "color": "#5a8fc5" }
+  ],
+  "parameter_groups": [
+    { "id": "instrument", "label": { "en": "Writing Instrument", "es": "Instrumento de Escritura" } },
+    { "id": "form", "label": { "en": "Holder Form", "es": "Forma del Soporte" } },
+    { "id": "walls", "label": { "en": "Walls", "es": "Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "pen_dia", "type": "slider", "default": 9.0, "min": 4.0, "max": 25.0, "step": 0.5,
+      "group": "instrument", "modes": ["pen_cup", "pen_block", "grip_enlarger"],
+      "label": { "en": "Barrel Diameter (mm)", "es": "Diámetro del Barril (mm)" },
+      "tooltip": { "en": "Diameter of the pen / pencil / stylus barrel. Ballpoint ~8, gel/marker ~10-11, #2 pencil ~7.", "es": "Diámetro del barril del bolígrafo / lápiz / lápiz óptico. Bolígrafo ~8, gel/marcador ~10-11, lápiz #2 ~7." }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 1.2, "min": 0.4, "max": 4.0, "step": 0.1,
+      "group": "instrument", "modes": ["pen_block", "grip_enlarger"],
+      "label": { "en": "Slip-Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Gap added to each bore so the pen drops in and out easily", "es": "Holgura añadida a cada orificio para que el bolígrafo entre y salga con facilidad" }
+    },
+    {
+      "id": "height", "type": "slider", "default": 95.0, "min": 30.0, "max": 200.0, "step": 1.0,
+      "group": "form", "modes": ["pen_cup", "pen_block"],
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": { "en": "Overall height of the cup or block", "es": "Altura total del vaso o bloque" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "cup_dia", "type": "slider", "default": 72.0, "min": 30.0, "max": 200.0, "step": 1.0,
+      "group": "form", "modes": ["pen_cup"],
+      "label": { "en": "Cup Diameter (mm)", "es": "Diámetro del Vaso (mm)" },
+      "tooltip": { "en": "Outer diameter of the round pen cup", "es": "Diámetro exterior del vaso redondo" }
+    },
+    {
+      "id": "divider", "type": "slider", "default": 1, "min": 0, "max": 1, "step": 1,
+      "group": "form", "modes": ["pen_cup"],
+      "label": { "en": "Internal Divider (0/1)", "es": "Divisor Interno (0/1)" },
+      "tooltip": { "en": "Add a single divider wall to split pens from pencils", "es": "Añade una pared divisoria para separar bolígrafos de lápices" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 4, "min": 1, "max": 8, "step": 1,
+      "group": "form", "modes": ["pen_block"],
+      "label": { "en": "Bore Columns", "es": "Columnas de Orificios" },
+      "tooltip": { "en": "Number of bores across the block width", "es": "Número de orificios a lo ancho del bloque" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 2, "min": 1, "max": 5, "step": 1,
+      "group": "form", "modes": ["pen_block"],
+      "label": { "en": "Bore Rows", "es": "Filas de Orificios" },
+      "tooltip": { "en": "Number of bores across the block depth (front row can be raked)", "es": "Número de orificios en la profundidad del bloque (la fila delantera puede inclinarse)" }
+    },
+    {
+      "id": "rake_deg", "type": "slider", "default": 12.0, "min": 0.0, "max": 30.0, "step": 1.0,
+      "group": "form", "modes": ["pen_block"],
+      "label": { "en": "Front-Row Rake (deg)", "es": "Inclinación de Fila Delantera (grados)" },
+      "tooltip": { "en": "Tilt of the front row so its pens lean toward the user", "es": "Inclinación de la fila delantera para que sus bolígrafos se inclinen hacia el usuario" }
+    },
+    {
+      "id": "grip_len", "type": "slider", "default": 85.0, "min": 40.0, "max": 160.0, "step": 1.0,
+      "group": "form", "modes": ["grip_enlarger"],
+      "label": { "en": "Sleeve Length (mm)", "es": "Longitud de la Funda (mm)" },
+      "tooltip": { "en": "Length of the ergonomic grip sleeve", "es": "Longitud de la funda de agarre ergonómica" }
+    },
+    {
+      "id": "grip_dia", "type": "slider", "default": 22.0, "min": 12.0, "max": 45.0, "step": 1.0,
+      "group": "form", "modes": ["grip_enlarger"],
+      "label": { "en": "Grip Diameter (mm)", "es": "Diámetro de Agarre (mm)" },
+      "tooltip": { "en": "Outer diameter of the fattened grip", "es": "Diámetro exterior del agarre engrosado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.2,
+      "group": "walls", "modes": ["pen_cup", "pen_block", "grip_enlarger"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall and floor thickness", "es": "Grosor de pared y piso" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "classic_cup", "mode": "pen_cup",
+      "label": { "en": "Classic Divided Cup", "es": "Vaso Dividido Clásico" },
+      "values": { "cup_dia": 72, "height": 95, "divider": 1, "wall": 3.0 }
+    },
+    {
+      "id": "eight_bore_block", "mode": "pen_block",
+      "label": { "en": "8-Bore Angled Block", "es": "Bloque Inclinado de 8 Orificios" },
+      "values": { "cols": 4, "rows": 2, "rake_deg": 12, "pen_dia": 9 }
+    },
+    {
+      "id": "assistive_grip", "mode": "grip_enlarger",
+      "label": { "en": "Assistive Fat Grip", "es": "Agarre Grueso Asistivo" },
+      "values": { "grip_len": 90, "grip_dia": 24, "pen_dia": 8, "clearance": 1.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cup_dia >= pen_dia * 3",
+      "severity": "warning",
+      "message": { "en": "A cup narrower than ~3 barrels holds very few pens", "es": "Un vaso más estrecho que ~3 barriles sostiene muy pocos bolígrafos" }
+    },
+    {
+      "expression": "grip_dia >= pen_dia + 2 * wall",
+      "severity": "error",
+      "message": { "en": "Grip diameter must clear the pen plus both walls", "es": "El diámetro de agarre debe superar el bolígrafo más ambas paredes" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 130] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "pen_barrel_socket",
+        "label": { "en": "Pen Barrel Socket", "es": "Alojamiento del Barril" },
+        "geometry_type": "socket",
+        "standard": "standard pen",
+        "parameters": ["pen_dia", "clearance", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A pen holder sized to the actual barrel keeps bores snug instead of the sloppy one-size cups sold in stores, and the grip-enlarger sleeve is an assistive aid: it lets people with arthritis or reduced grip strength write with an ordinary thin pen instead of buying a specialist adaptive pen.",
+      "es": "Un portabolígrafos dimensionado al barril real mantiene los orificios ajustados en lugar de los vasos comerciales de talla única, y la funda de agarre es una ayuda asistiva: permite a personas con artritis o poca fuerza de agarre escribir con un bolígrafo delgado común en lugar de comprar un bolígrafo adaptado especializado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

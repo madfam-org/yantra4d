@@ -1,0 +1,183 @@
+{
+  "project": {
+    "name": "Espresso Dosing Funnel & Ring",
+    "slug": "coffee-funnel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A dosing aid that slips over an espresso portafilter basket rim to guide ground coffee in cleanly: a funnel with a gripping ring, a minimal dosing ring, and a leveling base. Sized to a standard 58 mm, 54 mm, or 51 mm basket, all sharing one basket-rim interface. Optional magnet pockets for a magnetic funnel.\n\nFood-contact note: ground coffee passes through. Geometry only — food-safe filament and hygiene are the maker's responsibility.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un accesorio de dosificación que se desliza sobre el borde de la canasta del portafiltro para guiar el café molido limpiamente: un embudo con anillo de agarre, un anillo dosificador mínimo y una base niveladora. Dimensionado a una canasta estándar de 58 mm, 54 mm o 51 mm, todas compartiendo una interfaz de borde de canasta. Cavidades opcionales para imanes.\n\nNota de contacto con alimentos: el café molido pasa a través. Solo geometría — el filamento apto para alimentos y la higiene son responsabilidad del fabricante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/coffee-funnel.webp",
+    "difficulty": "intermediate",
+    "tags": ["espresso", "coffee", "dosing", "funnel", "portafilter", "kitchen", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dosing_funnel",
+      "label": { "en": "Dosing Funnel", "es": "Embudo Dosificador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dosing_funnel"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "dosing_ring",
+      "label": { "en": "Dosing Ring", "es": "Anillo Dosificador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dosing_ring"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "leveler_base",
+      "label": { "en": "Leveler Base", "es": "Base Niveladora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["leveler_base"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "dosing_funnel", "label": { "en": "Dosing Funnel", "es": "Embudo Dosificador" }, "render_mode": 0, "color": "#8a5a3c" },
+    { "id": "dosing_ring", "label": { "en": "Dosing Ring", "es": "Anillo Dosificador" }, "render_mode": 0, "color": "#a5744f" },
+    { "id": "leveler_base", "label": { "en": "Leveler Base", "es": "Base Niveladora" }, "render_mode": 0, "color": "#6f472e" }
+  ],
+  "parameter_groups": [
+    { "id": "basket", "label": { "en": "Basket & Fit", "es": "Canasta y Ajuste" } },
+    { "id": "funnel", "label": { "en": "Ring & Funnel", "es": "Anillo y Embudo" } },
+    { "id": "magnet", "label": { "en": "Magnets", "es": "Imanes" } }
+  ],
+  "parameters": [
+    {
+      "id": "basket", "type": "select", "default": "58mm",
+      "group": "basket", "modes": ["dosing_funnel", "dosing_ring", "leveler_base"],
+      "label": { "en": "Basket Size", "es": "Tamaño de Canasta" },
+      "tooltip": { "en": "Standard portafilter basket the ring slips over", "es": "Canasta estándar del portafiltro sobre la que se desliza el anillo" },
+      "options": [
+        { "value": "58mm", "label": { "en": "58 mm", "es": "58 mm" } },
+        { "value": "54mm", "label": { "en": "54 mm", "es": "54 mm" } },
+        { "value": "51mm", "label": { "en": "51 mm", "es": "51 mm" } }
+      ]
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "basket", "modes": ["dosing_funnel", "dosing_ring", "leveler_base"], "advanced": true,
+      "label": { "en": "Slip-Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap over the basket rim", "es": "Espacio por lado sobre el borde de la canasta" }
+    },
+    {
+      "id": "grip", "type": "slider", "default": 0.6, "min": 0.0, "max": 1.2, "step": 0.1,
+      "group": "basket", "modes": ["dosing_funnel", "dosing_ring", "leveler_base"], "advanced": true,
+      "label": { "en": "Grip Bead (mm)", "es": "Reborde de Agarre (mm)" },
+      "tooltip": { "en": "Inward retaining bead depth (0 = plain friction fit)", "es": "Profundidad del reborde de retención (0 = ajuste por fricción)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.6, "min": 1.8, "max": 6.0, "step": 0.2,
+      "group": "funnel", "modes": ["dosing_funnel", "dosing_ring", "leveler_base"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Ring / funnel wall thickness", "es": "Grosor de pared del anillo / embudo" }
+    },
+    {
+      "id": "ring_h", "type": "slider", "default": 9.0, "min": 4.0, "max": 25.0, "step": 0.5,
+      "group": "funnel", "modes": ["dosing_funnel", "dosing_ring", "leveler_base"],
+      "label": { "en": "Ring Height (mm)", "es": "Altura del Anillo (mm)" },
+      "tooltip": { "en": "Height of the gripping ring", "es": "Altura del anillo de agarre" }
+    },
+    {
+      "id": "funnel_h", "type": "slider", "default": 18.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "funnel", "modes": ["dosing_funnel"],
+      "label": { "en": "Funnel Height (mm)", "es": "Altura del Embudo (mm)" },
+      "tooltip": { "en": "Height of the flared funnel above the ring", "es": "Altura del embudo acampanado sobre el anillo" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "flare", "type": "slider", "default": 10.0, "min": 3.0, "max": 30.0, "step": 1.0,
+      "group": "funnel", "modes": ["dosing_funnel"],
+      "label": { "en": "Funnel Flare (mm)", "es": "Ensanche del Embudo (mm)" },
+      "tooltip": { "en": "Extra radius at the funnel top", "es": "Radio extra en la parte superior del embudo" }
+    },
+    {
+      "id": "magnets", "type": "checkbox", "default": false,
+      "group": "magnet", "modes": ["dosing_funnel"],
+      "label": { "en": "Magnet Pockets", "es": "Cavidades para Imanes" },
+      "tooltip": { "en": "Add blind pockets for magnets (magnetic funnel)", "es": "Agregar cavidades ciegas para imanes (embudo magnético)" }
+    },
+    {
+      "id": "magnet_d", "type": "slider", "default": 6.2, "min": 3.0, "max": 12.0, "step": 0.1,
+      "group": "magnet", "modes": ["dosing_funnel"], "advanced": true,
+      "label": { "en": "Magnet Diameter (mm)", "es": "Diámetro de Imán (mm)" },
+      "tooltip": { "en": "Magnet pocket diameter", "es": "Diámetro de la cavidad del imán" }
+    },
+    {
+      "id": "magnet_h", "type": "slider", "default": 3.2, "min": 1.5, "max": 6.0, "step": 0.1,
+      "group": "magnet", "modes": ["dosing_funnel"], "advanced": true,
+      "label": { "en": "Magnet Depth (mm)", "es": "Profundidad de Imán (mm)" },
+      "tooltip": { "en": "Magnet pocket depth", "es": "Profundidad de la cavidad del imán" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "magnetic_funnel_58", "mode": "dosing_funnel",
+      "label": { "en": "Magnetic Funnel 58 mm", "es": "Embudo Magnético 58 mm" },
+      "values": { "basket": "58mm", "funnel_h": 18, "flare": 10, "magnets": true }
+    },
+    {
+      "id": "minimal_ring_54", "mode": "dosing_ring",
+      "label": { "en": "Minimal Ring 54 mm", "es": "Anillo Mínimo 54 mm" },
+      "values": { "basket": "54mm", "ring_h": 8 }
+    },
+    {
+      "id": "leveler_58", "mode": "leveler_base",
+      "label": { "en": "Leveler Base 58 mm", "es": "Base Niveladora 58 mm" },
+      "values": { "basket": "58mm", "ring_h": 9 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "grip <= clearance + 0.8",
+      "severity": "warning",
+      "message": { "en": "Grip bead is large relative to the fit clearance", "es": "El reborde de agarre es grande respecto a la holgura" }
+    },
+    {
+      "expression": "wall >= 1.8",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.8 mm", "es": "La pared debe ser de al menos 1.8 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 64, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "portafilter_basket",
+        "label": { "en": "Portafilter Basket", "es": "Canasta del Portafiltro" },
+        "geometry_type": "socket",
+        "standard": "58/54/51mm basket",
+        "parameters": ["basket", "clearance", "grip"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "One printable dosing aid fits any of the three common basket sizes, replacing a $20+ machined ring per size and cutting ground-coffee mess for home baristas — standardizing dosing on one open basket-rim interface.",
+      "es": "Un accesorio de dosificación imprimible encaja en cualquiera de los tres tamaños comunes de canasta, reemplazando un anillo maquinado de más de $20 por tamaño y reduciendo el desperdicio de café molido para baristas caseros — estandarizando la dosificación en una interfaz abierta de borde de canasta."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["espresso", "coffee", "dosing", "funnel", "portafilter", "household", "hyperobject", "commons"]
+}

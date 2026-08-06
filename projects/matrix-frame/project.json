@@ -1,0 +1,477 @@
+{
+  "project": {
+    "name": "Neopixel / LED Matrix Frame",
+    "slug": "matrix-frame",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Frames, diffusers, and mounts for WS2812 / NeoPixel addressable LED matrices, built to the real grid pitch — WS2812B panels use a ~10 mm pixel pitch (8x8 ≈ 80 mm, 16x16 ≈ 160 mm). Build a picture-frame bezel, an egg-crate diffuser with one cell per pixel, or a rear panel mount with corner bosses.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Marcos, difusores y montajes para matrices LED direccionables WS2812 / NeoPixel, construidos al paso real de la cuadrícula — los paneles WS2812B usan un paso de píxel de ~10 mm (8x8 ≈ 80 mm, 16x16 ≈ 160 mm). Genera un bisel tipo marco, un difusor tipo rejilla con una celda por píxel, o un montaje trasero con torres de esquina.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/matrix-frame.webp",
+    "tags": [
+      "led",
+      "ws2812",
+      "neopixel",
+      "matrix",
+      "diffuser",
+      "grid",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "bezel_frame",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Bezel Frame",
+        "es": "Bisel"
+      },
+      "parts": [
+        "bezel_frame"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "diffuser_grid",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Diffuser Grid",
+        "es": "Rejilla Difusora"
+      },
+      "parts": [
+        "diffuser_grid"
+      ],
+      "estimate": {
+        "base_time": 24,
+        "per_unit": 6,
+        "per_part": 24
+      }
+    },
+    {
+      "id": "panel_mount",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Panel Mount",
+        "es": "Montaje de Panel"
+      },
+      "parts": [
+        "panel_mount"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "bezel_frame",
+      "render_mode": 0,
+      "label": {
+        "en": "Bezel Frame",
+        "es": "Bisel"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "diffuser_grid",
+      "render_mode": 0,
+      "label": {
+        "en": "Diffuser Grid",
+        "es": "Rejilla Difusora"
+      },
+      "default_color": "#6fa3bf"
+    },
+    {
+      "id": "panel_mount",
+      "render_mode": 0,
+      "label": {
+        "en": "Panel Mount",
+        "es": "Montaje de Panel"
+      },
+      "default_color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "matrix",
+      "label": {
+        "en": "Matrix Grid",
+        "es": "Cuadrícula"
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame & Walls",
+        "es": "Marco y Paredes"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Mount",
+        "es": "Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cols",
+      "type": "slider",
+      "default": 8,
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "group": "matrix",
+      "modes": [
+        "bezel_frame",
+        "diffuser_grid",
+        "panel_mount"
+      ],
+      "label": {
+        "en": "Columns",
+        "es": "Columnas"
+      },
+      "tooltip": {
+        "en": "Pixel columns (8 or 16 for standard panels)",
+        "es": "Columnas de píxeles (8 o 16 en paneles estándar)"
+      }
+    },
+    {
+      "id": "rows",
+      "type": "slider",
+      "default": 8,
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "group": "matrix",
+      "modes": [
+        "bezel_frame",
+        "diffuser_grid",
+        "panel_mount"
+      ],
+      "label": {
+        "en": "Rows",
+        "es": "Filas"
+      },
+      "tooltip": {
+        "en": "Pixel rows (8 or 16 for standard panels)",
+        "es": "Filas de píxeles (8 o 16 en paneles estándar)"
+      }
+    },
+    {
+      "id": "pitch",
+      "type": "slider",
+      "default": 10.0,
+      "min": 5.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "matrix",
+      "modes": [
+        "bezel_frame",
+        "diffuser_grid",
+        "panel_mount"
+      ],
+      "label": {
+        "en": "Pixel Pitch (mm)",
+        "es": "Paso de Píxel (mm)"
+      },
+      "tooltip": {
+        "en": "Centre-to-centre pixel spacing. WS2812 matrices are ~10 mm",
+        "es": "Espaciado centro a centro. Las matrices WS2812 son ~10 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.2,
+      "group": "frame",
+      "modes": [
+        "bezel_frame",
+        "diffuser_grid",
+        "panel_mount"
+      ],
+      "label": {
+        "en": "Wall (mm)",
+        "es": "Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Frame / cell wall thickness",
+        "es": "Grosor de pared del marco / celda"
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": [
+        "bezel_frame",
+        "diffuser_grid",
+        "panel_mount"
+      ],
+      "label": {
+        "en": "Depth (mm)",
+        "es": "Profundidad (mm)"
+      },
+      "tooltip": {
+        "en": "Frame / grid depth; deeper diffuser cells reduce bleed",
+        "es": "Profundidad del marco / rejilla; celdas más profundas reducen el sangrado"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "lip",
+      "type": "slider",
+      "default": 2.5,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "frame",
+      "modes": [
+        "bezel_frame",
+        "diffuser_grid"
+      ],
+      "label": {
+        "en": "Front Lip / Floor (mm)",
+        "es": "Labio / Piso (mm)"
+      },
+      "tooltip": {
+        "en": "Bezel front lip width / diffuser floor thickness",
+        "es": "Ancho del labio del bisel / grosor del piso del difusor"
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "mount",
+      "modes": [
+        "panel_mount"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Screw Hole Ø (mm)",
+        "es": "Ø de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Corner mount screw clearance (M3 ~3.2 mm)",
+        "es": "Holgura del tornillo de esquina (M3 ~3.2 mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "bezel_8x8",
+      "mode": "bezel_frame",
+      "label": {
+        "en": "8x8 Bezel",
+        "es": "Bisel 8x8"
+      },
+      "values": {
+        "cols": 8,
+        "rows": 8,
+        "pitch": 10.0
+      }
+    },
+    {
+      "id": "diffuser_8x8",
+      "mode": "diffuser_grid",
+      "label": {
+        "en": "8x8 Diffuser",
+        "es": "Difusor 8x8"
+      },
+      "values": {
+        "cols": 8,
+        "rows": 8,
+        "pitch": 10.0,
+        "depth": 8.0
+      }
+    },
+    {
+      "id": "diffuser_16x16",
+      "mode": "diffuser_grid",
+      "label": {
+        "en": "16x16 Diffuser",
+        "es": "Difusor 16x16"
+      },
+      "values": {
+        "cols": 16,
+        "rows": 16,
+        "pitch": 10.0,
+        "depth": 8.0
+      }
+    },
+    {
+      "id": "mount_8x8",
+      "mode": "panel_mount",
+      "label": {
+        "en": "8x8 Panel Mount",
+        "es": "Montaje 8x8"
+      },
+      "values": {
+        "cols": 8,
+        "rows": 8,
+        "pitch": 10.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall < pitch",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be narrower than the pixel pitch",
+        "es": "La pared debe ser más estrecha que el paso de píxel"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        160,
+        160,
+        140
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        0,
+        260
+      ]
+    },
+    {
+      "id": "back",
+      "label": {
+        "en": "Back",
+        "es": "Posterior"
+      },
+      "position": [
+        0,
+        0,
+        -260
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 16,
+    "per_unit": 4,
+    "per_part": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "ws2812_pixel_grid",
+        "label": {
+          "en": "WS2812 Pixel Grid",
+          "es": "Cuadrícula de Píxeles WS2812"
+        },
+        "geometry_type": "grid",
+        "standard": "WS2812B 8x8 / 16x16 (~10 mm pitch)",
+        "parameters": [
+          "cols",
+          "rows",
+          "pitch"
+        ]
+      },
+      {
+        "id": "corner_screw_mount",
+        "label": {
+          "en": "Corner Screw Mount",
+          "es": "Montaje de Esquina"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO 7045 M3",
+        "parameters": [
+          "screw_d"
+        ],
+        "compatible_with": [
+          "din-rail-clip",
+          "enclosure-vent",
+          "ferro-handle"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Addressable LED matrices are a commodity, but a diffuser or frame that matches your exact panel is not — makers hand-cut foamboard or buy a bespoke enclosure per project. Driving the bezel, egg-crate diffuser, and mount off the real WS2812 pixel pitch lets anyone print a clean-looking, glare-free matrix display for the panel they have, at any grid size.",
+      "es": "Las matrices LED direccionables son un producto básico, pero un difusor o marco que coincida con tu panel exacto no lo es — los creadores cortan cartón a mano o compran una caja a medida por proyecto. Derivar el bisel, el difusor tipo rejilla y el montaje del paso real de píxel WS2812 permite imprimir una pantalla matricial limpia y sin brillo para el panel que tienes, en cualquier tamaño."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "led",
+    "ws2812",
+    "neopixel",
+    "matrix",
+    "diffuser",
+    "grid",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

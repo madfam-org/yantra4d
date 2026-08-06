@@ -1,0 +1,183 @@
+{
+  "project": {
+    "name": "Robot Sensor Mount",
+    "slug": "robot-sensor-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A tilt-adjustable bracket for a small robot sensor board. The board plate carries the exact mounting-hole pattern of the sensor (VL53L0X ToF ~13 x 25 mm, MPU6050 IMU ~15 x 21 mm with 2 holes, Raspberry Pi camera 25 x 24 mm with 4 holes) plus a window clearing the sensor / lens, on a pillar with an adjustment slot so the board can be angled and locked. Choose a ToF, IMU, or camera mount.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte con angulo ajustable para una placa de sensor de robot. La placa lleva el patron exacto de agujeros del sensor (VL53L0X ToF ~13 x 25 mm, MPU6050 IMU ~15 x 21 mm con 2 agujeros, camara Raspberry Pi 25 x 24 mm con 4 agujeros) mas una ventana que libera el sensor / lente, sobre un pilar con ranura de ajuste para inclinar y fijar la placa. Elige un montaje ToF, IMU o de camara.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/robot-sensor-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["sensor", "vl53l0x", "mpu6050", "pi-camera", "tof", "imu", "bracket", "robotics", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tof_mount",
+      "label": { "en": "ToF Mount (VL53L0X)", "es": "Montaje ToF (VL53L0X)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tof_mount"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "imu_mount",
+      "label": { "en": "IMU Mount (MPU6050)", "es": "Montaje IMU (MPU6050)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["imu_mount"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "cam_mount",
+      "label": { "en": "Camera Mount (Pi Cam)", "es": "Montaje de Camara (Pi Cam)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cam_mount"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 17 }
+    }
+  ],
+  "parts": [
+    { "id": "tof_mount", "label": { "en": "ToF Mount", "es": "Montaje ToF" }, "render_mode": 0, "color": "#3f8f7a" },
+    { "id": "imu_mount", "label": { "en": "IMU Mount", "es": "Montaje IMU" }, "render_mode": 0, "color": "#4aa08f" },
+    { "id": "cam_mount", "label": { "en": "Camera Mount", "es": "Montaje de Camara" }, "render_mode": 0, "color": "#2f7a69" }
+  ],
+  "parameter_groups": [
+    { "id": "sensor", "label": { "en": "Sensor", "es": "Sensor" } },
+    { "id": "plate", "label": { "en": "Board Plate", "es": "Placa" } },
+    { "id": "tilt", "label": { "en": "Tilt & Base", "es": "Inclinacion y Base" } }
+  ],
+  "parameters": [
+    {
+      "id": "sensor", "type": "select", "default": "VL53L0X",
+      "group": "sensor", "modes": ["tof_mount", "imu_mount", "cam_mount"],
+      "label": { "en": "Sensor Board", "es": "Placa del Sensor" },
+      "tooltip": { "en": "Sensor board — the mode fixes the footprint; this echoes it", "es": "Placa del sensor — el modo fija la huella; este parametro la refleja" },
+      "options": [
+        { "value": "VL53L0X", "label": { "en": "VL53L0X ToF (~13 x 25 mm)", "es": "VL53L0X ToF (~13 x 25 mm)" } },
+        { "value": "MPU6050", "label": { "en": "MPU6050 IMU (~21 x 15 mm)", "es": "MPU6050 IMU (~21 x 15 mm)" } },
+        { "value": "pi-camera", "label": { "en": "Pi Camera (25 x 24 mm)", "es": "Camara Pi (25 x 24 mm)" } }
+      ]
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.5,
+      "group": "plate", "modes": ["tof_mount", "imu_mount", "cam_mount"],
+      "label": { "en": "Board Plate (mm)", "es": "Placa (mm)" },
+      "tooltip": { "en": "Board-plate thickness", "es": "Grosor de la placa del sensor" }
+    },
+    {
+      "id": "margin", "type": "slider", "default": 4.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "plate", "modes": ["tof_mount", "imu_mount", "cam_mount"], "advanced": true,
+      "label": { "en": "Plate Margin (mm)", "es": "Margen de Placa (mm)" },
+      "tooltip": { "en": "Material margin around the sensor holes", "es": "Margen de material alrededor de los agujeros del sensor" }
+    },
+    {
+      "id": "tilt_deg", "type": "slider", "default": 20.0, "min": 0.0, "max": 45.0, "step": 1,
+      "group": "tilt", "modes": ["tof_mount", "imu_mount", "cam_mount"],
+      "label": { "en": "Tilt Angle (deg)", "es": "Angulo de Inclinacion (grados)" },
+      "tooltip": { "en": "Rake angle of the board plate", "es": "Angulo de inclinacion de la placa del sensor" }
+    },
+    {
+      "id": "ear_h", "type": "slider", "default": 22.0, "min": 12.0, "max": 40.0, "step": 1,
+      "group": "tilt", "modes": ["tof_mount", "imu_mount", "cam_mount"],
+      "label": { "en": "Pillar Height (mm)", "es": "Altura del Pilar (mm)" },
+      "tooltip": { "en": "Height of the pillar carrying the board", "es": "Altura del pilar que sostiene la placa" }
+    },
+    {
+      "id": "base_len", "type": "slider", "default": 30.0, "min": 20.0, "max": 50.0, "step": 1,
+      "group": "tilt", "modes": ["tof_mount", "imu_mount", "cam_mount"],
+      "label": { "en": "Base Length (mm)", "es": "Largo de Base (mm)" },
+      "tooltip": { "en": "Base foot length", "es": "Largo del pie de la base" }
+    },
+    {
+      "id": "base_t", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "tilt", "modes": ["tof_mount", "imu_mount", "cam_mount"], "advanced": true,
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Base foot thickness", "es": "Grosor del pie de la base" }
+    },
+    {
+      "id": "mount_d", "type": "slider", "default": 4.5, "min": 2.5, "max": 6.5, "step": 0.1,
+      "group": "tilt", "modes": ["tof_mount", "imu_mount", "cam_mount"],
+      "label": { "en": "Base Bolt (mm)", "es": "Tornillo de Base (mm)" },
+      "tooltip": { "en": "Base surface bolt clearance (4.5 = M4)", "es": "Holgura del tornillo de superficie de la base (4.5 = M4)" }
+    },
+    {
+      "id": "pivot_d", "type": "slider", "default": 3.4, "min": 2.0, "max": 5.0, "step": 0.1,
+      "group": "tilt", "modes": ["tof_mount", "imu_mount", "cam_mount"], "advanced": true,
+      "label": { "en": "Tilt Bolt (mm)", "es": "Tornillo de Inclinacion (mm)" },
+      "tooltip": { "en": "Tilt / adjustment-slot bolt clearance (3.4 = M3)", "es": "Holgura del tornillo de la ranura de ajuste (3.4 = M3)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "tof_20", "mode": "tof_mount",
+      "label": { "en": "VL53L0X Tilted", "es": "VL53L0X Inclinado" },
+      "values": { "sensor": "VL53L0X", "tilt_deg": 20, "ear_h": 22 }
+    },
+    {
+      "id": "imu_flat", "mode": "imu_mount",
+      "label": { "en": "MPU6050 Upright", "es": "MPU6050 Vertical" },
+      "values": { "sensor": "MPU6050", "tilt_deg": 0, "ear_h": 20 }
+    },
+    {
+      "id": "cam_30", "mode": "cam_mount",
+      "label": { "en": "Pi Cam 30°", "es": "Camara Pi 30°" },
+      "values": { "sensor": "pi-camera", "tilt_deg": 30, "ear_h": 26 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_t >= 2",
+      "severity": "error",
+      "message": { "en": "Board plate must be at least 2 mm thick", "es": "La placa del sensor debe tener al menos 2 mm de grosor" }
+    },
+    {
+      "expression": "ear_h >= 12",
+      "severity": "warning",
+      "message": { "en": "A pillar under 12 mm leaves little room for the tilt slot", "es": "Un pilar menor a 12 mm deja poco espacio para la ranura de inclinacion" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [55, 55, 50] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [90, 0, 25] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [0, -90, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "sensor_board_mount",
+        "label": { "en": "Sensor Board Mount", "es": "Montaje de Placa del Sensor" },
+        "geometry_type": "bolt_pattern",
+        "standard": "VL53/MPU6050/Pi-cam",
+        "parameters": ["sensor", "margin"]
+      },
+      {
+        "id": "base_mount",
+        "label": { "en": "Base Mount", "es": "Montaje de Base" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["mount_d", "pivot_d", "base_len"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The same cheap sensor breakouts — a VL53L0X rangefinder, an MPU6050 IMU, a Pi camera — show up in every hobby robot, yet each needs holding at a specific angle to see. A printed mount cut to the board's exact hole pattern, with a tilt slot, aims any of them without a custom bracket per build.",
+      "es": "Los mismos modulos baratos — un telemetro VL53L0X, una IMU MPU6050, una camara Pi — aparecen en cada robot casero, pero cada uno debe sujetarse en un angulo especifico para ver. Un montaje impreso cortado al patron exacto de la placa, con ranura de inclinacion, apunta cualquiera de ellos sin un soporte a medida por proyecto."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["sensor", "vl53l0x", "mpu6050", "pi-camera", "bracket", "robotics", "industrial", "hyperobject", "commons"]
+}

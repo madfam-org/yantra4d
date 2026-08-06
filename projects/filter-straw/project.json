@@ -1,0 +1,169 @@
+{
+  "project": {
+    "name": "Water Filter / Straw Adapter",
+    "slug": "filter-straw",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Threaded adapters that connect a personal filter straw, a sport spout, or a hose to a standard 28 mm PET bottle neck (28-410 and the lightweight carbonated PCO-1881, 27.4 mm OD, 2.7 mm pitch). One 28 mm thread interface builds a straw-holding screw cap, a bite-valve drink cap, and an inline hose coupler. IMPORTANT: this is a housing / interface only — it carries a filter element, it is NOT itself a water filter and does not make water safe. Complements the faircap filter cartridge.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Adaptadores roscados que conectan una pajilla filtrante personal, un pico deportivo o una manguera a un cuello de botella PET estándar de 28 mm (28-410 y el ligero carbonatado PCO-1881, 27.4 mm de diámetro exterior, paso de 2.7 mm). Una sola interfaz de rosca de 28 mm construye una tapa de rosca porta-pajilla, una tapa de válvula de mordida y un acoplador de manguera en línea. IMPORTANTE: esto es solo un alojamiento / interfaz — sostiene un elemento filtrante, NO es un filtro de agua y no potabiliza el agua. Complementa el cartucho de filtro faircap.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/filter-straw.webp",
+    "difficulty": "intermediate",
+    "tags": ["water", "filter", "straw", "bottle", "28mm", "adapter", "survival", "outdoor", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "straw_adapter",
+      "label": { "en": "Filter Straw Cap", "es": "Tapa Porta-Pajilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["straw_adapter"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "bottle_cap",
+      "label": { "en": "Sport Bite-Valve Cap", "es": "Tapa de Válvula Deportiva" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["bottle_cap"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "inline_coupler",
+      "label": { "en": "Inline Hose Coupler", "es": "Acoplador de Manguera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["inline_coupler"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "straw_adapter", "label": { "en": "Filter Straw Cap", "es": "Tapa Porta-Pajilla" }, "render_mode": 0, "color": "#2f6f8f" },
+    { "id": "bottle_cap", "label": { "en": "Sport Bite-Valve Cap", "es": "Tapa de Válvula Deportiva" }, "render_mode": 0, "color": "#3880a0" },
+    { "id": "inline_coupler", "label": { "en": "Inline Hose Coupler", "es": "Acoplador de Manguera" }, "render_mode": 0, "color": "#4190b0" }
+  ],
+  "parameter_groups": [
+    { "id": "thread", "label": { "en": "28 mm Bottle Thread", "es": "Rosca de Botella 28 mm" } },
+    { "id": "cap", "label": { "en": "Cap", "es": "Tapa" } },
+    { "id": "port", "label": { "en": "Straw / Barb Port", "es": "Puerto de Pajilla / Espiga" } }
+  ],
+  "parameters": [
+    {
+      "id": "thread_d", "type": "slider", "default": 28.0, "min": 20.0, "max": 40.0, "step": 0.1,
+      "group": "thread", "modes": ["straw_adapter", "bottle_cap", "inline_coupler"],
+      "label": { "en": "Thread Major Diameter (mm)", "es": "Diámetro Mayor de Rosca (mm)" },
+      "tooltip": { "en": "Bottle neck major diameter. Standard soda/water is 28 mm", "es": "Diámetro mayor del cuello. El estándar de refresco/agua es 28 mm" }
+    },
+    {
+      "id": "pitch", "type": "slider", "default": 2.7, "min": 2.0, "max": 3.5, "step": 0.1,
+      "group": "thread", "modes": ["straw_adapter", "bottle_cap", "inline_coupler"],
+      "label": { "en": "Thread Pitch (mm)", "es": "Paso de Rosca (mm)" },
+      "tooltip": { "en": "Thread pitch. PCO-1881 is 2.7 mm; 28-410 is ~2.82 mm", "es": "Paso de rosca. PCO-1881 es 2.7 mm; 28-410 es ~2.82 mm" }
+    },
+    {
+      "id": "turns", "type": "slider", "default": 3.5, "min": 2.0, "max": 5.0, "step": 0.5,
+      "group": "thread", "modes": ["straw_adapter", "bottle_cap", "inline_coupler"], "advanced": true,
+      "label": { "en": "Thread Turns", "es": "Vueltas de Rosca" },
+      "tooltip": { "en": "Number of thread turns engaged", "es": "Número de vueltas de rosca engranadas" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.6, "min": 1.6, "max": 4.5, "step": 0.1,
+      "group": "cap", "modes": ["straw_adapter", "bottle_cap", "inline_coupler"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Cap and tube wall thickness", "es": "Grosor de pared de tapa y tubo" }
+    },
+    {
+      "id": "cap_h", "type": "slider", "default": 15.0, "min": 9.0, "max": 24.0, "step": 0.5,
+      "group": "cap", "modes": ["straw_adapter", "bottle_cap", "inline_coupler"],
+      "label": { "en": "Cap Skirt Height (mm)", "es": "Altura de Faldón (mm)" },
+      "tooltip": { "en": "Height of the screw-cap skirt", "es": "Altura del faldón de la tapa de rosca" }
+    },
+    {
+      "id": "straw_d", "type": "slider", "default": 8.0, "min": 4.0, "max": 16.0, "step": 0.5,
+      "group": "port", "modes": ["straw_adapter", "bottle_cap"],
+      "label": { "en": "Straw / Spout Bore (mm)", "es": "Diámetro de Pajilla / Pico (mm)" },
+      "tooltip": { "en": "Bore for the filter straw or the sport spout", "es": "Diámetro para la pajilla filtrante o el pico deportivo" }
+    },
+    {
+      "id": "barb_d", "type": "slider", "default": 10.0, "min": 6.0, "max": 20.0, "step": 0.5,
+      "group": "port", "modes": ["inline_coupler"],
+      "label": { "en": "Hose Barb Diameter (mm)", "es": "Diámetro de Espiga (mm)" },
+      "tooltip": { "en": "Outer diameter of the stepped hose barb", "es": "Diámetro exterior de la espiga escalonada" }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.3, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "port", "modes": ["straw_adapter"], "advanced": true,
+      "label": { "en": "Straw Press-Fit Clearance (mm)", "es": "Holgura de Pajilla (mm)" },
+      "tooltip": { "en": "Added to the straw bore for a press fit", "es": "Se suma al diámetro de la pajilla para un ajuste a presión" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "pco1881_straw", "mode": "straw_adapter",
+      "label": { "en": "PCO-1881 Straw Cap", "es": "Tapa Porta-Pajilla PCO-1881" },
+      "values": { "thread_d": 28.0, "pitch": 2.7, "turns": 3.5, "straw_d": 8.0, "wall": 2.6 }
+    },
+    {
+      "id": "sport_cap_28", "mode": "bottle_cap",
+      "label": { "en": "28 mm Sport Cap", "es": "Tapa Deportiva 28 mm" },
+      "values": { "thread_d": 28.0, "pitch": 2.7, "turns": 3.5, "straw_d": 8.0, "wall": 2.6 }
+    },
+    {
+      "id": "hose_coupler_28", "mode": "inline_coupler",
+      "label": { "en": "28 mm Hose Coupler", "es": "Acoplador de Manguera 28 mm" },
+      "values": { "thread_d": 28.0, "pitch": 2.7, "turns": 3.5, "barb_d": 10.0, "wall": 2.6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "straw_d < thread_d",
+      "severity": "error",
+      "message": { "en": "The straw/spout bore must be smaller than the bottle thread", "es": "El diámetro de pajilla/pico debe ser menor que la rosca de botella" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 120] },
+    { "id": "front", "label": { "en": "Front (Cross-Section)", "es": "Frontal (Sección)" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "bottle_thread_28",
+        "label": { "en": "28 mm Bottle Thread", "es": "Rosca de Botella 28 mm" },
+        "geometry_type": "thread",
+        "standard": "28mm/bottle (28-410 / PCO-1881)",
+        "parameters": ["thread_d", "pitch", "turns"]
+      },
+      {
+        "id": "straw_port",
+        "label": { "en": "Filter Straw Port", "es": "Puerto de Pajilla Filtrante" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["straw_d", "fit"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The 28 mm PET bottle neck is the most abundant reusable container fitting on earth — every discarded soda and water bottle carries it. Printable adapters that thread onto that neck let a filter straw, a sport spout or a hose mate to any bottle, so a filter element or a drinking system works with containers people already have instead of a proprietary bottle. This part is a housing only and never replaces a certified filter.",
+      "es": "El cuello de botella PET de 28 mm es el accesorio de contenedor reutilizable más abundante del planeta — cada botella de refresco y agua desechada lo lleva. Adaptadores imprimibles que se roscan en ese cuello permiten acoplar una pajilla filtrante, un pico deportivo o una manguera a cualquier botella, para que un elemento filtrante o un sistema de bebida funcione con contenedores que la gente ya tiene en vez de una botella propietaria. Esta pieza es solo un alojamiento y nunca reemplaza un filtro certificado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["water", "filter", "straw", "bottle", "28mm", "adapter", "survival", "outdoor", "hyperobject", "commons"]
+}

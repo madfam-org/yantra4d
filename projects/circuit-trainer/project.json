@@ -1,0 +1,561 @@
+{
+  "project": {
+    "name": "Circuit / Breadboard Trainer",
+    "slug": "circuit-trainer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Oversized, tactile circuit-teaching hardware on the universal 2.54 mm (0.1 in) breadboard pitch — big enough for small hands and group demonstration. Build a solderless-breadboard base board with a grid of lead holes and a DIP gutter, an oversized component holder with lead legs an integer number of pitches apart, or a power-rail bus strip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Hardware táctil sobredimensionado para enseñar circuitos sobre el paso universal de protoboard de 2.54 mm (0.1 in) — suficientemente grande para manos pequeñas y demostración grupal. Genera una placa base tipo protoboard con rejilla de orificios para patillas y un canal DIP, un soporte de componente sobredimensionado con patillas separadas un número entero de pasos, o una tira de riel de alimentación.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/circuit-trainer.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "circuit",
+      "breadboard",
+      "electronics",
+      "education",
+      "stem",
+      "component",
+      "2.54mm",
+      "commercial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "breadboard",
+      "label": {
+        "en": "Breadboard Base",
+        "es": "Base Protoboard"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "breadboard"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "component_holder",
+      "label": {
+        "en": "Component Holder",
+        "es": "Soporte de Componente"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "component_holder"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "bus_strip",
+      "label": {
+        "en": "Power Bus Strip",
+        "es": "Tira de Riel de Alimentación"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "bus_strip"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 3,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "breadboard",
+      "label": {
+        "en": "Breadboard Base",
+        "es": "Base Protoboard"
+      },
+      "render_mode": 0,
+      "color": "#8e7d3f"
+    },
+    {
+      "id": "component_holder",
+      "label": {
+        "en": "Component Holder",
+        "es": "Soporte de Componente"
+      },
+      "render_mode": 0,
+      "color": "#a9964d"
+    },
+    {
+      "id": "bus_strip",
+      "label": {
+        "en": "Power Bus Strip",
+        "es": "Tira de Riel"
+      },
+      "render_mode": 0,
+      "color": "#c0392b"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "grid",
+      "label": {
+        "en": "Breadboard Grid",
+        "es": "Rejilla Protoboard"
+      }
+    },
+    {
+      "id": "board",
+      "label": {
+        "en": "Base Board",
+        "es": "Placa Base"
+      }
+    },
+    {
+      "id": "component",
+      "label": {
+        "en": "Component",
+        "es": "Componente"
+      }
+    },
+    {
+      "id": "bus",
+      "label": {
+        "en": "Bus Strip",
+        "es": "Tira de Riel"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "pitch",
+      "type": "slider",
+      "default": 2.54,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.01,
+      "group": "grid",
+      "modes": [
+        "breadboard",
+        "component_holder",
+        "bus_strip"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Hole Pitch (mm)",
+        "es": "Paso de Orificios (mm)"
+      },
+      "tooltip": {
+        "en": "Breadboard lead pitch. Universal standard is 2.54 mm (0.1 in)",
+        "es": "Paso de patillas del protoboard. El estándar universal es 2.54 mm (0.1 in)"
+      }
+    },
+    {
+      "id": "scale",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "grid",
+      "modes": [
+        "breadboard",
+        "component_holder",
+        "bus_strip"
+      ],
+      "label": {
+        "en": "Oversize x",
+        "es": "Sobredimensión x"
+      },
+      "tooltip": {
+        "en": "Teaching multiplier — scales the whole 2.54 mm-faithful geometry up (4x by default)",
+        "es": "Multiplicador didáctico — escala toda la geometría fiel a 2.54 mm (4x por defecto)"
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.0,
+      "min": 0.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "grid",
+      "modes": [
+        "breadboard",
+        "component_holder",
+        "bus_strip"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Lead Hole (mm)",
+        "es": "Orificio de Patilla (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal lead hole diameter before the oversize multiplier (~1.0 mm)",
+        "es": "Diámetro nominal del orificio de patilla antes del multiplicador (~1.0 mm)"
+      }
+    },
+    {
+      "id": "bb_cols",
+      "type": "slider",
+      "default": 10,
+      "min": 2,
+      "max": 30,
+      "step": 1,
+      "group": "board",
+      "modes": [
+        "breadboard"
+      ],
+      "label": {
+        "en": "Hole Columns (X)",
+        "es": "Columnas de Orificios (X)"
+      },
+      "tooltip": {
+        "en": "Number of hole columns",
+        "es": "Número de columnas de orificios"
+      }
+    },
+    {
+      "id": "bb_rows",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 30,
+      "step": 1,
+      "group": "board",
+      "modes": [
+        "breadboard"
+      ],
+      "label": {
+        "en": "Hole Rows (Y)",
+        "es": "Filas de Orificios (Y)"
+      },
+      "tooltip": {
+        "en": "Number of hole rows",
+        "es": "Número de filas de orificios"
+      }
+    },
+    {
+      "id": "bb_thick",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "board",
+      "modes": [
+        "breadboard",
+        "bus_strip"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Board Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Slab thickness before the oversize multiplier",
+        "es": "Grosor de la placa antes del multiplicador"
+      }
+    },
+    {
+      "id": "gutter",
+      "type": "checkbox",
+      "default": true,
+      "group": "board",
+      "modes": [
+        "breadboard"
+      ],
+      "label": {
+        "en": "Centre DIP Gutter",
+        "es": "Canal DIP Central"
+      },
+      "tooltip": {
+        "en": "Add the central channel that straddles a DIP chip on a real breadboard",
+        "es": "Añade el canal central que separa los lados de un chip DIP en un protoboard real"
+      }
+    },
+    {
+      "id": "comp_pitches",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "group": "component",
+      "modes": [
+        "component_holder"
+      ],
+      "label": {
+        "en": "Lead Spacing (pitches)",
+        "es": "Separación de Patillas (pasos)"
+      },
+      "tooltip": {
+        "en": "Lead-to-lead spacing in whole pitches — the legs land on the breadboard grid",
+        "es": "Separación entre patillas en pasos enteros — las patas caen en la rejilla del protoboard"
+      }
+    },
+    {
+      "id": "comp_len",
+      "type": "slider",
+      "default": 12.0,
+      "min": 4.0,
+      "max": 60.0,
+      "step": 1,
+      "group": "component",
+      "modes": [
+        "component_holder"
+      ],
+      "label": {
+        "en": "Body Length (mm)",
+        "es": "Longitud del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Component body length before the oversize multiplier",
+        "es": "Longitud del cuerpo del componente antes del multiplicador"
+      }
+    },
+    {
+      "id": "comp_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "component",
+      "modes": [
+        "component_holder"
+      ],
+      "label": {
+        "en": "Body Diameter (mm)",
+        "es": "Diámetro del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Component body diameter before the oversize multiplier",
+        "es": "Diámetro del cuerpo del componente antes del multiplicador"
+      }
+    },
+    {
+      "id": "leg_len",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "component",
+      "modes": [
+        "component_holder"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Lead Leg Length (mm)",
+        "es": "Longitud de Patilla (mm)"
+      },
+      "tooltip": {
+        "en": "How far the lead legs drop below the body (before oversize)",
+        "es": "Cuánto bajan las patillas por debajo del cuerpo (antes del multiplicador)"
+      }
+    },
+    {
+      "id": "bus_holes",
+      "type": "slider",
+      "default": 12,
+      "min": 2,
+      "max": 40,
+      "step": 1,
+      "group": "bus",
+      "modes": [
+        "bus_strip"
+      ],
+      "label": {
+        "en": "Bus Holes",
+        "es": "Orificios de Riel"
+      },
+      "tooltip": {
+        "en": "Number of holes along the power-rail strip",
+        "es": "Número de orificios a lo largo de la tira de riel"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "half_board",
+      "mode": "breadboard",
+      "label": {
+        "en": "10x6 Trainer Board",
+        "es": "Placa de Práctica 10x6"
+      },
+      "values": {
+        "bb_cols": 10,
+        "bb_rows": 6,
+        "gutter": true,
+        "scale": 4.0
+      }
+    },
+    {
+      "id": "resistor",
+      "mode": "component_holder",
+      "label": {
+        "en": "Giant Resistor (4-pitch)",
+        "es": "Resistencia Gigante (4 pasos)"
+      },
+      "values": {
+        "comp_pitches": 4,
+        "comp_len": 12.0,
+        "comp_dia": 5.0,
+        "scale": 4.0
+      }
+    },
+    {
+      "id": "power_rail",
+      "mode": "bus_strip",
+      "label": {
+        "en": "12-Hole Power Rail",
+        "es": "Riel de Alimentación 12 Orificios"
+      },
+      "values": {
+        "bus_holes": 12,
+        "scale": 4.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hole_dia < pitch",
+      "severity": "error",
+      "message": {
+        "en": "Lead hole must be smaller than the pitch",
+        "es": "El orificio de patilla debe ser menor que el paso"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        110
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        260
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -240,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "breadboard_grid",
+        "label": {
+          "en": "2.54 mm Lead Grid",
+          "es": "Rejilla de Patillas 2.54 mm"
+        },
+        "geometry_type": "grid",
+        "standard": "breadboard 2.54mm",
+        "parameters": [
+          "pitch",
+          "hole_dia",
+          "scale"
+        ],
+        "compatible_with": [
+          "breadboard-holder"
+        ]
+      },
+      {
+        "id": "component_footprint",
+        "label": {
+          "en": "Component Lead Footprint",
+          "es": "Huella de Patillas de Componente"
+        },
+        "geometry_type": "profile",
+        "standard": "breadboard 2.54mm",
+        "parameters": [
+          "comp_pitches",
+          "pitch"
+        ],
+        "compatible_with": [
+          "breadboard-holder"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Oversized breadboard hardware turns electronics — normally too small and fiddly for beginners — into a hands-on, group-visible activity: learners see how rows connect, match component leads to the 2.54 mm grid, and build simple circuits without soldering. Because every piece shares the real 0.1 inch pitch, a printed teaching set stays true to standard components and costs a few grams of filament per part instead of a commercial trainer.",
+      "es": "El hardware de protoboard sobredimensionado convierte la electrónica — normalmente demasiado pequeña y difícil para principiantes — en una actividad práctica y visible para grupos: quien aprende ve cómo se conectan las filas, hace coincidir las patillas de los componentes con la rejilla de 2.54 mm y arma circuitos simples sin soldar. Como cada pieza comparte el paso real de 0.1 pulgadas, un conjunto didáctico impreso se mantiene fiel a los componentes estándar y cuesta unos gramos de filamento por pieza en vez de un entrenador comercial."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "circuit",
+    "breadboard",
+    "electronics",
+    "education",
+    "stem",
+    "component",
+    "2.54mm",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

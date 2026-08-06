@@ -1,0 +1,170 @@
+{
+  "project": {
+    "name": "Key / Zipper Grip Aid",
+    "slug": "grip-aid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Grip enlargers for the small, hard-to-turn objects of daily life. Capture a thin flat tab — a key bow, a zipper slider, a button or cord toggle — in a pocket and give it a large, easy-to-hold body so a user with limited pinch strength, arthritis, tremor, or one-handed use can turn, pull, or grasp it. Choose a key turner, a zipper pull, or a tab grip. Fit is user-specific — measure the tab and consult an OT.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Engrosadores de agarre para los objetos pequeños y difíciles de girar de la vida diaria. Capture una lengüeta plana y delgada — el arco de una llave, el tirador de una cremallera, un botón o toggle de cordón — en un bolsillo y dele un cuerpo grande y fácil de sujetar para que un usuario con fuerza de pinza limitada, artritis, temblor o uso con una sola mano pueda girar, tirar o agarrar. Elija un girador de llaves, un tirador de cremallera o un agarre de lengüeta. El ajuste es específico del usuario — mida la lengüeta y consulte a un terapeuta ocupacional.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/grip-aid.webp",
+    "difficulty": "beginner",
+    "tags": ["grip", "key", "zipper", "accessibility", "assistive", "adaptive", "dexterity", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "key_turner",
+      "label": { "en": "Key Turner", "es": "Girador de Llaves" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["key_turner"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "zip_pull",
+      "label": { "en": "Zipper Pull", "es": "Tirador de Cremallera" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["zip_pull"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "tab_grip",
+      "label": { "en": "Tab Grip", "es": "Agarre de Lengüeta" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["tab_grip"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "key_turner", "label": { "en": "Key Turner", "es": "Girador de Llaves" }, "render_mode": 0, "color": "#8f6f4a" },
+    { "id": "zip_pull", "label": { "en": "Zipper Pull", "es": "Tirador de Cremallera" }, "render_mode": 0, "color": "#a0805f" },
+    { "id": "tab_grip", "label": { "en": "Tab Grip", "es": "Agarre de Lengüeta" }, "render_mode": 0, "color": "#b19173" }
+  ],
+  "parameter_groups": [
+    { "id": "body", "label": { "en": "Grip Body", "es": "Cuerpo del Agarre" } },
+    { "id": "capture", "label": { "en": "Tab Capture", "es": "Captura de Lengüeta" } }
+  ],
+  "parameters": [
+    {
+      "id": "grip_len", "type": "slider", "default": 55.0, "min": 25.0, "max": 100.0, "step": 1.0,
+      "group": "body", "modes": ["key_turner", "zip_pull", "tab_grip"],
+      "label": { "en": "Grip Length (mm)", "es": "Longitud del Agarre (mm)" },
+      "tooltip": { "en": "Overall length of the grip body", "es": "Longitud total del cuerpo del agarre" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip_w", "type": "slider", "default": 24.0, "min": 14.0, "max": 45.0, "step": 1.0,
+      "group": "body", "modes": ["key_turner", "zip_pull", "tab_grip"],
+      "label": { "en": "Grip Width (mm)", "es": "Ancho del Agarre (mm)" },
+      "tooltip": { "en": "Width of the body across the hold", "es": "Ancho del cuerpo a lo ancho del agarre" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 12.0, "min": 6.0, "max": 22.0, "step": 0.5,
+      "group": "body", "modes": ["key_turner", "zip_pull", "tab_grip"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Body thickness (grip depth in the hand)", "es": "Grosor del cuerpo (profundidad del agarre en la mano)" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tab_w", "type": "slider", "default": 9.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "capture", "modes": ["key_turner", "zip_pull", "tab_grip"],
+      "label": { "en": "Tab Width (mm)", "es": "Ancho de Lengüeta (mm)" },
+      "tooltip": { "en": "Width of the captured tab (key bow / pull / toggle)", "es": "Ancho de la lengüeta capturada (arco de llave / tirador / toggle)" }
+    },
+    {
+      "id": "tab_t", "type": "slider", "default": 2.4, "min": 0.8, "max": 6.0, "step": 0.1,
+      "group": "capture", "modes": ["key_turner", "zip_pull", "tab_grip"], "advanced": true,
+      "label": { "en": "Tab Thickness / Slot Gap (mm)", "es": "Grosor de Lengüeta / Ranura (mm)" },
+      "tooltip": { "en": "Slot gap that grips the tab (key blade ~2.4 mm at the bow)", "es": "Espacio de ranura que sujeta la lengüeta (hoja de llave ~2.4 mm en el arco)" }
+    },
+    {
+      "id": "tab_depth", "type": "slider", "default": 12.0, "min": 4.0, "max": 40.0, "step": 1.0,
+      "group": "capture", "modes": ["key_turner", "tab_grip"], "advanced": true,
+      "label": { "en": "Tab Insertion Depth (mm)", "es": "Profundidad de Inserción (mm)" },
+      "tooltip": { "en": "How far the tab inserts into the grip", "es": "Cuánto se inserta la lengüeta en el agarre" }
+    },
+    {
+      "id": "pin_dia", "type": "slider", "default": 3.2, "min": 1.5, "max": 6.0, "step": 0.1,
+      "group": "capture", "modes": ["key_turner", "tab_grip"], "advanced": true,
+      "label": { "en": "Pin / Ring Hole (mm)", "es": "Orificio de Pasador / Anilla (mm)" },
+      "tooltip": { "en": "Cross-hole for a split ring or retaining pin", "es": "Orificio transversal para una anilla o pasador de retención" }
+    },
+    {
+      "id": "loop_dia", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 1.0,
+      "group": "capture", "modes": ["zip_pull"],
+      "label": { "en": "Finger Loop (mm)", "es": "Bucle para Dedo (mm)" },
+      "tooltip": { "en": "Opening of the finger loop on the zipper pull", "es": "Apertura del bucle para el dedo en el tirador de cremallera" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "house_key", "mode": "key_turner",
+      "label": { "en": "House-Key Turner", "es": "Girador de Llave de Casa" },
+      "values": { "grip_len": 55, "grip_w": 24, "thick": 12, "tab_w": 9, "tab_t": 2.4 }
+    },
+    {
+      "id": "coat_zip", "mode": "zip_pull",
+      "label": { "en": "Coat Zipper Pull", "es": "Tirador de Cremallera de Abrigo" },
+      "values": { "grip_len": 45, "grip_w": 22, "thick": 8, "tab_t": 2.0, "loop_dia": 14 }
+    },
+    {
+      "id": "cord_toggle", "mode": "tab_grip",
+      "label": { "en": "Cord-Toggle Grip", "es": "Agarre de Toggle de Cordón" },
+      "values": { "grip_len": 40, "grip_w": 22, "thick": 12, "tab_w": 8, "tab_t": 2.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tab_t < thick",
+      "severity": "error",
+      "message": { "en": "Slot gap must be smaller than the body thickness", "es": "El espacio de la ranura debe ser menor que el grosor del cuerpo" }
+    },
+    {
+      "expression": "grip_w >= 14",
+      "severity": "warning",
+      "message": { "en": "A narrow body offers little grip advantage", "es": "Un cuerpo estrecho ofrece poca ventaja de agarre" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "flat_tab_pocket",
+        "label": { "en": "Flat-Tab Capture Pocket", "es": "Bolsillo de Captura de Lengüeta Plana" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["tab_w", "tab_t", "tab_depth"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Turning a key, closing a zipper, and pinching a small toggle are everyday tasks that quietly fail for people with arthritis, reduced grip, tremor, or a single usable hand. A grip enlarger sized to the exact tab restores those tasks with the whole hand instead of a fine pinch, preserving independence at door, coat, and bag for the cost of a few grams of filament.",
+      "es": "Girar una llave, cerrar una cremallera y pellizcar un pequeño toggle son tareas cotidianas que fallan silenciosamente para personas con artritis, agarre reducido, temblor o una sola mano útil. Un engrosador de agarre dimensionado a la lengüeta exacta restaura esas tareas con toda la mano en vez de una pinza fina, preservando la independencia en la puerta, el abrigo y la bolsa por el costo de unos gramos de filamento."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["grip", "key", "zipper", "accessibility", "assistive", "adaptive", "medical", "hyperobject", "commons"]
+}

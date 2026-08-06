@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Capo / Slide (parametric)",
+    "slug": "capo",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "A parametric capo that clamps across the fretboard to raise every string's pitch. The functional interface is the fretboard radius — the contact bar's face is a concave cylinder matched to the neck crown so it presses every string evenly. Real radii: 7.25 in (vintage Fender), 9.5 in (modern Fender), 12 in (Gibson), 16 in (flat-ish), classical near-flat. Build a screw-tension yoke capo, a quick-change lever capo, or a short partial capo for drop tunings.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un capo paramétrico que se sujeta al diapasón para subir el tono de cada cuerda. La interfaz funcional es el radio del diapasón — la cara de la barra de contacto es un cilindro cóncavo ajustado a la curvatura del mástil para presionar cada cuerda uniformemente. Radios reales: 7.25 pulg (Fender vintage), 9.5 pulg (Fender moderno), 12 pulg (Gibson), 16 pulg (casi plano), clásica casi plana. Genera un capo de yugo con tornillo, un capo de palanca rápido, o un capo parcial corto para afinaciones drop.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/capo.webp",
+    "tags": ["capo", "guitar", "fretboard", "radius", "luthier", "music", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "yoke_capo",
+      "label": { "en": "Yoke Capo", "es": "Capo de Yugo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["yoke_capo"],
+      "estimate": { "base_time": 15, "per_unit": 3, "per_part": 15 }
+    },
+    {
+      "id": "lever_capo",
+      "label": { "en": "Lever Capo", "es": "Capo de Palanca" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lever_capo"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "partial_capo",
+      "label": { "en": "Partial Capo", "es": "Capo Parcial" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["partial_capo"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "yoke_capo", "label": { "en": "Yoke Capo", "es": "Capo de Yugo" }, "render_mode": 0, "color": "#4a6f8f" },
+    { "id": "lever_capo", "label": { "en": "Lever Capo", "es": "Capo de Palanca" }, "render_mode": 0, "color": "#5b83a3" },
+    { "id": "partial_capo", "label": { "en": "Partial Capo", "es": "Capo Parcial" }, "render_mode": 0, "color": "#6f9abf" }
+  ],
+  "parameter_groups": [
+    { "id": "neck", "label": { "en": "Neck", "es": "Mástil" } },
+    { "id": "pad", "label": { "en": "Pad", "es": "Almohadilla" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "fret_radius", "type": "select", "default": "9.5in",
+      "group": "neck", "modes": ["yoke_capo", "lever_capo", "partial_capo"],
+      "label": { "en": "Fretboard Radius", "es": "Radio del Diapasón" },
+      "tooltip": { "en": "Neck crown radius the pad matches — 9.5 in is modern Fender, 12 in Gibson", "es": "Radio de curvatura del mástil que la almohadilla iguala — 9.5 pulg Fender moderno, 12 pulg Gibson" },
+      "options": [
+        { "value": "7.25in", "label": { "en": "7.25 in (vintage Fender)", "es": "7.25 pulg (Fender vintage)" } },
+        { "value": "9.5in", "label": { "en": "9.5 in (modern Fender)", "es": "9.5 pulg (Fender moderno)" } },
+        { "value": "12in", "label": { "en": "12 in (Gibson)", "es": "12 pulg (Gibson)" } },
+        { "value": "16in", "label": { "en": "16 in (flat-ish)", "es": "16 pulg (casi plano)" } },
+        { "value": "flat", "label": { "en": "Classical (near-flat)", "es": "Clásica (casi plana)" } }
+      ]
+    },
+    {
+      "id": "neck_w", "type": "slider", "default": 46.0, "min": 38.0, "max": 60.0, "step": 0.5,
+      "group": "neck", "modes": ["yoke_capo", "lever_capo", "partial_capo"],
+      "label": { "en": "Fretboard Width (mm)", "es": "Ancho del Diapasón (mm)" },
+      "tooltip": { "en": "Fretboard width where the capo sits (~43 mm nut to ~56 mm up the neck)", "es": "Ancho del diapasón donde va el capo (~43 mm cejuela a ~56 mm mástil arriba)" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "neck_th", "type": "slider", "default": 22.0, "min": 15.0, "max": 30.0, "step": 0.5,
+      "group": "neck", "modes": ["yoke_capo", "lever_capo"],
+      "label": { "en": "Neck Thickness (mm)", "es": "Grosor del Mástil (mm)" },
+      "tooltip": { "en": "Front-to-back neck depth the yoke wraps around", "es": "Profundidad del mástil que el yugo abraza" }
+    },
+    {
+      "id": "pad_w", "type": "slider", "default": 10.0, "min": 6.0, "max": 18.0, "step": 0.5,
+      "group": "pad", "modes": ["yoke_capo", "lever_capo", "partial_capo"],
+      "label": { "en": "Pad Width (mm)", "es": "Ancho de Almohadilla (mm)" },
+      "tooltip": { "en": "Width of the string-contact bar along the string run", "es": "Ancho de la barra de contacto a lo largo de las cuerdas" }
+    },
+    {
+      "id": "strings", "type": "slider", "default": 6, "min": 1, "max": 8, "step": 1,
+      "group": "pad", "modes": ["partial_capo"],
+      "label": { "en": "Strings Covered", "es": "Cuerdas Cubiertas" },
+      "tooltip": { "en": "How many strings the partial capo spans", "es": "Cuántas cuerdas cubre el capo parcial" }
+    },
+    {
+      "id": "screw_d", "type": "slider", "default": 5.2, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "body", "modes": ["yoke_capo"], "advanced": true,
+      "label": { "en": "Tension Screw (mm)", "es": "Tornillo de Tensión (mm)" },
+      "tooltip": { "en": "Thumbscrew clearance hole (M5 ~5.2 mm)", "es": "Orificio del tornillo de tensión (M5 ~5.2 mm)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 4.0, "max": 10.0, "step": 0.5,
+      "group": "body", "modes": ["yoke_capo", "lever_capo", "partial_capo"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Yoke / body / spine wall thickness", "es": "Grosor de pared del yugo / cuerpo / lomo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "fender_yoke_capo", "mode": "yoke_capo",
+      "label": { "en": "9.5 in Yoke Capo", "es": "Capo de Yugo 9.5 pulg" },
+      "values": { "fret_radius": "9.5in", "neck_w": 46.0, "neck_th": 22.0, "pad_w": 10.0, "screw_d": 5.2, "wall": 6.0 }
+    },
+    {
+      "id": "quickchange_lever", "mode": "lever_capo",
+      "label": { "en": "Quick-Change Lever Capo", "es": "Capo de Palanca Rápido" },
+      "values": { "fret_radius": "12in", "neck_w": 46.0, "neck_th": 22.0, "pad_w": 10.0, "wall": 6.0 }
+    },
+    {
+      "id": "dsus_partial", "mode": "partial_capo",
+      "label": { "en": "Partial Capo (3-string)", "es": "Capo Parcial (3 cuerdas)" },
+      "values": { "fret_radius": "9.5in", "neck_w": 46.0, "strings": 3, "pad_w": 10.0, "wall": 6.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "neck_w >= 38",
+      "severity": "warning",
+      "message": { "en": "Necks narrower than ~38 mm are unusual — check the width at the capo position", "es": "Mástiles más angostos de ~38 mm son inusuales — verifica el ancho en la posición del capo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "front", "label": { "en": "Front (Cross-Section)", "es": "Frontal (Sección)" }, "position": [0, -200, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "fretboard_radius_pad",
+        "label": { "en": "Fretboard Radius Pad", "es": "Almohadilla de Radio" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["fret_radius", "neck_w", "neck_th"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A capo that doesn't match the fretboard radius buzzes or mutes strings, and every neck profile wants its own contact curve. Matching the pad to real radii — 7.25, 9.5, 12, 16 in and classical — lets a player print a capo that presses all six strings evenly on their exact neck, plus partial capos for open and drop tunings that stores rarely stock. On-demand capos fit any instrument in a mixed collection without a drawer of proprietary clamps.",
+      "es": "Un capo que no iguala el radio del diapasón produce zumbidos o apaga cuerdas, y cada perfil de mástil quiere su propia curva de contacto. Ajustar la almohadilla a radios reales — 7.25, 9.5, 12, 16 pulg y clásica — permite imprimir un capo que presiona las seis cuerdas uniformemente en su mástil exacto, más capos parciales para afinaciones abiertas y drop que las tiendas rara vez tienen. Capos bajo demanda encajan en cualquier instrumento de una colección mixta sin un cajón de abrazaderas propietarias."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["capo", "guitar", "fretboard", "radius", "luthier", "music", "commercial", "hyperobject", "commons"]
+}

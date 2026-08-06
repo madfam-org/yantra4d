@@ -1,0 +1,265 @@
+{
+    "project": {
+        "name": "Radiator / Baseboard Vent",
+        "slug": "radiator-vent",
+        "version": "1.0.0",
+        "description": {
+            "en": "Deflectors and covers for household radiators and baseboard heat: a scoop deflector that redirects a floor or wall register's airflow out into the room, a louvered baseboard cover panel, and an L-profile corner deflector. Everything is parametric to the register or baseboard channel you measure, and each part prints flat as a single louvered panel.",
+            "es": "Deflectores y cubiertas para radiadores y calefaccion de zocalo del hogar: un deflector tipo pala que redirige el flujo de aire de una rejilla de piso o pared hacia la habitacion, un panel de cubierta de zocalo con rejillas y un deflector de esquina en perfil L. Todo es parametrico a la rejilla o canal de zocalo que midas, y cada pieza se imprime plana como un solo panel con rejillas."
+        },
+        "thumbnail": "/projects/radiator-vent.webp",
+        "tags": [
+            "hvac",
+            "radiator",
+            "baseboard",
+            "vent",
+            "deflector",
+            "louver",
+            "household",
+            "hyperobject",
+            "commons"
+        ],
+        "difficulty": "beginner",
+        "hyperobject": {
+            "is_hyperobject": true
+        },
+        "attribution": {
+            "author": "Yantra4D",
+            "license": "CERN-OHL-W-2.0"
+        },
+        "force_backend": true,
+        "engine": "cadquery"
+    },
+    "modes": [
+        {
+            "id": "deflector",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Register Scoop Deflector",
+                "es": "Deflector Tipo Pala para Rejilla"
+            },
+            "description": {
+                "en": "A base plate that sits over a floor or wall register plus a raked louvered face that lifts at the set angle to throw conditioned air out into the room instead of straight up a wall or under furniture."
+            },
+            "parts": ["deflector"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "baseboard_cover",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "Louvered Baseboard Cover",
+                "es": "Cubierta de Zocalo con Rejillas"
+            },
+            "description": {
+                "en": "A flat louvered front cover panel for baseboard heaters, with horizontal vent slots and optional screw tabs to replace a dented or missing metal cover."
+            },
+            "parts": ["baseboard_cover"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        },
+        {
+            "id": "corner_deflector",
+            "scad_file": "main.py",
+            "cq_file": "main.py",
+            "engine": "cadquery",
+            "label": {
+                "en": "L-Profile Corner Deflector",
+                "es": "Deflector de Esquina Perfil L"
+            },
+            "description": {
+                "en": "A mounting flange and a louvered deflection vane meeting at a fold, to steer air around a corner or away from a wall-mounted register."
+            },
+            "parts": ["corner_deflector"],
+            "estimate": {
+                "base_units": 1,
+                "formula": "per_part"
+            }
+        }
+    ],
+    "parts": [
+        {
+            "id": "deflector",
+            "label": {
+                "en": "Scoop Deflector",
+                "es": "Deflector Pala"
+            },
+            "default_color": "#cbd5e1"
+        },
+        {
+            "id": "baseboard_cover",
+            "label": {
+                "en": "Baseboard Cover Panel",
+                "es": "Panel de Cubierta de Zocalo"
+            },
+            "default_color": "#cbd5e1"
+        },
+        {
+            "id": "corner_deflector",
+            "label": {
+                "en": "Corner Deflector",
+                "es": "Deflector de Esquina"
+            },
+            "default_color": "#cbd5e1"
+        }
+    ],
+    "parameters": [
+        {
+            "id": "width",
+            "type": "slider",
+            "default": 254,
+            "min": 80,
+            "max": 400,
+            "step": 2,
+            "label": {
+                "en": "Width (mm)",
+                "es": "Ancho (mm)"
+            },
+            "tooltip": {
+                "en": "Panel width. Match your register width (e.g. 254 mm for a 10\" register) or baseboard section.",
+                "es": "Ancho del panel. Iguala el ancho de tu rejilla (por ejemplo 254 mm para una rejilla de 10\") o seccion de zocalo."
+            },
+            "group": "size"
+        },
+        {
+            "id": "height",
+            "type": "slider",
+            "default": 180,
+            "min": 60,
+            "max": 320,
+            "step": 5,
+            "label": {
+                "en": "Height / Scoop Depth (mm)",
+                "es": "Altura / Profundidad de Pala (mm)"
+            },
+            "tooltip": {
+                "en": "Cover height, scoop face length, or vane length depending on mode.",
+                "es": "Altura de la cubierta, largo de la cara de la pala o largo de la aleta segun el modo."
+            },
+            "group": "size"
+        },
+        {
+            "id": "thickness",
+            "type": "slider",
+            "default": 3.0,
+            "min": 2.0,
+            "max": 6.0,
+            "step": 0.2,
+            "label": {
+                "en": "Panel Thickness (mm)",
+                "es": "Espesor del Panel (mm)"
+            },
+            "tooltip": {
+                "en": "Wall thickness of the panel. 2.5-3.5 mm is rigid enough for a large louvered face.",
+                "es": "Espesor de pared del panel. 2.5-3.5 mm es rigido para una cara grande con rejillas."
+            },
+            "group": "size"
+        },
+        {
+            "id": "louver_count",
+            "type": "slider",
+            "default": 7,
+            "min": 2,
+            "max": 20,
+            "step": 1,
+            "label": {
+                "en": "Louver Slot Count",
+                "es": "Numero de Rejillas"
+            },
+            "tooltip": {
+                "en": "Number of vent slots across the louvered face.",
+                "es": "Numero de ranuras de ventilacion en la cara con rejillas."
+            },
+            "group": "louvers"
+        },
+        {
+            "id": "louver_angle",
+            "type": "slider",
+            "default": 35,
+            "min": 10,
+            "max": 60,
+            "step": 1,
+            "label": {
+                "en": "Deflection Angle (deg)",
+                "es": "Angulo de Deflexion (grados)"
+            },
+            "tooltip": {
+                "en": "How steeply the scoop face or corner vane rises. Larger angles throw air more upward/outward.",
+                "es": "Que tan pronunciado se eleva la cara de la pala o la aleta de esquina. Angulos mayores lanzan el aire mas hacia arriba/afuera."
+            },
+            "group": "louvers"
+        },
+        {
+            "id": "tab",
+            "type": "checkbox",
+            "default": true,
+            "label": {
+                "en": "Mounting Tabs",
+                "es": "Pestanas de Montaje"
+            },
+            "tooltip": {
+                "en": "Adds two screw ears at the top corners of the cover / flange.",
+                "es": "Agrega dos orejas para tornillo en las esquinas superiores de la cubierta / brida."
+            },
+            "group": "louvers"
+        }
+    ],
+    "parameter_groups": [
+        {
+            "id": "size",
+            "label": {
+                "en": "Size",
+                "es": "Tamano"
+            }
+        },
+        {
+            "id": "louvers",
+            "label": {
+                "en": "Louvers & Mounting",
+                "es": "Rejillas y Montaje"
+            }
+        }
+    ],
+    "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+    "estimate_constants": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 8,
+        "wasm_multiplier": 2,
+        "warning_threshold_seconds": 45
+    },
+    "hyperobject": {
+        "domain": "household",
+        "cdg_interfaces": [
+            {
+                "id": "vent_slot_profile",
+                "label": {
+                    "en": "Louver Vent-Slot Profile",
+                    "es": "Perfil de Ranura de Rejilla"
+                },
+                "geometry_type": "profile",
+                "standard": "internal",
+                "parameters": ["width", "height", "louver_count", "louver_angle", "tab"]
+            }
+        ],
+        "material_awareness": {
+            "shrinkage_compensation": false,
+            "recycled_material_toggle": false,
+            "tolerance_by_material": false
+        },
+        "societal_benefit": {
+            "en": "Improves comfort and heating efficiency in rooms where furniture or wall placement blocks a register, by letting anyone print a deflector or replace a broken baseboard cover instead of living with cold spots or buying a whole new heater enclosure.",
+            "es": "Mejora el confort y la eficiencia de calefaccion en habitaciones donde los muebles o la ubicacion en la pared bloquean una rejilla, permitiendo imprimir un deflector o reemplazar una cubierta de zocalo rota en lugar de vivir con puntos frios o comprar toda una nueva carcasa de calefactor."
+        },
+        "commons_license": "CERN-OHL-W-2.0"
+    }
+}

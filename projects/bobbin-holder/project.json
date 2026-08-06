@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Spool / Bobbin Holder",
+    "slug": "bobbin-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "A desk and drawer organiser for sewing-machine bobbins and thread spools. The functional interface is the bobbin BORE, sized to real sewing standards (Class 15 and L-style bobbins are 20.3 mm across with a 6.1 mm centre hole; small thread spools have a ~6.5 mm core), plus a peg the bobbin drops onto. Build a multi-peg rack, a leaning spool pin on a weighted foot, or a flat well tray.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un organizador de escritorio y cajón para bobinas de máquina de coser y carretes de hilo. La interfaz funcional es el ORIFICIO de la bobina, dimensionado a estándares reales de costura (las bobinas Clase 15 y estilo L miden 20.3 mm de diámetro con orificio central de 6.1 mm; los carretes pequeños tienen un núcleo de ~6.5 mm), más un poste sobre el que cae la bobina. Genera un soporte de varios postes, un pin de carrete inclinado sobre base con peso, o una bandeja plana con pozos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bobbin-holder.webp",
+    "tags": ["bobbin", "spool", "sewing", "thread", "class-15", "organizer", "textile", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "bobbin_rack",
+      "label": { "en": "Bobbin Rack", "es": "Soporte de Bobinas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bobbin_rack"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "spool_pin",
+      "label": { "en": "Spool Pin", "es": "Pin de Carrete" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["spool_pin"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "bobbin_tray",
+      "label": { "en": "Well Tray", "es": "Bandeja de Pozos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bobbin_tray"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "bobbin_rack", "label": { "en": "Bobbin Rack", "es": "Soporte de Bobinas" }, "render_mode": 0, "color": "#4a7c8f" },
+    { "id": "spool_pin", "label": { "en": "Spool Pin", "es": "Pin de Carrete" }, "render_mode": 0, "color": "#5b8fb0" },
+    { "id": "bobbin_tray", "label": { "en": "Well Tray", "es": "Bandeja de Pozos" }, "render_mode": 0, "color": "#6fa3bf" }
+  ],
+  "parameter_groups": [
+    { "id": "bobbin", "label": { "en": "Bobbin / Spool", "es": "Bobina / Carrete" } },
+    { "id": "layout", "label": { "en": "Layout", "es": "Disposición" } },
+    { "id": "pin", "label": { "en": "Spool Pin", "es": "Pin de Carrete" } }
+  ],
+  "parameters": [
+    {
+      "id": "bobbin_type", "type": "select", "default": "class15",
+      "group": "bobbin", "modes": ["bobbin_rack", "spool_pin", "bobbin_tray"],
+      "label": { "en": "Bobbin / Spool Type", "es": "Tipo de Bobina / Carrete" },
+      "tooltip": { "en": "Class 15 (20.3 mm, 6.1 mm bore), L-style (narrower) or small spool (~6.5 mm core)", "es": "Clase 15 (20.3 mm, orificio 6.1 mm), estilo L (más angosta) o carrete pequeño (núcleo ~6.5 mm)" },
+      "options": [
+        { "value": "class15", "label": { "en": "Class 15 bobbin", "es": "Bobina Clase 15" } },
+        { "value": "lstyle", "label": { "en": "L-style bobbin", "es": "Bobina estilo L" } },
+        { "value": "spool", "label": { "en": "Thread spool", "es": "Carrete de hilo" } }
+      ]
+    },
+    {
+      "id": "count", "type": "slider", "default": 6, "min": 1, "max": 12, "step": 1,
+      "group": "layout", "modes": ["bobbin_rack", "bobbin_tray"],
+      "label": { "en": "Pegs / Wells per Row", "es": "Postes / Pozos por Fila" },
+      "tooltip": { "en": "How many bobbins in each row", "es": "Cuántas bobinas en cada fila" }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 1, "min": 1, "max": 4, "step": 1,
+      "group": "layout", "modes": ["bobbin_rack", "bobbin_tray"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Number of rows in the grid", "es": "Número de filas en la cuadrícula" }
+    },
+    {
+      "id": "peg_h", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "layout", "modes": ["bobbin_rack"],
+      "label": { "en": "Peg Height (mm)", "es": "Altura de Poste (mm)" },
+      "tooltip": { "en": "Peg height — taller stacks more spool thread", "es": "Altura del poste — más alto sostiene más hilo" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "peg_clear", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "bobbin", "modes": ["bobbin_rack", "spool_pin"], "advanced": true,
+      "label": { "en": "Bore Fit Clearance (mm)", "es": "Holgura de Ajuste (mm)" },
+      "tooltip": { "en": "Per-side gap between peg and bobbin bore — tune per printer/material", "es": "Espacio por lado entre poste y orificio de bobina — ajustar por impresora/material" }
+    },
+    {
+      "id": "base_th", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "layout", "modes": ["bobbin_rack", "bobbin_tray"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Base plate / tray floor thickness", "es": "Grosor de la placa base / piso de bandeja" }
+    },
+    {
+      "id": "pin_h", "type": "slider", "default": 60.0, "min": 25.0, "max": 120.0, "step": 1,
+      "group": "pin", "modes": ["spool_pin"],
+      "label": { "en": "Spool Pin Height (mm)", "es": "Altura del Pin (mm)" },
+      "tooltip": { "en": "Height of the free-standing spool post", "es": "Altura del poste de carrete independiente" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pin_tilt", "type": "slider", "default": 8.0, "min": 0.0, "max": 20.0, "step": 1,
+      "group": "pin", "modes": ["spool_pin"], "advanced": true,
+      "label": { "en": "Spool Pin Lean (deg)", "es": "Inclinación del Pin (grados)" },
+      "tooltip": { "en": "Lean angle so thread feeds off the top smoothly", "es": "Ángulo de inclinación para que el hilo se alimente suavemente" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "class15_rack_6", "mode": "bobbin_rack",
+      "label": { "en": "6-Bobbin Class 15 Rack", "es": "Soporte 6 Bobinas Clase 15" },
+      "values": { "bobbin_type": "class15", "count": 6, "rows": 1, "peg_h": 16.0, "base_th": 4.0 }
+    },
+    {
+      "id": "leaning_spool_pin", "mode": "spool_pin",
+      "label": { "en": "Leaning Spool Pin", "es": "Pin de Carrete Inclinado" },
+      "values": { "bobbin_type": "spool", "pin_h": 60.0, "pin_tilt": 8.0 }
+    },
+    {
+      "id": "bobbin_well_tray", "mode": "bobbin_tray",
+      "label": { "en": "12-Well Bobbin Tray", "es": "Bandeja 12 Pozos" },
+      "values": { "bobbin_type": "class15", "count": 6, "rows": 2, "base_th": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "peg_clear < 2",
+      "severity": "warning",
+      "message": { "en": "Large clearance makes bobbins wobble on the peg", "es": "Una holgura grande hace que las bobinas se tambaleen en el poste" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "bobbin_bore_peg",
+        "label": { "en": "Bobbin Bore + Peg", "es": "Orificio de Bobina + Poste" },
+        "geometry_type": "socket",
+        "standard": "Class 15 / L-style bobbin (6.1 mm bore, 20.3 mm OD)",
+        "parameters": ["bobbin_type", "peg_clear"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Sewing bobbins and thread spools are a universal small-parts nuisance — they roll away, unwind and tangle. The bobbin bore (Class 15 / L-style at 20.3 mm with a 6.1 mm centre hole) is a de-facto standard shared across Singer, Janome, Juki, Brother and Elna machines, so one printed rack or tray organises any household sewing kit. On-demand holders replace bought organisers and adapt to how many spools a maker actually owns.",
+      "es": "Las bobinas de costura y los carretes de hilo son una molestia universal de piezas pequeñas — ruedan, se desenrollan y se enredan. El orificio de la bobina (Clase 15 / estilo L de 20.3 mm con orificio central de 6.1 mm) es un estándar de facto compartido por máquinas Singer, Janome, Juki, Brother y Elna, así que un solo soporte o bandeja impresa organiza cualquier kit de costura doméstico. Los soportes bajo demanda reemplazan organizadores comprados y se adaptan a cuántos carretes tiene realmente un fabricante."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bobbin", "spool", "sewing", "thread", "class-15", "organizer", "textile", "household", "hyperobject", "commons"]
+}

@@ -1,0 +1,615 @@
+{
+  "project": {
+    "name": "5/8in Spigot Adapter",
+    "slug": "spigot-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The light-stand spigot (\"baby pin\") — a 5/8\" (16 mm) cylindrical stud that drops into the receiver on every photographic light stand, C-stand and grip head. Build a 5/8\" spigot to a 1/4-20 thread, a 5/8\" spigot to a 3/8-16 thread, or a double-ended spigot for stacking stands and heads.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El spigot de pie de luz (\"baby pin\") — un vástago cilíndrico de 5/8\" (16 mm) que encaja en el receptáculo de cada pie de luz, C-stand y cabeza de agarre fotográfica. Genera un spigot de 5/8\" a rosca 1/4-20, un spigot de 5/8\" a rosca 3/8-16, o un spigot de doble extremo para apilar pies y cabezas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/spigot-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "spigot",
+      "baby-pin",
+      "5-8",
+      "light-stand",
+      "grip",
+      "adapter",
+      "stud",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "spigot_to_quarter",
+      "label": {
+        "en": "5/8\" Spigot → 1/4-20",
+        "es": "Spigot 5/8\" → 1/4-20"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "spigot_to_quarter"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "spigot_to_three_eighth",
+      "label": {
+        "en": "5/8\" Spigot → 3/8-16",
+        "es": "Spigot 5/8\" → 3/8-16"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "spigot_to_three_eighth"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "double_spigot",
+      "label": {
+        "en": "Double Spigot",
+        "es": "Spigot Doble"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "double_spigot"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "spigot_to_quarter",
+      "label": {
+        "en": "Spigot → 1/4-20",
+        "es": "Spigot → 1/4-20"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "spigot_to_three_eighth",
+      "label": {
+        "en": "Spigot → 3/8-16",
+        "es": "Spigot → 3/8-16"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "double_spigot",
+      "label": {
+        "en": "Double Spigot",
+        "es": "Spigot Doble"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "spigot",
+      "label": {
+        "en": "5/8\" Spigot",
+        "es": "Spigot 5/8\""
+      }
+    },
+    {
+      "id": "hub",
+      "label": {
+        "en": "Hub",
+        "es": "Cubo"
+      }
+    },
+    {
+      "id": "thread",
+      "label": {
+        "en": "Screw Thread",
+        "es": "Rosca"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "spigot_d",
+      "type": "slider",
+      "default": 16.0,
+      "min": 10.0,
+      "max": 26.0,
+      "step": 0.1,
+      "group": "spigot",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "label": {
+        "en": "Spigot Diameter (mm)",
+        "es": "Diámetro de Spigot (mm)"
+      },
+      "tooltip": {
+        "en": "5/8\" baby-pin stud diameter. Standard is 15.875 mm (16 mm nominal)",
+        "es": "Diámetro del vástago baby-pin de 5/8\". El estándar es 15.875 mm (16 mm nominal)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "spigot_len",
+      "type": "slider",
+      "default": 22.0,
+      "min": 10.0,
+      "max": 45.0,
+      "step": 0.5,
+      "group": "spigot",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "label": {
+        "en": "Spigot Length (mm)",
+        "es": "Longitud de Spigot (mm)"
+      },
+      "tooltip": {
+        "en": "How far the stud protrudes into the stand receiver",
+        "es": "Cuánto sobresale el vástago en el receptáculo del pie"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "groove_depth",
+      "type": "slider",
+      "default": 1.5,
+      "min": 0.5,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "spigot",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Locking Groove Depth (mm)",
+        "es": "Profundidad de Ranura de Bloqueo (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the annular groove the stand's set-screw seats in",
+        "es": "Profundidad de la ranura anular donde asienta el tornillo del pie"
+      }
+    },
+    {
+      "id": "groove_pos",
+      "type": "slider",
+      "default": 9.0,
+      "min": 3.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "spigot",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Groove Position (mm)",
+        "es": "Posición de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the groove centre up the stud from its base",
+        "es": "Altura del centro de la ranura sobre el vástago desde su base"
+      }
+    },
+    {
+      "id": "hub_d",
+      "type": "slider",
+      "default": 22.0,
+      "min": 13.0,
+      "max": 45.0,
+      "step": 0.5,
+      "group": "hub",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "label": {
+        "en": "Hub Diameter (mm)",
+        "es": "Diámetro de Cubo (mm)"
+      },
+      "tooltip": {
+        "en": "Across-corners size of the central wrench hub",
+        "es": "Tamaño entre esquinas del cubo central de llave"
+      }
+    },
+    {
+      "id": "hub_h",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "hub",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "label": {
+        "en": "Hub Height (mm)",
+        "es": "Altura de Cubo (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the central hub",
+        "es": "Altura del cubo central"
+      }
+    },
+    {
+      "id": "hub_shape",
+      "type": "select",
+      "default": "hex",
+      "group": "hub",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "label": {
+        "en": "Hub Shape",
+        "es": "Forma de Cubo"
+      },
+      "tooltip": {
+        "en": "Hex for a wrench flat, or round",
+        "es": "Hexagonal para llave, o redondo"
+      },
+      "options": [
+        {
+          "value": "hex",
+          "label": {
+            "en": "Hex (Wrench Flat)",
+            "es": "Hexagonal (Llave)"
+          }
+        },
+        {
+          "value": "round",
+          "label": {
+            "en": "Round",
+            "es": "Redondo"
+          }
+        }
+      ]
+    },
+    {
+      "id": "thread_len",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "thread",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth"
+      ],
+      "label": {
+        "en": "Thread Length (mm)",
+        "es": "Longitud de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Male stud length or female socket depth",
+        "es": "Longitud del vástago macho o profundidad del casquillo hembra"
+      }
+    },
+    {
+      "id": "thread_form",
+      "type": "select",
+      "default": "stud",
+      "group": "thread",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth"
+      ],
+      "label": {
+        "en": "Thread Form",
+        "es": "Forma de Rosca"
+      },
+      "tooltip": {
+        "en": "Male stud (screws into a device) or female socket (a screw goes in)",
+        "es": "Vástago macho (se enrosca en un dispositivo) o casquillo hembra (entra un tornillo)"
+      },
+      "options": [
+        {
+          "value": "stud",
+          "label": {
+            "en": "Male Stud",
+            "es": "Vástago Macho"
+          }
+        },
+        {
+          "value": "socket",
+          "label": {
+            "en": "Female Socket",
+            "es": "Casquillo Hembra"
+          }
+        }
+      ]
+    },
+    {
+      "id": "thread_style",
+      "type": "select",
+      "default": "cosmetic",
+      "group": "thread",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Thread Style",
+        "es": "Estilo de Rosca"
+      },
+      "tooltip": {
+        "en": "Cosmetic threaded envelope, or a smooth stud/bore for tapping / heat-set",
+        "es": "Envolvente roscada cosmética, o vástago/agujero liso para roscar / inserto"
+      },
+      "options": [
+        {
+          "value": "cosmetic",
+          "label": {
+            "en": "Cosmetic Thread",
+            "es": "Rosca Cosmética"
+          }
+        },
+        {
+          "value": "smooth",
+          "label": {
+            "en": "Smooth (Tap/Insert)",
+            "es": "Liso (Roscar/Inserto)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "chamfer_lead",
+      "type": "checkbox",
+      "default": true,
+      "group": "thread",
+      "modes": [
+        "spigot_to_quarter",
+        "spigot_to_three_eighth",
+        "double_spigot"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Lead-in Chamfers",
+        "es": "Chaflanes de Entrada"
+      },
+      "tooltip": {
+        "en": "Chamfer stud and thread tips for easy insertion",
+        "es": "Chaflán en puntas de vástago y rosca para fácil inserción"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "baby_to_quarter",
+      "mode": "spigot_to_quarter",
+      "label": {
+        "en": "5/8\" → 1/4-20 Stud",
+        "es": "5/8\" → Vástago 1/4-20"
+      },
+      "values": {
+        "spigot_d": 16.0,
+        "spigot_len": 22.0,
+        "thread_form": "stud",
+        "thread_len": 10.0
+      }
+    },
+    {
+      "id": "baby_to_three_eighth",
+      "mode": "spigot_to_three_eighth",
+      "label": {
+        "en": "5/8\" → 3/8-16 Stud",
+        "es": "5/8\" → Vástago 3/8-16"
+      },
+      "values": {
+        "spigot_d": 16.0,
+        "spigot_len": 22.0,
+        "thread_form": "stud",
+        "thread_len": 12.0
+      }
+    },
+    {
+      "id": "stud_to_socket",
+      "mode": "spigot_to_three_eighth",
+      "label": {
+        "en": "5/8\" → 3/8-16 Socket",
+        "es": "5/8\" → Casquillo 3/8-16"
+      },
+      "values": {
+        "spigot_d": 16.0,
+        "thread_form": "socket",
+        "thread_len": 10.0,
+        "hub_h": 14.0
+      }
+    },
+    {
+      "id": "double_baby",
+      "mode": "double_spigot",
+      "label": {
+        "en": "Double 5/8\" Spigot",
+        "es": "Spigot Doble 5/8\""
+      },
+      "values": {
+        "spigot_d": 16.0,
+        "spigot_len": 22.0,
+        "hub_h": 12.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hub_d >= spigot_d + 3",
+      "severity": "error",
+      "message": {
+        "en": "Hub must be wider than the spigot stud",
+        "es": "El cubo debe ser más ancho que el vástago del spigot"
+      }
+    },
+    {
+      "expression": "groove_pos <= spigot_len - 3",
+      "severity": "warning",
+      "message": {
+        "en": "Locking groove sits too close to the stud tip",
+        "es": "La ranura de bloqueo queda demasiado cerca de la punta del vástago"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        80
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -140,
+        30
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        140
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "baby_pin_5_8",
+        "label": {
+          "en": "5/8in Baby Pin",
+          "es": "Baby Pin de 5/8in"
+        },
+        "geometry_type": "socket",
+        "standard": "5/8in (16mm) baby pin",
+        "parameters": [
+          "spigot_d",
+          "spigot_len",
+          "groove_depth",
+          "groove_pos"
+        ]
+      },
+      {
+        "id": "unc_screw_thread",
+        "label": {
+          "en": "1/4-20 / 3/8-16 Thread",
+          "es": "Rosca 1/4-20 / 3/8-16"
+        },
+        "geometry_type": "thread",
+        "standard": "ASME B1.1 1/4-20 & 3/8-16 UNC",
+        "parameters": [
+          "thread_len",
+          "thread_form",
+          "thread_style"
+        ],
+        "compatible_with": [
+          "ball-socket",
+          "camera-quarter-twenty",
+          "gopro-mount",
+          "sensor-mount-plate"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The 5/8\" baby pin is the universal grip and lighting interface — every stand, C-stand and grip head accepts it, and studio devices carry 1/4-20 or 3/8-16 threads. On-demand spigot adapters let a crew mate any light, flag or accessory to any stand from printed parts, instead of hunting for the exact adapter, and replace a stripped or lost spigot on set.",
+      "es": "El baby pin de 5/8\" es la interfaz universal de agarre e iluminación — cada pie, C-stand y cabeza de agarre lo acepta, y los dispositivos de estudio llevan roscas 1/4-20 o 3/8-16. Adaptadores de spigot bajo demanda permiten a un equipo acoplar cualquier luz, bandera o accesorio a cualquier pie con piezas impresas, en vez de buscar el adaptador exacto, y reemplazar un spigot desgastado o perdido en el set."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "spigot",
+    "baby-pin",
+    "5-8",
+    "light-stand",
+    "grip",
+    "adapter",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

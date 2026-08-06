@@ -1,0 +1,150 @@
+{
+  "project": {
+    "name": "Yarn / Cone Guide",
+    "slug": "yarn-guide",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Guides and tensioners that feed yarn smoothly off a cone or ball for knitting, crochet and weaving. The functional interface is a cone-base socket (a shallow tapered seat the cone sits in) plus a smooth-lipped eyelet the yarn passes through so it can't snag. Build a cone stand with a top eyelet, a wall/table tension gate with a row of eyelets, or a single table-edge redirect eyelet.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Guías y tensores que alimentan el hilo suavemente desde un cono u ovillo para tejido y telar. La interfaz funcional es un asiento cónico para la base del cono más un ojal de labio suave por el que pasa el hilo sin engancharse. Genera un soporte de cono con ojal superior, una compuerta de tensión de pared/mesa con varios ojales, o un ojal redirector de borde de mesa.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/yarn-guide.webp",
+    "tags": ["yarn", "cone", "guide", "tension", "eyelet", "knitting", "weaving", "textile", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true }
+  },
+  "modes": [
+    {
+      "id": "cone_stand",
+      "label": { "en": "Cone Stand", "es": "Soporte de Cono" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cone_stand"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "tension_gate",
+      "label": { "en": "Tension Gate", "es": "Compuerta de Tensión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tension_gate"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "table_eyelet",
+      "label": { "en": "Table Eyelet", "es": "Ojal de Mesa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["table_eyelet"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "cone_stand", "label": { "en": "Cone Stand", "es": "Soporte de Cono" }, "render_mode": 0, "color": "#7a9e5b" },
+    { "id": "tension_gate", "label": { "en": "Tension Gate", "es": "Compuerta de Tensión" }, "render_mode": 0, "color": "#8fb06f" },
+    { "id": "table_eyelet", "label": { "en": "Table Eyelet", "es": "Ojal de Mesa" }, "render_mode": 0, "color": "#a3bf8a" }
+  ],
+  "parameter_groups": [
+    { "id": "cone", "label": { "en": "Cone Seat", "es": "Asiento de Cono" } },
+    { "id": "eyelet", "label": { "en": "Eyelet", "es": "Ojal" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "base_dia", "type": "slider", "default": 50.0, "min": 25.0, "max": 120.0, "step": 1,
+      "group": "cone", "modes": ["cone_stand"],
+      "label": { "en": "Cone Base Diameter (mm)", "es": "Diámetro Base del Cono (mm)" },
+      "tooltip": { "en": "Diameter of the yarn cone's base — the seat is sized to it", "es": "Diámetro de la base del cono de hilo — el asiento se ajusta a él" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "taper", "type": "slider", "default": 6.0, "min": 0.0, "max": 20.0, "step": 1,
+      "group": "cone", "modes": ["cone_stand"], "advanced": true,
+      "label": { "en": "Seat Taper (deg)", "es": "Conicidad del Asiento (grados)" },
+      "tooltip": { "en": "Taper of the seat wall to match the cone flare", "es": "Conicidad de la pared del asiento para el ensanche del cono" }
+    },
+    {
+      "id": "eyelet_d", "type": "slider", "default": 8.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "eyelet", "modes": ["cone_stand", "tension_gate", "table_eyelet"],
+      "label": { "en": "Yarn Eyelet Bore (mm)", "es": "Ojal de Hilo (mm)" },
+      "tooltip": { "en": "Bore of the smooth eyelet the yarn threads through", "es": "Diámetro del ojal suave por el que pasa el hilo" }
+    },
+    {
+      "id": "arm_h", "type": "slider", "default": 90.0, "min": 40.0, "max": 160.0, "step": 1,
+      "group": "cone", "modes": ["cone_stand"],
+      "label": { "en": "Arm Height (mm)", "es": "Altura del Brazo (mm)" },
+      "tooltip": { "en": "Height of the eyelet arm above the cone", "es": "Altura del brazo del ojal sobre el cono" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 10.0, "step": 0.5,
+      "group": "body", "modes": ["cone_stand", "tension_gate", "table_eyelet"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Plate / seat / body wall thickness", "es": "Grosor de pared de placa / asiento / cuerpo" }
+    },
+    {
+      "id": "eyelets", "type": "slider", "default": 4, "min": 1, "max": 8, "step": 1,
+      "group": "eyelet", "modes": ["tension_gate"],
+      "label": { "en": "Eyelet Count", "es": "Número de Ojales" },
+      "tooltip": { "en": "How many eyelets across the tension gate", "es": "Cuántos ojales a lo ancho de la compuerta" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "small_cone_stand", "mode": "cone_stand",
+      "label": { "en": "Small Cone Stand", "es": "Soporte de Cono Pequeño" },
+      "values": { "base_dia": 50.0, "taper": 6.0, "eyelet_d": 8.0, "arm_h": 90.0, "wall": 4.0 }
+    },
+    {
+      "id": "four_eyelet_gate", "mode": "tension_gate",
+      "label": { "en": "4-Eyelet Tension Gate", "es": "Compuerta 4 Ojales" },
+      "values": { "eyelet_d": 8.0, "wall": 4.0, "eyelets": 4 }
+    },
+    {
+      "id": "edge_redirect", "mode": "table_eyelet",
+      "label": { "en": "Table-Edge Redirect", "es": "Redirector de Borde" },
+      "values": { "eyelet_d": 10.0, "wall": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "eyelet_d >= 3",
+      "severity": "warning",
+      "message": { "en": "Very small eyelets can shred fuzzy or plied yarn", "es": "Ojales muy pequeños pueden deshilachar hilo grueso o retorcido" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 130] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 3, "per_part": 13,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "cone_seat_eyelet",
+        "label": { "en": "Cone Seat + Yarn Eyelet", "es": "Asiento de Cono + Ojal" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["base_dia", "taper", "eyelet_d"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "Yarn fed straight off a cone or ball twists, tangles and pulls unevenly, which shows up as uneven stitches. A cone stand and eyelet guide let yarn draw off the tip and pass through a smooth eyelet under even tension — the same trick industrial creels use — from a printed part a hobbyist can size to whatever cone or ball they have, instead of buying a fixed metal stand.",
+      "es": "El hilo alimentado directamente de un cono u ovillo se retuerce, enreda y tira de forma despareja, lo que se nota como puntadas irregulares. Un soporte de cono y guía de ojal permiten que el hilo salga por la punta y pase por un ojal suave bajo tensión uniforme — el mismo truco de las fileteras industriales — desde una pieza impresa que un aficionado dimensiona a cualquier cono u ovillo, en vez de comprar un soporte metálico fijo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["yarn", "cone", "guide", "tension", "eyelet", "knitting", "weaving", "textile", "household", "hyperobject", "commons"]
+}

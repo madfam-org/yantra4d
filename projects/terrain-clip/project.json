@@ -1,0 +1,215 @@
+{
+  "project": {
+    "name": "Terrain Clip",
+    "slug": "terrain-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Modular-terrain hardware: connectors and magnet bases that lock printed or boxed terrain tiles together during play, then break down flat for storage. Built around the ubiquitous 6x2 mm disc magnet — a magnet base, a two-peg edge connector, and a U-channel panel clip.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Hardware para terreno modular: conectores y bases magnéticas que fijan losetas de terreno impresas o comerciales durante el juego y se desarman en plano para guardar. Basado en el imán de disco de 6x2 mm — una base magnética, un conector de borde de dos clavijas y una grapa de canal en U.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/terrain-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["terrain", "wargame", "modular", "magnet", "connector", "clip", "tabletop", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "magnet_base",
+      "label": { "en": "Magnet Base", "es": "Base Magnética" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["magnet_base"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "peg_connector",
+      "label": { "en": "Peg Connector", "es": "Conector de Clavija" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["peg_connector"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "clip",
+      "label": { "en": "Panel Clip", "es": "Grapa de Panel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "magnet_base", "label": { "en": "Magnet Base", "es": "Base Magnética" }, "render_mode": 0, "color": "#8c7a5c" },
+    { "id": "peg_connector", "label": { "en": "Peg Connector", "es": "Conector" }, "render_mode": 0, "color": "#9c8b6c" },
+    { "id": "clip", "label": { "en": "Panel Clip", "es": "Grapa" }, "render_mode": 0, "color": "#7c6a4c" }
+  ],
+  "parameter_groups": [
+    { "id": "magnet", "label": { "en": "Magnet", "es": "Imán" } },
+    { "id": "base", "label": { "en": "Magnet Base", "es": "Base Magnética" } },
+    { "id": "peg", "label": { "en": "Peg Connector", "es": "Conector de Clavija" } },
+    { "id": "clip", "label": { "en": "Panel Clip", "es": "Grapa de Panel" } }
+  ],
+  "parameters": [
+    {
+      "id": "magnet_d", "type": "slider", "default": 6.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "magnet", "modes": ["magnet_base"],
+      "label": { "en": "Magnet Diameter (mm)", "es": "Diámetro del Imán (mm)" },
+      "tooltip": { "en": "Diameter of the disc magnet", "es": "Diámetro del imán de disco" }
+    },
+    {
+      "id": "magnet_h", "type": "slider", "default": 2.0, "min": 0.8, "max": 4.0, "step": 0.2,
+      "group": "magnet", "modes": ["magnet_base"],
+      "label": { "en": "Magnet Depth (mm)", "es": "Profundidad del Imán (mm)" },
+      "tooltip": { "en": "Depth of the magnet pocket", "es": "Profundidad de la cavidad del imán" }
+    },
+    {
+      "id": "plate_th", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "base", "modes": ["magnet_base"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Base plate thickness", "es": "Grosor de la placa base" }
+    },
+    {
+      "id": "mag_cols", "type": "slider", "default": 2, "min": 1, "max": 6, "step": 1,
+      "group": "base", "modes": ["magnet_base"],
+      "label": { "en": "Pockets Across", "es": "Cavidades a lo Ancho" },
+      "tooltip": { "en": "Magnet pockets along X", "es": "Cavidades de imán en X" }
+    },
+    {
+      "id": "mag_rows", "type": "slider", "default": 2, "min": 1, "max": 6, "step": 1,
+      "group": "base", "modes": ["magnet_base"],
+      "label": { "en": "Pockets Deep", "es": "Cavidades a lo Profundo" },
+      "tooltip": { "en": "Magnet pockets along Y", "es": "Cavidades de imán en Y" }
+    },
+    {
+      "id": "mag_pitch", "type": "slider", "default": 20.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "base", "modes": ["magnet_base"], "advanced": true,
+      "label": { "en": "Pocket Spacing (mm)", "es": "Espaciado de Cavidades (mm)" },
+      "tooltip": { "en": "Centre-to-centre spacing", "es": "Espaciado centro a centro" }
+    },
+    {
+      "id": "mag_margin", "type": "slider", "default": 5.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "base", "modes": ["magnet_base"], "advanced": true,
+      "label": { "en": "Plate Margin (mm)", "es": "Margen de Placa (mm)" },
+      "tooltip": { "en": "Border around the outer pockets", "es": "Borde alrededor de las cavidades exteriores" }
+    },
+    {
+      "id": "peg_d", "type": "slider", "default": 6.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "peg", "modes": ["peg_connector"],
+      "label": { "en": "Peg Diameter (mm)", "es": "Diámetro de Clavija (mm)" },
+      "tooltip": { "en": "Diameter of each peg", "es": "Diámetro de cada clavija" }
+    },
+    {
+      "id": "peg_h", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "peg", "modes": ["peg_connector"],
+      "label": { "en": "Peg Height (mm)", "es": "Altura de Clavija (mm)" },
+      "tooltip": { "en": "How far the pegs stand up", "es": "Cuánto sobresalen las clavijas" }
+    },
+    {
+      "id": "peg_span", "type": "slider", "default": 24.0, "min": 12.0, "max": 80.0, "step": 1.0,
+      "group": "peg", "modes": ["peg_connector"],
+      "label": { "en": "Peg Spacing (mm)", "es": "Separación de Clavijas (mm)" },
+      "tooltip": { "en": "Centre-to-centre of the two pegs", "es": "Centro a centro de las dos clavijas" }
+    },
+    {
+      "id": "bar_th", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "peg", "modes": ["peg_connector"], "advanced": true,
+      "label": { "en": "Bar Thickness (mm)", "es": "Grosor de Barra (mm)" },
+      "tooltip": { "en": "Thickness of the connecting bar", "es": "Grosor de la barra de unión" }
+    },
+    {
+      "id": "clip_gap", "type": "slider", "default": 4.0, "min": 1.5, "max": 20.0, "step": 0.5,
+      "group": "clip", "modes": ["clip"],
+      "label": { "en": "Grip Gap (mm)", "es": "Hueco de Sujeción (mm)" },
+      "tooltip": { "en": "Total panel thickness the clip grips", "es": "Grosor total de panel que sujeta la grapa" }
+    },
+    {
+      "id": "clip_arm", "type": "slider", "default": 10.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "clip", "modes": ["clip"],
+      "label": { "en": "Arm Length (mm)", "es": "Longitud del Brazo (mm)" },
+      "tooltip": { "en": "How deep the clip grips over the edge", "es": "Qué tan profundo sujeta la grapa el borde" }
+    },
+    {
+      "id": "clip_w", "type": "slider", "default": 16.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "clip", "modes": ["clip"],
+      "label": { "en": "Clip Width (mm)", "es": "Ancho de Grapa (mm)" },
+      "tooltip": { "en": "Width along the panel edge", "es": "Ancho a lo largo del borde del panel" }
+    },
+    {
+      "id": "clip_wall", "type": "slider", "default": 3.0, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "clip", "modes": ["clip"], "advanced": true,
+      "label": { "en": "Clip Wall (mm)", "es": "Pared de Grapa (mm)" },
+      "tooltip": { "en": "Clip wall thickness", "es": "Grosor de la pared de la grapa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sheet_base", "mode": "magnet_base",
+      "label": { "en": "3x3 Magnet Sheet Base", "es": "Base Magnética 3x3" },
+      "values": { "mag_cols": 3, "mag_rows": 3, "mag_pitch": 22 }
+    },
+    {
+      "id": "tile_joiner", "mode": "peg_connector",
+      "label": { "en": "Tile Joiner", "es": "Unión de Losetas" },
+      "values": { "peg_d": 6, "peg_h": 8, "peg_span": 30 }
+    },
+    {
+      "id": "foam_clip", "mode": "clip",
+      "label": { "en": "Foam Panel Clip", "es": "Grapa para Panel de Espuma" },
+      "values": { "clip_gap": 10, "clip_arm": 14, "clip_w": 20 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_th >= magnet_h + 0.8",
+      "severity": "warning",
+      "message": { "en": "Plate is thin over the magnet pocket", "es": "La placa es delgada sobre la cavidad del imán" }
+    },
+    {
+      "expression": "magnet_h >= 0.8",
+      "severity": "error",
+      "message": { "en": "Magnet pocket must be at least 0.8 mm deep", "es": "La cavidad del imán debe tener al menos 0.8 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 80, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 8,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "terrain_magnet",
+        "label": { "en": "Terrain Magnet", "es": "Imán de Terreno" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["magnet_d", "magnet_h", "mag_pitch"]
+      },
+      {
+        "id": "edge_peg",
+        "label": { "en": "Edge Peg", "es": "Clavija de Borde" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["peg_d", "peg_span", "peg_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Standardized terrain connectors let players magnetize and lock together tiles from any source, keeping a table layout stable and letting terrain break down flat — reusable hardware instead of glue and disposable foam.",
+      "es": "Conectores de terreno estandarizados permiten imantar y unir losetas de cualquier origen, manteniendo estable la mesa y permitiendo desarmar el terreno en plano — hardware reutilizable en vez de pegamento y espuma desechable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["terrain", "wargame", "modular", "magnet", "commercial", "hyperobject", "commons"]
+}

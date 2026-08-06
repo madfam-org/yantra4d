@@ -1,0 +1,453 @@
+{
+  "project": {
+    "name": "GoPro Extension Arm",
+    "slug": "gopro-arm",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An extension arm for the GoPro-style action-cam mount. A finger clevis on each end of a connecting bar lets you extend, offset or couple mounts: one end is a 2-prong (female) bank, the other a 3-prong (male) bank facing the opposite way, so the arm passes a mount through while adding reach. Every finger set is the real GoPro clevis, so it mates any GoPro mount, base or accessory. Also builds a short male-to-male coupler and a lightened long arm.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un brazo de extensión para la montura de cámara de acción tipo GoPro. Una horquilla de dedos en cada extremo de una barra de conexión permite extender, desplazar o acoplar monturas: un extremo es un banco de 2 dedos (hembra), el otro de 3 dedos (macho) mirando al lado opuesto, para que el brazo deje pasar una montura mientras añade alcance. Cada juego de dedos es la horquilla GoPro real, por lo que se acopla a cualquier montura, base o accesorio GoPro. También genera un acoplador macho-macho corto y un brazo largo aligerado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gopro-arm.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "gopro",
+      "arm",
+      "extension",
+      "action-cam",
+      "mount",
+      "clevis",
+      "chain",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "straight_arm",
+      "label": {
+        "en": "Straight Arm",
+        "es": "Brazo Recto"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "straight_arm"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 4,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "coupler",
+      "label": {
+        "en": "Male-to-Male Coupler",
+        "es": "Acoplador Macho-Macho"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "coupler"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "long_arm",
+      "label": {
+        "en": "Long Lightened Arm",
+        "es": "Brazo Largo Aligerado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "long_arm"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 5,
+        "per_part": 18
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "straight_arm",
+      "label": {
+        "en": "Straight Arm",
+        "es": "Brazo Recto"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "coupler",
+      "label": {
+        "en": "Male-to-Male Coupler",
+        "es": "Acoplador Macho-Macho"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "long_arm",
+      "label": {
+        "en": "Long Lightened Arm",
+        "es": "Brazo Largo Aligerado"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "gopro",
+      "label": {
+        "en": "GoPro Fingers",
+        "es": "Dedos GoPro"
+      }
+    },
+    {
+      "id": "arm",
+      "label": {
+        "en": "Arm",
+        "es": "Brazo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "finger_thick",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "gopro",
+      "modes": [
+        "straight_arm",
+        "coupler",
+        "long_arm"
+      ],
+      "label": {
+        "en": "Finger Thickness (mm)",
+        "es": "Grosor del Dedo (mm)"
+      },
+      "tooltip": {
+        "en": "GoPro finger thickness. Standard ~3.0 mm",
+        "es": "Grosor del dedo GoPro. Estándar ~3.0 mm"
+      }
+    },
+    {
+      "id": "finger_gap",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.2,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "gopro",
+      "modes": [
+        "straight_arm",
+        "coupler",
+        "long_arm"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Finger Gap (mm)",
+        "es": "Separación de Dedos (mm)"
+      },
+      "tooltip": {
+        "en": "Gap between fingers; a mating finger nests here. ~3.2 mm",
+        "es": "Espacio entre dedos; un dedo acoplado anida aquí. ~3.2 mm"
+      }
+    },
+    {
+      "id": "knuckle_d",
+      "type": "slider",
+      "default": 15.0,
+      "min": 9.0,
+      "max": 26.0,
+      "step": 0.5,
+      "group": "gopro",
+      "modes": [
+        "straight_arm",
+        "coupler",
+        "long_arm"
+      ],
+      "label": {
+        "en": "Knuckle Diameter (mm)",
+        "es": "Diámetro del Nudillo (mm)"
+      },
+      "tooltip": {
+        "en": "GoPro knuckle diameter. Standard ~15 mm",
+        "es": "Diámetro del nudillo GoPro. Estándar ~15 mm"
+      }
+    },
+    {
+      "id": "bolt_hole_d",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "gopro",
+      "modes": [
+        "straight_arm",
+        "coupler",
+        "long_arm"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Axle Bolt Hole (mm)",
+        "es": "Orificio del Perno de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "GoPro thumbscrew axle through-hole (M5 ~5.0 mm)",
+        "es": "Orificio pasante del eje del tornillo GoPro (M5 ~5.0 mm)"
+      }
+    },
+    {
+      "id": "reach",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 30.0,
+      "step": 1,
+      "group": "gopro",
+      "modes": [
+        "straight_arm",
+        "coupler",
+        "long_arm"
+      ],
+      "label": {
+        "en": "Finger Reach (mm)",
+        "es": "Alcance del Dedo (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the knuckle pivot above the bar face",
+        "es": "Altura del pivote del nudillo sobre la cara de la barra"
+      }
+    },
+    {
+      "id": "arm_len",
+      "type": "slider",
+      "default": 60.0,
+      "min": 30.0,
+      "max": 160.0,
+      "step": 1,
+      "group": "arm",
+      "modes": [
+        "straight_arm",
+        "coupler",
+        "long_arm"
+      ],
+      "label": {
+        "en": "Arm Length (mm)",
+        "es": "Longitud del Brazo (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the connecting bar between the two finger banks",
+        "es": "Longitud de la barra de conexión entre los dos bancos de dedos"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "arm_th",
+      "type": "slider",
+      "default": 6.0,
+      "min": 4.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "arm",
+      "modes": [
+        "straight_arm",
+        "coupler",
+        "long_arm"
+      ],
+      "label": {
+        "en": "Arm Thickness (mm)",
+        "es": "Grosor del Brazo (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the connecting bar",
+        "es": "Grosor de la barra de conexión"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_extension",
+      "mode": "straight_arm",
+      "label": {
+        "en": "Standard Extension Arm",
+        "es": "Brazo de Extensión Estándar"
+      },
+      "values": {
+        "finger_thick": 3.0,
+        "knuckle_d": 15.0,
+        "reach": 12.0,
+        "arm_len": 60.0,
+        "arm_th": 6.0
+      }
+    },
+    {
+      "id": "male_coupler",
+      "mode": "coupler",
+      "label": {
+        "en": "Male-to-Male Coupler",
+        "es": "Acoplador Macho-Macho"
+      },
+      "values": {
+        "finger_thick": 3.0,
+        "knuckle_d": 15.0,
+        "reach": 10.0,
+        "arm_len": 36.0,
+        "arm_th": 6.0
+      }
+    },
+    {
+      "id": "long_reach",
+      "mode": "long_arm",
+      "label": {
+        "en": "Long Reach Arm",
+        "es": "Brazo de Largo Alcance"
+      },
+      "values": {
+        "finger_thick": 3.0,
+        "knuckle_d": 15.0,
+        "reach": 12.0,
+        "arm_len": 120.0,
+        "arm_th": 7.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "finger_gap >= finger_thick",
+      "severity": "warning",
+      "message": {
+        "en": "GoPro fingers interleave best when the gap is at least the finger thickness",
+        "es": "Los dedos GoPro se entrelazan mejor cuando la separación es al menos el grosor del dedo"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        110,
+        140,
+        90
+      ]
+    },
+    {
+      "id": "side",
+      "label": {
+        "en": "Side",
+        "es": "Lateral"
+      },
+      "position": [
+        200,
+        0,
+        20
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        220
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 18,
+    "per_unit": 4,
+    "per_part": 16,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "gopro_finger_clevis",
+        "label": {
+          "en": "GoPro Finger Clevis",
+          "es": "Horquilla de Dedos GoPro"
+        },
+        "geometry_type": "snap",
+        "standard": "GoPro action-cam mount",
+        "parameters": [
+          "finger_thick",
+          "finger_gap",
+          "knuckle_d",
+          "bolt_hole_d"
+        ],
+        "compatible_with": [
+          "gopro-mount"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The GoPro finger mount is the open lingua franca of action-cam accessories, but off-the-shelf extension arms come in fixed lengths. Printing an arm to the exact reach and offset a rig needs — and a male-to-male coupler to join two female mounts back-to-back — means a creator builds a custom camera rig from a handful of printed links instead of buying and stacking proprietary pieces. It shares the GoPro clevis, so it chains with every GoPro mount and accessory.",
+      "es": "La montura de dedos GoPro es la lingua franca abierta de los accesorios de cámara de acción, pero los brazos de extensión comerciales vienen en longitudes fijas. Imprimir un brazo con el alcance y desplazamiento exactos que necesita un montaje — y un acoplador macho-macho para unir dos monturas hembra — permite a un creador construir un rig de cámara a medida con unos pocos enlaces impresos en vez de comprar y apilar piezas propietarias. Comparte la horquilla GoPro, por lo que se encadena con cualquier montura y accesorio GoPro."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "gopro",
+    "arm",
+    "extension",
+    "action-cam",
+    "mount",
+    "clevis",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

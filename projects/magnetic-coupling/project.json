@@ -1,0 +1,185 @@
+{
+  "project": {
+    "name": "Magnetic Coupling Hub",
+    "slug": "magnetic-coupling",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A contactless magnetic shaft coupling: two hubs each carry a ring of disc magnets, so placed face to face (or across a thin non-magnetic wall) they transmit torque with no physical link — driving a shaft through a sealed barrier, or slipping harmlessly on overload. Choose the driving/driven hub, a thin magnet-carrier disc, or a cup shell for a through-wall coupling. The shaft bore is a round or D-flat 6/8 mm fit with a set-screw — the same shaft interface as knob-dshaft.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un acoplamiento magnetico de eje sin contacto: dos cubos llevan cada uno un anillo de imanes de disco, asi que puestos cara a cara (o a traves de una pared no magnetica delgada) transmiten par sin union fisica — accionando un eje a traves de una barrera sellada, o resbalando sin dano ante sobrecarga. Elige el cubo motriz/conducido, un disco delgado porta-imanes, o una carcasa de copa para acoplamiento a traves de pared. El barreno del eje es un ajuste redondo o de plano D de 6/8 mm con prisionero — la misma interfaz de eje que knob-dshaft.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/magnetic-coupling.webp",
+    "difficulty": "intermediate",
+    "tags": ["hybrid", "magnetic", "coupling", "shaft", "contactless", "torque", "magnets", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "coupling_hub",
+      "label": { "en": "Coupling Hub", "es": "Cubo de Acoplamiento" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["coupling_hub"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "disc_rotor",
+      "label": { "en": "Magnet Disc", "es": "Disco de Imanes" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["disc_rotor"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "cup_shell",
+      "label": { "en": "Cup Shell", "es": "Carcasa de Copa" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cup_shell"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "coupling_hub", "label": { "en": "Coupling Hub", "es": "Cubo de Acoplamiento" }, "render_mode": 0, "color": "#5b3f8f" },
+    { "id": "disc_rotor", "label": { "en": "Magnet Disc", "es": "Disco de Imanes" }, "render_mode": 0, "color": "#472a78" },
+    { "id": "cup_shell", "label": { "en": "Cup Shell", "es": "Carcasa de Copa" }, "render_mode": 0, "color": "#735ca5" }
+  ],
+  "parameter_groups": [
+    { "id": "hub", "label": { "en": "Hub", "es": "Cubo" } },
+    { "id": "shaft", "label": { "en": "Shaft Bore", "es": "Barreno de Eje" } },
+    { "id": "magnets", "label": { "en": "Magnets", "es": "Imanes" } }
+  ],
+  "parameters": [
+    {
+      "id": "hub_d", "type": "slider", "default": 36.0, "min": 18.0, "max": 80.0, "step": 1,
+      "group": "hub", "modes": ["coupling_hub", "disc_rotor", "cup_shell"],
+      "label": { "en": "Hub Diameter (mm)", "es": "Diametro del Cubo (mm)" },
+      "tooltip": { "en": "Outer diameter of the coupling disc", "es": "Diametro exterior del disco de acoplamiento" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "hub_h", "type": "slider", "default": 16.0, "min": 6.0, "max": 30.0, "step": 0.5,
+      "group": "hub", "modes": ["coupling_hub", "disc_rotor", "cup_shell"],
+      "label": { "en": "Hub Height (mm)", "es": "Altura del Cubo (mm)" },
+      "tooltip": { "en": "Height of the hub / shell", "es": "Altura del cubo / carcasa" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "shaft_dia", "type": "slider", "default": 6.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "shaft", "modes": ["coupling_hub", "disc_rotor", "cup_shell"],
+      "label": { "en": "Shaft Diameter (mm)", "es": "Diametro del Eje (mm)" },
+      "tooltip": { "en": "Shaft bore diameter (6 mm or 8 mm common)", "es": "Diametro del barreno del eje (6 mm u 8 mm comun)" }
+    },
+    {
+      "id": "bore_type", "type": "select", "default": "D-flat",
+      "group": "shaft", "modes": ["coupling_hub", "disc_rotor", "cup_shell"],
+      "label": { "en": "Bore Type", "es": "Tipo de Barreno" },
+      "tooltip": { "en": "Round or D-flat shaft fit (same as knob-dshaft)", "es": "Ajuste de eje redondo o plano D (igual que knob-dshaft)" },
+      "options": [
+        { "value": "round", "label": { "en": "Round", "es": "Redondo" } },
+        { "value": "D-flat", "label": { "en": "D-flat", "es": "Plano D" } }
+      ]
+    },
+    {
+      "id": "flat_depth", "type": "slider", "default": 0.5, "min": 0.0, "max": 3.0, "step": 0.1,
+      "group": "shaft", "modes": ["coupling_hub", "disc_rotor", "cup_shell"], "advanced": true,
+      "label": { "en": "D-flat Depth (mm)", "es": "Profundidad Plano D (mm)" },
+      "tooltip": { "en": "How far the D-flat cuts into the bore", "es": "Cuanto corta el plano D en el barreno" }
+    },
+    {
+      "id": "setscrew_dia", "type": "slider", "default": 3.2, "min": 2.0, "max": 5.0, "step": 0.1,
+      "group": "shaft", "modes": ["coupling_hub"], "advanced": true,
+      "label": { "en": "Set-Screw (mm)", "es": "Prisionero (mm)" },
+      "tooltip": { "en": "Radial set-screw clearance (M3 ~3.2 mm)", "es": "Holgura del prisionero radial (M3 ~3.2 mm)" }
+    },
+    {
+      "id": "n_magnets", "type": "slider", "default": 6, "min": 2, "max": 12, "step": 1,
+      "group": "magnets", "modes": ["coupling_hub", "disc_rotor", "cup_shell"],
+      "label": { "en": "Magnet Count", "es": "Numero de Imanes" },
+      "tooltip": { "en": "Disc magnets in the ring (alternate N/S poles)", "es": "Imanes de disco en el anillo (polos N/S alternos)" }
+    },
+    {
+      "id": "magnet_d", "type": "slider", "default": 8.0, "min": 3.0, "max": 16.0, "step": 0.5,
+      "group": "magnets", "modes": ["coupling_hub", "disc_rotor", "cup_shell"],
+      "label": { "en": "Magnet Diameter (mm)", "es": "Diametro de Iman (mm)" },
+      "tooltip": { "en": "Disc-magnet diameter", "es": "Diametro del iman de disco" }
+    },
+    {
+      "id": "magnet_h", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "magnets", "modes": ["coupling_hub", "disc_rotor", "cup_shell"], "advanced": true,
+      "label": { "en": "Magnet Thickness (mm)", "es": "Grosor de Iman (mm)" },
+      "tooltip": { "en": "Disc-magnet thickness (pocket depth)", "es": "Grosor del iman de disco (profundidad del alojamiento)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_6mm_hub", "mode": "coupling_hub",
+      "label": { "en": "Standard 6 mm Hub", "es": "Cubo Estandar 6 mm" },
+      "values": { "hub_d": 36, "shaft_dia": 6, "bore_type": "D-flat", "n_magnets": 6 }
+    },
+    {
+      "id": "encoder_disc", "mode": "disc_rotor",
+      "label": { "en": "8 mm Magnet Disc", "es": "Disco de Imanes 8 mm" },
+      "values": { "hub_d": 40, "shaft_dia": 8, "n_magnets": 8, "magnet_d": 6 }
+    },
+    {
+      "id": "sealed_cup", "mode": "cup_shell",
+      "label": { "en": "Through-Wall Cup", "es": "Copa a Traves de Pared" },
+      "values": { "hub_d": 44, "shaft_dia": 6, "n_magnets": 6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "magnet_d < hub_d",
+      "severity": "error",
+      "message": { "en": "The magnets must fit inside the hub", "es": "Los imanes deben caber dentro del cubo" }
+    },
+    {
+      "expression": "shaft_dia < hub_d",
+      "severity": "warning",
+      "message": { "en": "The shaft bore should be well inside the hub", "es": "El barreno del eje debe estar bien dentro del cubo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [70, 70, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 130] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -130, 15] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 15, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "magnet_ring",
+        "label": { "en": "Disc-Magnet Ring", "es": "Anillo de Imanes de Disco" },
+        "geometry_type": "socket",
+        "standard": "6/8mm shaft + magnets",
+        "parameters": ["n_magnets", "magnet_d", "magnet_h"]
+      },
+      {
+        "id": "shaft_bore",
+        "label": { "en": "Shaft Bore", "es": "Barreno de Eje" },
+        "geometry_type": "socket",
+        "standard": "internal (round / D-flat)",
+        "parameters": ["shaft_dia", "bore_type", "flat_depth"],
+        "compatible_with": ["knob-dshaft"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Magnetic couplings transmit torque with no physical contact — so they drive pumps and stirrers through a sealed wall (no leaking shaft seal), and slip safely instead of breaking on overload. Off-the-shelf magnetic couplings are expensive and fixed to one shaft size; an open, parametric hub that takes standard disc magnets and the same round/D-flat 6/8 mm shaft fit as the knob-dshaft family lets a maker or lab build a contactless drive to their exact shaft, for sealed fluidics, robotics and safe-slip drives.",
+      "es": "Los acoplamientos magneticos transmiten par sin contacto fisico — asi accionan bombas y agitadores a traves de una pared sellada (sin sello de eje que gotee), y resbalan de forma segura en vez de romperse ante sobrecarga. Los acoplamientos magneticos comerciales son caros y fijos a un tamano de eje; un cubo abierto y parametrico que toma imanes de disco estandar y el mismo ajuste de eje redondo/plano D de 6/8 mm que la familia knob-dshaft permite a un maker o laboratorio construir una transmision sin contacto a su eje exacto, para fluidica sellada, robotica y transmisiones de resbalamiento seguro."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hybrid", "magnetic", "coupling", "shaft", "hyperobject", "commons"]
+}

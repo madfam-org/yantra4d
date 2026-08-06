@@ -1,0 +1,183 @@
+{
+  "project": {
+    "name": "Prosthetic Wrist Adapter",
+    "slug": "prosthetic-wrist",
+    "version": "1.0.0",
+    "description": {
+      "en": "A quick-disconnect wrist unit for upper-limb prostheses on the open e-NABLE / Open Source Leg 4-bolt terminal interface. A wrist plate bolts to the socket and presents a keyed quick-disconnect socket; a terminal puck carries a hand or tool and locks into it against rotation; a fixed-flexion block sets the terminal device at a wrist angle. Mates the prosthetic-socket 4-bolt adapter. A clinician / occupational therapist must fit and approve any prosthesis — this is a fabrication blank, not a certified medical device.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una unidad de muñeca de desconexión rápida para prótesis de miembro superior sobre la interfaz abierta de 4 pernos e-NABLE / Open Source Leg. Una placa de muñeca se atornilla al socket y presenta un socket de desconexión rápida con llave; un puck terminal porta una mano o herramienta y encaja bloqueado contra rotación; un bloque de flexión fija el dispositivo terminal en un ángulo de muñeca. Compatible con el adaptador de 4 pernos de prosthetic-socket. Un clínico / terapeuta ocupacional debe ajustar y aprobar cualquier prótesis — es un blank de fabricación, no un dispositivo médico certificado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/prosthetic-wrist.webp",
+    "difficulty": "advanced",
+    "tags": ["medical", "prosthetic", "assistive", "wrist", "quick-disconnect", "e-nable", "osl", "hyperobject", "commons"],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The keyed post is printed under the socket by a fixed clearance so it seats and rotates out; tune bolt_dia to your fasteners. Print load-bearing wrist parts solid or high-infill in PETG/PA. Fit is user-specific: an occupational therapist or prosthetist must approve the assembly before use.",
+        "es": "El poste con llave se imprime bajo el socket con una holgura fija para que asiente y gire; ajusta bolt_dia a tus tornillos. Imprime las piezas de muñeca que soportan carga sólidas o de alto relleno en PETG/PA. El ajuste es específico del usuario: un terapeuta ocupacional o protesista debe aprobar el ensamble antes de usarlo."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "terminal_4bolt",
+        "label": {
+          "en": "e-NABLE / OSL 4-Bolt Terminal",
+          "es": "Terminal de 4 Pernos e-NABLE / OSL"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "e-NABLE / OSL 4-bolt",
+        "parameters": ["bolt_circle_dia", "bolt_dia", "plate_dia"],
+        "compatible_with": ["prosthetic-socket"]
+      },
+      {
+        "id": "quick_disconnect",
+        "label": {
+          "en": "Keyed Quick-Disconnect",
+          "es": "Desconexión Rápida con Llave"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["disc_dia"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Lets an upper-limb prosthesis user swap hands and tools in seconds on the open e-NABLE interface, printed locally for a fraction of clinical cost, so components interoperate across the humanitarian-prosthetics commons instead of locking to one vendor's wrist.",
+      "es": "Permite a un usuario de prótesis de miembro superior cambiar manos y herramientas en segundos sobre la interfaz abierta e-NABLE, impresa localmente por una fracción del costo clínico, de modo que los componentes sean interoperables en el commons de prótesis humanitarias en vez de atarse a la muñeca de un solo fabricante."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "wrist_plate",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Wrist Plate", "es": "Placa de Muñeca" },
+      "description": { "en": "4-bolt flange to the socket with a keyed quick-disconnect socket on the outer face." },
+      "parts": ["wrist_plate"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "terminal_puck",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Terminal Puck", "es": "Puck Terminal" },
+      "description": { "en": "Mating coupler with its own 4-bolt pattern and a keyed post that locks into the wrist plate." },
+      "parts": ["terminal_puck"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "wrist_flexion",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Fixed-Flexion Block", "es": "Bloque de Flexión Fija" },
+      "description": { "en": "Two 4-bolt flanges joined by a solid wedge to set the terminal device at a wrist angle." },
+      "parts": ["wrist_flexion"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "wrist_plate", "render_mode": 0, "label": { "en": "Wrist Plate", "es": "Placa de Muñeca" }, "default_color": "#f59e0b" },
+    { "id": "terminal_puck", "render_mode": 0, "label": { "en": "Terminal Puck", "es": "Puck Terminal" }, "default_color": "#fbbf24" },
+    { "id": "wrist_flexion", "render_mode": 0, "label": { "en": "Fixed-Flexion Block", "es": "Bloque de Flexión Fija" }, "default_color": "#d97706" }
+  ],
+  "parameters": [
+    {
+      "id": "plate_dia", "type": "slider", "default": 58.0, "min": 40.0, "max": 90.0, "step": 1.0,
+      "group": "flange", "modes": ["wrist_plate", "wrist_flexion"],
+      "label": { "en": "Flange Diameter (mm)", "es": "Diámetro de Brida (mm)" },
+      "tooltip": { "en": "Outer diameter of the 4-bolt flange (matches the socket adapter plate).", "es": "Diámetro exterior de la brida de 4 pernos (coincide con la placa del adaptador del socket)." },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "bolt_circle_dia", "type": "slider", "default": 40.0, "min": 20.0, "max": 80.0, "step": 1.0,
+      "group": "flange", "modes": ["wrist_plate", "terminal_puck", "wrist_flexion"],
+      "label": { "en": "Bolt Circle Diameter (mm)", "es": "Diámetro del Círculo de Pernos (mm)" },
+      "tooltip": { "en": "Pitch circle of the 4-bolt pattern (e-NABLE / OSL, ~40 mm).", "es": "Círculo primitivo del patrón de 4 pernos (e-NABLE / OSL, ~40 mm)." }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.5, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "flange", "modes": ["wrist_plate", "terminal_puck", "wrist_flexion"], "advanced": true,
+      "label": { "en": "Bolt Clearance Diameter (mm)", "es": "Diámetro de Holgura de Perno (mm)" },
+      "tooltip": { "en": "Through-hole size for the mounting bolts (5.5 = M5 clearance).", "es": "Tamaño del agujero pasante para los pernos (5.5 = holgura M5)." }
+    },
+    {
+      "id": "plate_th", "type": "slider", "default": 8.0, "min": 5.0, "max": 16.0, "step": 0.5,
+      "group": "flange", "modes": ["wrist_plate", "terminal_puck", "wrist_flexion"],
+      "label": { "en": "Flange Thickness (mm)", "es": "Grosor de Brida (mm)" },
+      "tooltip": { "en": "Thickness of the bolt flange; carries the wrist load.", "es": "Grosor de la brida de pernos; soporta la carga de la muñeca." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "disc_dia", "type": "slider", "default": 22.0, "min": 14.0, "max": 34.0, "step": 0.5,
+      "group": "coupler", "modes": ["wrist_plate", "terminal_puck"],
+      "label": { "en": "Quick-Disconnect Diameter (mm)", "es": "Diámetro de Desconexión Rápida (mm)" },
+      "tooltip": { "en": "Diameter of the keyed quick-disconnect socket and post.", "es": "Diámetro del socket y poste de desconexión rápida con llave." }
+    },
+    {
+      "id": "flex_angle", "type": "slider", "default": 20.0, "min": 0.0, "max": 45.0, "step": 1.0,
+      "group": "coupler", "modes": ["wrist_flexion"],
+      "label": { "en": "Flexion Angle (deg)", "es": "Ángulo de Flexión (grados)" },
+      "tooltip": { "en": "Fixed wrist flexion angle between the two flanges.", "es": "Ángulo de flexión de muñeca fijo entre las dos bridas." }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "flange", "label": { "en": "4-Bolt Flange", "es": "Brida de 4 Pernos" } },
+    { "id": "coupler", "label": { "en": "Quick-Disconnect", "es": "Desconexión Rápida" } }
+  ],
+  "presets": [
+    {
+      "id": "standard_wrist", "mode": "wrist_plate",
+      "label": { "en": "Standard e-NABLE Wrist", "es": "Muñeca e-NABLE Estándar" },
+      "values": { "plate_dia": 58.0, "bolt_circle_dia": 40.0, "bolt_dia": 5.5, "disc_dia": 22.0 }
+    },
+    {
+      "id": "standard_puck", "mode": "terminal_puck",
+      "label": { "en": "Standard Terminal Puck", "es": "Puck Terminal Estándar" },
+      "values": { "bolt_circle_dia": 40.0, "bolt_dia": 5.5, "disc_dia": 22.0, "plate_th": 8.0 }
+    },
+    {
+      "id": "flex_20", "mode": "wrist_flexion",
+      "label": { "en": "20° Flexion Block", "es": "Bloque de Flexión 20°" },
+      "values": { "bolt_circle_dia": 40.0, "bolt_dia": 5.5, "plate_th": 8.0, "flex_angle": 20.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bolt_circle_dia + bolt_dia + 6 <= plate_dia",
+      "severity": "warning",
+      "message": { "en": "Bolt circle is large relative to the flange; edges may break out", "es": "El círculo de pernos es grande respecto a la brida; los bordes pueden romperse" }
+    },
+    {
+      "expression": "disc_dia + 6 <= plate_dia",
+      "severity": "warning",
+      "message": { "en": "Quick-disconnect is large relative to the flange", "es": "La desconexión rápida es grande respecto a la brida" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 60
+  },
+  "license": "CERN-OHL-W-2.0"
+}

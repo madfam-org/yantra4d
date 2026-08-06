@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "Wheelchair Cup Holder",
+    "slug": "wheelchair-cup",
+    "version": "1.0.0",
+    "description": {
+      "en": "A cup holder that snap-clamps to the round frame tube of a wheelchair, walker or rollator (3/4\"–1\", 19–25 mm) so a drink stays within reach. Ships as a cup basket, a deeper bottle cradle, and a bare universal clamp with a bolt pad for your own tray. Shares the mobility-tube clamp with the mobility-accessory cartridge. An adaptive aid — fit is user-specific; confirm the clamp grips your frame before loading.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un portavasos que se sujeta a presión al tubo redondo del marco de una silla de ruedas, andador o rollator (3/4\"–1\", 19–25 mm) para tener la bebida al alcance. Incluye una canasta para vaso, un soporte más profundo para botella y una abrazadera universal con placa de pernos para tu propia bandeja. Comparte la abrazadera de tubo de movilidad con el cartucho mobility-accessory. Una ayuda adaptativa — el ajuste es específico del usuario; confirma que la abrazadera sujete tu marco antes de cargar.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/wheelchair-cup.webp",
+    "difficulty": "beginner",
+    "tags": ["wheelchair", "walker", "cup-holder", "mobility", "assistive", "medical", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The C-clamp bore adds the user 'clearance' per side and grips by spring; set tube_dia to your frame and print in PETG so the clamp flexes without cracking. This is an adaptive aid, not certified medical equipment — check the grip before hanging a full cup.",
+        "es": "El barreno de la abrazadera C suma la 'holgura' del usuario por lado y sujeta por resorte; ajusta tube_dia a tu marco e imprime en PETG para que la abrazadera flexione sin romperse. Es una ayuda adaptativa, no equipo médico certificado — verifica la sujeción antes de colgar un vaso lleno."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "mobility_tube_clamp",
+        "label": { "en": "Mobility Tube Clamp", "es": "Abrazadera de Tubo de Movilidad" },
+        "geometry_type": "socket",
+        "standard": "3/4-1in mobility tube",
+        "parameters": ["tube_dia", "clamp_wall", "clearance"],
+        "compatible_with": ["mobility-accessory"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Keeps a drink within reach for wheelchair, walker and rollator users, printed to fit their exact frame tube for a few pesos of filament instead of a costly proprietary holder, and interoperable with the wider mobility-accessory family.",
+      "es": "Mantiene una bebida al alcance de usuarios de sillas de ruedas, andadores y rollators, impreso a la medida exacta del tubo de su marco por unos pesos de filamento en vez de un portavasos propietario costoso, e interoperable con la familia mobility-accessory."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "cup_holder",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Cup Holder", "es": "Portavasos" },
+      "description": { "en": "C-clamp carrying an open cup basket sized to a standard drink cup." },
+      "parts": ["cup_holder"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "bottle_clamp",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Bottle Cradle", "es": "Soporte de Botella" },
+      "description": { "en": "C-clamp carrying a deeper, narrower cradle for a water bottle." },
+      "parts": ["bottle_clamp"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "clamp_only",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Universal Clamp", "es": "Abrazadera Universal" },
+      "description": { "en": "Bare C-clamp with a bolt pad so you can mount your own tray or accessory." },
+      "parts": ["clamp_only"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "cup_holder", "render_mode": 0, "label": { "en": "Cup Holder", "es": "Portavasos" }, "default_color": "#7c3aed" },
+    { "id": "bottle_clamp", "render_mode": 0, "label": { "en": "Bottle Cradle", "es": "Soporte de Botella" }, "default_color": "#8b5cf6" },
+    { "id": "clamp_only", "render_mode": 0, "label": { "en": "Universal Clamp", "es": "Abrazadera Universal" }, "default_color": "#a78bfa" }
+  ],
+  "parameters": [
+    {
+      "id": "tube_dia", "type": "slider", "default": 25.0, "min": 19.0, "max": 32.0, "step": 0.5,
+      "group": "clamp", "modes": ["cup_holder", "bottle_clamp", "clamp_only"],
+      "label": { "en": "Frame Tube Diameter (mm)", "es": "Diámetro de Tubo del Marco (mm)" },
+      "tooltip": { "en": "Outer diameter of your mobility frame tube (3/4\"=19, 1\"=25.4).", "es": "Diámetro exterior del tubo de tu marco de movilidad (3/4\"=19, 1\"=25.4)." }
+    },
+    {
+      "id": "cup_dia", "type": "slider", "default": 74.0, "min": 50.0, "max": 100.0, "step": 1.0,
+      "group": "cup", "modes": ["cup_holder", "bottle_clamp"],
+      "label": { "en": "Cup Diameter (mm)", "es": "Diámetro de Vaso (mm)" },
+      "tooltip": { "en": "Diameter of the drink cup / bottle base (standard cup ~74 mm).", "es": "Diámetro de la base del vaso / botella (vaso estándar ~74 mm)." },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "clamp_wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "clamp", "modes": ["cup_holder", "bottle_clamp", "clamp_only"],
+      "label": { "en": "Clamp Wall (mm)", "es": "Pared de Abrazadera (mm)" },
+      "tooltip": { "en": "Wall thickness of the C-clamp; thinner flexes more.", "es": "Grosor de pared de la abrazadera C; más delgada flexiona más." }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "clamp", "modes": ["cup_holder", "bottle_clamp", "clamp_only"],
+      "label": { "en": "Clamp Clearance (mm/side)", "es": "Holgura de Abrazadera (mm/lado)" },
+      "tooltip": { "en": "Per-side gap on the tube bore; 0 for a tight grip.", "es": "Espacio por lado en el barreno del tubo; 0 para agarre firme." }
+    },
+    {
+      "id": "cup_wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.5,
+      "group": "cup", "modes": ["cup_holder", "bottle_clamp"],
+      "label": { "en": "Basket Wall (mm)", "es": "Pared de Canasta (mm)" },
+      "tooltip": { "en": "Wall and floor thickness of the cup basket.", "es": "Grosor de pared y piso de la canasta." }
+    },
+    {
+      "id": "cup_h", "type": "slider", "default": 55.0, "min": 30.0, "max": 90.0, "step": 1.0,
+      "group": "cup", "modes": ["cup_holder", "bottle_clamp"],
+      "label": { "en": "Basket Height (mm)", "es": "Altura de Canasta (mm)" },
+      "tooltip": { "en": "How tall the cup basket rises around the cup.", "es": "Qué tan alta se eleva la canasta alrededor del vaso." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "clamp", "label": { "en": "Tube Clamp", "es": "Abrazadera de Tubo" } },
+    { "id": "cup", "label": { "en": "Cup Basket", "es": "Canasta" } }
+  ],
+  "presets": [
+    {
+      "id": "cup_1in", "mode": "cup_holder",
+      "label": { "en": "Cup on 1\" Tube", "es": "Vaso en Tubo 1\"" },
+      "values": { "tube_dia": 25.4, "cup_dia": 74.0, "cup_h": 55.0 }
+    },
+    {
+      "id": "bottle_1in", "mode": "bottle_clamp",
+      "label": { "en": "Bottle on 1\" Tube", "es": "Botella en Tubo 1\"" },
+      "values": { "tube_dia": 25.4, "cup_dia": 70.0, "cup_h": 60.0 }
+    },
+    {
+      "id": "clamp_34in", "mode": "clamp_only",
+      "label": { "en": "Universal Clamp 3/4\"", "es": "Abrazadera Universal 3/4\"" },
+      "values": { "tube_dia": 19.0, "clamp_wall": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 0.9",
+      "severity": "warning",
+      "message": { "en": "Large clearance lets the holder slide on the tube", "es": "Una holgura grande deja que el portavasos deslice en el tubo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 50] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "license": "CERN-OHL-W-2.0"
+}

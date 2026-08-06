@@ -1,0 +1,412 @@
+{
+  "project": {
+    "name": "Drill Press Fence",
+    "slug": "drill-fence",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "A drill-press fence with a flip stop for repeatable hole spacing. The fence clamps to the table's 3/4 in T-track and carries a top channel a flip stop slides along — flip it up to slide the workpiece past, flip it down to register the next position. Pick the fence body, the flip stop, or the mount bracket.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una guía para taladro de columna con tope abatible para espaciado repetible de agujeros. La guía se sujeta al riel en T de 3/4 in de la mesa y lleva un canal superior por el que desliza un tope — abátelo para pasar la pieza, bájalo para registrar la siguiente posición. Elige el cuerpo de la guía, el tope abatible o el soporte de montaje.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/drill-fence.webp",
+    "tags": [
+      "drill-press",
+      "fence",
+      "flip-stop",
+      "t-track",
+      "jig",
+      "woodworking",
+      "miter",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "fence_body",
+      "label": {
+        "en": "Fence Body",
+        "es": "Cuerpo de Guía"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "fence_body"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "flip_stop",
+      "label": {
+        "en": "Flip Stop",
+        "es": "Tope Abatible"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "flip_stop"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "mount_bracket",
+      "label": {
+        "en": "Mount Bracket",
+        "es": "Soporte de Montaje"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "mount_bracket"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "fence_body",
+      "label": {
+        "en": "Fence Body",
+        "es": "Cuerpo de Guía"
+      },
+      "render_mode": 0,
+      "color": "#b07a4a"
+    },
+    {
+      "id": "flip_stop",
+      "label": {
+        "en": "Flip Stop",
+        "es": "Tope Abatible"
+      },
+      "render_mode": 0,
+      "color": "#c08a5a"
+    },
+    {
+      "id": "mount_bracket",
+      "label": {
+        "en": "Mount Bracket",
+        "es": "Soporte de Montaje"
+      },
+      "render_mode": 0,
+      "color": "#a06a3a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "track",
+      "label": {
+        "en": "Track & Stud",
+        "es": "Riel y Vástago"
+      }
+    },
+    {
+      "id": "fence",
+      "label": {
+        "en": "Fence",
+        "es": "Guía"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "stud",
+      "type": "select",
+      "default": "1/4-20",
+      "group": "track",
+      "modes": [
+        "fence_body",
+        "flip_stop",
+        "mount_bracket"
+      ],
+      "label": {
+        "en": "Stud Thread",
+        "es": "Rosca del Vástago"
+      },
+      "tooltip": {
+        "en": "Table stud / knob thread — sets the clearance hole size",
+        "es": "Rosca del vástago / perilla de mesa — fija el tamaño del orificio"
+      },
+      "options": [
+        { "value": "1/4-20", "label": { "en": "1/4-20", "es": "1/4-20" } },
+        { "value": "5/16-18", "label": { "en": "5/16-18", "es": "5/16-18" } },
+        { "value": "M6", "label": { "en": "M6", "es": "M6" } },
+        { "value": "M8", "label": { "en": "M8", "es": "M8" } }
+      ]
+    },
+    {
+      "id": "fence_len",
+      "type": "slider",
+      "default": 180.0,
+      "min": 80.0,
+      "max": 400.0,
+      "step": 5,
+      "group": "fence",
+      "modes": [
+        "fence_body"
+      ],
+      "label": {
+        "en": "Fence Length (mm)",
+        "es": "Longitud de Guía (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the fence face along the table",
+        "es": "Longitud de la cara de la guía a lo largo de la mesa"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "fence_h",
+      "type": "slider",
+      "default": 45.0,
+      "min": 25.0,
+      "max": 100.0,
+      "step": 1,
+      "group": "fence",
+      "modes": [
+        "fence_body",
+        "mount_bracket"
+      ],
+      "label": {
+        "en": "Fence Height (mm)",
+        "es": "Altura de Guía (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the fence face",
+        "es": "Altura de la cara de la guía"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "fence_t",
+      "type": "slider",
+      "default": 12.0,
+      "min": 8.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "fence",
+      "modes": [
+        "fence_body"
+      ],
+      "label": {
+        "en": "Fence Thickness (mm)",
+        "es": "Grosor de Guía (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the fence bar",
+        "es": "Grosor de la barra de la guía"
+      }
+    },
+    {
+      "id": "channel_w",
+      "type": "slider",
+      "default": 10.0,
+      "min": 6.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "fence",
+      "advanced": true,
+      "modes": [
+        "fence_body",
+        "flip_stop"
+      ],
+      "label": {
+        "en": "Stop Channel Width (mm)",
+        "es": "Ancho de Canal de Tope (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the top channel the flip stop slides in",
+        "es": "Ancho del canal superior por el que desliza el tope"
+      }
+    },
+    {
+      "id": "mount_slot",
+      "type": "slider",
+      "default": 40.0,
+      "min": 12.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "track",
+      "modes": [
+        "fence_body"
+      ],
+      "label": {
+        "en": "Mount Slot Travel (mm)",
+        "es": "Recorrido de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Fore/aft travel of the table mount slots",
+        "es": "Recorrido de las ranuras de montaje a la mesa"
+      }
+    },
+    {
+      "id": "stop_h",
+      "type": "slider",
+      "default": 30.0,
+      "min": 15.0,
+      "max": 80.0,
+      "step": 1,
+      "group": "fence",
+      "modes": [
+        "flip_stop"
+      ],
+      "label": {
+        "en": "Stop Face Height (mm)",
+        "es": "Altura del Tope (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the flip-stop register face",
+        "es": "Altura de la cara de registro del tope abatible"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_fence",
+      "mode": "fence_body",
+      "label": {
+        "en": "Standard Drill Fence",
+        "es": "Guía de Taladro Estándar"
+      },
+      "values": {
+        "stud": "1/4-20",
+        "fence_len": 180.0,
+        "fence_h": 45.0,
+        "fence_t": 12.0
+      }
+    },
+    {
+      "id": "tall_flip_stop",
+      "mode": "flip_stop",
+      "label": {
+        "en": "Tall Flip Stop",
+        "es": "Tope Abatible Alto"
+      },
+      "values": {
+        "stud": "1/4-20",
+        "channel_w": 10.0,
+        "stop_h": 40.0
+      }
+    },
+    {
+      "id": "track_mount",
+      "mode": "mount_bracket",
+      "label": {
+        "en": "T-Track Mount",
+        "es": "Montaje a Riel en T"
+      },
+      "values": {
+        "stud": "5/16-18",
+        "fence_h": 45.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "channel_w < fence_t",
+      "severity": "error",
+      "message": {
+        "en": "Stop channel must be narrower than the fence thickness",
+        "es": "El canal del tope debe ser más estrecho que el grosor de la guía"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [150, 150, 120]
+    },
+    {
+      "id": "front",
+      "label": { "en": "Front", "es": "Frontal" },
+      "position": [0, -220, 25]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "ttrack_mount_rail",
+        "label": {
+          "en": "3/4 in T-Track Mount Rail",
+          "es": "Riel de Montaje T-Track 3/4 in"
+        },
+        "geometry_type": "rail",
+        "standard": "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
+        "parameters": [
+          "stud",
+          "mount_slot"
+        ],
+        "compatible_with": [
+          "bench-dog",
+          "featherboard"
+        ]
+      },
+      {
+        "id": "stop_channel_rail",
+        "label": {
+          "en": "Flip-Stop Channel Rail",
+          "es": "Riel de Canal del Tope"
+        },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": [
+          "channel_w",
+          "fence_len"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A drill-press fence with a flip stop turns a bare drill table into a repeatable boring jig — shelf-pin rows, dowel joints, hardware patterns all land on the mark. Printed on demand, it fits any drill or router table with 3/4 in T-track, and the flip stop and mount bracket reprint in minutes if lost. It clamps to the same track as bench dogs and featherboards, growing the miter/T-track commons.",
+      "es": "Una guía de taladro con tope abatible convierte una mesa de taladro simple en una plantilla de barrenado repetible — hileras de pernos de estante, uniones de espiga, patrones de herrajes caen en la marca. Impresa bajo demanda, encaja en cualquier mesa de taladro o router con riel en T de 3/4 in, y el tope y el soporte se reimprimen en minutos si se pierden. Se sujeta al mismo riel que los perros de banco y los peines, haciendo crecer el común de riel en T / inglete."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

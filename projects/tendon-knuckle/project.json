@@ -1,0 +1,175 @@
+{
+  "project": {
+    "name": "Tendon-Driven Knuckle",
+    "slug": "tendon-knuckle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A cable-driven articulated knuckle for soft and underactuated robotic hands. A tendon runs through a flexor channel on the palm side; pulling it curls the joint while a return elastic on the back straightens it. Choose the interlocking clevis-and-tongue knuckle, a straight phalanx segment with a soft-hinge notch, or a winch pulley that winds the tendon. Print in PLA/PETG for rigid links or TPU for compliant ones.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una articulacion accionada por cable para manos roboticas blandas y subactuadas. Un tendon corre por un canal flexor en el lado de la palma; al tirarlo la articulacion se flexiona mientras un elastico de retorno en el dorso la endereza. Elige la articulacion de horquilla y lengueta entrelazadas, un segmento de falange recto con muesca de bisagra blanda, o una polea de cabrestante que enrolla el tendon. Imprime en PLA/PETG para eslabones rigidos o TPU para compatibles.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tendon-knuckle.webp",
+    "difficulty": "advanced",
+    "tags": ["soft-robotics", "tendon", "knuckle", "cable-driven", "prosthetic", "underactuated", "hand", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "knuckle",
+      "label": { "en": "Knuckle Joint", "es": "Articulacion" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["knuckle"],
+      "estimate": { "base_time": 17, "per_unit": 5, "per_part": 18 }
+    },
+    {
+      "id": "finger_segment",
+      "label": { "en": "Finger Segment", "es": "Segmento de Dedo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["finger_segment"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 15 }
+    },
+    {
+      "id": "tendon_pulley",
+      "label": { "en": "Tendon Pulley", "es": "Polea de Tendon" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tendon_pulley"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "knuckle", "label": { "en": "Knuckle Joint", "es": "Articulacion" }, "render_mode": 0, "color": "#7c3f8f" },
+    { "id": "finger_segment", "label": { "en": "Finger Segment", "es": "Segmento de Dedo" }, "render_mode": 0, "color": "#672a78" },
+    { "id": "tendon_pulley", "label": { "en": "Tendon Pulley", "es": "Polea de Tendon" }, "render_mode": 0, "color": "#955ca5" }
+  ],
+  "parameter_groups": [
+    { "id": "segment", "label": { "en": "Segment", "es": "Segmento" } },
+    { "id": "joint", "label": { "en": "Joint & Tendon", "es": "Articulacion y Tendon" } },
+    { "id": "pulley", "label": { "en": "Pulley", "es": "Polea" } }
+  ],
+  "parameters": [
+    {
+      "id": "seg_len", "type": "slider", "default": 26.0, "min": 14.0, "max": 50.0, "step": 1,
+      "group": "segment", "modes": ["knuckle", "finger_segment"],
+      "label": { "en": "Segment Length (mm)", "es": "Largo del Segmento (mm)" },
+      "tooltip": { "en": "Length of the knuckle / phalanx along the finger", "es": "Largo de la articulacion / falange a lo largo del dedo" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "seg_w", "type": "slider", "default": 18.0, "min": 10.0, "max": 34.0, "step": 0.5,
+      "group": "segment", "modes": ["knuckle", "finger_segment"],
+      "label": { "en": "Segment Width (mm)", "es": "Ancho del Segmento (mm)" },
+      "tooltip": { "en": "Width of the segment", "es": "Ancho del segmento" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "seg_h", "type": "slider", "default": 16.0, "min": 8.0, "max": 28.0, "step": 0.5,
+      "group": "segment", "modes": ["knuckle", "finger_segment"],
+      "label": { "en": "Segment Height (mm)", "es": "Altura del Segmento (mm)" },
+      "tooltip": { "en": "Height of the segment", "es": "Altura del segmento" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pin_d", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.5,
+      "group": "joint", "modes": ["knuckle"],
+      "label": { "en": "Pivot Pin (mm)", "es": "Pasador (mm)" },
+      "tooltip": { "en": "Pivot pin diameter (steel wire or filament)", "es": "Diametro del pasador (alambre de acero o filamento)" }
+    },
+    {
+      "id": "tendon_d", "type": "slider", "default": 2.0, "min": 1.0, "max": 4.0, "step": 0.1,
+      "group": "joint", "modes": ["knuckle", "finger_segment", "tendon_pulley"],
+      "label": { "en": "Tendon Channel (mm)", "es": "Canal de Tendon (mm)" },
+      "tooltip": { "en": "Diameter of the tendon / cord channel", "es": "Diametro del canal del tendon / cordon" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.5, "max": 5.0, "step": 0.1,
+      "group": "joint", "modes": ["knuckle", "finger_segment"], "advanced": true,
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Wall thickness around the tendon channels", "es": "Grosor de pared alrededor de los canales del tendon" }
+    },
+    {
+      "id": "pulley_d", "type": "slider", "default": 24.0, "min": 12.0, "max": 50.0, "step": 1,
+      "group": "pulley", "modes": ["tendon_pulley"],
+      "label": { "en": "Pulley Diameter (mm)", "es": "Diametro de Polea (mm)" },
+      "tooltip": { "en": "Outer diameter of the tendon pulley", "es": "Diametro exterior de la polea del tendon" }
+    },
+    {
+      "id": "shaft_d", "type": "slider", "default": 5.0, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "pulley", "modes": ["tendon_pulley"],
+      "label": { "en": "Shaft Bore (mm)", "es": "Barreno de Eje (mm)" },
+      "tooltip": { "en": "Drive-shaft bore through the pulley hub", "es": "Barreno del eje motriz en el cubo de la polea" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "index_knuckle", "mode": "knuckle",
+      "label": { "en": "Index Knuckle", "es": "Articulacion Indice" },
+      "values": { "seg_len": 26, "seg_w": 18, "pin_d": 3 }
+    },
+    {
+      "id": "phalanx_segment", "mode": "finger_segment",
+      "label": { "en": "Phalanx Segment", "es": "Segmento de Falange" },
+      "values": { "seg_len": 24, "seg_w": 16, "tendon_d": 2 }
+    },
+    {
+      "id": "drive_pulley", "mode": "tendon_pulley",
+      "label": { "en": "Drive Pulley", "es": "Polea Motriz" },
+      "values": { "pulley_d": 24, "shaft_d": 5, "tendon_d": 2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tendon_d < seg_h",
+      "severity": "error",
+      "message": { "en": "The tendon channel must fit inside the segment", "es": "El canal del tendon debe caber dentro del segmento" }
+    },
+    {
+      "expression": "wall >= 1.5",
+      "severity": "warning",
+      "message": { "en": "Walls below 1.5 mm around the tendon may split", "es": "Paredes menores a 1.5 mm alrededor del tendon pueden romperse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [60, 60, 50] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [120, 0, 12] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 20, 110] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 5, "per_part": 17,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "tendon_channel",
+        "label": { "en": "Tendon Channel", "es": "Canal de Tendon" },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": ["tendon_d", "wall"]
+      },
+      {
+        "id": "pin_joint",
+        "label": { "en": "Pin Joint", "es": "Articulacion de Pasador" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["pin_d", "seg_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Tendon-driven fingers are the basis of low-cost prosthetic and research hands — one motor pulls a cable to curl a whole finger, and an elastic returns it. Off-the-shelf articulated hands cost thousands; an open, parametric knuckle with a standard tendon channel and pin joint lets a maker or clinic size a hand to a wearer and reprint a broken segment, cutting the cost of assistive and research robotics.",
+      "es": "Los dedos accionados por tendon son la base de manos protesicas y de investigacion de bajo costo — un motor tira de un cable para flexionar todo un dedo, y un elastico lo regresa. Las manos articuladas comerciales cuestan miles; una articulacion abierta y parametrica con un canal de tendon estandar y una articulacion de pasador permite a un maker o clinica ajustar una mano a un usuario y reimprimir un segmento roto, reduciendo el costo de la robotica de asistencia e investigacion."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["soft-robotics", "tendon", "knuckle", "prosthetic", "hybrid", "hyperobject", "commons"]
+}

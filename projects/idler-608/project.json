@@ -1,0 +1,406 @@
+{
+  "project": {
+    "name": "608 Bearing Idler Pulley",
+    "slug": "idler-608",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "An idler pulley that presses onto a standard 608 skate bearing (22 mm OD × 8 mm ID × 7 mm) and rides on an M8 shoulder bolt. The bearing carries the load; the printed part is the running surface and flanges — pick a flat-belt idler, a round-groove idler for cord or bungee, or the shoulder washer stack that sandwiches the bearing on the axle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una polea guía que se ajusta a presión sobre un rodamiento 608 estándar (22 mm DE × 8 mm DI × 7 mm) y gira sobre un tornillo hombro M8. El rodamiento soporta la carga; la pieza impresa es la superficie de rodadura y las pestañas — elige una polea de correa plana, una con ranura redonda para cuerda o elástico, o el juego de arandelas hombro que sujeta el rodamiento en el eje.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/idler-608.webp",
+    "tags": [
+      "608",
+      "bearing",
+      "idler",
+      "pulley",
+      "belt",
+      "cnc",
+      "3d-printer",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "flat_idler",
+      "label": {
+        "en": "Flat-Belt Idler",
+        "es": "Polea de Correa Plana"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "flat_idler"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "round_idler",
+      "label": {
+        "en": "Round-Groove Idler",
+        "es": "Polea de Ranura Redonda"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "round_idler"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "washer_stack",
+      "label": {
+        "en": "Shoulder Washer Stack",
+        "es": "Juego de Arandelas Hombro"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "washer_stack"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "flat_idler",
+      "label": {
+        "en": "Flat-Belt Idler",
+        "es": "Polea de Correa Plana"
+      },
+      "render_mode": 0,
+      "color": "#5a8f7a"
+    },
+    {
+      "id": "round_idler",
+      "label": {
+        "en": "Round-Groove Idler",
+        "es": "Polea de Ranura Redonda"
+      },
+      "render_mode": 0,
+      "color": "#6aa08a"
+    },
+    {
+      "id": "washer_stack",
+      "label": {
+        "en": "Shoulder Washer Stack",
+        "es": "Juego de Arandelas Hombro"
+      },
+      "render_mode": 0,
+      "color": "#4a7f6a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bearing",
+      "label": {
+        "en": "Bearing & Seat",
+        "es": "Rodamiento y Asiento"
+      }
+    },
+    {
+      "id": "pulley",
+      "label": {
+        "en": "Pulley",
+        "es": "Polea"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bearing",
+      "type": "select",
+      "default": "608",
+      "group": "bearing",
+      "modes": [
+        "flat_idler",
+        "round_idler",
+        "washer_stack"
+      ],
+      "label": {
+        "en": "Bearing",
+        "es": "Rodamiento"
+      },
+      "tooltip": {
+        "en": "Bearing designation → 22 mm seat and 8 mm bore for the 608",
+        "es": "Designación del rodamiento → asiento de 22 mm y barreno de 8 mm para el 608"
+      },
+      "options": [
+        { "value": "608", "label": { "en": "608 (8×22×7)", "es": "608 (8×22×7)" } },
+        { "value": "623", "label": { "en": "623 (3×10×4)", "es": "623 (3×10×4)" } },
+        { "value": "625", "label": { "en": "625 (5×16×5)", "es": "625 (5×16×5)" } },
+        { "value": "6900", "label": { "en": "6900 (10×22×6)", "es": "6900 (10×22×6)" } }
+      ]
+    },
+    {
+      "id": "od",
+      "type": "slider",
+      "default": 30.0,
+      "min": 28.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "pulley",
+      "modes": [
+        "flat_idler",
+        "round_idler"
+      ],
+      "label": {
+        "en": "Pulley Diameter (mm)",
+        "es": "Diámetro de Polea (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the running surface (must clear the seat)",
+        "es": "Diámetro de la superficie de rodadura (debe librar el asiento)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 10.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "pulley",
+      "modes": [
+        "flat_idler",
+        "round_idler",
+        "washer_stack"
+      ],
+      "label": {
+        "en": "Pulley Width (mm)",
+        "es": "Ancho de Polea (mm)"
+      },
+      "tooltip": {
+        "en": "Axial width; at least the bearing width plus a wall",
+        "es": "Ancho axial; al menos el ancho del rodamiento más una pared"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "flange_h",
+      "type": "slider",
+      "default": 2.5,
+      "min": 0.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "pulley",
+      "modes": [
+        "flat_idler"
+      ],
+      "label": {
+        "en": "Flange Height (mm)",
+        "es": "Altura de Pestaña (mm)"
+      },
+      "tooltip": {
+        "en": "How far the guide flanges stand proud of the running surface",
+        "es": "Cuánto sobresalen las pestañas guía sobre la superficie de rodadura"
+      }
+    },
+    {
+      "id": "flange_t",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "pulley",
+      "advanced": true,
+      "modes": [
+        "flat_idler",
+        "washer_stack"
+      ],
+      "label": {
+        "en": "Flange Thickness (mm)",
+        "es": "Grosor de Pestaña (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the guide flange / retaining washer",
+        "es": "Grosor de la pestaña guía / arandela de retención"
+      }
+    },
+    {
+      "id": "groove_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "pulley",
+      "modes": [
+        "round_idler"
+      ],
+      "label": {
+        "en": "Groove Diameter (mm)",
+        "es": "Diámetro de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the round belt / cord the groove carries",
+        "es": "Diámetro de la correa redonda / cuerda que porta la ranura"
+      }
+    },
+    {
+      "id": "press_fit",
+      "type": "slider",
+      "default": 0.0,
+      "min": -0.4,
+      "max": 0.4,
+      "step": 0.05,
+      "group": "bearing",
+      "advanced": true,
+      "modes": [
+        "flat_idler",
+        "round_idler"
+      ],
+      "label": {
+        "en": "Seat Fit (mm)",
+        "es": "Ajuste de Asiento (mm)"
+      },
+      "tooltip": {
+        "en": "Seat interference (−) tightens the press-fit; (+) loosens it",
+        "es": "Interferencia (−) aprieta el ajuste a presión; (+) lo afloja"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_608_idler",
+      "mode": "flat_idler",
+      "label": {
+        "en": "Standard 608 Idler",
+        "es": "Polea 608 Estándar"
+      },
+      "values": {
+        "bearing": "608",
+        "od": 30.0,
+        "width": 10.0,
+        "flange_h": 2.5
+      }
+    },
+    {
+      "id": "cord_round_idler",
+      "mode": "round_idler",
+      "label": {
+        "en": "Round-Cord Idler",
+        "es": "Polea de Cuerda Redonda"
+      },
+      "values": {
+        "bearing": "608",
+        "od": 36.0,
+        "width": 12.0,
+        "groove_dia": 5.0
+      }
+    },
+    {
+      "id": "shoulder_washers",
+      "mode": "washer_stack",
+      "label": {
+        "en": "608 Shoulder Washers",
+        "es": "Arandelas Hombro 608"
+      },
+      "values": {
+        "bearing": "608",
+        "width": 10.0,
+        "flange_t": 2.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "od > 22",
+      "severity": "error",
+      "message": {
+        "en": "Pulley diameter must exceed the 22 mm bearing seat",
+        "es": "El diámetro de la polea debe superar el asiento de 22 mm del rodamiento"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [80, 80, 70]
+    },
+    {
+      "id": "front",
+      "label": { "en": "Front (Cross-Section)", "es": "Frontal (Sección)" },
+      "position": [0, -140, 10]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "bearing_608_seat",
+        "label": {
+          "en": "608 Press-Fit Seat",
+          "es": "Asiento a Presión 608"
+        },
+        "geometry_type": "socket",
+        "standard": "608 bearing (ISO 15 — 8×22×7)",
+        "parameters": [
+          "bearing",
+          "press_fit",
+          "width"
+        ],
+        "compatible_with": [
+          "linear-wheel",
+          "bearing-housing"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The 608 skate bearing is the world's most available motion component — pennies each, in every hardware store. Printed idlers turn a 608 and an M8 bolt into a belt tensioner, cord guide, or roller for a printer, CNC, loom or conveyor, replacing proprietary pulleys that cost many times more. They share the same 22 mm seat as the linear-wheel and bearing-housing cartridges, so a builder stocks one bearing and prints whatever runs on it.",
+      "es": "El rodamiento 608 de patín es el componente de movimiento más disponible del mundo — centavos cada uno, en cualquier ferretería. Las poleas impresas convierten un 608 y un tornillo M8 en un tensor de correa, guía de cuerda o rodillo para una impresora, CNC, telar o transportador, reemplazando poleas propietarias que cuestan mucho más. Comparten el mismo asiento de 22 mm que los cartuchos linear-wheel y bearing-housing, así el constructor tiene un solo rodamiento e imprime lo que corra sobre él."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

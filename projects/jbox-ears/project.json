@@ -1,0 +1,175 @@
+{
+  "project": {
+    "name": "Junction Box Mounting Ears",
+    "slug": "jbox-ears",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Retrofit mounting hardware for US electrical junction boxes. It bridges the device-mounting screw pattern of a standard single-gang box — #6-32 screws on a ~83.3 mm (3.28 in) vertical pitch — to a wall, a surface standoff, or a raised mud ring. Print a flat retrofit ear plate, a rectangular standoff frame that lifts a box off a rough surface, or a raised plaster ring that brings the box flush to a thick wall finish.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de montaje para cajas de conexiones electricas de EE. UU. Conecta el patron de tornillos de montaje de dispositivo de una caja simple estandar — tornillos #6-32 a un paso vertical de ~83.3 mm (3.28 in) — a una pared, un separador de superficie o un anillo elevado. Imprime una placa plana de orejas de retrofit, un marco separador que levanta la caja de una superficie irregular, o un anillo elevado que deja la caja al ras de un acabado grueso.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/jbox-ears.webp",
+    "tags": [
+      "junction-box",
+      "electrical",
+      "mounting",
+      "ears",
+      "mud-ring",
+      "single-gang",
+      "retrofit",
+      "nec",
+      "infrastructure",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "ear_pair",
+      "label": { "en": "Retrofit Ear Plate", "es": "Placa de Orejas Retrofit" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ear_pair"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "box_standoff",
+      "label": { "en": "Box Standoff Frame", "es": "Marco Separador de Caja" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["box_standoff"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "mud_ring",
+      "label": { "en": "Raised Mud Ring", "es": "Anillo Elevado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["mud_ring"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "ear_pair", "label": { "en": "Retrofit Ear Plate", "es": "Placa de Orejas Retrofit" }, "render_mode": 0, "color": "#8a6d3b" },
+    { "id": "box_standoff", "label": { "en": "Box Standoff Frame", "es": "Marco Separador de Caja" }, "render_mode": 0, "color": "#9a7d4b" },
+    { "id": "mud_ring", "label": { "en": "Raised Mud Ring", "es": "Anillo Elevado" }, "render_mode": 0, "color": "#aa8d5b" }
+  ],
+  "parameter_groups": [
+    { "id": "device", "label": { "en": "Device Screw Pattern", "es": "Patron de Tornillos de Dispositivo" } },
+    { "id": "box", "label": { "en": "Box & Plate", "es": "Caja y Placa" } },
+    { "id": "wall", "label": { "en": "Wall Mount", "es": "Montaje en Pared" } }
+  ],
+  "parameters": [
+    {
+      "id": "device_pitch", "type": "slider", "default": 83.3, "min": 60.0, "max": 120.0, "step": 0.1,
+      "group": "device", "modes": ["ear_pair", "box_standoff", "mud_ring"],
+      "label": { "en": "Device Screw Pitch (mm)", "es": "Paso de Tornillos de Dispositivo (mm)" },
+      "tooltip": { "en": "Vertical centre-to-centre of the #6-32 device screws. US single-gang is ~83.3 mm (3.28 in).", "es": "Centro a centro vertical de los tornillos #6-32. La caja simple de EE. UU. es ~83.3 mm (3.28 in)." }
+    },
+    {
+      "id": "device_screw", "type": "slider", "default": 3.6, "min": 2.5, "max": 6.0, "step": 0.1,
+      "group": "device", "modes": ["ear_pair", "box_standoff", "mud_ring"], "advanced": true,
+      "label": { "en": "Device Screw (mm)", "es": "Tornillo de Dispositivo (mm)" },
+      "tooltip": { "en": "Clearance for the #6-32 device screw (~3.5 mm).", "es": "Holgura para el tornillo #6-32 (~3.5 mm)." }
+    },
+    {
+      "id": "gang_w", "type": "slider", "default": 50.0, "min": 40.0, "max": 70.0, "step": 0.5,
+      "group": "box", "modes": ["ear_pair", "box_standoff", "mud_ring"],
+      "label": { "en": "Box Width (mm)", "es": "Ancho de Caja (mm)" },
+      "tooltip": { "en": "Single-gang box face width (~2 in = 50 mm).", "es": "Ancho de la cara de la caja simple (~2 in = 50 mm)." }
+    },
+    {
+      "id": "plate_t", "type": "slider", "default": 4.0, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "box", "modes": ["ear_pair", "box_standoff", "mud_ring"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de Placa (mm)" },
+      "tooltip": { "en": "Thickness of the printed plate and walls.", "es": "Grosor de la placa impresa y las paredes." }
+    },
+    {
+      "id": "ring_h", "type": "slider", "default": 16.0, "min": 8.0, "max": 30.0, "step": 0.5,
+      "group": "box", "modes": ["box_standoff", "mud_ring"],
+      "label": { "en": "Raise / Standoff Depth (mm)", "es": "Profundidad de Elevacion (mm)" },
+      "tooltip": { "en": "How far the collar raises the device face / lifts the box.", "es": "Cuanto eleva el collar la cara del dispositivo / levanta la caja." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall_screw", "type": "slider", "default": 4.5, "min": 3.0, "max": 7.0, "step": 0.1,
+      "group": "wall", "modes": ["ear_pair", "box_standoff", "mud_ring"], "advanced": true,
+      "label": { "en": "Wall Screw (mm)", "es": "Tornillo de Pared (mm)" },
+      "tooltip": { "en": "Clearance for the wall/surface screws (#8 ~4.5 mm).", "es": "Holgura para tornillos de pared (#8 ~4.5 mm)." }
+    },
+    {
+      "id": "ear_w", "type": "slider", "default": 22.0, "min": 16.0, "max": 34.0, "step": 0.5,
+      "group": "wall", "modes": ["ear_pair", "box_standoff", "mud_ring"],
+      "label": { "en": "Wall Ear Width (mm)", "es": "Ancho de Oreja (mm)" },
+      "tooltip": { "en": "Width of each outboard wall-mount ear.", "es": "Ancho de cada oreja de montaje en pared." }
+    }
+  ],
+  "presets": [
+    {
+      "id": "single_gang_ears", "mode": "ear_pair",
+      "label": { "en": "Single-Gang Ear Plate", "es": "Placa de Orejas Simple" },
+      "values": { "device_pitch": 83.3, "gang_w": 50.0, "plate_t": 4.0, "ear_w": 22.0 }
+    },
+    {
+      "id": "rough_surface_standoff", "mode": "box_standoff",
+      "label": { "en": "Rough-Surface Standoff", "es": "Separador de Superficie" },
+      "values": { "device_pitch": 83.3, "gang_w": 50.0, "plate_t": 4.0, "ring_h": 16.0 }
+    },
+    {
+      "id": "thick_wall_ring", "mode": "mud_ring",
+      "label": { "en": "Thick-Wall Mud Ring", "es": "Anillo para Pared Gruesa" },
+      "values": { "device_pitch": 83.3, "gang_w": 50.0, "plate_t": 4.0, "ring_h": 16.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "gang_w > device_screw",
+      "severity": "error",
+      "message": { "en": "Box width must exceed the device screw diameter", "es": "El ancho de caja debe superar el diametro del tornillo" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [130, 130, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, 0, 200] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [200, 0, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "device_screw_pattern",
+        "label": { "en": "US Junction Box Device Screws", "es": "Tornillos de Dispositivo de Caja US" },
+        "geometry_type": "bolt_pattern",
+        "standard": "US junction box",
+        "parameters": ["device_pitch", "device_screw", "gang_w"]
+      },
+      {
+        "id": "wall_mount_pattern",
+        "label": { "en": "Wall Ear Screws", "es": "Tornillos de Oreja de Pared" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["wall_screw", "ear_w"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Electrical retrofit is full of boxes that sit too deep, mount to crumbling plaster, or lack a fixing point after a remodel. Printable ears, standoffs and mud rings on the standard #6-32 device pattern let an installer or DIYer salvage an existing box — bring it flush to a new wall finish, lift it off a rough surface, or add a wall flange — instead of cutting a new opening, using code-standard geometry.",
+      "es": "El retrofit electrico esta lleno de cajas demasiado profundas, montadas en yeso desmoronado o sin punto de fijacion tras una remodelacion. Orejas, separadores y anillos impresos sobre el patron estandar #6-32 permiten a un instalador o aficionado recuperar una caja existente — dejarla al ras de un nuevo acabado, levantarla de una superficie irregular o agregar una brida de pared — sin cortar una nueva abertura, con geometria segun norma."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

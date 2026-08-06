@@ -1,0 +1,445 @@
+{
+  "project": {
+    "name": "NEMA Damper Mount",
+    "slug": "nema-damper",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "A vibration-damping mount for NEMA 17 / 23 stepper motors: the motor bolts through rubber grommets so motor noise and resonance are isolated from the frame. Mount flat with a grommet plate, sandwich a damper spacer between motor and frame, or stand the motor off an isolating L-bracket. NEMA 17 (31 mm bolt square, M3) and NEMA 23 (47.14 mm, M4/M5). Mates the nema-stepper family.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un montaje amortiguador de vibraciones para motores paso a paso NEMA 17 / 23: el motor se atornilla a través de pasacables de goma para aislar el ruido y la resonancia del motor del bastidor. Monta plano con una placa de pasacables, intercala un separador amortiguador entre motor y bastidor, o eleva el motor con un soporte en L aislante. NEMA 17 (cuadro de 31 mm, M3) y NEMA 23 (47.14 mm, M4/M5). Compatible con la familia nema-stepper.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/nema-damper.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "nema",
+      "stepper",
+      "motor",
+      "damper",
+      "vibration",
+      "nema17",
+      "nema23",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "grommet_plate",
+      "label": {
+        "en": "Grommet Plate",
+        "es": "Placa de Pasacables"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "grommet_plate"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 11
+      }
+    },
+    {
+      "id": "sandwich_spacer",
+      "label": {
+        "en": "Sandwich Spacer",
+        "es": "Separador Sándwich"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "sandwich_spacer"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "bracket_isolator",
+      "label": {
+        "en": "Bracket Isolator",
+        "es": "Soporte Aislante"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bracket_isolator"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "grommet_plate",
+      "label": {
+        "en": "Grommet Plate",
+        "es": "Placa de Pasacables"
+      },
+      "render_mode": 0,
+      "color": "#4a6f8f"
+    },
+    {
+      "id": "sandwich_spacer",
+      "label": {
+        "en": "Sandwich Spacer",
+        "es": "Separador Sándwich"
+      },
+      "render_mode": 0,
+      "color": "#5b80a0"
+    },
+    {
+      "id": "bracket_isolator",
+      "label": {
+        "en": "Bracket Isolator",
+        "es": "Soporte Aislante"
+      },
+      "render_mode": 0,
+      "color": "#6f93bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "motor",
+      "label": {
+        "en": "Motor",
+        "es": "Motor"
+      }
+    },
+    {
+      "id": "damper",
+      "label": {
+        "en": "Damper",
+        "es": "Amortiguador"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Mount",
+        "es": "Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "nema",
+      "type": "select",
+      "default": "NEMA17",
+      "options": [
+        {
+          "value": "NEMA17",
+          "label": {
+            "en": "NEMA 17 (42 mm)",
+            "es": "NEMA 17 (42 mm)"
+          }
+        },
+        {
+          "value": "NEMA23",
+          "label": {
+            "en": "NEMA 23 (57 mm)",
+            "es": "NEMA 23 (57 mm)"
+          }
+        }
+      ],
+      "group": "motor",
+      "modes": [
+        "grommet_plate",
+        "sandwich_spacer",
+        "bracket_isolator"
+      ],
+      "label": {
+        "en": "NEMA Size",
+        "es": "Tamaño NEMA"
+      },
+      "tooltip": {
+        "en": "Stepper frame size — sets the bolt square, bolt size and pilot bore",
+        "es": "Tamaño del motor — define el cuadro de pernos, el perno y el barreno piloto"
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 6.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "motor",
+      "modes": [
+        "grommet_plate",
+        "sandwich_spacer",
+        "bracket_isolator"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Mount plate / leg thickness",
+        "es": "Grosor de la placa de montaje / pata"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "grommet_d",
+      "type": "slider",
+      "default": 10.0,
+      "min": 6.0,
+      "max": 18.0,
+      "step": 0.5,
+      "group": "damper",
+      "modes": [
+        "grommet_plate",
+        "sandwich_spacer",
+        "bracket_isolator"
+      ],
+      "label": {
+        "en": "Grommet Dia (mm)",
+        "es": "Diámetro de Pasacables (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the rubber isolation grommet pocket",
+        "es": "Diámetro exterior del bolsillo del pasacables de aislamiento"
+      }
+    },
+    {
+      "id": "grommet_depth",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "damper",
+      "modes": [
+        "grommet_plate",
+        "sandwich_spacer",
+        "bracket_isolator"
+      ],
+      "label": {
+        "en": "Grommet Depth (mm)",
+        "es": "Profundidad de Pasacables (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the grommet seats into the face",
+        "es": "Cuán profundo se asienta el pasacables en la cara"
+      }
+    },
+    {
+      "id": "margin",
+      "type": "slider",
+      "default": 7.0,
+      "min": 4.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "mount",
+      "modes": [
+        "grommet_plate",
+        "sandwich_spacer",
+        "bracket_isolator"
+      ],
+      "label": {
+        "en": "Edge Margin (mm)",
+        "es": "Margen de Borde (mm)"
+      },
+      "tooltip": {
+        "en": "Material around the bolt square",
+        "es": "Material alrededor del cuadro de pernos"
+      }
+    },
+    {
+      "id": "leg_h",
+      "type": "slider",
+      "default": 45.0,
+      "min": 25.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "mount",
+      "modes": [
+        "bracket_isolator"
+      ],
+      "label": {
+        "en": "Leg Height (mm)",
+        "es": "Altura de Pata (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the vertical motor leg on the L-bracket",
+        "es": "Altura de la pata vertical del motor en el soporte en L"
+      }
+    },
+    {
+      "id": "frame_bolt_d",
+      "type": "slider",
+      "default": 4.5,
+      "min": 3.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "mount",
+      "advanced": true,
+      "modes": [
+        "bracket_isolator"
+      ],
+      "label": {
+        "en": "Frame Bolt (mm)",
+        "es": "Perno de Bastidor (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance for the bolts fixing the base to the frame",
+        "es": "Holgura para los pernos que fijan la base al bastidor"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "nema17_plate",
+      "mode": "grommet_plate",
+      "label": {
+        "en": "NEMA 17 Grommet Plate",
+        "es": "Placa de Pasacables NEMA 17"
+      },
+      "values": {
+        "nema": "NEMA17",
+        "plate_t": 6.0,
+        "grommet_d": 10.0,
+        "grommet_depth": 3.0
+      }
+    },
+    {
+      "id": "nema23_bracket",
+      "mode": "bracket_isolator",
+      "label": {
+        "en": "NEMA 23 Isolator Bracket",
+        "es": "Soporte Aislante NEMA 23"
+      },
+      "values": {
+        "nema": "NEMA23",
+        "plate_t": 8.0,
+        "leg_h": 60.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "grommet_depth < plate_t",
+      "severity": "error",
+      "message": {
+        "en": "Grommet depth must be shallower than the plate",
+        "es": "La profundidad del pasacables debe ser menor que la placa"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        100,
+        100,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -180,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 13,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "nema_bolt_pattern",
+        "label": {
+          "en": "NEMA Bolt Pattern",
+          "es": "Patrón de Pernos NEMA"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "NEMA 17/23",
+        "parameters": [
+          "nema"
+        ],
+        "compatible_with": [
+          "nema-bracket",
+          "motor-mount",
+          "scara-robotics"
+        ]
+      },
+      {
+        "id": "grommet_isolator",
+        "label": {
+          "en": "Rubber Grommet Isolator",
+          "es": "Aislante de Pasacables de Goma"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "grommet_d",
+          "grommet_depth"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Steppers are the motion muscle of printers, CNC and robotics, and their high-frequency vibration radiates as noise and blurs precision. A printed damper mount at the exact NEMA bolt pattern isolates the motor through commodity rubber grommets, cutting noise and resonance on any machine without buying a motor-specific anti-vibration mount, and lets a builder retrofit isolation onto an existing frame.",
+      "es": "Los motores paso a paso son el músculo de movimiento de impresoras, CNC y robótica, y su vibración de alta frecuencia se irradia como ruido y difumina la precisión. Un montaje amortiguador impreso al patrón exacto de pernos NEMA aísla el motor mediante pasacables de goma genéricos, reduciendo el ruido y la resonancia en cualquier máquina sin comprar un montaje antivibración específico, y permite adaptar aislamiento a un bastidor existente."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "nema",
+    "stepper",
+    "motor",
+    "damper",
+    "vibration",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

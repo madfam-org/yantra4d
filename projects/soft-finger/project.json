@@ -1,0 +1,175 @@
+{
+  "project": {
+    "name": "Soft Pneumatic Finger",
+    "slug": "soft-finger",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A single-body pneumatic bending finger for soft robotics: a ribbed accordion bellows on the extension side, a flat strain-limiting base, and an internal air chamber that opens to the proximal face at a barbed port sized for 4 mm ID / 6 mm OD pneumatic tubing. Choose the full bellows finger, a press-fit grip tip, or just the base air-port flange. Print rigid as a casting/mold master, or in TPU for a flexible actuator.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un dedo neumatico flexor de un solo cuerpo para robotica blanda: un fuelle de acordeon en el lado de extension, una base limitadora de deformacion plana y una camara de aire interna que se abre en la cara proximal en un conector de espiga para tubo neumatico de 4 mm ID / 6 mm OD. Elige el dedo de fuelle completo, una punta de agarre a presion o solo la brida del puerto de aire. Imprime rigido como maestro de molde, o en TPU para un actuador flexible.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/soft-finger.webp",
+    "difficulty": "advanced",
+    "tags": ["soft-robotics", "pneumatic", "bellows", "gripper", "finger", "compliant-mechanism", "actuator", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bellows_finger",
+      "label": { "en": "Bellows Finger", "es": "Dedo de Fuelle" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bellows_finger"],
+      "estimate": { "base_time": 18, "per_unit": 5, "per_part": 20 }
+    },
+    {
+      "id": "finger_tip",
+      "label": { "en": "Grip Tip", "es": "Punta de Agarre" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["finger_tip"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "base_port",
+      "label": { "en": "Base Air Port", "es": "Puerto de Aire Base" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["base_port"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "bellows_finger", "label": { "en": "Bellows Finger", "es": "Dedo de Fuelle" }, "render_mode": 0, "color": "#3f8f7c" },
+    { "id": "finger_tip", "label": { "en": "Grip Tip", "es": "Punta de Agarre" }, "render_mode": 0, "color": "#2a7a67" },
+    { "id": "base_port", "label": { "en": "Base Air Port", "es": "Puerto de Aire Base" }, "render_mode": 0, "color": "#5ca592" }
+  ],
+  "parameter_groups": [
+    { "id": "finger", "label": { "en": "Finger Body", "es": "Cuerpo del Dedo" } },
+    { "id": "bellows", "label": { "en": "Bellows & Chamber", "es": "Fuelle y Camara" } },
+    { "id": "port", "label": { "en": "Air Port", "es": "Puerto de Aire" } }
+  ],
+  "parameters": [
+    {
+      "id": "finger_len", "type": "slider", "default": 80.0, "min": 40.0, "max": 140.0, "step": 1,
+      "group": "finger", "modes": ["bellows_finger", "finger_tip", "base_port"],
+      "label": { "en": "Finger Length (mm)", "es": "Largo del Dedo (mm)" },
+      "tooltip": { "en": "Overall length of the finger along its bend axis", "es": "Largo total del dedo a lo largo de su eje de flexion" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "finger_w", "type": "slider", "default": 20.0, "min": 12.0, "max": 34.0, "step": 0.5,
+      "group": "finger", "modes": ["bellows_finger", "finger_tip", "base_port"],
+      "label": { "en": "Finger Width (mm)", "es": "Ancho del Dedo (mm)" },
+      "tooltip": { "en": "Width of the finger body", "es": "Ancho del cuerpo del dedo" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "body_h", "type": "slider", "default": 14.0, "min": 8.0, "max": 22.0, "step": 0.5,
+      "group": "finger", "modes": ["bellows_finger", "finger_tip", "base_port"],
+      "label": { "en": "Body Height (mm)", "es": "Altura del Cuerpo (mm)" },
+      "tooltip": { "en": "Height of the finger body including bellows ribs", "es": "Altura del cuerpo incluyendo las nervaduras del fuelle" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "n_ribs", "type": "slider", "default": 8, "min": 3, "max": 16, "step": 1,
+      "group": "bellows", "modes": ["bellows_finger"],
+      "label": { "en": "Bellows Ribs", "es": "Nervaduras del Fuelle" },
+      "tooltip": { "en": "Number of accordion ribs — more ribs bend tighter", "es": "Numero de nervaduras de acordeon — mas nervaduras flexionan mas" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 4.0, "step": 0.1,
+      "group": "bellows", "modes": ["bellows_finger", "finger_tip", "base_port"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Chamber wall thickness (thinner walls inflate more in TPU)", "es": "Grosor de pared de la camara (paredes mas delgadas se inflan mas en TPU)" }
+    },
+    {
+      "id": "chamber_w", "type": "slider", "default": 12.0, "min": 4.0, "max": 26.0, "step": 0.5,
+      "group": "bellows", "modes": ["bellows_finger"], "advanced": true,
+      "label": { "en": "Air Chamber Width (mm)", "es": "Ancho de Camara de Aire (mm)" },
+      "tooltip": { "en": "Width of the internal air chamber", "es": "Ancho de la camara de aire interna" }
+    },
+    {
+      "id": "barb_od", "type": "slider", "default": 6.0, "min": 4.0, "max": 10.0, "step": 0.5,
+      "group": "port", "modes": ["bellows_finger", "base_port"],
+      "label": { "en": "Barb Outer Dia (mm)", "es": "Diametro Ext. de Espiga (mm)" },
+      "tooltip": { "en": "Outer diameter of the barbed air port (6 mm OD tube)", "es": "Diametro exterior del conector de aire (tubo de 6 mm OD)" }
+    },
+    {
+      "id": "barb_id", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "port", "modes": ["bellows_finger", "base_port"], "advanced": true,
+      "label": { "en": "Barb Bore (mm)", "es": "Barreno de Espiga (mm)" },
+      "tooltip": { "en": "Air bore through the barb (4 mm ID tube)", "es": "Barreno de aire a traves de la espiga (tubo de 4 mm ID)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_finger", "mode": "bellows_finger",
+      "label": { "en": "Standard 80 mm Finger", "es": "Dedo Estandar 80 mm" },
+      "values": { "finger_len": 80, "finger_w": 20, "n_ribs": 8, "barb_od": 6 }
+    },
+    {
+      "id": "short_stiff_finger", "mode": "bellows_finger",
+      "label": { "en": "Short Stiff Finger", "es": "Dedo Corto Rigido" },
+      "values": { "finger_len": 55, "finger_w": 24, "n_ribs": 5, "body_h": 16 }
+    },
+    {
+      "id": "modular_base", "mode": "base_port",
+      "label": { "en": "Modular Base Port", "es": "Puerto Base Modular" },
+      "values": { "finger_w": 20, "barb_od": 6, "barb_id": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "barb_id < barb_od",
+      "severity": "error",
+      "message": { "en": "Barb bore must be smaller than the barb outer diameter", "es": "El barreno de la espiga debe ser menor que su diametro exterior" }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "warning",
+      "message": { "en": "Walls below 1.2 mm are hard to print watertight", "es": "Paredes menores a 1.2 mm son dificiles de imprimir estancas" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [90, 90, 70] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [180, 0, 10] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 40, 160] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 18, "per_unit": 5, "per_part": 20,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "hybrid",
+    "cdg_interfaces": [
+      {
+        "id": "air_port_barb",
+        "label": { "en": "Pneumatic Air Port", "es": "Puerto de Aire Neumatico" },
+        "geometry_type": "socket",
+        "standard": "4/6mm pneumatic tube",
+        "parameters": ["barb_od", "barb_id"]
+      },
+      {
+        "id": "bellows_chamber",
+        "label": { "en": "Bellows Chamber", "es": "Camara de Fuelle" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["n_ribs", "chamber_w", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Soft pneumatic fingers grip fragile or irregular objects that rigid grippers crush — fruit, tissue, lab samples. Commercial soft actuators are costly and closed; an open, parametric finger with a standard 4/6 mm air port lets a lab or maker cast or print a gripper to size and repair it in the field, lowering the barrier to soft-robotics research and assistive devices.",
+      "es": "Los dedos neumaticos blandos agarran objetos fragiles o irregulares que los pinzas rigidas aplastan — fruta, tejido, muestras de laboratorio. Los actuadores blandos comerciales son costosos y cerrados; un dedo abierto y parametrico con un puerto de aire estandar de 4/6 mm permite a un laboratorio o maker fundir o imprimir una pinza a medida y repararla en campo, bajando la barrera para la robotica blanda y dispositivos de asistencia."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["soft-robotics", "pneumatic", "bellows", "gripper", "hybrid", "hyperobject", "commons"]
+}

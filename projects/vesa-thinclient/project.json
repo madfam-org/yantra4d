@@ -1,0 +1,496 @@
+{
+  "project": {
+    "name": "VESA Thin-Client Mount",
+    "slug": "vesa-thinclient",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Mounts a mini-PC, thin-client or SBC enclosure behind a monitor on the VESA MIS-D 100 x 100 mm bolt pattern (M4). Choose a strap cage that cradles the box, an L-shelf tray it rests on, or a pair of brackets that pinch it — then set the device box size. Mates the vesa family.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Monta un mini-PC, cliente ligero o carcasa SBC detrás de un monitor en el patrón de pernos VESA MIS-D de 100 x 100 mm (M4). Elige una jaula con correas que sostiene la caja, una bandeja en L donde descansa, o un par de soportes que la sujetan — y ajusta el tamaño de la caja. Compatible con la familia vesa.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vesa-thinclient.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "vesa",
+      "mis-d",
+      "thin-client",
+      "mini-pc",
+      "sbc",
+      "mount",
+      "monitor",
+      "commercial",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "strap_cage",
+      "label": {
+        "en": "Strap Cage",
+        "es": "Jaula con Correas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "strap_cage"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "tray_shelf",
+      "label": {
+        "en": "Shelf Tray",
+        "es": "Bandeja en L"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tray_shelf"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "bracket_pair",
+      "label": {
+        "en": "Bracket Pair",
+        "es": "Par de Soportes"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bracket_pair"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 15,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "strap_cage",
+      "label": {
+        "en": "Strap Cage",
+        "es": "Jaula con Correas"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "tray_shelf",
+      "label": {
+        "en": "Shelf Tray",
+        "es": "Bandeja en L"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "bracket_pair",
+      "label": {
+        "en": "Bracket Pair",
+        "es": "Par de Soportes"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "vesa",
+      "label": {
+        "en": "VESA Plate",
+        "es": "Placa VESA"
+      }
+    },
+    {
+      "id": "device",
+      "label": {
+        "en": "Device Box",
+        "es": "Caja del Dispositivo"
+      }
+    },
+    {
+      "id": "capture",
+      "label": {
+        "en": "Capture",
+        "es": "Sujeción"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "vesa_sq",
+      "type": "slider",
+      "default": 100.0,
+      "min": 75.0,
+      "max": 100.0,
+      "step": 25,
+      "group": "vesa",
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "VESA Square (mm)",
+        "es": "Cuadro VESA (mm)"
+      },
+      "tooltip": {
+        "en": "MIS-D bolt-square spacing (75 or 100 mm)",
+        "es": "Separación del patrón MIS-D (75 o 100 mm)"
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "vesa",
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Backing plate thickness",
+        "es": "Grosor de la placa de respaldo"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "bolt_d",
+      "type": "slider",
+      "default": 4.5,
+      "min": 3.5,
+      "max": 7.0,
+      "step": 0.1,
+      "group": "vesa",
+      "advanced": true,
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Bolt Clearance (mm)",
+        "es": "Holgura de Perno (mm)"
+      },
+      "tooltip": {
+        "en": "M4 clearance hole diameter (~4.5 mm)",
+        "es": "Diámetro de orificio de holgura M4 (~4.5 mm)"
+      }
+    },
+    {
+      "id": "dev_w",
+      "type": "slider",
+      "default": 120.0,
+      "min": 50.0,
+      "max": 220.0,
+      "step": 1,
+      "group": "device",
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Device Width (mm)",
+        "es": "Ancho del Dispositivo (mm)"
+      },
+      "tooltip": {
+        "en": "Device box width (X)",
+        "es": "Ancho de la caja del dispositivo (X)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "dev_h",
+      "type": "slider",
+      "default": 120.0,
+      "min": 50.0,
+      "max": 220.0,
+      "step": 1,
+      "group": "device",
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Device Height (mm)",
+        "es": "Alto del Dispositivo (mm)"
+      },
+      "tooltip": {
+        "en": "Device box height (Y)",
+        "es": "Alto de la caja del dispositivo (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "dev_t",
+      "type": "slider",
+      "default": 30.0,
+      "min": 10.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "device",
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Device Depth (mm)",
+        "es": "Profundidad del Dispositivo (mm)"
+      },
+      "tooltip": {
+        "en": "Device box depth (stand-off from the plate)",
+        "es": "Profundidad de la caja (separación de la placa)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "capture",
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Cage / shelf / bracket wall thickness",
+        "es": "Grosor de pared de la jaula / bandeja / soporte"
+      }
+    },
+    {
+      "id": "lip",
+      "type": "slider",
+      "default": 10.0,
+      "min": 5.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "capture",
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Capture Lip (mm)",
+        "es": "Labio de Sujeción (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the lip / shelf curb / bracket foot that traps the device",
+        "es": "Profundidad del labio / tope / pie que atrapa el dispositivo"
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "vesa",
+      "advanced": true,
+      "modes": [
+        "strap_cage",
+        "tray_shelf",
+        "bracket_pair"
+      ],
+      "label": {
+        "en": "Corner Radius (mm)",
+        "es": "Radio de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Fillet radius on the plate corners",
+        "es": "Radio de redondeo en las esquinas de la placa"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_cage",
+      "mode": "strap_cage",
+      "label": {
+        "en": "Standard Cage (120mm box)",
+        "es": "Jaula Estándar (caja 120mm)"
+      },
+      "values": {
+        "vesa_sq": 100.0,
+        "plate_t": 5.0,
+        "dev_w": 120.0,
+        "dev_h": 120.0,
+        "dev_t": 30.0
+      }
+    },
+    {
+      "id": "sbc_tray",
+      "mode": "tray_shelf",
+      "label": {
+        "en": "SBC Tray",
+        "es": "Bandeja SBC"
+      },
+      "values": {
+        "vesa_sq": 100.0,
+        "plate_t": 5.0,
+        "dev_w": 90.0,
+        "dev_t": 25.0,
+        "lip": 12.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "dev_w >= 50",
+      "severity": "warning",
+      "message": {
+        "en": "Very small device widths leave little material to grip",
+        "es": "Anchos de dispositivo muy pequeños dejan poco material para sujetar"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        180,
+        180,
+        160
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        0,
+        260
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 15,
+    "per_unit": 3,
+    "per_part": 13,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "vesa_mis_d_mount",
+        "label": {
+          "en": "VESA MIS-D Mount Face",
+          "es": "Cara de Montaje VESA MIS-D"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "VESA MIS-D",
+        "parameters": [
+          "vesa_sq",
+          "bolt_d"
+        ],
+        "compatible_with": [
+          "vesa-mount",
+          "vesa-arm-extender",
+          "framing-hyperobject"
+        ]
+      },
+      {
+        "id": "device_cradle",
+        "label": {
+          "en": "Device Cradle",
+          "es": "Cuna del Dispositivo"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "dev_w",
+          "dev_h",
+          "dev_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Thin-clients, mini-PCs and single-board computers ship without a VESA mount, and off-the-shelf cradles rarely fit a specific enclosure. A printed VESA-100 mount cradles any device box behind a monitor on demand, clearing desk space and reusing the monitor's own mounting interface instead of buying a device-specific bracket.",
+      "es": "Los clientes ligeros, mini-PCs y computadoras de placa única se venden sin montaje VESA, y las cunas comerciales rara vez encajan en una carcasa específica. Un montaje VESA-100 impreso sostiene cualquier caja de dispositivo detrás de un monitor bajo demanda, liberando espacio de escritorio y reutilizando la interfaz de montaje del propio monitor en vez de comprar un soporte específico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "vesa",
+    "mis-d",
+    "thin-client",
+    "mini-pc",
+    "mount",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

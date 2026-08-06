@@ -1,0 +1,421 @@
+{
+  "project": {
+    "name": "Keyed Shaft Collar",
+    "slug": "shaft-collar",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Shaft collars and stops for the common 6-12 mm small-drive-shaft range. Print a solid setscrew collar to pin an axial stop, a split clamp collar that squeezes shut without marring the shaft, or a flanged shaft stop that presents a wide seating face for a bearing or panel. Sized to the shaft-spline commons bore range so a printed collar drops onto the same shafts a spline-hub or D-shaft knob keys to.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Collares y topes de eje para el rango común de ejes de transmisión pequeños de 6-12 mm. Imprime un collar de prisionero macizo para fijar un tope axial, un collar de apriete partido que cierra sin marcar el eje, o un tope de eje con brida que ofrece una cara amplia de asiento para un rodamiento o panel. Dimensionado al rango de barreno de la familia shaft-spline para que un collar impreso encaje en los mismos ejes que un spline-hub o una perilla de eje-D.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shaft-collar.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "shaft-collar",
+      "collar",
+      "setscrew",
+      "clamp",
+      "shaft-stop",
+      "6-12mm",
+      "shaft-spline",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "setscrew_collar",
+      "label": {
+        "en": "Setscrew Collar",
+        "es": "Collar de Prisionero"
+      },
+      "engine": "cadquery",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "setscrew_collar"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "clamp_collar",
+      "label": {
+        "en": "Clamp Collar (Split)",
+        "es": "Collar de Apriete (Partido)"
+      },
+      "engine": "cadquery",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "clamp_collar"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "shaft_stop",
+      "label": {
+        "en": "Flanged Shaft Stop",
+        "es": "Tope de Eje con Brida"
+      },
+      "engine": "cadquery",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "shaft_stop"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "setscrew_collar",
+      "label": {
+        "en": "Setscrew Collar",
+        "es": "Collar de Prisionero"
+      },
+      "render_mode": 0,
+      "color": "#8f7a4a"
+    },
+    {
+      "id": "clamp_collar",
+      "label": {
+        "en": "Clamp Collar",
+        "es": "Collar de Apriete"
+      },
+      "render_mode": 0,
+      "color": "#a3905b"
+    },
+    {
+      "id": "shaft_stop",
+      "label": {
+        "en": "Shaft Stop",
+        "es": "Tope de Eje"
+      },
+      "render_mode": 0,
+      "color": "#bfa96f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "shaft",
+      "label": {
+        "en": "Shaft & Ring",
+        "es": "Eje y Anillo"
+      }
+    },
+    {
+      "id": "fixing",
+      "label": {
+        "en": "Fixing",
+        "es": "Fijación"
+      }
+    },
+    {
+      "id": "flange",
+      "label": {
+        "en": "Flange",
+        "es": "Brida"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bore_d",
+      "type": "slider",
+      "default": 8.0,
+      "min": 6.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "shaft",
+      "modes": [
+        "setscrew_collar",
+        "clamp_collar",
+        "shaft_stop"
+      ],
+      "label": {
+        "en": "Shaft Bore (mm)",
+        "es": "Barreno de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Shaft diameter the collar clamps onto. shaft-spline commons range is 6-12 mm",
+        "es": "Diámetro del eje sobre el que se aprieta el collar. El rango común shaft-spline es 6-12 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "shaft",
+      "modes": [
+        "setscrew_collar",
+        "clamp_collar",
+        "shaft_stop"
+      ],
+      "label": {
+        "en": "Ring Wall (mm)",
+        "es": "Pared del Anillo (mm)"
+      },
+      "tooltip": {
+        "en": "Radial wall thickness of the ring around the bore",
+        "es": "Grosor de pared radial del anillo alrededor del barreno"
+      }
+    },
+    {
+      "id": "collar_h",
+      "type": "slider",
+      "default": 10.0,
+      "min": 5.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "shaft",
+      "modes": [
+        "setscrew_collar",
+        "clamp_collar",
+        "shaft_stop"
+      ],
+      "label": {
+        "en": "Collar Height (mm)",
+        "es": "Altura del Collar (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the collar along the shaft axis",
+        "es": "Altura del collar a lo largo del eje"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "set_d",
+      "type": "slider",
+      "default": 4.3,
+      "min": 2.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "fixing",
+      "modes": [
+        "setscrew_collar",
+        "clamp_collar",
+        "shaft_stop"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Setscrew / Bolt Hole (mm)",
+        "es": "Orificio de Prisionero / Perno (mm)"
+      },
+      "tooltip": {
+        "en": "Clearance for the setscrew or clamp bolt (M4 ~4.3 mm)",
+        "es": "Holgura para el prisionero o perno de apriete (M4 ~4.3 mm)"
+      }
+    },
+    {
+      "id": "flange_ext",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "flange",
+      "modes": [
+        "shaft_stop"
+      ],
+      "label": {
+        "en": "Flange Extension (mm)",
+        "es": "Extensión de Brida (mm)"
+      },
+      "tooltip": {
+        "en": "How far the base flange extends past the ring OD",
+        "es": "Cuánto se extiende la brida base más allá del diámetro exterior del anillo"
+      }
+    },
+    {
+      "id": "flange_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "flange",
+      "modes": [
+        "shaft_stop"
+      ],
+      "label": {
+        "en": "Flange Thickness (mm)",
+        "es": "Grosor de Brida (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the seating flange at the base",
+        "es": "Grosor de la brida de asiento en la base"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "collar_8mm",
+      "mode": "setscrew_collar",
+      "label": {
+        "en": "8 mm Setscrew Collar",
+        "es": "Collar de Prisionero 8 mm"
+      },
+      "values": {
+        "bore_d": 8.0,
+        "wall": 5.0,
+        "collar_h": 10.0,
+        "set_d": 4.3
+      }
+    },
+    {
+      "id": "split_10mm",
+      "mode": "clamp_collar",
+      "label": {
+        "en": "10 mm Split Clamp Collar",
+        "es": "Collar de Apriete Partido 10 mm"
+      },
+      "values": {
+        "bore_d": 10.0,
+        "wall": 5.0,
+        "collar_h": 12.0,
+        "set_d": 4.3
+      }
+    },
+    {
+      "id": "stop_6mm",
+      "mode": "shaft_stop",
+      "label": {
+        "en": "6 mm Flanged Stop",
+        "es": "Tope con Brida 6 mm"
+      },
+      "values": {
+        "bore_d": 6.0,
+        "wall": 4.0,
+        "collar_h": 10.0,
+        "flange_ext": 8.0,
+        "flange_t": 3.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "set_d < wall",
+      "severity": "warning",
+      "message": {
+        "en": "Setscrew hole should be narrower than the ring wall so material remains around it",
+        "es": "El orificio del prisionero debe ser más estrecho que la pared del anillo para que quede material alrededor"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        70
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "shaft_bore_setscrew",
+        "label": {
+          "en": "6-12 mm Shaft Bore + Setscrew",
+          "es": "Barreno de Eje 6-12 mm + Prisionero"
+        },
+        "geometry_type": "socket",
+        "standard": "6-12mm shaft",
+        "parameters": [
+          "bore_d",
+          "set_d"
+        ],
+        "compatible_with": [
+          "spline-hub",
+          "knob-dshaft"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A shaft collar is a tiny part that fails at the worst time and is rarely sold on its own for an odd shaft size. Printing a set collar, split clamp collar or flanged stop to the exact 6-12 mm bore lets a maker or repair tech set an axial stop, space a bearing, or lock a hub on any small drive shaft in the field, reusing the same shaft interface the rest of the shaft-spline commons keys to instead of ordering a specific metric collar and waiting for it.",
+      "es": "Un collar de eje es una pieza diminuta que falla en el peor momento y rara vez se vende suelto para un tamaño de eje inusual. Imprimir un collar de prisionero, un collar de apriete partido o un tope con brida al barreno exacto de 6-12 mm permite a un fabricante o técnico de reparación fijar un tope axial, espaciar un rodamiento o bloquear un cubo en cualquier eje de transmisión pequeño en campo, reutilizando la misma interfaz de eje a la que se acopla el resto de la familia shaft-spline en vez de pedir un collar métrico específico y esperar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0",
+  "tags": [
+    "shaft-collar",
+    "collar",
+    "setscrew",
+    "clamp",
+    "shaft-stop",
+    "6-12mm",
+    "shaft-spline",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

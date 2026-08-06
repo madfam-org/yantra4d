@@ -1,0 +1,173 @@
+{
+  "project": {
+    "name": "Cuvette Adapter Sleeve",
+    "slug": "cuvette-sleeve",
+    "version": "1.0.0",
+    "description": {
+      "en": "A drop-in sleeve that adapts cuvette sizes to the universal 12.5 mm square holder slot used by spectrophotometers, cuvette racks and filter wheels. Fit a 10 mm-path cuvette into a wider slot, adapt a round cuvette or vial to a square slot, or raise a short semi-micro cuvette so its window centres in a tall light path. Mates the cuvette-rack and filter-wheel cuvette wells.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un manguito de inserción que adapta tamaños de cubeta a la ranura cuadrada universal de 12.5 mm usada por espectrofotómetros, gradillas de cubetas y ruedas de filtros. Ajusta una cubeta de paso 10 mm en una ranura más ancha, adapta una cubeta o vial redondo a una ranura cuadrada, o eleva una cubeta semi-micro corta para centrar su ventana en un paso de luz alto. Compatible con los pozos de cubeta de cuvette-rack y filter-wheel.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cuvette-sleeve.webp",
+    "difficulty": "intermediate",
+    "tags": ["cuvette", "sleeve", "adapter", "spectrophotometer", "lab", "medical", "hyperobject", "commons"],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The pocket adds the user 'clearance' per side so the cuvette slips in and out; start at 0.4 mm. For optical work print opaque and matte to avoid stray light in the beam path. This is a bench aid, not a calibrated optical accessory.",
+        "es": "El hueco suma la 'holgura' del usuario por lado para que la cubeta entre y salga; empieza en 0.4 mm. Para trabajo óptico imprime opaco y mate para evitar luz parásita en el paso del haz. Es una ayuda de mesa, no un accesorio óptico calibrado."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "cuvette_socket",
+        "label": {
+          "en": "10 mm Cuvette to 12.5 mm Holder Socket",
+          "es": "Socket de Cubeta 10 mm a Portador 12.5 mm"
+        },
+        "geometry_type": "socket",
+        "standard": "10 mm path / 12.5 mm square cuvette",
+        "parameters": ["cuvette_size", "holder_size", "clearance"],
+        "compatible_with": ["cuvette-rack", "filter-wheel"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "A single printed sleeve lets teaching and field labs reuse a spectrophotometer or cuvette rack across cuvette sizes and round vials instead of buying dedicated adapters, standardising sample handling on the universal 12.5 mm slot at the cost of filament.",
+      "es": "Un solo manguito impreso permite a laboratorios de enseñanza y de campo reutilizar un espectrofotómetro o gradilla de cubetas con distintos tamaños de cubeta y viales redondos en vez de comprar adaptadores dedicados, estandarizando el manejo de muestras en la ranura universal de 12.5 mm al costo del filamento."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "sleeve",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Square Drop Sleeve", "es": "Manguito Cuadrado" },
+      "description": { "en": "Square outer footprint to the holder slot; square inner pocket for a smaller cuvette." },
+      "parts": ["sleeve"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "round_adapter",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Round-to-Square Adapter", "es": "Adaptador Redondo a Cuadrado" },
+      "description": { "en": "Square outer prism with a round bore to seat a round cuvette or vial in a square slot." },
+      "parts": ["round_adapter"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "riser_sleeve",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Height Riser Sleeve", "es": "Manguito Elevador" },
+      "description": { "en": "Sleeve with a solid riser base so a short cuvette's window centres in a tall light path." },
+      "parts": ["riser_sleeve"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "sleeve", "render_mode": 0, "label": { "en": "Square Drop Sleeve", "es": "Manguito Cuadrado" }, "default_color": "#0e7490" },
+    { "id": "round_adapter", "render_mode": 0, "label": { "en": "Round-to-Square Adapter", "es": "Adaptador Redondo a Cuadrado" }, "default_color": "#0891b2" },
+    { "id": "riser_sleeve", "render_mode": 0, "label": { "en": "Height Riser Sleeve", "es": "Manguito Elevador" }, "default_color": "#06b6d4" }
+  ],
+  "parameters": [
+    {
+      "id": "cuvette_size", "type": "slider", "default": 10.0, "min": 6.0, "max": 12.0, "step": 0.5,
+      "group": "vessel", "modes": ["sleeve", "round_adapter", "riser_sleeve"],
+      "label": { "en": "Cuvette / Vial Size (mm)", "es": "Tamaño de Cubeta / Vial (mm)" },
+      "tooltip": { "en": "Inner size to accept: square side for a cuvette, diameter for a round vial (10 mm is the path standard).", "es": "Tamaño interior a aceptar: lado cuadrado para cubeta, diámetro para vial redondo (10 mm es el estándar de paso)." }
+    },
+    {
+      "id": "holder_size", "type": "slider", "default": 12.5, "min": 10.0, "max": 25.0, "step": 0.5,
+      "group": "vessel", "modes": ["sleeve", "round_adapter", "riser_sleeve"],
+      "label": { "en": "Holder Slot Size (mm)", "es": "Tamaño de Ranura del Portador (mm)" },
+      "tooltip": { "en": "Outer square footprint to match the holder slot (12.5 mm is the cuvette standard).", "es": "Formato cuadrado exterior para la ranura del portador (12.5 mm es el estándar de cubeta)." },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "sleeve_h", "type": "slider", "default": 45.0, "min": 20.0, "max": 60.0, "step": 1.0,
+      "group": "body", "modes": ["sleeve", "round_adapter", "riser_sleeve"],
+      "label": { "en": "Cuvette Height Reference (mm)", "es": "Altura de Cubeta de Referencia (mm)" },
+      "tooltip": { "en": "Standard cuvette height (~45 mm); sets sleeve proportions.", "es": "Altura estándar de cubeta (~45 mm); define las proporciones del manguito." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 0.5 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "body", "modes": ["sleeve", "round_adapter", "riser_sleeve"],
+      "label": { "en": "Slip Clearance (mm/side)", "es": "Holgura (mm/lado)" },
+      "tooltip": { "en": "Per-side gap so the cuvette drops in and out.", "es": "Espacio por lado para que la cubeta entre y salga." }
+    },
+    {
+      "id": "floor_th", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.5,
+      "group": "body", "modes": ["sleeve", "round_adapter", "riser_sleeve"],
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Sealed bottom under the cuvette.", "es": "Fondo sellado bajo la cubeta." }
+    },
+    {
+      "id": "riser", "type": "slider", "default": 8.0, "min": 0.0, "max": 30.0, "step": 1.0,
+      "group": "body", "modes": ["sleeve", "round_adapter", "riser_sleeve"],
+      "label": { "en": "Riser Height (mm)", "es": "Altura del Elevador (mm)" },
+      "tooltip": { "en": "Solid base height that lifts a short cuvette into the light path.", "es": "Altura de base sólida que eleva una cubeta corta al paso de luz." }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "vessel", "label": { "en": "Vessel & Slot", "es": "Recipiente y Ranura" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "presets": [
+    {
+      "id": "std_10_to_125", "mode": "sleeve",
+      "label": { "en": "10 mm into 12.5 mm", "es": "10 mm en 12.5 mm" },
+      "values": { "cuvette_size": 10.0, "holder_size": 12.5, "clearance": 0.4 }
+    },
+    {
+      "id": "round_vial", "mode": "round_adapter",
+      "label": { "en": "Round Vial to Square", "es": "Vial Redondo a Cuadrado" },
+      "values": { "cuvette_size": 10.0, "holder_size": 12.5, "clearance": 0.4 }
+    },
+    {
+      "id": "semi_micro_riser", "mode": "riser_sleeve",
+      "label": { "en": "Semi-Micro Riser", "es": "Elevador Semi-Micro" },
+      "values": { "cuvette_size": 10.0, "holder_size": 12.5, "riser": 12.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "cuvette_size < holder_size",
+      "severity": "error",
+      "message": { "en": "The cuvette must be smaller than the holder slot", "es": "La cubeta debe ser menor que la ranura del portador" }
+    },
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Large clearance lets the cuvette rattle in the beam path", "es": "Una holgura grande deja que la cubeta se mueva en el paso del haz" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 30
+  },
+  "license": "CERN-OHL-W-2.0"
+}

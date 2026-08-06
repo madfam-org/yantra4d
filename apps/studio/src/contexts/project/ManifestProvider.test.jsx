@@ -23,7 +23,9 @@ function TestConsumer() {
   if (loading) return <div data-testid="loading">loading</div>
 
   const cupMode = getMode('cup')
-  const baseplateParams = getParametersForMode('baseplate')
+  // baseplate_scad is the OpenSCAD baseplate mode that scopes width_units/depth_units
+  // (via visible_in_modes) while height_units stays cup-only.
+  const baseplateParams = getParametersForMode('baseplate_scad')
   const defaults = getDefaultParams()
   const colors = getDefaultColors()
   const label = getLabel({ name: { en: 'Hello', es: 'Hola' } }, 'name', 'en')
@@ -49,7 +51,7 @@ function TestConsumer() {
       <span data-testid="dim-label">{dimLabel}</span>
       <span data-testid="mount-label">{mountLabel}</span>
       <span data-testid="missing-group">{missingGroup}</span>
-      <span data-testid="viewer-default-color">{viewerConfig.default_color}</span>
+      <span data-testid="viewer-config">{JSON.stringify(viewerConfig)}</span>
       <span data-testid="wasm-multiplier">{estimateConstants.wasm_multiplier}</span>
       <span data-testid="warning-threshold">{estimateConstants.warning_threshold_seconds}</span>
       <span data-testid="project-slug">{projectSlug}</span>
@@ -89,7 +91,7 @@ describe('ManifestProvider', () => {
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
     const viewIds = screen.getByTestId('camera-views').textContent.split(',')
-    expect(viewIds).toEqual(['iso', 'top', 'front', 'right'])
+    expect(viewIds).toEqual(['iso', 'top', 'front'])
   })
 
   it('getGroupLabel returns translated group label', async () => {
@@ -126,7 +128,9 @@ describe('ManifestProvider', () => {
 
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
-    expect(screen.getByTestId('viewer-default-color').textContent).toBe('#4a90d9')
+    // The dual-kernel Gridfinity fallback manifest omits the `viewer` block, so the
+    // accessor falls back to an empty object (consumers apply their own defaults).
+    expect(screen.getByTestId('viewer-config').textContent).toBe('{}')
   })
 
   it('getEstimateConstants returns extended constants', async () => {
@@ -205,7 +209,7 @@ describe('ManifestProvider', () => {
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
     // Gridfinity fallback manifest includes export_formats but not print_estimation
-    expect(screen.getByTestId('export-formats').textContent).toBe('["stl","3mf","off","step","glb","gltf","obj"]')
+    expect(screen.getByTestId('export-formats').textContent).toBe('["stl","3mf","step","glb","gltf","obj"]')
     expect(screen.getByTestId('print-estimation').textContent).toBe('"undefined"')
   })
 

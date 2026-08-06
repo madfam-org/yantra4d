@@ -5,12 +5,15 @@ import BomPanel from '../bom/BomPanel'
 import AppearancePanel from '../controls/AppearancePanel'
 import AssemblyView from '../bom/AssemblyView'
 import AssemblyEditorPanel from '../assembly-editor/AssemblyEditorPanel'
+import WorksWithPanel from './WorksWithPanel'
+import PrintPanel from './PrintPanel'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkles, CheckCircle2, Copy, PanelLeftClose } from 'lucide-react'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { useTier } from '../../hooks/system/useTier'
 
 interface ActionDockProps {
   compareMode?: boolean
@@ -165,8 +168,14 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
     overhangThreshold, setOverhangThreshold,
     setHoveredParamId,
   } = useProject()
+  const { tier } = useTier()
 
   const { t } = useLanguage()
+
+  // Slug driving the "Works with" companion lookup. Prefer the manifest's own
+  // project slug, falling back to the (strongly-typed) context projectSlug.
+  const manifestSlug = manifest.project?.slug
+  const worksWithSlug = typeof manifestSlug === 'string' && manifestSlug ? manifestSlug : projectSlug
 
   // Show editor panel instead of normal sidebar
   if (assemblyEditorOpen) {
@@ -252,6 +261,12 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
               onParamLeave={() => setHoveredParamId(null)}
             />
           </div>
+
+          {worksWithSlug && (
+            <div className="border-t border-border pt-4">
+              <WorksWithPanel slug={worksWithSlug} />
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="view" className="m-0 space-y-4 animate-in fade-in-50 duration-300">
@@ -305,7 +320,7 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
           )}
         </TabsContent>
 
-        <TabsContent value="export" className="m-0 animate-in fade-in-50 duration-300">
+        <TabsContent value="export" className="m-0 space-y-5 animate-in fade-in-50 duration-300">
           <ExportPanel
             parts={parts}
             mode={mode}
@@ -315,6 +330,9 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
             exportFormat={exportFormat}
             onExportFormatChange={setExportFormat}
           />
+          {/* Send-to-printer (OctoPrint/Moonraker). Self-gates on tier; only renders its
+              controls when a printer is configured. Grouped with export as an output action. */}
+          <PrintPanel tier={tier} projectSlug={projectSlug ?? undefined} />
         </TabsContent>
       </div>
 

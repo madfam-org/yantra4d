@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "Raised-Bed Corner Bracket",
+    "slug": "bed-corner",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Joins dimensional lumber into a raised garden bed or planter box with no metal brackets and no mitered cuts. Each arm is a three-sided channel a board end slides into; screws lock it. A 90° corner, a tall stackable corner for deep beds, or a tee for a cross board.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Une madera dimensional en una cama de cultivo elevada o jardinera sin herrajes metálicos ni cortes en inglete. Cada brazo es un canal de tres lados donde entra el extremo de una tabla; los tornillos lo fijan. Esquina de 90°, esquina alta apilable para camas profundas, o una te para tabla transversal.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bed-corner.webp",
+    "difficulty": "beginner",
+    "tags": ["raised-bed", "planter", "corner", "bracket", "garden", "lumber", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "corner_90",
+      "label": { "en": "90° Corner", "es": "Esquina 90°" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_90"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "corner_tall",
+      "label": { "en": "Tall / Stackable Corner", "es": "Esquina Alta / Apilable" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["corner_tall"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "tee_join",
+      "label": { "en": "Tee Join", "es": "Unión en Te" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tee_join"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "corner_90", "label": { "en": "90° Corner", "es": "Esquina 90°" }, "render_mode": 0, "color": "#8a6a3a" },
+    { "id": "corner_tall", "label": { "en": "Tall Corner", "es": "Esquina Alta" }, "render_mode": 0, "color": "#9a7a4a" },
+    { "id": "tee_join", "label": { "en": "Tee Join", "es": "Unión en Te" }, "render_mode": 0, "color": "#aa8a5a" }
+  ],
+  "parameter_groups": [
+    { "id": "board", "label": { "en": "Board Size", "es": "Tamaño de Tabla" } },
+    { "id": "bracket", "label": { "en": "Bracket", "es": "Soporte" } },
+    { "id": "fasten", "label": { "en": "Fastening", "es": "Fijación" } }
+  ],
+  "parameters": [
+    {
+      "id": "board_t", "type": "slider", "default": 38.0, "min": 12.0, "max": 90.0, "step": 1.0,
+      "group": "board", "modes": ["corner_90", "corner_tall", "tee_join"],
+      "label": { "en": "Board Thickness (mm)", "es": "Grosor de Tabla (mm)" },
+      "tooltip": { "en": "Nominal board thickness (e.g. 38 mm ≈ 1.5\")", "es": "Grosor nominal de la tabla (ej. 38 mm ≈ 1.5\")" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "board_w", "type": "slider", "default": 140.0, "min": 60.0, "max": 300.0, "step": 2.0,
+      "group": "board", "modes": ["corner_90", "corner_tall", "tee_join"],
+      "label": { "en": "Board Width (mm)", "es": "Ancho de Tabla (mm)" },
+      "tooltip": { "en": "Board face height (e.g. 140 mm ≈ 6\") = bracket height", "es": "Altura de la cara de la tabla (ej. 140 mm ≈ 6\") = altura del soporte" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "slot_depth", "type": "slider", "default": 60.0, "min": 25.0, "max": 150.0, "step": 1.0,
+      "group": "bracket", "modes": ["corner_90", "corner_tall", "tee_join"],
+      "label": { "en": "Slot Depth (mm)", "es": "Profundidad de Ranura (mm)" },
+      "tooltip": { "en": "How far each board end slides into the arm", "es": "Cuánto entra cada extremo de tabla en el brazo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5,
+      "group": "bracket", "modes": ["corner_90", "corner_tall", "tee_join"],
+      "label": { "en": "Channel Wall (mm)", "es": "Pared del Canal (mm)" },
+      "tooltip": { "en": "Thickness of the channel walls that grip the board", "es": "Grosor de las paredes del canal que sujetan la tabla" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.2, "max": 1.5, "step": 0.1,
+      "group": "bracket", "modes": ["corner_90", "corner_tall", "tee_join"],
+      "label": { "en": "Board Clearance (mm)", "es": "Holgura de Tabla (mm)" },
+      "tooltip": { "en": "Per-side slack so a real board slides in", "es": "Holgura por lado para que entre una tabla real" }
+    },
+    {
+      "id": "corner_r", "type": "slider", "default": 5.0, "min": 0.0, "max": 12.0, "step": 0.5,
+      "group": "bracket", "modes": ["corner_90", "corner_tall", "tee_join"], "advanced": true,
+      "label": { "en": "Corner Radius (mm)", "es": "Radio de Esquina (mm)" },
+      "tooltip": { "en": "Round the free outer edges (0 = sharp)", "es": "Redondear los bordes exteriores libres (0 = recto)" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "fasten", "modes": ["corner_90", "corner_tall", "tee_join"],
+      "label": { "en": "Pilot Hole (mm)", "es": "Orificio Piloto (mm)" },
+      "tooltip": { "en": "Screw pilot-hole diameter", "es": "Diámetro del orificio piloto del tornillo" }
+    },
+    {
+      "id": "stack_lug", "type": "checkbox", "default": true,
+      "group": "fasten", "modes": ["corner_tall"],
+      "label": { "en": "Stacking Lug", "es": "Espiga de Apilado" },
+      "tooltip": { "en": "Add a spigot + socket so a second bracket stacks on top", "es": "Añade espiga + casquillo para apilar un segundo soporte" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "two_by_six", "mode": "corner_90",
+      "label": { "en": "2×6 Bed Corner", "es": "Esquina 2×6" },
+      "values": { "board_t": 38, "board_w": 140, "slot_depth": 60 }
+    },
+    {
+      "id": "deep_bed", "mode": "corner_tall",
+      "label": { "en": "Deep Bed (stackable)", "es": "Cama Profunda (apilable)" },
+      "values": { "board_t": 38, "board_w": 184, "stack_lug": true }
+    },
+    {
+      "id": "long_side", "mode": "tee_join",
+      "label": { "en": "Long-Side Tee", "es": "Te de Lado Largo" },
+      "values": { "board_t": 38, "board_w": 140, "slot_depth": 55 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_depth < board_w * 1.5",
+      "severity": "warning",
+      "message": { "en": "Slot depth is very deep relative to board width", "es": "La ranura es muy profunda respecto al ancho de la tabla" }
+    },
+    {
+      "expression": "wall >= 3",
+      "severity": "error",
+      "message": { "en": "Channel wall must be at least 3 mm", "es": "La pared del canal debe ser de al menos 3 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 170] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [40, 40, 260] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [40, -240, 80] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "board_slot",
+        "label": { "en": "Board Slot", "es": "Ranura de Tabla" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["board_t", "board_w", "slot_depth", "clearance", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Raised beds put food growing within reach for renters, small yards, and people who cannot bend to ground level. A screwless corner lets anyone build one from a single board and a printer, with no saw or metal hardware.",
+      "es": "Las camas elevadas ponen el cultivo de alimentos al alcance de inquilinos, patios pequeños y personas que no pueden agacharse. Una esquina sin cortes deja que cualquiera arme una con una sola tabla y una impresora, sin sierra ni herrajes."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["raised-bed", "planter", "corner", "bracket", "garden", "household", "hyperobject", "commons"]
+}

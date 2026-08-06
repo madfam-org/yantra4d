@@ -1,0 +1,184 @@
+{
+  "project": {
+    "name": "Solar Light & Path Stake",
+    "slug": "path-stake",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Replaces the brittle plastic stakes that snap off cheap solar path lights. A tapered ground spike carries a standardized fixture socket that a light head, reflective marker, or sign plugs into. Bare stake, solar-head light housing, or a marker stake with a sign paddle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Reemplaza las frágiles estacas de plástico que se rompen en las luces solares baratas. Un pincho cónico lleva un casquillo de accesorio estandarizado donde se conecta un cabezal de luz, marcador reflectante o letrero. Estaca simple, alojamiento para cabezal solar, o estaca marcadora con paleta.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/path-stake.webp",
+    "difficulty": "beginner",
+    "tags": ["solar", "light", "path", "stake", "garden", "marker", "outdoor", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "stake",
+      "label": { "en": "Stake", "es": "Estaca" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stake"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "light_housing",
+      "label": { "en": "Light Housing", "es": "Alojamiento de Luz" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["light_housing"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "marker_stake",
+      "label": { "en": "Marker Stake", "es": "Estaca Marcadora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["marker_stake"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "stake", "label": { "en": "Stake", "es": "Estaca" }, "render_mode": 0, "color": "#4a5a6a" },
+    { "id": "light_housing", "label": { "en": "Light Housing", "es": "Alojamiento de Luz" }, "render_mode": 0, "color": "#5a6a7a" },
+    { "id": "marker_stake", "label": { "en": "Marker Stake", "es": "Estaca Marcadora" }, "render_mode": 0, "color": "#6a7a8a" }
+  ],
+  "parameter_groups": [
+    { "id": "spike", "label": { "en": "Ground Spike", "es": "Pincho de Tierra" } },
+    { "id": "socket", "label": { "en": "Fixture Socket", "es": "Casquillo de Accesorio" } },
+    { "id": "fixture", "label": { "en": "Head & Sign", "es": "Cabezal y Letrero" } }
+  ],
+  "parameters": [
+    {
+      "id": "spike_len", "type": "slider", "default": 120.0, "min": 40.0, "max": 300.0, "step": 2.0,
+      "group": "spike", "modes": ["stake", "marker_stake"],
+      "label": { "en": "Spike Length (mm)", "es": "Largo del Pincho (mm)" },
+      "tooltip": { "en": "Buried ground-spike length — longer = firmer in soft soil", "es": "Longitud enterrada del pincho — mayor = más firme en suelo blando" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "spike_dia", "type": "slider", "default": 20.0, "min": 10.0, "max": 50.0, "step": 1.0,
+      "group": "spike", "modes": ["stake", "marker_stake"],
+      "label": { "en": "Spike Top Diameter (mm)", "es": "Diámetro Superior del Pincho (mm)" },
+      "tooltip": { "en": "Spike width at the top; it tapers to a point", "es": "Ancho del pincho arriba; se afina hasta la punta" }
+    },
+    {
+      "id": "fins", "type": "slider", "default": 4, "min": 0, "max": 8, "step": 1,
+      "group": "spike", "modes": ["stake", "marker_stake"],
+      "label": { "en": "Anti-Rotation Fins", "es": "Aletas Anti-Giro" },
+      "tooltip": { "en": "Fins that stop the stake spinning in soil (0 = smooth)", "es": "Aletas que evitan que la estaca gire en el suelo (0 = liso)" }
+    },
+    {
+      "id": "socket_dia", "type": "slider", "default": 22.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "socket", "modes": ["stake", "light_housing"],
+      "label": { "en": "Socket Diameter (mm)", "es": "Diámetro del Casquillo (mm)" },
+      "tooltip": { "en": "Bore the fixture stem plugs into", "es": "Barreno donde se conecta el vástago del accesorio" }
+    },
+    {
+      "id": "socket_depth", "type": "slider", "default": 25.0, "min": 10.0, "max": 80.0, "step": 1.0,
+      "group": "socket", "modes": ["stake", "light_housing"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad del Casquillo (mm)" },
+      "tooltip": { "en": "How deep the fixture plugs in", "es": "Qué tan profundo se conecta el accesorio" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "socket", "modes": ["stake", "light_housing", "marker_stake"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Socket / housing wall thickness", "es": "Grosor de pared del casquillo / alojamiento" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "socket", "modes": ["stake", "light_housing"], "advanced": true,
+      "label": { "en": "Socket Clearance (mm)", "es": "Holgura del Casquillo (mm)" },
+      "tooltip": { "en": "Per-side slop for a printable plug fit", "es": "Holgura por lado para un ajuste imprimible" }
+    },
+    {
+      "id": "head_dia", "type": "slider", "default": 58.0, "min": 25.0, "max": 140.0, "step": 1.0,
+      "group": "fixture", "modes": ["light_housing"],
+      "label": { "en": "Solar Head Diameter (mm)", "es": "Diámetro del Cabezal Solar (mm)" },
+      "tooltip": { "en": "Diameter of the solar/LED head the cup holds", "es": "Diámetro del cabezal solar/LED que sostiene la copa" }
+    },
+    {
+      "id": "head_h", "type": "slider", "default": 30.0, "min": 12.0, "max": 80.0, "step": 1.0,
+      "group": "fixture", "modes": ["light_housing"],
+      "label": { "en": "Head Cup Depth (mm)", "es": "Profundidad de la Copa (mm)" },
+      "tooltip": { "en": "How deep the head seats in the cup", "es": "Qué tan profundo se asienta el cabezal en la copa" }
+    },
+    {
+      "id": "sign_w", "type": "slider", "default": 60.0, "min": 25.0, "max": 200.0, "step": 2.0,
+      "group": "fixture", "modes": ["marker_stake"],
+      "label": { "en": "Sign Width (mm)", "es": "Ancho del Letrero (mm)" },
+      "tooltip": { "en": "Sign paddle width", "es": "Ancho de la paleta del letrero" }
+    },
+    {
+      "id": "sign_h", "type": "slider", "default": 90.0, "min": 30.0, "max": 250.0, "step": 2.0,
+      "group": "fixture", "modes": ["marker_stake"],
+      "label": { "en": "Sign Height (mm)", "es": "Alto del Letrero (mm)" },
+      "tooltip": { "en": "Sign paddle height above the ground line", "es": "Alto de la paleta sobre la línea del suelo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "path_light", "mode": "stake",
+      "label": { "en": "Path-Light Stake", "es": "Estaca de Luz de Camino" },
+      "values": { "spike_len": 130, "socket_dia": 22, "socket_depth": 28, "fins": 4 }
+    },
+    {
+      "id": "solar_head", "mode": "light_housing",
+      "label": { "en": "Solar Head Cup", "es": "Copa de Cabezal Solar" },
+      "values": { "head_dia": 58, "head_h": 30, "socket_dia": 22 }
+    },
+    {
+      "id": "plant_label", "mode": "marker_stake",
+      "label": { "en": "Plant Label Stake", "es": "Estaca Etiqueta de Planta" },
+      "values": { "spike_len": 90, "sign_w": 55, "sign_h": 80 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "socket_dia < spike_dia * 2 + 20",
+      "severity": "warning",
+      "message": { "en": "Socket is large relative to the spike top", "es": "El casquillo es grande respecto a la punta del pincho" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -240, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "fixture_socket",
+        "label": { "en": "Fixture Socket", "es": "Casquillo de Accesorio" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["socket_dia", "socket_depth", "wall", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Solar path lights are landfilled en masse when their flimsy stakes snap, even though the electronics still work. A durable printed stake with a shared fixture socket keeps the light in service and turns the same socket into markers and signs for shared paths and gardens.",
+      "es": "Las luces solares de camino se desechan en masa cuando sus estacas endebles se rompen, aunque la electrónica siga funcionando. Una estaca impresa resistente con casquillo compartido mantiene la luz en uso y convierte el mismo casquillo en marcadores y letreros para caminos y jardines comunitarios."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["solar", "light", "path", "stake", "marker", "infrastructure", "hyperobject", "commons"]
+}

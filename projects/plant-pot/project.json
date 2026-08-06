@@ -1,0 +1,191 @@
+{
+  "project": {
+    "name": "Drainage Plant Pot & Saucer",
+    "slug": "plant-pot",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A tapered plant pot with a real drainage array in the floor, a matching drip saucer, and a hanging variant with three cord lugs. Sized by rim diameter and height with adjustable taper so pots nest for storage.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una maceta cónica con una verdadera rejilla de drenaje en el fondo, un plato de goteo a juego y una variante colgante con tres orejetas para cordón. Se dimensiona por diámetro del borde y altura, con conicidad ajustable para que las macetas se apilen.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/plant-pot.webp",
+    "difficulty": "beginner",
+    "tags": ["plant", "pot", "planter", "saucer", "drainage", "garden", "hanging", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "pot",
+      "label": { "en": "Drainage Pot", "es": "Maceta con Drenaje" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pot"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "saucer",
+      "label": { "en": "Drip Saucer", "es": "Plato de Goteo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["saucer"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "hanging_pot",
+      "label": { "en": "Hanging Pot", "es": "Maceta Colgante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hanging_pot"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "pot", "label": { "en": "Drainage Pot", "es": "Maceta con Drenaje" }, "render_mode": 0, "color": "#a4623c" },
+    { "id": "saucer", "label": { "en": "Drip Saucer", "es": "Plato de Goteo" }, "render_mode": 0, "color": "#8a5230" },
+    { "id": "hanging_pot", "label": { "en": "Hanging Pot", "es": "Maceta Colgante" }, "render_mode": 0, "color": "#b4724c" }
+  ],
+  "parameter_groups": [
+    { "id": "shape", "label": { "en": "Shape", "es": "Forma" } },
+    { "id": "walls", "label": { "en": "Walls & Floor", "es": "Paredes y Piso" } },
+    { "id": "drainage", "label": { "en": "Drainage & Extras", "es": "Drenaje y Extras" } }
+  ],
+  "parameters": [
+    {
+      "id": "pot_dia", "type": "slider", "default": 120.0, "min": 40.0, "max": 400.0, "step": 2.0,
+      "group": "shape", "modes": ["pot", "saucer", "hanging_pot"],
+      "label": { "en": "Rim Diameter (mm)", "es": "Diámetro del Borde (mm)" },
+      "tooltip": { "en": "Inner diameter at the top rim", "es": "Diámetro interior en el borde superior" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pot_h", "type": "slider", "default": 110.0, "min": 30.0, "max": 400.0, "step": 2.0,
+      "group": "shape", "modes": ["pot", "hanging_pot"],
+      "label": { "en": "Pot Height (mm)", "es": "Altura de Maceta (mm)" },
+      "tooltip": { "en": "Overall pot height", "es": "Altura total de la maceta" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "taper", "type": "slider", "default": 12.0, "min": 0.0, "max": 100.0, "step": 1.0,
+      "group": "shape", "modes": ["pot", "saucer", "hanging_pot"],
+      "label": { "en": "Wall Taper (mm)", "es": "Conicidad de Pared (mm)" },
+      "tooltip": { "en": "How much the base narrows vs the rim (per side) — enables nesting", "es": "Cuánto se estrecha la base respecto al borde (por lado) — permite apilar" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 8.0, "step": 0.2,
+      "group": "walls", "modes": ["pot", "saucer", "hanging_pot"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Side wall thickness", "es": "Grosor de la pared lateral" }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 4.0, "min": 2.5, "max": 12.0, "step": 0.5,
+      "group": "walls", "modes": ["pot", "saucer", "hanging_pot"],
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Bottom thickness", "es": "Grosor del fondo" }
+    },
+    {
+      "id": "rim_lip", "type": "checkbox", "default": true,
+      "group": "walls", "modes": ["pot", "hanging_pot"],
+      "label": { "en": "Rolled Rim", "es": "Borde Enrollado" },
+      "tooltip": { "en": "Add a rounded top rim for strength and grip", "es": "Añade un borde redondeado para resistencia y agarre" }
+    },
+    {
+      "id": "foot_ring", "type": "checkbox", "default": true,
+      "group": "walls", "modes": ["pot", "hanging_pot"],
+      "label": { "en": "Foot Ring", "es": "Anillo de Base" },
+      "tooltip": { "en": "Raise the pot off the surface so it drains", "es": "Levanta la maceta de la superficie para que drene" }
+    },
+    {
+      "id": "drain_dia", "type": "slider", "default": 10.0, "min": 3.0, "max": 24.0, "step": 0.5,
+      "group": "drainage", "modes": ["pot", "hanging_pot"],
+      "label": { "en": "Drain Hole (mm)", "es": "Orificio de Drenaje (mm)" },
+      "tooltip": { "en": "Diameter of each drainage hole", "es": "Diámetro de cada orificio de drenaje" }
+    },
+    {
+      "id": "drain_ring", "type": "slider", "default": 6, "min": 0, "max": 12, "step": 1,
+      "group": "drainage", "modes": ["pot", "hanging_pot"],
+      "label": { "en": "Drain Holes (ring)", "es": "Orificios de Drenaje (anillo)" },
+      "tooltip": { "en": "Extra holes around the floor (plus one central)", "es": "Orificios extra alrededor del fondo (más uno central)" }
+    },
+    {
+      "id": "saucer_h", "type": "slider", "default": 22.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "drainage", "modes": ["saucer"],
+      "label": { "en": "Saucer Height (mm)", "es": "Altura del Plato (mm)" },
+      "tooltip": { "en": "Drip tray wall height", "es": "Altura de la pared del plato" }
+    },
+    {
+      "id": "hang_lugs", "type": "slider", "default": 3, "min": 2, "max": 6, "step": 1,
+      "group": "drainage", "modes": ["hanging_pot"],
+      "label": { "en": "Hanging Lugs", "es": "Orejetas Colgantes" },
+      "tooltip": { "en": "Number of cord/wire lugs on the rim", "es": "Número de orejetas para cordón/alambre en el borde" }
+    },
+    {
+      "id": "lug_hole", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5,
+      "group": "drainage", "modes": ["hanging_pot"],
+      "label": { "en": "Cord Hole (mm)", "es": "Orificio de Cordón (mm)" },
+      "tooltip": { "en": "Diameter of the hole through each hanging lug", "es": "Diámetro del orificio en cada orejeta" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "succulent", "mode": "pot",
+      "label": { "en": "Succulent Pot", "es": "Maceta de Suculenta" },
+      "values": { "pot_dia": 80, "pot_h": 70, "taper": 8, "drain_ring": 4 }
+    },
+    {
+      "id": "herb_saucer", "mode": "saucer",
+      "label": { "en": "Herb Pot Saucer", "es": "Plato para Hierbas" },
+      "values": { "pot_dia": 120, "saucer_h": 20 }
+    },
+    {
+      "id": "hanging_fern", "mode": "hanging_pot",
+      "label": { "en": "Hanging Fern", "es": "Helecho Colgante" },
+      "values": { "pot_dia": 160, "pot_h": 130, "hang_lugs": 3, "lug_hole": 7 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "taper <= pot_dia / 2 - 8",
+      "severity": "warning",
+      "message": { "en": "Taper is large relative to the rim — base may be tiny", "es": "La conicidad es grande respecto al borde — la base puede ser diminuta" }
+    },
+    {
+      "expression": "wall >= 2",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 160] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -280, 90] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "pot_drainage",
+        "label": { "en": "Pot Drainage", "es": "Drenaje de Maceta" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["drain_dia", "drain_ring", "floor", "taper"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Nursery pots are single-use plastic thrown away by the billion. A printable, right-sized pot with proper drainage — plus a saucer and a hanging option — lets households propagate and grow food from waste-stream or recycled filament.",
+      "es": "Las macetas de vivero son plástico de un solo uso desechado por miles de millones. Una maceta imprimible del tamaño exacto con buen drenaje — más plato y opción colgante — permite a los hogares propagar y cultivar alimentos con filamento reciclado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["plant", "pot", "planter", "saucer", "drainage", "garden", "household", "hyperobject", "commons"]
+}

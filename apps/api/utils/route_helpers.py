@@ -6,7 +6,6 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Optional
 
 from flask import g, jsonify, request
 
@@ -40,7 +39,7 @@ def cleanup_old_stl_files(parts: list[str], static_folder: str, prefix: str | No
             pass
 
 
-def safe_join_path(base_dir: str, filename: str) -> Optional[Path]:
+def safe_join_path(base_dir: str, filename: str) -> Path | None:
     """Safely join a base directory with a filename, guarding against path traversal.
 
     Returns the resolved Path if safe, or None if the path escapes base_dir.

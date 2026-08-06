@@ -2,10 +2,9 @@
 import hashlib
 import hmac
 import json
-
-import pytest
 from unittest.mock import patch
 
+import pytest
 
 # ---------------------------------------------------------------------------
 # Shared helpers

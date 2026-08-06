@@ -1,10 +1,11 @@
 """
 Unit tests for tasks/simulation_tasks.py
 """
-import time
-import pytest
-import sys
 import os
+import sys
+import time
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
@@ -17,7 +18,7 @@ def test_queue_simulation_returns_job_id():
 
 
 def test_get_job_status_queued_initially():
-    from tasks.simulation_tasks import queue_simulation, get_job_status
+    from tasks.simulation_tasks import get_job_status, queue_simulation
     job_id = queue_simulation("demo", [{"id": "body"}], {})
     status = get_job_status(job_id)
     assert status is not None
@@ -33,7 +34,7 @@ def test_get_job_status_unknown_returns_none():
 
 def test_simulation_completes_with_frames():
     """Simulation should complete and set status=success with frames populated."""
-    from tasks.simulation_tasks import queue_simulation, get_job_status
+    from tasks.simulation_tasks import get_job_status, queue_simulation
     job_id = queue_simulation("sentinel-gripper", [{"id": "housing"}], {"housing": {"pinned": True}})
 
     # Poll for up to 15 seconds (mock runs ~3s)
@@ -51,7 +52,7 @@ def test_simulation_completes_with_frames():
 
 def test_simulation_progress_increases():
     """Progress should reach 100 on success."""
-    from tasks.simulation_tasks import queue_simulation, get_job_status
+    from tasks.simulation_tasks import get_job_status, queue_simulation
     job_id = queue_simulation("test", [{"id": "body"}], {})
 
     deadline = time.time() + 15
@@ -66,7 +67,7 @@ def test_simulation_progress_increases():
 
 def test_separate_jobs_have_independent_state():
     """Two concurrent jobs must not share state."""
-    from tasks.simulation_tasks import queue_simulation, get_job_status
+    from tasks.simulation_tasks import get_job_status, queue_simulation
     job1 = queue_simulation("proj-a", [{"id": "a"}], {})
     job2 = queue_simulation("proj-b", [{"id": "b"}], {})
     assert job1 != job2

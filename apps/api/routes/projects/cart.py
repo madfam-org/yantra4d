@@ -5,15 +5,15 @@ Handles /api/projects/<slug>/bom/cart endpoint for BOM-to-cart pricing via Forge
 import json
 import logging
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, Response, jsonify, request
 
-from middleware.auth import require_tier
 from extensions import limiter
+from middleware.auth import require_tier
+from routes.projects.bom import _safe_eval_formula
+from services.integrations.forgesight import forgesight_client
+from utils.project_resolver import require_project
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
-from utils.project_resolver import require_project
-from services.integrations.forgesight import forgesight_client
-from routes.projects.bom import _safe_eval_formula
 
 cart_bp = Blueprint("cart", __name__)
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def get_cart(slug: str, project_dir) -> Response | tuple[Response, int]:
     manifest_path = project_dir / "project.json"
     if not manifest_path.is_file():
         return error_response("Project manifest not found", 404)
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         manifest = json.load(f)
 
     hardware = (manifest.get("bom") or {}).get("hardware")

@@ -2,15 +2,21 @@
 import json
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
-
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.editor.github_import import (
-    validate_repo_url, _build_clone_url, _clean_repo_url,
-    check_repo_exists, clone_repo, find_scad_files, check_manifest,
-    validate_repo, import_repo, sync_repo,
+    _build_clone_url,
+    _clean_repo_url,
+    check_manifest,
+    check_repo_exists,
+    clone_repo,
+    find_scad_files,
+    import_repo,
+    sync_repo,
+    validate_repo,
+    validate_repo_url,
 )
 
 

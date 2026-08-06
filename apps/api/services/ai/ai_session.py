@@ -3,15 +3,14 @@ In-memory or Redis-backed per-session conversation store.
 Auto-expires after 1 hour. Includes circuit breaker for Redis resilience,
 schema validation, distributed locking, and per-user session limits.
 """
-import time
-import uuid
+import json
 import logging
 import os
-import json
-from dataclasses import dataclass, field, asdict
+import time
+import uuid
+from dataclasses import asdict, dataclass, field
 
 import redis
-
 
 logger = logging.getLogger(__name__)
 

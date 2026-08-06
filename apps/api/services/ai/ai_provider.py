@@ -9,7 +9,7 @@ or OpenAI. The gateway URL comes from ``SELVA_BASE_URL`` (or an explicit
 ``AI_BASE_URL`` override); if neither is set the call fails closed.
 """
 import logging
-from typing import Iterator
+from collections.abc import Iterator
 
 from config import Config
 

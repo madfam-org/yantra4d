@@ -8,7 +8,7 @@ from flask import Blueprint, jsonify, request
 from config import Config
 from extensions import db
 from middleware.auth import optional_auth, require_auth
-from services.core.tier_service import load_tiers, resolve_tier, get_tier_limits
+from services.core.tier_service import get_tier_limits, load_tiers, resolve_tier
 from services.core.user_service import get_user_projects
 from utils.route_helpers import error_response
 

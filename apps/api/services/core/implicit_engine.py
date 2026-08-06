@@ -1,8 +1,9 @@
-import numpy as np
-from skimage.measure import marching_cubes
-import trimesh
-import logging
 import json
+import logging
+
+import numpy as np
+import trimesh
+from skimage.measure import marching_cubes
 
 logger = logging.getLogger(__name__)
 

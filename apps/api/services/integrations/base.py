@@ -107,8 +107,8 @@ class PrinterClient(ABC):
 
 def get_printer_client(printer_type: str, base_url: str, api_key: str) -> PrinterClient:
     """Factory function to create the appropriate printer client."""
-    from services.integrations.octoprint import OctoPrintClient
     from services.integrations.moonraker import MoonrakerClient
+    from services.integrations.octoprint import OctoPrintClient
 
     clients = {
         "octoprint": OctoPrintClient,

@@ -20,12 +20,12 @@ from pathlib import Path
 import requests
 from flask import Blueprint, g, jsonify, request
 
+import rate_limits
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
-import rate_limits
 
 logger = logging.getLogger(__name__)
 

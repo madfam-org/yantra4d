@@ -6,7 +6,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.ai.ai_code_editor import build_code_editor_prompt, parse_edits
 
-
 SAMPLE_MANIFEST = {
     "project": {"thumbnail": "thumb.png", "tags": ["test"], "difficulty": "beginner", "name": "Test Project"},
     "parameters": [

@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
-import yaml
+
 import pytest
+import yaml
 from openapi_schema_validator import validate
 
 # ---------------------------------------------------------------------------
@@ -9,7 +10,7 @@ from openapi_schema_validator import validate
 # ---------------------------------------------------------------------------
 
 OPENAPI_PATH = Path(__file__).parent.parent.parent.parent.parent / "docs" / "reference" / "openapi.yaml"
-with open(OPENAPI_PATH, "r") as f:
+with open(OPENAPI_PATH) as f:
     OPENAPI_SPEC = yaml.safe_load(f)
 
 def assert_matches_schema(data, schema_name):

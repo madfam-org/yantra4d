@@ -172,7 +172,7 @@ def import_repo(repo_url: str, slug: str, manifest: dict, github_token: str | No
         "source": {
             "type": "github",
             "repo_url": _clean_repo_url(repo_url),
-            "imported_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "imported_at": datetime.datetime.now(datetime.UTC).isoformat(),
         }
     }
     with open(project_dir / "project.meta.json", "w") as f:
@@ -215,7 +215,7 @@ def sync_repo(slug: str, github_token: str | None = None) -> dict:
             return result
 
         # Update sync timestamp
-        source["last_synced_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        source["last_synced_at"] = datetime.datetime.now(datetime.UTC).isoformat()
         with open(meta_path, "w") as f:
             json.dump(meta, f, indent=2)
 
@@ -247,7 +247,7 @@ def sync_repo(slug: str, github_token: str | None = None) -> dict:
             updated.append("project.json")
 
         # Update sync timestamp
-        source["last_synced_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        source["last_synced_at"] = datetime.datetime.now(datetime.UTC).isoformat()
         with open(meta_path, "w") as f:
             json.dump(meta, f, indent=2)
 

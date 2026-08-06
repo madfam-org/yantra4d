@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 try:
     from prometheus_client import (
+        CONTENT_TYPE_LATEST,
         Counter,
         Gauge,
         Histogram,
         generate_latest,
-        CONTENT_TYPE_LATEST,
     )
 
     RENDERS_TOTAL = Counter(

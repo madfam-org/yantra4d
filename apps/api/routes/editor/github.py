@@ -3,16 +3,15 @@ GitHub Import Blueprint — validate, import, and sync repos.
 """
 import logging
 
+from flask import Blueprint, jsonify, request
 
-from flask import Blueprint, request, jsonify
-
+import rate_limits
 from config import Config
 from extensions import limiter
-import rate_limits
 from middleware.auth import require_tier
-from utils.route_helpers import error_response, require_json_body
-from services.editor.github_import import validate_repo, import_repo, sync_repo
+from services.editor.github_import import import_repo, sync_repo, validate_repo
 from services.editor.github_token import get_github_token
+from utils.route_helpers import error_response, require_json_body
 from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)

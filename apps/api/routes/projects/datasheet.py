@@ -8,11 +8,11 @@ import io
 import json
 import logging
 
-from flask import Blueprint, request, Response
+from flask import Blueprint, Response, request
 
+from utils.project_resolver import require_project
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
-from utils.project_resolver import require_project
 
 datasheet_bp = Blueprint("datasheet", __name__)
 logger = logging.getLogger(__name__)
@@ -20,9 +20,15 @@ logger = logging.getLogger(__name__)
 try:
     from reportlab.lib import colors as rl_colors
     from reportlab.lib.pagesizes import A4
-    from reportlab.lib.units import mm
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
     from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.lib.units import mm
+    from reportlab.platypus import (
+        Paragraph,
+        SimpleDocTemplate,
+        Spacer,
+        Table,
+        TableStyle,
+    )
 
     HAS_REPORTLAB = True
 except ImportError:
@@ -33,7 +39,7 @@ def _load_manifest(project_dir):
     manifest_path = project_dir / "project.json"
     if not manifest_path.is_file():
         return None
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         return json.load(f)
 
 

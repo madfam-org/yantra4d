@@ -2,9 +2,9 @@
 import json
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -130,6 +130,7 @@ class TestAdminAPI:
     def test_list_projects_empty(self, client, monkeypatch):
         """When PROJECTS_DIR has no project subdirs with manifests, list returns no enriched projects."""
         import tempfile
+
         from config import Config
         with tempfile.TemporaryDirectory() as empty:
             monkeypatch.setattr(Config, "PROJECTS_DIR", Path(empty))

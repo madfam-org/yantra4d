@@ -7,9 +7,18 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.editor.git_operations import (
-    git_init, git_status, git_diff, git_commit, git_push, git_pull,
-    git_log, git_show_head, _run_git, _get_remote_url,
-    _make_askpass_env, _cleanup_askpass,
+    _cleanup_askpass,
+    _get_remote_url,
+    _make_askpass_env,
+    _run_git,
+    git_commit,
+    git_diff,
+    git_init,
+    git_log,
+    git_pull,
+    git_push,
+    git_show_head,
+    git_status,
 )
 
 

@@ -40,8 +40,9 @@ def _check_redis() -> tuple[bool, str]:
 def _check_analytics_db() -> tuple[bool, str]:
     """Check analytics DB connectivity via SQLAlchemy."""
     try:
-        from extensions import db
         from sqlalchemy import text
+
+        from extensions import db
         db.session.execute(text("SELECT 1"))
         db.session.rollback()  # don't hold open transactions
         uri = Config.SQLALCHEMY_DATABASE_URI

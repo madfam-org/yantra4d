@@ -2,12 +2,11 @@
 Unit tests for assembly_generator.py
 """
 from services.core.assembly_generator import (
+    _build_attachment_graph,
+    _topological_sort,
     generate_assembly_steps,
     merge_assembly_steps,
-    _topological_sort,
-    _build_attachment_graph,
 )
-
 
 # --- Fixtures ---
 

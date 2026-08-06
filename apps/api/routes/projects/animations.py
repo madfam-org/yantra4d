@@ -12,22 +12,26 @@ import json
 import logging
 import os
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, Response, jsonify, request
 
 from config import Config
 from manifest import get_manifest
 from middleware.auth import optional_auth
-from services.core.tier_service import resolve_tier, check_feature
-from services.engine.openscad import (
-    build_openscad_command,
-    run_render as run_openscad_render,
-)
+from services.core.implicit_engine import run_render as run_implicit_render
+from services.core.tier_service import check_feature, resolve_tier
 from services.engine.cadquery_engine import (
     build_cadquery_command,
+)
+from services.engine.cadquery_engine import (
     run_render as run_cadquery_render,
 )
-from services.core.implicit_engine import run_render as run_implicit_render
 from services.engine.format_converter import stl_to_glb
+from services.engine.openscad import (
+    build_openscad_command,
+)
+from services.engine.openscad import (
+    run_render as run_openscad_render,
+)
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 

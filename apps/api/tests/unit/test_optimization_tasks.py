@@ -1,9 +1,9 @@
 """
 Unit tests for tasks/optimization_tasks.py and services/simulation/optimizer.py
 """
-import time
-import sys
 import os
+import sys
+import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
@@ -62,7 +62,7 @@ class TestOptimizationTasks:
         assert len(job_id) == 36
 
     def test_initial_status_queued_or_running(self):
-        from tasks.optimization_tasks import queue_optimization, get_opt_status
+        from tasks.optimization_tasks import get_opt_status, queue_optimization
         job_id = queue_optimization("demo", {"blade_thickness": 2.0})
         status = get_opt_status(job_id)
         assert status["status"] in ("queued", "running")
@@ -74,7 +74,7 @@ class TestOptimizationTasks:
 
     def test_optimization_completes(self):
         """Full optimization loop should complete and produce best_params."""
-        from tasks.optimization_tasks import queue_optimization, get_opt_status
+        from tasks.optimization_tasks import get_opt_status, queue_optimization
         job_id = queue_optimization("sentinel-gripper", {"blade_thickness": 2.0})
 
         # 15 gens × 0.4s/step = ~6s; allow 20s
@@ -91,7 +91,7 @@ class TestOptimizationTasks:
 
     def test_optimization_logs_populated(self):
         """Completed jobs should expose human-readable generation logs."""
-        from tasks.optimization_tasks import queue_optimization, get_opt_status
+        from tasks.optimization_tasks import get_opt_status, queue_optimization
         job_id = queue_optimization("demo", {"blade_thickness": 2.0})
 
         deadline = time.time() + 20
@@ -107,7 +107,7 @@ class TestOptimizationTasks:
         assert any("Sigma" in line or "Gen" in line for line in logs)
 
     def test_two_jobs_independent(self):
-        from tasks.optimization_tasks import queue_optimization, get_opt_status
+        from tasks.optimization_tasks import get_opt_status, queue_optimization
         j1 = queue_optimization("proj-a", {"blade_thickness": 1.0})
         j2 = queue_optimization("proj-b", {"blade_thickness": 3.0})
         assert j1 != j2

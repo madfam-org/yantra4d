@@ -6,6 +6,7 @@ import hashlib
 import json
 
 from flask import Blueprint, make_response, request
+
 from manifest import get_manifest
 
 manifest_bp = Blueprint('manifest', __name__)

@@ -178,7 +178,7 @@ def _build_catalog() -> dict:
             slug = (data.get("project", {}) or {}).get("slug", child.name)
             try:
                 records.append(_build_record(slug, data, st.st_mtime))
-            except Exception:  # noqa: BLE001 — one bad manifest must not sink the catalog
+            except Exception:
                 logger.warning("catalog: skipping malformed manifest at %s", pj)
 
     facets = _compute_facets(records)

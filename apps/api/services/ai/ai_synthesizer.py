@@ -8,7 +8,7 @@ with the required project.json manifest bounds and CDG interfaces.
 import json
 import logging
 import re
-from typing import Iterator
+from collections.abc import Iterator
 
 from services.ai.ai_provider import stream_chat
 from services.ai.ai_session import append_message, get_messages
@@ -97,8 +97,9 @@ def stream_synthesis_response(session_id: str, message: str) -> Iterator[dict]:
         manifest = cartridge["manifest"]
         files = cartridge["files"]
         
-        from config import Config
         from pathlib import Path
+
+        from config import Config
         projects_dir = Path(Config.PROJECTS_DIR)
         
         new_project_dir = projects_dir / slug

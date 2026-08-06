@@ -1,6 +1,8 @@
 import json
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 
 @pytest.fixture
 def app(tmp_path):

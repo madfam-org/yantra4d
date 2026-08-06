@@ -1,9 +1,9 @@
 import builtins as _builtins
-import os
-import sys
 import json
 import logging
 import math
+import os
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     print(f"Executing CadQuery script: {script_path}")
 
     # Read the script
-    with open(script_path, 'r') as f:
+    with open(script_path) as f:
         script_content = f.read()
 
     # Create a sandboxed execution environment with restricted builtins

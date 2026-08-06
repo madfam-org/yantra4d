@@ -36,7 +36,7 @@ import logging
 import os
 import time
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
 from extensions import db
 from models.analytics import AnalyticsEvent

@@ -12,10 +12,10 @@ NopSCADlib vitamins/*.scad files. No OpenSCAD execution required.
 
 from __future__ import annotations
 
-import re
 import logging
-from pathlib import Path
+import re
 from functools import lru_cache
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 

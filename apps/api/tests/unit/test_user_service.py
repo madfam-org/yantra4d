@@ -1,7 +1,6 @@
 """Tests for user_service — upsert, touch_project, and query functions."""
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -19,6 +18,7 @@ def _make_claims(sub="janua|user-1", email="alice@example.com", name="Alice", ti
 def app():
     """Create a minimal Flask app with an in-memory SQLite database."""
     from flask import Flask
+
     from extensions import db
 
     test_app = Flask(__name__)
@@ -52,8 +52,8 @@ class TestUpsertUserFromClaims:
     """Tests for services.core.user_service.upsert_user_from_claims."""
 
     def test_creates_new_user_from_claims(self, ctx):
-        from services.core.user_service import upsert_user_from_claims
         from models.user import User
+        from services.core.user_service import upsert_user_from_claims
 
         claims = _make_claims()
         user = upsert_user_from_claims(claims)
@@ -71,8 +71,8 @@ class TestUpsertUserFromClaims:
         assert queried.id == user.id
 
     def test_updates_existing_user_on_repeat_upsert(self, ctx):
-        from services.core.user_service import upsert_user_from_claims
         from models.user import User
+        from services.core.user_service import upsert_user_from_claims
 
         claims_v1 = _make_claims(email="alice@v1.com", name="Alice V1", tier="essentials")
         user_v1 = upsert_user_from_claims(claims_v1)
@@ -131,8 +131,11 @@ class TestTouchUserProject:
     """Tests for services.core.user_service.touch_user_project."""
 
     def test_creates_new_association(self, ctx):
-        from services.core.user_service import upsert_user_from_claims, touch_user_project
         from models.user import UserProject
+        from services.core.user_service import (
+            touch_user_project,
+            upsert_user_from_claims,
+        )
 
         user = upsert_user_from_claims(_make_claims())
         assoc = touch_user_project(user, "rugged-box")
@@ -146,7 +149,10 @@ class TestTouchUserProject:
         assert UserProject.query.count() == 1
 
     def test_updates_last_accessed_on_repeat_touch(self, ctx):
-        from services.core.user_service import upsert_user_from_claims, touch_user_project
+        from services.core.user_service import (
+            touch_user_project,
+            upsert_user_from_claims,
+        )
 
         user = upsert_user_from_claims(_make_claims())
         assoc1 = touch_user_project(user, "rugged-box")
@@ -162,13 +168,19 @@ class TestTouchUserProject:
         assert touch_user_project(None, "rugged-box") is None
 
     def test_returns_none_for_empty_slug(self, ctx):
-        from services.core.user_service import upsert_user_from_claims, touch_user_project
+        from services.core.user_service import (
+            touch_user_project,
+            upsert_user_from_claims,
+        )
 
         user = upsert_user_from_claims(_make_claims())
         assert touch_user_project(user, "") is None
 
     def test_supports_custom_role(self, ctx):
-        from services.core.user_service import upsert_user_from_claims, touch_user_project
+        from services.core.user_service import (
+            touch_user_project,
+            upsert_user_from_claims,
+        )
 
         user = upsert_user_from_claims(_make_claims())
         assoc = touch_user_project(user, "shared-project", role="viewer")
@@ -184,7 +196,10 @@ class TestGetUserProjects:
     """Tests for services.core.user_service.get_user_projects."""
 
     def test_returns_empty_for_new_user(self, ctx):
-        from services.core.user_service import upsert_user_from_claims, get_user_projects
+        from services.core.user_service import (
+            get_user_projects,
+            upsert_user_from_claims,
+        )
 
         user = upsert_user_from_claims(_make_claims())
         projects = get_user_projects(user)
@@ -193,9 +208,9 @@ class TestGetUserProjects:
 
     def test_returns_projects_sorted_by_last_accessed(self, ctx):
         from services.core.user_service import (
-            upsert_user_from_claims,
-            touch_user_project,
             get_user_projects,
+            touch_user_project,
+            upsert_user_from_claims,
         )
 
         user = upsert_user_from_claims(_make_claims())
@@ -211,9 +226,9 @@ class TestGetUserProjects:
 
     def test_project_dicts_have_expected_keys(self, ctx):
         from services.core.user_service import (
-            upsert_user_from_claims,
-            touch_user_project,
             get_user_projects,
+            touch_user_project,
+            upsert_user_from_claims,
         )
 
         user = upsert_user_from_claims(_make_claims())
@@ -236,7 +251,7 @@ class TestGetUserBySub:
     """Tests for services.core.user_service.get_user_by_sub."""
 
     def test_returns_user_when_exists(self, ctx):
-        from services.core.user_service import upsert_user_from_claims, get_user_by_sub
+        from services.core.user_service import get_user_by_sub, upsert_user_from_claims
 
         upsert_user_from_claims(_make_claims(sub="janua|lookup-test"))
         user = get_user_by_sub("janua|lookup-test")

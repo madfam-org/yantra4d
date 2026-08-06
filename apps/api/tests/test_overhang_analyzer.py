@@ -1,13 +1,14 @@
 """Tests for overhang angle analyzer."""
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 import numpy as np
 import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 from services.geometry.overhang_analyzer import (
-    compute_overhang_angles,
-    _empty_result,
     DEFAULT_OVERHANG_THRESHOLD_DEG,
+    _empty_result,
+    compute_overhang_angles,
 )
 
 

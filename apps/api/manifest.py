@@ -139,7 +139,7 @@ class ProjectManifest:
         """Returns {part_id: absolute_path} for parts with static_stl defined."""
         result = {}
         for p in self.parts:
-            if "static_stl" in p and p["static_stl"]:
+            if p.get("static_stl"):
                 result[p["id"]] = self.project_dir / p["static_stl"]
         return result
 
@@ -219,7 +219,7 @@ class ManifestService:
     """Service for managing project manifests."""
 
     def __init__(self):
-        self._manifest_cache: dict[str, "ProjectManifest"] = {}
+        self._manifest_cache: dict[str, ProjectManifest] = {}
 
     def discover_projects(self) -> list[dict]:
         """Scan all CARTRIDGES_DIRS for projects, return metadata list."""
@@ -234,7 +234,7 @@ class ManifestService:
                 manifest_path = child / "project.json"
                 if child.is_dir() and manifest_path.exists():
                     try:
-                        with open(manifest_path, "r") as f:
+                        with open(manifest_path) as f:
                             data = json.load(f)
                             
                         self._validate_manifest_strictness(data, manifest_path)
@@ -261,7 +261,7 @@ class ManifestService:
             manifest_path = Config.SCAD_DIR / "project.json"
             if manifest_path.exists():
                 try:
-                    with open(manifest_path, "r") as f:
+                    with open(manifest_path) as f:
                         data = json.load(f)
                         
                     self._validate_manifest_strictness(data, manifest_path)
@@ -348,7 +348,7 @@ class ManifestService:
         logger.info(f"Loading project manifest from {manifest_path}")
 
         try:
-            with open(manifest_path, "r") as f:
+            with open(manifest_path) as f:
                 data = json.load(f)
         except FileNotFoundError:
             logger.error(f"Manifest not found: {manifest_path}")

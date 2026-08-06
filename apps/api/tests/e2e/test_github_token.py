@@ -1,12 +1,15 @@
 """Tests for GitHub token extraction and validation service."""
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
-
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.editor.github_token import get_github_token, _fetch_github_token_from_janua, validate_github_token
+from services.editor.github_token import (
+    _fetch_github_token_from_janua,
+    get_github_token,
+    validate_github_token,
+)
 
 
 class TestGetGithubToken:

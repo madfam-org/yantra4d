@@ -1,5 +1,7 @@
-import trimesh
 import sys
+
+import trimesh
+
 
 def main():
     if len(sys.argv) < 2:

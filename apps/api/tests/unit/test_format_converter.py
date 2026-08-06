@@ -1,7 +1,11 @@
 """Unit tests for mesh format converter."""
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from services.engine.format_converter import stl_to_glb, convert_mesh, TRIMESH_EXPORT_FORMATS
+from services.engine.format_converter import (
+    TRIMESH_EXPORT_FORMATS,
+    convert_mesh,
+    stl_to_glb,
+)
 
 
 class TestStlToGlb:

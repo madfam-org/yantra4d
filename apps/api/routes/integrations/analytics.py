@@ -7,7 +7,7 @@ import json
 import logging
 import time
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, Response, jsonify, request
 from sqlalchemy import func
 
 from extensions import db

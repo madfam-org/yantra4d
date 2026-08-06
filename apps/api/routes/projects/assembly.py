@@ -16,11 +16,14 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from middleware.auth import require_tier
+from services.core.assembly_generator import (
+    generate_assembly_steps,
+    merge_assembly_steps,
+)
+from services.core.scad_analyzer import analyze_directory
+from utils.project_resolver import require_project
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
-from utils.project_resolver import require_project
-from services.core.scad_analyzer import analyze_directory
-from services.core.assembly_generator import generate_assembly_steps, merge_assembly_steps
 
 assembly_bp = Blueprint("assembly", __name__)
 logger = logging.getLogger(__name__)

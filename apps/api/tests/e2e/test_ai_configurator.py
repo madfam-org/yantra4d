@@ -6,7 +6,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.ai.ai_configurator import build_configurator_prompt, parse_response
 
-
 SAMPLE_MANIFEST = {
     "project": {"thumbnail": "thumb.png", "tags": ["test"], "difficulty": "beginner", "name": "Test Project"},
     "parameters": [

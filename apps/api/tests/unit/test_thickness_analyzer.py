@@ -1,14 +1,15 @@
 """Tests for wall thickness analyzer."""
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 import numpy as np
 import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 from services.geometry.thickness_analyzer import (
-    compute_wall_thickness,
-    _empty_result,
-    THIN_WALL_THRESHOLD_MM,
     RAY_ORIGIN_OFFSET,
+    THIN_WALL_THRESHOLD_MM,
+    _empty_result,
+    compute_wall_thickness,
 )
 
 

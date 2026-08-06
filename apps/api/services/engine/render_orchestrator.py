@@ -13,9 +13,9 @@ import redis
 
 from config import Config
 from manifest import get_manifest
+from services.engine.format_converter import convert_mesh, stl_to_glb
 from services.engine.openscad import compute_scad_hash, validate_params
 from services.engine.render_cache import render_cache
-from services.engine.format_converter import stl_to_glb, convert_mesh
 from services.engine.render_contract import (
     RENDER_EVENT_CANCELLED,
     RENDER_EVENT_COMPLETE,

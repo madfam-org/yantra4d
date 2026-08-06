@@ -55,8 +55,7 @@ class TestAIConfigurator:
         # Extract JSON from response (may be wrapped in markdown code block)
         if "```" in text:
             text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
+            text = text.removeprefix("json")
             text = text.strip()
 
         result = json.loads(text)
@@ -91,8 +90,7 @@ class TestAIConfigurator:
 
         if "```" in text:
             text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
+            text = text.removeprefix("json")
             text = text.strip()
 
         result = json.loads(text)
@@ -132,8 +130,7 @@ class TestAICodeEditor:
 
         if "```" in text:
             text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
+            text = text.removeprefix("json")
             text = text.strip()
 
         result = json.loads(text)

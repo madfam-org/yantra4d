@@ -2,10 +2,10 @@
 CadQuery Service
 Handles executing Python CadQuery scripts via a subprocess.
 """
+import json
 import logging
 import os
 import subprocess
-import json
 import threading
 import time
 from collections.abc import Callable
@@ -117,7 +117,7 @@ def stream_render(
         yield json.dumps({
             'event': 'error',
             'part': part,
-            'message': f'Internal Process Error: {str(e)}'
+            'message': f'Internal Process Error: {e!s}'
         })
         return
 

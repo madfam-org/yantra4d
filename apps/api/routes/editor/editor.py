@@ -4,14 +4,14 @@ SCAD File CRUD API — read/write/create/delete .scad files within a project.
 import logging
 from pathlib import Path
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
-from extensions import limiter
 import rate_limits
+from extensions import limiter
 from middleware.auth import require_tier
+from utils.project_resolver import require_project
 from utils.route_helpers import error_response, safe_join_path
 from utils.validators import require_valid_slug
-from utils.project_resolver import require_project
 
 logger = logging.getLogger(__name__)
 

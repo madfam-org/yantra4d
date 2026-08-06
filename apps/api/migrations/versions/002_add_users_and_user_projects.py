@@ -7,8 +7,8 @@ Create Date: 2026-04-14
 Persistent user storage: stores Janua JWT subjects with tier, preferences,
 and project associations.
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "002"

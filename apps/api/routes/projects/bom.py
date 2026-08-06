@@ -10,12 +10,12 @@ import logging
 import operator
 import os
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, Response, jsonify, request
 
 from config import Config
+from utils.project_resolver import require_project
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
-from utils.project_resolver import require_project
 
 bom_bp = Blueprint("bom", __name__)
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ def _load_manifest(slug: str):
     manifest_path = os.path.join(projects_dir, slug, "project.json")
     if not os.path.isfile(manifest_path):
         return None
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         return json.load(f)
 
 
@@ -87,7 +87,7 @@ def get_bom(slug: str, project_dir) -> Response | tuple[Response, int]:
     manifest_path = project_dir / "project.json"
     if not manifest_path.is_file():
         return error_response("Project manifest not found", 404)
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         manifest = json.load(f)
 
     hardware = (manifest.get("bom") or {}).get("hardware")

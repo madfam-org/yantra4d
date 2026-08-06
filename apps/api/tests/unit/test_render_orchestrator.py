@@ -5,9 +5,9 @@ Focuses on the _post_render_convert helper which was fixed to return
 separate url (download) and viewer_url (GLB) fields rather than replacing
 the STL path with the GLB path unconditionally.
 """
-import pytest
 from unittest.mock import patch
 
+import pytest
 
 # ---------------------------------------------------------------------------
 # _post_render_convert
@@ -149,7 +149,7 @@ class TestPostRenderConvert:
 
 def test_render_worker_unavailable_when_heartbeat_missing(monkeypatch):
     """Render worker is unavailable when no heartbeat key exists in Redis."""
-    import services.engine.render_orchestrator as render_orchestrator
+    from services.engine import render_orchestrator
 
     class _FakeRedis:
         def get(self, _key):
@@ -162,7 +162,8 @@ def test_render_worker_unavailable_when_heartbeat_missing(monkeypatch):
 def test_render_worker_available_with_recent_heartbeat(monkeypatch):
     """Render worker becomes available when heartbeat timestamp is fresh."""
     import time
-    import services.engine.render_orchestrator as render_orchestrator
+
+    from services.engine import render_orchestrator
 
     class _FakeRedis:
         def get(self, _key):
@@ -176,7 +177,8 @@ def test_render_worker_available_with_recent_heartbeat(monkeypatch):
 def test_render_worker_status_includes_queue_and_active_jobs(monkeypatch):
     """Render worker status includes operational queue depth and active job count."""
     import time
-    import services.engine.render_orchestrator as render_orchestrator
+
+    from services.engine import render_orchestrator
 
     class _FakeRedis:
         def get(self, _key):
@@ -200,7 +202,7 @@ def test_render_worker_status_includes_queue_and_active_jobs(monkeypatch):
 
 def test_render_parts_sync_rejects_when_worker_unavailable(monkeypatch):
     """Sync rendering should reject quickly if no worker heartbeat is available."""
-    import services.engine.render_orchestrator as render_orchestrator
+    from services.engine import render_orchestrator
 
     monkeypatch.setattr(render_orchestrator, "is_render_worker_available", lambda: False)
     generated_parts, message, cache_stats = render_orchestrator.render_parts_sync(
@@ -227,7 +229,8 @@ def test_render_parts_sync_rejects_when_worker_unavailable(monkeypatch):
 def test_render_parts_stream_emits_unavailable_error_when_worker_unavailable(monkeypatch):
     """Stream rendering should emit explicit unavailable error and complete events."""
     import json
-    import services.engine.render_orchestrator as render_orchestrator
+
+    from services.engine import render_orchestrator
 
     monkeypatch.setattr(render_orchestrator, "is_render_worker_available", lambda: False)
     stream = render_orchestrator.render_parts_stream(

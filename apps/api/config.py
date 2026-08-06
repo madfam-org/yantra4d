@@ -1,8 +1,8 @@
 import logging
 import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-import sys
 
 logger = logging.getLogger(__name__)
 

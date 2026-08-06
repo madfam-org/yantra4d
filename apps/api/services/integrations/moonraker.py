@@ -10,7 +10,7 @@ import logging
 
 import requests
 
-from services.integrations.base import PrinterClient, UPLOAD_TIMEOUT
+from services.integrations.base import UPLOAD_TIMEOUT, PrinterClient
 
 logger = logging.getLogger(__name__)
 

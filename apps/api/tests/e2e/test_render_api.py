@@ -222,7 +222,9 @@ class TestRenderPayloadValidation:
 
     def test_render_payload_extracts_ignore_cache(self, monkeypatch):
         """_extract_render_payload correctly extracts ignore_cache flag."""
-        from services.engine.render_orchestrator import extract_render_payload as _extract_render_payload
+        from services.engine.render_orchestrator import (
+            extract_render_payload as _extract_render_payload,
+        )
 
         class MockManifest:
             def __init__(self):
@@ -510,8 +512,8 @@ class TestTrimeshConversion:
 
     def test_openscad_still_rejects_unsupported_formats(self):
         """OpenSCAD should still reject formats not in native or TRIMESH_CONVERTIBLE."""
-        from services.engine.render_orchestrator import TRIMESH_CONVERTIBLE
         from config import Config
+        from services.engine.render_orchestrator import TRIMESH_CONVERTIBLE
         assert "exe" not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS
         assert "exe" not in TRIMESH_CONVERTIBLE
 

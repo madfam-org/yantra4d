@@ -1,5 +1,7 @@
 import json
+
 import pytest
+
 
 def _create_project(tmp_path, slug="assembly-test", **kwargs):
     project_dir = tmp_path / slug

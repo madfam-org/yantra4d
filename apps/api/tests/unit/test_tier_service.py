@@ -2,10 +2,17 @@
 import sys
 from pathlib import Path
 
-
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.core.tier_service import resolve_tier, has_tier, get_tier_limits, get_render_limit, get_render_limit_for_project, check_feature, load_tiers
+from services.core.tier_service import (
+    check_feature,
+    get_render_limit,
+    get_render_limit_for_project,
+    get_tier_limits,
+    has_tier,
+    load_tiers,
+    resolve_tier,
+)
 
 
 class TestResolveTier:

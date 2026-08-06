@@ -160,7 +160,7 @@ def generate_manifest(directory: Path, slug: str | None = None) -> dict:
     }
 
 
-def _infer_step(value: float | int) -> float:
+def _infer_step(value: float) -> float:
     """Infer a reasonable step size from a numeric value."""
     if isinstance(value, int) or (isinstance(value, float) and value == int(value)):
         return 1

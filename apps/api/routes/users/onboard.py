@@ -8,11 +8,11 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from flask import Blueprint, g, request, jsonify
+from flask import Blueprint, g, jsonify, request
 
+import rate_limits
 from config import Config
 from extensions import limiter
-import rate_limits
 from manifest import invalidate_cache
 from middleware.auth import require_role
 from services.core.manifest_generator import generate_manifest

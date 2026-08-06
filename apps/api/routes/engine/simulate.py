@@ -6,17 +6,17 @@ import glob
 import logging
 import os
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
+import rate_limits
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
 from services.geometry.stress_analyzer import compute_stress_field
-from tasks.simulation_tasks import queue_simulation, get_job_status
-from tasks.optimization_tasks import queue_optimization, get_opt_status
+from tasks.optimization_tasks import get_opt_status, queue_optimization
+from tasks.simulation_tasks import get_job_status, queue_simulation
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
-import rate_limits
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ def simulate_stress(slug: str):
         return error_response("Render file disappeared during simulation", 404)
     except Exception as e:
         logger.exception("FEA simulation failed for %s", slug)
-        return error_response(f"Simulation failed: {str(e)}", 500)
+        return error_response(f"Simulation failed: {e!s}", 500)
 
     return jsonify({
         "status": "success",
@@ -95,7 +95,7 @@ def start_physics_simulation(slug: str):
         job_id = queue_simulation(slug, parts, kinematics)
     except Exception as e:
         logger.exception("Failed to dispatch simulation job")
-        return error_response(f"Job dispatch failed: {str(e)}", 500)
+        return error_response(f"Job dispatch failed: {e!s}", 500)
         
     return jsonify({
         "status": "success",
@@ -144,7 +144,7 @@ def start_optimization(slug: str):
         job_id = queue_optimization(slug, original_params)
     except Exception as e:
         logger.exception("Failed to dispatch topology optimizer")
-        return error_response(f"Job dispatch failed: {str(e)}", 500)
+        return error_response(f"Job dispatch failed: {e!s}", 500)
         
     return jsonify({
         "status": "success",

@@ -126,9 +126,7 @@ class RenderCache:
         with self._lock:
             entry = self._cache.get(key)
             if entry is not None:
-                if time.time() - entry["ts"] > self._ttl:
-                    self._cache.pop(key, None)
-                elif not os.path.isfile(entry["path"]):
+                if time.time() - entry["ts"] > self._ttl or not os.path.isfile(entry["path"]):
                     self._cache.pop(key, None)
                 else:
                     self._cache.move_to_end(key)

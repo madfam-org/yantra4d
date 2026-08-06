@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "Fishing Rod Holder",
+    "slug": "rod-holder",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Holds a fishing rod by its butt in a cradle socket sized to the rod diameter. A wall/garage screw plate, a boat-rail clamp that angles the rod over the water, and a ground stake you push into the bank so the rod stands by itself.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sostiene una caña de pescar por su base en un casquillo dimensionado al diámetro de la caña. Una placa atornillable de pared/garaje, una abrazadera para tubo de barco que inclina la caña sobre el agua, y una estaca de tierra que clavas en la orilla para que la caña se sostenga sola.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/rod-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["fishing", "rod", "holder", "rack", "boat", "bank", "outdoor", "angling", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "wall_holder",
+      "label": { "en": "Wall Holder", "es": "Soporte de Pared" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wall_holder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "rail_holder",
+      "label": { "en": "Rail Clamp", "es": "Abrazadera de Tubo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rail_holder"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 11 }
+    },
+    {
+      "id": "ground_stake",
+      "label": { "en": "Ground Stake", "es": "Estaca de Tierra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ground_stake"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "wall_holder", "label": { "en": "Wall Holder", "es": "Soporte de Pared" }, "render_mode": 0, "color": "#0369a1" },
+    { "id": "rail_holder", "label": { "en": "Rail Clamp", "es": "Abrazadera de Tubo" }, "render_mode": 0, "color": "#0284c7" },
+    { "id": "ground_stake", "label": { "en": "Ground Stake", "es": "Estaca de Tierra" }, "render_mode": 0, "color": "#075985" }
+  ],
+  "parameter_groups": [
+    { "id": "rod", "label": { "en": "Rod & Socket", "es": "Caña y Casquillo" } },
+    { "id": "mount", "label": { "en": "Mount", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "rod_dia", "type": "slider", "default": 26, "min": 10, "max": 45, "step": 1,
+      "group": "rod", "modes": ["wall_holder", "rail_holder", "ground_stake"],
+      "label": { "en": "Rod Butt Diameter (mm)", "es": "Diámetro de la Base (mm)" },
+      "tooltip": { "en": "Diameter of the rod handle/butt the socket cradles", "es": "Diámetro del mango/base de la caña que sostiene el casquillo" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "socket_len", "type": "slider", "default": 70, "min": 35, "max": 140, "step": 1,
+      "group": "rod", "modes": ["wall_holder", "rail_holder", "ground_stake"],
+      "label": { "en": "Socket Depth (mm)", "es": "Profundidad del Casquillo (mm)" },
+      "tooltip": { "en": "How deep the rod seats into the socket", "es": "Qué tan profundo se asienta la caña en el casquillo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.2,
+      "group": "rod", "modes": ["wall_holder", "rail_holder", "ground_stake"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body wall thickness", "es": "Grosor de la pared del cuerpo" }
+    },
+    {
+      "id": "lean", "type": "slider", "default": 15, "min": 0, "max": 35, "step": 1,
+      "group": "mount", "modes": ["wall_holder", "rail_holder"],
+      "label": { "en": "Socket Lean (deg)", "es": "Inclinación del Casquillo (grados)" },
+      "tooltip": { "en": "Angle the socket leans so the rod tips forward/out", "es": "Ángulo de inclinación del casquillo para que la caña se incline hacia adelante/afuera" }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 50, "min": 30, "max": 120, "step": 1,
+      "group": "mount", "modes": ["wall_holder"],
+      "label": { "en": "Wall Plate Width (mm)", "es": "Ancho de Placa (mm)" },
+      "tooltip": { "en": "Width of the wall screw plate", "es": "Ancho de la placa atornillable de pared" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.5, "min": 2.5, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["wall_holder"], "advanced": true,
+      "label": { "en": "Screw Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Diameter of the wall screw holes", "es": "Diámetro de los orificios de tornillo de pared" }
+    },
+    {
+      "id": "rail_dia", "type": "slider", "default": 25, "min": 12, "max": 45, "step": 1,
+      "group": "mount", "modes": ["rail_holder"],
+      "label": { "en": "Rail Tube Diameter (mm)", "es": "Diámetro del Tubo (mm)" },
+      "tooltip": { "en": "Diameter of the boat/rail tube the clamp grips", "es": "Diámetro del tubo de barco/baranda que sujeta la abrazadera" }
+    },
+    {
+      "id": "stake_len", "type": "slider", "default": 160, "min": 90, "max": 300, "step": 5,
+      "group": "mount", "modes": ["ground_stake"],
+      "label": { "en": "Stake Length (mm)", "es": "Largo de la Estaca (mm)" },
+      "tooltip": { "en": "Length of the ground spike below the socket", "es": "Longitud de la punta de tierra bajo el casquillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "garage_rack", "mode": "wall_holder",
+      "label": { "en": "Garage Wall Rack", "es": "Rack de Pared para Garaje" },
+      "values": { "rod_dia": 26, "socket_len": 70, "lean": 15 }
+    },
+    {
+      "id": "boat_rail", "mode": "rail_holder",
+      "label": { "en": "Boat Rail Clamp", "es": "Abrazadera de Baranda" },
+      "values": { "rod_dia": 26, "rail_dia": 25, "lean": 20 }
+    },
+    {
+      "id": "bank_stake", "mode": "ground_stake",
+      "label": { "en": "Bank Fishing Stake", "es": "Estaca de Orilla" },
+      "values": { "rod_dia": 26, "stake_len": 180 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "socket_len >= 35",
+      "severity": "warning",
+      "message": { "en": "A shallow socket may not hold the rod securely", "es": "Un casquillo poco profundo puede no sujetar bien la caña" }
+    },
+    {
+      "expression": "wall >= 2.5",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.5 mm", "es": "La pared debe ser de al menos 2.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -220, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "rod_cradle",
+        "label": { "en": "Rod Cradle", "es": "Casquillo de Caña" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["rod_dia", "socket_len", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Rod holders are cheap plastic that never fit a specific rod or mount; one socket geometry printable as a wall rack, rail clamp, or bank stake lets any angler store and fish with gear sized to their own rod.",
+      "es": "Los porta-cañas son plástico barato que nunca ajusta a una caña o montaje específico; una geometría de casquillo imprimible como rack de pared, abrazadera o estaca permite a cualquier pescador guardar y pescar con equipo dimensionado a su propia caña."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["fishing", "rod", "holder", "boat", "outdoor", "commercial", "hyperobject", "commons"]
+}

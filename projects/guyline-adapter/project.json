@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "Guy-Line Adapter Set",
+    "slug": "guyline-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Lightweight tent and tarp hardware sized to your guy-line cord. A 3-hole friction line tensioner, a tarp edge clip that grips without a grommet, and a pole tip that caps an improvised pole. The cord-hole geometry is shared across the set.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herraje ligero para carpas y lonas dimensionado a tu cuerda de tensado. Un tensor de línea de 3 orificios por fricción, un clip de borde de lona que agarra sin ojal, y una punta de poste que remata un poste improvisado. La geometría del orificio de cuerda es compartida en todo el conjunto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/guyline-adapter.webp",
+    "difficulty": "beginner",
+    "tags": ["tent", "tarp", "camping", "guyline", "tensioner", "outdoor", "cord", "hiking", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "line_tensioner",
+      "label": { "en": "Line Tensioner", "es": "Tensor de Línea" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["line_tensioner"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 7 }
+    },
+    {
+      "id": "tarp_clip",
+      "label": { "en": "Tarp Clip", "es": "Clip de Lona" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tarp_clip"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 7 }
+    },
+    {
+      "id": "pole_tip",
+      "label": { "en": "Pole Tip", "es": "Punta de Poste" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pole_tip"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "line_tensioner", "label": { "en": "Line Tensioner", "es": "Tensor de Línea" }, "render_mode": 0, "color": "#ca8a04" },
+    { "id": "tarp_clip", "label": { "en": "Tarp Clip", "es": "Clip de Lona" }, "render_mode": 0, "color": "#eab308" },
+    { "id": "pole_tip", "label": { "en": "Pole Tip", "es": "Punta de Poste" }, "render_mode": 0, "color": "#a16207" }
+  ],
+  "parameter_groups": [
+    { "id": "cord", "label": { "en": "Cord & Body", "es": "Cuerda y Cuerpo" } },
+    { "id": "variant", "label": { "en": "Variant Options", "es": "Opciones de Variante" } }
+  ],
+  "parameters": [
+    {
+      "id": "cord_dia", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5,
+      "group": "cord", "modes": ["line_tensioner", "tarp_clip", "pole_tip"],
+      "label": { "en": "Cord Diameter (mm)", "es": "Diámetro de Cuerda (mm)" },
+      "tooltip": { "en": "Guy-line cord diameter — sizes every cord hole", "es": "Diámetro de la cuerda de tensado — dimensiona cada orificio de cuerda" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thick", "type": "slider", "default": 5.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "cord", "modes": ["line_tensioner", "tarp_clip", "pole_tip"],
+      "label": { "en": "Body Thickness (mm)", "es": "Grosor del Cuerpo (mm)" },
+      "tooltip": { "en": "Thickness of the tensioner plate / clip jaw", "es": "Grosor de la placa del tensor / mandíbula del clip" }
+    },
+    {
+      "id": "holes", "type": "slider", "default": 3, "min": 2, "max": 4, "step": 1,
+      "group": "variant", "modes": ["line_tensioner"],
+      "label": { "en": "Tensioner Holes", "es": "Orificios del Tensor" },
+      "tooltip": { "en": "Number of cord holes (3 is the classic triangle)", "es": "Número de orificios de cuerda (3 es el triángulo clásico)" }
+    },
+    {
+      "id": "tarp_gap", "type": "slider", "default": 2.0, "min": 0.5, "max": 8.0, "step": 0.5,
+      "group": "variant", "modes": ["tarp_clip"],
+      "label": { "en": "Tarp Thickness (mm)", "es": "Grosor de Lona (mm)" },
+      "tooltip": { "en": "Thickness of the tarp edge the clip pinches", "es": "Grosor del borde de lona que pellizca el clip" }
+    },
+    {
+      "id": "pole_dia", "type": "slider", "default": 16, "min": 8, "max": 40, "step": 1,
+      "group": "variant", "modes": ["pole_tip"],
+      "label": { "en": "Pole Diameter (mm)", "es": "Diámetro del Poste (mm)" },
+      "tooltip": { "en": "Diameter of the stick/pole the tip caps", "es": "Diámetro del palo/poste que remata la punta" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_tensioner", "mode": "line_tensioner",
+      "label": { "en": "Standard 3-Hole Tensioner", "es": "Tensor 3 Orificios Estándar" },
+      "values": { "cord_dia": 3, "holes": 3 }
+    },
+    {
+      "id": "tarp_tieout", "mode": "tarp_clip",
+      "label": { "en": "Tarp Tie-Out Clip", "es": "Clip de Amarre para Lona" },
+      "values": { "cord_dia": 3, "tarp_gap": 2 }
+    },
+    {
+      "id": "trekking_pole_tip", "mode": "pole_tip",
+      "label": { "en": "Improvised Pole Tip", "es": "Punta de Poste Improvisado" },
+      "values": { "pole_dia": 16, "cord_dia": 3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thick >= 3.0",
+      "severity": "warning",
+      "message": { "en": "A thin tensioner may not grip the cord", "es": "Un tensor delgado puede no sujetar la cuerda" }
+    },
+    {
+      "expression": "cord_dia <= 8.0",
+      "severity": "error",
+      "message": { "en": "Cord diameter out of range", "es": "Diámetro de cuerda fuera de rango" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [50, 50, 45] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 1, "per_part": 7,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 45
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "guyline_tensioner",
+        "label": { "en": "Guy-Line Tensioner", "es": "Tensor de Guía" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["cord_dia", "thick", "holes"]
+      },
+      {
+        "id": "cord_hole",
+        "label": { "en": "Cord Hole", "es": "Orificio de Cuerda" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["cord_dia"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Guy-line hardware is trivially lost and disproportionately expensive; a printable set sized to any cord lets campers and disaster-relief shelters pitch tarps and tents with scrap line and sticks, no proprietary parts.",
+      "es": "El herraje de tensado se pierde con facilidad y es desproporcionadamente caro; un conjunto imprimible dimensionado a cualquier cuerda permite a campistas y refugios de emergencia montar lonas y carpas con cuerda y palos improvisados, sin piezas propietarias."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["tent", "tarp", "camping", "guyline", "outdoor", "household", "hyperobject", "commons"]
+}

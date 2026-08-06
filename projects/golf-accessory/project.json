@@ -1,0 +1,153 @@
+{
+  "project": {
+    "name": "Golf Accessory Set",
+    "slug": "golf-accessory",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Small course accessories sized to a standard golf ball (42.7 mm) and tee. A tee holder that carries a row of tees, a coin-style ball marker, and an alignment tool that cradles the ball so you can draw a straight putting line.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Pequeños accesorios de campo dimensionados a una pelota de golf estándar (42.7 mm) y a un tee. Un porta-tees que lleva una fila de tees, un marcador de pelota estilo moneda, y una herramienta de alineación que sostiene la pelota para trazar una línea recta de putt.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/golf-accessory.webp",
+    "difficulty": "beginner",
+    "tags": ["golf", "tee", "ball-marker", "alignment", "putting", "accessory", "sports", "outdoor", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tee_holder",
+      "label": { "en": "Tee Holder", "es": "Porta-Tees" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tee_holder"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "ball_marker",
+      "label": { "en": "Ball Marker", "es": "Marcador de Pelota" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ball_marker"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 7 }
+    },
+    {
+      "id": "alignment_tool",
+      "label": { "en": "Alignment Tool", "es": "Herramienta de Alineación" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["alignment_tool"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "tee_holder", "label": { "en": "Tee Holder", "es": "Porta-Tees" }, "render_mode": 0, "color": "#65a30d" },
+    { "id": "ball_marker", "label": { "en": "Ball Marker", "es": "Marcador de Pelota" }, "render_mode": 0, "color": "#84cc16" },
+    { "id": "alignment_tool", "label": { "en": "Alignment Tool", "es": "Herramienta de Alineación" }, "render_mode": 0, "color": "#4d7c0f" }
+  ],
+  "parameter_groups": [
+    { "id": "sizes", "label": { "en": "Ball & Tee", "es": "Pelota y Tee" } },
+    { "id": "variant", "label": { "en": "Variant Options", "es": "Opciones de Variante" } }
+  ],
+  "parameters": [
+    {
+      "id": "ball_dia", "type": "slider", "default": 42.7, "min": 38.0, "max": 46.0, "step": 0.1,
+      "group": "sizes", "modes": ["alignment_tool"],
+      "label": { "en": "Ball Diameter (mm)", "es": "Diámetro de Pelota (mm)" },
+      "tooltip": { "en": "Golf ball diameter — the R&A/USGA standard is 42.67 mm", "es": "Diámetro de la pelota de golf — el estándar R&A/USGA es 42.67 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tee_dia", "type": "slider", "default": 5.5, "min": 3.0, "max": 9.0, "step": 0.5,
+      "group": "sizes", "modes": ["tee_holder"],
+      "label": { "en": "Tee Shaft Diameter (mm)", "es": "Diámetro del Tee (mm)" },
+      "tooltip": { "en": "Diameter of the tee shaft the sockets hold", "es": "Diámetro del cuerpo del tee que sostienen los orificios" }
+    },
+    {
+      "id": "tee_count", "type": "slider", "default": 5, "min": 2, "max": 12, "step": 1,
+      "group": "variant", "modes": ["tee_holder"],
+      "label": { "en": "Tee Count", "es": "Número de Tees" },
+      "tooltip": { "en": "How many tees the holder carries", "es": "Cuántos tees lleva el porta-tees" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "sizes", "modes": ["tee_holder", "ball_marker", "alignment_tool"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body wall thickness", "es": "Grosor de la pared del cuerpo" }
+    },
+    {
+      "id": "marker_dia", "type": "slider", "default": 24, "min": 18, "max": 36, "step": 1,
+      "group": "variant", "modes": ["ball_marker"],
+      "label": { "en": "Marker Diameter (mm)", "es": "Diámetro del Marcador (mm)" },
+      "tooltip": { "en": "Diameter of the ball marker disc", "es": "Diámetro del disco marcador" }
+    },
+    {
+      "id": "slot_w", "type": "slider", "default": 2.2, "min": 1.2, "max": 4.0, "step": 0.1,
+      "group": "variant", "modes": ["alignment_tool"],
+      "label": { "en": "Pen Slot Width (mm)", "es": "Ancho de Ranura para Pluma (mm)" },
+      "tooltip": { "en": "Width of the line-drawing slot (match your pen tip)", "es": "Ancho de la ranura para trazar la línea (según la punta de tu pluma)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "five_tee_clip", "mode": "tee_holder",
+      "label": { "en": "Five-Tee Belt Clip", "es": "Clip de Cinco Tees" },
+      "values": { "tee_dia": 5.5, "tee_count": 5 }
+    },
+    {
+      "id": "coin_marker", "mode": "ball_marker",
+      "label": { "en": "Coin-Style Marker", "es": "Marcador Estilo Moneda" },
+      "values": { "marker_dia": 24 }
+    },
+    {
+      "id": "putting_liner", "mode": "alignment_tool",
+      "label": { "en": "Putting Line-Up Tool", "es": "Herramienta de Línea de Putt" },
+      "values": { "ball_dia": 42.7, "slot_w": 2.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_w >= 1.2",
+      "severity": "warning",
+      "message": { "en": "A narrow slot may not fit a pen tip", "es": "Una ranura estrecha puede no aceptar la punta de la pluma" }
+    },
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm", "es": "La pared debe ser de al menos 2 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 50] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -110, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 45
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "golf_accessory",
+        "label": { "en": "Golf Accessory", "es": "Accesorio de Golf" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["ball_dia", "tee_dia", "marker_dia", "slot_w"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Golf accessories are cheap impulse buys that pile up as landfill; a printable set sized to the standard ball and tee lets any player make and replace their own markers, tee holders, and alignment aids from a single reusable design.",
+      "es": "Los accesorios de golf son compras impulsivas baratas que terminan en el vertedero; un conjunto imprimible dimensionado a la pelota y tee estándar permite a cualquier jugador fabricar y reemplazar sus marcadores, porta-tees y ayudas de alineación desde un mismo diseño reutilizable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["golf", "tee", "ball-marker", "alignment", "sports", "commercial", "hyperobject", "commons"]
+}

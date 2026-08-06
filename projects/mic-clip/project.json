@@ -1,0 +1,153 @@
+{
+  "project": {
+    "name": "Microphone Clip & Thread Adapter",
+    "slug": "mic-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Mounts a microphone to any stand. The functional interface is the audio-industry 5/8\"-27 mic-stand thread, modelled at its real nominal diameter and pitch. A sprung C-clip for the mic body, a 5/8\"-27-to-3/8\"-16 reducer, and a printable shock-mount ring.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Monta un micrófono en cualquier soporte. La interfaz funcional es la rosca de soporte de micrófono 5/8\"-27 de la industria del audio, modelada con su diámetro y paso nominales reales. Una pinza en C con resorte para el cuerpo del micrófono, un reductor de 5/8\"-27 a 3/8\"-16 y un anillo antivibración imprimible.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mic-clip.webp",
+    "difficulty": "intermediate",
+    "tags": ["microphone", "mic", "clip", "stand", "thread", "5/8-27", "shock-mount", "audio", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "mic_clip",
+      "label": { "en": "Mic Clip", "es": "Pinza de Micrófono" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["mic_clip"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "thread_adapter",
+      "label": { "en": "Thread Adapter (5/8→3/8)", "es": "Adaptador de Rosca (5/8→3/8)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["thread_adapter"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "shock_mount_ring",
+      "label": { "en": "Shock Mount Ring", "es": "Anillo Antivibración" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shock_mount_ring"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "mic_clip", "label": { "en": "Mic Clip", "es": "Pinza de Micrófono" }, "render_mode": 0, "color": "#334155" },
+    { "id": "thread_adapter", "label": { "en": "Thread Adapter", "es": "Adaptador de Rosca" }, "render_mode": 0, "color": "#475569" },
+    { "id": "shock_mount_ring", "label": { "en": "Shock Mount Ring", "es": "Anillo Antivibración" }, "render_mode": 0, "color": "#1e293b" }
+  ],
+  "parameter_groups": [
+    { "id": "mic", "label": { "en": "Microphone", "es": "Micrófono" } },
+    { "id": "fit", "label": { "en": "Thread Fit & Walls", "es": "Ajuste de Rosca y Paredes" } }
+  ],
+  "parameters": [
+    {
+      "id": "mic_dia", "type": "slider", "default": 50, "min": 20, "max": 70, "step": 1,
+      "group": "mic", "modes": ["mic_clip", "shock_mount_ring"],
+      "label": { "en": "Mic Body Diameter (mm)", "es": "Diámetro del Micrófono (mm)" },
+      "tooltip": { "en": "Outer diameter of the microphone barrel to grip", "es": "Diámetro exterior del cuerpo del micrófono a sujetar" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip_wrap", "type": "slider", "default": 250, "min": 180, "max": 300, "step": 5,
+      "group": "mic", "modes": ["mic_clip"],
+      "label": { "en": "Clip Wrap Angle (deg)", "es": "Ángulo de Abrazado (grados)" },
+      "tooltip": { "en": "How far the C-clip wraps around the mic (larger = tighter hold)", "es": "Cuánto abraza la pinza en C al micrófono (mayor = sujeción más firme)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "fit", "modes": ["mic_clip", "thread_adapter", "shock_mount_ring"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Body and thread wall thickness", "es": "Grosor de pared del cuerpo y la rosca" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "fit", "modes": ["mic_clip", "thread_adapter", "shock_mount_ring"],
+      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)" },
+      "tooltip": { "en": "Per-side gap so the printed thread screws onto the stand (0.3-0.5 typical)", "es": "Espacio por lado para que la rosca impresa enrosque en el soporte (0.3-0.5 típico)" }
+    },
+    {
+      "id": "stem_len", "type": "slider", "default": 26, "min": 14, "max": 50, "step": 1,
+      "group": "fit", "modes": ["mic_clip", "thread_adapter", "shock_mount_ring"],
+      "label": { "en": "Socket Stem Length (mm)", "es": "Largo del Vástago (mm)" },
+      "tooltip": { "en": "Length of the threaded socket stem", "es": "Longitud del vástago roscado del casquillo" }
+    },
+    {
+      "id": "extra_turns", "type": "slider", "default": 0.0, "min": 0.0, "max": 2.0, "step": 0.25,
+      "group": "fit", "modes": ["mic_clip", "thread_adapter", "shock_mount_ring"], "advanced": true,
+      "label": { "en": "Extra Engagement Turns", "es": "Vueltas de Enrosque Extra" },
+      "tooltip": { "en": "Add thread turns for a deeper grip (slower render)", "es": "Añade vueltas de rosca para un agarre más profundo (render más lento)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "vocal_mic", "mode": "mic_clip",
+      "label": { "en": "Vocal Mic (SM58-size)", "es": "Micrófono Vocal (tipo SM58)" },
+      "values": { "mic_dia": 51, "grip_wrap": 250 }
+    },
+    {
+      "id": "std_reducer", "mode": "thread_adapter",
+      "label": { "en": "5/8→3/8 Reducer", "es": "Reductor 5/8→3/8" },
+      "values": { "clearance": 0.4, "wall": 3.0 }
+    },
+    {
+      "id": "large_diaphragm_shock", "mode": "shock_mount_ring",
+      "label": { "en": "Large-Diaphragm Shock Mount", "es": "Antivibración de Diafragma Grande" },
+      "values": { "mic_dia": 56, "wall": 3.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 1.0",
+      "severity": "warning",
+      "message": { "en": "Large clearance may loosen the stand thread", "es": "Una holgura grande puede aflojar la rosca del soporte" }
+    },
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm around the thread", "es": "La pared debe ser de al menos 2 mm alrededor de la rosca" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -140, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "mic_stand_thread",
+        "label": { "en": "Mic Stand Thread", "es": "Rosca de Soporte de Micrófono" },
+        "geometry_type": "thread",
+        "standard": "5/8-27 mic thread",
+        "parameters": ["wall", "clearance", "stem_len", "extra_turns"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Mic clips and stand adapters are proprietary and easily lost; a commons part on the real 5/8\"-27 thread lets any performer, podcaster, or studio keep gear working without chasing discontinued hardware.",
+      "es": "Las pinzas y adaptadores de micrófono son propietarios y se pierden fácilmente; una pieza común sobre la rosca real 5/8\"-27 permite a cualquier músico, podcaster o estudio seguir trabajando sin buscar accesorios descontinuados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["microphone", "mic", "clip", "thread", "audio", "commercial", "hyperobject", "commons"]
+}

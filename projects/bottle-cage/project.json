@@ -1,0 +1,177 @@
+{
+  "project": {
+    "name": "Bike Bottle Cage",
+    "slug": "bottle-cage",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A water-bottle cage that bolts to a bicycle frame's standard water-bottle bosses (two M5 bosses at 64 mm spacing). Sized by the bottle diameter so the cradle grips a 73 mm bidon. Side-entry cage, top-entry cage, or a boss-mounted tool/CO2 accessory holder.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una portabotellas que se atornilla a los insertos estándar del cuadro de la bicicleta (dos bosses M5 a 64 mm de separación). Se dimensiona por el diámetro de la botella para que la cuna sujete un bidón de 73 mm. Portabotellas de entrada lateral, de entrada superior, o un soporte de herramienta/CO2 montado en los insertos.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bottle-cage.webp",
+    "difficulty": "intermediate",
+    "tags": ["bike", "bicycle", "bottle", "cage", "cycling", "bidon", "boss", "m5", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cage",
+      "label": { "en": "Side-Entry Cage", "es": "Portabotellas Lateral" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cage"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "top_entry_cage",
+      "label": { "en": "Top-Entry Cage", "es": "Portabotellas Superior" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["top_entry_cage"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "accessory_mount",
+      "label": { "en": "Accessory Holder", "es": "Soporte de Accesorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["accessory_mount"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "cage", "label": { "en": "Side-Entry Cage", "es": "Portabotellas Lateral" }, "render_mode": 0, "color": "#16a34a" },
+    { "id": "top_entry_cage", "label": { "en": "Top-Entry Cage", "es": "Portabotellas Superior" }, "render_mode": 0, "color": "#22c55e" },
+    { "id": "accessory_mount", "label": { "en": "Accessory Holder", "es": "Soporte de Accesorio" }, "render_mode": 0, "color": "#15803d" }
+  ],
+  "parameter_groups": [
+    { "id": "bottle", "label": { "en": "Bottle & Cradle", "es": "Botella y Cuna" } },
+    { "id": "boss", "label": { "en": "Frame Boss", "es": "Insertos del Cuadro" } }
+  ],
+  "parameters": [
+    {
+      "id": "bottle_dia", "type": "slider", "default": 73, "min": 45, "max": 90, "step": 1,
+      "group": "bottle", "modes": ["cage", "top_entry_cage"],
+      "label": { "en": "Bottle Diameter (mm)", "es": "Diámetro de Botella (mm)" },
+      "tooltip": { "en": "Bottle diameter — a standard cycling bidon is 73-74 mm", "es": "Diámetro de la botella — un bidón estándar de ciclismo mide 73-74 mm" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip", "type": "slider", "default": 210, "min": 180, "max": 300, "step": 5,
+      "group": "bottle", "modes": ["cage", "top_entry_cage"],
+      "label": { "en": "Band Wrap (deg)", "es": "Abrazado de Banda (grados)" },
+      "tooltip": { "en": "How far each cradle band wraps the bottle (larger = tighter hold)", "es": "Cuánto abraza cada banda a la botella (mayor = sujeción más firme)" }
+    },
+    {
+      "id": "band_w", "type": "slider", "default": 12, "min": 8, "max": 25, "step": 1,
+      "group": "bottle", "modes": ["cage", "top_entry_cage", "accessory_mount"],
+      "label": { "en": "Band Width (mm)", "es": "Ancho de Banda (mm)" },
+      "tooltip": { "en": "Width of the cradle bands", "es": "Ancho de las bandas de la cuna" }
+    },
+    {
+      "id": "band_t", "type": "slider", "default": 4.0, "min": 3.0, "max": 8.0, "step": 0.5,
+      "group": "bottle", "modes": ["cage", "top_entry_cage", "accessory_mount"],
+      "label": { "en": "Band Thickness (mm)", "es": "Grosor de Banda (mm)" },
+      "tooltip": { "en": "Wall thickness of the cradle bands", "es": "Grosor de pared de las bandas de la cuna" }
+    },
+    {
+      "id": "tool_dia", "type": "slider", "default": 40, "min": 20, "max": 70, "step": 1,
+      "group": "bottle", "modes": ["accessory_mount"],
+      "label": { "en": "Canister Diameter (mm)", "es": "Diámetro del Bote (mm)" },
+      "tooltip": { "en": "Diameter of the tool/CO2/spares canister to hold", "es": "Diámetro del bote de herramienta/CO2/repuestos a sujetar" }
+    },
+    {
+      "id": "boss_space", "type": "select", "default": 64,
+      "group": "boss", "modes": ["cage", "top_entry_cage", "accessory_mount"],
+      "label": { "en": "Boss Spacing (mm)", "es": "Separación de Insertos (mm)" },
+      "tooltip": { "en": "Vertical spacing between the two frame bosses — 64 mm is the world standard", "es": "Separación vertical entre los dos insertos del cuadro — 64 mm es el estándar mundial" },
+      "options": [
+        { "value": 64, "label": { "en": "64 mm (standard)", "es": "64 mm (estándar)" } },
+        { "value": 50, "label": { "en": "50 mm (small frame)", "es": "50 mm (cuadro pequeño)" } },
+        { "value": 72, "label": { "en": "72 mm (some MTB)", "es": "72 mm (algunas MTB)" } }
+      ]
+    },
+    {
+      "id": "spine_w", "type": "slider", "default": 18, "min": 12, "max": 30, "step": 1,
+      "group": "boss", "modes": ["cage", "top_entry_cage", "accessory_mount"],
+      "label": { "en": "Spine Width (mm)", "es": "Ancho del Espinazo (mm)" },
+      "tooltip": { "en": "Width of the backbone spine carrying the bosses", "es": "Ancho del espinazo que lleva los insertos" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.5, "min": 4.5, "max": 8.0, "step": 0.5,
+      "group": "boss", "modes": ["cage", "top_entry_cage", "accessory_mount"], "advanced": true,
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Perno (mm)" },
+      "tooltip": { "en": "Clearance hole for the M5 frame bolts (5.5 typical)", "es": "Orificio de holgura para los pernos M5 del cuadro (5.5 típico)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_bidon", "mode": "cage",
+      "label": { "en": "Standard Bidon (73 mm)", "es": "Bidón Estándar (73 mm)" },
+      "values": { "bottle_dia": 73, "boss_space": 64, "grip": 210 }
+    },
+    {
+      "id": "mtb_top_entry", "mode": "top_entry_cage",
+      "label": { "en": "MTB Top-Entry", "es": "Entrada Superior MTB" },
+      "values": { "bottle_dia": 74, "grip": 240 }
+    },
+    {
+      "id": "tool_canister", "mode": "accessory_mount",
+      "label": { "en": "Tool / CO2 Canister", "es": "Bote de Herramienta / CO2" },
+      "values": { "tool_dia": 44, "boss_space": 64 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "grip >= 180",
+      "severity": "warning",
+      "message": { "en": "Under 180° the bottle is not captured", "es": "Por debajo de 180° la botella no queda sujeta" }
+    },
+    {
+      "expression": "band_t >= 3.0",
+      "severity": "error",
+      "message": { "en": "Band must be at least 3 mm to hold the bottle", "es": "La banda debe tener al menos 3 mm para sujetar la botella" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [180, 0, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "bottle_boss",
+        "label": { "en": "Bottle Boss", "es": "Insertos de Botella" },
+        "geometry_type": "bolt_pattern",
+        "standard": "water-bottle boss",
+        "parameters": ["boss_space", "bolt_dia", "bottle_dia"]
+      },
+      {
+        "id": "bottle_cradle",
+        "label": { "en": "Bottle Cradle", "es": "Cuna de Botella" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["bottle_dia", "grip", "band_w", "band_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Every bicycle frame exposes the same 64 mm M5 boss pattern; a printable cage sized to any bottle keeps riders hydrated and lets them carry tools without buying brand-specific hardware, extending the life of frames worldwide.",
+      "es": "Cada cuadro de bicicleta expone el mismo patrón de insertos M5 a 64 mm; un portabotellas imprimible dimensionado a cualquier botella mantiene hidratados a los ciclistas y les deja llevar herramientas sin comprar herraje de marca, extendiendo la vida de los cuadros en todo el mundo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bike", "bicycle", "bottle", "cage", "cycling", "commercial", "hyperobject", "commons"]
+}

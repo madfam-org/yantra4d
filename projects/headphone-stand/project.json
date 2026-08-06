@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Desk Headphone Stand",
+    "slug": "headphone-stand",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A free-standing desk stand that holds a headset by its headband on a broad, rounded cradle so the band does not develop a dent. Single saddle on a weighted base, a dual-saddle post for two headsets, or a desk-edge clamp version.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte de escritorio independiente que sostiene los audífonos por la diadema en una cuna ancha y redondeada para que la banda no se marque. Silla simple sobre una base con peso, un poste de doble silla para dos audífonos, o una versión con pinza al borde del escritorio.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/headphone-stand.webp",
+    "difficulty": "beginner",
+    "tags": ["headphone", "headset", "stand", "desk", "cradle", "audio", "gaming", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "desk_stand",
+      "label": { "en": "Desk Stand", "es": "Soporte de Escritorio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["desk_stand"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "dual_stand",
+      "label": { "en": "Dual Stand", "es": "Soporte Doble" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dual_stand"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "clamp_stand",
+      "label": { "en": "Clamp Stand", "es": "Soporte con Pinza" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clamp_stand"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 13 }
+    }
+  ],
+  "parts": [
+    { "id": "desk_stand", "label": { "en": "Desk Stand", "es": "Soporte de Escritorio" }, "render_mode": 0, "color": "#2563eb" },
+    { "id": "dual_stand", "label": { "en": "Dual Stand", "es": "Soporte Doble" }, "render_mode": 0, "color": "#3b82f6" },
+    { "id": "clamp_stand", "label": { "en": "Clamp Stand", "es": "Soporte con Pinza" }, "render_mode": 0, "color": "#1d4ed8" }
+  ],
+  "parameter_groups": [
+    { "id": "cradle", "label": { "en": "Headband Cradle", "es": "Cuna de Diadema" } },
+    { "id": "post", "label": { "en": "Post & Base", "es": "Poste y Base" } }
+  ],
+  "parameters": [
+    {
+      "id": "cradle_w", "type": "slider", "default": 30, "min": 16, "max": 60, "step": 1,
+      "group": "cradle", "modes": ["desk_stand", "dual_stand", "clamp_stand"],
+      "label": { "en": "Cradle Width (mm)", "es": "Ancho de la Cuna (mm)" },
+      "tooltip": { "en": "Width of the headband rest saddle", "es": "Ancho de la silla donde descansa la diadema" }
+    },
+    {
+      "id": "post_h", "type": "slider", "default": 260, "min": 120, "max": 380, "step": 5,
+      "group": "post", "modes": ["desk_stand", "dual_stand", "clamp_stand"],
+      "label": { "en": "Post Height (mm)", "es": "Altura del Poste (mm)" },
+      "tooltip": { "en": "How tall the stand rises", "es": "Qué tan alto se eleva el soporte" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "post_dia", "type": "slider", "default": 26, "min": 16, "max": 50, "step": 1,
+      "group": "post", "modes": ["desk_stand", "dual_stand", "clamp_stand"],
+      "label": { "en": "Post Diameter (mm)", "es": "Diámetro del Poste (mm)" },
+      "tooltip": { "en": "Diameter of the support pillar", "es": "Diámetro del pilar de soporte" }
+    },
+    {
+      "id": "base_dia", "type": "slider", "default": 120, "min": 70, "max": 220, "step": 2,
+      "group": "post", "modes": ["desk_stand", "dual_stand"],
+      "label": { "en": "Base Diameter (mm)", "es": "Diámetro de la Base (mm)" },
+      "tooltip": { "en": "Diameter of the weighted disc base", "es": "Diámetro de la base de disco con peso" }
+    },
+    {
+      "id": "base_h", "type": "slider", "default": 14, "min": 8, "max": 30, "step": 1,
+      "group": "post", "modes": ["desk_stand", "dual_stand"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de la Base (mm)" },
+      "tooltip": { "en": "Base disc thickness (more = more stable)", "es": "Grosor del disco base (más = más estable)" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.2,
+      "group": "post", "modes": ["desk_stand", "dual_stand", "clamp_stand"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Shell wall thickness of post and base", "es": "Grosor de pared del poste y la base" }
+    },
+    {
+      "id": "desk_t", "type": "slider", "default": 28, "min": 10, "max": 60, "step": 1,
+      "group": "post", "modes": ["clamp_stand"],
+      "label": { "en": "Desk Thickness (mm)", "es": "Grosor del Escritorio (mm)" },
+      "tooltip": { "en": "Thickness of the desk edge the clamp grips", "es": "Grosor del borde del escritorio que sujeta la pinza" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "gaming_headset", "mode": "desk_stand",
+      "label": { "en": "Gaming Headset Stand", "es": "Soporte para Audífonos Gaming" },
+      "values": { "cradle_w": 34, "post_h": 260, "base_dia": 120 }
+    },
+    {
+      "id": "studio_pair", "mode": "dual_stand",
+      "label": { "en": "Studio Pair", "es": "Par de Estudio" },
+      "values": { "cradle_w": 32, "post_h": 240, "base_dia": 140 }
+    },
+    {
+      "id": "edge_clamp", "mode": "clamp_stand",
+      "label": { "en": "Desk-Edge Clamp", "es": "Pinza al Borde" },
+      "values": { "cradle_w": 30, "post_h": 200, "desk_t": 28 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "base_dia >= post_dia * 2",
+      "severity": "warning",
+      "message": { "en": "A small base relative to a tall post may tip over", "es": "Una base pequeña frente a un poste alto puede volcarse" }
+    },
+    {
+      "expression": "wall >= 2.5",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.5 mm", "es": "La pared debe ser de al menos 2.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [250, 250, 260] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 420] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -400, 150] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 14,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "headband_cradle",
+        "label": { "en": "Headband Cradle", "es": "Cuna de Diadema" },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": ["cradle_w", "wall"]
+      },
+      {
+        "id": "post_base_stack",
+        "label": { "en": "Post & Base Stack", "es": "Poste y Base" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["post_h", "post_dia", "base_dia", "base_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A padded, broad headband saddle sized to the exact headset prevents the band-denting that ruins headphones on generic hooks — free-standing desk storage anyone can print instead of buying an aluminium stand.",
+      "es": "Una silla de diadema ancha y acolchable dimensionada al audífono exacto evita el marcado de la banda que arruina los audífonos en ganchos genéricos — almacenamiento de escritorio independiente que cualquiera puede imprimir en vez de comprar un soporte de aluminio."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["headphone", "headset", "stand", "desk", "commercial", "hyperobject", "commons"]
+}

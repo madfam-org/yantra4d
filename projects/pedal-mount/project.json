@@ -1,0 +1,190 @@
+{
+  "project": {
+    "name": "Pedalboard Pedal Mount",
+    "slug": "pedal-mount",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Fixes guitar effects pedals to a pedalboard, sized by the pedal footprint. An edge-gripping rail bracket (rail slot / hook-and-loop / riser feet), a viewing-angle riser, and an under-board power-supply cradle — all indexed off one pedalboard rail slot.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Fija pedales de efectos de guitarra a una pedalera, dimensionado por la huella del pedal. Un soporte de riel que agarra el borde (ranura de riel / velcro / patas elevadoras), un elevador con ángulo de visión y una cuna para la fuente de poder bajo el tablero — todo indexado a una misma ranura de riel de pedalera.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pedal-mount.webp",
+    "difficulty": "intermediate",
+    "tags": ["pedal", "pedalboard", "guitar", "effects", "rail", "mount", "riser", "music", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rail_mount",
+      "label": { "en": "Rail Mount", "es": "Montaje de Riel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rail_mount"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "riser",
+      "label": { "en": "Angle Riser", "es": "Elevador Angular" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["riser"],
+      "estimate": { "base_time": 9, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "power_bracket",
+      "label": { "en": "Power Bracket", "es": "Soporte de Fuente" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["power_bracket"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "rail_mount", "label": { "en": "Rail Mount", "es": "Montaje de Riel" }, "render_mode": 0, "color": "#dc2626" },
+    { "id": "riser", "label": { "en": "Angle Riser", "es": "Elevador Angular" }, "render_mode": 0, "color": "#ef4444" },
+    { "id": "power_bracket", "label": { "en": "Power Bracket", "es": "Soporte de Fuente" }, "render_mode": 0, "color": "#b91c1c" }
+  ],
+  "parameter_groups": [
+    { "id": "pedal", "label": { "en": "Pedal Footprint", "es": "Huella del Pedal" } },
+    { "id": "rail", "label": { "en": "Board Rail", "es": "Riel del Tablero" } },
+    { "id": "extras", "label": { "en": "Riser & Power", "es": "Elevador y Fuente" } }
+  ],
+  "parameters": [
+    {
+      "id": "mount", "type": "select", "default": "rail",
+      "group": "pedal", "modes": ["rail_mount"],
+      "label": { "en": "Attach Method", "es": "Método de Fijación" },
+      "tooltip": { "en": "How the rail mount attaches to the board", "es": "Cómo se fija el montaje al tablero" },
+      "options": [
+        { "value": "rail", "label": { "en": "Rail slot (hook onto rail)", "es": "Ranura de riel (engancha al riel)" } },
+        { "value": "hookloop", "label": { "en": "Hook-and-loop plate", "es": "Placa de velcro" } },
+        { "value": "riserfeet", "label": { "en": "Riser feet", "es": "Patas elevadoras" } }
+      ]
+    },
+    {
+      "id": "pedal_w", "type": "slider", "default": 66, "min": 30, "max": 200, "step": 1,
+      "group": "pedal", "modes": ["rail_mount", "riser"],
+      "label": { "en": "Pedal Width (mm)", "es": "Ancho del Pedal (mm)" },
+      "tooltip": { "en": "Pedal footprint width the bracket hugs", "es": "Ancho de la huella del pedal que abraza el soporte" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "pedal_d", "type": "slider", "default": 120, "min": 40, "max": 300, "step": 1,
+      "group": "pedal", "modes": ["rail_mount", "riser", "power_bracket"],
+      "label": { "en": "Pedal Depth (mm)", "es": "Profundidad del Pedal (mm)" },
+      "tooltip": { "en": "Pedal footprint depth (sets bracket length)", "es": "Profundidad de la huella del pedal (define el largo del soporte)" }
+    },
+    {
+      "id": "grip_h", "type": "slider", "default": 10, "min": 4, "max": 25, "step": 0.5,
+      "group": "pedal", "modes": ["rail_mount"],
+      "label": { "en": "Grip Lip Height (mm)", "es": "Altura del Labio de Agarre (mm)" },
+      "tooltip": { "en": "How far the lip grips over the pedal front edge", "es": "Cuánto agarra el labio sobre el borde frontal del pedal" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.5, "max": 8.0, "step": 0.2,
+      "group": "pedal", "modes": ["rail_mount", "riser", "power_bracket"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Bracket wall thickness", "es": "Grosor de pared del soporte" }
+    },
+    {
+      "id": "rail_w", "type": "slider", "default": 18, "min": 8, "max": 40, "step": 1,
+      "group": "rail", "modes": ["rail_mount", "riser", "power_bracket"],
+      "label": { "en": "Rail Width (mm)", "es": "Ancho del Riel (mm)" },
+      "tooltip": { "en": "Width of the pedalboard rail the hook clips onto", "es": "Ancho del riel de la pedalera donde engancha" }
+    },
+    {
+      "id": "rail_t", "type": "slider", "default": 6, "min": 3, "max": 14, "step": 0.5,
+      "group": "rail", "modes": ["rail_mount", "riser", "power_bracket"],
+      "label": { "en": "Rail Thickness (mm)", "es": "Grosor del Riel (mm)" },
+      "tooltip": { "en": "Thickness of the board rail (sizes the hook slot)", "es": "Grosor del riel del tablero (dimensiona la ranura del gancho)" }
+    },
+    {
+      "id": "riser_angle", "type": "slider", "default": 12, "min": 4, "max": 30, "step": 1,
+      "group": "extras", "modes": ["riser"],
+      "label": { "en": "Riser Angle (deg)", "es": "Ángulo del Elevador (grados)" },
+      "tooltip": { "en": "Tilt angle the riser lifts the pedal to", "es": "Ángulo de inclinación al que el elevador levanta el pedal" }
+    },
+    {
+      "id": "brick_w", "type": "slider", "default": 60, "min": 30, "max": 140, "step": 1,
+      "group": "extras", "modes": ["power_bracket"],
+      "label": { "en": "Power Brick Width (mm)", "es": "Ancho de la Fuente (mm)" },
+      "tooltip": { "en": "Width of the power-supply brick to cradle", "es": "Ancho de la fuente de poder a sostener" }
+    },
+    {
+      "id": "brick_h", "type": "slider", "default": 35, "min": 15, "max": 80, "step": 1,
+      "group": "extras", "modes": ["power_bracket"],
+      "label": { "en": "Power Brick Height (mm)", "es": "Alto de la Fuente (mm)" },
+      "tooltip": { "en": "Height of the power-supply brick", "es": "Alto de la fuente de poder" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_pedal", "mode": "rail_mount",
+      "label": { "en": "Standard Compact Pedal", "es": "Pedal Compacto Estándar" },
+      "values": { "pedal_w": 66, "pedal_d": 120, "mount": "rail" }
+    },
+    {
+      "id": "back_row_riser", "mode": "riser",
+      "label": { "en": "Back-Row Riser (12°)", "es": "Elevador Fila Trasera (12°)" },
+      "values": { "pedal_w": 66, "riser_angle": 12 }
+    },
+    {
+      "id": "power_supply_cradle", "mode": "power_bracket",
+      "label": { "en": "Power-Supply Cradle", "es": "Cuna de Fuente" },
+      "values": { "brick_w": 62, "brick_h": 34 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "rail_t <= 14",
+      "severity": "warning",
+      "message": { "en": "A thick rail slot weakens the hook", "es": "Una ranura de riel gruesa debilita el gancho" }
+    },
+    {
+      "expression": "wall >= 2.5",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.5 mm", "es": "La pared debe ser de al menos 2.5 mm" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 2, "per_part": 10,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "pedalboard_rail",
+        "label": { "en": "Pedalboard Rail", "es": "Riel de Pedalera" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["rail_w", "rail_t", "wall"]
+      },
+      {
+        "id": "pedal_edge_grip",
+        "label": { "en": "Pedal Edge Grip", "es": "Agarre del Borde del Pedal" },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["pedal_w", "pedal_d", "grip_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Pedalboard hardware is expensive and pedal-specific; a commons mount indexed to the board rail lets any musician fit any pedal, riser, or power brick without buying proprietary brackets.",
+      "es": "El herraje de pedalera es caro y específico por pedal; un montaje común indexado al riel del tablero permite a cualquier músico ajustar cualquier pedal, elevador o fuente sin comprar soportes propietarios."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pedal", "pedalboard", "guitar", "rail", "mount", "commercial", "hyperobject", "commons"]
+}

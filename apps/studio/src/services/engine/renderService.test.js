@@ -101,6 +101,19 @@ describe('estimateRenderTime', () => {
     expect(partsTerm / total).toBeLessThan(0.2)
   })
 
+  it('reports no observed time before a render has run, never zero', () => {
+    // "Not measured yet" must not be readable as "took no time" — that confusion
+    // is what let a 1,714x overshoot look like a working estimator.
+    expect(renderService.getLastObservedRenderSeconds()).toBeNull()
+    expect(renderService.getEstimateAccuracy(336)).toBeNull()
+  })
+
+  it('accuracy is null for a nonsense estimate rather than Infinity', () => {
+    expect(renderService.getEstimateAccuracy(0)).toBeNull()
+    expect(renderService.getEstimateAccuracy(NaN)).toBeNull()
+    expect(renderService.getEstimateAccuracy(-5)).toBeNull()
+  })
+
   it('the threshold still FIRES for a genuinely expensive render', () => {
     // Guard against having swapped "always warns" for "never warns". The dialog
     // must remain reachable — proven here by a mode whose cost is real.

@@ -73,6 +73,11 @@ const API_BASE = getApiBase()
 let _hardwareMode: 'backend' | 'wasm' | null = null
 let _worker: Worker | null = null
 let _initPromise: Promise<void> | null = null
+//: Wall-clock seconds of the last WASM render, compile INCLUDED. This is the
+//: quantity `estimateRenderTime` claims to predict, kept so the prediction can be
+//: checked against the outcome instead of being taken on faith. Read it with
+//: `getLastObservedRenderSeconds()`; null until a render has completed.
+let _lastObservedRenderSeconds: number | null = null
 
 /**
  * Detect hardware capabilities
@@ -254,6 +259,7 @@ async function renderWasm(
   if (!modeConfig) throw new Error(`Unknown mode: ${mode}`)
 
   const parts: RenderPart[] = []
+  const partTimings: { part: string; seconds: number }[] = []
   const totalParts = modeConfig.parts.length
 
   for (let i = 0; i < totalParts; i++) {
@@ -266,6 +272,15 @@ async function renderWasm(
     }
 
     const basePercent = Math.round((i / totalParts) * 100)
+    // WALL-CLOCK PER PART, spanning compile AND render.
+    //
+    // The engine already logs a "Total rendering time" line, but that EXCLUDES
+    // the OpenSCAD/WASM compile — which is the dominant cost the operator
+    // actually waits through. Calibrating estimate_constants against the engine's
+    // number alone therefore fits the small half of the problem: measured 2026-08-08,
+    // a 3x3 reported 0.196 s of "rendering" while the visible wait was seconds of
+    // "Compilando...". Timing the await is the only place both are in scope.
+    const partStart = performance.now()
     onProgress?.({
       percent: basePercent,
       phase: 'compiling',
@@ -315,13 +330,25 @@ async function renderWasm(
     const url = URL.createObjectURL(blob)
     parts.push({ type: partId, blob, url })
 
+    const partElapsed = (performance.now() - partStart) / 1000
+    partTimings.push({ part: partId, seconds: partElapsed })
     onProgress?.({
       percent: Math.round(((i + 1) / totalParts) * 100),
       phase: 'done',
       part: partId,
-      log: `[${partId}] Done (${Math.round(((i + 1) / totalParts) * 100)}%)`
+      log: `[${partId}] Done (${Math.round(((i + 1) / totalParts) * 100)}%) in ${partElapsed.toFixed(2)}s`
     })
   }
+
+  // The line the estimator should be fitted against. `estimateRenderTime` predicts
+  // exactly this quantity, so printing them together is what makes a bad
+  // calibration visible instead of silent — the shipped constants were 1,714x high
+  // and nothing in the UI ever compared the two.
+  const observedTotal = partTimings.reduce((a, p) => a + p.seconds, 0)
+  _lastObservedRenderSeconds = observedTotal
+  onProgress?.({
+    log: `[render] observed ${observedTotal.toFixed(2)}s wall-clock across ${partTimings.length} part(s)`
+  })
 
   if (_worker) {
     _worker.terminate()
@@ -586,4 +613,29 @@ export function estimateRenderTime(mode: string, params: Record<string, unknown>
  */
 export function getRenderMode(): string {
   return _hardwareMode || 'detecting'
+}
+
+/**
+ * Wall-clock seconds of the last completed WASM render, compile INCLUDED.
+ *
+ * `estimateRenderTime` predicts this exact quantity. Until this existed nothing
+ * compared the two, which is how constants that overshot by 1,714x shipped and
+ * stayed: the estimator drove a blocking dialog on every render and no surface
+ * ever contradicted it. Returns null before the first render completes — a
+ * missing measurement must read as missing, never as zero.
+ */
+export function getLastObservedRenderSeconds(): number | null {
+  return _lastObservedRenderSeconds
+}
+
+/**
+ * How far off the estimate was, as a ratio (estimate / observed).
+ *
+ * 1.0 is perfect; >1 overshoots. Null when either side is unknown, so a caller
+ * cannot mistake "not measured yet" for "accurate".
+ */
+export function getEstimateAccuracy(estimateSeconds: number): number | null {
+  if (_lastObservedRenderSeconds == null || _lastObservedRenderSeconds <= 0) return null
+  if (!Number.isFinite(estimateSeconds) || estimateSeconds <= 0) return null
+  return estimateSeconds / _lastObservedRenderSeconds
 }

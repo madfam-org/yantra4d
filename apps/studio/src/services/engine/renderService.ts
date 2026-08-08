@@ -391,9 +391,18 @@ async function renderBackend(
         onProgress?.({ log: `  ${line}` })
       }
     } else if (data.event === 'part_done') {
+      // `data.progress` is optional on the wire — a backend that omits it used to
+      // render literally as "[cubies] Done (undefined%)" in the operator console,
+      // right underneath the WASM path's correct "[cubies] Done (14%)". Two lines
+      // per part, one of them nonsense. Fall back to the part index instead of
+      // interpolating undefined; drop the percentage entirely if neither is known,
+      // because a missing number should read as missing, not as a value.
+      const pct = typeof data.progress === 'number' && Number.isFinite(data.progress)
+        ? `${Math.round(data.progress)}%`
+        : null
       onProgress?.({
         part: data.part,
-        log: `[${data.part}] Done (${data.progress}%)`
+        log: pct ? `[${data.part}] Done (${pct})` : `[${data.part}] Done`
       })
     } else if (data.event === 'complete') {
       finalParts = data.parts || []
@@ -534,6 +543,25 @@ export function estimateRenderTime(mode: string, params: Record<string, unknown>
   const modeConfig = manifest.modes.find(m => m.id === mode)
   if (!modeConfig) return 0
 
+  // UNITS. `formula_vars` is a PRODUCT of the named params, so a mode whose cost
+  // scales with N^2 lists N twice. That is not a trick: it is the only thing the
+  // reducer below can express, and it keeps `base_units` (documentation) and the
+  // computed value in agreement.
+  //
+  // They used to disagree. The cube mode declared `base_units: "N * N"` while
+  // listing `formula_vars: ["N"]`, so the estimator computed N and the manifest
+  // claimed N^2 — and nothing reconciled them, because `base_units` is only read
+  // in the `else` branch and only when it is a NUMBER. A string like "N * N"
+  // could never satisfy `typeof base === 'number'`, so the declared intent was
+  // unreachable code that read as configuration.
+  //
+  // Measured 2026-08-08 in the browser (WASM), from the app's own
+  // "Total rendering time" lines:
+  //     3x3 -> 0.196 s   (units N^2 = 9)
+  //     5x5 -> 0.607 s   (units N^2 = 25)
+  // Ratio 3.10x observed against 2.78x predicted by N^2 — the manifest's declared
+  // model was right and the code was wrong. N alone predicts 1.67x, which the
+  // measurement rules out.
   let units = 1
   if (modeConfig.estimate?.formula_vars) {
     units = modeConfig.estimate.formula_vars.reduce((acc, v) => acc * (Number(params[v]) || 1), 1)

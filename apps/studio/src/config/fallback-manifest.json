@@ -1,28 +1,25 @@
 {
   "project": {
-    "name": "Gridfinity",
+    "name": "Gridfinity Extended",
     "slug": "gridfinity",
-    "version": "2.1.0",
-    "engine": "cadquery",
+    "version": "1.0.0",
     "description": {
-      "en": "Gridfinity with a dual kernel: exact CadQuery B-Rep bin & baseplate (canonical 42 mm / 7 mm profile) plus the full OpenSCAD gridfinity_extended cup, baseplate and lid modes with chambers, wall patterns and sliding lids.\n\nOfficial Visualizer and Configurator: Yantra4D",
-      "es": "Gridfinity con doble kernel: contenedor y base exactos en CadQuery B-Rep (perfil canónico 42 mm / 7 mm) más los modos completos de OpenSCAD gridfinity_extended con compartimentos, patrones de pared y tapas deslizantes.\n\nVisualizador y configurador oficial: Yantra4D"
+      "en": "Modular storage system with bins, baseplates, and lids in the Gridfinity grid standard\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Sistema de almacenamiento modular con contenedores, placas base y tapas en el estándar Gridfinity\n\nVisualizador y configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/gridfinity.webp",
-    "difficulty": "intermediate",
     "tags": [
-      "gridfinity",
       "storage",
       "modular",
       "snap-fit",
-      "baseplate",
-      "organizer",
       "hyperobject",
       "commons"
     ],
+    "difficulty": "advanced",
     "hyperobject": {
       "is_hyperobject": true
     },
+    "is_demo": true,
     "attribution": {
       "author": "Zack Freedman",
       "url": "https://thangs.com/designer/ZackFreedman",
@@ -31,46 +28,12 @@
   },
   "modes": [
     {
-      "id": "bin",
-      "label": {
-        "en": "Bin",
-        "es": "Contenedor"
-      },
-      "scad_file": "main.py",
-      "cq_file": "main.py",
-      "parts": [
-        "bin"
-      ],
-      "estimate": {
-        "base_time": 10,
-        "per_unit": 3,
-        "per_part": 12
-      }
-    },
-    {
-      "id": "baseplate",
-      "label": {
-        "en": "Baseplate",
-        "es": "Placa Base"
-      },
-      "scad_file": "main.py",
-      "cq_file": "main.py",
-      "parts": [
-        "baseplate"
-      ],
-      "estimate": {
-        "base_time": 8,
-        "per_unit": 2,
-        "per_part": 10
-      }
-    },
-    {
       "id": "cup",
       "scad_file": "cup.scad",
       "cq_file": "cup.py",
       "label": {
-        "es": "Contenedor (OpenSCAD)",
-        "en": "Bin (OpenSCAD Extended)"
+        "es": "Contenedor",
+        "en": "Bin"
       },
       "parts": [
         "cup"
@@ -78,33 +41,31 @@
       "estimate": {
         "base_units": 1,
         "formula": "constant"
-      },
-      "engine": "openscad"
+      }
     },
     {
-      "id": "baseplate_scad",
+      "id": "baseplate",
       "scad_file": "baseplate.scad",
       "cq_file": "baseplate.py",
       "label": {
-        "es": "Placa Base (OpenSCAD)",
-        "en": "Baseplate (OpenSCAD Extended)"
+        "es": "Placa Base",
+        "en": "Baseplate"
       },
       "parts": [
-        "baseplate_scad"
+        "baseplate"
       ],
       "estimate": {
         "base_units": 1,
         "formula": "constant"
-      },
-      "engine": "openscad"
+      }
     },
     {
       "id": "lid",
       "scad_file": "lid.scad",
       "cq_file": "lid.py",
       "label": {
-        "es": "Tapa (OpenSCAD)",
-        "en": "Lid (OpenSCAD Extended)"
+        "es": "Tapa",
+        "en": "Lid"
       },
       "parts": [
         "lid"
@@ -112,29 +73,10 @@
       "estimate": {
         "base_units": 1,
         "formula": "constant"
-      },
-      "engine": "openscad"
+      }
     }
   ],
   "parts": [
-    {
-      "id": "bin",
-      "label": {
-        "en": "Bin",
-        "es": "Contenedor"
-      },
-      "render_mode": 0,
-      "color": "#4a90d9"
-    },
-    {
-      "id": "baseplate",
-      "label": {
-        "en": "Baseplate",
-        "es": "Placa Base"
-      },
-      "render_mode": 0,
-      "color": "#2d2d2d"
-    },
     {
       "id": "cup",
       "render_mode": 0,
@@ -145,7 +87,7 @@
       "default_color": "#4a90d9"
     },
     {
-      "id": "baseplate_scad",
+      "id": "baseplate",
       "render_mode": 0,
       "label": {
         "es": "Placa Base",
@@ -163,368 +105,108 @@
       "default_color": "#6b7280"
     }
   ],
-  "parameter_groups": [
+  "presets": [
     {
-      "id": "grid",
+      "id": "small_bin",
       "label": {
-        "en": "Grid",
-        "es": "Rejilla"
-      }
-    },
-    {
-      "id": "structure",
-      "label": {
-        "en": "Bin Structure",
-        "es": "Estructura del Contenedor"
-      }
-    },
-    {
-      "id": "features",
-      "label": {
-        "en": "Bin Features",
-        "es": "Características"
-      }
-    },
-    {
-      "id": "baseplate",
-      "label": {
-        "en": "Baseplate",
-        "es": "Placa Base"
-      }
-    },
-    {
-      "id": "dimensions",
-      "label": {
-        "es": "Dimensiones",
-        "en": "Dimensions"
-      }
-    },
-    {
-      "id": "cup_structure",
-      "label": {
-        "es": "Estructura del Contenedor",
-        "en": "Bin Structure"
+        "es": "Contenedor Pequeño (2×1×3)",
+        "en": "Small Parts Bin (2×1×3)"
       },
-      "levels": [
-        {
-          "id": "basic",
-          "label": {
-            "es": "Básico",
-            "en": "Basic"
-          }
-        },
-        {
-          "id": "advanced",
-          "label": {
-            "es": "Avanzado",
-            "en": "Advanced"
-          }
-        }
-      ]
-    },
-    {
-      "id": "cup_features",
-      "label": {
-        "es": "Características del Contenedor",
-        "en": "Bin Features"
-      },
-      "levels": [
-        {
-          "id": "basic",
-          "label": {
-            "es": "Básico",
-            "en": "Basic"
-          }
-        },
-        {
-          "id": "advanced",
-          "label": {
-            "es": "Avanzado",
-            "en": "Advanced"
-          }
-        }
-      ]
-    },
-    {
-      "id": "mounting",
-      "label": {
-        "es": "Montaje",
-        "en": "Mounting"
+      "values": {
+        "width_units": 2,
+        "depth_units": 1,
+        "height_units": 3,
+        "enable_magnets": true,
+        "fingerslide_enabled": true
       }
     },
     {
-      "id": "lid",
+      "id": "battery_holder",
       "label": {
-        "es": "Tapa",
-        "en": "Lid"
+        "es": "Porta Baterías (3×2×3)",
+        "en": "Battery Holder (3×2×3)"
       },
-      "levels": [
-        {
-          "id": "basic",
-          "label": {
-            "es": "Básico",
-            "en": "Basic"
-          }
-        },
-        {
-          "id": "advanced",
-          "label": {
-            "es": "Avanzado",
-            "en": "Advanced"
-          }
-        }
-      ]
+      "values": {
+        "width_units": 3,
+        "depth_units": 2,
+        "height_units": 3,
+        "vertical_chambers": 3,
+        "horizontal_chambers": 2,
+        "label_enabled": true
+      }
     },
     {
-      "id": "rendering",
+      "id": "tool_drawer",
       "label": {
-        "es": "Renderizado",
-        "en": "Rendering"
+        "es": "Cajón de Herramientas (4×2×2)",
+        "en": "Tool Drawer (4×2×2)"
+      },
+      "values": {
+        "width_units": 4,
+        "depth_units": 2,
+        "height_units": 2,
+        "horizontal_chambers": 4,
+        "wallpattern_enabled": true
+      }
+    },
+    {
+      "id": "baseplate_std",
+      "mode": "baseplate",
+      "label": {
+        "es": "Placa Base Estándar (2×2)",
+        "en": "Standard Baseplate (2×2)"
+      },
+      "values": {
+        "width_units": 2,
+        "depth_units": 2,
+        "bp_enable_magnets": true
+      }
+    },
+    {
+      "id": "lid_std",
+      "mode": "lid",
+      "label": {
+        "es": "Tapa Estándar (2×1)",
+        "en": "Standard Lid (2×1)"
+      },
+      "values": {
+        "width_units": 2,
+        "depth_units": 1,
+        "lid_include_magnets": true
+      }
+    },
+    {
+      "id": "screw_organizer",
+      "label": {
+        "es": "Organizador de Tornillos (3×2×4)",
+        "en": "Screw Organizer (3×2×4)"
+      },
+      "values": {
+        "width_units": 3,
+        "depth_units": 2,
+        "height_units": 4,
+        "vertical_chambers": 2,
+        "horizontal_chambers": 3,
+        "label_enabled": true,
+        "enable_magnets": true
+      }
+    },
+    {
+      "id": "pen_cup",
+      "label": {
+        "es": "Porta Plumas (1×1×6)",
+        "en": "Pen Cup (1×1×6)"
+      },
+      "values": {
+        "width_units": 1,
+        "depth_units": 1,
+        "height_units": 6,
+        "fingerslide_enabled": false,
+        "enable_magnets": true
       }
     }
   ],
   "parameters": [
-    {
-      "id": "target_part",
-      "type": "select",
-      "default": "bin",
-      "group": "grid",
-      "modes": [
-        "bin",
-        "baseplate"
-      ],
-      "label": {
-        "en": "Part",
-        "es": "Pieza"
-      },
-      "tooltip": {
-        "en": "Which Gridfinity part to generate",
-        "es": "Qué pieza Gridfinity generar"
-      },
-      "options": [
-        {
-          "value": "bin",
-          "label": {
-            "en": "Bin",
-            "es": "Contenedor"
-          }
-        },
-        {
-          "value": "baseplate",
-          "label": {
-            "en": "Baseplate",
-            "es": "Placa Base"
-          }
-        }
-      ]
-    },
-    {
-      "id": "grid_x",
-      "type": "slider",
-      "default": 2,
-      "min": 1,
-      "max": 6,
-      "step": 1,
-      "group": "grid",
-      "modes": [
-        "bin",
-        "baseplate"
-      ],
-      "label": {
-        "en": "Width (units)",
-        "es": "Ancho (unidades)"
-      },
-      "tooltip": {
-        "en": "Grid units in X — each unit is 42 mm",
-        "es": "Unidades de rejilla en X — cada unidad son 42 mm"
-      },
-      "preview_hint": {
-        "type": "axis_scale",
-        "axis": "x",
-        "scale_factor": 42,
-        "affected_parts": [
-          "bin",
-          "baseplate"
-        ]
-      }
-    },
-    {
-      "id": "grid_y",
-      "type": "slider",
-      "default": 1,
-      "min": 1,
-      "max": 6,
-      "step": 1,
-      "group": "grid",
-      "modes": [
-        "bin",
-        "baseplate"
-      ],
-      "label": {
-        "en": "Depth (units)",
-        "es": "Profundidad (unidades)"
-      },
-      "tooltip": {
-        "en": "Grid units in Y — each unit is 42 mm",
-        "es": "Unidades de rejilla en Y — cada unidad son 42 mm"
-      },
-      "preview_hint": {
-        "type": "axis_scale",
-        "axis": "y",
-        "scale_factor": 42,
-        "affected_parts": [
-          "bin",
-          "baseplate"
-        ]
-      }
-    },
-    {
-      "id": "grid_z",
-      "type": "slider",
-      "default": 3,
-      "min": 1,
-      "max": 12,
-      "step": 1,
-      "group": "grid",
-      "modes": [
-        "bin"
-      ],
-      "label": {
-        "en": "Height (units)",
-        "es": "Altura (unidades)"
-      },
-      "tooltip": {
-        "en": "Height in 7 mm units",
-        "es": "Altura en unidades de 7 mm"
-      },
-      "preview_hint": {
-        "type": "axis_scale",
-        "axis": "z",
-        "scale_factor": 7,
-        "affected_parts": [
-          "bin"
-        ]
-      }
-    },
-    {
-      "id": "wall",
-      "type": "slider",
-      "default": 1.2,
-      "min": 0.8,
-      "max": 3.0,
-      "step": 0.1,
-      "group": "structure",
-      "modes": [
-        "bin"
-      ],
-      "label": {
-        "en": "Wall Thickness (mm)",
-        "es": "Grosor de Pared (mm)"
-      },
-      "tooltip": {
-        "en": "Bin side-wall thickness",
-        "es": "Grosor de la pared lateral del contenedor"
-      }
-    },
-    {
-      "id": "floor_th",
-      "type": "slider",
-      "default": 1.2,
-      "min": 0.6,
-      "max": 4.0,
-      "step": 0.1,
-      "group": "structure",
-      "modes": [
-        "bin"
-      ],
-      "advanced": true,
-      "label": {
-        "en": "Floor Thickness (mm)",
-        "es": "Grosor del Piso (mm)"
-      },
-      "tooltip": {
-        "en": "Solid floor above the base profile",
-        "es": "Piso sólido sobre el perfil base"
-      }
-    },
-    {
-      "id": "lip_enabled",
-      "type": "checkbox",
-      "default": true,
-      "group": "structure",
-      "modes": [
-        "bin"
-      ],
-      "label": {
-        "en": "Stacking Lip",
-        "es": "Labio de Apilamiento"
-      },
-      "tooltip": {
-        "en": "Top lip so bins stack on one another",
-        "es": "Labio superior para apilar contenedores"
-      }
-    },
-    {
-      "id": "enable_magnets",
-      "type": "checkbox",
-      "default": false,
-      "group": "features",
-      "modes": [
-        "bin"
-      ],
-      "label": {
-        "en": "Magnet Holes (6×2 mm)",
-        "es": "Orificios para Imanes (6×2 mm)"
-      },
-      "tooltip": {
-        "en": "6 mm dia × 2 mm deep pockets at each cell corner",
-        "es": "Cavidades de 6 mm diám × 2 mm en cada esquina de celda"
-      },
-      "preview_hint": {
-        "type": "toggle_geometry",
-        "affected_parts": [
-          "bin"
-        ]
-      }
-    },
-    {
-      "id": "finger_scoop",
-      "type": "checkbox",
-      "default": false,
-      "group": "features",
-      "modes": [
-        "bin"
-      ],
-      "label": {
-        "en": "Finger Scoop",
-        "es": "Rampa para Dedos"
-      },
-      "tooltip": {
-        "en": "Front ramp for easy access to contents",
-        "es": "Rampa frontal para acceso fácil al contenido"
-      }
-    },
-    {
-      "id": "bp_thickness",
-      "type": "slider",
-      "default": 5.25,
-      "min": 4.75,
-      "max": 10.0,
-      "step": 0.25,
-      "group": "baseplate",
-      "modes": [
-        "baseplate"
-      ],
-      "advanced": true,
-      "label": {
-        "en": "Baseplate Thickness (mm)",
-        "es": "Grosor de Placa Base (mm)"
-      },
-      "tooltip": {
-        "en": "Plate thickness; ≥ 4.75 mm socket profile depth",
-        "es": "Grosor de la placa; ≥ 4.75 mm de profundidad del perfil"
-      }
-    },
     {
       "id": "width_units",
       "type": "slider",
@@ -542,7 +224,7 @@
       },
       "visible_in_modes": [
         "cup",
-        "baseplate_scad",
+        "baseplate",
         "lid"
       ],
       "group": "dimensions",
@@ -550,11 +232,7 @@
         "type": "axis_scale",
         "axis": "x",
         "scale_factor": 42,
-        "affected_parts": [
-          "cup",
-          "baseplate",
-          "lid"
-        ]
+        "affected_parts": ["cup", "baseplate", "lid"]
       }
     },
     {
@@ -574,7 +252,7 @@
       },
       "visible_in_modes": [
         "cup",
-        "baseplate_scad",
+        "baseplate",
         "lid"
       ],
       "group": "dimensions"
@@ -602,9 +280,7 @@
         "type": "axis_scale",
         "axis": "z",
         "scale_factor": 7,
-        "affected_parts": [
-          "cup"
-        ]
+        "affected_parts": ["cup"]
       }
     },
     {
@@ -886,6 +562,27 @@
       "parent": "tapered_corner_id"
     },
     {
+      "id": "enable_magnets",
+      "type": "checkbox",
+      "default": false,
+      "label": {
+        "es": "Imanes (Contenedor)",
+        "en": "Magnets (Bin)"
+      },
+      "tooltip": {
+        "es": "Agregar cavidades para imanes 6×2mm en las esquinas",
+        "en": "Add 6×2mm magnet cavities in corners"
+      },
+      "visible_in_modes": [
+        "cup"
+      ],
+      "group": "mounting",
+      "preview_hint": {
+        "type": "toggle_geometry",
+        "affected_parts": ["cup"]
+      }
+    },
+    {
       "id": "enable_screws",
       "type": "checkbox",
       "default": false,
@@ -915,7 +612,7 @@
         "en": "Add magnet cavities in baseplate"
       },
       "visible_in_modes": [
-        "baseplate_scad"
+        "baseplate"
       ],
       "group": "mounting"
     },
@@ -932,7 +629,7 @@
         "en": "Add screw holes in baseplate corners"
       },
       "visible_in_modes": [
-        "baseplate_scad"
+        "baseplate"
       ],
       "group": "mounting"
     },
@@ -952,7 +649,7 @@
         "en": "Baseplate corner radius"
       },
       "visible_in_modes": [
-        "baseplate_scad"
+        "baseplate"
       ],
       "group": "baseplate"
     },
@@ -972,7 +669,7 @@
         "en": "-1 = full height"
       },
       "visible_in_modes": [
-        "baseplate_scad"
+        "baseplate"
       ],
       "group": "baseplate"
     },
@@ -989,7 +686,7 @@
         "en": "Taper the reduced wall edge"
       },
       "visible_in_modes": [
-        "baseplate_scad"
+        "baseplate"
       ],
       "group": "baseplate",
       "visibility_level": "advanced"
@@ -1069,231 +766,353 @@
       },
       "visible_in_modes": [
         "cup",
-        "baseplate_scad",
+        "baseplate",
         "lid"
       ],
       "group": "rendering"
     }
   ],
-  "presets": [
-    {
-      "id": "small_parts_bin",
-      "mode": "bin",
-      "label": {
-        "en": "Small Parts Bin (2×1×3)",
-        "es": "Contenedor Pequeño (2×1×3)"
-      },
-      "values": {
-        "target_part": "bin",
-        "grid_x": 2,
-        "grid_y": 1,
-        "grid_z": 3,
-        "enable_magnets": true,
-        "finger_scoop": true
-      }
-    },
-    {
-      "id": "deep_bin",
-      "mode": "bin",
-      "label": {
-        "en": "Deep Bin (2×2×6)",
-        "es": "Contenedor Profundo (2×2×6)"
-      },
-      "values": {
-        "target_part": "bin",
-        "grid_x": 2,
-        "grid_y": 2,
-        "grid_z": 6,
-        "enable_magnets": true
-      }
-    },
-    {
-      "id": "standard_baseplate",
-      "mode": "baseplate",
-      "label": {
-        "en": "Standard Baseplate (2×2)",
-        "es": "Placa Base Estándar (2×2)"
-      },
-      "values": {
-        "target_part": "baseplate",
-        "grid_x": 2,
-        "grid_y": 2
-      }
-    },
-    {
-      "id": "small_bin_scad",
-      "label": {
-        "es": "Contenedor Pequeño (2×1×3)",
-        "en": "Small Parts Bin (2×1×3)"
-      },
-      "values": {
-        "width_units": 2,
-        "depth_units": 1,
-        "height_units": 3,
-        "enable_magnets": true,
-        "fingerslide_enabled": true
-      },
-      "mode": "cup_scad"
-    },
-    {
-      "id": "battery_holder_scad",
-      "label": {
-        "es": "Porta Baterías (3×2×3)",
-        "en": "Battery Holder (3×2×3)"
-      },
-      "values": {
-        "width_units": 3,
-        "depth_units": 2,
-        "height_units": 3,
-        "vertical_chambers": 3,
-        "horizontal_chambers": 2,
-        "label_enabled": true
-      },
-      "mode": "cup_scad"
-    },
-    {
-      "id": "tool_drawer_scad",
-      "label": {
-        "es": "Cajón de Herramientas (4×2×2)",
-        "en": "Tool Drawer (4×2×2)"
-      },
-      "values": {
-        "width_units": 4,
-        "depth_units": 2,
-        "height_units": 2,
-        "horizontal_chambers": 4,
-        "wallpattern_enabled": true
-      },
-      "mode": "cup_scad"
-    },
-    {
-      "id": "baseplate_std_scad",
-      "mode": "baseplate_scad",
-      "label": {
-        "es": "Placa Base Estándar (2×2)",
-        "en": "Standard Baseplate (2×2)"
-      },
-      "values": {
-        "width_units": 2,
-        "depth_units": 2,
-        "bp_enable_magnets": true
-      }
-    },
-    {
-      "id": "lid_std_scad",
-      "mode": "lid",
-      "label": {
-        "es": "Tapa Estándar (2×1)",
-        "en": "Standard Lid (2×1)"
-      },
-      "values": {
-        "width_units": 2,
-        "depth_units": 1,
-        "lid_include_magnets": true
-      }
-    },
-    {
-      "id": "screw_organizer_scad",
-      "label": {
-        "es": "Organizador de Tornillos (3×2×4)",
-        "en": "Screw Organizer (3×2×4)"
-      },
-      "values": {
-        "width_units": 3,
-        "depth_units": 2,
-        "height_units": 4,
-        "vertical_chambers": 2,
-        "horizontal_chambers": 3,
-        "label_enabled": true,
-        "enable_magnets": true
-      },
-      "mode": "cup_scad"
-    },
-    {
-      "id": "pen_cup_scad",
-      "label": {
-        "es": "Porta Plumas (1×1×6)",
-        "en": "Pen Cup (1×1×6)"
-      },
-      "values": {
-        "width_units": 1,
-        "depth_units": 1,
-        "height_units": 6,
-        "fingerslide_enabled": false,
-        "enable_magnets": true
-      },
-      "mode": "cup_scad"
-    }
-  ],
   "constraints": [
     {
-      "expression": "grid_x * grid_y <= 24",
+      "rule": "width_units * depth_units <= 24",
+      "message": {
+        "es": "Máximo 24 celdas (riesgo de timeout)",
+        "en": "Max 24 grid cells (render timeout risk)"
+      },
       "severity": "warning",
-      "message": {
-        "en": "Large grids (>24 cells) may be slow to render",
-        "es": "Rejillas grandes (>24 celdas) pueden tardar en renderizar"
-      }
-    },
-    {
-      "expression": "wall >= 0.8",
-      "severity": "error",
-      "message": {
-        "en": "Wall must be at least 0.8 mm",
-        "es": "La pared debe ser de al menos 0.8 mm"
-      }
-    }
-  ],
-  "camera_views": [
-    {
-      "id": "iso",
-      "label": {
-        "en": "Isometric",
-        "es": "Isométrico"
-      },
-      "position": [
-        120,
-        120,
-        100
+      "applies_to": [
+        "width_units",
+        "depth_units"
       ]
     },
     {
-      "id": "top",
-      "label": {
-        "en": "Top",
-        "es": "Superior"
+      "rule": "vertical_chambers * horizontal_chambers <= 12",
+      "message": {
+        "es": "Máximo 12 compartimentos",
+        "en": "Max 12 compartments"
       },
-      "position": [
-        0,
-        0,
-        200
-      ]
-    },
-    {
-      "id": "front",
-      "label": {
-        "en": "Front",
-        "es": "Frontal"
-      },
-      "position": [
-        0,
-        -200,
-        30
+      "severity": "warning",
+      "applies_to": [
+        "vertical_chambers",
+        "horizontal_chambers"
       ]
     }
   ],
+  "bom": {
+    "hardware": [
+      {
+        "id": "magnets_6x2",
+        "label": {
+          "es": "Imanes N52 6×2mm",
+          "en": "N52 6×2mm Magnets"
+        },
+        "quantity_formula": "(enable_magnets ? 4 : 0) + (bp_enable_magnets ? 4 * width_units * depth_units : 0) + (lid_include_magnets ? 4 * width_units * depth_units : 0)",
+        "unit": "pcs"
+      },
+      {
+        "id": "screws_m3x6",
+        "label": {
+          "es": "Tornillos M3×6",
+          "en": "M3×6 Screws"
+        },
+        "quantity_formula": "(enable_screws ? 4 : 0) + (bp_enable_screws ? 4 : 0)",
+        "unit": "pcs"
+      }
+    ]
+  },
   "export_formats": [
     "stl",
     "3mf",
+    "off",
     "step",
     "glb",
     "gltf",
     "obj"
   ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "es": "Isométrico",
+        "en": "Isometric"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "es": "Superior",
+        "en": "Top"
+      },
+      "position": [
+        0,
+        0,
+        150
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "es": "Frente",
+        "en": "Front"
+      },
+      "position": [
+        0,
+        -150,
+        0
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "es": "Derecha",
+        "en": "Right"
+      },
+      "position": [
+        150,
+        0,
+        0
+      ]
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "dimensions",
+      "label": {
+        "es": "Dimensiones",
+        "en": "Dimensions"
+      }
+    },
+    {
+      "id": "cup_structure",
+      "label": {
+        "es": "Estructura del Contenedor",
+        "en": "Bin Structure"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cup_features",
+      "label": {
+        "es": "Características del Contenedor",
+        "en": "Bin Features"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mounting",
+      "label": {
+        "es": "Montaje",
+        "en": "Mounting"
+      }
+    },
+    {
+      "id": "baseplate",
+      "label": {
+        "es": "Placa Base",
+        "en": "Baseplate"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lid",
+      "label": {
+        "es": "Tapa",
+        "en": "Lid"
+      },
+      "levels": [
+        {
+          "id": "basic",
+          "label": {
+            "es": "Básico",
+            "en": "Basic"
+          }
+        },
+        {
+          "id": "advanced",
+          "label": {
+            "es": "Avanzado",
+            "en": "Advanced"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rendering",
+      "label": {
+        "es": "Renderizado",
+        "en": "Rendering"
+      }
+    }
+  ],
+  "viewer": {
+    "default_color": "#4a90d9"
+  },
+  "grid_presets": {
+    "rendering": {
+      "emoji": "🪽",
+      "label": {
+        "en": "Quick Preview",
+        "es": "Vista Rápida"
+      },
+      "values": {
+        "width_units": 2,
+        "depth_units": 1
+      }
+    },
+    "manufacturing": {
+      "emoji": "⭐",
+      "label": {
+        "en": "Large Grid",
+        "es": "Rejilla Grande"
+      },
+      "values": {
+        "width_units": 4,
+        "depth_units": 4
+      }
+    },
+    "default": "rendering"
+  },
+  "assembly_steps": [
+    {
+      "step": 1,
+      "label": {
+        "es": "Imprime la placa base",
+        "en": "Print the baseplate"
+      },
+      "notes": {
+        "es": "Lado plano abajo, 0.2mm capas, 20% relleno",
+        "en": "Flat side down, 0.2mm layers, 20% infill"
+      },
+      "visible_parts": [
+        "baseplate"
+      ],
+      "highlight_parts": [
+        "baseplate"
+      ],
+      "camera": [
+        80,
+        -80,
+        30
+      ],
+      "camera_target": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "step": 2,
+      "label": {
+        "es": "Imprime los contenedores",
+        "en": "Print the bins"
+      },
+      "notes": {
+        "es": "Boca arriba, sin soportes necesarios para diseño estándar",
+        "en": "Opening up, no supports needed for standard design"
+      },
+      "visible_parts": [
+        "baseplate",
+        "cup"
+      ],
+      "highlight_parts": [
+        "cup"
+      ],
+      "camera": [
+        80,
+        -80,
+        60
+      ],
+      "camera_target": [
+        0,
+        0,
+        15
+      ]
+    },
+    {
+      "step": 3,
+      "label": {
+        "es": "Coloca los contenedores en la placa",
+        "en": "Place bins on baseplate"
+      },
+      "notes": {
+        "es": "Los contenedores encajan a presión en la rejilla. Los imanes son opcionales para mayor sujeción.",
+        "en": "Bins snap into the grid. Magnets are optional for extra hold."
+      },
+      "visible_parts": [
+        "baseplate",
+        "cup"
+      ],
+      "highlight_parts": [
+        "baseplate",
+        "cup"
+      ],
+      "camera": [
+        60,
+        -60,
+        40
+      ],
+      "camera_target": [
+        0,
+        0,
+        15
+      ]
+    }
+  ],
   "estimate_constants": {
-    "base_time": 10,
-    "per_unit": 3,
-    "per_part": 12,
-    "fn_factor": 32,
+    "base_time": 8,
+    "per_unit": 2,
+    "fn_factor": 64,
+    "per_part": 10,
     "wasm_multiplier": 4,
     "warning_threshold_seconds": 90
   },
@@ -1303,45 +1122,26 @@
       {
         "id": "gridfinity_grid",
         "label": {
-          "en": "Gridfinity 42mm Grid",
-          "es": "Rejilla Gridfinity de 42mm"
+          "en": "Gridfinity Grid Unit",
+          "es": "Unidad de Rejilla Gridfinity"
         },
         "geometry_type": "grid",
-        "standard": "Gridfinity (42mm module, 7mm Z-unit)",
+        "standard": "Gridfinity 42mm grid",
         "parameters": [
-          "grid_x",
-          "grid_y",
-          "grid_z"
-        ],
-        "compatible_with": [
-          "multiboard"
-        ]
-      },
-      {
-        "id": "gridfinity_base_profile",
-        "label": {
-          "en": "Gridfinity Base Profile",
-          "es": "Perfil Base Gridfinity"
-        },
-        "geometry_type": "profile",
-        "standard": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
-        "parameters": [
-          "lip_enabled",
-          "bp_thickness"
+          "width_units",
+          "depth_units"
         ]
       },
       {
         "id": "gridfinity_baseplate_snap",
         "label": {
           "en": "Baseplate Snap Interface",
-          "es": "Interfaz de Encaje a Placa"
+          "es": "Interfaz de Encaje a Base"
         },
         "geometry_type": "snap",
-        "standard": "Gridfinity baseplate socket (0.25 mm clearance)",
+        "standard": "Gridfinity baseplate profile",
         "parameters": [
-          "grid_x",
-          "grid_y",
-          "bp_thickness"
+          "lip_style_id"
         ]
       },
       {
@@ -1351,9 +1151,21 @@
           "es": "Alojamiento para Imán 6×2mm"
         },
         "geometry_type": "socket",
-        "standard": "6mm dia × 2mm N52 neodymium",
+        "standard": "6×2mm N52 neodymium",
         "parameters": [
           "enable_magnets"
+        ]
+      },
+      {
+        "id": "screw_socket_m5",
+        "label": {
+          "en": "M5 Screw Pocket",
+          "es": "Alojamiento para Tornillo M5"
+        },
+        "geometry_type": "pocket",
+        "standard": "ISO 4762 M5",
+        "parameters": [
+          "enable_screws"
         ]
       }
     ],
@@ -1363,8 +1175,8 @@
       "tolerance_by_material": false
     },
     "societal_benefit": {
-      "en": "A universal, freely licensed modular storage grid for workshops, offices, and homes. One shared 42 mm/7 mm standard lets bins, trays, and baseplates from any maker interoperate — reducing single-use organizers and packaging waste while keeping storage repairable and endlessly reconfigurable.",
-      "es": "Una rejilla de almacenamiento modular universal y de licencia libre para talleres, oficinas y hogares. Un estándar compartido de 42 mm/7 mm permite que contenedores, bandejas y placas base de cualquier fabricante sean interoperables — reduciendo organizadores de un solo uso y residuos de empaque, manteniendo el almacenamiento reparable e infinitamente reconfigurable."
+      "en": "Universal modular storage system for workshops, offices, and homes — reduces single-use organizers",
+      "es": "Sistema de almacenamiento modular universal para talleres, oficinas y hogares — reduce organizadores de un solo uso"
     },
     "commons_license": "CERN-OHL-W-2.0"
   },
@@ -1372,9 +1184,32 @@
     "gridfinity",
     "modular",
     "storage",
-    "snap-fit",
-    "household",
     "hyperobject",
     "commons"
+  ],
+  "animations": [
+    {
+      "id": "expand",
+      "label": {
+        "en": "Grid Expansion",
+        "es": "Expansión de cuadrícula"
+      },
+      "description": {
+        "en": "Smoothly expand the gridfinity base from 1×1 to 3×3 units.",
+        "es": "Expande la base de 1×1 a 3×3 unidades."
+      },
+      "from_state": {
+        "width_units": 1,
+        "depth_units": 1
+      },
+      "to_state": {
+        "width_units": 3,
+        "depth_units": 3
+      },
+      "frames": 5,
+      "duration_ms": 2500,
+      "easing": "ease-in-out",
+      "mode": "cup"
+    }
   ]
 }

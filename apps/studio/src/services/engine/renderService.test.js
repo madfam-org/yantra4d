@@ -55,6 +55,77 @@ describe('estimateRenderTime', () => {
     expect(renderService.estimateRenderTime('nonexistent', {}, manifest)).toBe(0)
   })
 
+  // ---------------------------------------------------------------------------
+  // Calibration regression. Live measurement 2026-08-08 on app.yantra4d.com, from
+  // the app's own "Total rendering time" log lines in the browser (WASM path):
+  //
+  //     3x3 -> 0.196 s      5x5 -> 0.607 s
+  //
+  // The shipped estimator said ~336 s and ~352 s — a 1,714x and 580x overshoot —
+  // and, because 70 s of its 84 s base came from a FIXED parts*per_part term, it
+  // produced "~6 minutes" for EVERY cube size. It therefore fired its blocking
+  // "the application may become unresponsive" dialog on every render, including
+  // the deep link a prospect lands on. A warning that always fires is not a
+  // warning; at the Digital Twin Gate it actively trains operators to click
+  // through the check that governs whether atoms get extruded.
+  // ---------------------------------------------------------------------------
+  const rubiks = {
+    parts: Array.from({ length: 7 }, (_, i) => ({ id: `p${i}`, render_mode: '3D' })),
+    modes: [{
+      id: 'cube',
+      parts: Array.from({ length: 7 }, (_, i) => `p${i}`),
+      estimate: { base_units: 'N * N', formula: 'grid', formula_vars: ['N', 'N'] },
+    }],
+    estimate_constants: { base_time: 2.0, per_unit: 0.006, per_part: 0.05 },
+  }
+
+  it('cube units follow N^2, matching the declared base_units "N * N"', () => {
+    // The manifest declared N*N while formula_vars listed ["N"], so the code
+    // computed N. Measurement settles it: 3x3 -> 5x5 grew 3.10x, and N^2 predicts
+    // 2.78x while N alone predicts only 1.67x.
+    const at = (N) => renderService.estimateRenderTime('cube', { N }, rubiks)
+    const growth = (at(5) - 2.0 - 7 * 0.05) / (at(3) - 2.0 - 7 * 0.05)
+    expect(growth).toBeCloseTo(25 / 9, 6)   // N^2, not N
+  })
+
+  it('a standard 3x3 no longer estimates minutes', () => {
+    // Native path (no wasm multiplier in this fixture): 2 + 9*0.006 + 7*0.05
+    expect(renderService.estimateRenderTime('cube', { N: 3 }, rubiks)).toBeCloseTo(2.404, 3)
+  })
+
+  it('the per-part term no longer dominates the estimate', () => {
+    // This is the specific defect: parts*per_part was 70 s of an 84 s estimate,
+    // so cube size barely moved the number and every size looked identical.
+    const partsTerm = 7 * rubiks.estimate_constants.per_part      // 0.35
+    const total = renderService.estimateRenderTime('cube', { N: 9 }, rubiks)
+    expect(partsTerm / total).toBeLessThan(0.2)
+  })
+
+  it('reports no observed time before a render has run, never zero', () => {
+    // "Not measured yet" must not be readable as "took no time" — that confusion
+    // is what let a 1,714x overshoot look like a working estimator.
+    expect(renderService.getLastObservedRenderSeconds()).toBeNull()
+    expect(renderService.getEstimateAccuracy(336)).toBeNull()
+  })
+
+  it('accuracy is null for a nonsense estimate rather than Infinity', () => {
+    expect(renderService.getEstimateAccuracy(0)).toBeNull()
+    expect(renderService.getEstimateAccuracy(NaN)).toBeNull()
+    expect(renderService.getEstimateAccuracy(-5)).toBeNull()
+  })
+
+  it('the threshold still FIRES for a genuinely expensive render', () => {
+    // Guard against having swapped "always warns" for "never warns". The dialog
+    // must remain reachable — proven here by a mode whose cost is real.
+    const heavy = {
+      ...rubiks,
+      modes: [{ ...rubiks.modes[0], id: 'cube' }],
+      estimate_constants: { base_time: 2.0, per_unit: 0.006, per_part: 0.05 },
+    }
+    const huge = renderService.estimateRenderTime('cube', { N: 400 }, heavy)
+    expect(huge).toBeGreaterThan(90)   // 90 s = warning_threshold_seconds
+  })
+
   it('uses formula_vars to compute units generically', () => {
     const customManifest = {
       modes: [

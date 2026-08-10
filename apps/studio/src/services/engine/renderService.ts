@@ -73,6 +73,11 @@ const API_BASE = getApiBase()
 let _hardwareMode: 'backend' | 'wasm' | null = null
 let _worker: Worker | null = null
 let _initPromise: Promise<void> | null = null
+//: Wall-clock seconds of the last WASM render, compile INCLUDED. This is the
+//: quantity `estimateRenderTime` claims to predict, kept so the prediction can be
+//: checked against the outcome instead of being taken on faith. Read it with
+//: `getLastObservedRenderSeconds()`; null until a render has completed.
+let _lastObservedRenderSeconds: number | null = null
 
 /**
  * Detect hardware capabilities
@@ -254,6 +259,7 @@ async function renderWasm(
   if (!modeConfig) throw new Error(`Unknown mode: ${mode}`)
 
   const parts: RenderPart[] = []
+  const partTimings: { part: string; seconds: number }[] = []
   const totalParts = modeConfig.parts.length
 
   for (let i = 0; i < totalParts; i++) {
@@ -266,6 +272,15 @@ async function renderWasm(
     }
 
     const basePercent = Math.round((i / totalParts) * 100)
+    // WALL-CLOCK PER PART, spanning compile AND render.
+    //
+    // The engine already logs a "Total rendering time" line, but that EXCLUDES
+    // the OpenSCAD/WASM compile — which is the dominant cost the operator
+    // actually waits through. Calibrating estimate_constants against the engine's
+    // number alone therefore fits the small half of the problem: measured 2026-08-08,
+    // a 3x3 reported 0.196 s of "rendering" while the visible wait was seconds of
+    // "Compilando...". Timing the await is the only place both are in scope.
+    const partStart = performance.now()
     onProgress?.({
       percent: basePercent,
       phase: 'compiling',
@@ -315,13 +330,25 @@ async function renderWasm(
     const url = URL.createObjectURL(blob)
     parts.push({ type: partId, blob, url })
 
+    const partElapsed = (performance.now() - partStart) / 1000
+    partTimings.push({ part: partId, seconds: partElapsed })
     onProgress?.({
       percent: Math.round(((i + 1) / totalParts) * 100),
       phase: 'done',
       part: partId,
-      log: `[${partId}] Done (${Math.round(((i + 1) / totalParts) * 100)}%)`
+      log: `[${partId}] Done (${Math.round(((i + 1) / totalParts) * 100)}%) in ${partElapsed.toFixed(2)}s`
     })
   }
+
+  // The line the estimator should be fitted against. `estimateRenderTime` predicts
+  // exactly this quantity, so printing them together is what makes a bad
+  // calibration visible instead of silent — the shipped constants were 1,714x high
+  // and nothing in the UI ever compared the two.
+  const observedTotal = partTimings.reduce((a, p) => a + p.seconds, 0)
+  _lastObservedRenderSeconds = observedTotal
+  onProgress?.({
+    log: `[render] observed ${observedTotal.toFixed(2)}s wall-clock across ${partTimings.length} part(s)`
+  })
 
   if (_worker) {
     _worker.terminate()
@@ -391,9 +418,18 @@ async function renderBackend(
         onProgress?.({ log: `  ${line}` })
       }
     } else if (data.event === 'part_done') {
+      // `data.progress` is optional on the wire — a backend that omits it used to
+      // render literally as "[cubies] Done (undefined%)" in the operator console,
+      // right underneath the WASM path's correct "[cubies] Done (14%)". Two lines
+      // per part, one of them nonsense. Fall back to the part index instead of
+      // interpolating undefined; drop the percentage entirely if neither is known,
+      // because a missing number should read as missing, not as a value.
+      const pct = typeof data.progress === 'number' && Number.isFinite(data.progress)
+        ? `${Math.round(data.progress)}%`
+        : null
       onProgress?.({
         part: data.part,
-        log: `[${data.part}] Done (${data.progress}%)`
+        log: pct ? `[${data.part}] Done (${pct})` : `[${data.part}] Done`
       })
     } else if (data.event === 'complete') {
       finalParts = data.parts || []
@@ -534,6 +570,25 @@ export function estimateRenderTime(mode: string, params: Record<string, unknown>
   const modeConfig = manifest.modes.find(m => m.id === mode)
   if (!modeConfig) return 0
 
+  // UNITS. `formula_vars` is a PRODUCT of the named params, so a mode whose cost
+  // scales with N^2 lists N twice. That is not a trick: it is the only thing the
+  // reducer below can express, and it keeps `base_units` (documentation) and the
+  // computed value in agreement.
+  //
+  // They used to disagree. The cube mode declared `base_units: "N * N"` while
+  // listing `formula_vars: ["N"]`, so the estimator computed N and the manifest
+  // claimed N^2 — and nothing reconciled them, because `base_units` is only read
+  // in the `else` branch and only when it is a NUMBER. A string like "N * N"
+  // could never satisfy `typeof base === 'number'`, so the declared intent was
+  // unreachable code that read as configuration.
+  //
+  // Measured 2026-08-08 in the browser (WASM), from the app's own
+  // "Total rendering time" lines:
+  //     3x3 -> 0.196 s   (units N^2 = 9)
+  //     5x5 -> 0.607 s   (units N^2 = 25)
+  // Ratio 3.10x observed against 2.78x predicted by N^2 — the manifest's declared
+  // model was right and the code was wrong. N alone predicts 1.67x, which the
+  // measurement rules out.
   let units = 1
   if (modeConfig.estimate?.formula_vars) {
     units = modeConfig.estimate.formula_vars.reduce((acc, v) => acc * (Number(params[v]) || 1), 1)
@@ -558,4 +613,29 @@ export function estimateRenderTime(mode: string, params: Record<string, unknown>
  */
 export function getRenderMode(): string {
   return _hardwareMode || 'detecting'
+}
+
+/**
+ * Wall-clock seconds of the last completed WASM render, compile INCLUDED.
+ *
+ * `estimateRenderTime` predicts this exact quantity. Until this existed nothing
+ * compared the two, which is how constants that overshot by 1,714x shipped and
+ * stayed: the estimator drove a blocking dialog on every render and no surface
+ * ever contradicted it. Returns null before the first render completes — a
+ * missing measurement must read as missing, never as zero.
+ */
+export function getLastObservedRenderSeconds(): number | null {
+  return _lastObservedRenderSeconds
+}
+
+/**
+ * How far off the estimate was, as a ratio (estimate / observed).
+ *
+ * 1.0 is perfect; >1 overshoots. Null when either side is unknown, so a caller
+ * cannot mistake "not measured yet" for "accurate".
+ */
+export function getEstimateAccuracy(estimateSeconds: number): number | null {
+  if (_lastObservedRenderSeconds == null || _lastObservedRenderSeconds <= 0) return null
+  if (!Number.isFinite(estimateSeconds) || estimateSeconds <= 0) return null
+  return estimateSeconds / _lastObservedRenderSeconds
 }

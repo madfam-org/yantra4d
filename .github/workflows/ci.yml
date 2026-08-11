@@ -286,6 +286,12 @@ jobs:
           python-version: "3.12"
       - name: Run metadata consistency audit
         run: python3 scripts/qa/compliance_audit.py --strict
+      # Report-only for now: 4 pre-existing CONFLICT findings need an owner
+      # decision (two upstream GPL forks, a proprietary client design, and a
+      # LICENSE file that is a saved HTML 404). Switch to --strict once those
+      # are resolved so they cannot come back.
+      - name: Audit cartridge licensing
+        run: python3 scripts/qa/check_licenses.py
 
   openapi-validation:
     runs-on: ubuntu-latest

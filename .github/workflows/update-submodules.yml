@@ -31,6 +31,13 @@ jobs:
               git checkout origin/main 2>/dev/null || git checkout origin/master 2>/dev/null || true
             fi
           '
+      # Cartridge manifests just moved, so everything derived from them must be
+      # regenerated in the same PR. Otherwise the weekly bump lands a stale
+      # Studio fallback and catalog, and manifest-sync goes red on main.
+      - name: Regenerate derived manifests
+        run: |
+          python3 scripts/qa/sync_fallback_manifest.py
+          python3 scripts/qa/generate_commons_catalog.py
       - name: Create PR if changed
         id: create-pr
         uses: peter-evans/create-pull-request@v7

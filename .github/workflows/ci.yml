@@ -92,6 +92,22 @@ jobs:
         run: npm audit --audit-level=high --legacy-peer-deps || true
       - run: npm run lint
       - run: npm run build
+      # Assert the production auth endpoint was baked into the bundle. This
+      # replaces a status probe pinned to a hashed asset filename, which 404'd
+      # after the next build and silently stopped checking anything.
+      #
+      # Deliberately a positive assertion. Grepping for absence of "localhost:"
+      # false-positives on @janua/react-sdk, which carries
+      # `apiUrl = NEXT_PUBLIC_API_URL || "http://localhost:8000"` defaults —
+      # inert here, because every call site passes apiUrl explicitly, and
+      # NEXT_PUBLIC_* is a Next.js convention this Vite app never injects.
+      - name: Assert production auth endpoint is baked in
+        run: |
+          if ! grep -rq "auth\.madfam\.io" dist/assets/ 2>/dev/null; then
+            echo "::error::Built admin bundle does not reference auth.madfam.io — VITE_JANUA_BASE_URL may be misconfigured, leaving the SDK's localhost:8000 default in play"
+            exit 1
+          fi
+          echo "Production auth endpoint present in built bundle."
       - run: npm run test:coverage
 
   backend:

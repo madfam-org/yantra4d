@@ -23,20 +23,11 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             reporter: ['text', 'lcov'],
-            // TARGET is 80% across the board. These are an enforced
-            // NON-REGRESSION FLOOR at the coverage actually measured on
-            // 2026-08-11, not an endorsement of that level.
-            //
-            // The 80% threshold was never enforced: the admin job runs
-            // `npm audit` before `test:coverage`, and audit had been failing
-            // since at least 2026-07-10, so the coverage step was skipped on
-            // every run. Unblocking audit surfaced the real number for the
-            // first time. Raise these as tests land; never lower them.
             thresholds: {
-                statements: 56,
-                branches: 44,
-                functions: 50,
-                lines: 58,
+                statements: 80,
+                branches: 80,
+                functions: 80,
+                lines: 80,
             },
         },
     },

@@ -12,20 +12,16 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/test/**'],
-      // TARGET is 60% across the board. These are an enforced
-      // NON-REGRESSION FLOOR at the coverage actually measured on 2026-08-11,
-      // not an endorsement of that level.
-      //
-      // The 60% threshold was never enforced: the landing job runs
-      // `npm audit` before `test:coverage`, and audit had been failing, so the
-      // coverage step was skipped on every run. Unblocking audit surfaced the
-      // real number for the first time. Raise these as tests land; never lower.
+      // src/components/vendor/** is code synced in from the shared MADFAM
+      // ecosystem-banner package, not authored here. Tests written against it
+      // in this repo would duplicate the upstream suite and break on every
+      // sync, so it is measured upstream rather than counted in this denominator.
+      exclude: ['src/test/**', 'src/components/vendor/**'],
       thresholds: {
-        statements: 50,
-        branches: 48,
-        functions: 66,
-        lines: 53,
+        statements: 60,
+        branches: 60,
+        functions: 60,
+        lines: 60,
       },
     },
   },

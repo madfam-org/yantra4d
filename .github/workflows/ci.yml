@@ -23,7 +23,13 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      - run: npm audit --audit-level=high
+      # Blocking: anything that reaches a user's browser.
+      - name: Audit runtime dependencies
+        run: npm audit --audit-level=high --omit=dev
+      # Advisory: build-time tooling (vite, vitest, astro) never ships, so a CVE
+      # there must not block a deploy — but it stays visible in the log.
+      - name: Audit build tooling (advisory)
+        run: npm audit --audit-level=high || true
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test:coverage
@@ -51,7 +57,13 @@ jobs:
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
-      - run: npm audit --audit-level=high
+      # Blocking: anything that reaches a user's browser.
+      - name: Audit runtime dependencies
+        run: npm audit --audit-level=high --omit=dev
+      # Advisory: build-time tooling (astro, sharp) never ships, so a CVE there
+      # must not block a deploy — but it stays visible in the log.
+      - name: Audit build tooling (advisory)
+        run: npm audit --audit-level=high || true
       - run: npm run test:coverage
       - run: npm run build
 
@@ -71,7 +83,13 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      - run: npm audit --audit-level=high
+      # Blocking: anything that reaches a user's browser.
+      - name: Audit runtime dependencies
+        run: npm audit --audit-level=high --omit=dev --legacy-peer-deps
+      # Advisory: build-time tooling (vite, vitest) never ships, so a CVE there
+      # must not block a deploy — but it stays visible in the log.
+      - name: Audit build tooling (advisory)
+        run: npm audit --audit-level=high --legacy-peer-deps || true
       - run: npm run lint
       - run: npm run build
       - run: npm run test:coverage
@@ -128,6 +146,36 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+      # The Studio proxies /api and /static to localhost:5000 (vite.config.ts).
+      # Without a backend every request proxy-errors, the specs retry until the
+      # job hits its timeout, and the whole matrix reports red for a reason that
+      # has nothing to do with the change under test.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend dependencies
+        working-directory: apps/api
+        run: |
+          sudo apt-get update && sudo apt-get install -y openscad
+          pip install -r requirements.txt
+      - name: Start backend
+        working-directory: apps/api
+        env:
+          PORT: "5000"
+          FLASK_DEBUG: "false"
+          AUTH_ENABLED: "false"
+          PROJECTS_DIR: ${{ github.workspace }}/projects
+        run: |
+          python app.py > "$RUNNER_TEMP/backend.log" 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:5000/api/health > /dev/null 2>&1; then
+              echo "backend up after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::backend did not become healthy within 60s"
+          cat "$RUNNER_TEMP/backend.log"
+          exit 1
       - name: Build studio
         run: npm run build
       - name: Cache Playwright browsers
@@ -145,6 +193,14 @@ jobs:
           name: playwright-report-${{ matrix.project }}
           path: apps/studio/playwright-report/
           retention-days: 14
+      - name: Upload backend log
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: backend-log-${{ matrix.project }}
+          path: ${{ runner.temp }}/backend.log
+          retention-days: 14
+          if-no-files-found: ignore
       - name: Upload visual regression diffs
         uses: actions/upload-artifact@v4
         if: failure()
@@ -182,24 +238,9 @@ jobs:
           submodules: recursive
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - name: Check manifest sync
-        run: |
-          # Fallback manifest = source minus force_backend (stripped for offline/WASM mode)
-          python3 -c "
-          import json, sys
-          src = json.load(open('projects/gridfinity/project.json'))
-          dst = json.load(open('apps/studio/src/config/fallback-manifest.json'))
-          # Strip force_backend from source for comparison (fallback intentionally omits it)
-          if 'project' in src and 'force_backend' in src['project']:
-              del src['project']['force_backend']
-          if src != dst:
-              print('ERROR: fallback-manifest.json is out of sync with projects/gridfinity/project.json')
-              print('Expected (source minus force_backend):')
-              print(json.dumps(src, indent=2)[:500])
-              print('Got (fallback):')
-              print(json.dumps(dst, indent=2)[:500])
-              sys.exit(1)
-          print('Manifest sync OK')
-          "
+        run: python3 scripts/qa/sync_fallback_manifest.py --check
+      - name: Check commons catalog is current
+        run: python3 scripts/qa/generate_commons_catalog.py --check
 
   manifest-validation:
     runs-on: ubuntu-latest

@@ -219,9 +219,12 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ matrix.project }}-${{ hashFiles('apps/studio/package-lock.json') }}
       - run: npx playwright install --with-deps ${{ matrix.project == 'mobile' && 'chromium' || matrix.project }}
-      # Blob reporter so the shards can be merged back into one report and one
-      # honest total; a per-shard HTML report only tells you a third of the story.
-      - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob
+      # Blob so the shards can be merged back into one report and one honest
+      # total; a per-shard HTML report only tells you a third of the story. list
+      # alongside it because blob alone writes nothing to stdout — the first cut
+      # of this left each shard's log silent about which specs ran, which makes
+      # triaging one shard harder than before sharding existed.
+      - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob,list
         env:
           CI: true
       - name: Upload blob report

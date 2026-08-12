@@ -324,7 +324,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   )
 
   return (
-    <div id="main-content" className="flex-1 relative flex flex-col min-h-0">
+    <div className="flex-1 relative flex flex-col min-h-0">
       {showWelcome && (
         <WelcomeOverlay slug={projectSlug} welcome={welcomeData as never} />
       )}

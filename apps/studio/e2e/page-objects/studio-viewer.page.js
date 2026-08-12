@@ -18,15 +18,19 @@ export class StudioViewerPage extends BasePage {
     // Also duplicated across the desktop and mobile layout trees: 4 in the
     // DOM, 1 visible. Same reason as the console above.
     this.axesToggle = page.locator('button:visible', { hasText: /⊞|⊟/ })
-    this.animationToggle = page.locator('[data-testid="animation-toggle"]')
+    // 4 in the DOM, same double-mount as the console and the axes toggle above.
+    this.animationToggle = page.locator('[data-testid="animation-toggle"]:visible').first()
   }
 
   /** Get camera view button by view id. */
   cameraViewButton(viewId) {
     // Camera view buttons are in the top-right button group, present in both
     // layout trees — the unscoped selector resolved to 4 elements.
+    // Both layout trees also carry the button group itself, so :visible alone
+    // still left two candidates in some layouts and the click waited out its
+    // timeout. Take the first visible match.
     const viewLabels = { iso: 'Isometric', top: 'Top', front: 'Front', right: 'Right' }
-    return this.page.locator('.absolute.top-2.right-2 button:visible', { hasText: new RegExp(viewLabels[viewId] || viewId, 'i') })
+    return this.page.locator('.absolute.top-2.right-2 button:visible', { hasText: new RegExp(viewLabels[viewId] || viewId, 'i') }).first()
   }
 
   /** Click a camera view. */

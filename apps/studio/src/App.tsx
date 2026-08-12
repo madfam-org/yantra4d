@@ -221,6 +221,22 @@ function App() {
 
       {!isEmbed && <RateLimitBanner />}
 
+      {/*
+        Single #main-content spanning both layout trees.
+
+        The id used to live on StudioMainView, which is rendered once here for
+        desktop and once below for mobile — so it was in the DOM twice. That is
+        invalid HTML, and it broke the skip link above: href="#main-content"
+        resolves to the first match, the desktop tree, which is display:none
+        under lg. Skipping to content on a phone landed on a hidden element.
+
+        Exactly one child is ever displayed (hidden lg:flex vs lg:hidden), so
+        one wrapper is unambiguous at every width and needs no JS breakpoint.
+        tabIndex={-1} lets the skip link move focus here without adding a tab
+        stop of its own.
+      */}
+      <div id="main-content" tabIndex={-1} className="flex flex-1 overflow-hidden min-h-0 outline-none">
+
       {/* Desktop: resizable horizontal layout */}
       <div className="hidden lg:flex flex-1 overflow-hidden relative">
         <ResizablePanelGroup
@@ -331,6 +347,8 @@ function App() {
           </div>
         </ErrorBoundary>
       </div>
+
+      </div>{/* /#main-content */}
 
       {/* AI Configurator overlay */}
       {aiPanelOpen && !editorOpen && (

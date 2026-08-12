@@ -156,21 +156,21 @@ test.describe('Rendering Flow', () => {
     }
   })
 
-  test('long render warning dialog appears for high estimates', async ({ page }) => {
+  test('long render warning dialog appears for high estimates', async ({ page, sidebar }) => {
     await page.route('**/api/estimate', (route) => {
       route.fulfill({ json: { estimated_time: 120 } }) // 2 minutes
     })
     // Trigger render — this should show confirmation dialog
-    await page.locator('button', { hasText: 'Generate' }).click()
+    await sidebar.generateButton.click()
     await page.waitForTimeout(500)
     // Dialog may appear if estimate exceeds threshold
   })
 
-  test('confirm dialog "Render Anyway" proceeds with render', async ({ page }) => {
+  test('confirm dialog "Render Anyway" proceeds with render', async ({ page, sidebar }) => {
     await page.route('**/api/estimate', (route) => {
       route.fulfill({ json: { estimated_time: 120 } })
     })
-    await page.locator('button', { hasText: 'Generate' }).click()
+    await sidebar.generateButton.click()
     await page.waitForTimeout(500)
     const dialog = page.locator('text=Render Anyway')
     if (await dialog.isVisible()) {
@@ -178,11 +178,11 @@ test.describe('Rendering Flow', () => {
     }
   })
 
-  test('confirm dialog "Cancel" aborts render', async ({ page }) => {
+  test('confirm dialog "Cancel" aborts render', async ({ page, sidebar }) => {
     await page.route('**/api/estimate', (route) => {
       route.fulfill({ json: { estimated_time: 120 } })
     })
-    await page.locator('button', { hasText: 'Generate' }).click()
+    await sidebar.generateButton.click()
     await page.waitForTimeout(500)
     const cancelBtn = page.locator('[role="alertdialog"] button', { hasText: 'Cancel' })
     if (await cancelBtn.isVisible()) {

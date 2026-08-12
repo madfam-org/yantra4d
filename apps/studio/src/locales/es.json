@@ -293,6 +293,8 @@
   "splash.tip_10": "Todos los proyectos funcionan sin conexión mediante renderizado en el navegador",
   "error.project_not_found_title": "Proyecto No Encontrado",
   "error.project_not_found_body": "El proyecto \"{slug}\" no existe o aún no ha sido desplegado.",
+  "error.server_unreachable_title": "No se puede conectar con el servidor",
+  "error.server_unreachable_body": "Yantra4D no pudo cargar \"{slug}\". El servidor podría estar caído o tu conexión sin acceso. Puede que el proyecto esté bien.",
   "error.browse_projects": "Ver Proyectos",
   "print.pattern": "Patrón de Relleno",
   "print.nozzle": "Boquilla",

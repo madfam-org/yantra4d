@@ -293,6 +293,8 @@
   "splash.tip_10": "All projects work offline via browser-based rendering",
   "error.project_not_found_title": "Project Not Found",
   "error.project_not_found_body": "The project \"{slug}\" doesn't exist or hasn't been deployed yet.",
+  "error.server_unreachable_title": "Can't Reach the Server",
+  "error.server_unreachable_body": "Yantra4D couldn’t load \"{slug}\". The server may be down or your connection may be offline. The project itself may be fine.",
   "error.browse_projects": "Browse Projects",
   "print.pattern": "Infill Pattern",
   "print.nozzle": "Nozzle",

@@ -356,8 +356,17 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
   return (
     <>
       {/* Desktop sidebar — render when variant is 'desktop' or undefined */}
+      {/*
+        `relative` on the wrapper below is load-bearing. The collapse button is
+        positioned absolutely, and with no positioned ancestor here it resolved
+        against one further up the tree — landing at the top-right of the viewer
+        instead of the sidebar. At z-30 it sat on top of the "Right" camera view
+        button, so that button could not be clicked at all, and the collapse
+        control itself appeared nowhere near the sidebar it collapses. The inner
+        div's `relative` does not help: the button is its sibling, not its child.
+      */}
       {variant !== 'mobile' && (
-        <div className={`${variant === 'desktop' ? 'flex' : 'hidden lg:flex'} flex-col flex-1 min-w-0 bg-card border-r border-border overflow-y-auto overflow-x-hidden min-h-0`}>
+        <div className={`${variant === 'desktop' ? 'flex' : 'hidden lg:flex'} relative flex-col flex-1 min-w-0 bg-card border-r border-border overflow-y-auto overflow-x-hidden min-h-0`}>
           {onCollapse && (
             <button
               onClick={onCollapse}

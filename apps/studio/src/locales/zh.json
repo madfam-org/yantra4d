@@ -241,6 +241,8 @@
   "ctrl.display": "[UNTRANSLATED] Display Modes",
   "error.browse_projects": "[UNTRANSLATED] Browse Projects",
   "error.project_not_found_body": "[UNTRANSLATED] The project \"{slug}\" doesn't exist or hasn't been deployed yet.",
+  "error.server_unreachable_title": "[UNTRANSLATED] Can't Reach the Server",
+  "error.server_unreachable_body": "[UNTRANSLATED] Yantra4D couldn’t load \"{slug}\". The server may be down or your connection may be offline. The project itself may be fine.",
   "error.project_not_found_title": "[UNTRANSLATED] Project Not Found",
   "info.part_types": "[UNTRANSLATED] Part Types",
   "info.total_pieces": "[UNTRANSLATED] Total Pieces",

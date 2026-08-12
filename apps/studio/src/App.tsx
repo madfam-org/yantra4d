@@ -184,18 +184,36 @@ function App() {
     )
   }
 
-  // Project not found or manifest error — show friendly error page
+  // Manifest error — show a friendly error page.
+  //
+  // Only a 404 means the project is actually absent. ManifestProvider also
+  // reports 'network_error' (fetch rejected) and 'manifest_load_failed' (non-404
+  // response), and this branch used to render "The project X doesn't exist" for
+  // all three. With the backend unreachable the app was therefore telling the
+  // user a project was gone when it had no way to know — the server never
+  // answered. Retry is offered because, unlike a 404, the condition is very
+  // often transient.
   if (_manifestError) {
+    const notFound = _manifestError === 'project_not_found'
     return (
       <div className="flex flex-col items-center justify-center h-dvh bg-background text-foreground gap-4 px-4 text-center">
-        <div className="text-6xl">🔍</div>
-        <h1 className="text-2xl font-bold">{t('error.project_not_found_title')}</h1>
+        <div className="text-6xl">{notFound ? '🔍' : '📡'}</div>
+        <h1 className="text-2xl font-bold">
+          {t(notFound ? 'error.project_not_found_title' : 'error.server_unreachable_title')}
+        </h1>
         <p className="text-muted-foreground max-w-md">
-          {t('error.project_not_found_body', { slug: projectSlug })}
+          {t(notFound ? 'error.project_not_found_body' : 'error.server_unreachable_body', { slug: projectSlug })}
         </p>
-        <Button onClick={() => navigate('/projects')} variant="default" className="min-h-[44px]">
-          {t('error.browse_projects')}
-        </Button>
+        <div className="flex gap-2">
+          {!notFound && (
+            <Button onClick={() => window.location.reload()} variant="default" className="min-h-[44px]">
+              {t('status.retry')}
+            </Button>
+          )}
+          <Button onClick={() => navigate('/projects')} variant={notFound ? 'default' : 'outline'} className="min-h-[44px]">
+            {t('error.browse_projects')}
+          </Button>
+        </div>
       </div>
     )
   }

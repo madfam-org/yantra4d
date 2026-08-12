@@ -73,27 +73,33 @@ test.describe('Keyboard Shortcuts', () => {
     await expect(page.locator('button', { hasText: /Generate|Generar/ })).toBeVisible({ timeout: 5000 })
   })
 
-  test('Cmd/Ctrl+1 switches to first mode', async ({ page }) => {
+  // The mode tabs are plain buttons carrying aria-selected; the only tabs with
+  // data-state="active" are the Radix section tabs (Design/View/BOM/Export) and
+  // the hidden mobile mode list. So [role="tab"][data-state="active"] resolved
+  // first to the Design section tab and these assertions compared a mode name
+  // against "Design". sidebar.getActiveMode() reads the visible mode tablist.
+  test('Cmd/Ctrl+1 switches to first mode', async ({ page, sidebar }) => {
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+1' : 'Control+1')
     await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Start|Inicio/i, { timeout: 3000 })
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 5000 }).toMatch(/start|inicio/i)
   })
 
-  test('Cmd/Ctrl+2 switches to second mode', async ({ page }) => {
+  test('Cmd/Ctrl+2 switches to second mode', async ({ page, sidebar }) => {
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+2' : 'Control+2')
     await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Single|Individual/i, { timeout: 3000 })
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 5000 }).toMatch(/single|individual/i)
   })
 
-  test('Cmd/Ctrl+number beyond mode count does nothing', async ({ page }) => {
-    const tabBefore = await page.locator('[role="tab"][data-state="active"]').first().textContent()
+  test('Cmd/Ctrl+number beyond mode count does nothing', async ({ page, sidebar }) => {
+    // This one was green, but only because both reads resolved to the Design
+    // section tab — it would have stayed green if Meta+9 had switched the mode.
+    const modeBefore = await sidebar.getActiveMode()
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+9' : 'Control+9')
     await page.waitForTimeout(300)
-    const tabAfter = await page.locator('[role="tab"][data-state="active"]').first().textContent()
-    expect(tabAfter).toBe(tabBefore)
+    expect(await sidebar.getActiveMode()).toBe(modeBefore)
   })
 
   test('keyboard shortcuts work when sidebar is focused', async ({ page, sidebar }) => {
@@ -108,15 +114,18 @@ test.describe('Keyboard Shortcuts', () => {
     await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
   })
 
-  test('keyboard shortcuts work when viewer is focused', async ({ page }) => {
-    // Click the viewer area (not canvas directly — it may remount during manifest load)
-    await page.locator('#main-content').click()
+  test('keyboard shortcuts work when viewer is focused', async ({ page, sidebar }) => {
+    // Click the viewer area (not canvas directly — it may remount during manifest load).
+    // App.tsx renders StudioMainView in both the desktop and the mobile layout
+    // tree, so #main-content is in the DOM twice — a duplicate id, and enough to
+    // fail strict mode here before any key was pressed. Scope to the visible one.
+    await page.locator('#main-content:visible').first().click()
     await page.waitForTimeout(200)
     const mac = await isMac(page)
     // Ctrl+3 selects the 3rd mode (Grid) — modes are 1-indexed in shortcuts
     await page.keyboard.press(mac ? 'Meta+3' : 'Control+3')
     await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Grid|Cuadrícula/i, { timeout: 3000 })
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 5000 }).toMatch(/grid|cuadr/i)
   })
 
   test('keyboard shortcuts do not interfere with text inputs', async ({ sidebar }) => {

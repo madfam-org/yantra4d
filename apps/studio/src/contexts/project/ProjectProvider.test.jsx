@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import { renderHook } from '@testing-library/react'
@@ -23,7 +24,18 @@ vi.mock('../system/LanguageProvider', () => ({
 }))
 
 vi.mock('../../hooks/project/useProjectParams', () => ({
-  useProjectParams: () => ({ mode: 'cup', params: {}, setParams: vi.fn(), colors: {} }),
+  // The job handlers below call setLoading and read parts, so the stub has to
+  // carry them — otherwise handleRunPhysics throws before it reaches fetch.
+  useProjectParams: () => ({
+    mode: 'cup',
+    params: {},
+    setParams: vi.fn(),
+    colors: {},
+    parts: [{ type: 'body', url: 'blob:body' }],
+    setLoading: vi.fn(),
+    setLogs: vi.fn(),
+    setParts: vi.fn(),
+  }),
 }))
 
 vi.mock('../../hooks/project/useProjectActions', () => ({
@@ -41,6 +53,27 @@ vi.mock('../../components/feedback/SplashScreen', () => ({
 }))
 
 import { ProjectProvider, useProject } from './ProjectProvider'
+
+// Defined at module scope: a component that writes to an outer binding during
+// render is fine for a probe, but only if it is a real top-level component.
+const captured = { ctx: null }
+
+function Capture() {
+  const ctx = useProject()
+  // Assigned in an effect, not during render: the React Compiler lint forbids
+  // writing to an outer binding while rendering, and it would be a real hazard
+  // under concurrent rendering.
+  useEffect(() => { captured.ctx = ctx }, [ctx])
+  return (
+    <div
+      data-testid="job-state"
+      data-physics-id={String(ctx.physicsJobId)}
+      data-physics-progress={String(ctx.physicsProgress)}
+      data-opt-id={String(ctx.optimizationJobId)}
+      data-opt-progress={String(ctx.optimizationProgress)}
+    />
+  )
+}
 
 function Probe() {
   const ctx = useProject()
@@ -126,4 +159,63 @@ describe('ProjectProvider', () => {
     expect(() => renderHook(() => useProject())).toThrow()
     spy.mockRestore()
   })
+
+  // --- Simulation jobs ------------------------------------------------------
+  // handleRunPhysics and handleOptimizeTopology each start a job and then poll
+  // for it. None of that ran: no test reached the provider at all.
+
+  const jobState = (attr) => screen.getByTestId('job-state').getAttribute(attr)
+
+  const renderProvider = () => render(<ProjectProvider><Capture /></ProjectProvider>)
+
+  const mockFetchSequence = (responses) => {
+    let i = 0
+    return vi.spyOn(globalThis, 'fetch').mockImplementation(() => {
+      const next = responses[Math.min(i, responses.length - 1)]
+      i += 1
+      return Promise.resolve({ ok: next.ok !== false, json: () => Promise.resolve(next.body) })
+    })
+  }
+
+  it('a physics start that returns no job id leaves no job running', async () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => { })
+    mockFetchSequence([{ ok: false, body: { error: 'no solver' } }])
+    renderProvider()
+
+    await act(async () => { await captured.ctx.handleRunPhysics() })
+    expect(jobState('data-physics-id')).toBe('null')
+    spy.mockRestore()
+  })
+
+  it('a failed physics job stops polling instead of spinning forever', async () => {
+    vi.useFakeTimers()
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => { })
+    mockFetchSequence([
+      { body: { job_id: 'phys-1' } },
+      { body: { status: 'failed', error: 'diverged' } },
+    ])
+    renderProvider()
+
+    await act(async () => { await captured.ctx.handleRunPhysics() })
+    await act(async () => { await vi.advanceTimersByTimeAsync(2000) })
+    expect(jobState('data-physics-id')).toBe('null')
+    spy.mockRestore()
+  })
+
+  it('starting a topology optimization records its job id', async () => {
+    mockFetchSequence([{ body: { job_id: 'opt-1' } }])
+    renderProvider()
+
+    await act(async () => { await captured.ctx.handleOptimizeTopology() })
+    expect(jobState('data-opt-id')).toBe('opt-1')
+  })
+
+  it('running FEA records the returned simulation', async () => {
+    mockFetchSequence([{ body: { status: 'success', simulation: { max_stress: 12 } } }])
+    renderProvider()
+
+    await act(async () => { await captured.ctx.handleRunFEA() })
+    expect(captured.ctx.stressData).toMatchObject({ max_stress: 12 })
+  })
 })
+

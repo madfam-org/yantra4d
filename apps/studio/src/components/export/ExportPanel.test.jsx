@@ -1,7 +1,25 @@
-import { describe, it, expect, vi } from 'vitest'
-import { screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import ExportPanel from './ExportPanel'
 import { renderWithProviders } from '../../test/render-with-providers'
+
+// Partial mock: keeps the real project context, but lets a test supply the
+// values the panel's handlers depend on — a print estimate, a share-url
+// callback — which the real provider leaves null in a bare render.
+const { projectOverride } = vi.hoisted(() => ({ projectOverride: { value: null } }))
+
+vi.mock('../../contexts/project/ProjectProvider', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useProject: () => ({ ...actual.useProject(), ...(projectOverride.value || {}) }),
+  }
+})
+
+const mockDownloadZip = vi.fn(() => Promise.resolve())
+vi.mock('../../lib/downloadUtils', () => ({
+  downloadZip: (...args) => mockDownloadZip(...args),
+}))
 
 vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
 
@@ -245,6 +263,94 @@ describe('ExportPanel', () => {
     openSection(/Documents/i)
     fireEvent.click(screen.getByText(/BOM/i).closest('button'))
     expect(open).toHaveBeenCalledWith(expect.stringContaining('/bom?format=csv'), '_blank')
+  })
+
+  // --- Copy, share and archive handlers ------------------------------------
+
+  const ESTIMATE = { time: '2h 15m', weight: '48 g', cost: '$3.20' }
+
+  afterEach(() => {
+    projectOverride.value = null
+    mockDownloadZip.mockClear()
+  })
+
+  it('copying the estimate puts every populated field on the clipboard', async () => {
+    const writeText = vi.fn(() => Promise.resolve())
+    Object.assign(navigator, { clipboard: { writeText } })
+    projectOverride.value = { printEstimate: ESTIMATE, projectSlug: 'widget' }
+
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    // Both controls live in collapsed accordion sections.
+    openSection(/Print Estimate/i)
+    fireEvent.click(screen.getByRole('button', { name: /Copy Estimate/i }))
+
+    await waitFor(() => expect(writeText).toHaveBeenCalled())
+    const text = writeText.mock.calls[0][0]
+    expect(text).toContain('2h 15m')
+    expect(text).toContain('48 g')
+    expect(text).toContain('$3.20')
+  })
+
+  it('an estimate with only a time copies just that line', async () => {
+    const writeText = vi.fn(() => Promise.resolve())
+    Object.assign(navigator, { clipboard: { writeText } })
+    projectOverride.value = { printEstimate: { time: '10m' }, projectSlug: 'widget' }
+
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    openSection(/Print Estimate/i)
+    fireEvent.click(screen.getByRole('button', { name: /Copy Estimate/i }))
+
+    await waitFor(() => expect(writeText).toHaveBeenCalled())
+    expect(writeText.mock.calls[0][0]).not.toMatch(/undefined/)
+  })
+
+  it('the archive bundles each part, the manifest, and the BOM when there is one', async () => {
+    projectOverride.value = { projectSlug: 'widget' }
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Download Project Archive/i }))
+
+    await waitFor(() => expect(mockDownloadZip).toHaveBeenCalled())
+    const [items, filename] = mockDownloadZip.mock.calls[0]
+    expect(filename).toBe('widget-archive.zip')
+    const names = items.map(i => i.filename)
+    expect(names).toContain('project.json')
+    expect(names).toContain('bom.csv')
+    expect(names).toContain('body.stl')
+    // download_url wins over url when a part carries both.
+    expect(items.find(i => i.filename === 'lid.stl').url).toBe('/lid.stl')
+  })
+
+  it('the archive omits the BOM when the manifest has none', async () => {
+    projectOverride.value = { projectSlug: 'widget' }
+    const noBom = { ...MANIFEST }
+    delete noBom.bom
+    renderPanel({ manifest: noBom, parts: PARTS })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Download Project Archive/i }))
+    await waitFor(() => expect(mockDownloadZip).toHaveBeenCalled())
+    expect(mockDownloadZip.mock.calls[0][0].map(i => i.filename)).not.toContain('bom.csv')
+  })
+
+  it('the archive is not attempted with no parts', () => {
+    projectOverride.value = { projectSlug: 'widget' }
+    renderPanel({ manifest: MANIFEST, parts: [] })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Download Project Archive/i }))
+    expect(mockDownloadZip).not.toHaveBeenCalled()
+  })
+
+  it('the share control copies the share URL', async () => {
+    const copyShareUrl = vi.fn(() => Promise.resolve())
+    projectOverride.value = { copyShareUrl, projectSlug: 'widget' }
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Copy Share Link/i }))
+    await waitFor(() => expect(copyShareUrl).toHaveBeenCalled())
   })
 })
 

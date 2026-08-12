@@ -77,8 +77,11 @@ def assess(mesh: trimesh.Trimesh, scale_hint: float | None = None) -> MeshIntegr
     for rel in (1e-8, 1e-7, 1e-6, 1e-5):
         tol = max(extent * rel, 1e-9)
         candidate = mesh.copy()
+        # float() first: np.log10 yields a numpy scalar, whose round() returns a
+        # numpy float rather than an int, and merge_vertices wants a digit count.
+        digits = max(0, round(float(-np.log10(tol))))
         try:
-            candidate.merge_vertices(digits_vertex=max(0, int(round(-np.log10(tol)))))
+            candidate.merge_vertices(digits_vertex=digits)
         except TypeError:
             # Older trimesh signatures take no tolerance argument.
             candidate.merge_vertices()

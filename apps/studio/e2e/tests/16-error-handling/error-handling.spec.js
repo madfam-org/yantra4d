@@ -24,9 +24,10 @@ test.describe('Error Handling', () => {
     await page.route('**/api/render', (route) => route.abort('connectionrefused'))
     await page.route('**/api/render-stream', (route) => route.abort('connectionrefused'))
     await sidebar.clickGenerate()
-    await page.waitForTimeout(2000)
-    const logs = await viewer.getConsoleLogs()
-    expect(logs).toContain('Error')
+    // Poll rather than sleeping 2s and reading once. Under serial load the
+    // error had not reached the console yet and the single read saw the
+    // initial "Ready." — a real flake, not a regression.
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
   test('API 500 on render surfaces error to user', async ({ page, sidebar, viewer }) => {
@@ -38,12 +39,13 @@ test.describe('Error Handling', () => {
       route.fulfill({ status: 500, json: { error: 'Internal server error' } })
     })
     await sidebar.clickGenerate()
-    await page.waitForTimeout(2000)
-    const logs = await viewer.getConsoleLogs()
-    expect(logs).toContain('Error')
+    // Poll rather than sleeping 2s and reading once. Under serial load the
+    // error had not reached the console yet and the single read saw the
+    // initial "Ready." — a real flake, not a regression.
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
-  test('API 400 on render shows error', async ({ page, sidebar }) => {
+  test('API 400 on render shows error', async ({ page, sidebar, viewer }) => {
     await goToStudio(page)
     await page.route('**/api/render', (route) => {
       route.fulfill({ status: 400, json: { error: 'Bad request: missing mode' } })
@@ -52,7 +54,9 @@ test.describe('Error Handling', () => {
       route.fulfill({ status: 400, json: { error: 'Bad request: missing mode' } })
     })
     await sidebar.clickGenerate()
-    await page.waitForTimeout(2000)
+    // This test ended here, on a bare 2s wait with no assertion — it passed
+    // whether or not a 400 surfaced anything. Its name is a claim; make it one.
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
   test('manifest fetch failure falls back gracefully', async ({ page }) => {
@@ -83,7 +87,7 @@ test.describe('Error Handling', () => {
     await expect(page.locator('.text-destructive')).toBeVisible({ timeout: 8000 })
   })
 
-  test('verify failure shows error in console', async ({ page, sidebar }) => {
+  test('verify failure shows error in console', async ({ page, sidebar, viewer }) => {
     await goToStudio(page)
     await page.route('**/api/verify', (route) => {
       route.fulfill({ status: 500, json: { error: 'Verification failed' } })
@@ -91,10 +95,17 @@ test.describe('Error Handling', () => {
     // Need parts to enable verify button
     await sidebar.clickGenerate()
     await page.waitForTimeout(2000)
-    if (!(await sidebar.verifyButton.isDisabled())) {
-      await sidebar.clickVerify()
-      await page.waitForTimeout(1000)
-    }
+
+    // This body used to be an `if` around two clicks and a sleep, with no
+    // assertion in any branch — it reported success whether verification
+    // errored, succeeded, or never ran. Verify needs rendered parts, which
+    // depend on the renderer being available, so the unavailable case is now
+    // an explicit skip rather than a silent pass.
+    const canVerify = await sidebar.verifyButton.isEnabled().catch(() => false)
+    test.skip(!canVerify, 'verify requires rendered parts; none were produced in this environment')
+
+    await sidebar.clickVerify()
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
   test('render timeout does not crash the app', async ({ page, sidebar }) => {

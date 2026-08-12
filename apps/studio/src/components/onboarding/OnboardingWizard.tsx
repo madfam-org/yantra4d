@@ -102,7 +102,9 @@ export default function OnboardingWizard({ onComplete, onCancel }: OnboardingWiz
     .replace("{params}", String((manifest?.parameters as unknown[])?.length || 0))
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-2xl mx-auto">
+    // The onboarding route renders standalone, without the app header, so E2E
+    // specs need an anchor of their own to wait on.
+    <div data-testid="onboarding-wizard" className="flex flex-col gap-4 p-4 sm:p-6 max-w-2xl mx-auto">
       {/* Step indicator */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
         {STEP_KEYS.map((key, i) => (

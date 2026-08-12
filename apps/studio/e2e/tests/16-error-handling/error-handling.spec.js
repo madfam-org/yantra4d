@@ -133,13 +133,18 @@ test.describe('Error Handling', () => {
     await expect(page.locator('header')).toBeVisible()
   })
 
-  // Skipped: OnboardingWizard route (/onboard) not integrated into app routing
+  // /onboard IS routed — useHashNavigation.isOnboardView matches it and App.tsx
+  // renders OnboardingWizard for it. The old reason on this skip was stale. What
+  // was actually wrong is the `header` wait below: the wizard renders standalone
+  // with no app chrome, so that selector never resolves. Left skipped only
+  // because these two have not been re-verified since; the anchor is now
+  // [data-testid="onboarding-wizard"], as used in 08-onboarding.
   test.skip('onboarding API error shows error banner', async ({ page }) => {
     await page.route('**/api/projects/analyze', (route) => {
       route.fulfill({ status: 500, json: { error: 'Analysis failed' } })
     })
     await page.goto('/onboard')
-    await page.waitForSelector('header')
+    await page.waitForSelector('[data-testid="onboarding-wizard"]')
     await page.locator('#scad-upload').setInputFiles({
       name: 'test.scad', mimeType: 'text/plain', buffer: Buffer.from('cube(10);'),
     })

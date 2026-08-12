@@ -6,7 +6,12 @@ test.describe('Onboarding Wizard', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
     await page.goto('/onboard')
-    await page.waitForSelector('header')
+    // Wait for the wizard, not for `header`. /onboard renders OnboardingWizard
+    // standalone — App.tsx returns it inside ErrorBoundary/Suspense with no app
+    // chrome — so `header` never appears. Every test in this file therefore sat
+    // in beforeEach until its 60s timeout, and with 23 spec files that alone
+    // exhausted the 25 minute job budget for chromium, firefox and webkit.
+    await page.waitForSelector('[data-testid="onboarding-wizard"]')
   })
 
   // Step 0: Upload

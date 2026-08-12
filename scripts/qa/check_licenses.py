@@ -54,6 +54,13 @@ def submodule_slugs() -> set[str]:
 COPYLEFT = {"GPL-2.0", "GPL-3.0", "AGPL-3.0"}
 COMMONS_DEFAULT = "CERN-OHL-W-2.0"
 
+# Client engagements: the client retains all private rights to the repository.
+# A proprietary license is correct here, not a defect. What would be a defect is
+# such a cartridge appearing in the published catalogue — so the requirement is
+# inverted for these, and kept in step with CLIENT_PRIVATE in
+# scripts/qa/generate_commons_catalog.py.
+CLIENT_PRIVATE = {"tablaco"}
+
 
 def identify(path: Path) -> str:
     """Best-effort SPDX-ish identifier for a license file."""
@@ -94,9 +101,31 @@ def identify(path: Path) -> str:
     return "UNKNOWN"
 
 
+def published_slugs() -> set[str]:
+    """Slugs present in the generated public catalogue."""
+    catalog = REPO / "docs" / "commons-catalog.json"
+    if not catalog.exists():
+        return set()
+    try:
+        data = json.loads(catalog.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    return {c.get("slug") for c in data.get("cartridges", [])}
+
+
 def audit() -> list[dict]:
     findings = []
     standalone = submodule_slugs()
+    published = published_slugs()
+
+    # Inverted requirement: client work must stay out of the public catalogue.
+    for slug in sorted(CLIENT_PRIVATE & published):
+        findings.append({
+            "severity": "CONFLICT", "slug": slug, "declared": None, "files": {},
+            "message": "client-private cartridge appears in the published catalogue — "
+                       "the client retains private rights and this repo is public",
+        })
+
     for manifest in sorted(PROJECTS.glob("*/project.json")):
         slug = manifest.parent.name
         hyper = json.loads(manifest.read_text(encoding="utf-8")).get("hyperobject") or {}
@@ -122,7 +151,7 @@ def audit() -> list[dict]:
         if "HTML-ERROR-PAGE" in shipped:
             add("CONFLICT", "LICENSE file is a saved HTML error page, not license text — "
                             "the cartridge effectively ships no license")
-        if "PROPRIETARY" in shipped:
+        if "PROPRIETARY" in shipped and slug not in CLIENT_PRIVATE:
             add("CONFLICT", "ships an all-rights-reserved / proprietary license but sits in a "
                             "public commons catalogue")
         copyleft = shipped & COPYLEFT
@@ -133,8 +162,13 @@ def audit() -> list[dict]:
             add("CONFLICT", f"ships more than one license: {', '.join(sorted(shipped))}")
         if declared and shipped and declared not in shipped and not copyleft:
             add("MISMATCH", f"declares {declared} but ships {', '.join(sorted(shipped))}")
-        if not declared:
+        if not declared and slug not in CLIENT_PRIVATE:
             add("METADATA", f"declares no commons_license; ships {', '.join(sorted(shipped))}")
+        elif not declared:
+            # Correct by design: client work is not part of the Commons, so it
+            # has no commons_license to declare.
+            add("OK", f"client-private, correctly absent from the catalogue "
+                      f"(ships {', '.join(sorted(shipped))})")
     return findings
 
 
@@ -145,12 +179,13 @@ def main() -> int:
     args = ap.parse_args()
 
     findings = audit()
-    order = {"CONFLICT": 0, "MISMATCH": 1, "METADATA": 2}
+    order = {"CONFLICT": 0, "MISMATCH": 1, "METADATA": 2, "OK": 3}
     findings.sort(key=lambda f: (order.get(f["severity"], 9), f["slug"]))
 
     conflicts = [f for f in findings if f["severity"] == "CONFLICT"]
     mismatches = [f for f in findings if f["severity"] == "MISMATCH"]
     metadata = [f for f in findings if f["severity"] == "METADATA"]
+    actionable = conflicts + mismatches + metadata
 
     for f in findings:
         print(f"[{f['severity']:8}] {f['slug']:26} {f['message']}")
@@ -161,7 +196,7 @@ def main() -> int:
     print(f"\n{total} cartridges — {len(conflicts)} conflict, "
           f"{len(mismatches)} mismatch, {len(metadata)} metadata-only")
 
-    if args.strict_all and findings:
+    if args.strict_all and actionable:
         return 1
     if args.strict and conflicts:
         print("\nCONFLICT findings block: a cartridge must not ship a license it cannot honour.")

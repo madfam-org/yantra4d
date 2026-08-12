@@ -286,12 +286,11 @@ jobs:
           python-version: "3.12"
       - name: Run metadata consistency audit
         run: python3 scripts/qa/compliance_audit.py --strict
-      # Report-only for now: 4 pre-existing CONFLICT findings need an owner
-      # decision (two upstream GPL forks, a proprietary client design, and a
-      # LICENSE file that is a saved HTML 404). Switch to --strict once those
-      # are resolved so they cannot come back.
+      # Blocking. Every cartridge must declare the licence it actually ships,
+      # client-private work must stay out of the published catalogue, and an
+      # upstream copyleft fork must not be relabelled as CERN-OHL-W.
       - name: Audit cartridge licensing
-        run: python3 scripts/qa/check_licenses.py
+        run: python3 scripts/qa/check_licenses.py --strict-all
 
   openapi-validation:
     runs-on: ubuntu-latest

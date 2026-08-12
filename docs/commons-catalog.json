@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 326,
+    "cartridges": 325,
     "with_cdg_interfaces": 311,
-    "with_commons_license": 311,
+    "with_commons_license": 325,
     "dual_engine": 23
   },
   "domains": {
@@ -13,7 +13,7 @@
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
-    "uncategorized": 15,
+    "uncategorized": 14,
     "hybrid": 7,
     "soft-robotics": 1
   },
@@ -4060,7 +4060,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -7864,7 +7864,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -8164,7 +8164,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": "CC-BY-SA-4.0",
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": {
         "en": "Open-source diagnostic tools for healthcare — reduces cost barriers to medical equipment access",
         "es": "Herramientas de diagnóstico de código abierto para salud — reduce barreras de costo al acceso de equipamiento médico"
@@ -9527,7 +9527,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -9679,7 +9679,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "GPL-3.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -10818,7 +10818,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -11912,7 +11912,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -14487,7 +14487,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "BSD-2-Clause",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -14520,7 +14520,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -15291,7 +15291,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -15784,7 +15784,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -17267,7 +17267,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -17658,7 +17658,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": "CERN-OHL-W-2.0",
+      "commons_license": "GPL-2.0",
       "societal_benefit": {
         "en": "Open-source construction kit for STEM education — enables schools to fabricate their own learning tools",
         "es": "Kit de construcción de código abierto para educación STEM — permite a escuelas fabricar sus propias herramientas de aprendizaje"
@@ -18045,7 +18045,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -18113,39 +18113,6 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/switch-mount"
-      }
-    },
-    {
-      "slug": "tablaco",
-      "name": "Tablaco Studio",
-      "domain": null,
-      "engines": [
-        "openscad"
-      ],
-      "dual_engine": false,
-      "modes": 3,
-      "parts": 6,
-      "parameters": 49,
-      "export_formats": [
-        "stl",
-        "3mf",
-        "off",
-        "glb",
-        "obj"
-      ],
-      "commons_license": null,
-      "societal_benefit": null,
-      "material_awareness": null,
-      "cdg_interfaces": [],
-      "standards": [],
-      "source": {
-        "manifest": "projects/tablaco/project.json",
-        "has_cadquery": false,
-        "has_openscad": true
-      },
-      "clone": {
-        "kind": "submodule",
-        "command": "git clone https://github.com/madfam-org/tablaco.git"
       }
     },
     {
@@ -18818,7 +18785,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -19707,7 +19674,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": null,
+      "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],

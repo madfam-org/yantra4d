@@ -59,9 +59,9 @@ Honest, code-verified snapshot. **Working today:**
 
 ---
 
-## 📦 The Commons Catalog (326 cartridges, CadQuery-first)
+## 📦 The Commons Catalog (325 cartridges, CadQuery-first)
 
-The Commons is a demand-grounded catalog of **326 Bounded 4D Hyperobjects**, authored
+The Commons is a demand-grounded catalog of **325 Bounded 4D Hyperobjects**, authored
 **CadQuery-first** (exact B-Rep, STEP export). Each `projects/<slug>/` is a
 self-contained cartridge (`main.py` + `project.json` + docs); the flagship interfaces
 are also published as independent `madfam-org` git submodules.
@@ -71,11 +71,37 @@ Counts below are generated from the manifests, not maintained by hand — see
 
 | | |
 | :-- | --: |
-| Cartridges | 326 |
+| Cartridges | 325 |
 | With declared CDG interfaces | 311 |
-| Licensed **CERN-OHL-W-2.0** (1 is CC-BY-SA-4.0) | 311 |
+| Carrying an explicit license | 325 (100%) |
 | Dual-engine (CadQuery B-Rep + OpenSCAD CSG) | 23 |
 | Distinct external standards referenced | 206 |
+
+### Licensing
+
+Two licenses apply to this repository and they cover different things:
+
+- **The platform** — everything outside `projects/` — is **AGPL-3.0** (see [LICENSE](./LICENSE)).
+- **The cartridges** in `projects/` are hardware designs, licensed
+  **CERN-OHL-W-2.0** (322 of 325). Weakly reciprocal: modifications to a design
+  must be shared, but a larger product incorporating one need not be.
+
+Three cartridges differ because they derive from upstream work whose license
+travels with it, and cannot be relicensed:
+
+| Cartridge | License | Why |
+| :-- | :-- | :-- |
+| `stemfie` | GPL-2.0 | Derivative of [stemfie.org](https://stemfie.org) |
+| `keyv2` | GPL-3.0 | Derivative of [rsheldiii/KeyV2](https://github.com/rsheldiii/KeyV2) |
+| `polydice` | BSD-2-Clause | Derivative of PolyDiceGenerator, © 2020 charmaur |
+
+If you build on those three, you inherit their terms, not CERN-OHL-W-2.0. Each
+cartridge's license is machine-readable in the catalog, and CI fails if a
+declared license ever diverges from the one a cartridge actually ships
+(`scripts/qa/check_licenses.py`).
+
+Client engagements are **not** part of the Commons — the client retains all
+private rights to their repository — and are excluded from the published catalog.
 
 **What is verified, precisely.** Every manifest is schema-validated in CI, and every
 mode is geometrically distinct (each mode's `parts[]` id drives `target_part` dispatch).

@@ -31,6 +31,16 @@ CATALOG_MD = REPO / "COMMONS.md"
 UPSTREAM = "https://github.com/madfam-org/yantra4d"
 SCHEMA_VERSION = "commons_catalog_v1"
 
+# Client engagements. The client retains all private rights to the repository,
+# so the design is NOT part of the public Hyperobjects Commons and must not be
+# catalogued here — this catalogue is published from a public repo, and listing
+# one would advertise a private client repo, its name, and a clone command for it.
+#
+# Kept as an explicit list rather than inferred from the cartridge's LICENSE:
+# these submodules are private, so a clone without access simply has no LICENSE
+# to read, and an inferred rule would silently include them.
+CLIENT_PRIVATE = {"tablaco"}
+
 
 def submodule_urls() -> dict[str, str]:
     """Map project slug -> upstream git URL for cartridges published standalone."""
@@ -170,6 +180,7 @@ def build_catalog() -> dict:
     entries = [
         build_entry(p, submodules)
         for p in sorted(PROJECTS.glob("*/project.json"))
+        if p.parent.name not in CLIENT_PRIVATE
     ]
     domains: dict[str, int] = {}
     standards: set[str] = set()

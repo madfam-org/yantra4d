@@ -1,6 +1,22 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { goToProjects, setLanguage } from '../../helpers/test-utils.js'
-import { MOCK_PROJECTS } from '../../helpers/api-mocker.js'
+import { catalogResponse } from '../../helpers/api-mocker.js'
+
+// ProjectsView is a faceted catalog browser over /api/catalog/search, not the
+// card grid over /api/admin/projects these tests were written against. Three
+// consequences, all of which showed up as failures here:
+//
+//   1. Every mock in this file addressed **/api/admin/projects, an endpoint the
+//      page no longer calls — so the loading/empty/error tests overrode nothing
+//      and the rest ran against the live catalog (326 cartridges).
+//   2. A catalog result has no `version` and no `has_manifest`, so "v1.0.0" and
+//      the "Manifest" badge assert markup that no longer has a data source.
+//   3. Results carry mode_count/part_count, but the row renders name,
+//      description, domain and tags — not a "2 modes / 4 params" metadata line.
+//
+// The mock now lives in api-mocker (catalogResponse) so it applies by default;
+// the per-test routes below only override it for the state under test.
+const CATALOG = '**/api/catalog/search**'
 
 test.describe('Projects View', () => {
   test.beforeEach(async ({ page }) => {
@@ -18,21 +34,26 @@ test.describe('Projects View', () => {
     expect(count).toBeGreaterThan(0)
   })
 
-  test('project card displays name and version', async ({ page }) => {
+  test('project result displays name and description', async ({ page }) => {
     await goToProjects(page)
-    await expect(page.getByText('Test Project')).toBeVisible({ timeout: 8000 })
-    await expect(page.getByText('v1.0.0')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText('Test Project').first()).toBeVisible({ timeout: 8000 })
+    await expect(page.getByText('A test').first()).toBeVisible({ timeout: 5000 })
   })
 
-  test('project card displays metadata (modes, params, scad count)', async ({ page }) => {
+  test('result count reflects the catalog response', async ({ page }) => {
     await goToProjects(page)
-    await expect(page.getByText('2 modes')).toBeVisible({ timeout: 8000 })
-    await expect(page.getByText('4 params')).toBeVisible({ timeout: 5000 })
+    // catalogResponse() returns 2 results → "2 results" / "2 in catalog".
+    await expect(page.getByText('2 results')).toBeVisible({ timeout: 8000 })
+    await expect(page.getByText('2 in catalog')).toBeVisible({ timeout: 5000 })
   })
 
-  test('project card shows manifest badge', async ({ page }) => {
+  test('facet rails render counts from the response', async ({ page }) => {
     await goToProjects(page)
-    await expect(page.getByText('Manifest').first()).toBeVisible({ timeout: 8000 })
+    // The Domain rail is driven by facets.domain, which the old
+    // /api/admin/projects payload had no equivalent of at all.
+    await expect(page.getByRole('heading', { name: 'Domain' })).toBeVisible({ timeout: 8000 })
+    await expect(page.getByText('household').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText('industrial').first()).toBeVisible({ timeout: 5000 })
   })
 
   test('clicking project card navigates to studio', async ({ page, projectsView }) => {
@@ -45,9 +66,9 @@ test.describe('Projects View', () => {
 
   test('empty state shows message', async ({ page }) => {
     // Override the mock to return empty array
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', (route) => {
-      route.fulfill({ json: [] })
+    await page.unroute(CATALOG)
+    await page.route(CATALOG, (route) => {
+      route.fulfill({ json: catalogResponse([]) })
     })
     await goToProjects(page)
     await expect(page.getByText('No projects found').or(page.getByText('No se encontraron proyectos'))).toBeVisible({ timeout: 10000 })
@@ -56,18 +77,18 @@ test.describe('Projects View', () => {
 
   test('loading state shows loading text', async ({ page }) => {
     // Delay the response to catch loading state
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', async (route) => {
+    await page.unroute(CATALOG)
+    await page.route(CATALOG, async (route) => {
       await new Promise(r => setTimeout(r, 3000))
-      route.fulfill({ json: [] })
+      route.fulfill({ json: catalogResponse([]) })
     })
     await goToProjects(page)
     await expect(page.getByText('Loading').or(page.getByText('Cargando'))).toBeVisible({ timeout: 2000 })
   })
 
   test('error state shows error message with retry and demo buttons', async ({ page }) => {
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', (route) => {
+    await page.unroute(CATALOG)
+    await page.route(CATALOG, (route) => {
       route.fulfill({ status: 500, json: { error: 'Server error' } })
     })
     await goToProjects(page)
@@ -80,17 +101,17 @@ test.describe('Projects View', () => {
 
   test('retry button re-fetches projects after error', async ({ page }) => {
     // Force 500 → error state
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', (route) => {
+    await page.unroute(CATALOG)
+    await page.route(CATALOG, (route) => {
       route.fulfill({ status: 500, json: { error: 'Server error' } })
     })
     await goToProjects(page)
     await expect(page.getByText(/Retry|Reintentar/i)).toBeVisible({ timeout: 10000 })
 
     // Restore healthy response
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', (route) => {
-      route.fulfill({ json: MOCK_PROJECTS })
+    await page.unroute(CATALOG)
+    await page.route(CATALOG, (route) => {
+      route.fulfill({ json: catalogResponse() })
     })
 
     // Click retry → projects should load
@@ -99,8 +120,8 @@ test.describe('Projects View', () => {
   })
 
   test('demo button navigates to fallback project', async ({ page }) => {
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', (route) => {
+    await page.unroute(CATALOG)
+    await page.route(CATALOG, (route) => {
       route.fulfill({ status: 500, json: { error: 'Server error' } })
     })
     await goToProjects(page)

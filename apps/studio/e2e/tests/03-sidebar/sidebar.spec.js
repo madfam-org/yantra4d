@@ -121,12 +121,16 @@ test.describe('Studio Sidebar', () => {
     await expect(toggle).toHaveAttribute('data-state', 'checked')
   })
 
-  // Color pickers
+  // Color pickers. AppearancePanel renders these, and it lives inside
+  // <TabsContent value="view">, so #color-<part> is absent until that tab is
+  // selected — the sidebar defaults to "config".
   test('color picker renders for parts', async ({ sidebar }) => {
+    await sidebar.selectSection('view')
     await expect(sidebar.colorInput('body')).toBeVisible()
   })
 
   test('color picker accepts value', async ({ sidebar }) => {
+    await sidebar.selectSection('view')
     // Native <input type="color"> is tested via its render and accessibility
     // (Playwright cannot programmatically open the OS color picker dialog)
     const input = sidebar.colorInput('body')

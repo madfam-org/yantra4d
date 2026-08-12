@@ -28,13 +28,14 @@ export class StudioSidebarPage extends BasePage {
    * StudioSidebar wraps its panels in <Tabs defaultValue="config">, so
    * ExportPanel, PrintPanel and the BOM only exist in the DOM once their tab is
    * selected. Tests that assume a panel is present on load find nothing at all.
+   *
+   * Matched on Radix's generated id rather than the tab's text. Radix builds it
+   * as `${baseId}-trigger-${value}` from the TabsTrigger `value` prop, which is
+   * the same "export" in every locale — matching the label instead broke the
+   * moment a test ran in Spanish and looked for "Export" against "Exportar".
    */
   async selectSection(value) {
-    const labels = { config: 'Design', view: 'View', analysis: 'BOM', export: 'Export' }
-    const tab = this.sidebar
-      .locator('[role="tablist"]:not([aria-label="Mode selection"]) [role="tab"]')
-      .filter({ hasText: new RegExp(labels[value] || value, 'i') })
-      .first()
+    const tab = this.sidebar.locator(`[role="tab"][id$="-trigger-${value}"]`).first()
     await tab.click()
     await this.page.waitForTimeout(150)
   }

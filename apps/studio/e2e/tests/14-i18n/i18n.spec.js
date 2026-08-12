@@ -59,9 +59,12 @@ test.describe('Internationalization (i18n)', () => {
     await expect(page.locator('text=Proyectos').first()).toBeVisible({ timeout: 5000 })
   })
 
-  test('export panel text updates on language toggle', async ({ page }) => {
+  test('export panel text updates on language toggle', async ({ page, sidebar }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
+    // ExportPanel is behind the sidebar's "export" tab; the sidebar opens on
+    // "config", so none of these labels exist until the tab is selected.
+    await sidebar.selectSection('export')
     await expect(page.locator('text=Geometry')).toBeVisible()
     await expect(page.locator('text=Download STL')).toBeVisible()
 

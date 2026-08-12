@@ -52,6 +52,50 @@ const MOCK_PROJECTS = [
   { slug: 'demo', name: 'Demo Project', version: '0.1.0', description: 'A demo', mode_count: 1, parameter_count: 2, scad_file_count: 1, has_manifest: true, has_exports: true },
 ]
 
+// ProjectsView no longer reads /api/admin/projects. It is a faceted catalog
+// browser backed by /api/catalog/search, which returns results plus the facet
+// counts that drive the Domain / Connects via / Material filter rails. Because
+// that route was never mocked, every projects-view test ran against whatever
+// the dev backend happened to hold — 326 real cartridges — so assertions about
+// "Test Project" could not pass and the empty/loading/error routes overrode an
+// endpoint the page had stopped calling.
+const MOCK_CATALOG_RESULTS = [
+  {
+    slug: 'test', name: 'Test Project', description: 'A test',
+    engine: 'openscad', difficulty: 'beginner', domain: 'household',
+    is_hyperobject: true, dual_engine: false, tags: ['test', 'fixture'],
+    geometry_types: ['socket'], standards: ['gridfinity'],
+    mode_count: 2, part_count: 2,
+  },
+  {
+    slug: 'demo', name: 'Demo Project', description: 'A demo',
+    engine: 'cadquery', difficulty: 'intermediate', domain: 'industrial',
+    is_hyperobject: false, dual_engine: true, tags: ['demo'],
+    geometry_types: ['bolt_pattern'], standards: [],
+    mode_count: 1, part_count: 1,
+  },
+]
+
+const MOCK_CATALOG_FACETS = {
+  domain: [{ value: 'household', count: 1 }, { value: 'industrial', count: 1 }],
+  geometry_type: [{ value: 'socket', count: 1 }, { value: 'bolt_pattern', count: 1 }],
+  standard: [{ value: 'gridfinity', count: 1 }],
+  material: [],
+  difficulty: [{ value: 'beginner', count: 1 }, { value: 'intermediate', count: 1 }],
+  engine: [{ value: 'openscad', count: 1 }, { value: 'cadquery', count: 1 }],
+}
+
+export function catalogResponse(results = MOCK_CATALOG_RESULTS) {
+  return {
+    results,
+    total: results.length,
+    limit: 60,
+    offset: 0,
+    facets: MOCK_CATALOG_FACETS,
+    catalog_count: results.length,
+  }
+}
+
 // Minimal valid binary STL (134 bytes, 1 triangle)
 function createMinimalSTL() {
   // 80-byte header + 4-byte count + 50-byte triangle = 134 bytes
@@ -81,6 +125,12 @@ function createMinimalSTL() {
  * @param {import('@playwright/test').Page} page
  */
 export async function mockAllAPIs(page) {
+  // The endpoint ProjectsView actually calls. Query string varies with filters
+  // and paging, so the pattern has to end in ** to match ?q=&limit=&offset=.
+  await page.route('**/api/catalog/search**', (route) => {
+    route.fulfill({ json: catalogResponse() })
+  })
+
   await page.route('**/api/projects', (route) => {
     if (route.request().url().includes('/api/projects/')) return route.fallback()
     console.log('MOCK: Intercepted GET /api/projects')

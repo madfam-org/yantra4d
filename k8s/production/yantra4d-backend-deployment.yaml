@@ -125,7 +125,7 @@ spec:
               mountPath: /tmp
             - name: render-output
               mountPath: /app/backend/static
-            - name: analytics-data
+            - name: analytics-pvc
               mountPath: /app/backend/data
           resources:
             requests:
@@ -195,6 +195,15 @@ spec:
             # Raised from 512Mi, which evicted the pod twice (2026-08-01 17:55 and
             # 2026-08-04 18:00 America/Mexico_City) under bulk-render load.
             sizeLimit: 2Gi
-        - name: analytics-data
+        # Renamed from analytics-data deliberately. Argo applies this with
+        # ServerSideApply, and volumes merge on `name` — so switching an
+        # existing volume from emptyDir to persistentVolumeClaim under the same
+        # name produced one volume carrying both types:
+        #   "may not specify more than 1 volume type"
+        # The Deployment then failed to apply at all, which silently blocked
+        # every other change in this file, including the render-output limit.
+        # A new name is a new list entry: the old emptyDir is pruned, this is
+        # added, and no single volume ever holds two types.
+        - name: analytics-pvc
           persistentVolumeClaim:
             claimName: yantra4d-analytics

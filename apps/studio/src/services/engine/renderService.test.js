@@ -1047,4 +1047,84 @@ describe('backend to WASM fallback', () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 500 internal error'))
     await expect(svc.renderParts('unit', {}, scadManifest, {})).rejects.toThrow(/500/)
   })
+
+  // --- Estimation branches -------------------------------------------------
+
+  const CONSTANTS = { base_time: 1, per_unit: 2, per_part: 3, wasm_multiplier: 4 }
+
+  it('estimateRenderTime returns 0 when the manifest declares no constants', () => {
+    expect(renderService.estimateRenderTime('cup', {}, { modes: [{ id: 'cup', parts: ['a'] }] })).toBe(0)
+  })
+
+  it('estimateRenderTime returns 0 for a mode the manifest does not define', () => {
+    const manifest = { estimate_constants: CONSTANTS, modes: [{ id: 'cup', parts: ['a'] }] }
+    expect(renderService.estimateRenderTime('nope', {}, manifest)).toBe(0)
+  })
+
+  it('formula_vars multiply, so a var listed twice scales quadratically', () => {
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [
+        { id: 'lin', parts: ['a'], estimate: { formula_vars: ['n'] } },
+        { id: 'sq', parts: ['a'], estimate: { formula_vars: ['n', 'n'] } },
+      ],
+    }
+    const lin = renderService.estimateRenderTime('lin', { n: 5 }, manifest)
+    const sq = renderService.estimateRenderTime('sq', { n: 5 }, manifest)
+    // units 5 vs 25 against the same base and part costs.
+    expect(sq).toBeGreaterThan(lin)
+  })
+
+  it('a missing formula var contributes 1 rather than collapsing the estimate to 0', () => {
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { formula_vars: ['absent'] } }],
+    }
+    expect(renderService.estimateRenderTime('cup', {}, manifest)).toBeGreaterThan(0)
+  })
+
+  it('numeric base_units is used when no formula_vars are given', () => {
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { base_units: 10 } }],
+    }
+    const withBase = renderService.estimateRenderTime('cup', {}, manifest)
+    const manifestNoBase = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: {} }],
+    }
+    expect(withBase).toBeGreaterThan(renderService.estimateRenderTime('cup', {}, manifestNoBase))
+  })
+
+  it('a non-numeric base_units falls back to one unit', () => {
+    // "N * N" is documentation, not something the reducer can evaluate — the
+    // estimator must not treat the string as a count.
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { base_units: 'N * N' } }],
+    }
+    const manifestOne = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { base_units: 1 } }],
+    }
+    expect(renderService.estimateRenderTime('cup', {}, manifest)).toBe(renderService.estimateRenderTime('cup', {}, manifestOne))
+  })
+
+  // --- Estimate accuracy ---------------------------------------------------
+
+  it('getEstimateAccuracy is null before any render has been observed', () => {
+    // Null rather than a number, so "not measured yet" cannot read as "accurate".
+    expect(renderService.getEstimateAccuracy(10)).toBeNull()
+  })
+
+  it('getEstimateAccuracy is null for a non-positive or non-finite estimate', () => {
+    expect(renderService.getEstimateAccuracy(0)).toBeNull()
+    expect(renderService.getEstimateAccuracy(Number.NaN)).toBeNull()
+    expect(renderService.getEstimateAccuracy(Number.POSITIVE_INFINITY)).toBeNull()
+  })
+
+  it('getRenderMode reports a mode string', () => {
+    expect(typeof renderService.getRenderMode()).toBe('string')
+  })
 })
+

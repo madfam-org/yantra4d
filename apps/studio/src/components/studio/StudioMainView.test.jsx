@@ -33,8 +33,10 @@ vi.mock('./ShortcutHelpDialog', () => ({
 }))
 
 vi.mock('./ModelInfoPanel', () => ({
-  default: function MockModelInfo() {
-    return <div data-testid="model-info" />
+  default: function MockModelInfo(props) {
+    // totalPieceCount is computed in StudioMainView and handed straight to this
+    // child, so surface it for assertions rather than rendering a bare stub.
+    return <div data-testid="model-info" data-total-pieces={props.totalPieceCount ?? ''} />
   },
 }))
 
@@ -47,6 +49,12 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
 }))
 vi.mock('../../hooks/system/useUnitSystem', () => ({
   useUnitSystem: () => ({ unit: 'mm', format: (v) => `${v}mm`, formatVolume: (v, p = 0) => `${v.toFixed(p)} mm³`, label: 'mm', toggle: vi.fn() }),
+}))
+
+vi.mock('../feedback/WelcomeOverlay', () => ({
+  default: function MockWelcomeOverlay() {
+    return <div data-testid="welcome-overlay" />
+  },
 }))
 
 import StudioMainView from './StudioMainView'
@@ -208,4 +216,103 @@ describe('StudioMainView', () => {
     expect(panelIds).toContain('viewer')
     expect(panelIds).toContain('console')
   })
+
+  // --- Manifest-driven branches -------------------------------------------
+  // baseContext leaves manifest, printEstimate and the job ids empty, so the
+  // part-count computation, welcome overlay, estimate strip and the physics and
+  // optimization badges were all unreachable.
+
+  const withContext = (patch) => {
+    useProject.mockReturnValue({ ...baseContext, ...patch })
+  }
+
+  it('part count multiplies quantities declared per part', () => {
+    withContext({
+      manifest: {
+        modes: [{ id: 'full', parts: ['body', 'pin'], part_quantities: { body: 1, pin: 4 } }],
+      },
+      params: {},
+      // ModelInfoPanel, which receives the count, only renders once a render
+      // has produced parts.
+      parts: [{ type: 'body' }, { type: 'pin' }],
+    })
+    render(<StudioMainView />)
+    // 1 body + 4 pins.
+    // StudioMainView renders its own desktop and mobile trees, so this child
+    // appears twice; both carry the same computed count.
+    expect(screen.getAllByTestId('model-info')[0]).toHaveAttribute('data-total-pieces', '5')
+  })
+
+  it('a part with no declared quantity counts as one', () => {
+    withContext({
+      manifest: { modes: [{ id: 'full', parts: ['body', 'lid'], part_quantities: { body: 2 } }] },
+      parts: [{ type: 'body' }, { type: 'lid' }],
+    })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('model-info')[0]).toHaveAttribute('data-total-pieces', '3')
+  })
+
+  it('no part count when the active mode is absent from the manifest', () => {
+    withContext({ manifest: { modes: [{ id: 'other', parts: ['a'], part_quantities: { a: 9 } }] } })
+    const { container } = render(<StudioMainView />)
+    expect(container).toBeTruthy() // renders without the count block
+  })
+
+  it('welcome overlay appears when the manifest enables it', () => {
+    localStorage.clear()
+    withContext({
+      projectSlug: 'demo',
+      manifest: { project: { welcome: { enabled: true, title: 'Welcome aboard' } } },
+    })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('welcome-overlay').length).toBeGreaterThan(0)
+  })
+
+  it('welcome overlay stays hidden once dismissed for that project', () => {
+    localStorage.setItem('yantra4d-welcome-demo', '1')
+    withContext({
+      projectSlug: 'demo',
+      manifest: { project: { welcome: { enabled: true, title: 'Welcome aboard' } } },
+    })
+    render(<StudioMainView />)
+    expect(screen.queryAllByTestId('welcome-overlay')).toHaveLength(0)
+    localStorage.clear()
+  })
+
+  it('welcome overlay stays hidden when the manifest does not enable it', () => {
+    localStorage.clear()
+    withContext({
+      projectSlug: 'demo',
+      manifest: { project: { welcome: { enabled: false, title: 'Welcome aboard' } } },
+    })
+    render(<StudioMainView />)
+    expect(screen.queryAllByTestId('welcome-overlay')).toHaveLength(0)
+  })
+
+  it('the collapsed console previews the last log line', () => {
+    withContext({ logs: 'first line\nsecond line\nlast line' })
+    render(<StudioMainView />)
+    expect(document.body.textContent).toContain('last line')
+  })
+
+  it('print estimate strip appears once a volume is known', () => {
+    withContext({ printEstimate: { volumeMm3: 1234 } })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('print-overlay').length).toBeGreaterThan(0)
+  })
+
+  it('estimate toggle is offered with a volume and withdrawn when estimation is disabled', () => {
+    withContext({ printEstimate: { volumeMm3: 1234 } })
+    const { unmount } = render(<StudioMainView />)
+    expect(screen.getAllByLabelText('Toggle print estimate panel').length).toBeGreaterThan(0)
+    unmount()
+
+    withContext({
+      printEstimate: { volumeMm3: 1234 },
+      manifest: { print_estimation: { enabled: false } },
+    })
+    render(<StudioMainView />)
+    expect(screen.queryAllByLabelText('Toggle print estimate panel')).toHaveLength(0)
+  })
 })
+

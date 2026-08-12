@@ -183,4 +183,54 @@ describe('EditStep', () => {
     fireEvent.change(textarea, { target: { value: 'bad' } })
     expect(textarea).toHaveAttribute('aria-invalid', 'true')
   })
+
+  // --- Structured editors ---------------------------------------------------
+  // The raw JSON path was covered; the structured editors below it — mode id and
+  // label, parameter bounds, part colours — were not, so none of their onChange
+  // handlers ran.
+
+  /** Apply the updater setManifest was called with, to see the edit it encodes. */
+  const applyLastUpdate = (setManifest, prev) => {
+    const updater = setManifest.mock.calls.at(-1)[0]
+    return typeof updater === 'function' ? updater(prev) : updater
+  }
+
+  it('editing a mode id rewrites that mode in place', () => {
+    const setManifest = vi.fn()
+    renderEditStep({ setManifest })
+    fireEvent.change(screen.getByDisplayValue('default'), { target: { value: 'primary' } })
+    const next = applyLastUpdate(setManifest, baseManifest)
+    expect(next.modes[0].id).toBe('primary')
+    expect(next.modes[1].id).toBe('alt') // siblings untouched
+  })
+
+  it('editing a mode label replaces the locale map with the typed string', () => {
+    const setManifest = vi.fn()
+    renderEditStep({ setManifest })
+    // The first mode's label is { en: 'Default' }; the input shows the en value.
+    fireEvent.change(screen.getByDisplayValue('Default'), { target: { value: 'Primary' } })
+    expect(applyLastUpdate(setManifest, baseManifest).modes[0].label).toBe('Primary')
+  })
+
+  it('editing a slider bound stores a number, not the raw string', () => {
+    const setManifest = vi.fn()
+    renderEditStep({ setManifest })
+    fireEvent.change(screen.getByDisplayValue('100'), { target: { value: '250' } })
+    expect(applyLastUpdate(setManifest, baseManifest).parameters[0].max).toBe(250)
+  })
+
+  it('a non-numeric bound falls back to zero rather than NaN', () => {
+    const setManifest = vi.fn()
+    renderEditStep({ setManifest })
+    fireEvent.change(screen.getByDisplayValue('100'), { target: { value: 'abc' } })
+    expect(applyLastUpdate(setManifest, baseManifest).parameters[0].max).toBe(0)
+  })
+
+  it('choosing a part colour updates that part', () => {
+    const setManifest = vi.fn()
+    renderEditStep({ setManifest })
+    fireEvent.change(screen.getByDisplayValue('#ff0000'), { target: { value: '#00ff00' } })
+    expect(applyLastUpdate(setManifest, baseManifest).parts[0].default_color).toBe('#00ff00')
+  })
 })
+

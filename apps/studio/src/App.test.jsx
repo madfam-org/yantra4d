@@ -302,4 +302,50 @@ describe('App', { timeout: 30000 }, () => {
     expect(panelIds).toContain('sidebar')
     expect(panelIds).toContain('main')
   })
+
+  // --- Manifest error pages ------------------------------------------------
+  // App distinguishes a genuinely missing project from an unreachable server;
+  // neither page was covered.
+
+  const failManifestWith = (responder) => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      const u = url.toString()
+      if (u.includes('/api/projects') && !u.includes('/manifest')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([fallbackManifest.project]) })
+      }
+      if (u.includes('/manifest')) return responder()
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(fallbackManifest) })
+    })
+  }
+
+  it('a 404 on the manifest reports the project as missing', async () => {
+    failManifestWith(() => Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) }))
+    await renderApp(['/project/ghost'])
+    expect(await screen.findByText(/doesn't exist|no existe/i)).toBeInTheDocument()
+    // A missing project is not retryable, so no Retry is offered.
+    expect(screen.queryByRole('button', { name: /^Retry$/i })).not.toBeInTheDocument()
+  })
+
+  it('an unreachable server is reported as a server problem, with a retry', async () => {
+    failManifestWith(() => Promise.reject(new Error('network down')))
+    await renderApp(['/project/gridfinity'])
+    expect(await screen.findByText(/Can't Reach the Server/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^Retry$/i })).toBeInTheDocument()
+    // Must not claim the project is gone when the server never answered.
+    expect(screen.queryByText(/doesn't exist/i)).not.toBeInTheDocument()
+  })
+
+  it('a non-404 manifest failure is also treated as a server problem', async () => {
+    failManifestWith(() => Promise.resolve({ ok: false, status: 503, json: () => Promise.resolve({}) }))
+    await renderApp(['/project/gridfinity'])
+    expect(await screen.findByText(/Can't Reach the Server/i)).toBeInTheDocument()
+  })
+
+  it('browse projects from the error page navigates to the catalog', async () => {
+    failManifestWith(() => Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) }))
+    await renderApp(['/project/ghost'])
+    fireEvent.click(await screen.findByRole('button', { name: /Browse Projects/i }))
+    await waitFor(() => expect(testLocation.pathname).toBe('/projects'))
+  })
 })
+

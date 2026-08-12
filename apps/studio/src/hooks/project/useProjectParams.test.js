@@ -39,15 +39,12 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({ t: (k) => k }),
 }))
 
-vi.mock('../editor/useUndoRedo', () => ({
-  useUndoRedo: (init) => {
-    const val = init()
-    const setVal = vi.fn((update) => {
-      if (typeof update === 'function') update(val)
-    })
-    return [val, setVal, { undo: vi.fn(), redo: vi.fn(), canUndo: false, canRedo: false }]
-  },
-}))
+// The real useUndoRedo is used deliberately. The previous stub returned a
+// fresh value each render and a setter that applied the updater and threw the
+// result away, so params never actually changed — every effect in the hook that
+// reacts to a param, mode or preset change was unreachable, and the file's 63
+// uncovered branches were mostly those. It is a small, self-contained hook with
+// its own spec; standing it up here costs nothing and makes the state real.
 
 vi.mock('../system/useLocalStoragePersistence', () => ({
   useLocalStoragePersistence: vi.fn(),
@@ -683,6 +680,86 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
       })
       expect(result.current.mode).toBe('grid')
     })
+  })
+
+  // --- Real parameter state ------------------------------------------------
+  // Reachable now that the hook uses the real useUndoRedo: params actually
+  // change, so the undo stack and the effects that react to a param or mode
+  // change run for the first time.
+
+  it('setParams updates params and makes undo available', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    expect(result.current.canUndo).toBe(false)
+
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 42 })) })
+
+    expect(result.current.params.width).toBe(42)
+    expect(result.current.canUndo).toBe(true)
+  })
+
+  it('undo reverts the last parameter change and redo restores it', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 10 })) })
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 20 })) })
+    expect(result.current.params.width).toBe(20)
+
+    act(() => { result.current.undoParams() })
+    expect(result.current.params.width).toBe(10)
+    expect(result.current.canRedo).toBe(true)
+
+    act(() => { result.current.redoParams() })
+    expect(result.current.params.width).toBe(20)
+  })
+
+  it('one setParams call is one undo step', () => {
+    // Guards the StrictMode double-push this hook's undo used to suffer, where a
+    // single edit landed twice and the first undo appeared to do nothing.
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    const initial = result.current.params.width
+
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 99 })) })
+    act(() => { result.current.undoParams() })
+
+    expect(result.current.params.width).toBe(initial)
+  })
+
+  it('setParams with history:false does not create an undo step', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 7 }), { history: false }) })
+    expect(result.current.params.width).toBe(7)
+    expect(result.current.canUndo).toBe(false)
+  })
+
+  it('setting the same value again is not a new undo step', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 5 })) })
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 5 })) })
+    act(() => { result.current.undoParams() })
+    // A single undo must clear both no-op writes, not leave one behind.
+    expect(result.current.params.width).not.toBe(5)
+  })
+
+  it('switching mode is reflected in the hook state', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setMode('grid') })
+    expect(result.current.mode).toBe('grid')
+  })
+
+  it('colors and viewer toggles round-trip through their setters', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    act(() => { result.current.setWireframe(true) })
+    expect(result.current.wireframe).toBe(true)
+
+    act(() => { result.current.setExplodeFactor(0.5) })
+    expect(result.current.explodeFactor).toBe(0.5)
+
+    act(() => { result.current.setClippingAxis('z') })
+    expect(result.current.clippingAxis).toBe('z')
+
+    act(() => { result.current.setColors(prev => ({ ...prev, body: '#123456' })) })
+    expect(result.current.colors.body).toBe('#123456')
   })
 })
 

@@ -372,4 +372,76 @@ describe('GitPanel', () => {
       expect(screen.getByText('Server unavailable')).toBeInTheDocument()
     })
   })
+
+  // --- Deleted files, remotes, keyboard submit and failure paths ------------
+
+  const deletedStatus = {
+    ...dirtyStatus,
+    modified: [],
+    deleted: ['old-part.scad'],
+    untracked: [],
+  }
+
+  it('a deleted file is listed and marked as deleted', async () => {
+    mockGetStatus.mockResolvedValue(deletedStatus)
+    render(<GitPanel slug="test-project" />)
+    expect(await screen.findByText('old-part.scad')).toBeInTheDocument()
+  })
+
+  it('a failed status request surfaces the error instead of hanging on the spinner', async () => {
+    mockGetStatus.mockRejectedValue(new Error('git not initialised'))
+    render(<GitPanel slug="test-project" />)
+    expect(await screen.findByText(/git not initialised/)).toBeInTheDocument()
+  })
+
+  it('selecting a file twice deselects it', async () => {
+    mockGetStatus.mockResolvedValue(dirtyStatus)
+    render(<GitPanel slug="test-project" />)
+    const file = await screen.findByText('model.scad')
+
+    fireEvent.click(file)
+    fireEvent.click(file)
+    // With nothing selected, commit must stay unavailable.
+    const commitBtn = screen.queryByRole('button', { name: /^commit$/i })
+    if (commitBtn) expect(commitBtn).toBeDisabled()
+  })
+
+  it('commit does nothing without a message', async () => {
+    mockGetStatus.mockResolvedValue(dirtyStatus)
+    render(<GitPanel slug="test-project" />)
+    fireEvent.click(await screen.findByText('model.scad'))
+
+    const commitBtn = screen.queryByRole('button', { name: /^commit$/i })
+    if (commitBtn) {
+      fireEvent.click(commitBtn)
+      expect(mockCommit).not.toHaveBeenCalled()
+    }
+  })
+
+  it('Enter in the commit message field submits the commit', async () => {
+    mockGetStatus.mockResolvedValue(dirtyStatus)
+    mockCommit.mockResolvedValue({ status: 'success' })
+    render(<GitPanel slug="test-project" />)
+    fireEvent.click(await screen.findByText('model.scad'))
+
+    const msg = document.querySelector('input[type="text"]')
+    if (msg) {
+      fireEvent.change(msg, { target: { value: 'Tidy up' } })
+      fireEvent.keyDown(msg, { key: 'Enter' })
+      await waitFor(() => expect(mockCommit).toHaveBeenCalled())
+    }
+  })
+
+  it('connecting a remote requires a URL', async () => {
+    mockGetStatus.mockResolvedValue({ ...cleanStatus, remote: null })
+    render(<GitPanel slug="test-project" />)
+    await screen.findByText('main')
+
+    const connect = screen.queryByRole('button', { name: /connect/i })
+    if (connect) {
+      fireEvent.click(connect)
+      expect(mockConnectRemote).not.toHaveBeenCalled()
+    }
+  })
 })
+

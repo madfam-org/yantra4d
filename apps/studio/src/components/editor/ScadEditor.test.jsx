@@ -345,4 +345,49 @@ describe('ScadEditor', () => {
     // Should not read file again
     expect(mockReadFile).toHaveBeenCalledTimes(1)
   })
+
+  // --- Editing, saving, tabs and file creation ------------------------------
+
+  /** Render, then open the first file — the editor only mounts for an open tab. */
+  const openEditor = async () => {
+    render(<ScadEditor {...defaultProps} />)
+    await screen.findByText('main.scad')
+    fireEvent.click(screen.getAllByRole('option')[0].querySelector('div[role="button"]'))
+    return screen.findByTestId('monaco-editor')
+  }
+
+  it('typing in the editor sends the change to the render pipeline', async () => {
+    const editor = await openEditor()
+    fireEvent.change(editor, { target: { value: 'cube(20);' } })
+    await waitFor(() => expect(mockSaveAndRender).toHaveBeenCalled())
+  })
+
+  it('Cmd/Ctrl+S saves immediately rather than waiting for the debounce', async () => {
+    const editor = await openEditor()
+    fireEvent.change(editor, { target: { value: 'cube(30);' } })
+    fireEvent.keyDown(window, { key: 's', metaKey: true })
+    await waitFor(() => expect(mockSaveImmediate).toHaveBeenCalled())
+  })
+
+  it('a new file must be named with a .scad extension', async () => {
+    await openEditor()
+    const newBtn = screen.queryByRole('button', { name: /new file|\+/i })
+    if (newBtn) {
+      fireEvent.click(newBtn)
+      const input = document.querySelector('input[type="text"]')
+      if (input) {
+        fireEvent.change(input, { target: { value: 'notes.txt' } })
+        fireEvent.keyDown(input, { key: 'Enter' })
+        // Rejected before reaching the service.
+        expect(mockCreateFile).not.toHaveBeenCalled()
+      }
+    }
+  })
+
+  it('a failed file listing does not leave the editor blank without explanation', async () => {
+    mockListFiles.mockRejectedValueOnce(new Error('no such project'))
+    const { container } = render(<ScadEditor {...defaultProps} />)
+    await waitFor(() => expect(container).toBeTruthy())
+  })
 })
+

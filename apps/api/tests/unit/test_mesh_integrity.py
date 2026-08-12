@@ -97,6 +97,39 @@ class TestGenuineHoles:
         assert r.boundary_edges == 4
 
 
+class TestNonManifoldGeometry:
+    """Closed but self-touching. Distinct from a hole, and fixed differently.
+
+    This is gridfinity's actual signature: zero boundary edges, consistent
+    winding, still not watertight. Calling that "not watertight" without saying
+    why sends someone hunting a gap that does not exist.
+    """
+
+    def _two_boxes_sharing_a_face(self):
+        a = trimesh.creation.box(extents=(10, 10, 10))
+        b = trimesh.creation.box(extents=(10, 10, 10))
+        b.apply_translation((10, 0, 0))
+        glued = trimesh.util.concatenate([a, b])
+        glued.merge_vertices()
+        return glued
+
+    def test_reports_non_manifold_edges_not_a_hole(self):
+        r = assess(self._two_boxes_sharing_a_face(), scale_hint=10.0)
+        assert not r.watertight
+        assert r.boundary_edges == 0, "there is no hole here"
+        assert r.nonmanifold_edges > 0
+        assert "no holes" in r.summary
+        assert "more than two faces" in " ".join(r.notes)
+
+    def test_does_not_confuse_it_with_float_noise(self):
+        """Merging must not make a self-touching surface read as sealed."""
+        r = assess(_unwelded(self._two_boxes_sharing_a_face()), scale_hint=10.0)
+        assert not r.watertight, r.summary
+
+    def test_a_clean_solid_reports_no_non_manifold_edges(self):
+        assert assess(_box()).nonmanifold_edges == 0
+
+
 class TestDegenerateInput:
     def test_empty_mesh(self):
         empty = trimesh.Trimesh(vertices=np.zeros((0, 3)), faces=np.zeros((0, 3), dtype=int))

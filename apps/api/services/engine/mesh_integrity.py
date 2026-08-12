@@ -28,6 +28,7 @@ class MeshIntegrity:
     euler_number: int | None
     winding_consistent: bool
     volume: float
+    nonmanifold_edges: int = 0
     merge_tolerance: float | None = None
     notes: list[str] = field(default_factory=list)
 
@@ -37,19 +38,33 @@ class MeshIntegrity:
             tol = (f" after merging at {self.merge_tolerance:g}mm"
                    if self.merge_tolerance else "")
             return f"watertight{tol} (volume {self.volume:.2f})"
+        # Name which of the two failures this is. "Not watertight" alone sends
+        # someone looking for a hole even when the surface is closed.
+        if self.boundary_edges == 0 and self.nonmanifold_edges > 0:
+            return (f"NOT watertight — no holes, but {self.nonmanifold_edges} "
+                    f"non-manifold edge(s) shared by more than two faces "
+                    f"(euler {self.euler_number})")
         return (f"NOT watertight — {self.boundary_edges} boundary edge(s), "
+                f"{self.nonmanifold_edges} non-manifold edge(s), "
                 f"euler {self.euler_number}, winding "
                 f"{'consistent' if self.winding_consistent else 'INCONSISTENT'}")
 
 
-def _count_boundary_edges(mesh: trimesh.Trimesh) -> int:
-    """Edges used by exactly one face. A closed surface has none."""
+def _edge_face_counts(mesh: trimesh.Trimesh) -> tuple[int, int]:
+    """Return (boundary, non-manifold) edge counts.
+
+    A closed manifold surface has every edge shared by exactly two faces.
+    Edges used once leave a hole; edges used three or more times mean surfaces
+    meeting where they should not — usually coincident coplanar faces left
+    behind by a boolean union. Both break watertightness, for opposite reasons,
+    and the fix for each is different.
+    """
     try:
         edges = np.sort(mesh.edges_sorted, axis=1)
         _, counts = np.unique(edges, axis=0, return_counts=True)
-        return int((counts == 1).sum())
+        return int((counts == 1).sum()), int((counts > 2).sum())
     except Exception:
-        return -1
+        return -1, -1
 
 
 def assess(mesh: trimesh.Trimesh, scale_hint: float | None = None) -> MeshIntegrity:
@@ -94,14 +109,19 @@ def assess(mesh: trimesh.Trimesh, scale_hint: float | None = None) -> MeshIntegr
                                  float(candidate.volume), merge_tolerance=tol,
                                  notes=notes)
 
-    # Genuinely open.
-    boundary = _count_boundary_edges(mesh)
+    # Genuinely not closed-manifold. Say which failure it is.
+    boundary, nonmanifold = _edge_face_counts(mesh)
     if boundary > 0:
         notes.append(f"{boundary} edge(s) belong to only one face, so the surface "
                      f"does not close")
+    if nonmanifold > 0:
+        notes.append(f"{nonmanifold} edge(s) are shared by more than two faces — "
+                     f"the surface is closed but self-touching, typically "
+                     f"coincident coplanar faces left by a boolean union")
     if not mesh.is_winding_consistent:
         notes.append("face winding is inconsistent, which can invert normals and "
                      "break slicing even where the surface closes")
     return MeshIntegrity(False, boundary, int(mesh.euler_number),
                          bool(mesh.is_winding_consistent),
-                         float(mesh.volume), notes=notes)
+                         float(mesh.volume), nonmanifold_edges=nonmanifold,
+                         notes=notes)

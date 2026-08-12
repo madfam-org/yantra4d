@@ -31,15 +31,22 @@ CATALOG_MD = REPO / "COMMONS.md"
 UPSTREAM = "https://github.com/madfam-org/yantra4d"
 SCHEMA_VERSION = "commons_catalog_v1"
 
-# Client engagements. The client retains all private rights to the repository,
-# so the design is NOT part of the public Hyperobjects Commons and must not be
-# catalogued here — this catalogue is published from a public repo, and listing
-# one would advertise a private client repo, its name, and a clone command for it.
+# Cartridges deliberately kept OUT of the published Commons catalogue, and why.
 #
-# Kept as an explicit list rather than inferred from the cartridge's LICENSE:
-# these submodules are private, so a clone without access simply has no LICENSE
-# to read, and an inferred rule would silently include them.
-CLIENT_PRIVATE = {"tablaco"}
+# Kept as an explicit map rather than inferred: a private submodule cloned
+# without access simply has no LICENSE to read, so an inferred rule would
+# silently include exactly the entries that must never appear.
+NOT_COMMONS = {
+    # Client engagement. The client retains all private rights to the repo, so
+    # the design is not ours to publish. This catalogue ships from a public
+    # repo, and an entry here would advertise a private repo, its name, and a
+    # clone command for it.
+    "tablaco": "client engagement — client retains all private rights",
+    # Test fixture (box.py + box.step), not a Bounded 4D Hyperobject. Its repo
+    # is archived and therefore read-only, so it cannot be corrected in place.
+    "cq-hyperobject-test": "engine test fixture, not a Commons object; repo archived",
+}
+CLIENT_PRIVATE = set(NOT_COMMONS)
 
 
 def submodule_urls() -> dict[str, str]:
@@ -131,6 +138,12 @@ def build_entry(manifest_path: Path, submodules: dict[str, str]) -> dict:
     project = m.get("project") or {}
     hyper = m.get("hyperobject") if isinstance(m.get("hyperobject"), dict) else {}
 
+    # Two conventions are in use: Commons cartridges declare
+    # hyperobject.commons_license, while several standalone cartridge repos
+    # declare project.license. Read both rather than reporting a licensed
+    # cartridge as unlicensed because it picked the other field.
+    commons_license = hyper.get("commons_license") or project.get("license") or m.get("license")
+
     interfaces = []
     for iface in hyper.get("cdg_interfaces") or []:
         if not isinstance(iface, dict):
@@ -158,7 +171,7 @@ def build_entry(manifest_path: Path, submodules: dict[str, str]) -> dict:
         "parts": _len(m.get("parts")),
         "parameters": _len(m.get("parameters")),
         "export_formats": m.get("export_formats") or [],
-        "commons_license": hyper.get("commons_license"),
+        "commons_license": commons_license,
         "societal_benefit": hyper.get("societal_benefit"),
         "material_awareness": hyper.get("material_awareness"),
         "cdg_interfaces": interfaces,

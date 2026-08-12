@@ -59,9 +59,9 @@ Honest, code-verified snapshot. **Working today:**
 
 ---
 
-## 📦 The Commons Catalog (325 cartridges, CadQuery-first)
+## 📦 The Commons Catalog (324 cartridges, CadQuery-first)
 
-The Commons is a demand-grounded catalog of **325 Bounded 4D Hyperobjects**, authored
+The Commons is a demand-grounded catalog of **324 Bounded 4D Hyperobjects**, authored
 **CadQuery-first** (exact B-Rep, STEP export). Each `projects/<slug>/` is a
 self-contained cartridge (`main.py` + `project.json` + docs); the flagship interfaces
 are also published as independent `madfam-org` git submodules.
@@ -71,9 +71,9 @@ Counts below are generated from the manifests, not maintained by hand — see
 
 | | |
 | :-- | --: |
-| Cartridges | 325 |
+| Cartridges | 324 |
 | With declared CDG interfaces | 311 |
-| Carrying an explicit license | 325 (100%) |
+| Carrying an explicit license | 324 (100%) |
 | Dual-engine (CadQuery B-Rep + OpenSCAD CSG) | 23 |
 | Distinct external standards referenced | 206 |
 
@@ -83,25 +83,32 @@ Two licenses apply to this repository and they cover different things:
 
 - **The platform** — everything outside `projects/` — is **AGPL-3.0** (see [LICENSE](./LICENSE)).
 - **The cartridges** in `projects/` are hardware designs, licensed
-  **CERN-OHL-W-2.0** (322 of 325). Weakly reciprocal: modifications to a design
+  **CERN-OHL-W-2.0** (320 of 324). Weakly reciprocal: modifications to a design
   must be shared, but a larger product incorporating one need not be.
 
-Three cartridges differ because they derive from upstream work whose license
-travels with it, and cannot be relicensed:
+Four cartridges differ because they derive from upstream work whose license
+travels with it and cannot be relicensed:
 
-| Cartridge | License | Why |
+| Cartridge | License | Upstream |
 | :-- | :-- | :-- |
-| `stemfie` | GPL-2.0 | Derivative of [stemfie.org](https://stemfie.org) |
-| `keyv2` | GPL-3.0 | Derivative of [rsheldiii/KeyV2](https://github.com/rsheldiii/KeyV2) |
-| `polydice` | BSD-2-Clause | Derivative of PolyDiceGenerator, © 2020 charmaur |
+| `stemfie` | GPL-3.0-or-later | [stemfie.org](https://stemfie.org) |
+| `keyv2` | GPL-3.0 | [rsheldiii/KeyV2](https://github.com/rsheldiii/KeyV2) |
+| `multiboard` | **CC-BY-NC-SA-4.0** | Multiboard — **NonCommercial: you may not sell prints of this design** |
+| `polydice` | BSD-2-Clause | PolyDiceGenerator, © 2020 charmaur |
 
-If you build on those three, you inherit their terms, not CERN-OHL-W-2.0. Each
-cartridge's license is machine-readable in the catalog, and CI fails if a
-declared license ever diverges from the one a cartridge actually ships
-(`scripts/qa/check_licenses.py`).
+If you build on those four you inherit their terms, not CERN-OHL-W-2.0 — and
+`multiboard` in particular forbids commercial use, which CERN-OHL-W permits.
+`rugged-box` is CERN-OHL-W-2.0 for its own wrappers but vendors upstream files
+under CC BY-NC-SA 4.0; see its `NOTICE`.
 
-Client engagements are **not** part of the Commons — the client retains all
-private rights to their repository — and are excluded from the published catalog.
+Every cartridge's license is machine-readable in the catalog, and CI fails if a
+declared license ever diverges from the one a cartridge actually ships, if a
+manifest declares two conflicting licenses, or if an excluded cartridge appears
+in the published catalog (`scripts/qa/check_licenses.py --strict-all`).
+
+Two cartridges are deliberately **excluded** from the published Commons:
+`tablaco` is a client engagement whose client retains all private rights, and
+`cq-hyperobject-test` is an engine test fixture rather than a hyperobject.
 
 **What is verified, precisely.** Every manifest is schema-validated in CI, and every
 mode is geometrically distinct (each mode's `parts[]` id drives `target_part` dispatch).

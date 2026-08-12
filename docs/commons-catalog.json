@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 325,
+    "cartridges": 324,
     "with_cdg_interfaces": 311,
-    "with_commons_license": 325,
+    "with_commons_license": 324,
     "dual_engine": 23
   },
   "domains": {
@@ -13,7 +13,7 @@
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
-    "uncategorized": 14,
+    "uncategorized": 13,
     "hybrid": 7,
     "soft-robotics": 1
   },
@@ -4039,40 +4039,6 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/corner-clamp"
-      }
-    },
-    {
-      "slug": "cq-hyperobject-test",
-      "name": "CadQuery Hyperobject Test",
-      "domain": null,
-      "engines": [
-        "cadquery"
-      ],
-      "dual_engine": false,
-      "modes": 1,
-      "parts": 1,
-      "parameters": 3,
-      "export_formats": [
-        "stl",
-        "3mf",
-        "step",
-        "glb",
-        "gltf",
-        "obj"
-      ],
-      "commons_license": "CERN-OHL-W-2.0",
-      "societal_benefit": null,
-      "material_awareness": null,
-      "cdg_interfaces": [],
-      "standards": [],
-      "source": {
-        "manifest": "projects/cq-hyperobject-test/project.json",
-        "has_cadquery": true,
-        "has_openscad": false
-      },
-      "clone": {
-        "kind": "submodule",
-        "command": "git clone https://github.com/madfam-org/cq-hyperobject-test.git"
       }
     },
     {
@@ -11912,7 +11878,7 @@
         "glb",
         "obj"
       ],
-      "commons_license": "CERN-OHL-W-2.0",
+      "commons_license": "CC-BY-NC-SA-4.0",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],
@@ -17658,7 +17624,7 @@
         "gltf",
         "obj"
       ],
-      "commons_license": "GPL-2.0",
+      "commons_license": "GPL-3.0-or-later",
       "societal_benefit": {
         "en": "Open-source construction kit for STEM education — enables schools to fabricate their own learning tools",
         "es": "Kit de construcción de código abierto para educación STEM — permite a escuelas fabricar sus propias herramientas de aprendizaje"

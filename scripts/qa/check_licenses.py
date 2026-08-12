@@ -54,12 +54,15 @@ def submodule_slugs() -> set[str]:
 COPYLEFT = {"GPL-2.0", "GPL-3.0", "AGPL-3.0"}
 COMMONS_DEFAULT = "CERN-OHL-W-2.0"
 
-# Client engagements: the client retains all private rights to the repository.
-# A proprietary license is correct here, not a defect. What would be a defect is
-# such a cartridge appearing in the published catalogue — so the requirement is
-# inverted for these, and kept in step with CLIENT_PRIVATE in
-# scripts/qa/generate_commons_catalog.py.
-CLIENT_PRIVATE = {"tablaco"}
+# Cartridges deliberately outside the published Commons. Their licence terms are
+# whatever they are — a proprietary client design is correct, not a defect — so
+# the requirement inverts: what matters is that they stay out of the catalogue.
+# Kept in step with NOT_COMMONS in scripts/qa/generate_commons_catalog.py.
+NOT_COMMONS = {
+    "tablaco": "client engagement — client retains all private rights",
+    "cq-hyperobject-test": "engine test fixture, not a Commons object; repo archived",
+}
+CLIENT_PRIVATE = set(NOT_COMMONS)
 
 
 def identify(path: Path) -> str:
@@ -94,8 +97,18 @@ def identify(path: Path) -> str:
     if "Permission is hereby granted, free of charge" in head:
         return "MIT"
     if "Creative Commons" in head or "creativecommons.org" in head:
-        m = re.search(r"(CC[- ]BY[A-Z-]*)[- ]?(\d\.\d)?", head, re.I)
-        return (m.group(0).upper().replace(" ", "-") if m else "CC")
+        # Resolve the exact variant. A bare "CC" hides the difference between a
+        # permissive CC-BY and a NonCommercial CC-BY-NC-SA, which is the whole
+        # question when deciding whether a design can be sold.
+        parts = ["CC", "BY"]
+        if re.search(r"NonCommercial", head, re.I):
+            parts.append("NC")
+        if re.search(r"ShareAlike", head, re.I):
+            parts.append("SA")
+        if re.search(r"NoDerivatives", head, re.I):
+            parts.append("ND")
+        ver = re.search(r"(\d\.\d) International", head)
+        return "-".join(parts) + (f"-{ver.group(1)}" if ver else "")
     if re.search(r"All rights reserved|Uso Privado|Private Use|Proprietary", head, re.I):
         return "PROPRIETARY"
     return "UNKNOWN"
@@ -113,6 +126,18 @@ def published_slugs() -> set[str]:
     return {c.get("slug") for c in data.get("cartridges", [])}
 
 
+def normalize(identifier: str | None) -> str | None:
+    """Strip SPDX suffixes so GPL-3.0-or-later and GPL-3.0 compare equal.
+
+    `-or-later` / `-only` express how a licence may be upgraded, not which
+    licence it is; treating them as different identifiers reports a correct
+    declaration as a conflict.
+    """
+    if not identifier:
+        return identifier
+    return re.sub(r"-(or-later|only)$", "", identifier.strip())
+
+
 def audit() -> list[dict]:
     findings = []
     standalone = submodule_slugs()
@@ -122,14 +147,25 @@ def audit() -> list[dict]:
     for slug in sorted(CLIENT_PRIVATE & published):
         findings.append({
             "severity": "CONFLICT", "slug": slug, "declared": None, "files": {},
-            "message": "client-private cartridge appears in the published catalogue — "
-                       "the client retains private rights and this repo is public",
+            "message": f"excluded cartridge appears in the published catalogue "
+                       f"({NOT_COMMONS[slug]})",
         })
 
     for manifest in sorted(PROJECTS.glob("*/project.json")):
         slug = manifest.parent.name
-        hyper = json.loads(manifest.read_text(encoding="utf-8")).get("hyperobject") or {}
-        declared = hyper.get("commons_license") if isinstance(hyper, dict) else None
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        hyper = data.get("hyperobject") or {}
+        # Two conventions are in use: Commons cartridges declare
+        # hyperobject.commons_license, while several standalone cartridge repos
+        # declare project.license. Accept either, or a licensed cartridge gets
+        # reported as unlicensed purely for picking the other field.
+        candidates = {
+            "hyperobject.commons_license": (
+                hyper.get("commons_license") if isinstance(hyper, dict) else None),
+            "project.license": (data.get("project") or {}).get("license"),
+            "license": data.get("license"),
+        }
+        declared = next((v for v in candidates.values() if v), None)
 
         files = {p.name: identify(p) for p in sorted(manifest.parent.glob("LICENSE*"))}
         files.update({p.name: identify(p) for p in sorted(manifest.parent.glob("COPYING*"))})
@@ -148,26 +184,35 @@ def audit() -> list[dict]:
                 add("METADATA", "declares no commons_license and ships no LICENSE file")
             continue
 
+        # Two fields can each hold a licence, so a manifest can contradict
+        # itself. Reading only the first non-null would silently hide that.
+        stated = {k: v for k, v in candidates.items() if v}
+        if len({normalize(v) for v in stated.values()}) > 1:
+            add("CONFLICT", "manifest declares conflicting licences in different fields: "
+                            + ", ".join(f"{k}={v}" for k, v in sorted(stated.items())))
+
         if "HTML-ERROR-PAGE" in shipped:
             add("CONFLICT", "LICENSE file is a saved HTML error page, not license text — "
                             "the cartridge effectively ships no license")
         if "PROPRIETARY" in shipped and slug not in CLIENT_PRIVATE:
             add("CONFLICT", "ships an all-rights-reserved / proprietary license but sits in a "
                             "public commons catalogue")
-        copyleft = shipped & COPYLEFT
-        if copyleft and declared and declared not in copyleft:
+        shipped_norm = {normalize(v) for v in shipped}
+        declared_norm = normalize(declared)
+        copyleft = shipped_norm & COPYLEFT
+        if copyleft and declared_norm and declared_norm not in copyleft:
             add("CONFLICT", f"declares {declared} but ships {', '.join(sorted(copyleft))} — "
                             f"copyleft cannot be relicensed on a derivative work")
         if len(shipped - {"UNKNOWN"}) > 1:
             add("CONFLICT", f"ships more than one license: {', '.join(sorted(shipped))}")
-        if declared and shipped and declared not in shipped and not copyleft:
+        if declared_norm and shipped and declared_norm not in shipped_norm and not copyleft:
             add("MISMATCH", f"declares {declared} but ships {', '.join(sorted(shipped))}")
         if not declared and slug not in CLIENT_PRIVATE:
             add("METADATA", f"declares no commons_license; ships {', '.join(sorted(shipped))}")
         elif not declared:
             # Correct by design: client work is not part of the Commons, so it
             # has no commons_license to declare.
-            add("OK", f"client-private, correctly absent from the catalogue "
+            add("OK", f"correctly absent from the catalogue — {NOT_COMMONS[slug]} "
                       f"(ships {', '.join(sorted(shipped))})")
     return findings
 

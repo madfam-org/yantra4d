@@ -109,12 +109,16 @@ test.describe('Studio Sidebar', () => {
     // State should have changed
   })
 
-  // Wireframe
-  test('wireframe toggle is visible in colors section', async ({ page }) => {
+  // Wireframe. Same AppearancePanel as the colour pickers below, so the same
+  // rule applies: it lives inside <TabsContent value="view"> and is absent from
+  // the DOM until that tab is selected.
+  test('wireframe toggle is visible in colors section', async ({ page, sidebar }) => {
+    await sidebar.selectSection('view')
     await expect(page.locator('#wireframe-toggle')).toBeVisible()
   })
 
-  test('wireframe toggle switches state', async ({ page }) => {
+  test('wireframe toggle switches state', async ({ page, sidebar }) => {
+    await sidebar.selectSection('view')
     const toggle = page.locator('#wireframe-toggle')
     await toggle.click()
     // data-state should change

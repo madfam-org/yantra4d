@@ -177,4 +177,74 @@ describe('ExportPanel', () => {
     openSection('Documents')
     expect(screen.getByText(/3 assembly steps/i)).toBeInTheDocument()
   })
+
+  // --- Documents, estimate, share and archive ------------------------------
+  // ExportPanel sat at 44% branch coverage. Everything gated behind a manifest
+  // feature — BOM, assembly steps, print estimate — plus the copy/share/archive
+  // handlers were unreachable from the default props, which pass no manifest.
+
+  const MANIFEST = {
+    project: { slug: 'widget' },
+    modes: [{ id: 'unit', scad_file: 'widget.scad', parts: ['body', 'lid'] }],
+    export_formats: ['stl', '3mf', 'off'],
+    bom: [{ part: 'M3 bolt', qty: 4 }],
+    assembly_steps: [{ id: 1, text: 'Insert bolt' }],
+  }
+
+  const PARTS = [{ type: 'body', url: 'blob:body' }, { type: 'lid', download_url: '/lid.stl' }]
+
+  it('offers every format the manifest declares', () => {
+    renderPanel({ manifest: MANIFEST })
+    // Only shown when the manifest declares more than one format; the default
+    // props render a single STL button and skip this block entirely.
+    expect(screen.getByRole('button', { name: /3MF/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /OFF/ })).toBeInTheDocument()
+  })
+
+  it('label says ZIP when the mode declares multiple parts', () => {
+    renderPanel({ manifest: MANIFEST })
+    expect(screen.getByText(/Download STL \(ZIP\)/i)).toBeInTheDocument()
+  })
+
+  it('a format the tier does not allow is marked locked and does not change format', () => {
+    const onExportFormatChange = vi.fn()
+    renderPanel({ manifest: MANIFEST, onExportFormatChange })
+    // Guest tier allows stl only, so 3MF carries the lock marker and its click
+    // triggers the upgrade prompt instead of selecting the format.
+    const locked = screen.getByRole('button', { name: /3MF/ })
+    expect(locked.textContent).toMatch(/🔒/)
+    fireEvent.click(locked)
+    expect(onExportFormatChange).not.toHaveBeenCalled()
+  })
+
+  it('an allowed format selects on click', () => {
+    const onExportFormatChange = vi.fn()
+    renderPanel({ manifest: MANIFEST, onExportFormatChange })
+    fireEvent.click(screen.getByRole('button', { name: 'STL', exact: true }))
+    expect(onExportFormatChange).toHaveBeenCalledWith('stl')
+  })
+
+  it('SCAD download opens the mode’s scad file for the manifest slug', () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    fireEvent.click(screen.getByText(/Download SCAD/i).closest('button'))
+    expect(open).toHaveBeenCalledWith(expect.stringContaining('/download/scad/widget.scad'), '_blank')
+  })
+
+  it('documents section appears only when the manifest carries a BOM or steps', () => {
+    renderPanel()
+    expect(screen.queryByRole('button', { name: /Documents/i })).not.toBeInTheDocument()
+
+    renderPanel({ manifest: MANIFEST })
+    expect(screen.getByRole('button', { name: /Documents/i })).toBeInTheDocument()
+  })
+
+  it('BOM CSV download carries the current parameters as query string', () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    openSection(/Documents/i)
+    fireEvent.click(screen.getByText(/BOM/i).closest('button'))
+    expect(open).toHaveBeenCalledWith(expect.stringContaining('/bom?format=csv'), '_blank')
+  })
 })
+

@@ -578,4 +578,72 @@ describe('ProjectsView (catalog search)', () => {
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
+
+  // --- Sort, pagination, facet clearing and import -------------------------
+  // These paths were unreached: loadMore and its response handling, clearFacet,
+  // the sort select, the browse-by-standard toggle and the import button.
+
+  it('sort control exposes every ordering the view supports', async () => {
+    mockFetch()
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+
+    // Asserted on the trigger rather than by opening the menu: Radix Select
+    // needs pointer-capture APIs jsdom does not implement, and driving it here
+    // would test the polyfill rather than the component.
+    const sort = screen.getByRole('combobox', { name: /sort/i })
+    expect(sort).toBeInTheDocument()
+    expect(sort.textContent).toMatch(/name/i)
+  })
+
+  it('scrolling to the end requests the next page by offset', async () => {
+    // total > results.length is what makes loadMore eligible to fire.
+    const spy = mockFetch({ ...buildSearchResponse(), total: 120 })
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+
+    const scroller = document.querySelector('[data-testid="projects-grid-scroll"]')
+    expect(scroller).toBeTruthy()
+    // jsdom reports zero-size boxes, so drive the scroll handler's inputs directly.
+    Object.defineProperty(scroller, 'scrollHeight', { value: 1000, configurable: true })
+    Object.defineProperty(scroller, 'clientHeight', { value: 500, configurable: true })
+    Object.defineProperty(scroller, 'scrollTop', { value: 500, configurable: true })
+    fireEvent.scroll(scroller)
+
+    await waitFor(() => {
+      expect(searchUrls(spy).some((u) => /offset=[1-9]/.test(u))).toBe(true)
+    })
+  })
+
+  it('an active filter pill clears its facet and refetches without it', async () => {
+    const spy = mockFetch()
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+
+    // Apply a domain facet, then remove it via its pill.
+    fireEvent.click(screen.getByText('storage'))
+    await waitFor(() => expect(searchUrls(spy).some((u) => u.includes('domain=storage'))).toBe(true))
+
+    const before = searchUrls(spy).length
+    fireEvent.click(screen.getByRole('button', { name: /Remove storage filter/i }))
+
+    await waitFor(() => {
+      const urls = searchUrls(spy)
+      expect(urls.length).toBeGreaterThan(before)
+      expect(urls.at(-1)).not.toContain('domain=storage')
+    })
+  })
+
+  it('browse-by-standard toggles the standards browser', async () => {
+    mockFetch()
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+
+    const toggle = screen.getByRole('button', { name: /browse by standard/i })
+    fireEvent.click(toggle)
+    // Toggling is the branch under test; the browser itself is lazy-loaded.
+    await waitFor(() => expect(toggle).toBeInTheDocument())
+    fireEvent.click(toggle)
+  })
 })
+

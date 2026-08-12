@@ -639,5 +639,50 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
     expect(result.current.preRenderStatus).toBe('idle')
   })
+
+  // --- Mode and preset transitions over a manifest with real parameters ----
+  // mockManifest.parameters was empty for every existing test, so the block
+  // that resets out-of-mode parameters and applies preset values on a
+  // mode/preset change was never entered. The manifest mock reads the object on
+  // each call, so a test can extend it and restore it afterwards.
+
+  const withManifest = (patch, fn) => {
+    const saved = { ...mockManifest }
+    Object.assign(mockManifest, patch)
+    try {
+      return fn()
+    } finally {
+      Object.keys(patch).forEach((k) => { delete mockManifest[k] })
+      Object.assign(mockManifest, saved)
+    }
+  }
+
+  it('a preset with no mode of its own leaves the current mode alone', () => {
+    withManifest({
+      parameters: [
+        { id: 'a', default: 0, visible_in_modes: ['default'] },
+        { id: 'b', default: 5, visible_in_modes: ['grid'] },
+      ],
+    }, () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      const before = result.current.mode
+      act(() => {
+        result.current.handleApplyPreset({ id: 'preset1', values: { a: 9 } })
+      })
+      expect(result.current.mode).toBe(before)
+    })
+  })
+
+  it('a preset that names a mode switches to it', () => {
+    withManifest({
+      parameters: [{ id: 'a', default: 0, visible_in_modes: ['default', 'grid'] }],
+    }, () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => {
+        result.current.handleApplyPreset({ id: 'preset2', mode: 'grid', values: { a: 3 } })
+      })
+      expect(result.current.mode).toBe('grid')
+    })
+  })
 })
 

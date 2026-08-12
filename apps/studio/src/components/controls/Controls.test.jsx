@@ -13,7 +13,13 @@ expect.extend(toHaveNoViolations)
 // Controls' "no parameters" empty-state branch. The dual-kernel Gridfinity fallback
 // manifest has base params with no `visible_in_modes`, so they render for every mode
 // (even unknown ones) — there is no genuinely param-less mode to select otherwise.
-const { manifestOverride } = vi.hoisted(() => ({ manifestOverride: { emptyParams: false } }))
+// `params` replaces the parameter list for the rendered mode, and `manifest`
+// shallow-patches the manifest itself. Both are needed to reach control types the
+// Gridfinity fallback manifest does not contain — component pickers, material
+// awareness, grid presets — which was most of Controls' uncovered surface.
+const { manifestOverride } = vi.hoisted(() => ({
+  manifestOverride: { emptyParams: false, params: null, manifest: null },
+}))
 
 vi.mock('../../contexts/project/ManifestProvider', async (importOriginal) => {
   const actual = await importOriginal()
@@ -21,16 +27,24 @@ vi.mock('../../contexts/project/ManifestProvider', async (importOriginal) => {
     ...actual,
     useManifest: () => {
       const real = actual.useManifest()
+      let out = real
       if (manifestOverride.emptyParams) {
-        return { ...real, getParametersForMode: () => [] }
+        out = { ...out, getParametersForMode: () => [] }
       }
-      return real
+      if (manifestOverride.params) {
+        const forced = manifestOverride.params
+        out = { ...out, getParametersForMode: () => forced }
+      }
+      if (manifestOverride.manifest) {
+        out = { ...out, manifest: { ...out.manifest, ...manifestOverride.manifest } }
+      }
+      return out
     },
   }
 })
 
 // Wrap with required providers
-function renderControls(props = {}) {
+function renderControls(props = {}, fetchRoutes = {}) {
   const defaultProps = {
     params: {
       width_units: 2, depth_units: 1, height_units: 3,
@@ -46,14 +60,28 @@ function renderControls(props = {}) {
     setColors: vi.fn(),
   }
 
-  // ManifestProvider fetches manifest on mount; mock fetch to fail so it uses fallback
-  vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
+  // ManifestProvider fetches manifest on mount; mock fetch to fail so it uses
+  // fallback. `fetchRoutes` lets a test answer specific endpoints instead —
+  // the material and component pickers each load their own catalog, and with a
+  // blanket rejection they only ever rendered their empty state.
+  vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+    const target = String(url)
+    for (const [fragment, body] of Object.entries(fetchRoutes)) {
+      if (target.includes(fragment)) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(body) })
+      }
+    }
+    return Promise.reject(new Error('no backend'))
+  })
 
   return renderWithProviders(<Controls {...defaultProps} {...props} />)
 }
 
 afterEach(() => {
   manifestOverride.emptyParams = false
+  manifestOverride.params = null
+  manifestOverride.manifest = null
+  vi.restoreAllMocks()
 })
 
 describe('Controls', () => {
@@ -299,4 +327,110 @@ describe('Controls', () => {
     expect(screen.getByText('Violation 1')).toBeInTheDocument()
     expect(screen.getByText('Violation 2')).toBeInTheDocument()
   })
+
+  // --- Widgets and handlers the Gridfinity fallback manifest never reaches ---
+  // Controls had 65 of its 95 functions uncovered. Both picker widgets were
+  // entirely unexercised, as were the three change handlers and the grid-preset
+  // block, because none of them appear in the fallback manifest.
+
+  const slider = (id, over = {}) => ({
+    id, type: 'slider', label: id, default: 1, min: 0, max: 10, step: 1, ...over,
+  })
+
+  it('grid presets render and clicking one calls onToggleGridPreset', () => {
+    const onToggleGridPreset = vi.fn()
+    manifestOverride.manifest = {
+      grid_presets: {
+        default: 'rendering',
+        rendering: { emoji: '🎨', label: { en: 'Rendering' }, values: { fn: 64 } },
+        draft: { emoji: '⚡', label: { en: 'Draft' }, values: { fn: 8 } },
+      },
+    }
+    renderControls({ mode: 'grid', params: { fn: 8 }, onToggleGridPreset })
+
+    expect(screen.getByText(/Rendering/)).toBeInTheDocument()
+    fireEvent.click(screen.getByText(/Rendering/))
+    expect(onToggleGridPreset).toHaveBeenCalled()
+  })
+
+  it('checkbox toggle commits through setParams', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [
+      { id: 'enable_magnets', type: 'checkbox', label: 'Enable Magnets', default: false },
+    ]
+    renderControls({ setParams, params: { enable_magnets: false } })
+
+    fireEvent.click(screen.getByLabelText(/Enable Magnets/i))
+    expect(setParams).toHaveBeenCalled()
+    // setParams is called with an updater; applying it must flip the flag.
+    const updater = setParams.mock.calls[0][0]
+    expect(updater({ enable_magnets: false })).toMatchObject({ enable_magnets: true })
+  })
+
+  it('editing a slider value commits the new number with history', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [slider('width_units', { label: 'Width (units)', default: 2 })]
+    renderControls({ setParams, params: { width_units: 2 } })
+
+    // SliderControl shows the value as a button whose accessible name is
+    // "<label>: <value>. Click to edit"; clicking swaps in a number input.
+    fireEvent.click(screen.getByLabelText(/Width \(units\): 2\./))
+    const input = screen.getByRole('spinbutton')
+    fireEvent.change(input, { target: { value: '7' } })
+    fireEvent.blur(input)
+
+    expect(setParams).toHaveBeenCalled()
+    const [updater, options] = setParams.mock.calls[0]
+    expect(updater({ width_units: 2 })).toMatchObject({ width_units: 7 })
+    expect(options).toMatchObject({ history: true })
+  })
+
+  it('material picker lists fetched materials and selecting one sets target_material', async () => {
+    const setParams = vi.fn()
+    manifestOverride.manifest = { hyperobject: { material_awareness: true } }
+    renderControls({ setParams }, {
+      '/api/materials': [
+        { material: { slug: 'pa12', name: 'PA12', vendor: 'EOS', am_technology: 'SLS' }, thermodynamics: null },
+      ],
+    })
+
+    expect(await screen.findByRole('option', { name: /PA12/ })).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText(/Material Target/i), { target: { value: 'pa12' } })
+
+    expect(setParams).toHaveBeenCalled()
+    const updater = setParams.mock.calls.at(-1)[0]
+    expect(updater({})).toMatchObject({ target_material: 'pa12' })
+  })
+
+  it('component picker applies a component’s parameter mappings on click', async () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [{
+      id: 'bearing', type: 'select', label: 'Bearing',
+      widget: { type: 'component-picker', catalog: 'nopscadlib/bearings' },
+    }]
+    renderControls({ setParams }, {
+      '/api/catalog/nopscadlib/bearings': {
+        components: [{ id: 'BB608', specs: { bore_diameter: 8 }, parameters: { bore: 8, od: 22 } }],
+      },
+    })
+
+    const option = await screen.findByTestId('component-option-BB608')
+    expect(option).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(option)
+
+    expect(setParams).toHaveBeenCalled()
+    expect(setParams.mock.calls.at(-1)[0]({})).toMatchObject({ bore: 8, od: 22 })
+    expect(screen.getByTestId('component-option-BB608')).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('component picker reports an empty catalog rather than rendering nothing', async () => {
+    manifestOverride.params = [{
+      id: 'bearing', type: 'select', label: 'Bearing',
+      widget: { type: 'component-picker', catalog: 'nopscadlib/bearings' },
+    }]
+    renderControls({}, { '/api/catalog/nopscadlib/bearings': { components: [] } })
+
+    expect(await screen.findByText(/No components found/)).toBeInTheDocument()
+  })
 })
+

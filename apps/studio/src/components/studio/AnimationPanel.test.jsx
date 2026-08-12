@@ -135,4 +135,118 @@ describe('AnimationPanel', () => {
             expect(screen.getByRole('region', { name: 'Animation Panel' })).toBeInTheDocument()
         })
     })
+
+    // --- Render, playback, cancel and export ---------------------------------
+    // AnimationPanel sat at 23.8% branch coverage: only the "no animations"
+    // early return was exercised. Everything below the fetch — the SSE render
+    // stream, playback, cancel and WebM export — was untested.
+
+    /** Build a Response whose body streams the given SSE events. */
+    function sseResponse(events) {
+        const encoder = new TextEncoder()
+        let i = 0
+        return {
+            ok: true,
+            status: 200,
+            json: async () => ({}),
+            body: {
+                getReader: () => ({
+                    read: async () => {
+                        if (i >= events.length) return { done: true, value: undefined }
+                        const chunk = `data: ${JSON.stringify(events[i++])}\n\n`
+                        return { done: false, value: encoder.encode(chunk) }
+                    },
+                }),
+            },
+        }
+    }
+
+    const listAnimations = () => ({ ok: true, json: async () => ({ animations: MOCK_ANIMATIONS }) })
+
+    const FRAMES = [
+        { frame_index: 0, parts: [{ url: '/f0.glb' }] },
+        { frame_index: 1, parts: [{ url: '/f1.glb' }] },
+    ]
+
+    async function renderPanelWithAnimations(props = {}) {
+        mockFetch.mockResolvedValueOnce(listAnimations())
+        const utils = render(<AnimationPanel {...defaultProps} {...props} />)
+        await screen.findByText('Grow')
+        return utils
+    }
+
+    it('lists animations from the backend with frame and duration metadata', async () => {
+        await renderPanelWithAnimations()
+        expect(screen.getByText('Grow')).toBeInTheDocument()
+        // The second entry uses a plain string label rather than a locale map.
+        expect(screen.getByText('Rotate')).toBeInTheDocument()
+        expect(screen.getByText('Animate height')).toBeInTheDocument()
+    })
+
+    it('streams a render to completion and reports progress then playback', async () => {
+        const onLoadFrame = vi.fn()
+        await renderPanelWithAnimations({ onLoadFrame })
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce(sseResponse([
+            { event: 'frame_done', progress: 50 },
+            { event: 'complete', frames: FRAMES },
+        ]))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+
+        // Frames reaching the viewport is the observable outcome of 'complete'.
+        await waitFor(() => expect(onLoadFrame).toHaveBeenCalledWith(['/f0.glb']))
+    })
+
+    it('surfaces a non-OK render response as an error', async () => {
+        await renderPanelWithAnimations()
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({ error: 'Renderer exploded' }) })
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+
+        expect(await screen.findByText(/Renderer exploded/)).toBeInTheDocument()
+    })
+
+    it('surfaces an SSE error event as an error', async () => {
+        await renderPanelWithAnimations()
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'error', error: 'frame 3 failed' }]))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+
+        expect(await screen.findByText(/frame 3 failed/)).toBeInTheDocument()
+    })
+
+    it('cancel during a render returns the panel to idle', async () => {
+        await renderPanelWithAnimations()
+        fireEvent.click(screen.getByText('Grow'))
+
+        // A render that never resolves leaves the panel in its 'rendering' state.
+        mockFetch.mockImplementationOnce(() => new Promise(() => { }))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+
+        const cancel = await screen.findByRole('button', { name: /cancel/i })
+        fireEvent.click(cancel)
+        await waitFor(() =>
+            expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument()
+        )
+    })
+
+    it('WebM export reports when there is no canvas to record', async () => {
+        const onLoadFrame = vi.fn()
+        await renderPanelWithAnimations({ onLoadFrame })
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+        await waitFor(() => expect(onLoadFrame).toHaveBeenCalled())
+
+        // jsdom renders no <canvas>, which is the branch under test: export must
+        // say so rather than throwing on a null element.
+        const exportBtn = await screen.findByRole('button', { name: /webm/i })
+        fireEvent.click(exportBtn)
+        expect(await screen.findByText(/No 3D canvas found/)).toBeInTheDocument()
+    })
 })
+

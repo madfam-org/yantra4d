@@ -38,10 +38,16 @@ test.describe('Responsive Design', () => {
     // with mode tabs and a hamburger button is shown above the viewer.
     const mobileBar = page.locator('.lg\\:hidden:visible').first()
     await expect(mobileBar).toBeVisible({ timeout: 5000 })
-    // Viewer area should be below the mobile bar.
-    // Use #main-content instead of canvas — R3F's <Canvas> requires WebGL
-    // which may not be available in CI headless Chromium at mobile DPI.
-    const viewerArea = page.locator('#main-content:visible').first()
+    // Viewer area should be below the mobile bar. Measured on the studio main
+    // view, not on a canvas — R3F's <Canvas> requires WebGL, which may not be
+    // available in CI headless Chromium at mobile DPI.
+    //
+    // This used #main-content, which worked only while that id sat on
+    // StudioMainView. It now marks the whole content region — both layout
+    // trees, so that the skip link resolves to something visible at every
+    // width — and therefore starts at the same y as the mobile bar rather than
+    // below it. data-testid is the stable handle for the viewer pane itself.
+    const viewerArea = page.locator('[data-testid="studio-main-view"]:visible').first()
     await expect(viewerArea).toBeVisible({ timeout: 10000 })
     const barBox = await mobileBar.boundingBox()
     const viewerBox = await viewerArea.boundingBox()
@@ -136,7 +142,7 @@ test.describe('Responsive Design', () => {
   test('landscape: viewer area is usable', async ({ page }) => {
     await page.setViewportSize({ width: 812, height: 375 })
     await goToStudioMobile(page)
-    const viewerArea = page.locator('#main-content:visible').first()
+    const viewerArea = page.locator('[data-testid="studio-main-view"]:visible').first()
     await expect(viewerArea).toBeVisible({ timeout: 10000 })
     const box = await viewerArea.boundingBox()
     if (box) {
@@ -159,8 +165,8 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await goToStudio(page)
     await expect(page.locator('header')).toBeVisible()
-    // Use #main-content instead of canvas — WebGL may be unavailable at mobile DPI
-    await expect(page.locator('#main-content:visible').first()).toBeVisible({ timeout: 10000 })
+    // Measured on the studio main view, not a canvas — WebGL may be unavailable at mobile DPI
+    await expect(page.locator('[data-testid="studio-main-view"]:visible').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('tablet: sidebar is visible', async ({ page }) => {

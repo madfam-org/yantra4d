@@ -36,30 +36,37 @@ export function useUndoRedo<T>(initialValue: T | (() => T)): [T, (updater: SetVa
 
   // setValue: pushes a new entry to history (normal user action)
   // options: { history: boolean } - if false, update state but skip history push
+  //
+  // The history bookkeeping deliberately happens OUTSIDE setValueRaw. It used
+  // to run inside the updater callback, which made that updater impure: React
+  // may invoke an updater more than once for a single call, and StrictMode
+  // does so on every call in development. Each edit was therefore pushed to
+  // history twice, so the first Undo moved onto the duplicate and looked like
+  // it had done nothing — a parameter change took two clicks to revert (width
+  // 30 → 100, undo → 100, undo → 30). Computing `next` from latestValueRef and
+  // handing setValueRaw a plain value keeps one call to setValue equal to one
+  // history entry, and is correct under concurrent rendering too.
   const setValue = useCallback((updater: SetValueUpdater<T>, options: SetValueOptions = {}) => {
     const { history = true } = options
 
-    setValueRaw(prevRaw => {
-      const next = typeof updater === 'function' ? (updater as (prev: T) => T)(prevRaw) : updater
+    const prev = latestValueRef.current
+    const next = typeof updater === 'function' ? (updater as (prev: T) => T)(prev) : updater
 
-      if (JSON.stringify(prevRaw) === JSON.stringify(next)) {
-        return prevRaw
-      }
+    if (JSON.stringify(prev) === JSON.stringify(next)) return
 
-      if (history) {
-        // Truncate redo history and push
-        const newHistory = historyRef.current.slice(0, indexRef.current + 1)
-        newHistory.push(next)
-        if (newHistory.length > MAX_HISTORY) newHistory.shift()
-        historyRef.current = newHistory
-        indexRef.current = newHistory.length - 1
-        setCanUndo(indexRef.current > 0)
-        setCanRedo(false)
-      }
+    if (history) {
+      // Truncate redo history and push
+      const newHistory = historyRef.current.slice(0, indexRef.current + 1)
+      newHistory.push(next)
+      if (newHistory.length > MAX_HISTORY) newHistory.shift()
+      historyRef.current = newHistory
+      indexRef.current = newHistory.length - 1
+      setCanUndo(indexRef.current > 0)
+      setCanRedo(false)
+    }
 
-      latestValueRef.current = next
-      return next
-    })
+    latestValueRef.current = next
+    setValueRaw(next)
   }, [])
 
   // undo: move back in history (no push)

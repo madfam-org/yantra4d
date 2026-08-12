@@ -7,7 +7,11 @@ export class StudioSidebarPage extends BasePage {
     this.generateButton = this.sidebar.locator('button', { hasText: /Generate|Generar/ }).first()
     this.cancelButton = this.sidebar.locator('button', { hasText: /Cancel|Cancelar/ }).first()
     this.verifyButton = this.sidebar.locator('button', { hasText: /Verification|Verificación/ }).first()
-    this.resetButton = this.sidebar.locator('button', { hasText: /Reset to Defaults|Restablecer/ }).first()
+    // Reset is an icon button — <Button size="icon" title={t("btn.reset")}>
+    // with no text node — so a hasText match could never find it and every
+    // click on it waited out the full 60s timeout. Match the title, which is
+    // also what a screen reader announces.
+    this.resetButton = this.sidebar.getByTitle(/Reset to Defaults|Restablecer/i).first()
   }
 
   /** Get mode tab trigger by mode id or label. */
@@ -42,14 +46,27 @@ export class StudioSidebarPage extends BasePage {
 
   /** Locator for the mode tablist (distinguished from section tabs by aria-label). */
   get modeTablist() {
-    // Desktop: custom ModeTabs with aria-label="Mode selection"
-    // Mobile: Radix TabsList inside the mobile bar
-    return this.sidebar.locator('[role="tablist"][aria-label="Mode selection"]').or(
-      this.page.locator('[data-testid="studio-sidebar"] [role="tablist"][aria-label="Mode selection"]')
-    ).first()
+    // The sidebar renders a mode tablist in both its desktop and mobile layout
+    // trees, so this matched two elements and `.first()` was a guess about DOM
+    // order. The mobile one does not track the desktop one's selection, so
+    // getActiveMode() read aria-selected off a stale hidden tab and returned
+    // "start" after a click that had correctly switched the mode to "grid" —
+    // which is why the sibling test asserting the URL passed at the same time.
+    // Scope to the tablist the user can actually see. The two previous branches
+    // of the .or() were the same selector written twice: `this.sidebar` IS
+    // [data-testid="studio-sidebar"].
+    return this.sidebar.locator('[role="tablist"][aria-label="Mode selection"]:visible').first()
   }
 
-  /** Click a mode tab by index (0-based) or data-value/aria-selected. */
+  /**
+   * Click a mode tab by index (0-based) or data-value/aria-selected.
+   *
+   * Each branch waits for the clicked tab to actually become selected before
+   * returning. Without that, `await selectMode('grid')` resolved as soon as the
+   * click dispatched and callers read the pre-render DOM — getActiveMode()
+   * returned "start" for a click that had correctly switched to grid, while the
+   * sibling test asserting the URL passed because the router had already moved.
+   */
   async selectMode(modeId) {
     const tablist = this.modeTablist
 
@@ -57,6 +74,7 @@ export class StudioSidebarPage extends BasePage {
     const tabByValue = tablist.locator(`[role="tab"][data-value="${modeId}"]`)
     if (await tabByValue.count() > 0) {
       await tabByValue.click()
+      await this._waitForSelected(tabByValue)
       return
     }
 
@@ -64,6 +82,7 @@ export class StudioSidebarPage extends BasePage {
     const tabByText = tablist.locator(`[role="tab"]`).filter({ hasText: new RegExp(modeId, 'i') }).first()
     if (await tabByText.count() > 0) {
       await tabByText.click()
+      await this._waitForSelected(tabByText)
       return
     }
 
@@ -74,7 +93,23 @@ export class StudioSidebarPage extends BasePage {
     const idx = modeIndex[modeId] ?? 0
     if (idx < count) {
       await tabs.nth(idx).click()
+      await this._waitForSelected(tabs.nth(idx))
     }
+  }
+
+  /**
+   * Wait for a mode tab to report itself selected.
+   *
+   * The desktop ModeTabs are plain buttons carrying aria-selected; the mobile
+   * Radix list uses data-state="active". Accept either, and don't fail the
+   * caller if neither ever appears — some callers only want the side effect
+   * (the route change), and a strict wait here would turn those into timeouts.
+   */
+  async _waitForSelected(tab) {
+    await tab
+      .and(this.page.locator('[aria-selected="true"], [data-state="active"]'))
+      .waitFor({ timeout: 5000 })
+      .catch(() => { })
   }
 
   /** Get the active mode tab's data-value or text. */

@@ -138,6 +138,10 @@ test.describe('Onboarding Wizard', () => {
     })
     await page.locator('button', { hasText: 'Analyze Files' }).click()
     await page.locator('button', { hasText: 'Edit Manifest' }).click()
+    // EditStep defaults to the structured editor; the raw JSON textarea is
+    // behind a toggle labelled "Raw JSON". These tests were written against an
+    // editor that was always raw, so `textarea` matched nothing on step 2.
+    await page.getByRole('button', { name: /Raw JSON/i }).click()
     await expect(page.locator('textarea')).toBeVisible()
   })
 
@@ -157,6 +161,10 @@ test.describe('Onboarding Wizard', () => {
     })
     await page.locator('button', { hasText: 'Analyze Files' }).click()
     await page.locator('button', { hasText: 'Edit Manifest' }).click()
+    // EditStep defaults to the structured editor; the raw JSON textarea is
+    // behind a toggle labelled "Raw JSON". These tests were written against an
+    // editor that was always raw, so `textarea` matched nothing on step 2.
+    await page.getByRole('button', { name: /Raw JSON/i }).click()
 
     const textarea = page.locator('textarea')
     await textarea.fill('{invalid json')

@@ -72,8 +72,11 @@ test.describe('Error Handling', () => {
   })
 
   test('projects fetch failure shows error state', async ({ page }) => {
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', (route) => {
+    // ProjectsView reads /api/catalog/search, not /api/admin/projects — this
+    // mock used to override an endpoint the page no longer calls, so the view
+    // loaded normally and never rendered an error.
+    await page.unroute('**/api/catalog/search**')
+    await page.route('**/api/catalog/search**', (route) => {
       route.fulfill({ status: 500, json: { error: 'Server down' } })
     })
     await goToProjects(page)
@@ -118,12 +121,21 @@ test.describe('Error Handling', () => {
     expect(crashed).toBe(0)
   })
 
-  test('backend unavailable shows warning in console', async ({ page }) => {
+  test('backend unavailable reports a server problem, not a missing project', async ({ page }) => {
     await page.route('**/api/**', (route) => route.abort('connectionrefused'))
     await page.goto('/project/test')
-    await page.waitForTimeout(3000)
-    // Should still render with fallback manifest
-    await expect(page.locator('header')).toBeVisible()
+
+    // The old assertion was `header` visible, on the premise that the app falls
+    // back to the bundled manifest. It does not: a manifest error takes over the
+    // whole screen, header included. What it used to render there was "The
+    // project 'test' doesn't exist or hasn't been deployed yet" — a claim the
+    // app cannot support when the server never answered.
+    await expect(page.getByText(/Can't Reach the Server|No se puede conectar/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/doesn't exist|no existe/i)).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Retry|Reintentar/i })).toBeVisible()
+
+    const crashed = await page.locator('[data-testid="error-boundary"], .error-boundary').count()
+    expect(crashed).toBe(0)
   })
 
   test('ErrorBoundary retry button resets error state', async ({ page }) => {

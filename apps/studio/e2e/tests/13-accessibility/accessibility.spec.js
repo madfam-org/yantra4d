@@ -149,12 +149,14 @@ test.describe('Accessibility', () => {
     expect(langAfter).not.toBe(langBefore)
   })
 
-  test('confirm dialog traps focus', async ({ page }) => {
+  test('confirm dialog traps focus', async ({ page, sidebar }) => {
     await page.route('**/api/estimate', (route) => {
       route.fulfill({ json: { estimated_time: 120 } })
     })
     await goToStudio(page)
-    await page.locator('button', { hasText: 'Generate' }).click()
+    // Scoped to the sidebar: Generate renders in both layout trees, so the bare
+    // match resolved to 2 elements and failed strict mode.
+    await sidebar.generateButton.click()
     await page.waitForTimeout(500)
     const dialog = page.locator('[role="alertdialog"]')
     if (await dialog.isVisible()) {

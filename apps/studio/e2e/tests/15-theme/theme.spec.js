@@ -99,13 +99,13 @@ test.describe('Theme System', () => {
     await setTheme(page, 'dark')
     await goToStudio(page)
     // Canvas background should be dark (#09090b)
-    await expect(page.locator('canvas')).toBeVisible()
+    await expect(page.locator('canvas:visible').first()).toBeVisible()
   })
 
   test('light theme changes canvas background', async ({ page }) => {
     await setTheme(page, 'light')
     await goToStudio(page)
-    await expect(page.locator('canvas')).toBeVisible()
+    await expect(page.locator('canvas:visible').first()).toBeVisible()
   })
 
   test('theme affects card backgrounds', async ({ page }) => {

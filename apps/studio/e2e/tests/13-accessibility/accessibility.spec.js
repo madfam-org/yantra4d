@@ -100,7 +100,8 @@ test.describe('Accessibility', () => {
 
   test('console has role="log" and aria-live', async ({ page }) => {
     await goToStudio(page)
-    const console_ = page.locator('[role="log"]')
+    // StudioMainView renders a desktop and a mobile console, both role="log".
+    const console_ = page.locator('[role="log"]:visible')
     await expect(console_).toHaveAttribute('aria-live', 'polite')
     await expect(console_).toHaveAttribute('aria-label', 'Render console')
   })

@@ -63,9 +63,18 @@ test.describe('WASM Fallback Mode', () => {
         await goToStudio(page)
         await page.waitForTimeout(3000) // Allow WASM worker init to settle
 
-        // Filter out known non-critical warnings (e.g. ResizeObserver loop limit)
+        // Filter out known non-critical warnings (e.g. ResizeObserver loop limit).
+        //
+        // "Error creating WebGL context." is environmental, not the app: headless
+        // Firefox on the CI runners has no GPU and no software fallback, so the
+        // viewer's canvas cannot get a context and Three.js throws once per
+        // attempt (6 in a run). Chromium and WebKit pass this test unchanged, so
+        // this is the runner, not WASM initialisation. Everything else stays
+        // strict — the point of the test is app errors during WASM init.
         const critical = errors.filter(
-            (msg) => !msg.includes('ResizeObserver') && !msg.includes('Non-Error promise rejection')
+            (msg) => !msg.includes('ResizeObserver')
+                && !msg.includes('Non-Error promise rejection')
+                && !msg.includes('Error creating WebGL context')
         )
         expect(critical).toHaveLength(0)
     })

@@ -199,7 +199,12 @@ test.describe('Responsive Design', () => {
         const overlapX = Math.max(0, Math.min(b1.x + b1.width, b2.x + b2.width) - Math.max(b1.x, b2.x))
         const overlapY = Math.max(0, Math.min(b1.y + b1.height, b2.y + b2.height) - Math.max(b1.y, b2.y))
         const intersection = overlapX * overlapY
-        expect(intersection).toBe(0)
+        // Compared against a threshold, not exact zero. Firefox reports
+        // fractional bounding boxes where Chromium rounds, so adjacent buttons
+        // that merely touch produced an intersection of 0.00067 square pixels —
+        // 0.026px on a side — and failed `toBe(0)`. Anything under a square
+        // pixel is measurement noise, not two controls overlapping.
+        expect(intersection).toBeLessThan(1)
       }
     }
   })

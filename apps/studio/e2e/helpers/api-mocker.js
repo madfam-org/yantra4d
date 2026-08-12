@@ -138,8 +138,20 @@ export async function mockAllAPIs(page) {
   })
 
   await page.route('**/api/projects/*/manifest', (route) => {
-    console.log('MOCK: Intercepted GET manifest', route.request().url())
-    route.fulfill({ json: MOCK_MANIFEST })
+    const url = route.request().url()
+    console.log('MOCK: Intercepted GET manifest', url)
+    // Echo the requested slug back. ProjectProvider computes
+    //   manifestStale = manifestSlug && projectSlug && manifestSlug !== projectSlug
+    // and holds SplashScreen up for as long as that is true — correctly, since
+    // showing one project's UI against another's manifest would be a bug. But
+    // this mock answered every slug with project.slug === 'test', so any
+    // goToStudio(page, <anything but 'test'>) sat on the splash forever, never
+    // rendered <header>, and failed in waitForAppReady 15s later. That is what
+    // took out all of 20-digital-twin, which loads a material-aware project.
+    const slug = new URL(url).pathname.split('/').at(-2)
+    route.fulfill({
+      json: { ...MOCK_MANIFEST, project: { ...MOCK_MANIFEST.project, slug } },
+    })
   })
 
   await page.route('**/api/manifest', (route) => {

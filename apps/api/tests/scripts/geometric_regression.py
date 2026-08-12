@@ -15,6 +15,7 @@ from config import Config
 from manifest import get_manifest
 from services.engine.cadquery_engine import build_cadquery_command
 from services.engine.cadquery_engine import run_render as run_cq_render
+from services.engine.mesh_integrity import assess
 from services.engine.openscad import build_openscad_command
 from services.engine.openscad import run_render as run_scad_render
 
@@ -147,12 +148,21 @@ def geometric_regression(project_slug: str, mode_id: str = "0", rtol: float = 0.
 
         # Watertightness is part of the Commons promise, so assert it where we
         # claim verification rather than merely logging it.
+        #
+        # Judged via mesh_integrity.assess rather than trimesh.is_watertight
+        # directly: STL stores every triangle with its own vertices, so a closed
+        # solid loads as loose triangle soup and only seals once coincident
+        # vertices are merged. Reading the raw flag reports valid geometry as
+        # holed. assess() merges at a tolerance scaled to the model first, and
+        # reports boundary-edge counts when a mesh really is open.
         for label, mesh in (("CSG", mesh_csg), ("B-Rep", mesh_brep)):
-            watertight = getattr(mesh, "is_watertight", False)
-            logger.info(f"{label} watertight: {watertight}")
-            if not watertight and verified:
+            integrity = assess(mesh)
+            logger.info(f"{label} {integrity.summary}")
+            for note in integrity.notes:
+                logger.info(f"  {label}: {note}")
+            if not integrity.watertight and verified:
                 logger.error(f"❌ {label} mesh for verified-parity project "
-                             f"'{project_slug}' is not watertight.")
+                             f"'{project_slug}' is not watertight: {integrity.summary}")
                 return False
 
         # Check volume

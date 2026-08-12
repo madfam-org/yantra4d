@@ -55,14 +55,14 @@ function mockFetchResolving(body, ok = true, status = 200) {
 describe('AnalyticsDashboard', () => {
     beforeEach(() => {
         sessionStorage.clear()
-        global.fetch = mockFetchResolving(FULL)
+        globalThis.fetch = mockFetchResolving(FULL)
     })
     afterEach(() => {
         vi.restoreAllMocks()
     })
 
     it('shows a loading state before the request settles', () => {
-        global.fetch = vi.fn(() => new Promise(() => {}))
+        globalThis.fetch = vi.fn(() => new Promise(() => {}))
         render(<AnalyticsDashboard />)
         expect(screen.getByText('Loading analytics...')).toBeInTheDocument()
     })
@@ -70,7 +70,7 @@ describe('AnalyticsDashboard', () => {
     it('requests a 30 day window', async () => {
         render(<AnalyticsDashboard />)
         await screen.findByText('Last 30 days')
-        expect(global.fetch).toHaveBeenCalledWith(
+        expect(globalThis.fetch).toHaveBeenCalledWith(
             '/api/admin/analytics/global?days=30',
             expect.any(Object),
         )
@@ -80,7 +80,7 @@ describe('AnalyticsDashboard', () => {
         sessionStorage.setItem('janua_access_token', 'tok-xyz')
         render(<AnalyticsDashboard />)
         await screen.findByText('Last 30 days')
-        expect(global.fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+        expect(globalThis.fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
             headers: expect.objectContaining({ Authorization: 'Bearer tok-xyz' }),
         }))
     })
@@ -88,7 +88,7 @@ describe('AnalyticsDashboard', () => {
     it('omits the Authorization header when no token is stored', async () => {
         render(<AnalyticsDashboard />)
         await screen.findByText('Last 30 days')
-        expect(global.fetch.mock.calls[0][1].headers).not.toHaveProperty('Authorization')
+        expect(globalThis.fetch.mock.calls[0][1].headers).not.toHaveProperty('Authorization')
     })
 
     it('renders metric cards with thousands separators', async () => {
@@ -123,7 +123,7 @@ describe('AnalyticsDashboard', () => {
     })
 
     it('shows an empty state when nothing was recorded', async () => {
-        global.fetch = mockFetchResolving(EMPTY)
+        globalThis.fetch = mockFetchResolving(EMPTY)
         render(<AnalyticsDashboard />)
         expect(await screen.findByText('No analytics events recorded in the last 7 days.')).toBeInTheDocument()
         expect(screen.queryByText('Top Projects by Renders')).not.toBeInTheDocument()
@@ -132,7 +132,7 @@ describe('AnalyticsDashboard', () => {
     })
 
     it('survives a zero-count day without dividing by zero', async () => {
-        global.fetch = mockFetchResolving({
+        globalThis.fetch = mockFetchResolving({
             ...EMPTY,
             daily_renders: [{ date: '2026-08-10', count: 0 }],
         })
@@ -142,17 +142,17 @@ describe('AnalyticsDashboard', () => {
     })
 
     it('surfaces an HTTP error and retries on demand', async () => {
-        global.fetch = mockFetchResolving(null, false, 403)
+        globalThis.fetch = mockFetchResolving(null, false, 403)
         render(<AnalyticsDashboard />)
         expect(await screen.findByText(/Failed to load analytics: HTTP 403/)).toBeInTheDocument()
 
-        global.fetch = mockFetchResolving(FULL)
+        globalThis.fetch = mockFetchResolving(FULL)
         fireEvent.click(screen.getByText('Retry'))
         expect(await screen.findByText('Last 30 days')).toBeInTheDocument()
     })
 
     it('surfaces a network rejection', async () => {
-        global.fetch = vi.fn(() => Promise.reject(new Error('DNS failure')))
+        globalThis.fetch = vi.fn(() => Promise.reject(new Error('DNS failure')))
         render(<AnalyticsDashboard />)
         expect(await screen.findByText(/Failed to load analytics: DNS failure/)).toBeInTheDocument()
     })
@@ -161,11 +161,11 @@ describe('AnalyticsDashboard', () => {
         render(<AnalyticsDashboard />)
         await screen.findByText('Last 30 days')
         fireEvent.click(screen.getByTitle('Refresh'))
-        await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2))
+        await waitFor(() => expect(globalThis.fetch).toHaveBeenCalledTimes(2))
     })
 
     it('renders nothing when the payload is null', async () => {
-        global.fetch = mockFetchResolving(null)
+        globalThis.fetch = mockFetchResolving(null)
         const { container } = render(<AnalyticsDashboard />)
         await waitFor(() => expect(screen.queryByText('Loading analytics...')).not.toBeInTheDocument())
         expect(container).toBeEmptyDOMElement()

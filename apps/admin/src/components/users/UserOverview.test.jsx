@@ -34,14 +34,14 @@ function mockFetchResolving(body, ok = true, status = 200) {
 describe('UserOverview', () => {
     beforeEach(() => {
         sessionStorage.clear()
-        global.fetch = mockFetchResolving(TIERS_OBJECT)
+        globalThis.fetch = mockFetchResolving(TIERS_OBJECT)
     })
     afterEach(() => {
         vi.restoreAllMocks()
     })
 
     it('shows a loading state before the request settles', () => {
-        global.fetch = vi.fn(() => new Promise(() => {}))
+        globalThis.fetch = vi.fn(() => new Promise(() => {}))
         render(<UserOverview />)
         expect(screen.getByText('Loading tier definitions...')).toBeInTheDocument()
     })
@@ -57,7 +57,7 @@ describe('UserOverview', () => {
         sessionStorage.setItem('janua_access_token', 'tok-123')
         render(<UserOverview />)
         await screen.findByText('guest')
-        expect(global.fetch).toHaveBeenCalledWith('/api/tiers', expect.objectContaining({
+        expect(globalThis.fetch).toHaveBeenCalledWith('/api/tiers', expect.objectContaining({
             headers: expect.objectContaining({ Authorization: 'Bearer tok-123' }),
         }))
     })
@@ -65,7 +65,7 @@ describe('UserOverview', () => {
     it('omits the Authorization header when no token is stored', async () => {
         render(<UserOverview />)
         await screen.findByText('guest')
-        const { headers } = global.fetch.mock.calls[0][1]
+        const { headers } = globalThis.fetch.mock.calls[0][1]
         expect(headers).not.toHaveProperty('Authorization')
     })
 
@@ -88,7 +88,7 @@ describe('UserOverview', () => {
     })
 
     it('accepts an array payload as well as an object', async () => {
-        global.fetch = mockFetchResolving([
+        globalThis.fetch = mockFetchResolving([
             { name: 'basic', max_projects: 3, ai_requests_per_hour: 10 },
         ])
         render(<UserOverview />)
@@ -97,17 +97,17 @@ describe('UserOverview', () => {
     })
 
     it('surfaces an HTTP error and retries on demand', async () => {
-        global.fetch = mockFetchResolving(null, false, 503)
+        globalThis.fetch = mockFetchResolving(null, false, 503)
         render(<UserOverview />)
         expect(await screen.findByText(/Failed to load tiers: HTTP 503/)).toBeInTheDocument()
 
-        global.fetch = mockFetchResolving(TIERS_OBJECT)
+        globalThis.fetch = mockFetchResolving(TIERS_OBJECT)
         fireEvent.click(screen.getByText('Retry'))
         expect(await screen.findByText('guest')).toBeInTheDocument()
     })
 
     it('surfaces a network rejection', async () => {
-        global.fetch = vi.fn(() => Promise.reject(new Error('offline')))
+        globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')))
         render(<UserOverview />)
         expect(await screen.findByText(/Failed to load tiers: offline/)).toBeInTheDocument()
     })
@@ -116,18 +116,18 @@ describe('UserOverview', () => {
         render(<UserOverview />)
         await screen.findByText('guest')
         fireEvent.click(screen.getByTitle('Refresh'))
-        await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2))
+        await waitFor(() => expect(globalThis.fetch).toHaveBeenCalledTimes(2))
     })
 
     it('renders nothing when the payload is null', async () => {
-        global.fetch = mockFetchResolving(null)
+        globalThis.fetch = mockFetchResolving(null)
         const { container } = render(<UserOverview />)
         await waitFor(() => expect(screen.queryByText('Loading tier definitions...')).not.toBeInTheDocument())
         expect(container).toBeEmptyDOMElement()
     })
 
     it('falls back to a neutral colour for an unknown tier key', async () => {
-        global.fetch = mockFetchResolving({ enterprise: { max_projects: 9 } })
+        globalThis.fetch = mockFetchResolving({ enterprise: { max_projects: 9 } })
         render(<UserOverview />)
         const badge = await screen.findByText('enterprise')
         expect(badge.className).toContain('text-zinc-500')

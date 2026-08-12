@@ -34,20 +34,29 @@ async function toggleToOtherLanguage(page) {
 }
 
 test.describe('Internationalization (i18n)', () => {
-  test('default language renders all UI in Spanish', async ({ page }) => {
+  // Both of these go through the sidebar page object rather than raw text
+  // locators. Two reasons, one per failure they used to produce:
+  //   - "Generate" matched 2 elements (the sidebar renders its controls in both
+  //     the desktop and mobile layout trees) and failed strict mode.
+  //   - Reset is an icon button — <Button size="icon" title={t("btn.reset")}>
+  //     with no text node — so text=Restablecer Valores found nothing at all.
+  // The page object already scopes to the sidebar and matches Reset by title.
+  test('default language renders all UI in Spanish', async ({ page, sidebar }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
-    await expect(page.locator('text=Generar')).toBeVisible()
-    await expect(page.locator('text=Ejecutar Verificación')).toBeVisible()
-    await expect(page.locator('text=Restablecer Valores')).toBeVisible()
+    await expect(sidebar.generateButton).toBeVisible()
+    await expect(sidebar.generateButton).toHaveText(/Generar/)
+    await expect(sidebar.verifyButton).toHaveText(/Verificación/)
+    await expect(sidebar.resetButton).toBeVisible()
   })
 
-  test('English UI renders all buttons', async ({ page }) => {
+  test('English UI renders all buttons', async ({ page, sidebar }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
-    await expect(page.locator('text=Generate')).toBeVisible()
-    await expect(page.locator('text=Run Verification Suite')).toBeVisible()
-    await expect(page.locator('text=Reset to Defaults')).toBeVisible()
+    await expect(sidebar.generateButton).toBeVisible()
+    await expect(sidebar.generateButton).toHaveText(/Generate/)
+    await expect(sidebar.verifyButton).toHaveText(/Verification/)
+    await expect(sidebar.resetButton).toBeVisible()
   })
 
   test('toggling language updates all header text', async ({ page }) => {
@@ -117,18 +126,24 @@ test.describe('Internationalization (i18n)', () => {
     await expect(globe).toBeVisible()
   })
 
-  test('console "Ready" message translates', async ({ page }) => {
+  test('console "Ready" message translates', async ({ page, viewer }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
-    const logs = await page.locator('[role="log"]').textContent()
+    // StudioMainView renders a render console in each of the desktop and mobile
+    // layout trees, both carrying role="log", so a bare [role="log"] resolved to
+    // two elements and failed strict mode. viewer.console is scoped to :visible.
+    const logs = await viewer.getConsoleLogs()
     expect(logs).toContain('Listo')
   })
 
   test('viewer button labels translate', async ({ page }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
-    // Camera view buttons — check any Spanish button is present
-    const hasSpanish = await page.locator('button', { hasText: /Isométric|Superior|Frontal|Derech/ }).first().isVisible({ timeout: 3000 }).catch(() => false)
+    // Camera view buttons — check any Spanish button is present. Scoped to
+    // :visible for the same duplication reason; without it .first() resolved to
+    // the hidden mobile copy, isVisible() came back false, and the test fell
+    // through to an export-panel assertion that only holds on the export tab.
+    const hasSpanish = await page.locator('button:visible', { hasText: /Isométric|Superior|Frontal|Derech/ }).first().isVisible({ timeout: 3000 }).catch(() => false)
     // If camera buttons use icons instead of text, just verify Spanish export text
     if (!hasSpanish) {
       await expect(page.locator('text=Exportar Imágenes')).toBeVisible()

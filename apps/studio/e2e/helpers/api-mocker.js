@@ -3,7 +3,7 @@
  * Playwright route interception helpers for mocking backend API responses.
  */
 
-const MOCK_MANIFEST = {
+const MOCK_MANIFEST_RAW = {
   project: { name: 'Test Project', slug: 'test', version: '1.0.0', description: 'Test project' },
   modes: [
     { id: 'cup', label: 'Start', label_es: 'Inicio', scad_file: 'test.scad', parts: ['body'] },
@@ -46,6 +46,42 @@ const MOCK_MANIFEST = {
   ],
   estimate_constants: { base_time: 5, time_per_mm3: 0.001 },
 }
+
+/**
+ * Convert the `label` / `label_es` sibling pairs above into the `{ en, es }`
+ * objects the app actually reads.
+ *
+ * ManifestProvider.getLabel is:
+ *
+ *   if (typeof obj[key] === "string") return obj[key]
+ *   return obj[key][lang] || obj[key]["en"] || ""
+ *
+ * so a flat string label comes back verbatim in every locale, and `label_es` is
+ * read by nothing at all — `grep -r label_es src/` returns zero hits, while the
+ * real manifests use `label: { en, es }` (see config/fallback-manifest.json).
+ * The mock therefore rendered English mode tabs, presets and camera buttons in
+ * Spanish, which is what "viewer button labels translate" was reporting: the
+ * fixture was wrong, not the app.
+ *
+ * Kept as a transform rather than rewriting the literal so the fixture above
+ * stays readable as a flat table.
+ */
+function withI18nLabels(node) {
+  if (Array.isArray(node)) return node.map(withI18nLabels)
+  if (node && typeof node === 'object') {
+    const out = {}
+    for (const [key, value] of Object.entries(node)) {
+      if (key.endsWith('_es')) continue // folded into its base key below
+      const esKey = `${key}_es`
+      if (typeof value === 'string' && esKey in node) out[key] = { en: value, es: node[esKey] }
+      else out[key] = withI18nLabels(value)
+    }
+    return out
+  }
+  return node
+}
+
+const MOCK_MANIFEST = withI18nLabels(MOCK_MANIFEST_RAW)
 
 const MOCK_PROJECTS = [
   { slug: 'test', name: 'Test Project', version: '1.0.0', description: 'A test', mode_count: 2, parameter_count: 4, scad_file_count: 1, has_manifest: true, has_exports: false },

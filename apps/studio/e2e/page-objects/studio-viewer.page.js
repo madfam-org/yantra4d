@@ -5,7 +5,13 @@ export class StudioViewerPage extends BasePage {
     super(page)
     this.viewerContainer = page.locator('.flex-1.relative.flex.flex-col')
     this.canvas = page.locator('canvas').first()
-    this.console = page.locator('[role="log"]')
+    // StudioMainView renders two render consoles — one in the desktop layout,
+    // one in the mobile layout behind consoleExpanded — and both carry
+    // role="log". Matching bare [role="log"] resolved to both and failed strict
+    // mode on every console assertion. Scope to whichever the user can actually
+    // see; if both were ever visible at once that is an app bug, and strict mode
+    // will still say so rather than quietly picking one.
+    this.console = page.locator('[role="log"]:visible')
     this.loadingOverlay = page.locator('text=Rendering..., text=Renderizando...')
     this.progressBar = page.locator('.bg-primary.transition-all')
     this.progressText = page.locator('.text-muted-foreground', { hasText: '%' })

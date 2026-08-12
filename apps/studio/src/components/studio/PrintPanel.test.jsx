@@ -149,4 +149,76 @@ describe('PrintPanel', () => {
             expect(container.innerHTML).toBe('')
         })
     })
+
+    // --- Status, temperature, job progress and dispatch ----------------------
+    // Only the empty-printer-list and happy-path render were covered. The
+    // temperature gauges, active job, dispatch handler and every non-OK
+    // response path were not.
+
+    const withPrinters = (status = MOCK_STATUS) => {
+        mockFetch
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ printers: MOCK_PRINTERS }) })
+            .mockResolvedValue({ ok: true, json: async () => status })
+    }
+
+    const panel = async () => {
+        render(<PrintPanel {...defaultProps} />)
+        return screen.findByRole('region', { name: 'Print Panel' })
+    }
+
+    it('renders nothing when the printer list request fails', async () => {
+        mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({}) })
+        const { container } = render(<PrintPanel {...defaultProps} />)
+        await waitFor(() => expect(container.innerHTML).toBe(''))
+    })
+
+    it('renders nothing when the printer list request throws', async () => {
+        mockFetch.mockRejectedValueOnce(new Error('offline'))
+        const { container } = render(<PrintPanel {...defaultProps} />)
+        await waitFor(() => expect(container.innerHTML).toBe(''))
+    })
+
+    it('shows the reported printer state', async () => {
+        withPrinters()
+        await panel()
+        expect(await screen.findByText(/Operational/)).toBeInTheDocument()
+    })
+
+    it('falls back to Unknown when the status carries no state', async () => {
+        withPrinters({ ...MOCK_STATUS, state: undefined })
+        await panel()
+        expect(await screen.findByText(/Unknown/)).toBeInTheDocument()
+    })
+
+    it('temperature gauges show a reading, and an em dash when there is none', async () => {
+        withPrinters({
+            ...MOCK_STATUS,
+            temperatures: { tool0: { actual: 210.4, target: 210 }, bed: { actual: null, target: 60 } },
+        })
+        await panel()
+        expect(await screen.findByText(/210\.4°C/)).toBeInTheDocument()
+        // A null reading must render as — rather than "null°C" or a crash.
+        expect(screen.getByText(/—/)).toBeInTheDocument()
+    })
+
+    it('an active job renders its progress', async () => {
+        withPrinters({
+            ...MOCK_STATUS,
+            state: 'Printing',
+            job: { file: 'part.gcode', progress_pct: 42 },
+        })
+        await panel()
+        expect(await screen.findByText(/42/)).toBeInTheDocument()
+    })
+
+    it('a job with no reported percentage does not break the progress bar', async () => {
+        withPrinters({
+            ...MOCK_STATUS,
+            state: 'Printing',
+            job: { file: 'part.gcode' },
+        })
+        await panel()
+        expect(await screen.findByText(/part\.gcode/)).toBeInTheDocument()
+    })
 })
+

@@ -395,4 +395,48 @@ describe('PrintEstimateOverlay', () => {
       expect(timeRow.textContent).toMatch(/\d+m/)
     })
   })
+
+  // --- Inline layout, currency and time formatting -------------------------
+  // The overlay renders a second, inline layout used by the studio's estimate
+  // strip; none of it was covered, nor the currency toggle or the hours branch
+  // of the time row.
+
+  const box = { width: 40, depth: 40, height: 40 }
+
+  it('inline layout renders its own labelled controls', () => {
+    renderWithProviders(
+      <PrintEstimateOverlay volumeMm3={50000} boundingBox={box} inline />
+    )
+    // The inline layout uses -inline control ids so it can coexist with the
+    // floating one without duplicating DOM ids.
+    expect(document.querySelector('#pe-material-inline')).toBeTruthy()
+    expect(document.querySelector('#pe-pattern-inline')).toBeTruthy()
+    expect(document.querySelector('#pe-nozzle-inline')).toBeTruthy()
+  })
+
+  it('changing material in the inline layout keeps the estimate rendered', () => {
+    renderWithProviders(
+      <PrintEstimateOverlay volumeMm3={50000} boundingBox={box} inline />
+    )
+    const select = document.querySelector('#pe-material-inline')
+    const option = select.querySelectorAll('option')[1]
+    if (option) fireEvent.change(select, { target: { value: option.value } })
+    expect(screen.getByRole('status', { name: 'Print estimate' })).toBeInTheDocument()
+  })
+
+  it('a large volume reports hours as well as minutes', () => {
+    renderWithProviders(
+      <PrintEstimateOverlay volumeMm3={5_000_000} boundingBox={{ width: 200, depth: 200, height: 200 }} />
+    )
+    // hours > 0 takes the "Nh Mm" branch; small prints render minutes only.
+    expect(screen.getByText(/\d+h \d+m/)).toBeInTheDocument()
+  })
+
+  it('a small volume reports minutes only', () => {
+    renderWithProviders(
+      <PrintEstimateOverlay volumeMm3={500} boundingBox={{ width: 10, depth: 10, height: 5 }} />
+    )
+    expect(screen.queryByText(/\dh \d+m/)).not.toBeInTheDocument()
+  })
 })
+

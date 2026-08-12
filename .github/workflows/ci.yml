@@ -143,12 +143,31 @@ jobs:
         run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing --cov-fail-under=80
 
   e2e:
+    # Each desktop project runs 321 specs, and playwright.config.js pins CI to a
+    # single worker, so a full pass takes ~38 min against the old 25 min cap. The
+    # suite had never once reached the end: it was cancelled around test 212
+    # every time, so nobody knew the real pass/fail total.
+    #
+    # Sharded three ways (~107 specs, ~13 min per shard) rather than raising the
+    # worker count, which would run WebGL-heavy viewer specs concurrently on one
+    # runner and trade a known problem for a flaky one. Mobile only matches the
+    # responsive suite (28 specs, ~4 min) so it stays unsharded.
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit, mobile]
+        include:
+          - { project: chromium, shard: 1, shards: 3 }
+          - { project: chromium, shard: 2, shards: 3 }
+          - { project: chromium, shard: 3, shards: 3 }
+          - { project: firefox,  shard: 1, shards: 3 }
+          - { project: firefox,  shard: 2, shards: 3 }
+          - { project: firefox,  shard: 3, shards: 3 }
+          - { project: webkit,   shard: 1, shards: 3 }
+          - { project: webkit,   shard: 2, shards: 3 }
+          - { project: webkit,   shard: 3, shards: 3 }
+          - { project: mobile,   shard: 1, shards: 1 }
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/studio
@@ -200,20 +219,23 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ matrix.project }}-${{ hashFiles('apps/studio/package-lock.json') }}
       - run: npx playwright install --with-deps ${{ matrix.project == 'mobile' && 'chromium' || matrix.project }}
-      - run: npx playwright test --project=${{ matrix.project }}
+      # Blob reporter so the shards can be merged back into one report and one
+      # honest total; a per-shard HTML report only tells you a third of the story.
+      - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob
         env:
           CI: true
-      - uses: actions/upload-artifact@v4
+      - name: Upload blob report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-${{ matrix.project }}
-          path: apps/studio/playwright-report/
-          retention-days: 14
+          name: blob-${{ matrix.project }}-${{ matrix.shard }}
+          path: apps/studio/blob-report/
+          retention-days: 3
       - name: Upload backend log
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: backend-log-${{ matrix.project }}
+          name: backend-log-${{ matrix.project }}-${{ matrix.shard }}
           path: ${{ runner.temp }}/backend.log
           retention-days: 14
           if-no-files-found: ignore
@@ -221,10 +243,47 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: visual-regression-diffs-${{ matrix.project }}
+          name: visual-regression-diffs-${{ matrix.project }}-${{ matrix.shard }}
           path: apps/studio/test-results/**/*-diff.png
           retention-days: 14
           if-no-files-found: ignore
+
+  # Merge the shards into one report. Without this the only figures available
+  # are per-shard, and the suite's real pass/fail total stays unknown — which is
+  # how ~70 failures sat unquantified behind a job that was always cancelled.
+  # Runs even when shards fail, because a red suite is exactly when the total
+  # matters.
+  e2e-report:
+    needs: e2e
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/studio/package-lock.json
+      - run: npm ci --legacy-peer-deps
+        env:
+          NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          path: apps/studio/all-blobs
+          pattern: blob-*
+          merge-multiple: true
+      - name: Merge shard reports
+        run: npx playwright merge-reports --reporter=html,list ./all-blobs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-merged
+          path: apps/studio/playwright-report/
+          retention-days: 14
 
   test-geometric-parity:
     runs-on: ubuntu-latest

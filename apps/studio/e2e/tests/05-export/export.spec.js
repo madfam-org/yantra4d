@@ -2,13 +2,19 @@ import { test, expect } from '../../fixtures/app.fixture.js'
 import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
 
 test.describe('Export Panel', () => {
-  test.beforeEach(async ({ page }) => {
+  // ExportPanel renders inside <TabsContent value="export"> in StudioSidebar,
+  // which defaults to "config". Nothing in this file selected that tab, so the
+  // panel was never in the DOM and every assertion failed with "element(s) not
+  // found" rather than anything to do with export. The old comment on the first
+  // test — "Geometry accordion section is open by default" — described a
+  // layout that no longer exists.
+  test.beforeEach(async ({ page, sidebar }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
+    await sidebar.selectSection('export')
   })
 
   test('export panel is visible', async ({ page }) => {
-    // Geometry accordion section is open by default
     await expect(page.locator('text=Geometry')).toBeVisible()
   })
 
@@ -47,13 +53,14 @@ test.describe('Export Panel', () => {
   })
 
   // Image export buttons (inside collapsed "Images" accordion section)
-  test('image export view buttons are visible after opening Images section', async ({ page }) => {
-    // Open the Images accordion section
+  test('image export view buttons are visible after opening Images section', async ({ page, sidebar }) => {
+    // Scoped to the sidebar: the viewer carries its own Isometric/Top/Front/
+    // Right camera buttons, so an unscoped match spans both and .last() was a
+    // guess about DOM order rather than a statement about which button is meant.
     await page.getByRole('button', { name: 'Images' }).click()
-    await expect(page.locator('button', { hasText: 'Isometric' }).last()).toBeVisible()
-    await expect(page.locator('button', { hasText: 'Top' }).last()).toBeVisible()
-    await expect(page.locator('button', { hasText: 'Front' }).last()).toBeVisible()
-    await expect(page.locator('button', { hasText: 'Right' }).last()).toBeVisible()
+    for (const view of ['Isometric', 'Top', 'Front', 'Right']) {
+      await expect(sidebar.sidebar.locator('button', { hasText: view }).last()).toBeVisible()
+    }
   })
 
   test('export all views button is visible after opening Images section', async ({ page }) => {
@@ -61,7 +68,7 @@ test.describe('Export Panel', () => {
     await expect(page.locator('button', { hasText: 'Export All Views' })).toBeVisible()
   })
 
-  test('image export buttons are enabled after render produces parts', async ({ page }) => {
+  test('image export buttons are enabled after render produces parts', async ({ page, sidebar }) => {
     // Force backend rendering mode — WASM has no binary in the E2E test
     // environment, so it fails silently. By lowering hardwareConcurrency,
     // detectMode() picks 'backend' and the SSE mock produces real parts.
@@ -69,6 +76,9 @@ test.describe('Export Panel', () => {
       Object.defineProperty(navigator, 'hardwareConcurrency', { value: 2 })
     })
     await goToStudio(page)
+    // goToStudio renavigates, which resets the sidebar to its default "config"
+    // tab and takes ExportPanel back out of the DOM.
+    await sidebar.selectSection('export')
 
     // Wait for auto-render to complete (Generate button re-enables)
     const generateBtn = page.locator('button', { hasText: /Generate|Generar/i }).first()
@@ -82,14 +92,15 @@ test.describe('Export Panel', () => {
   })
 
   // Auth gate
-  test('shows "Sign in to download" when auth is required and user is unauthenticated', async ({ page }) => {
-    // If auth is enabled, download buttons show sign-in fallback
-    // This depends on auth config — verify graceful handling either way
-    const signInMsg = page.locator('text=Sign in to download')
-    // May or may not be visible depending on auth config
-    await signInMsg.isVisible().catch(() => false)
-    // Just verify the page doesn't crash
-    expect(true).toBe(true)
+  test('offers either a download control or a sign-in prompt, never neither', async ({ page }) => {
+    // Which of the two appears depends on auth config, so the test asserts the
+    // invariant that holds either way: the panel always gives the user a way
+    // forward. It previously ended in expect(true).toBe(true), which passes
+    // just as happily when the panel renders nothing at all.
+    const signIn = page.locator('text=Sign in to download')
+    const download = page.locator('button', { hasText: 'Download STL' })
+    const offered = (await signIn.count()) + (await download.count())
+    expect(offered).toBeGreaterThan(0)
   })
 
   test('format label shows "Format:" prefix', async ({ page }) => {

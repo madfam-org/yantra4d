@@ -22,6 +22,23 @@ export class StudioSidebarPage extends BasePage {
     )
   }
 
+  /**
+   * Select one of the sidebar's section tabs: config | view | analysis | export.
+   *
+   * StudioSidebar wraps its panels in <Tabs defaultValue="config">, so
+   * ExportPanel, PrintPanel and the BOM only exist in the DOM once their tab is
+   * selected. Tests that assume a panel is present on load find nothing at all.
+   */
+  async selectSection(value) {
+    const labels = { config: 'Design', view: 'View', analysis: 'BOM', export: 'Export' }
+    const tab = this.sidebar
+      .locator('[role="tablist"]:not([aria-label="Mode selection"]) [role="tab"]')
+      .filter({ hasText: new RegExp(labels[value] || value, 'i') })
+      .first()
+    await tab.click()
+    await this.page.waitForTimeout(150)
+  }
+
   /** Locator for the mode tablist (distinguished from section tabs by aria-label). */
   get modeTablist() {
     // Desktop: custom ModeTabs with aria-label="Mode selection"

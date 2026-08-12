@@ -13,11 +13,10 @@
     "gen:projects": "node ../../scripts/dev/generate-landing-projects.mjs"
   },
   "dependencies": {
-    "@astrojs/react": "^4.2.0",
-    "@astrojs/tailwind": "^6.0.0",
+    "@astrojs/react": "^6.0.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
-    "astro": "^5.7.0",
+    "astro": "^7.2.1",
     "autoprefixer": "^10.4.23",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -39,10 +38,6 @@
   "overrides": {
     "h3": "^1.15.11",
     "defu": "^6.1.7",
-    "vite": {
-      ".": "^6.4.2",
-      "picomatch": "^4.0.4"
-    },
     "flatted": "^3.4.2",
     "smol-toml": "^1.6.1",
     "postcss": "^8.5.14",

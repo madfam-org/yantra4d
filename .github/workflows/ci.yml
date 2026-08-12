@@ -23,7 +23,13 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      - run: npm audit --audit-level=high
+      # Blocking: anything that reaches a user's browser.
+      - name: Audit runtime dependencies
+        run: npm audit --audit-level=high --omit=dev
+      # Advisory: build-time tooling (vite, vitest, astro) never ships, so a CVE
+      # there must not block a deploy — but it stays visible in the log.
+      - name: Audit build tooling (advisory)
+        run: npm audit --audit-level=high || true
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test:coverage
@@ -51,7 +57,13 @@ jobs:
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
-      - run: npm audit --audit-level=high
+      # Blocking: anything that reaches a user's browser.
+      - name: Audit runtime dependencies
+        run: npm audit --audit-level=high --omit=dev
+      # Advisory: build-time tooling (astro, sharp) never ships, so a CVE there
+      # must not block a deploy — but it stays visible in the log.
+      - name: Audit build tooling (advisory)
+        run: npm audit --audit-level=high || true
       - run: npm run test:coverage
       - run: npm run build
 
@@ -71,9 +83,31 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      - run: npm audit --audit-level=high
+      # Blocking: anything that reaches a user's browser.
+      - name: Audit runtime dependencies
+        run: npm audit --audit-level=high --omit=dev --legacy-peer-deps
+      # Advisory: build-time tooling (vite, vitest) never ships, so a CVE there
+      # must not block a deploy — but it stays visible in the log.
+      - name: Audit build tooling (advisory)
+        run: npm audit --audit-level=high --legacy-peer-deps || true
       - run: npm run lint
       - run: npm run build
+      # Assert the production auth endpoint was baked into the bundle. This
+      # replaces a status probe pinned to a hashed asset filename, which 404'd
+      # after the next build and silently stopped checking anything.
+      #
+      # Deliberately a positive assertion. Grepping for absence of "localhost:"
+      # false-positives on @janua/react-sdk, which carries
+      # `apiUrl = NEXT_PUBLIC_API_URL || "http://localhost:8000"` defaults —
+      # inert here, because every call site passes apiUrl explicitly, and
+      # NEXT_PUBLIC_* is a Next.js convention this Vite app never injects.
+      - name: Assert production auth endpoint is baked in
+        run: |
+          if ! grep -rq "auth\.madfam\.io" dist/assets/ 2>/dev/null; then
+            echo "::error::Built admin bundle does not reference auth.madfam.io — VITE_JANUA_BASE_URL may be misconfigured, leaving the SDK's localhost:8000 default in play"
+            exit 1
+          fi
+          echo "Production auth endpoint present in built bundle."
       - run: npm run test:coverage
 
   backend:
@@ -109,12 +143,31 @@ jobs:
         run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing --cov-fail-under=80
 
   e2e:
+    # Each desktop project runs 321 specs, and playwright.config.js pins CI to a
+    # single worker, so a full pass takes ~38 min against the old 25 min cap. The
+    # suite had never once reached the end: it was cancelled around test 212
+    # every time, so nobody knew the real pass/fail total.
+    #
+    # Sharded three ways (~107 specs, ~13 min per shard) rather than raising the
+    # worker count, which would run WebGL-heavy viewer specs concurrently on one
+    # runner and trade a known problem for a flaky one. Mobile only matches the
+    # responsive suite (28 specs, ~4 min) so it stays unsharded.
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit, mobile]
+        include:
+          - { project: chromium, shard: 1, shards: 3 }
+          - { project: chromium, shard: 2, shards: 3 }
+          - { project: chromium, shard: 3, shards: 3 }
+          - { project: firefox,  shard: 1, shards: 3 }
+          - { project: firefox,  shard: 2, shards: 3 }
+          - { project: firefox,  shard: 3, shards: 3 }
+          - { project: webkit,   shard: 1, shards: 3 }
+          - { project: webkit,   shard: 2, shards: 3 }
+          - { project: webkit,   shard: 3, shards: 3 }
+          - { project: mobile,   shard: 1, shards: 1 }
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/studio
@@ -128,6 +181,36 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+      # The Studio proxies /api and /static to localhost:5000 (vite.config.ts).
+      # Without a backend every request proxy-errors, the specs retry until the
+      # job hits its timeout, and the whole matrix reports red for a reason that
+      # has nothing to do with the change under test.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend dependencies
+        working-directory: apps/api
+        run: |
+          sudo apt-get update && sudo apt-get install -y openscad
+          pip install -r requirements.txt
+      - name: Start backend
+        working-directory: apps/api
+        env:
+          PORT: "5000"
+          FLASK_DEBUG: "false"
+          AUTH_ENABLED: "false"
+          PROJECTS_DIR: ${{ github.workspace }}/projects
+        run: |
+          python app.py > "$RUNNER_TEMP/backend.log" 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:5000/api/health > /dev/null 2>&1; then
+              echo "backend up after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::backend did not become healthy within 60s"
+          cat "$RUNNER_TEMP/backend.log"
+          exit 1
       - name: Build studio
         run: npm run build
       - name: Cache Playwright browsers
@@ -136,23 +219,74 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ matrix.project }}-${{ hashFiles('apps/studio/package-lock.json') }}
       - run: npx playwright install --with-deps ${{ matrix.project == 'mobile' && 'chromium' || matrix.project }}
-      - run: npx playwright test --project=${{ matrix.project }}
+      # Blob so the shards can be merged back into one report and one honest
+      # total; a per-shard HTML report only tells you a third of the story. list
+      # alongside it because blob alone writes nothing to stdout — the first cut
+      # of this left each shard's log silent about which specs ran, which makes
+      # triaging one shard harder than before sharding existed.
+      - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob,list
         env:
           CI: true
-      - uses: actions/upload-artifact@v4
+      - name: Upload blob report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-${{ matrix.project }}
-          path: apps/studio/playwright-report/
+          name: blob-${{ matrix.project }}-${{ matrix.shard }}
+          path: apps/studio/blob-report/
+          retention-days: 3
+      - name: Upload backend log
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: backend-log-${{ matrix.project }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/backend.log
           retention-days: 14
+          if-no-files-found: ignore
       - name: Upload visual regression diffs
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: visual-regression-diffs-${{ matrix.project }}
+          name: visual-regression-diffs-${{ matrix.project }}-${{ matrix.shard }}
           path: apps/studio/test-results/**/*-diff.png
           retention-days: 14
           if-no-files-found: ignore
+
+  # Merge the shards into one report. Without this the only figures available
+  # are per-shard, and the suite's real pass/fail total stays unknown — which is
+  # how ~70 failures sat unquantified behind a job that was always cancelled.
+  # Runs even when shards fail, because a red suite is exactly when the total
+  # matters.
+  e2e-report:
+    needs: e2e
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/studio/package-lock.json
+      - run: npm ci --legacy-peer-deps
+        env:
+          NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          path: apps/studio/all-blobs
+          pattern: blob-*
+          merge-multiple: true
+      - name: Merge shard reports
+        run: npx playwright merge-reports --reporter=html,list ./all-blobs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-merged
+          path: apps/studio/playwright-report/
+          retention-days: 14
 
   test-geometric-parity:
     runs-on: ubuntu-latest
@@ -182,24 +316,9 @@ jobs:
           submodules: recursive
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - name: Check manifest sync
-        run: |
-          # Fallback manifest = source minus force_backend (stripped for offline/WASM mode)
-          python3 -c "
-          import json, sys
-          src = json.load(open('projects/gridfinity/project.json'))
-          dst = json.load(open('apps/studio/src/config/fallback-manifest.json'))
-          # Strip force_backend from source for comparison (fallback intentionally omits it)
-          if 'project' in src and 'force_backend' in src['project']:
-              del src['project']['force_backend']
-          if src != dst:
-              print('ERROR: fallback-manifest.json is out of sync with projects/gridfinity/project.json')
-              print('Expected (source minus force_backend):')
-              print(json.dumps(src, indent=2)[:500])
-              print('Got (fallback):')
-              print(json.dumps(dst, indent=2)[:500])
-              sys.exit(1)
-          print('Manifest sync OK')
-          "
+        run: python3 scripts/qa/sync_fallback_manifest.py --check
+      - name: Check commons catalog is current
+        run: python3 scripts/qa/generate_commons_catalog.py --check
 
   manifest-validation:
     runs-on: ubuntu-latest
@@ -229,6 +348,11 @@ jobs:
           python-version: "3.12"
       - name: Run metadata consistency audit
         run: python3 scripts/qa/compliance_audit.py --strict
+      # Blocking. Every cartridge must declare the licence it actually ships,
+      # client-private work must stay out of the published catalogue, and an
+      # upstream copyleft fork must not be relabelled as CERN-OHL-W.
+      - name: Audit cartridge licensing
+        run: python3 scripts/qa/check_licenses.py --strict-all
 
   openapi-validation:
     runs-on: ubuntu-latest

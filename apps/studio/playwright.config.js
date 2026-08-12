@@ -65,7 +65,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? 'npm run build && npx vite preview --port 5173' : 'cd ../.. && ./scripts/dev.sh',
+    // In CI the backend is started by the workflow before Playwright runs; here
+    // we only need the static preview. Locally dev.sh brings up backend+studio.
+    command: process.env.CI ? 'npm run build && npx vite preview --port 5173' : 'cd ../.. && ./scripts/dev/dev.sh',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,

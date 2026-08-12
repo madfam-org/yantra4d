@@ -49,6 +49,9 @@ spec:
               value: "redis://yantra4d-redis:6379/0"
             - name: RATE_LIMIT_STORAGE
               value: "redis://yantra4d-redis:6379/1"
+            # Must equal the render-output emptyDir sizeLimit below (2Gi).
+            - name: RENDER_VOLUME_LIMIT_BYTES
+              value: "2147483648"
             - name: CORS_ORIGINS
               value: "https://app.yantra4d.com,https://yantra4d.com,https://admin.yantra4d.com"
             - name: AUTH_ENABLED
@@ -155,6 +158,9 @@ spec:
               value: "redis://yantra4d-redis:6379/1"
             - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
               value: "60"
+            # Must equal the render-output emptyDir sizeLimit below (2Gi).
+            - name: RENDER_VOLUME_LIMIT_BYTES
+              value: "2147483648"
           readinessProbe:
             exec:
               command:
@@ -183,7 +189,12 @@ spec:
             sizeLimit: 256Mi
         - name: render-output
           emptyDir:
-            sizeLimit: 512Mi
+            # Keep RENDER_VOLUME_LIMIT_BYTES on both containers in sync with this.
+            # The in-process GC reclaims at 75% of that value; if the two drift,
+            # the kubelet evicts the pod before the GC ever runs.
+            # Raised from 512Mi, which evicted the pod twice (2026-08-01 17:55 and
+            # 2026-08-04 18:00 America/Mexico_City) under bulk-render load.
+            sizeLimit: 2Gi
         - name: analytics-data
-          emptyDir:
-            sizeLimit: 128Mi
+          persistentVolumeClaim:
+            claimName: yantra4d-analytics

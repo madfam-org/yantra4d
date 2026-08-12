@@ -915,3 +915,136 @@ describe('renderParts (wasm mode)', () => {
     await expect(renderService.renderParts('unit', {}, manifest, {})).rejects.toThrow('render failed')
   })
 })
+
+describe('canRunWasm', () => {
+  // The WASM circuit breaker decides whether a cartridge may render in the
+  // browser at all. Kernels with no WASM build must never be offered it.
+  it('allows OpenSCAD cartridges', () => {
+    expect(renderService.canRunWasm({ engine: 'openscad' })).toBe(true)
+  })
+
+  it('allows a cartridge that declares no engine', () => {
+    expect(renderService.canRunWasm({})).toBe(true)
+  })
+
+  it('refuses CadQuery, which has no browser build', () => {
+    expect(renderService.canRunWasm({ engine: 'cadquery' })).toBe(false)
+  })
+
+  it('refuses the implicit SDF engine', () => {
+    expect(renderService.canRunWasm({ engine: 'implicit' })).toBe(false)
+  })
+
+  it('treats a null manifest as permitted rather than throwing', () => {
+    expect(renderService.canRunWasm(null)).toBe(true)
+  })
+})
+
+describe('backend to WASM fallback', () => {
+  // A backend failure should fall back to browser rendering only when that is
+  // both possible and appropriate. Getting this wrong either strands the user
+  // on a dead backend, or silently offers WASM to a cartridge that has no
+  // browser build. The backend must be *available* for this path to run at
+  // all, so backendDetection is stubbed rather than inferred from fetch.
+  const scadManifest = {
+    ...manifest,
+    engine: 'openscad',
+    modes: [{ id: 'unit', parts: ['main'], scad_file: 'main.scad', estimate: { base_units: 1 } }],
+  }
+
+  async function loadWithBackendUp() {
+    vi.resetModules()
+    vi.doMock('../core/backendDetection', () => ({
+      isBackendAvailable: vi.fn(async () => true),
+      // Must be non-empty: detectMode only routes to the backend when an API
+      // base is configured, so an empty string sends every render to WASM and
+      // the fallback path under test is never entered.
+      getApiBase: vi.fn(() => 'http://localhost:5000'),
+      resetDetection: vi.fn(),
+    }))
+    vi.stubGlobal('navigator', { hardwareConcurrency: 16, deviceMemory: 16 })
+
+    class MockWorker {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
+        } else if (msg.type === 'render') {
+          setTimeout(() => this.listeners['message']?.({
+            data: { type: 'result', stl: new Uint8Array([1, 2, 3]).buffer },
+          }), 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorker)
+    URL.createObjectURL = vi.fn(() => 'blob:abc')
+
+    return import('./renderService')
+  }
+
+  afterEach(() => { vi.doUnmock('../core/backendDetection') })
+
+  it('falls back to WASM and names rate limiting as the reason', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 429 rate limited'))
+    const logs = []
+    await svc.renderParts('unit', {}, scadManifest, {
+      onProgress: (p) => p.log && logs.push(p.log),
+    })
+    expect(logs.some(l => l.includes('Server limit reached'))).toBe(true)
+  })
+
+  it('falls back to WASM and names the unavailable worker', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(
+      new Error('Render worker unavailable or not healthy'))
+    const logs = []
+    await svc.renderParts('unit', {}, scadManifest, {
+      onProgress: (p) => p.log && logs.push(p.log),
+    })
+    expect(logs.some(l => l.includes('Render worker unavailable'))).toBe(true)
+  })
+
+  it('falls back on a network failure', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'))
+    const logs = []
+    await svc.renderParts('unit', {}, scadManifest, {
+      onProgress: (p) => p.log && logs.push(p.log),
+    })
+    expect(logs.some(l => l.includes('Backend unavailable'))).toBe(true)
+  })
+
+  it('does not fall back for a force_backend cartridge, and explains why', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 429 rate limited'))
+    const logs = []
+    await expect(
+      svc.renderParts('unit', {}, { ...scadManifest, project: { force_backend: true } }, {
+        onProgress: (p) => p.log && logs.push(p.log),
+      }),
+    ).rejects.toThrow(/429/)
+    expect(logs.some(l => l.includes('requires server rendering'))).toBe(true)
+  })
+
+  it('explains a worker outage on a force_backend cartridge', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('render_worker_unavailable'))
+    const logs = []
+    await expect(
+      svc.renderParts('unit', {}, { ...scadManifest, force_backend: true }, {
+        onProgress: (p) => p.log && logs.push(p.log),
+      }),
+    ).rejects.toThrow(/render_worker_unavailable/)
+    expect(logs.some(l => l.includes('render service recovers'))).toBe(true)
+  })
+
+  it('re-throws a backend error that WASM could not have fixed', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 500 internal error'))
+    await expect(svc.renderParts('unit', {}, scadManifest, {})).rejects.toThrow(/500/)
+  })
+})

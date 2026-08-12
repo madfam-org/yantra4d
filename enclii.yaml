@@ -19,8 +19,11 @@ spec:
         description: 3D design studio
       - name: Yantra4D Admin
         url: https://admin.yantra4d.com
-        probeUrl: https://admin.yantra4d.com/assets/index-ZhuLUOX-.js
-        assertNotContains: 'localhost:'
+        # Do not pin a hashed asset here: the filename changes on every build,
+        # so the probe 404s and `assertNotContains` then passes vacuously
+        # against an error page. The bundle is checked for leaked localhost
+        # URLs at build time instead (see the admin job in ci.yml).
+        probeUrl: https://admin.yantra4d.com/
         group: Yantra4D
         family: Digital Fabrication
         description: Print operations console

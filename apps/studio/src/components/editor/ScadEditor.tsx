@@ -17,6 +17,7 @@ import { FileCode, Plus, X, Loader2, Sparkles } from 'lucide-react'
 
 const AiChatPanel = lazy(() => import('../ai/AiChatPanel'))
 import { useTheme } from '../../contexts/system/ThemeProvider'
+import GraphIssues from './GraphIssues'
 import { listFiles, readFile, createFile, deleteFile } from '../../services/domain/editorService'
 import { registerScadLanguage, SCAD_LANGUAGE_ID } from '../../lib/scad-language'
 import { useEditorRender } from '../../hooks/editor/useEditorRender'
@@ -173,6 +174,9 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
   }, [slug, closeTab])
 
   const activeContent = openTabs.find(t => t.path === activeTab)?.content || ''
+  // Graph documents are JSON, not OpenSCAD — highlight them as such and run the
+  // transpiler's validation rules against the buffer as the author types.
+  const isGraphFile = (activeTab ?? '').endsWith('.graph.json')
 
   // Build file contents map for AI code editor
   const getFileContents = useCallback(() => {
@@ -297,7 +301,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
       <div className="flex-1 min-h-[200px]">
         {activeTab ? (
           <Editor
-            language={SCAD_LANGUAGE_ID}
+            language={isGraphFile ? 'json' : SCAD_LANGUAGE_ID}
             value={activeContent}
             onChange={handleContentChange}
             onMount={handleEditorMount}
@@ -318,6 +322,8 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
           </div>
         )}
       </div>
+
+      {activeTab && isGraphFile && <GraphIssues content={activeContent} />}
 
       {/* AI Code Editor panel */}
       {aiOpen && (

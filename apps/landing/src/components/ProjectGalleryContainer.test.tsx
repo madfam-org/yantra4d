@@ -1,5 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import modelManifest from '../../public/models/manifest.json'
+
+const MODELLED = new Set(modelManifest.models.map((m) => m.slug))
 
 // Mock child components to avoid Three.js/R3F in jsdom. The carousel mock also
 // surfaces the state setters the container passes down, so the filter branches
@@ -8,6 +11,7 @@ vi.mock('./ProjectCarousel3D', () => ({
   default: ({ projects, activeCategory, searchQuery, carouselNote,
               setSearchQuery, setActiveCategory, setActiveDomain }: any) => (
     <div data-testid="carousel" data-count={projects.length} data-category={activeCategory}
+         data-slugs={projects.map((p: any) => p.slug).join(",")}
          data-search={searchQuery} data-note={carouselNote ?? ''}>
       Carousel
       <button data-testid="set-search" onClick={() => setSearchQuery('gridfinity')} />
@@ -21,7 +25,8 @@ vi.mock('./ProjectCarousel3D', () => ({
 }))
 vi.mock('./ProjectGalleryGrid', () => ({
   default: ({ projects, activeCategory }: any) => (
-    <div data-testid="grid" data-count={projects.length} data-category={activeCategory}>
+    <div data-testid="grid" data-count={projects.length} data-category={activeCategory}
+         data-slugs={projects.map((p: any) => p.slug).join(",")}>
       Grid
     </div>
   ),
@@ -109,6 +114,24 @@ describe('ProjectGalleryContainer', () => {
     const after = count('carousel') + count('grid')
     expect(after).toBeGreaterThan(0)
     expect(after).toBeLessThan(before)
+  })
+
+  it('fills the 3D carousel with projects that actually have geometry', () => {
+    // The carousel took the first 24 hyperobjects in list order, none of which
+    // had a pre-rendered GLB, so the page's flagship visual showed 24 identical
+    // gray wireframe cubes. Every slot it can fill with real geometry, it must.
+    render(<ProjectGalleryContainer />)
+    const slugs = screen.getByTestId('carousel').getAttribute('data-slugs')!.split(',')
+    const withModels = slugs.filter((s) => MODELLED.has(s))
+    expect(slugs.length).toBeGreaterThan(0)
+    expect(withModels.length).toBe(Math.min(slugs.length, MODELLED.size))
+  })
+
+  it('never shows the same project in both the carousel and the grid', () => {
+    render(<ProjectGalleryContainer />)
+    const carousel = screen.getByTestId('carousel').getAttribute('data-slugs')!.split(',')
+    const grid = new Set(screen.getByTestId('grid').getAttribute('data-slugs')!.split(','))
+    expect(carousel.filter((s) => grid.has(s))).toEqual([])
   })
 
   it('filters by domain', () => {

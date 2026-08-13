@@ -16,12 +16,12 @@
     "titleLine1": "Your Designs.",
     "titleLine2": "Their Dimensions.",
     "subtitle": "Makers: customize any parameter and export your perfect STL. Creators: turn your OpenSCAD models into configurators anyone can use.",
-    "ctaPrimary": "Browse 21 Projects",
+    "ctaPrimary": "Browse the Commons",
     "ctaSecondary": "Onboard Your Design"
   },
   "gallery": {
     "heading": "Project Gallery",
-    "subtitle": "21 ready-to-customize parametric designs. Open any one in Studio and make it yours.",
+    "subtitle": "Open, parametric hardware you can resize, remix and manufacture — every cartridge free, forever. Open one in Studio and make it yours.",
     "categories": {
       "all": "All",
       "commons": "🔷 Commons",
@@ -48,11 +48,11 @@
     },
     "estimate": {
       "title": "Know Before You Print",
-      "desc": "Time, filament, and cost estimates before you waste a gram."
+      "desc": "Time, filament and cost estimates before you waste a gram — approximations, not slicer-exact."
     },
     "export": {
       "title": "Export Your Way",
-      "desc": "STL, 3MF, or OFF. One click. Ready for your slicer."
+      "desc": "STL for the slicer, STEP for real CAD. 317 cartridges export B-Rep solids you can open in Fusion, SolidWorks or FreeCAD."
     },
     "assembly": {
       "title": "Assembly Made Clear",
@@ -65,10 +65,10 @@
   },
   "forCreators": {
     "heading": "Built for Creators",
-    "subtitle": "Your designs deserve an audience beyond coders. Turn .scad files into shareable configurators.",
+    "subtitle": "Your designs deserve an audience beyond coders. Turn OpenSCAD or CadQuery models into shareable configurators.",
     "upload": {
       "title": "Upload and Done",
-      "desc": "Drop .scad files. Yantra4D auto-generates a configurator with params, modes, and presets."
+      "desc": "Drop in .scad or CadQuery Python. Yantra4D reads the parameters and generates a configurator."
     },
     "share": {
       "title": "Share With Anyone",
@@ -79,8 +79,8 @@
       "desc": "Params, presets, assembly steps, BOM, modes — one JSON manifest."
     },
     "multiProject": {
-      "title": "Host Unlimited Projects",
-      "desc": "Multi-project dashboard. Every design gets its own configurator."
+      "title": "Host Your Whole Catalog",
+      "desc": "Five projects free with an account, unlimited on Pro. Each gets its own URL."
     },
     "openSource": {
       "title": "Open Source Forever",
@@ -128,10 +128,12 @@
   "openSourceSection": {
     "heading": "Free. Open Source. Forever.",
     "description": "Self-host, contribute, build on top — own your configurators.",
-    "statProjects": "21 Projects",
-    "statLicense": "AGPLv3",
+    "statProjects": "Open Cartridges",
+    "statLicense": "CERN-OHL-W",
     "cta": "View on GitHub",
-    "techNote": "Built with OpenSCAD, React, Three.js, Flask, and WebAssembly."
+    "techNote": "Platform AGPLv3, designs CERN-OHL-W. Built with CadQuery, OpenSCAD, React, Three.js, Flask and WebAssembly.",
+    "statStandards": "Standards",
+    "statLicensedSuffix": "designs"
   },
   "pricing": {
     "heading": "Pricing",
@@ -342,7 +344,7 @@
       "forkTitle": "Fork & Adapt",
       "forkDesc": "Derivative works are encouraged, not restricted.",
       "copyleftTitle": "Copyleft Licensed",
-      "copyleftDesc": "Protected by AGPLv3 to ensure freedom forever.",
+      "copyleftDesc": "Designs carry CERN-OHL-W, a strong-reciprocal hardware licence: improve one and the improvement stays open. The platform itself is AGPLv3.",
       "globalTitle": "Global Standards",
       "globalDesc": "Language agnostic, metric-first, universally compatible.",
       "joinTitle": "Join the Movement",
@@ -351,7 +353,7 @@
     }
   },
   "heroNew": {
-    "badge": "v0.1.0 Public Beta",
+    "badge": "Open Commons · Public Beta",
     "journeyBtn": "Begin Your Journey",
     "studioBtn": "Launch Studio"
   },

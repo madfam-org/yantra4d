@@ -16,12 +16,12 @@
     "titleLine1": "Tus Diseños.",
     "titleLine2": "Sus Dimensiones.",
     "subtitle": "Makers: personaliza cualquier parámetro y exporta tu STL perfecto. Creadores: convierte tus modelos OpenSCAD en configuradores que cualquiera puede usar.",
-    "ctaPrimary": "Explorar 21 Proyectos",
+    "ctaPrimary": "Explorar el Commons",
     "ctaSecondary": "Sube Tu Diseño"
   },
   "gallery": {
     "heading": "Galería de Proyectos",
-    "subtitle": "21 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.",
+    "subtitle": "Hardware abierto y paramétrico que puedes redimensionar, remezclar y fabricar — cada cartucho libre, para siempre. Abre uno en Studio y hazlo tuyo.",
     "categories": {
       "all": "Todos",
       "commons": "🔷 Commons",
@@ -48,11 +48,11 @@
     },
     "estimate": {
       "title": "Anticípate a la Impresión",
-      "desc": "Tiempo, filamento y costo estimados antes de gastar un gramo."
+      "desc": "Estimaciones de tiempo, filamento y costo antes de desperdiciar un gramo — aproximaciones, no exactitud de laminador."
     },
     "export": {
       "title": "Exporta a Tu Manera",
-      "desc": "STL, 3MF u OFF. Un clic. Listo para tu slicer."
+      "desc": "STL para el laminador, STEP para CAD real. 317 cartuchos exportan sólidos B-Rep que abres en Fusion, SolidWorks o FreeCAD."
     },
     "assembly": {
       "title": "Ensamblaje Claro",
@@ -65,10 +65,10 @@
   },
   "forCreators": {
     "heading": "Hecho para Creadores",
-    "subtitle": "Tus diseños merecen una audiencia más allá de los programadores. Convierte archivos .scad en configuradores compartibles.",
+    "subtitle": "Tus diseños merecen público más allá de quienes programan. Convierte modelos OpenSCAD o CadQuery en configuradores.",
     "upload": {
       "title": "Sube y Listo",
-      "desc": "Arrastra archivos .scad. Yantra4D auto-genera un configurador con parámetros, modos y preajustes."
+      "desc": "Sube .scad o Python de CadQuery. Yantra4D lee los parámetros y genera un configurador."
     },
     "share": {
       "title": "Comparte con Cualquiera",
@@ -79,8 +79,8 @@
       "desc": "Parámetros, preajustes, pasos de ensamblaje, BOM, modos — un solo manifiesto JSON."
     },
     "multiProject": {
-      "title": "Proyectos Ilimitados",
-      "desc": "Panel multi-proyecto. Cada diseño tiene su propio configurador."
+      "title": "Aloja Todo Tu Catálogo",
+      "desc": "Cinco proyectos gratis con cuenta, ilimitados en Pro. Cada uno con su propia URL."
     },
     "openSource": {
       "title": "Código Abierto para Siempre",
@@ -128,10 +128,12 @@
   "openSourceSection": {
     "heading": "Gratis. Código Abierto. Para Siempre.",
     "description": "Auto-aloja, contribuye, construye encima — tus configuradores son tuyos.",
-    "statProjects": "21 Proyectos",
-    "statLicense": "AGPLv3",
+    "statProjects": "Cartuchos Abiertos",
+    "statLicense": "CERN-OHL-W",
     "cta": "Ver en GitHub",
-    "techNote": "Construido con OpenSCAD, React, Three.js, Flask y WebAssembly."
+    "techNote": "Plataforma AGPLv3, diseños CERN-OHL-W. Construido con CadQuery, OpenSCAD, React, Three.js, Flask y WebAssembly.",
+    "statStandards": "Estándares",
+    "statLicensedSuffix": "diseños"
   },
   "pricing": {
     "heading": "Precios",
@@ -342,7 +344,7 @@
       "forkTitle": "Fork y Adaptar",
       "forkDesc": "Las obras derivadas son fomentadas, no restringidas.",
       "copyleftTitle": "Licencia Copyleft",
-      "copyleftDesc": "Protegido por AGPLv3 para asegurar libertad por siempre.",
+      "copyleftDesc": "Los diseños llevan CERN-OHL-W, una licencia de hardware con reciprocidad fuerte: si mejoras uno, la mejora sigue abierta. La plataforma es AGPLv3.",
       "globalTitle": "Estándares Globales",
       "globalDesc": "Agnóstico al idioma, sistema métrico, universalmente compatible.",
       "joinTitle": "Únete al Movimiento",
@@ -351,7 +353,7 @@
     }
   },
   "heroNew": {
-    "badge": "v0.1.0 Beta Pública",
+    "badge": "Commons Abierto · Beta Pública",
     "journeyBtn": "Comienza Tu Viaje",
     "studioBtn": "Abrir Studio"
   },

@@ -314,9 +314,22 @@ describe('OpenSource.astro', () => {
   })
 
   it('shows stats badges', () => {
-    expect(html).toMatch(/21 Proyectos|statProjects/)
-    expect(html).toMatch(/AGPLv3|statLicense/)
+    expect(html).toMatch(/statProjects/)
+    expect(html).toMatch(/statLicense/)
     expect(html).toContain('GitHub')
+  })
+
+  it('renders its figures from bound values, never from literal copy', () => {
+    // The badges once advertised "21 Projects" against a commons of 326. The
+    // numbers must be bound from generated stats so they cannot go stale.
+    expect(html).toMatch(/\{cartridges\}/)
+    expect(html).toMatch(/\{standards\}/)
+    expect(html).not.toMatch(/\b21 (Proyectos|Projects)\b/)
+  })
+
+  it('does not credit the designs to the platform licence', () => {
+    // Cartridges are CERN-OHL-W; AGPLv3 covers the platform code only.
+    expect(html).not.toMatch(/>AGPLv3</)
   })
 
   it('has GitHub link', () => {

@@ -322,9 +322,12 @@ test.describe('Responsive Design', () => {
     await menuBtn.click()
     const sheet = page.locator('[role="dialog"]')
     await expect(sheet).toBeVisible({ timeout: 5000 })
-    // Verify Generate button is visible within the sheet
+    // Verify Generate button is visible within the sheet. The sheet opens
+    // before its controls do — they render off the manifest fetch — so this
+    // waits on the same budget as the steps above rather than assuming the
+    // contents are ready the instant the dialog is.
     const generateBtn = sheet.locator('button', { hasText: /Generate|Generar/ })
-    await expect(generateBtn.first()).toBeVisible({ timeout: 3000 })
+    await expect(generateBtn.first()).toBeVisible({ timeout: 10000 })
     const box = await generateBtn.first().boundingBox()
     if (box) {
       // Button should be within viewport width

@@ -205,6 +205,7 @@ jobs:
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
             VITE_JANUA_CLIENT_ID=${{ secrets.JANUA_CLIENT_ID }}
             VITE_JANUA_REDIRECT_URI=https://app.yantra4d.com
+            VITE_DHANAM_CHECKOUT_URL=https://app.dhan.am/checkout
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
       - name: Install cosign

@@ -17,6 +17,11 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
     }),
 }))
 
+// Mock auth — the dialog reads user.id for the checkout URL.
+vi.mock('../../contexts/auth/AuthProvider', () => ({
+    useAuth: () => ({ user: { id: 'user-42' } }),
+}))
+
 // Mock shadcn AlertDialog components
 vi.mock('../ui/alert-dialog', () => ({
     AlertDialog: ({ children, open }) => open ? <div data-testid="alert-dialog">{children}</div> : null,
@@ -66,10 +71,39 @@ describe('UpgradeDialog', () => {
         expect(onClose).toHaveBeenCalled()
     })
 
-    it('has an upgrade link to pricing page', () => {
+    it('the Upgrade CTA is the checkout link, not the old pricing anchor', () => {
         render(<UpgradeDialog {...defaultProps} />)
         const link = screen.getByText('Upgrade to Pro')
-        expect(link.closest('a')).toHaveAttribute('href', 'https://yantra4d.com/#pricing')
-        expect(link.closest('a')).toHaveAttribute('target', '_blank')
+        // Repurposed from the pre-billing behavior this file used to pin: the
+        // primary CTA now goes to checkout; the pricing page is the secondary.
+        expect(link.closest('a').getAttribute('href')).toContain('/checkout')
+    })
+
+    it('primary CTA links to Dhanam checkout with the user and a return URL', () => {
+        render(<UpgradeDialog {...defaultProps} />)
+        const link = screen.getByTestId('upgrade-checkout-link')
+        const href = link.getAttribute('href')
+        // The dead-end this guards: the CTA used to point at a #pricing anchor
+        // that did not exist, and the real checkout builder had no callers.
+        expect(href).toContain('/checkout')
+        expect(href).toContain('plan=yantra4d_pro')
+        expect(href).toContain('product=yantra4d')
+        expect(href).toContain('user_id=user-42')
+        expect(href).toContain('return_url=')
+    })
+
+    it('shows the plan price and closes on checkout click', () => {
+        const onClose = vi.fn()
+        render(<UpgradeDialog {...defaultProps} onClose={onClose} />)
+        expect(screen.getByText(/from \$9\/mo|tier\.pro_price/)).toBeInTheDocument()
+        fireEvent.click(screen.getByTestId('upgrade-checkout-link'))
+        expect(onClose).toHaveBeenCalled()
+    })
+
+    it('keeps a secondary link to the public pricing page', () => {
+        render(<UpgradeDialog {...defaultProps} />)
+        const links = [...document.querySelectorAll('a')].map(a => a.getAttribute('href'))
+        expect(links).toContain('https://yantra4d.com/#pricing')
     })
 })
+

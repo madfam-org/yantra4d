@@ -133,6 +133,38 @@
     "cta": "Ver en GitHub",
     "techNote": "Construido con OpenSCAD, React, Three.js, Flask y WebAssembly."
   },
+  "pricing": {
+    "heading": "Precios",
+    "subheading": "El acervo común es gratis para siempre. Los planes de pago financian los servidores que lo renderizan, verifican y fabrican.",
+    "free": {
+      "name": "Explorador",
+      "price": "Gratis",
+      "f1": "Explora los 324 cartuchos abiertos",
+      "f2": "Renderizado en el navegador y exportación STL",
+      "f3": "10 renders en servidor por hora",
+      "cta": "Abrir el estudio"
+    },
+    "essentials": {
+      "name": "Essentials",
+      "price": "Gratis con cuenta",
+      "f1": "30 renders en servidor por hora",
+      "f2": "Exportación 3MF y OBJ",
+      "f3": "Configurador con IA",
+      "cta": "Crear cuenta"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "desde $9/mes",
+      "badge": "Recomendado",
+      "f1": "150 renders en servidor por hora",
+      "f2": "Todos los formatos de exportación, incluido STEP",
+      "f3": "Motor CadQuery, importación de GitHub y editor de código",
+      "f4": "Envío a impresora y cotizaciones de manufactura",
+      "cta": "Mejorar a Pro"
+    },
+    "whitelabel": "¿Necesitas un estudio con tu marca y un catálogo privado para tu equipo o clientes? Licencias white-label disponibles con",
+    "whitelabelCta": "Innovaciones MADFAM"
+  },
   "hyperCommons": {
     "heading": "Los Comunes Paramétricos",
     "subtitle": "Un solo archivo .scad no define un objeto — define todos los objetos posibles dentro de su espacio de parámetros. Los llamamos Hiperobjetos 4D Acotados, y están construyendo un nuevo tipo de infraestructura abierta.",

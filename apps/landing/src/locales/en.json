@@ -133,6 +133,38 @@
     "cta": "View on GitHub",
     "techNote": "Built with OpenSCAD, React, Three.js, Flask, and WebAssembly."
   },
+  "pricing": {
+    "heading": "Pricing",
+    "subheading": "The commons is free forever. Paid tiers fund the servers that render, verify, and manufacture it.",
+    "free": {
+      "name": "Explorer",
+      "price": "Free",
+      "f1": "Browse all 324 open cartridges",
+      "f2": "In-browser rendering + STL export",
+      "f3": "10 server renders per hour",
+      "cta": "Open the studio"
+    },
+    "essentials": {
+      "name": "Essentials",
+      "price": "Free with an account",
+      "f1": "30 server renders per hour",
+      "f2": "3MF and OBJ exports",
+      "f3": "AI configurator",
+      "cta": "Create an account"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "from $9/mo",
+      "badge": "Recommended",
+      "f1": "150 server renders per hour",
+      "f2": "All export formats, including STEP",
+      "f3": "CadQuery engine, GitHub import & code editor",
+      "f4": "Print dispatch & manufacturing quotes",
+      "cta": "Upgrade to Pro"
+    },
+    "whitelabel": "Need a branded studio with a private catalog for your team or clients? White-label licensing is available from",
+    "whitelabelCta": "Innovaciones MADFAM"
+  },
   "hyperCommons": {
     "heading": "The Parametric Commons",
     "subtitle": "A single .scad file doesn't define one object — it defines every possible object within its parameter space. We call these Bounded 4D Hyperobjects, and they're building a new kind of open infrastructure.",

@@ -55,4 +55,24 @@ describe('i18n', () => {
       expect(getLangFromUrl(new URL('https://yantra4d.com/fr/'))).toBe('es')
     })
   })
+
+  describe('pricing section strings', () => {
+    // The #pricing anchor is the destination of every upsell CTA in the
+    // studio; its copy must exist in both locales and state the tier facts.
+    it('exists in both locales with matching keys', () => {
+      const en = getTranslations('en') as Record<string, unknown>
+      const es = getTranslations('es') as Record<string, unknown>
+      expect(en.pricing).toBeDefined()
+      expect(es.pricing).toBeDefined()
+      expect(Object.keys(en.pricing as object).sort()).toEqual(
+        Object.keys(es.pricing as object).sort()
+      )
+    })
+
+    it('pro pricing carries the product price copy', () => {
+      const en = getTranslations('en') as { pricing: { pro: { price: string } } }
+      expect(en.pricing.pro.price).toContain('$9')
+    })
+  })
 })
+

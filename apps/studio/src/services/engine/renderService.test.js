@@ -461,6 +461,25 @@ describe('renderParts (SSE event types)', () => {
     expect(body.export_format).toBe('step')
   })
 
+  it('applies glb export_format for graph engine', async () => {
+    const graphManifest = { ...manifest, engine: 'graph' }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Graph is backend-only (transpiles to CadQuery server-side) — detectMode short-circuits
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.glb"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', {}, graphManifest, {})
+
+    const renderCall = fetchMock.mock.calls[0]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.export_format).toBe('glb')
+  })
+
   it('uses backend when manifest.force_backend is true', async () => {
     const forcedManifest = { ...manifest, force_backend: true }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
@@ -628,6 +647,21 @@ describe('detectMode WASM fallback on backend unavailability', () => {
 
     await expect(
       renderService.renderParts('unit', {}, cqManifest, {})
+    ).rejects.toThrow('Render request failed (HTTP 502)')
+  })
+
+  it('still uses backend for graph engine even when backend is down', async () => {
+    const graphManifest = { ...manifest, engine: 'graph' }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Graph skips health check like CadQuery — no WASM path exists
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      text: () => Promise.resolve('Bad Gateway')
+    })
+
+    await expect(
+      renderService.renderParts('unit', {}, graphManifest, {})
     ).rejects.toThrow('Render request failed (HTTP 502)')
   })
 })
@@ -828,6 +862,19 @@ describe('renderParts network error WASM fallback', () => {
       renderService.renderParts('unit', {}, cqManifest, {})
     ).rejects.toThrow('Failed to fetch')
   })
+
+  it('does NOT fallback for graph engine even on network error', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+    const graphManifest = { ...manifest, engine: 'graph' }
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Graph skips health check and must never fall back to WASM
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+
+    await expect(
+      renderService.renderParts('unit', {}, graphManifest, {})
+    ).rejects.toThrow('Failed to fetch')
+  })
 })
 
 describe('renderParts (wasm mode)', () => {
@@ -933,6 +980,7 @@ describe('canRunWasm', () => {
 
   it('refuses the implicit SDF engine', () => {
     expect(renderService.canRunWasm({ engine: 'implicit' })).toBe(false)
+    expect(renderService.canRunWasm({ engine: 'graph' })).toBe(false)
   })
 
   it('treats a null manifest as permitted rather than throwing', () => {
@@ -1138,6 +1186,7 @@ describe('backend to WASM fallback', () => {
     // down a WASM path that cannot produce their geometry.
     expect(renderService.canRunWasm({ engine: 'cadquery' })).toBe(false)
     expect(renderService.canRunWasm({ engine: 'implicit' })).toBe(false)
+    expect(renderService.canRunWasm({ engine: 'graph' })).toBe(false)
   })
 
   it('a manifest with no declared engine is treated as WASM-capable', () => {

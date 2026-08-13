@@ -94,8 +94,8 @@ function hasWasmCapabilities(): boolean {
  * so the app can fall back to WASM when the backend is unreachable.
  */
 async function detectMode(manifest: Manifest | null, mode: string, params: Record<string, unknown>): Promise<'backend' | 'wasm'> {
-  // CadQuery engine has no WASM path — always backend
-  if (manifest && manifest.engine === 'cadquery') {
+  // Backend-only engines have no WASM path — always backend
+  if (manifest && BACKEND_ONLY_ENGINES.has(manifest.engine ?? '')) {
     return 'backend'
   }
 
@@ -139,10 +139,17 @@ async function detectMode(manifest: Manifest | null, mode: string, params: Recor
 }
 
 /**
+ * Engines the browser cannot run: CadQuery and graph documents execute
+ * server-side kernels (graph transpiles to CadQuery). Implicit is additionally
+ * excluded from WASM in canRunWasm but keeps its own detectMode behavior.
+ */
+const BACKEND_ONLY_ENGINES = new Set(['cadquery', 'graph'])
+
+/**
  * Check whether the current manifest supports client-side WASM rendering.
  */
 export function canRunWasm(manifest: Manifest | null): boolean {
-  return manifest?.engine !== 'cadquery' && manifest?.engine !== 'implicit'
+  return !BACKEND_ONLY_ENGINES.has(manifest?.engine ?? '') && manifest?.engine !== 'implicit'
 }
 
 /**
@@ -378,7 +385,7 @@ async function renderBackend(
 
   if (exportFormat) {
     payload.export_format = exportFormat
-  } else if (manifest && manifest.engine === 'cadquery') {
+  } else if (manifest && BACKEND_ONLY_ENGINES.has(manifest.engine ?? '')) {
     payload.export_format = 'glb'
   }
 
@@ -508,7 +515,7 @@ export async function renderParts(
       const forceBackend = manifest?.project?.force_backend || manifest?.force_backend
       const canFallbackToWasm = (
         !forceBackend
-        && manifest?.engine !== 'cadquery'
+        && !BACKEND_ONLY_ENGINES.has(manifest?.engine ?? '')
         && hasWasmCapabilities()
       )
       const shouldFallback = (

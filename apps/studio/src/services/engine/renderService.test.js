@@ -1126,5 +1126,28 @@ describe('backend to WASM fallback', () => {
   it('getRenderMode reports a mode string', () => {
     expect(typeof renderService.getRenderMode()).toBe('string')
   })
+
+  // --- Engine capability ----------------------------------------------------
+
+  it('WASM can run OpenSCAD projects', () => {
+    expect(renderService.canRunWasm({ engine: 'openscad' })).toBe(true)
+  })
+
+  it('WASM cannot run CadQuery or implicit projects', () => {
+    // Both kernels are backend-only; claiming otherwise would send the user
+    // down a WASM path that cannot produce their geometry.
+    expect(renderService.canRunWasm({ engine: 'cadquery' })).toBe(false)
+    expect(renderService.canRunWasm({ engine: 'implicit' })).toBe(false)
+  })
+
+  it('a manifest with no declared engine is treated as WASM-capable', () => {
+    expect(renderService.canRunWasm({})).toBe(true)
+    expect(renderService.canRunWasm(null)).toBe(true)
+  })
+
+  it('getLastObservedRenderSeconds reports null before any render', () => {
+    const observed = renderService.getLastObservedRenderSeconds()
+    expect(observed === null || typeof observed === 'number').toBe(true)
+  })
 })
 

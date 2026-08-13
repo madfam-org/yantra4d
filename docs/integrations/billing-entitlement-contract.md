@@ -4,8 +4,11 @@ Status: **draft spec (P2)** — the Yantra4D side of this contract is grounded
 in code and cited `file:line`; the Dhanam and Janua sides are the *intended*
 integration (asserted today by the admin UI and repo docs) and every
 unverified detail is explicitly marked **UNKNOWN / to confirm**. No prices
-appear here on purpose: pricing is owned by Dhanam configuration and the
-internal pricing decision record, not by this platform's code.
+appear here on purpose: price points are forged by tulana's benchmarking and
+pricing processes (see `docs/strategy/tulana-pricing-research-brief.md`) and
+then configured in Dhanam — never set in this platform's code. The "from
+$9/mo" copy currently visible in the product is a legacy anchor pending
+tulana validation.
 
 Parties:
 

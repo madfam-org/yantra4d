@@ -2,8 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
+// The layout callback is captured so a test can fire it; it is how the console
+// reports a new size, and it guards against writing a size while collapsed.
+const { layoutCb } = vi.hoisted(() => ({ layoutCb: { onLayoutChanged: null } }))
+
 vi.mock('@/components/ui/resizable', () => ({
-  ResizablePanelGroup: function MockPanelGroup({ children, orientation }) {
+  ResizablePanelGroup: function MockPanelGroup({ children, orientation, onLayoutChanged }) {
+    layoutCb.onLayoutChanged = onLayoutChanged ?? null
     return <div data-testid="resizable-panel-group" data-orientation={orientation}>{children}</div>
   },
   ResizablePanel: function MockPanel({ children, id }) {
@@ -403,6 +408,32 @@ describe('StudioMainView', () => {
     render(<StudioMainView />)
     const status = document.querySelector('[role="status"][aria-live="polite"]')
     expect(status.textContent.length).toBeGreaterThan(0)
+  })
+
+  it('a console resize is reported upward', () => {
+    const onConsoleResize = vi.fn()
+    withContext({})
+    render(<StudioMainView onConsoleResize={onConsoleResize} consoleCollapsed={false} />)
+    layoutCb.onLayoutChanged?.({ console: 30 })
+    expect(onConsoleResize).toHaveBeenCalledWith(30)
+  })
+
+  it('a resize while the console is collapsed is not recorded', () => {
+    // Recording the collapsed height would make it the size the console
+    // restores to next time it opens.
+    const onConsoleResize = vi.fn()
+    withContext({})
+    render(<StudioMainView onConsoleResize={onConsoleResize} consoleCollapsed />)
+    layoutCb.onLayoutChanged?.({ console: 0 })
+    expect(onConsoleResize).not.toHaveBeenCalled()
+  })
+
+  it('a layout change that omits the console size is ignored', () => {
+    const onConsoleResize = vi.fn()
+    withContext({})
+    render(<StudioMainView onConsoleResize={onConsoleResize} consoleCollapsed={false} />)
+    layoutCb.onLayoutChanged?.({ sidebar: 20 })
+    expect(onConsoleResize).not.toHaveBeenCalled()
   })
 })
 

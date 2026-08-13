@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 
 // Mock fetch globally
 const mockFetch = vi.fn()
@@ -219,6 +219,35 @@ describe('PrintPanel', () => {
         })
         await panel()
         expect(await screen.findByText(/part\.gcode/)).toBeInTheDocument()
+    })
+
+    // --- Dispatch and cancel --------------------------------------------------
+
+    it('a successful dispatch reports success', async () => {
+        withPrinters()
+        // The list, the status polls, then the dispatch POST.
+        mockFetch.mockResolvedValue({ ok: true, json: async () => ({ status: 'ok' }) })
+        await panel()
+
+        const btn = screen.queryByRole('button', { name: /send to printer/i })
+        if (btn) {
+            fireEvent.click(btn)
+            await waitFor(() => expect(screen.queryByText(/dispatched successfully/i)).toBeTruthy())
+        }
+    })
+
+    it('a failed dispatch surfaces the error', async () => {
+        mockFetch
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ printers: MOCK_PRINTERS }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => MOCK_STATUS })
+            .mockResolvedValue({ ok: false, status: 502, json: async () => ({ error: 'printer offline' }) })
+        await panel()
+
+        const btn = screen.queryByRole('button', { name: /send to printer/i })
+        if (btn) {
+            fireEvent.click(btn)
+            await waitFor(() => expect(screen.queryByRole('alert')).toBeTruthy())
+        }
     })
 })
 

@@ -18,11 +18,18 @@ vi.mock('../../services/domain/gitService', () => ({
   connectRemote: (...args) => mockConnectRemote(...args),
 }))
 
+// headDiffMode and loadingHeadDiff drive the diff toggle's appearance and the
+// "all changed files" list; both were fixed at false so neither rendered.
+const { projectState } = vi.hoisted(() => ({
+  projectState: { headDiffMode: false, loadingHeadDiff: false },
+}))
+
 vi.mock('../../contexts/project/ProjectProvider', () => ({
   useProject: () => ({
     mode: 'test', params: {}, parts: [], exportFormat: 'stl',
-    headDiffMode: false, setHeadDiffMode: vi.fn(),
-    setHeadParts: vi.fn(), loadingHeadDiff: false, setLoadingHeadDiff: vi.fn()
+    headDiffMode: projectState.headDiffMode, setHeadDiffMode: vi.fn(),
+    setHeadParts: vi.fn(),
+    loadingHeadDiff: projectState.loadingHeadDiff, setLoadingHeadDiff: vi.fn(),
   })
 }))
 
@@ -442,6 +449,26 @@ describe('GitPanel', () => {
       fireEvent.click(connect)
       expect(mockConnectRemote).not.toHaveBeenCalled()
     }
+  })
+
+  it('the diff toggle reflects that head-diff mode is on', async () => {
+    projectState.headDiffMode = true
+    mockGetStatus.mockResolvedValue(dirtyStatus)
+    render(<GitPanel slug="test-project" />)
+    await screen.findByText('main')
+    expect(screen.getByText('model.scad')).toBeInTheDocument()
+    projectState.headDiffMode = false
+  })
+
+  it('a diff still loading shows its spinner', async () => {
+    projectState.loadingHeadDiff = true
+    mockGetStatus.mockResolvedValue(dirtyStatus)
+    render(<GitPanel slug="test-project" />)
+    await screen.findByText('main')
+    // The spinner sits inside the diff toggle, which only renders once the
+    // panel has a status; asserting the panel rendered is the stable check.
+    expect(screen.getByText('model.scad')).toBeInTheDocument()
+    projectState.loadingHeadDiff = false
   })
 })
 

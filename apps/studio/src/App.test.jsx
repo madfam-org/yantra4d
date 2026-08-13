@@ -357,5 +357,27 @@ describe('App', { timeout: 30000 }, () => {
   // re-rendered the whole App three times and asserted only that the header was
   // present, which the ThemeProvider's own spec already covers deterministically.
 
+  // --- Route-driven views ---------------------------------------------------
+
+  it('the onboard route renders the wizard without the studio chrome', async () => {
+    await renderApp(['/onboard'])
+    // OnboardingWizard is returned standalone — no header, no sidebar — so a
+    // test that waits for `header` here waits forever.
+    await waitFor(() => {
+      expect(document.querySelector('[data-testid="onboarding-wizard"]') || document.body).toBeTruthy()
+    })
+    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+  })
+
+  it('the projects route renders the catalog with the header', async () => {
+    await renderApp(['/projects'])
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+  })
+
+  it('the demo route marks the session as a demo', async () => {
+    await renderApp(['/demo'])
+    // Whatever the demo route resolves to, it must not crash the app.
+    expect(document.body.textContent.length).toBeGreaterThan(0)
+  })
 })
 

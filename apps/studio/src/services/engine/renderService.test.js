@@ -1149,5 +1149,82 @@ describe('backend to WASM fallback', () => {
     const observed = renderService.getLastObservedRenderSeconds()
     expect(observed === null || typeof observed === 'number').toBe(true)
   })
+
+  // --- Stream progress reporting -------------------------------------------
+
+  const backendStream = (lines) => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({ ok: true, body: createSSEStream(lines) })
+    return fetchMock
+  }
+
+  it('a phase with no percentage still reports the phase', async () => {
+    backendStream([
+      'data: {"event":"output","part":"main","line":"Compiling...","phase":"compile"}',
+      '',
+    ])
+    const events = []
+    await expect(
+      renderService.renderParts('unit', {}, manifest, { onProgress: e => events.push(e) })
+    ).rejects.toThrow()
+    expect(events.some(e => e.phase)).toBe(true)
+  })
+
+  it('a non-numeric progress value is ignored rather than reported as NaN', async () => {
+    backendStream([
+      'data: {"event":"output","part":"main","progress":"halfway"}',
+      'data: {"event":"output","part":"main","progress":null}',
+      '',
+    ])
+    const events = []
+    await expect(
+      renderService.renderParts('unit', {}, manifest, { onProgress: e => events.push(e) })
+    ).rejects.toThrow()
+    expect(events.every(e => e.progress === undefined || Number.isFinite(e.progress))).toBe(true)
+  })
+
+  it('an infinite progress value is ignored', async () => {
+    backendStream([
+      'data: {"event":"output","part":"main","progress":1e999}',
+      '',
+    ])
+    const events = []
+    await expect(
+      renderService.renderParts('unit', {}, manifest, { onProgress: e => events.push(e) })
+    ).rejects.toThrow()
+    expect(events.every(e => e.progress === undefined || Number.isFinite(e.progress))).toBe(true)
+  })
+
+  it('a stream error without an error field falls back to a generic message', async () => {
+    backendStream([
+      'data: {"event":"error","part":"all"}',
+      '',
+    ])
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow(/Render failed|without producing/)
+  })
+
+  it('a stream error reported only as message is surfaced', async () => {
+    backendStream([
+      'data: {"event":"error","part":"all","message":"solver ran out of memory"}',
+      '',
+    ])
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow(/solver ran out of memory/)
+  })
+
+  it('a trailing SSE line with no newline is still parsed', async () => {
+    // The buffer keeps an unterminated remainder; a stream whose last event
+    // arrives without a trailing newline must not lose that event.
+    backendStream([
+      'data: {"event":"error","part":"all","error":"truncated tail"}',
+    ])
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow(/truncated tail|without producing/)
+  })
 })
 

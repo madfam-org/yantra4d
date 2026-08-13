@@ -313,5 +313,49 @@ describe('AnimationPanel', () => {
         canvas.remove()
         delete globalThis.MediaRecorder
     })
+
+    it('scrubbing to a frame loads that frame into the viewport', async () => {
+        const onLoadFrame = vi.fn()
+        mockFetch.mockResolvedValueOnce(listAnimations())
+        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
+        await screen.findByText('Grow')
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+        await waitFor(() => expect(onLoadFrame).toHaveBeenCalled())
+
+        onLoadFrame.mockClear()
+        fireEvent.change(screen.getByLabelText('Animation frame scrubber'), { target: { value: '1' } })
+        expect(onLoadFrame).toHaveBeenCalledWith(['/f1.glb'])
+    })
+
+    it('reset clears the frames and returns the panel to idle', async () => {
+        const onLoadFrame = vi.fn()
+        mockFetch.mockResolvedValueOnce(listAnimations())
+        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
+        await screen.findByText('Grow')
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+        await screen.findByLabelText('Animation frame scrubber')
+
+        fireEvent.click(screen.getByRole('button', { name: /^Reset$/ }))
+        // With no frames there is nothing to scrub.
+        expect(screen.queryByLabelText('Animation frame scrubber')).not.toBeInTheDocument()
+    })
+
+    it('an animations response with no animations key yields an empty list', async () => {
+        mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) })
+        const { container } = render(<AnimationPanel {...defaultProps} />)
+        await waitFor(() => expect(container.innerHTML).toBe(''))
+    })
+
+    it('a failed animations request yields an empty list rather than throwing', async () => {
+        mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({}) })
+        const { container } = render(<AnimationPanel {...defaultProps} />)
+        await waitFor(() => expect(container.innerHTML).toBe(''))
+    })
 })
 

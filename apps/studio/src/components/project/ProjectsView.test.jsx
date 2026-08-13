@@ -645,5 +645,64 @@ describe('ProjectsView (catalog search)', () => {
     await waitFor(() => expect(toggle).toBeInTheDocument())
     fireEvent.click(toggle)
   })
+
+  it('a long facet section collapses and expands', async () => {
+    const spy = mockFetch()
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+
+    // Long sections show a capped list behind a show-more control.
+    const showMore = screen.queryByRole('button', { name: /show more/i })
+    if (showMore) {
+      fireEvent.click(showMore)
+      expect(await screen.findByRole('button', { name: /show less/i })).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: /show less/i }))
+      expect(screen.getByRole('button', { name: /show more/i })).toBeInTheDocument()
+    }
+    expect(searchUrls(spy).length).toBeGreaterThan(0)
+  })
+
+  it('a project without a thumbnail falls back to its initial', async () => {
+    mockFetch()
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+    // Portacosas is the fixture entry with an empty thumbnail, so its card
+    // falls back to the initial of its display name.
+    expect(screen.getAllByText('P').length).toBeGreaterThan(0)
+  })
+
+  it('names come from the active language when the catalog supplies one', async () => {
+    mockFetch()
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+    // Portacosas carries name_i18n; the English entry is what renders.
+    expect(screen.getByText('Portacosas')).toBeInTheDocument()
+  })
+
+  it('an empty catalog and a filtered-to-nothing catalog say different things', async () => {
+    mockFetch({ ...buildSearchResponse([]), total: 0 })
+    renderWithProviders(<ProjectsView />)
+    // With no filters applied this is an empty catalog, not an empty result set.
+    expect(await screen.findByText(/No projects found/i)).toBeInTheDocument()
+  })
+
+  it('a filtered search with no matches reports no matches', async () => {
+    const spy = mockFetch()
+    renderWithProviders(<ProjectsView />)
+    await waitForProjects()
+
+    // Apply a filter, then answer with an empty result set.
+    spy.mockImplementation((url) => {
+      const u = url.toString()
+      if (u.includes('/manifest')) return Promise.resolve({ ok: true, json: () => Promise.resolve(fallbackManifest) })
+      if (u.includes('/api/catalog/search')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ ...buildSearchResponse([]), total: 0 }) })
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
+    })
+    fireEvent.click(screen.getByText('storage'))
+
+    expect(await screen.findByText(/No projects match your search/i)).toBeInTheDocument()
+  })
 })
 

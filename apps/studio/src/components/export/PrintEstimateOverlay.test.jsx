@@ -5,6 +5,7 @@ import { LanguageProvider } from '../../contexts/system/LanguageProvider'
 import { ManifestProvider } from '../../contexts/project/ManifestProvider'
 import { MemoryRouter } from 'react-router-dom'
 
+
 beforeEach(() => {
   vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
 })
@@ -438,5 +439,6 @@ describe('PrintEstimateOverlay', () => {
     )
     expect(screen.queryByText(/\dh \d+m/)).not.toBeInTheDocument()
   })
+
 })
 

@@ -1,0 +1,11 @@
+---
+import CommonDenominatorContent from '../../../components/concepts/common-denominator.astro';
+import { getTranslations } from '../../../lib/i18n';
+
+// The three "Choose Your Path" cards are the homepage's primary CTAs. Without
+// these routes an English visitor clicking them landed on the Spanish page.
+const lang = 'en';
+const t = getTranslations(lang);
+---
+
+<CommonDenominatorContent lang={lang} t={t} />

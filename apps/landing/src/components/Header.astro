@@ -10,15 +10,18 @@ interface Props {
 const { lang = 'es', t } = Astro.props;
 const studioUrl = STUDIO_URL;
 const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label: 'Español', href: '/' };
+// Concept routes are mirrored per locale; without the prefix an English
+// visitor following the nav landed on the Spanish page.
+const base = lang === 'en' ? '/en' : '';
 ---
 
 <header class="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm pt-safe">
   <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
     <a href={lang === 'en' ? '/en/' : '/'} class="text-xl font-bold tracking-tight">Yantra4D</a>
     <nav class="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-      <a href="/concepts/hyperobjects/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.concepts?.hyperobjects?.title ?? 'Hyperobjects'}</a>
-      <a href="/concepts/common-denominator/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.cdg ?? 'CDG'}</a>
-      <a href="/concepts/commons/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.commons ?? 'Commons'}</a>
+      <a href={`${base}/concepts/hyperobjects/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.concepts?.hyperobjects?.title ?? 'Hyperobjects'}</a>
+      <a href={`${base}/concepts/common-denominator/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.cdg ?? 'CDG'}</a>
+      <a href={`${base}/concepts/commons/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.commons ?? 'Commons'}</a>
       <a href="#gallery" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.gallery ?? 'Galería'}</a>
       <a href={switchLang.href} class="min-h-[44px] flex items-center hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
     </nav>
@@ -61,9 +64,9 @@ const switchLang = lang === 'es' ? { label: 'English', href: '/en/' } : { label:
     </button>
   </div>
   <nav class="flex flex-col items-center gap-6 mt-12 landscape:mt-8 text-lg text-muted-foreground">
-      <a href="/concepts/hyperobjects/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.concepts?.hyperobjects?.title ?? 'Hyperobjects'}</a>
-      <a href="/concepts/common-denominator/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.cdg ?? 'CDG'}</a>
-      <a href="/concepts/commons/" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.commons ?? 'Commons'}</a>
+      <a href={`${base}/concepts/hyperobjects/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.concepts?.hyperobjects?.title ?? 'Hyperobjects'}</a>
+      <a href={`${base}/concepts/common-denominator/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.cdg ?? 'CDG'}</a>
+      <a href={`${base}/concepts/commons/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.commons ?? 'Commons'}</a>
       <a href="#gallery" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.gallery ?? 'Galería'}</a>
       <a href={switchLang.href} class="min-h-[44px] flex items-center hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
     <a

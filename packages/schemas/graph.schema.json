@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://yantra4d.com/schemas/graph.schema.json",
+  "title": "Yantra4D Graph Document",
+  "description": "Node-graph geometry document (.graph.json) compiled by the graph engine into a sandboxed CadQuery script. Version 1.x. The enforcing validator is apps/api/services/engine/graph_engine.py; this schema is the public contract for authoring tools and the studio editor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "nodes", "outputs"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.\\d+(\\.\\d+)?$",
+      "description": "Graph format version. Major 1 is the only supported line; the renderer rejects anything else."
+    },
+    "units": {
+      "type": "string",
+      "enum": ["mm"],
+      "default": "mm",
+      "description": "Model units. v1 supports millimeters only — declared explicitly so future unit support cannot silently rescale existing documents."
+    },
+    "meta": {
+      "type": "object",
+      "description": "Free-form authoring metadata. Ignored by the renderer."
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "outputs": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 50,
+      "description": "Map of part id → node id. Part ids correspond to manifest parts[].id; the render selects one via the injected target_part.",
+      "additionalProperties": { "$ref": "#/$defs/nodeId" }
+    }
+  },
+  "$defs": {
+    "nodeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+    },
+    "floatParam": { "type": "number" },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nodeId" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "box", "cylinder", "sphere",
+            "union", "cut", "intersect",
+            "translate", "rotate",
+            "fillet", "chamfer"
+          ]
+        },
+        "params": { "type": "object" },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/nodeId" }
+        },
+        "meta": { "type": "object" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "box" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "w": { "$ref": "#/$defs/floatParam" },
+                  "d": { "$ref": "#/$defs/floatParam" },
+                  "h": { "$ref": "#/$defs/floatParam" }
+                }
+              },
+              "inputs": { "type": "object", "additionalProperties": false }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "cylinder" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "r": { "$ref": "#/$defs/floatParam" },
+                  "h": { "$ref": "#/$defs/floatParam" }
+                }
+              },
+              "inputs": { "type": "object", "additionalProperties": false }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "sphere" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": { "r": { "$ref": "#/$defs/floatParam" } }
+              },
+              "inputs": { "type": "object", "additionalProperties": false }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "enum": ["union", "cut", "intersect"] } } },
+          "then": {
+            "properties": {
+              "params": { "type": "object", "additionalProperties": false },
+              "inputs": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["a", "b"],
+                "properties": {
+                  "a": { "$ref": "#/$defs/nodeId" },
+                  "b": { "$ref": "#/$defs/nodeId" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "translate" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "x": { "$ref": "#/$defs/floatParam" },
+                  "y": { "$ref": "#/$defs/floatParam" },
+                  "z": { "$ref": "#/$defs/floatParam" }
+                }
+              },
+              "inputs": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["shape"],
+                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "rotate" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "axis": { "type": "string", "enum": ["x", "y", "z"] },
+                  "angle": { "$ref": "#/$defs/floatParam" }
+                }
+              },
+              "inputs": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["shape"],
+                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "fillet" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "edges": { "type": "string", "maxLength": 120 },
+                  "radius": { "$ref": "#/$defs/floatParam" }
+                }
+              },
+              "inputs": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["shape"],
+                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "chamfer" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "edges": { "type": "string", "maxLength": 120 },
+                  "distance": { "$ref": "#/$defs/floatParam" }
+                }
+              },
+              "inputs": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["shape"],
+                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

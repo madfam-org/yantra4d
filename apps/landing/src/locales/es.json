@@ -131,7 +131,7 @@
     "statProjects": "Cartuchos Abiertos",
     "statLicense": "CERN-OHL-W",
     "cta": "Ver en GitHub",
-    "techNote": "Plataforma AGPLv3, diseños CERN-OHL-W. Construido con CadQuery, OpenSCAD, React, Three.js, Flask y WebAssembly.",
+    "techNote": "Plataforma AGPLv3, diseños CERN-OHL-W. Cuatro kernels renderizan el commons — OpenSCAD, CadQuery B-Rep, un motor implícito SDF para celosías, y un nuevo motor de grafos de nodos — sobre React, Three.js, Flask y WebAssembly.",
     "statStandards": "Estándares",
     "statLicensedSuffix": "diseños"
   },

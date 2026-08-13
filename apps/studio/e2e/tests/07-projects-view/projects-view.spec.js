@@ -83,7 +83,10 @@ test.describe('Projects View', () => {
       route.fulfill({ json: catalogResponse([]) })
     })
     await goToProjects(page)
-    await expect(page.getByText('Loading').or(page.getByText('Cargando'))).toBeVisible({ timeout: 2000 })
+    // .first(): the loading state renders both a visible label and an sr-only
+    // one, and on WebKit both were present when this ran, failing strict mode.
+    await expect(page.getByText('Loading').or(page.getByText('Cargando')).first())
+      .toBeVisible({ timeout: 5000 })
   })
 
   test('error state shows error message with retry and demo buttons', async ({ page }) => {

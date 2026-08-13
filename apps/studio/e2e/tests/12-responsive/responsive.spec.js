@@ -236,7 +236,9 @@ test.describe('Responsive Design', () => {
     // On mobile, the export panel is inside the bottom sheet.
     // Open the sheet by clicking the hamburger menu button.
     // The SheetTrigger button contains <Menu> icon and sr-only text "Open controls".
-    const menuBtn = page.locator('button:has(.lucide-menu)').first()
+    // Scoped to :visible — the menu button exists in both layout trees, and on
+    // WebKit .first() resolved to the hidden copy and never became visible.
+    const menuBtn = page.locator('button:visible:has(.lucide-menu)').first()
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
     await menuBtn.click()
     // Wait for the Sheet dialog to open (SidebarContent is rendered twice:
@@ -279,7 +281,9 @@ test.describe('Responsive Design', () => {
   test('mobile: bottom sheet opens with controls', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudioMobile(page)
-    const menuBtn = page.locator('button:has(.lucide-menu)').first()
+    // Scoped to :visible — the menu button exists in both layout trees, and on
+    // WebKit .first() resolved to the hidden copy and never became visible.
+    const menuBtn = page.locator('button:visible:has(.lucide-menu)').first()
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
     await menuBtn.click()
     const sheet = page.locator('[role="dialog"]')
@@ -311,7 +315,9 @@ test.describe('Responsive Design', () => {
   test('landscape: action buttons dont overflow viewport', async ({ page }) => {
     await page.setViewportSize({ width: 812, height: 375 })
     await goToStudioMobile(page)
-    const menuBtn = page.locator('button:has(.lucide-menu)').first()
+    // Scoped to :visible — the menu button exists in both layout trees, and on
+    // WebKit .first() resolved to the hidden copy and never became visible.
+    const menuBtn = page.locator('button:visible:has(.lucide-menu)').first()
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
     await menuBtn.click()
     const sheet = page.locator('[role="dialog"]')

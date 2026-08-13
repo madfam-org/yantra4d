@@ -110,3 +110,33 @@ def check_feature(tier: str, feature: str) -> bool:
     """Check if a tier has access to a specific feature (boolean key in tier config)."""
     limits = get_tier_limits(tier)
     return bool(limits.get(feature, False))
+
+
+def export_format_allowed(tier: str, export_format: str) -> bool:
+    """Whether a tier's export_formats list includes the given format.
+
+    The per-tier list in tiers.json is the single source of truth. The render
+    routes used to gate on the blanket `premium_export` boolean over a
+    hardcoded format set, which contradicted the list: essentials declares
+    ["stl", "3mf", "obj"], the UI unlocked those buttons from the list, and
+    the server then 403'd 3mf/obj because essentials lacks `premium_export` —
+    a paying user hitting a guaranteed error on an advertised feature.
+    """
+    formats = get_tier_limits(tier).get("export_formats") or []
+    return export_format in formats
+
+
+def minimum_tier_for_export_format(export_format: str) -> str | None:
+    """Lowest tier (by hierarchy) whose export_formats includes the format.
+
+    Used to name the tier an upsell message should point at. None when no
+    tier offers the format (an unknown or mistyped format).
+    """
+    tiers = load_tiers()
+    best: str | None = None
+    for name, limits in tiers.items():
+        if export_format in (limits.get("export_formats") or []):
+            normalized = _normalize_tier(name)
+            if best is None or TIER_HIERARCHY.get(normalized, 0) < TIER_HIERARCHY.get(best, 0):
+                best = normalized
+    return best

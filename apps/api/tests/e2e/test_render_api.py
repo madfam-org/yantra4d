@@ -114,7 +114,8 @@ class TestEngineFormatValidation:
         monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
         # Pro user bypasses premium export check but still hits engine format validation
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
-        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+        # The format gate now reads the tier's export_formats list.
+        monkeypatch.setattr("routes.engine.render.export_format_allowed", lambda *args: True)
 
         res = client.post("/api/render", json={"project": "os"})
         assert res.status_code == 400
@@ -157,6 +158,48 @@ class TestTierEnforcementRender:
         res = client.post("/api/render", json={"project": "os"})
         assert res.status_code == 403
         assert "requires Pro tier" in res.get_json()["error"]
+
+    def _payload(self, fmt):
+        return {
+            "parts": ["m"], "export_format": fmt, "params": {}, "scad_path": "mock",
+            "mode_map": {"m": 0}, "stl_prefix": "pre_", "project_slug": "os",
+            "scad_filename": "mock.scad",
+        }
+
+    def test_essentials_allowed_3mf_export(self, client, monkeypatch):
+        # The regression this guards: essentials declares export_formats
+        # ["stl", "3mf", "obj"] and the UI unlocks those buttons, but the old
+        # blanket premium_export check 403'd them — a paying tier hitting an
+        # error on an advertised feature. The gate must follow the tier's
+        # export_formats list.
+        monkeypatch.setattr("routes.engine.render.extract_render_payload",
+                            lambda *args: self._payload("3mf"))
+        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "essentials")
+        # Short-circuit after the format gate: engine resolution "fails" with a
+        # sentinel status, proving the request passed the gate.
+        monkeypatch.setattr("routes.engine.render.resolve_engine_config",
+                            lambda *args: (None, None, None, ("passed format gate", 418)))
+
+        res = client.post("/api/render", json={"project": "os"})
+        assert res.status_code == 418
+        assert "passed format gate" in res.get_json()["error"]
+
+    def test_essentials_blocked_from_step_export(self, client, monkeypatch):
+        monkeypatch.setattr("routes.engine.render.extract_render_payload",
+                            lambda *args: self._payload("step"))
+        monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "essentials")
+
+        res = client.post("/api/render", json={"project": "os"})
+        assert res.status_code == 403
+        assert "requires Pro tier" in res.get_json()["error"]
+
+    def test_unknown_export_format_rejected(self, client, monkeypatch):
+        monkeypatch.setattr("routes.engine.render.extract_render_payload",
+                            lambda *args: self._payload("dwg"))
+
+        res = client.post("/api/render", json={"project": "os"})
+        assert res.status_code == 403
+        assert "not available" in res.get_json()["error"]
 
 
 class TestCancelAPI:
@@ -285,7 +328,8 @@ class TestDualEngineRouting:
         monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
 
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
-        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+        # The format gate now reads the tier's export_formats list.
+        monkeypatch.setattr("routes.engine.render.export_format_allowed", lambda *args: True)
 
         # Track which engine was selected before dispatch to the render worker.
         engine_calls = []
@@ -421,7 +465,8 @@ class TestDualEngineRouting:
             def mode_engine(self, mode_id=None): return self.engine
         monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
-        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+        # The format gate now reads the tier's export_formats list.
+        monkeypatch.setattr("routes.engine.render.export_format_allowed", lambda *args: True)
         engine_calls = []
 
         def fake_render_parts_sync(_data, _payload, engine, *_args):
@@ -457,7 +502,8 @@ class TestImplicitEngineFormats:
             def mode_engine(self, mode_id=None): return self.engine
         monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
-        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+        # The format gate now reads the tier's export_formats list.
+        monkeypatch.setattr("routes.engine.render.export_format_allowed", lambda *args: True)
 
         res = client.post("/api/render", json={"project": "impl", "mode": "unit", "export_format": "step"})
         assert res.status_code == 400
@@ -493,7 +539,8 @@ class TestTrimeshConversion:
             def mode_engine(self, mode_id=None): return self.engine
         monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
-        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+        # The format gate now reads the tier's export_formats list.
+        monkeypatch.setattr("routes.engine.render.export_format_allowed", lambda *args: True)
 
         engine_calls = []
 
@@ -541,7 +588,8 @@ class TestStaticPartConversion:
             def mode_engine(self, mode_id=None): return self.engine
         monkeypatch.setattr("services.engine.render_orchestrator.get_manifest", lambda *args: MockManifest())
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "pro")
-        monkeypatch.setattr("routes.engine.render.check_feature", lambda *args: True)
+        # The format gate now reads the tier's export_formats list.
+        monkeypatch.setattr("routes.engine.render.export_format_allowed", lambda *args: True)
         monkeypatch.setattr("services.engine.render_orchestrator.convert_mesh", lambda *args, **kwargs: True)
 
         res = client.post("/api/render", json={"project": "stat-test", "mode": "unit", "export_format": "obj"})

@@ -116,6 +116,6 @@ AI requests are rate-limited per tier:
 | Tier | Requests per hour |
 |------|:---:|
 | Guest | 0 |
-| Essentials | 30 |
+| Essentials | 20 |
 | Pro | 100 |
 | Madfam | 300 |

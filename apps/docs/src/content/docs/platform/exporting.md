@@ -10,12 +10,12 @@ Yantra4D supports exporting configured models in multiple file formats. The avai
 | Format | Extension | Tier | Best for |
 |--------|-----------|------|----------|
 | **STL** | `.stl` | Guest+ | 3D printing (universal slicer support) |
-| **3MF** | `.3mf` | Pro+ | 3D printing (supports colors, metadata) |
+| **3MF** | `.3mf` | Essentials+ | 3D printing (supports colors, metadata) |
 | **OFF** | `.off` | Pro+ | Academic and computational geometry |
 | **STEP** | `.step` | Pro+ | Engineering CAD (Fusion 360, SolidWorks, FreeCAD) |
 | **GLB** | `.glb` | Pro+ | Web, AR/VR, game engines (binary glTF) |
 | **GLTF** | `.gltf` | Pro+ | Web, AR/VR, game engines (JSON + binary) |
-| **OBJ** | `.obj` | Pro+ | General 3D (Blender, Maya, 3ds Max) |
+| **OBJ** | `.obj` | Essentials+ | General 3D (Blender, Maya, 3ds Max) |
 
 ### Format availability by engine
 
@@ -23,6 +23,8 @@ Not every format is available for every project. It depends on the rendering eng
 
 - **OpenSCAD engine** produces STL, 3MF, and OFF natively. OBJ, GLB, and GLTF are generated through automatic post-render conversion from STL.
 - **CadQuery engine** produces STL, STEP, GLB, GLTF, 3MF, OBJ, VRML, and AMF natively with B-Rep precision.
+- **Implicit SDF engine** produces STL natively; other mesh formats come from conversion, and STEP is not available.
+- **Graph engine** transpiles a `.graph.json` node graph into sandboxed CadQuery, so it shares CadQuery's formats — including STEP, with no `cq_file`.
 - **STEP export** requires that the project includes a CadQuery script (`cq_file` in the manifest). If no CadQuery script is available, STEP export is not offered.
 
 The export panel only shows formats that the current project supports. The project manifest declares which formats are available via its `export_formats` field.

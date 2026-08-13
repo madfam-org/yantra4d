@@ -9,11 +9,22 @@ LICENSE file. Nothing kept those two honest, so the Commons accumulated:
     cannot legally be relicensed),
   - a cartridge whose LICENSE file is a saved HTML 404 page,
   - a proprietary, all-rights-reserved client design inside a public commons,
-  - cartridges shipping a license they never declared.
+  - cartridges shipping a license they never declared,
+  - third-party licenses vendored BELOW the cartridge root (bundled libraries,
+    upstream sources), invisible to a depth-1 scan.
+
+Nested LICENSE*/COPYING* files below the cartridge root are therefore scanned
+too (bounded depth, .git skipped). A NonCommercial license found nested inside
+a cartridge is a CONFLICT — an NC clause travels with the files and constrains
+commercial use of the whole cartridge no matter what the top-level LICENSE
+says — unless the cartridge is acknowledged in KNOWN_NC_EXPOSURE, in which
+case it is reported as a clearly-labeled WARNING (never blocking). Other
+nested licenses are reported informationally.
 
 Findings are grouped by severity. `--strict` fails on CONFLICT only, so the
 metadata backlog can be worked down without blocking every build; use
-`--strict-all` to fail on anything.
+`--strict-all` to fail on anything actionable (WARNING and informational
+nested findings never block).
 
 Usage:
     python3 scripts/qa/check_licenses.py            # report
@@ -24,6 +35,7 @@ from __future__ import annotations
 import argparse
 import configparser
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -64,6 +76,29 @@ NOT_COMMONS = {
 }
 CLIENT_PRIVATE = set(NOT_COMMONS)
 
+# Cartridges with a KNOWN, documented NonCommercial exposure: files vendored
+# from an NC-licensed upstream inside an otherwise commercially-usable
+# cartridge. The NC terms travel with those files regardless of what the
+# cartridge's own LICENSE says, so the exposure is surfaced as a WARNING here
+# (and as `license_exposure` in the public catalogue) instead of passing
+# silently. A nested NC license in any cartridge NOT listed here is a CONFLICT.
+# Kept in step with KNOWN_NC_EXPOSURE in scripts/qa/generate_commons_catalog.py.
+KNOWN_NC_EXPOSURE = {
+    # rugged-box declares CERN-OHL-W-2.0 for its own wrappers, but vendors the
+    # upstream "Super Customizable Rugged Box in OpenSCAD" source by Iceman
+    # (RuggedBoxV1.scad and the RuggedBoxV1.txt parameter sets, from
+    # Printables model 1073708), which is CC BY-NC-SA 4.0. Selling prints of
+    # those vendored files is forbidden by the upstream terms. Documented in
+    # projects/rugged-box/README.md ("License & attribution") and
+    # projects/rugged-box/NOTICE.
+    "rugged-box": "CC-BY-NC-SA-4.0 (vendored upstream files; see NOTICE)",
+}
+
+# Nested-scan bounds: how deep below projects/<slug>/ to look for third-party
+# license files, and which directories are never license-relevant.
+NESTED_MAX_DEPTH = 4
+NESTED_SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "exports"}
+
 
 def identify(path: Path) -> str:
     """Best-effort SPDX-ish identifier for a license file."""
@@ -73,7 +108,7 @@ def identify(path: Path) -> str:
         return "UNREADABLE"
 
     # A license file that is actually a web page is a download that silently failed.
-    if re.match(r"\s*<(!doctype|html)", head, re.I):
+    if re.match(r"\s*<(!doctype|html)", head, re.IGNORECASE):
         return "HTML-ERROR-PAGE"
 
     version = "3.0" if re.search(r"Version 3", head) else ("2.0" if re.search(r"Version 2", head) else "")
@@ -101,17 +136,48 @@ def identify(path: Path) -> str:
         # permissive CC-BY and a NonCommercial CC-BY-NC-SA, which is the whole
         # question when deciding whether a design can be sold.
         parts = ["CC", "BY"]
-        if re.search(r"NonCommercial", head, re.I):
+        if re.search(r"NonCommercial", head, re.IGNORECASE):
             parts.append("NC")
-        if re.search(r"ShareAlike", head, re.I):
+        if re.search(r"ShareAlike", head, re.IGNORECASE):
             parts.append("SA")
-        if re.search(r"NoDerivatives", head, re.I):
+        if re.search(r"NoDerivatives", head, re.IGNORECASE):
             parts.append("ND")
         ver = re.search(r"(\d\.\d) International", head)
         return "-".join(parts) + (f"-{ver.group(1)}" if ver else "")
-    if re.search(r"All rights reserved|Uso Privado|Private Use|Proprietary", head, re.I):
+    if re.search(r"All rights reserved|Uso Privado|Private Use|Proprietary", head, re.IGNORECASE):
         return "PROPRIETARY"
     return "UNKNOWN"
+
+
+def is_noncommercial(identifier: str) -> bool:
+    """True when an identified license carries a NonCommercial clause (CC *-NC-*)."""
+    return "NC" in identifier.split("-")
+
+
+def nested_license_files(project_dir: Path) -> dict[str, str]:
+    """Map relative path -> identified license for LICENSE*/COPYING* files
+    nested BELOW the cartridge root (vendored libraries, upstream sources).
+
+    Files directly in the cartridge root are the cartridge's own license and
+    are handled by the main audit. The walk is bounded to NESTED_MAX_DEPTH
+    directory levels and prunes NESTED_SKIP_DIRS (notably .git) so it stays
+    cheap and never reads repository internals. Matching is case-insensitive:
+    a lowercase `license` file is still a license.
+    """
+    found: dict[str, str] = {}
+    root_depth = len(project_dir.parts)
+    for dirpath, dirnames, filenames in os.walk(project_dir):
+        depth = len(Path(dirpath).parts) - root_depth
+        # Prune: stop descending at the depth bound, never enter skip dirs.
+        dirnames[:] = [] if depth >= NESTED_MAX_DEPTH else sorted(
+            d for d in dirnames if d not in NESTED_SKIP_DIRS)
+        if depth < 1:
+            continue  # cartridge-root files are covered by the depth-1 audit
+        for name in sorted(filenames):
+            if name.upper().startswith(("LICENSE", "COPYING")):
+                path = Path(dirpath) / name
+                found[str(path.relative_to(project_dir))] = identify(path)
+    return found
 
 
 def published_slugs() -> set[str]:
@@ -171,7 +237,9 @@ def audit() -> list[dict]:
         files.update({p.name: identify(p) for p in sorted(manifest.parent.glob("COPYING*"))})
         shipped = {v for v in files.values()}
 
-        def add(severity, message):
+        def add(severity, message, slug=slug, declared=declared, files=files):
+            # Loop variables bound as defaults: the closure otherwise captures
+            # the loop's last values if any finding is emitted late (B023).
             findings.append({"severity": severity, "slug": slug, "declared": declared,
                              "files": files, "message": message})
 
@@ -214,6 +282,38 @@ def audit() -> list[dict]:
             # has no commons_license to declare.
             add("OK", f"correctly absent from the catalogue — {NOT_COMMONS[slug]} "
                       f"(ships {', '.join(sorted(shipped))})")
+
+    # Second pass: third-party licenses vendored below the cartridge root.
+    # These never relicense the cartridge, but an NC clause among them forbids
+    # selling prints of the affected files no matter what the cartridge's own
+    # LICENSE says — so NC must be either acknowledged or treated as a conflict.
+    for manifest in sorted(PROJECTS.glob("*/project.json")):
+        slug = manifest.parent.name
+        nested = nested_license_files(manifest.parent)
+        nc = {rel: ident for rel, ident in nested.items() if is_noncommercial(ident)}
+        benign = {rel: ident for rel, ident in nested.items() if rel not in nc}
+
+        if slug in KNOWN_NC_EXPOSURE:
+            detail = "; ".join(f"{rel}={ident}" for rel, ident in sorted(nc.items()))
+            findings.append({
+                "severity": "WARNING", "slug": slug, "declared": None, "files": nc,
+                "message": f"known NC exposure (acknowledged): {KNOWN_NC_EXPOSURE[slug]}"
+                           + (f" — nested NC license files: {detail}" if nc else ""),
+            })
+        elif nc:
+            findings.append({
+                "severity": "CONFLICT", "slug": slug, "declared": None, "files": nc,
+                "message": "vendors NonCommercial-licensed files: "
+                           + "; ".join(f"{rel}={ident}" for rel, ident in sorted(nc.items()))
+                           + " — an NC clause constrains commercial use of the whole "
+                             "cartridge; remove the files or acknowledge the exposure "
+                             "in KNOWN_NC_EXPOSURE with a documented justification",
+            })
+        if benign:
+            findings.append({
+                "severity": "NESTED", "slug": slug, "declared": None, "files": benign,
+                "message": "; ".join(f"{rel}={ident}" for rel, ident in sorted(benign.items())),
+            })
     return findings
 
 
@@ -224,22 +324,38 @@ def main() -> int:
     args = ap.parse_args()
 
     findings = audit()
-    order = {"CONFLICT": 0, "MISMATCH": 1, "METADATA": 2, "OK": 3}
+    order = {"CONFLICT": 0, "MISMATCH": 1, "METADATA": 2, "WARNING": 3, "NESTED": 4, "OK": 5}
     findings.sort(key=lambda f: (order.get(f["severity"], 9), f["slug"]))
 
     conflicts = [f for f in findings if f["severity"] == "CONFLICT"]
     mismatches = [f for f in findings if f["severity"] == "MISMATCH"]
     metadata = [f for f in findings if f["severity"] == "METADATA"]
+    warnings = [f for f in findings if f["severity"] == "WARNING"]
+    nested_info = [f for f in findings if f["severity"] == "NESTED"]
+    # WARNING (acknowledged NC exposure) and NESTED (informational) never
+    # block: acknowledging an exposure is the mechanism for keeping CI green
+    # while the catalogue surfaces it.
     actionable = conflicts + mismatches + metadata
 
-    for f in findings:
+    def show(f):
         print(f"[{f['severity']:8}] {f['slug']:26} {f['message']}")
-        if f["severity"] != "METADATA":
+        if f["severity"] != "METADATA" and f["files"]:
             print(f"{'':11} files: {f['files']}")
+
+    for f in findings:
+        if f["severity"] not in ("WARNING", "NESTED"):
+            show(f)
+
+    if warnings or nested_info:
+        print("\nNested third-party licenses (LICENSE/COPYING below the cartridge root):")
+        for f in warnings + nested_info:
+            show(f)
 
     total = len(list(PROJECTS.glob("*/project.json")))
     print(f"\n{total} cartridges — {len(conflicts)} conflict, "
-          f"{len(mismatches)} mismatch, {len(metadata)} metadata-only")
+          f"{len(mismatches)} mismatch, {len(metadata)} metadata-only, "
+          f"{len(warnings)} acknowledged NC exposure, "
+          f"{len(nested_info)} with nested third-party licenses")
 
     if args.strict_all and actionable:
         return 1

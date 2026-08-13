@@ -15751,6 +15751,7 @@
         "obj"
       ],
       "commons_license": "CERN-OHL-W-2.0",
+      "license_exposure": "CC-BY-NC-SA-4.0 (vendored upstream files; see NOTICE)",
       "societal_benefit": null,
       "material_awareness": null,
       "cdg_interfaces": [],

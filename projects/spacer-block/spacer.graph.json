@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "units": "mm",
+  "meta": {
+    "title": "Parametric Spacer Block",
+    "notes": "First graph-engine cartridge. Bored and solid variants share one graph; manifest bindings drive the node params."
+  },
+  "nodes": [
+    { "id": "base", "type": "box", "params": { "w": 40, "d": 30, "h": 15 } },
+    { "id": "bore", "type": "cylinder", "params": { "r": 4.25, "h": 400 } },
+    { "id": "body", "type": "cut", "inputs": { "a": "base", "b": "bore" } },
+    {
+      "id": "spacer",
+      "type": "chamfer",
+      "inputs": { "shape": "body" },
+      "params": { "edges": "|Z", "distance": 1.5 }
+    },
+    {
+      "id": "spacer_solid",
+      "type": "chamfer",
+      "inputs": { "shape": "base" },
+      "params": { "edges": "|Z", "distance": 1.5 }
+    }
+  ],
+  "outputs": {
+    "spacer": "spacer",
+    "spacer_solid": "spacer_solid"
+  }
+}

@@ -2,14 +2,14 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 324,
+    "cartridges": 325,
     "with_cdg_interfaces": 311,
-    "with_commons_license": 324,
+    "with_commons_license": 325,
     "dual_engine": 23
   },
   "domains": {
     "household": 113,
-    "industrial": 78,
+    "industrial": 79,
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
@@ -17009,6 +17009,33 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/solar-mount"
+      }
+    },
+    {
+      "slug": "spacer-block",
+      "name": "Parametric Spacer Block",
+      "domain": "industrial",
+      "engines": [
+        "graph"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 5,
+      "export_formats": [],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": "Exact spacers, shims and risers on demand reduce scrapped fixtures and one-off machining; the graph source keeps the design remixable at node level.",
+      "material_awareness": true,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "manifest": "projects/spacer-block/project.json",
+        "has_cadquery": false,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/spacer-block"
       }
     },
     {

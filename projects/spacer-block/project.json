@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Parametric Spacer Block",
+    "slug": "spacer-block",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "A machinist-style spacer/riser block defined as a node graph — the first graph-engine cartridge in the commons. Pick exact width, depth and height, add a clearance bore for a bolt (default fits M8) or print the solid variant, and chamfered corners keep it print-friendly and comfortable to handle. Stack them to shim fixtures, raise workpieces, or set repeatable offsets.",
+      "es": "Un bloque espaciador/elevador estilo taller definido como grafo de nodos — el primer cartucho del motor de grafos en el commons. Elige ancho, profundidad y altura exactos, agrega un barreno de paso para tornillo (por defecto M8) o imprime la variante sólida; las esquinas achaflanadas lo hacen imprimible y cómodo de manejar. Apílalos para calzar fijaciones, elevar piezas o fijar desfases repetibles."
+    },
+    "thumbnail": "/projects/spacer-block.webp",
+    "difficulty": "beginner",
+    "tags": ["spacer", "riser", "shim", "workholding", "fixture", "graph", "hyperobject", "commons"],
+    "hyperobject": {
+      "is_hyperobject": true,
+      "domain": "industrial",
+      "commons_license": "CERN-OHL-W-2.0"
+    },
+    "engine": "graph",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "commons_license": "CERN-OHL-W-2.0",
+    "societal_benefit": "Exact spacers, shims and risers on demand reduce scrapped fixtures and one-off machining; the graph source keeps the design remixable at node level.",
+    "material_awareness": true
+  },
+  "modes": [
+    {
+      "id": "spacer",
+      "scad_file": "spacer.graph.json",
+      "engine": "graph",
+      "label": { "en": "Bored Spacer", "es": "Espaciador con Barreno" },
+      "description": {
+        "en": "Spacer block with a centered clearance bore — slide it over a bolt or rod.",
+        "es": "Bloque espaciador con barreno de paso centrado — deslízalo sobre un tornillo o varilla."
+      },
+      "parts": ["spacer"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "solid",
+      "scad_file": "spacer.graph.json",
+      "engine": "graph",
+      "label": { "en": "Solid Block", "es": "Bloque Sólido" },
+      "description": {
+        "en": "The same block without the bore — a plain riser or setup block.",
+        "es": "El mismo bloque sin barreno — un elevador o bloque de ajuste liso."
+      },
+      "parts": ["spacer_solid"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    {
+      "id": "spacer",
+      "label": { "en": "Bored Spacer", "es": "Espaciador con Barreno" },
+      "render_mode": 0,
+      "color": "#0e7c66"
+    },
+    {
+      "id": "spacer_solid",
+      "label": { "en": "Solid Block", "es": "Bloque Sólido" },
+      "render_mode": 1,
+      "color": "#5a7a8a"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 40.0,
+      "min": 10.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": ["spacer", "solid"],
+      "binding": "base.w",
+      "label": { "en": "Width (mm)", "es": "Ancho (mm)" },
+      "tooltip": {
+        "en": "Block size along X.",
+        "es": "Tamaño del bloque en X."
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 30.0,
+      "min": 10.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": ["spacer", "solid"],
+      "binding": "base.d",
+      "label": { "en": "Depth (mm)", "es": "Profundidad (mm)" },
+      "tooltip": {
+        "en": "Block size along Y.",
+        "es": "Tamaño del bloque en Y."
+      }
+    },
+    {
+      "id": "height",
+      "type": "slider",
+      "default": 15.0,
+      "min": 3.0,
+      "max": 80.0,
+      "step": 0.5,
+      "group": "size",
+      "modes": ["spacer", "solid"],
+      "binding": "base.h",
+      "label": { "en": "Height (mm)", "es": "Altura (mm)" },
+      "tooltip": {
+        "en": "The spacing this block provides.",
+        "es": "El espaciamiento que da este bloque."
+      }
+    },
+    {
+      "id": "bore_radius",
+      "type": "slider",
+      "default": 4.25,
+      "min": 1.0,
+      "max": 15.0,
+      "step": 0.25,
+      "group": "bore",
+      "modes": ["spacer"],
+      "binding": "bore.r",
+      "label": { "en": "Bore radius (mm)", "es": "Radio del barreno (mm)" },
+      "tooltip": {
+        "en": "Radius of the clearance bore. 4.25 clears an M8 bolt; 3.25 clears M6.",
+        "es": "Radio del barreno de paso. 4.25 libra un tornillo M8; 3.25 libra M6."
+      }
+    },
+    {
+      "id": "chamfer_size",
+      "type": "slider",
+      "default": 1.5,
+      "min": 0.2,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "finish",
+      "modes": ["spacer", "solid"],
+      "binding": ["spacer.distance", "spacer_solid.distance"],
+      "label": { "en": "Corner chamfer (mm)", "es": "Chaflán de esquinas (mm)" },
+      "tooltip": {
+        "en": "Chamfer on the vertical corner edges of both variants.",
+        "es": "Chaflán en las aristas verticales de ambas variantes."
+      }
+    }
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  }
+}

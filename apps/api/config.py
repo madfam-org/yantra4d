@@ -48,6 +48,8 @@ class AppConfig:
     CADQUERY_ALLOWED_EXPORT_FORMATS: set = field(default_factory=lambda: {'stl', 'step', 'glb', 'gltf', 'obj', 'vrml', 'amf', '3mf'})
     OPENSCAD_ALLOWED_EXPORT_FORMATS: set = field(default_factory=lambda: {'stl', '3mf', 'off'})
     IMPLICIT_ALLOWED_EXPORT_FORMATS: set = field(default_factory=lambda: {'stl', 'glb', 'gltf', '3mf', 'off', 'obj'})
+    # Graph documents transpile to CadQuery scripts, so they share its formats.
+    GRAPH_ALLOWED_EXPORT_FORMATS: set = field(default_factory=lambda: {'stl', 'step', 'glb', 'gltf', 'obj', 'vrml', 'amf', '3mf'})
 
     # Janua Auth
     MANIFEST_STRICTNESS: str = field(default_factory=lambda: os.getenv("MANIFEST_STRICTNESS", ""))

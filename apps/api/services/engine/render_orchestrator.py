@@ -217,6 +217,13 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
             return engine, scad_path, None, ("CadQuery engine is not available for your tier.", 403)
         if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
+    elif engine == "graph":
+        # Graph documents transpile to CadQuery scripts (services/engine/graph_engine.py),
+        # so they gate and format-check like a paid backend kernel of their own.
+        if not check_feature(tier, "graph_engine"):
+            return engine, scad_path, None, ("Graph engine is not available for your tier.", 403)
+        if export_format not in Config.GRAPH_ALLOWED_EXPORT_FORMATS:
+            return engine, scad_path, None, (f"Export format '{export_format}' is not supported by graph engine.", 400)
     elif engine == "implicit":
         if export_format not in Config.IMPLICIT_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by implicit engine.", 400)
@@ -225,7 +232,7 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
 
     # Determine actual render format
-    if engine == "cadquery":
+    if engine in ("cadquery", "graph"):
         actual_format = export_format
     elif engine == "implicit":
         actual_format = 'stl'

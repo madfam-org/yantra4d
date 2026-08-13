@@ -55,8 +55,12 @@ vi.mock('./useShareableUrl', () => ({
   getSharedParams: () => ({}),
 }))
 
+// Constraint errors and cache hits both short-circuit the debounced
+// auto-generate effect, so both need to be steerable from a test.
+const { constraintState } = vi.hoisted(() => ({ constraintState: { hasErrors: false } }))
+
 vi.mock('../editor/useConstraints', () => ({
-  useConstraints: () => ({ violations: [], byParam: {}, hasErrors: false }),
+  useConstraints: () => ({ violations: [], byParam: {}, hasErrors: constraintState.hasErrors }),
 }))
 
 // The mock captures onHashChange so a test can drive it. Route changes are how
@@ -79,21 +83,24 @@ vi.mock('../render/useImageExport', () => ({
 }))
 
 const mockSetParts = vi.fn()
+const mockCheckCache = vi.fn(() => null)
+const mockHandleGenerate = vi.fn()
+const { renderState } = vi.hoisted(() => ({ renderState: { parts: [] } }))
 
 vi.mock('../render/useRender', () => ({
   useRender: () => ({
-    parts: [],
+    parts: renderState.parts,
     setParts: mockSetParts,
     logs: '',
     setLogs: vi.fn(),
     loading: false,
     progress: 0,
     progressPhase: '',
-    checkCache: vi.fn(),
+    checkCache: mockCheckCache,
     evictCache: vi.fn(),
     showConfirmDialog: false,
     pendingEstimate: null,
-    handleGenerate: vi.fn(),
+    handleGenerate: mockHandleGenerate,
     handleCancelGenerate: vi.fn(),
     handleConfirmRender: vi.fn(),
     handleCancelRender: vi.fn(),
@@ -842,6 +849,72 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
       act(() => { hashNav.onHashChange({ mode: { id: 'default' }, preset: null }) })
       expect(result.current.params.only_default).toBe(99)
     })
+  })
+
+  // --- Auto-generate gate and overhang analysis ----------------------------
+
+  beforeEach(() => {
+    constraintState.hasErrors = false
+    renderState.parts = []
+    mockCheckCache.mockReturnValue(null)
+    mockHandleGenerate.mockClear()
+    mockSetParts.mockClear()
+  })
+
+  it('a cache hit serves the cached parts instead of rendering again', () => {
+    const cached = [{ type: 'body', url: 'blob:cached' }]
+    mockCheckCache.mockReturnValue(cached)
+    renderHook(() => useProjectParams({ viewerRef: {} }))
+    expect(mockSetParts).toHaveBeenCalledWith(cached)
+    expect(mockHandleGenerate).not.toHaveBeenCalled()
+  })
+
+  it('a constraint error suppresses the auto-render', () => {
+    vi.useFakeTimers()
+    constraintState.hasErrors = true
+    renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { vi.advanceTimersByTime(2000) })
+    // Rendering geometry that violates its own constraints wastes a render and
+    // shows the user something the manifest says is invalid.
+    expect(mockHandleGenerate).not.toHaveBeenCalled()
+    vi.useRealTimers()
+  })
+
+  it('no auto-render while every visibility parameter for the mode is off', () => {
+    vi.useFakeTimers()
+    const saved = mockManifest.parameters
+    mockManifest.parameters = [
+      { id: 'show_body', group: 'visibility', visible_in_modes: ['default'], default: false },
+    ]
+    try {
+      renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { vi.advanceTimersByTime(2000) })
+      // With nothing visible there is no geometry to produce.
+      expect(mockHandleGenerate).not.toHaveBeenCalled()
+    } finally {
+      mockManifest.parameters = saved
+      vi.useRealTimers()
+    }
+  })
+
+  it('disabling overhang analysis clears the data it produced', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setOverhangEnabled(true) })
+    act(() => { result.current.setOverhangEnabled(false) })
+    expect(result.current.overhangData).toBeNull()
+  })
+
+  it('overhang analysis is not requested without rendered parts', () => {
+    const spy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true, json: () => Promise.resolve({ analysis: {} }),
+    })
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setOverhangEnabled(true) })
+    // Nothing to analyse yet, so no request.
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('/analyze/overhang'), expect.anything()
+    )
+    spy.mockRestore()
   })
 })
 

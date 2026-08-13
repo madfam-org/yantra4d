@@ -345,13 +345,15 @@ If a user requests a STEP export and the mode has a `cq_file`, the backend autom
 | OpenSCAD | `stl`, `3mf`, `off` | `obj`, `glb`, `gltf`, `ply` | `step` (requires `cq_file`) |
 | CadQuery | `stl`, `step`, `glb`, `gltf`, `3mf`, `obj`, `vrml`, `amf` | — | — |
 | Implicit | `stl` | `obj`, `glb`, `gltf`, `3mf`, `off` | `step` (requires `cq_file`) |
+| Graph | stl, step, glb, gltf, 3mf, obj, vrml, amf | — | Transpiles to CadQuery, so it shares CadQuery's formats. STEP needs no `cq_file`. |
 
-To advertise STEP support in the UI, add `"step"` to the manifest's `export_formats` array and provide a `cq_file` for each mode that should support it. For OBJ and GLB, no `cq_file` is needed — trimesh conversion handles these automatically.
+Except for graph modes, which produce STEP natively, to advertise STEP support in the UI, add `"step"` to the manifest's `export_formats` array and provide a `cq_file` for each mode that should support it. For OBJ and GLB, no `cq_file` is needed — trimesh conversion handles these automatically.
 
 ### Reference projects
 
 - `projects/gridfinity/project.json` — all three modes declare `cq_file` alongside `scad_file`, with `"export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"]`.
 - `projects/scara-robotics/project.json` — benchmark dual-engine parity implementation.
+- `projects/spacer-block/project.json`, `projects/flange-plate/project.json` — graph-engine cartridges (see [authoring guide](../guides/graph-cartridges.md)).
 - `projects/cq-hyperobject-test/project.json` — CadQuery-only test project.
 
 ---
@@ -365,6 +367,7 @@ The `ProjectManifest` class provides:
 | `get_allowed_files()` | `{filename: Path}` | All SCAD files referenced by modes |
 | `get_parts_map()` | `{scad_filename: [part_ids]}` | Parts per SCAD file |
 | `get_mode_map()` | `{part_id: render_mode_int}` | Render mode integers for OpenSCAD |
+| `mode_engine(mode_id)` | Resolve the engine for one mode (explicit `engine`, then `.graph.json`/`.py` inference, then project default) |
 | `get_scad_file_for_mode(mode_id)` | `str \| None` | SCAD filename for a mode |
 | `get_parts_for_mode(mode_id)` | `[str]` | Part IDs for a mode |
 | `calculate_estimate_units(mode_id, params)` | `int` | Unit count for time estimation |

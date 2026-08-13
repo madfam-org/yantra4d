@@ -16,7 +16,7 @@ We are building the **Hyperobjects Commons** — a repository of "Bounded 4D Hyp
 ### 📼 Cartridge-Like Architecture
 Every project in Yantra4D is a self-contained **"Cartridge"**. 
 - **The Manifest**: A `project.json` file serves as the single source of truth, defining parameters, modes, and parts.
-- **Poly-Kernel**: High-performance OpenSCAD (CSG) for browser-side WASM reactivity + mathematically exact CadQuery (B-Rep) for engineering-grade STEP exports.
+- **Poly-Kernel**: four kernels — high-performance OpenSCAD (CSG) for browser-side WASM reactivity, mathematically exact CadQuery (B-Rep) for engineering-grade STEP exports, a native Implicit SDF engine for lattices, and a node-graph engine that compiles graphs to sandboxed CadQuery.
 - **Portability**: Drop a project folder into `projects/` and the platform instantly white-labels the UI to serve it.
 
 ### 🧠 Material Hyperobjects & Hyperawareness
@@ -32,7 +32,7 @@ The vision: apply simulated energy to any hyperobject and watch the continuous S
 ---
 
 ## 🛠️ The Stack
-- **CAD Engines**: Tri-kernel execution via [OpenSCAD](https://openscad.org/) (CSG), [CadQuery](https://cadquery.readthedocs.io/) (B-Rep), and a native **Implicit SDF Engine** (TPMS/Lattice).
+- **CAD Engines**: Four-kernel execution via [OpenSCAD](https://openscad.org/) (CSG), [CadQuery](https://cadquery.readthedocs.io/) (B-Rep), a native **Implicit SDF Engine** (TPMS/Lattice), and a **Graph Engine** that transpiles `.graph.json` node graphs into sandboxed CadQuery (see [authoring guide](docs/guides/graph-cartridges.md)).
 - **The Studio**: React 19 + Three.js + Manifold-3d for blisteringly fast volumetric browser rendering.
 - **The API**: Python Flask backend with Docker-orchestrated render clusters and slicer-grade physics estimation.
 - **The Knowledge Base**: [4D Docs source](apps/docs/) — Astro Starlight; the public docs site is not deployed yet (see "Deep Documentation" below).
@@ -49,7 +49,7 @@ Honest, code-verified snapshot. **Working today:**
 - **Geometry verification** — dedicated verify endpoint (`apps/api/routes/engine/verify.py`) and parity QA scripts (`scripts/qa/verify_parity.py`).
 - **Cartridge project system** — `project.json` manifests, 326-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows.
 - **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
-- **Per-mode engine resolution** — a single cartridge can mix OpenSCAD and CadQuery modes; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
+- **Per-mode engine resolution** — a single cartridge can mix modes across kernels; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
 
 **Mocked or heuristic today (presented as roadmap, not shipped):**
 
@@ -59,9 +59,9 @@ Honest, code-verified snapshot. **Working today:**
 
 ---
 
-## 📦 The Commons Catalog (324 cartridges, CadQuery-first)
+## 📦 The Commons Catalog (CadQuery-first)
 
-The Commons is a demand-grounded catalog of **324 Bounded 4D Hyperobjects**, authored
+The Commons is a demand-grounded catalog of **Bounded 4D Hyperobjects**, authored
 **CadQuery-first** (exact B-Rep, STEP export). Each `projects/<slug>/` is a
 self-contained cartridge (`main.py` + `project.json` + docs); the flagship interfaces
 are also published as independent `madfam-org` git submodules.
@@ -69,13 +69,18 @@ are also published as independent `madfam-org` git submodules.
 Counts below are generated from the manifests, not maintained by hand — see
 [`docs/commons-catalog.json`](docs/commons-catalog.json):
 
+<!-- BEGIN COMMONS_COUNTS -->
+
 | | |
 | :-- | --: |
-| Cartridges | 324 |
-| With declared CDG interfaces | 311 |
-| Carrying an explicit license | 324 (100%) |
+| Cartridges | 326 |
+| With declared CDG interfaces | 312 |
+| Carrying an explicit license | 326 |
 | Dual-engine (CadQuery B-Rep + OpenSCAD CSG) | 23 |
-| Distinct external standards referenced | 206 |
+| Distinct external standards referenced | 208 |
+| Licensed CERN-OHL-W-2.0 | 322 of 326 |
+
+<!-- END COMMONS_COUNTS -->
 
 ### Licensing
 
@@ -83,10 +88,10 @@ Two licenses apply to this repository and they cover different things:
 
 - **The platform** — everything outside `projects/` — is **AGPL-3.0** (see [LICENSE](./LICENSE)).
 - **The cartridges** in `projects/` are hardware designs, licensed
-  **CERN-OHL-W-2.0** (320 of 324). Weakly reciprocal: modifications to a design
+  **CERN-OHL-W-2.0** (see the table above). Weakly reciprocal: modifications to a design
   must be shared, but a larger product incorporating one need not be.
 
-Four cartridges differ because they derive from upstream work whose license
+A few cartridges differ because they derive from upstream work whose license
 travels with it and cannot be relicensed:
 
 | Cartridge | License | Upstream |

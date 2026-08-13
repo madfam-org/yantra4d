@@ -28,6 +28,9 @@ REPO = Path(__file__).resolve().parents[2]
 PROJECTS = REPO / "projects"
 CATALOG_JSON = REPO / "docs" / "commons-catalog.json"
 CATALOG_MD = REPO / "COMMONS.md"
+README_MD = REPO / "README.md"
+README_BEGIN = "<!-- BEGIN COMMONS_COUNTS -->"
+README_END = "<!-- END COMMONS_COUNTS -->"
 UPSTREAM = "https://github.com/madfam-org/yantra4d"
 SCHEMA_VERSION = "commons_catalog_v1"
 
@@ -286,6 +289,45 @@ def render_markdown(catalog: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+
+def render_readme(catalog: dict, current: str) -> str:
+    """Refresh README's counts block in place.
+
+    The README states these figures are generated rather than hand-maintained.
+    They were not: it claimed 324 cartridges in one paragraph and 326 in
+    another. Now the claim is true, and drift is caught by --check.
+    """
+    counts = catalog["counts"]
+    licenses: dict[str, int] = {}
+    for entry in catalog["cartridges"]:
+        licenses[entry.get("commons_license") or "unlicensed"] = (
+            licenses.get(entry.get("commons_license") or "unlicensed", 0) + 1
+        )
+    cern = sum(n for lic, n in licenses.items() if lic.startswith("CERN-OHL"))
+    total = counts["cartridges"]
+
+    block = "\n".join([
+        README_BEGIN,
+        "",
+        "| | |",
+        "| :-- | --: |",
+        f"| Cartridges | {total} |",
+        f"| With declared CDG interfaces | {counts['with_cdg_interfaces']} |",
+        f"| Carrying an explicit license | {counts['with_commons_license']} |",
+        f"| Dual-engine (CadQuery B-Rep + OpenSCAD CSG) | {counts['dual_engine']} |",
+        f"| Distinct external standards referenced | {len(catalog.get('standards', []))} |",
+        f"| Licensed CERN-OHL-W-2.0 | {cern} of {total} |",
+        "",
+        README_END,
+    ])
+
+    if README_BEGIN not in current or README_END not in current:
+        return current
+    head, _, rest = current.partition(README_BEGIN)
+    _, _, tail = rest.partition(README_END)
+    return head + block + tail
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Generate the Hyperobjects Commons catalog")
     ap.add_argument("--check", action="store_true",
@@ -302,7 +344,9 @@ def main() -> int:
 
     if args.check:
         stale = []
-        for path, fresh in ((CATALOG_JSON, payload), (CATALOG_MD, markdown)):
+        readme_current = README_MD.read_text(encoding="utf-8") if README_MD.exists() else ""
+        readme_fresh = render_readme(catalog, readme_current)
+        for path, fresh in ((CATALOG_JSON, payload), (CATALOG_MD, markdown), (README_MD, readme_fresh)):
             current = path.read_text(encoding="utf-8") if path.exists() else None
             if current != fresh:
                 stale.append(path.relative_to(REPO))
@@ -316,6 +360,8 @@ def main() -> int:
     CATALOG_JSON.parent.mkdir(parents=True, exist_ok=True)
     CATALOG_JSON.write_text(payload, encoding="utf-8")
     CATALOG_MD.write_text(markdown, encoding="utf-8")
+    if README_MD.exists():
+        README_MD.write_text(render_readme(catalog, README_MD.read_text(encoding="utf-8")), encoding="utf-8")
     print(f"Wrote {CATALOG_JSON.relative_to(REPO)} and {CATALOG_MD.relative_to(REPO)} "
           f"({catalog['counts']['cartridges']} cartridges)")
     return 0

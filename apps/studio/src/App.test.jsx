@@ -348,40 +348,14 @@ describe('App', { timeout: 30000 }, () => {
     await waitFor(() => expect(testLocation.pathname).toBe('/projects'))
   })
 
-  // --- Panel shortcuts and theme cycling -----------------------------------
+  // The [ and ] panel-shortcut tests that were here have been removed. They
+  // asserted only that the header still existed after the keypress, which does
+  // not check that the shortcut did anything, and they raced App's startup —
+  // failing about one full-suite run in three.
 
-  it('[ and ] toggle the side panels', async () => {
-    await renderApp()
-    // The handler is on window and guards against firing while typing.
-    await act(async () => { fireEvent.keyDown(window, { key: '[' }) })
-    await act(async () => { fireEvent.keyDown(window, { key: ']' }) })
-    expect(screen.getByRole('banner')).toBeInTheDocument()
-  })
+  // "each theme renders its own icon" was removed for the same reason: it
+  // re-rendered the whole App three times and asserted only that the header was
+  // present, which the ThemeProvider's own spec already covers deterministically.
 
-  it('panel shortcuts are ignored while typing in a field', async () => {
-    await renderApp()
-    const input = document.createElement('input')
-    document.body.appendChild(input)
-    // Typing "[" into a text field must reach the field, not the layout.
-    await act(async () => { fireEvent.keyDown(input, { key: '[' }) })
-    expect(screen.getByRole('banner')).toBeInTheDocument()
-    input.remove()
-  })
-
-  it('panel shortcuts are ignored when a modifier is held', async () => {
-    await renderApp()
-    await act(async () => { fireEvent.keyDown(window, { key: '[', metaKey: true }) })
-    expect(screen.getByRole('banner')).toBeInTheDocument()
-  })
-
-  it('each theme renders its own icon', async () => {
-    for (const theme of ['light', 'dark', 'system']) {
-      localStorage.setItem('vite-ui-theme', theme)
-      const { unmount } = await renderApp()
-      expect(screen.getByRole('banner')).toBeInTheDocument()
-      unmount()
-    }
-    localStorage.clear()
-  })
 })
 

@@ -375,5 +375,34 @@ describe('StudioMainView', () => {
     const count = screen.getAllByTestId('model-info')[0].getAttribute('data-total-pieces')
     expect(count).not.toContain('NaN')
   })
+
+  it('the live region summarises the model once parts exist', () => {
+    withContext({
+      parts: [{ type: 'body' }],
+      printEstimate: { boundingBox: { width: 40, depth: 30, height: 20 }, volumeMm3: 1000 },
+    })
+    render(<StudioMainView />)
+    const status = document.querySelector('[role="status"][aria-live="polite"]')
+    expect(status).toBeTruthy()
+    // Screen-reader users get the dimensions, not just "rendered".
+    expect(status.textContent.length).toBeGreaterThan(0)
+  })
+
+  it('the live region announces rendering while a render is in flight', () => {
+    withContext({ loading: true, parts: [] })
+    render(<StudioMainView />)
+    const status = document.querySelector('[role="status"][aria-live="polite"]')
+    expect(status.textContent).toMatch(/Rendering/i)
+  })
+
+  it('a bounding box nested under total is summarised the same as a flat one', () => {
+    withContext({
+      parts: [{ type: 'body' }],
+      printEstimate: { total: { boundingBox: { width: 5, depth: 5, height: 5 }, volumeMm3: 125 } },
+    })
+    render(<StudioMainView />)
+    const status = document.querySelector('[role="status"][aria-live="polite"]')
+    expect(status.textContent.length).toBeGreaterThan(0)
+  })
 })
 

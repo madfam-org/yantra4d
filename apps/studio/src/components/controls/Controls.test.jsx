@@ -81,7 +81,8 @@ afterEach(() => {
   manifestOverride.emptyParams = false
   manifestOverride.params = null
   manifestOverride.manifest = null
-  vi.restoreAllMocks()
+  // No vi.restoreAllMocks() here: renderControls installs a fresh fetch spy on
+  // every call, so restoring the global between tests buys nothing.
 })
 
 describe('Controls', () => {
@@ -493,6 +494,70 @@ describe('Controls', () => {
     // The child renders, but must not be operable while the parent is off.
     const row = screen.getByText('Magnet Depth').closest('div')
     expect(row).toBeTruthy()
+  })
+
+  it('a select preserves the numeric type of its option values', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [{
+      id: 'layers', type: 'select', label: 'Layers', default: 2,
+      options: [{ value: 1, label: 'One' }, { value: 2, label: 'Two' }],
+    }]
+    renderControls({ setParams, params: { layers: 2 } })
+
+    fireEvent.change(screen.getByLabelText('Layers'), { target: { value: '1' } })
+    // The select hands back a string; storing "1" where the manifest declared 1
+    // would break any comparison the geometry does against the number.
+    expect(setParams.mock.calls.at(-1)[0]({})).toMatchObject({ layers: 1 })
+  })
+
+  it('a select with string options keeps them as strings', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [{
+      id: 'style', type: 'select', label: 'Style', default: 'flat',
+      options: [{ value: 'flat', label: 'Flat' }, { value: 'domed', label: 'Domed' }],
+    }]
+    renderControls({ setParams, params: { style: 'flat' } })
+
+    fireEvent.change(screen.getByLabelText('Style'), { target: { value: 'domed' } })
+    expect(setParams.mock.calls.at(-1)[0]({})).toMatchObject({ style: 'domed' })
+  })
+
+  it('a colour widget without a stored value falls back to black', () => {
+    manifestOverride.params = [{
+      id: 'accent', type: 'text', label: 'Accent', widget: { type: 'color' },
+    }]
+    renderControls({ params: {} })
+    expect(document.getElementById('color-accent')).toHaveValue('#000000')
+  })
+
+  it('a localised constraint message renders in the active language', () => {
+    manifestOverride.params = [
+      { id: 'width_units', type: 'slider', label: 'Width (units)', default: 2, min: 1, max: 6, step: 1 },
+    ]
+    renderControls({
+      params: { width_units: 2 },
+      constraintsByParam: {
+        width_units: [{ severity: 'error', message: { en: 'Too wide for the plate', es: 'Demasiado ancho' } }],
+      },
+    })
+    expect(screen.getByText('Too wide for the plate')).toBeInTheDocument()
+  })
+
+  it('the visibility level toggle switches between basic and advanced', () => {
+    manifestOverride.manifest = {
+      parameter_groups: [{ id: 'visibility', levels: [{ id: 'basic' }, { id: 'advanced' }] }],
+    }
+    manifestOverride.params = [
+      { id: 'show_base', type: 'checkbox', label: 'Show Base', group: 'visibility', default: true },
+      { id: 'show_internals', type: 'checkbox', label: 'Show Internals', group: 'visibility', default: false, visibility_level: 'advanced' },
+    ]
+    renderControls({ params: { show_base: true, show_internals: false } })
+
+    // Advanced-only parameters are hidden until the level is raised.
+    expect(screen.queryByLabelText(/Show Internals/i)).not.toBeInTheDocument()
+    const toggle = screen.getByRole('button', { pressed: false })
+    fireEvent.click(toggle)
+    expect(screen.getByLabelText(/Show Internals/i)).toBeInTheDocument()
   })
 })
 

@@ -220,6 +220,27 @@ describe('graph traversal', () => {
     expect(G.topologicalOrder(nodes)).toHaveLength(400)
   })
 
+  it('assigns depth 0 to sources and one past the deepest input otherwise', () => {
+    const depth = G.dependencyDepth(makeDoc().nodes)
+    expect(depth.get('base')).toBe(0)
+    expect(depth.get('bore')).toBe(0)
+    expect(depth.get('body')).toBe(1)
+    expect(depth.get('soft')).toBe(2)
+  })
+
+  it('has no depth for a cyclic graph', () => {
+    const nodes = [
+      { id: 'a', type: 'translate', inputs: { shape: 'b' } },
+      { id: 'b', type: 'translate', inputs: { shape: 'a' } },
+    ]
+    expect(G.dependencyDepth(nodes)).toBeNull()
+  })
+
+  it('ignores inputs pointing outside the graph when computing depth', () => {
+    const nodes = [{ id: 'a', type: 'translate', inputs: { shape: 'ghost' } }]
+    expect(G.dependencyDepth(nodes).get('a')).toBe(0)
+  })
+
   it('collects downstream nodes', () => {
     const down = G.downstreamOf(makeDoc().nodes, 'base')
     expect([...down].sort()).toEqual(['base', 'body', 'soft'])

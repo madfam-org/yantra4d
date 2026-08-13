@@ -252,6 +252,24 @@ export function topologicalOrder(nodes: GraphNode[]): string[] | null {
   return order
 }
 
+/**
+ * Depth of each node — 0 for nodes with no inputs, otherwise one past the
+ * deepest thing it consumes. Laying a graph out by depth puts sources on the
+ * left and the final solid on the right, which is how these graphs read.
+ * Returns null when the graph contains a cycle, since depth is then undefined.
+ */
+export function dependencyDepth(nodes: GraphNode[]): Map<string, number> | null {
+  const order = topologicalOrder(nodes)
+  if (!order) return null
+  const byId = new Map(nodes.map((n) => [n.id, n]))
+  const depth = new Map<string, number>()
+  for (const id of order) {
+    const deps = dependenciesOf(byId.get(id)!).filter((d) => byId.has(d))
+    depth.set(id, deps.length === 0 ? 0 : Math.max(...deps.map((d) => depth.get(d) ?? 0)) + 1)
+  }
+  return depth
+}
+
 /** Ids of every node downstream of the given one, including itself. */
 export function downstreamOf(nodes: GraphNode[], nodeId: string): Set<string> {
   const dirty = new Set<string>([nodeId])

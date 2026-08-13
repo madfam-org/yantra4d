@@ -18,6 +18,7 @@ import { FileCode, Plus, X, Loader2, Sparkles } from 'lucide-react'
 const AiChatPanel = lazy(() => import('../ai/AiChatPanel'))
 import { useTheme } from '../../contexts/system/ThemeProvider'
 import GraphIssues from './GraphIssues'
+const GraphCanvas = lazy(() => import('./GraphCanvas'))
 import { listFiles, readFile, createFile, deleteFile } from '../../services/domain/editorService'
 import { registerScadLanguage, SCAD_LANGUAGE_ID } from '../../lib/scad-language'
 import { useEditorRender } from '../../hooks/editor/useEditorRender'
@@ -177,6 +178,8 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
   // Graph documents are JSON, not OpenSCAD — highlight them as such and run the
   // transpiler's validation rules against the buffer as the author types.
   const isGraphFile = (activeTab ?? '').endsWith('.graph.json')
+  const [graphView, setGraphView] = useState(false)
+  const showCanvas = isGraphFile && graphView
 
   // Build file contents map for AI code editor
   const getFileContents = useCallback(() => {
@@ -297,9 +300,37 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
         </div>
       )}
 
+      {/* Text / Graph toggle — only meaningful for node-graph documents */}
+      {isGraphFile && (
+        <div className="flex items-center gap-1 border-b border-border px-2 py-1">
+          <Button
+            size="sm"
+            variant={graphView ? 'ghost' : 'secondary'}
+            className="h-7 min-h-[44px] md:min-h-0 px-2 text-xs"
+            onClick={() => setGraphView(false)}
+            aria-pressed={!graphView}
+          >
+            Text
+          </Button>
+          <Button
+            size="sm"
+            variant={graphView ? 'secondary' : 'ghost'}
+            className="h-7 min-h-[44px] md:min-h-0 px-2 text-xs"
+            onClick={() => setGraphView(true)}
+            aria-pressed={graphView}
+          >
+            Graph
+          </Button>
+        </div>
+      )}
+
       {/* Editor */}
       <div className="flex-1 min-h-[200px]">
-        {activeTab ? (
+        {showCanvas ? (
+          <Suspense fallback={<div className="flex h-full items-center justify-center text-xs text-muted-foreground">Loading graph view…</div>}>
+            <GraphCanvas content={activeContent} />
+          </Suspense>
+        ) : activeTab ? (
           <Editor
             language={isGraphFile ? 'json' : SCAD_LANGUAGE_ID}
             value={activeContent}

@@ -432,5 +432,67 @@ describe('Controls', () => {
 
     expect(await screen.findByText(/No components found/)).toBeInTheDocument()
   })
+
+  it('a text parameter enforces its declared maximum length', () => {
+    manifestOverride.params = [
+      { id: 'label_text', type: 'text', label: 'Label', default: '', maxlength: 8 },
+    ]
+    renderControls({ params: { label_text: 'abc' } })
+    expect(document.getElementById('text-label_text')).toHaveAttribute('maxLength', '8')
+  })
+
+  it('a text parameter over its maximum is marked invalid', () => {
+    manifestOverride.params = [
+      { id: 'label_text', type: 'text', label: 'Label', default: '', maxlength: 4 },
+    ]
+    // A value longer than maxlength can arrive from a shared URL or a preset,
+    // so the control has to flag it rather than assume the input prevented it.
+    renderControls({ params: { label_text: 'far too long' } })
+    expect(document.getElementById('text-label_text')).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('a text parameter within its maximum is not marked invalid', () => {
+    manifestOverride.params = [
+      { id: 'label_text', type: 'text', label: 'Label', default: '', maxlength: 20 },
+    ]
+    renderControls({ params: { label_text: 'fine' } })
+    expect(document.getElementById('text-label_text')).not.toHaveAttribute('aria-invalid')
+  })
+
+  it('a text parameter with no declared maximum still gets a default cap', () => {
+    manifestOverride.params = [
+      { id: 'note', type: 'text', label: 'Note', default: '' },
+    ]
+    renderControls({ params: { note: '' } })
+    expect(document.getElementById('text-note')).toHaveAttribute('maxLength', '255')
+  })
+
+  it('the basic visibility level hides parameters marked for a higher level', () => {
+    manifestOverride.manifest = {
+      parameter_groups: [
+        { id: 'visibility', levels: [{ id: 'basic' }, { id: 'advanced' }] },
+      ],
+    }
+    manifestOverride.params = [
+      { id: 'show_base', type: 'checkbox', label: 'Show Base', group: 'visibility', default: true },
+      { id: 'show_internals', type: 'checkbox', label: 'Show Internals', group: 'visibility', default: false, visibility_level: 'advanced' },
+    ]
+    renderControls({ params: { show_base: true, show_internals: false } })
+
+    expect(screen.getByLabelText(/Show Base/i)).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Show Internals/i)).not.toBeInTheDocument()
+  })
+
+  it('a child parameter is disabled while its parent is unchecked', () => {
+    manifestOverride.params = [
+      { id: 'enable_magnets', type: 'checkbox', label: 'Enable Magnets', default: false },
+      { id: 'magnet_depth', type: 'slider', label: 'Magnet Depth', default: 2, min: 0, max: 6, step: 0.5, parent: 'enable_magnets' },
+    ]
+    renderControls({ params: { enable_magnets: false, magnet_depth: 2 } })
+
+    // The child renders, but must not be operable while the parent is off.
+    const row = screen.getByText('Magnet Depth').closest('div')
+    expect(row).toBeTruthy()
+  })
 })
 

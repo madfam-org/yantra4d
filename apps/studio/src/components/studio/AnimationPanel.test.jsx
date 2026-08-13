@@ -248,5 +248,70 @@ describe('AnimationPanel', () => {
         fireEvent.click(exportBtn)
         expect(await screen.findByText(/No 3D canvas found/)).toBeInTheDocument()
     })
+
+    it('playback advances through frames and loads each into the viewport', async () => {
+        vi.useFakeTimers()
+        const onLoadFrame = vi.fn()
+        mockFetch.mockResolvedValueOnce(listAnimations())
+        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
+        await vi.waitFor(() => expect(screen.getByText('Grow')).toBeInTheDocument())
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+        await vi.waitFor(() => expect(onLoadFrame).toHaveBeenCalledWith(['/f0.glb']))
+
+        // Playback loops on an interval of duration / frames.length.
+        onLoadFrame.mockClear()
+        await vi.advanceTimersByTimeAsync(2000)
+        expect(onLoadFrame).toHaveBeenCalledWith(['/f1.glb'])
+        vi.useRealTimers()
+    })
+
+    it('WebM export records the canvas and downloads the result', async () => {
+        // jsdom has neither captureStream nor MediaRecorder; both are supplied
+        // here so the export path can run end to end.
+        const canvas = document.createElement('canvas')
+        canvas.captureStream = vi.fn(() => ({ getTracks: () => [] }))
+        document.body.appendChild(canvas)
+
+        const started = vi.fn()
+        const stopped = vi.fn()
+        class FakeRecorder {
+            constructor() { this.ondataavailable = null; this.onstop = null }
+            start() { started() }
+            stop() { stopped(); this.onstop?.() }
+        }
+        FakeRecorder.isTypeSupported = () => true
+        globalThis.MediaRecorder = FakeRecorder
+        const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { })
+        globalThis.URL.createObjectURL = vi.fn(() => 'blob:anim')
+        globalThis.URL.revokeObjectURL = vi.fn()
+
+        vi.useFakeTimers()
+        const onLoadFrame = vi.fn()
+        mockFetch.mockResolvedValueOnce(listAnimations())
+        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
+        await vi.waitFor(() => expect(screen.getByText('Grow')).toBeInTheDocument())
+        fireEvent.click(screen.getByText('Grow'))
+
+        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
+        fireEvent.click(screen.getByRole('button', { name: /render/i }))
+        await vi.waitFor(() => expect(onLoadFrame).toHaveBeenCalled())
+
+        fireEvent.click(screen.getByRole('button', { name: /webm/i }))
+        expect(started).toHaveBeenCalled()
+
+        // Run past the last frame: the timer stops the recorder, which triggers
+        // the download.
+        await vi.advanceTimersByTimeAsync(5000)
+        expect(stopped).toHaveBeenCalled()
+        expect(clickSpy).toHaveBeenCalled()
+
+        vi.useRealTimers()
+        clickSpy.mockRestore()
+        canvas.remove()
+        delete globalThis.MediaRecorder
+    })
 })
 

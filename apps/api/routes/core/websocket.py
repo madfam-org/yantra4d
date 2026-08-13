@@ -122,9 +122,12 @@ if _WS_AVAILABLE and sock is not None:
 
         try:
             while True:
-                # Check telemetry queue for messages matching this project
+                # Check telemetry queue for messages matching this project.
+                # The producer (mqtt_telemetry) enqueues dicts: {"topic": ..., "payload": ...}
                 try:
-                    topic, payload = telemetry_queue.get(timeout=5)
+                    message = telemetry_queue.get(timeout=5)
+                    topic = message["topic"]
+                    payload = message["payload"]
                     expected_prefix = f"yantra4d/{project_slug}/telemetry/"
                     if topic.startswith(expected_prefix):
                         ws.send(json.dumps({
@@ -135,7 +138,7 @@ if _WS_AVAILABLE and sock is not None:
                         }))
                     # Put back if not for this project (other WS clients may need it)
                     else:
-                        telemetry_queue.put((topic, payload))
+                        telemetry_queue.put(message)
                 except Exception:
                     # Queue empty or timeout — send heartbeat
                     ws.send(json.dumps({"type": "heartbeat", "timestamp": time.time()}))

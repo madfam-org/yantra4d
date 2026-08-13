@@ -17022,7 +17022,14 @@
       "modes": 2,
       "parts": 2,
       "parameters": 5,
-      "export_formats": [],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
       "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": "Exact spacers, shims and risers on demand reduce scrapped fixtures and one-off machining; the graph source keeps the design remixable at node level.",
       "material_awareness": true,

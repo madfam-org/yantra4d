@@ -151,6 +151,7 @@
       }
     }
   ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
   "estimate_constants": {
     "base_time": 8,
     "per_unit": 2,

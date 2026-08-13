@@ -2,14 +2,14 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 325,
-    "with_cdg_interfaces": 311,
-    "with_commons_license": 325,
+    "cartridges": 326,
+    "with_cdg_interfaces": 312,
+    "with_commons_license": 326,
     "dual_engine": 23
   },
   "domains": {
     "household": 113,
-    "industrial": 79,
+    "industrial": 80,
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
@@ -117,7 +117,9 @@
     "ISO 23509",
     "ISO 261 / ISO 965",
     "ISO 261 M3/M4/M5",
+    "ISO 273 medium clearance",
     "ISO 286 (shaft/hole tolerance)",
+    "ISO 286 clearance fit",
     "ISO 2904 (Tr) / ACME",
     "ISO 4014 / ISO 4762 / ISO 7380",
     "ISO 4026 M3 set screw",
@@ -6951,6 +6953,66 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/finger-guard"
+      }
+    },
+    {
+      "slug": "flange-plate",
+      "name": "Bolt-Circle Flange Plate",
+      "domain": "industrial",
+      "engines": [
+        "graph"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 8,
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": "A parametric flange adapts salvaged motors, pumps and bearings to new machines instead of scrapping them for want of a matching bolt circle.",
+      "material_awareness": true,
+      "cdg_interfaces": [
+        {
+          "id": "bolt_circle",
+          "label": "Polar bolt circle",
+          "geometry_type": "bolt_pattern",
+          "standard": "ISO 273 medium clearance",
+          "parameters": [
+            "bolt_circle_radius",
+            "bolt_hole_radius",
+            "bolt_count",
+            "bolt_spacing_deg"
+          ]
+        },
+        {
+          "id": "center_bore",
+          "label": "Centered through bore",
+          "geometry_type": "socket",
+          "standard": "ISO 286 clearance fit",
+          "parameters": [
+            "bore_radius",
+            "thickness"
+          ]
+        }
+      ],
+      "standards": [
+        "ISO 273 medium clearance",
+        "ISO 286 clearance fit"
+      ],
+      "source": {
+        "manifest": "projects/flange-plate/project.json",
+        "has_cadquery": false,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/flange-plate"
       }
     },
     {

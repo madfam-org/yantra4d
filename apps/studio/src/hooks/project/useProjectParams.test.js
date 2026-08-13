@@ -59,8 +59,17 @@ vi.mock('../editor/useConstraints', () => ({
   useConstraints: () => ({ violations: [], byParam: {}, hasErrors: false }),
 }))
 
+// The mock captures onHashChange so a test can drive it. Route changes are how
+// mode and preset actually change in this app — the whole block that cleans up
+// out-of-mode parameters and applies preset values hangs off this callback, and
+// with the old stub it could never fire.
+const { hashNav } = vi.hoisted(() => ({ hashNav: { onHashChange: null } }))
+
 vi.mock('../system/useHashNavigation', () => ({
-  useHashNavigation: () => ({ currentView: 'studio', isDemo: false }),
+  useHashNavigation: (opts) => {
+    hashNav.onHashChange = opts?.onHashChange ?? null
+    return { currentView: 'studio', isDemo: false }
+  },
   parseHash: () => ({}),
   buildHash: () => '#',
 }))
@@ -760,6 +769,79 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
 
     act(() => { result.current.setColors(prev => ({ ...prev, body: '#123456' })) })
     expect(result.current.colors.body).toBe('#123456')
+  })
+
+  // --- Route-driven mode and preset changes --------------------------------
+  // Driving onHashChange is what a navigation does. The block it runs resets
+  // parameters that do not belong to the new mode and applies the new preset's
+  // values, and none of it had ever executed.
+
+  const withManifestParams = (params, fn) => {
+    const saved = mockManifest.parameters
+    mockManifest.parameters = params
+    try { return fn() } finally { mockManifest.parameters = saved }
+  }
+
+  it('navigating to a new mode resets parameters that do not belong to it', () => {
+    withManifestParams([
+      { id: 'only_default', default: 7, visible_in_modes: ['default'] },
+      { id: 'shared', default: 1 },
+    ], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+      act(() => { result.current.setParams(prev => ({ ...prev, only_default: 99 })) })
+      expect(result.current.params.only_default).toBe(99)
+
+      // A parameter scoped to 'default' must not leak into 'grid'.
+      act(() => { hashNav.onHashChange({ mode: { id: 'grid' }, preset: null }) })
+      expect(result.current.mode).toBe('grid')
+      expect(result.current.params.only_default).toBe(7)
+    })
+  })
+
+  it('a parameter with no mode scope survives a mode change', () => {
+    withManifestParams([{ id: 'shared', default: 1 }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+      act(() => { result.current.setParams(prev => ({ ...prev, shared: 42 })) })
+      act(() => { hashNav.onHashChange({ mode: { id: 'grid' }, preset: null }) })
+      expect(result.current.params.shared).toBe(42)
+    })
+  })
+
+  it('navigating to a preset applies its values', () => {
+    withManifestParams([{ id: 'a', default: 0 }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      // preset1 is already active on init, and re-applying the active preset is
+      // deliberately skipped; preset2 is a genuine change.
+      act(() => { hashNav.onHashChange({ mode: null, preset: { id: 'preset2', values: { a: 5 } } }) })
+      expect(result.current.params.a).toBe(5)
+    })
+  })
+
+  it('a hash change with neither mode nor preset leaves state alone', () => {
+    withManifestParams([{ id: 'a', default: 0 }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { result.current.setParams(prev => ({ ...prev, a: 3 })) })
+      const before = result.current.mode
+
+      act(() => { hashNav.onHashChange({ mode: null, preset: null }) })
+      expect(result.current.mode).toBe(before)
+      expect(result.current.params.a).toBe(3)
+    })
+  })
+
+  it('re-navigating to the mode already active does not reset parameters', () => {
+    // The auto-redirect from /project/x to /project/x/<mode>/<preset> fires a
+    // hash change for the mode that is already active; treating that as a
+    // change would wipe values the user or a ?p= share had just set.
+    withManifestParams([{ id: 'only_default', default: 7, visible_in_modes: ['default'] }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { result.current.setParams(prev => ({ ...prev, only_default: 99 })) })
+
+      act(() => { hashNav.onHashChange({ mode: { id: 'default' }, preset: null }) })
+      expect(result.current.params.only_default).toBe(99)
+    })
   })
 })
 

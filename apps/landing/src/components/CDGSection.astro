@@ -9,6 +9,7 @@ const { t } = Astro.props;
 const c = t?.cdg;
 
 import cdgRegistry from '../../../../packages/schemas/cdg.json';
+import { COMMONS_STATS } from '../data/projects';
 
 const entries = cdgRegistry.cdg_registry.map(entry => {
   let key = entry.id;
@@ -36,15 +37,15 @@ const colorMap: Record<string, { border: string; glow: string; text: string }> =
   orange: { border: 'border-orange-500/30', glow: 'hover:shadow-orange-500/20', text: 'text-orange-400' },
 };
 
-const interfaceCount = cdgRegistry.cdg_registry.length;
-const domainSet = new Set(cdgRegistry.cdg_registry.map(e => e.domain));
-const domainCount = domainSet.size;
-
+// Values are generated from the manifests, labels stay translatable. The
+// locale copy previously hardcoded "14 CDG Interfaces" and "10 Hyperobjects"
+// against 545 declared interfaces across 326 cartridges, and because those
+// strings overrode the computed fallbacks the numbers could not self-correct.
 const stats = [
-  { value: c?.stat1value ?? interfaceCount.toString(), label: c?.stat1label ?? 'CDG Interfaces' },
-  { value: c?.stat2value ?? '10',                      label: c?.stat2label ?? 'Hyperobjects' },
-  { value: c?.stat3value ?? domainCount.toString(),    label: c?.stat3label ?? 'Domains' },
-  { value: c?.stat4value ?? 'CERN OHL',                label: c?.stat4label ?? 'Open License' },
+  { value: COMMONS_STATS.interfaceInstances.toString(), label: c?.stat1label ?? 'CDG Interfaces' },
+  { value: COMMONS_STATS.withInterfaces.toString(),     label: c?.stat2label ?? 'Hyperobjects' },
+  { value: COMMONS_STATS.standards.toString(),          label: c?.stat3label ?? 'Standards' },
+  { value: c?.stat4value ?? 'CERN OHL',                 label: c?.stat4label ?? 'Open License' },
 ];
 ---
 

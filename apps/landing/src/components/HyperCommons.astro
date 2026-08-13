@@ -1,5 +1,6 @@
 ---
 import type { Translations } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
 
 interface Props {
   t?: Translations;
@@ -7,6 +8,10 @@ interface Props {
 
 const { t } = Astro.props;
 const h = t?.hyperCommons;
+// Impact figures are generated from the manifests. The cards previously
+// carried "99% cheaper" and "3-17x cheaper" with no source anywhere in the
+// repo; these four are each derived from the commons itself.
+const { cartridges, standards, interfaceInstances, cernLicensed } = COMMONS_STATS;
 ---
 
 <!-- ═══════ Section: The Parametric Commons ═══════ -->
@@ -203,20 +208,20 @@ const h = t?.hyperCommons;
       </h3>
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 max-w-4xl mx-auto">
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact1value ?? '99% más barato'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact1label ?? 'Otoscopio Glia'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{cartridges}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact1label ?? 'Cartuchos abiertos'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact2value ?? '3-17× más baratos'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact2label ?? 'Conectores Tubería'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{standards}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact2label ?? 'Estándares que hablan'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact3value ?? 'Estándar global'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact3label ?? 'Gridfinity'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{interfaceInstances}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact3label ?? 'Interfaces declaradas'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
           <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact4value ?? 'CERN OHL'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact4label ?? 'Licencia'}</div>
+          <div class="text-xs text-muted-foreground">{cernLicensed} {h?.impact4label ?? 'diseños'}</div>
         </div>
       </div>
     </div>

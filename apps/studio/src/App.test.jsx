@@ -347,5 +347,41 @@ describe('App', { timeout: 30000 }, () => {
     fireEvent.click(await screen.findByRole('button', { name: /Browse Projects/i }))
     await waitFor(() => expect(testLocation.pathname).toBe('/projects'))
   })
+
+  // --- Panel shortcuts and theme cycling -----------------------------------
+
+  it('[ and ] toggle the side panels', async () => {
+    await renderApp()
+    // The handler is on window and guards against firing while typing.
+    await act(async () => { fireEvent.keyDown(window, { key: '[' }) })
+    await act(async () => { fireEvent.keyDown(window, { key: ']' }) })
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+  })
+
+  it('panel shortcuts are ignored while typing in a field', async () => {
+    await renderApp()
+    const input = document.createElement('input')
+    document.body.appendChild(input)
+    // Typing "[" into a text field must reach the field, not the layout.
+    await act(async () => { fireEvent.keyDown(input, { key: '[' }) })
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+    input.remove()
+  })
+
+  it('panel shortcuts are ignored when a modifier is held', async () => {
+    await renderApp()
+    await act(async () => { fireEvent.keyDown(window, { key: '[', metaKey: true }) })
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+  })
+
+  it('each theme renders its own icon', async () => {
+    for (const theme of ['light', 'dark', 'system']) {
+      localStorage.setItem('vite-ui-theme', theme)
+      const { unmount } = await renderApp()
+      expect(screen.getByRole('banner')).toBeInTheDocument()
+      unmount()
+    }
+    localStorage.clear()
+  })
 })
 

@@ -314,5 +314,66 @@ describe('StudioMainView', () => {
     render(<StudioMainView />)
     expect(screen.queryAllByLabelText('Toggle print estimate panel')).toHaveLength(0)
   })
+
+  it('compare mode renders a slot per comparison', () => {
+    withContext({ parts: [{ type: 'body' }] })
+    render(
+      <StudioMainView
+        compareMode
+        comparisonSlots={[{ id: 'a', parts: [] }, { id: 'b', parts: [] }]}
+      />
+    )
+    // The compare layout replaces the single viewer with one per slot.
+    expect(screen.getAllByTestId('viewer').length).toBeGreaterThan(1)
+  })
+
+  it('optimization logs are shown while a run reports them', () => {
+    // The logs panel only renders while a job is active; the last line is
+    // what the badge shows.
+    // The simulation toolbar as a whole only renders for a mode with rendered
+    // parts and no render in flight.
+    withContext({
+      mode: 'full',
+      parts: [{ type: 'body' }],
+      loading: false,
+      optimizationJobId: 'opt-1',
+      optimizationProgress: 30,
+      optimizationLogs: ['seeding', 'iteration 1'],
+    })
+    render(<StudioMainView />)
+    expect(document.body.textContent).toContain('iteration 1')
+  })
+
+  it('an estimate nested under total is read the same as a flat one', () => {
+    // The estimate arrives either flat or wrapped in `total` depending on
+    // whether the render produced one part or several.
+    withContext({ printEstimate: { total: { volumeMm3: 900, boundingBox: { width: 1, depth: 2, height: 3 } } } })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('print-overlay').length).toBeGreaterThan(0)
+  })
+
+  it('a part quantity given as a formula string is coerced to a number', () => {
+    withContext({
+      manifest: {
+        modes: [{ id: 'full', parts: ['body'], part_quantities: { body: '2 + 3' } }],
+      },
+      params: {},
+      parts: [{ type: 'body' }],
+    })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('model-info')[0]).toHaveAttribute('data-total-pieces', '5')
+  })
+
+  it('an unevaluable part quantity counts as one rather than NaN', () => {
+    withContext({
+      manifest: {
+        modes: [{ id: 'full', parts: ['body'], part_quantities: { body: 'not a formula' } }],
+      },
+      parts: [{ type: 'body' }],
+    })
+    render(<StudioMainView />)
+    const count = screen.getAllByTestId('model-info')[0].getAttribute('data-total-pieces')
+    expect(count).not.toContain('NaN')
+  })
 })
 

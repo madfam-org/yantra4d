@@ -151,7 +151,7 @@
         "id": "plate_bolt_pattern",
         "label": { "en": "Plate Bolt Pattern", "es": "Patrón de Pernos de Placa" },
         "geometry_type": "bolt_pattern",
-        "standard": "ISO/US plate",
+        "standard": "US/EU license plate (12x6in / 520x110mm)",
         "parameters": ["plate", "slot_len"]
       },
       {

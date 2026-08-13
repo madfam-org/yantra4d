@@ -22,8 +22,8 @@
     "0–3 mm pin-vise collet",
     "1 in / 25 mm round rail",
     "1-inch pegboard / IKEA SKÅDIS",
-    "1/2-3/4 in stub slip",
-    "1/2in & 3/4in pipe",
+    "1/2-3/4 in IPS stub slip (PVC sched 40)",
+    "1/2in & 3/4in IPS pipe",
     "1/4 in hex driver bit (6.35 mm A/F)",
     "1/4in & 1/2in drip",
     "1020 tray",
@@ -68,7 +68,6 @@
     "60° V-groove bench block",
     "60° lever-indicator dovetail",
     "6mm dia × 2mm N52 neodymium",
-    "7/8-1in bar",
     "8 mm indicator stem (Mitutoyo Series 2)",
     "830-pt breadboard",
     "90mm petri",
@@ -85,6 +84,7 @@
     "Class 15 / L-style bobbin (6.1 mm bore, 20.3 mm OD)",
     "Copper / PEX OD 1/2-1 in",
     "Custom mounting pattern",
+    "D-shaft / spline bore",
     "DIN 3975",
     "DIN 5480 (spline) / keyway",
     "DIN EN 60715",
@@ -136,7 +136,6 @@
     "ISO 9409-1-50-4-M6",
     "ISO handlebar Ø 22.2/25.4/31.8",
     "ISO metric (M2/M2.5/M3)",
-    "ISO/US plate",
     "Kurt-style vise bolt pattern",
     "Luer barrel",
     "M22x1 / M24x1 aerator",
@@ -144,7 +143,7 @@
     "MC4",
     "MGN9/12/15",
     "MIL-STD-1913 / M-LOK",
-    "MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
+    "MOLLE/PALS MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
     "Meanwell LRS/RS",
     "Multiboard 25 mm",
     "Multiconnect / GOEWS",
@@ -180,6 +179,7 @@
     "US register 4x10/4x12/6x10/6x12 in",
     "US round duct 4/5/6 in",
     "US tubular 1-1/4 / 1-1/2 in slip",
+    "US/EU license plate (12x6in / 520x110mm)",
     "US/EU ring sizing",
     "US/EU wall box",
     "USB-A / SD / 18650 form factors",
@@ -203,7 +203,7 @@
     "dry-erase marker",
     "e-NABLE / OSL 4-bolt",
     "fine-tool slot array (tweezer/probe body 1.5–8 mm)",
-    "internal (D-shaft / spline)",
+    "handlebar 7/8-1in (22.2-25.4mm)",
     "internal bond socket",
     "internal peg grid 8mm",
     "internal solids 40mm",
@@ -920,7 +920,7 @@
           "id": "pipe_clamp_bore",
           "label": "Pipe Clamp Bore",
           "geometry_type": "socket",
-          "standard": "1/2in & 3/4in pipe",
+          "standard": "1/2in & 3/4in IPS pipe",
           "parameters": [
             "pipe",
             "fit",
@@ -939,7 +939,7 @@
         }
       ],
       "standards": [
-        "1/2in & 3/4in pipe"
+        "1/2in & 3/4in IPS pipe"
       ],
       "source": {
         "manifest": "projects/bar-clamp/project.json",
@@ -985,7 +985,7 @@
           "id": "handlebar_clamp",
           "label": "Handlebar Clamp",
           "geometry_type": "socket",
-          "standard": "7/8-1in bar",
+          "standard": "handlebar 7/8-1in (22.2-25.4mm)",
           "parameters": [
             "bar_od",
             "wall",
@@ -1005,7 +1005,7 @@
         }
       ],
       "standards": [
-        "7/8-1in bar"
+        "handlebar 7/8-1in (22.2-25.4mm)"
       ],
       "source": {
         "manifest": "projects/barend-mount/project.json",
@@ -3654,7 +3654,7 @@
           "id": "drain_slip_socket",
           "label": "Drain Stub Slip Socket",
           "geometry_type": "socket",
-          "standard": "1/2-3/4 in stub slip",
+          "standard": "1/2-3/4 in IPS stub slip (PVC sched 40)",
           "parameters": [
             "socket_od",
             "clearance"
@@ -3662,7 +3662,7 @@
         }
       ],
       "standards": [
-        "1/2-3/4 in stub slip",
+        "1/2-3/4 in IPS stub slip (PVC sched 40)",
         "3/8-3/4 in tube barb"
       ],
       "source": {
@@ -9694,7 +9694,7 @@
           "id": "d_shaft_bore",
           "label": "D-Shaft Bore",
           "geometry_type": "socket",
-          "standard": "internal (D-shaft / spline)",
+          "standard": "D-shaft / spline bore",
           "parameters": [
             "bore_type",
             "shaft_dia",
@@ -9705,7 +9705,7 @@
         }
       ],
       "standards": [
-        "internal (D-shaft / spline)"
+        "D-shaft / spline bore"
       ],
       "source": {
         "manifest": "projects/knob-dshaft/project.json",
@@ -11616,7 +11616,7 @@
           "id": "pals_grid",
           "label": "PALS / MOLLE Grid",
           "geometry_type": "snap",
-          "standard": "MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
+          "standard": "MOLLE/PALS MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
           "parameters": [
             "row_h",
             "row_pitch",
@@ -11637,7 +11637,7 @@
       ],
       "standards": [
         "25mm webbing",
-        "MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)"
+        "MOLLE/PALS MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)"
       ],
       "source": {
         "manifest": "projects/molle-clip/project.json",
@@ -14403,7 +14403,7 @@
           "id": "plate_bolt_pattern",
           "label": "Plate Bolt Pattern",
           "geometry_type": "bolt_pattern",
-          "standard": "ISO/US plate",
+          "standard": "US/EU license plate (12x6in / 520x110mm)",
           "parameters": [
             "plate",
             "slot_len"
@@ -14423,7 +14423,7 @@
         }
       ],
       "standards": [
-        "ISO/US plate"
+        "US/EU license plate (12x6in / 520x110mm)"
       ],
       "source": {
         "manifest": "projects/plate-frame/project.json",

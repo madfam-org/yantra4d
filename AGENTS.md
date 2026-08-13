@@ -74,9 +74,9 @@ projects/
   {slug}/*.scad        (OpenSCAD geometry)
   {slug}/exports/      (reference STL exports)
        |
-       |---> apps/api/      (Flask API, renders via OpenSCAD CLI)
+       |---> apps/api/      (Flask API; four render kernels)
        |        |-- routes/  render, verify, health, manifest, config, projects, onboard, editor, git_ops, github, ai, admin, download, bom, datasheet, analytics, user, cotiza_webhook, forgesight_webhook
-       |        |-- services/  render_orchestrator, render_cache, render_gc, openscad, cadquery, implicit, scad_analyzer, manifest_generator, ai_provider, ai_configurator, ai_code_editor, ai_session, git_operations, github_import, github_token, tier_service, user_service, mqtt_telemetry, format_converter
+       |        |-- services/  render_orchestrator, render_cache, render_gc, openscad, cadquery, implicit, graph_engine, scad_analyzer, manifest_generator, ai_provider, ai_configurator, ai_code_editor, ai_session, git_operations, github_import, github_token, tier_service, user_service, mqtt_telemetry, format_converter
        |        |-- models/  analytics, user (User + UserProject)
        |        \-- middleware/  auth (JWT + tier gating + user upsert)
        |
@@ -84,6 +84,7 @@ projects/
        |        |-- contexts/  auth, project, system
        |        |-- hooks/     ai, editor, project, render, system
        |        |-- components/  Controls, Viewer, ProjectSelector, OnboardingWizard, ScadEditor, GitPanel, AiChatPanel, ForkDialog, BomPanel
+       |        |-- lib/graph/   graphDocument (client model for .graph.json cartridges)
        |        \-- services/  renderService, verifyService, openscad-worker (WASM)
        |
        |---> apps/landing/  (Astro + React islands -- marketing site)
@@ -334,12 +335,15 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on re
 
 Access is gated by user tier. Tier definitions live in `apps/api/tiers.json`; enforcement is in `middleware/auth.py`.
 
-| Tier | Server renders/hr | Projects | Export | GitHub | AI Config | AI Code | AI Req/hr |
-|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| guest | 10 | 0 | STL | -- | -- | -- | 0 |
-| essentials | 30 | 5 | STL/3MF/OBJ | -- | Yes | -- | 20 |
-| pro | 150 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, editor, private | Yes | Yes | 100 |
-| madfam | 500 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | import, sync, editor, private | Yes | Yes | 300 |
+| Tier | Server renders/hr | Projects | Export | Engines | GitHub | AI Config | AI Code | AI Req/hr |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| guest | 10 | 0 | STL | openscad, implicit | -- | -- | -- | 0 |
+| essentials | 30 | 5 | STL/3MF/OBJ | openscad, implicit | -- | Yes | -- | 20 |
+| pro | 150 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | + cadquery, graph | import, editor, private | Yes | Yes | 100 |
+| madfam | 500 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | + cadquery, graph | import, sync, editor, private | Yes | Yes | 300 |
+
+The `cadquery_engine` and `graph_engine` keys gate the two B-Rep kernels; a
+cartridge that declares either renders only for pro and madfam.
 
 > **Note**: WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to `/api/render*` endpoints.
 
@@ -482,6 +486,9 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/index.md`](docs/index.md) -- Platform documentation hub
 - [`docs/reference/manifest.md`](docs/reference/manifest.md) -- Manifest schema and extension guide
 - [`docs/architecture/web_interface.md`](docs/architecture/web_interface.md) -- Full-stack architecture details
+- [`docs/guides/graph-cartridges.md`](docs/guides/graph-cartridges.md) -- Authoring node-graph cartridges
+- [`docs/architecture/sim4d-extraction.md`](docs/architecture/sim4d-extraction.md) -- What was taken from sim4d and what was left
+- [`docs/operations/cross-ecosystem-interventions.md`](docs/operations/cross-ecosystem-interventions.md) -- Items owed to Yantra4D from other platforms
 - [`docs/guides/ai-features.md`](docs/guides/ai-features.md) -- AI Configurator and Code Editor
 - [`docs/guides/verification.md`](docs/guides/verification.md) -- STL quality verification system
 - [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md) -- Client-side rendering fallback

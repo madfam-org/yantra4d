@@ -34,6 +34,9 @@ GRAPH_VERSION_PATTERN = re.compile(r"^1\.\d+(\.\d+)?$")
 MAX_GRAPH_BYTES = 256 * 1024
 MAX_NODES = 500
 MAX_OUTPUTS = 50
+# Pattern repeat ceiling. Each repeat is a boolean union, so an unbounded count
+# is a denial-of-service against the render worker, not just a slow render.
+MAX_PATTERN_COUNT = 200
 
 _IDENT_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 _BINDING_RE = re.compile(r"^([A-Za-z][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)$")
@@ -51,16 +54,25 @@ _ALLOWED_TOP_KEYS = frozenset({"version", "units", "nodes", "outputs", "meta"})
 _ALLOWED_NODE_KEYS = frozenset({"id", "type", "params", "inputs", "meta"})
 
 _AXIS_TUPLES = {"x": "(1, 0, 0)", "y": "(0, 1, 0)", "z": "(0, 0, 1)"}
+_PLANES = frozenset({"XY", "XZ", "YZ"})
 
 
 class GraphError(ValueError):
     """Raised when a graph document fails validation or transpilation."""
 
 
-# ── Node vocabulary v1 ─────────────────────────────────────────────────────────
-# Each type declares typed params (kind, default) and ordered input sockets.
-# Emitters receive already-safe expression strings — a param expression is
-# always either a validated literal or a `_param(...)` probe, never raw text.
+# ── Node vocabulary ────────────────────────────────────────────────────────────
+# Each type declares typed params (kind, default), typed input sockets
+# ({socket: required_output_type}), and its own output type — "solid" or
+# "profile" (a 2D sketch that only extrude consumes). Emitters receive
+# already-safe expression strings: a param expression is always either a
+# validated literal or a `_param(...)` probe, never raw text. An emitter
+# returns one line or a list of lines.
+#
+# Deliberately absent: revolve. A 360° revolve blew the memory budget hard
+# enough to kill the process during vocabulary bring-up, and the render worker
+# must not host an operation that can hang a job. It returns once it is proven
+# bounded.
 
 def _emit_box(v, i, p):
     return f"{v} = cq.Workplane(\"XY\").box({p['w']}, {p['d']}, {p['h']})"
@@ -72,6 +84,60 @@ def _emit_cylinder(v, i, p):
 
 def _emit_sphere(v, i, p):
     return f"{v} = cq.Workplane(\"XY\").sphere({p['r']})"
+
+
+def _emit_profile_rect(v, i, p):
+    return f"{v} = cq.Workplane({p['plane']}).center({p['x']}, {p['y']}).rect({p['w']}, {p['d']})"
+
+
+def _emit_profile_circle(v, i, p):
+    return f"{v} = cq.Workplane({p['plane']}).center({p['x']}, {p['y']}).circle({p['r']})"
+
+
+def _emit_profile_polygon(v, i, p):
+    return (
+        f"{v} = cq.Workplane({p['plane']}).center({p['x']}, {p['y']})"
+        f".polygon({p['sides']}, {p['diameter']})"
+    )
+
+
+def _emit_extrude(v, i, p):
+    return f"{v} = {i['profile']}.extrude({p['height']})"
+
+
+def _emit_shell(v, i, p):
+    # Negative thickness hollows inward, leaving the selected face open.
+    return f"{v} = {i['shape']}.faces({p['face']}).shell(-{p['thickness']})"
+
+
+def _emit_hole(v, i, p):
+    return f"{v} = {i['shape']}.faces(\">Z\").workplane().hole({p['diameter']})"
+
+
+def _emit_mirror(v, i, p):
+    return f"{v} = {i['shape']}.union({i['shape']}.mirror({p['plane']}))"
+
+
+def _emit_pattern_linear(v, i, p):
+    src = i["shape"]
+    loop = f"_i{v}"
+    offset = f"({p['dx']} * {loop}, {p['dy']} * {loop}, {p['dz']} * {loop})"
+    return [
+        f"{v} = {src}",
+        f"for {loop} in range(1, {p['count']}):",
+        f"    {v} = {v}.union({src}.translate({offset}))",
+    ]
+
+
+def _emit_pattern_polar(v, i, p):
+    src = i["shape"]
+    loop = f"_i{v}"
+    spin = f"rotate((0, 0, 0), (0, 0, 1), {p['angle']} * {loop})"
+    return [
+        f"{v} = {src}",
+        f"for {loop} in range(1, {p['count']}):",
+        f"    {v} = {v}.union({src}.{spin})",
+    ]
 
 
 def _emit_union(v, i, p):
@@ -102,46 +168,136 @@ def _emit_chamfer(v, i, p):
     return f"{v} = {i['shape']}.edges({p['edges']}).chamfer({p['distance']})"
 
 
-# kinds: "float" (finite number), "selector" (cq edge selector string, "" = all
-# edges), "axis" (x|y|z, emitted as a unit-vector tuple literal).
+# Param kinds: "float" (finite number), "count" (int, clamped 1..MAX_PATTERN_COUNT
+# at render time so a bound parameter cannot detonate a union loop), "selector"
+# (cq edge/face selector string, "" = all edges), "axis" (x|y|z as a unit vector),
+# "plane" (XY|XZ|YZ workplane name).
 NODE_TYPES = {
+    # ── Solids ────────────────────────────────────────────────────────────────
     "box": {
         "params": {"w": ("float", 10.0), "d": ("float", 10.0), "h": ("float", 10.0)},
-        "inputs": (),
+        "inputs": {},
+        "output": "solid",
         "emit": _emit_box,
     },
     "cylinder": {
         "params": {"r": ("float", 5.0), "h": ("float", 10.0)},
-        "inputs": (),
+        "inputs": {},
+        "output": "solid",
         "emit": _emit_cylinder,
     },
     "sphere": {
         "params": {"r": ("float", 5.0)},
-        "inputs": (),
+        "inputs": {},
+        "output": "solid",
         "emit": _emit_sphere,
     },
-    "union": {"params": {}, "inputs": ("a", "b"), "emit": _emit_union},
-    "cut": {"params": {}, "inputs": ("a", "b"), "emit": _emit_cut},
-    "intersect": {"params": {}, "inputs": ("a", "b"), "emit": _emit_intersect},
+    # ── 2D profiles (consumed by extrude) ─────────────────────────────────────
+    "profile_rect": {
+        "params": {
+            "w": ("float", 10.0), "d": ("float", 10.0),
+            "x": ("float", 0.0), "y": ("float", 0.0), "plane": ("plane", "XY"),
+        },
+        "inputs": {},
+        "output": "profile",
+        "emit": _emit_profile_rect,
+    },
+    "profile_circle": {
+        "params": {
+            "r": ("float", 5.0),
+            "x": ("float", 0.0), "y": ("float", 0.0), "plane": ("plane", "XY"),
+        },
+        "inputs": {},
+        "output": "profile",
+        "emit": _emit_profile_circle,
+    },
+    "profile_polygon": {
+        "params": {
+            "sides": ("count", 6), "diameter": ("float", 20.0),
+            "x": ("float", 0.0), "y": ("float", 0.0), "plane": ("plane", "XY"),
+        },
+        "inputs": {},
+        "output": "profile",
+        "emit": _emit_profile_polygon,
+    },
+    "extrude": {
+        "params": {"height": ("float", 10.0)},
+        "inputs": {"profile": "profile"},
+        "output": "solid",
+        "emit": _emit_extrude,
+    },
+    # ── Booleans ──────────────────────────────────────────────────────────────
+    "union": {
+        "params": {}, "inputs": {"a": "solid", "b": "solid"},
+        "output": "solid", "emit": _emit_union,
+    },
+    "cut": {
+        "params": {}, "inputs": {"a": "solid", "b": "solid"},
+        "output": "solid", "emit": _emit_cut,
+    },
+    "intersect": {
+        "params": {}, "inputs": {"a": "solid", "b": "solid"},
+        "output": "solid", "emit": _emit_intersect,
+    },
+    # ── Transforms ────────────────────────────────────────────────────────────
     "translate": {
         "params": {"x": ("float", 0.0), "y": ("float", 0.0), "z": ("float", 0.0)},
-        "inputs": ("shape",),
+        "inputs": {"shape": "solid"},
+        "output": "solid",
         "emit": _emit_translate,
     },
     "rotate": {
         "params": {"axis": ("axis", "z"), "angle": ("float", 0.0)},
-        "inputs": ("shape",),
+        "inputs": {"shape": "solid"},
+        "output": "solid",
         "emit": _emit_rotate,
     },
+    "mirror": {
+        "params": {"plane": ("plane", "YZ")},
+        "inputs": {"shape": "solid"},
+        "output": "solid",
+        "emit": _emit_mirror,
+    },
+    # ── Patterns ──────────────────────────────────────────────────────────────
+    "pattern_linear": {
+        "params": {
+            "count": ("count", 3),
+            "dx": ("float", 10.0), "dy": ("float", 0.0), "dz": ("float", 0.0),
+        },
+        "inputs": {"shape": "solid"},
+        "output": "solid",
+        "emit": _emit_pattern_linear,
+    },
+    "pattern_polar": {
+        "params": {"count": ("count", 4), "angle": ("float", 90.0)},
+        "inputs": {"shape": "solid"},
+        "output": "solid",
+        "emit": _emit_pattern_polar,
+    },
+    # ── Finishing ─────────────────────────────────────────────────────────────
     "fillet": {
         "params": {"edges": ("selector", ""), "radius": ("float", 1.0)},
-        "inputs": ("shape",),
+        "inputs": {"shape": "solid"},
+        "output": "solid",
         "emit": _emit_fillet,
     },
     "chamfer": {
         "params": {"edges": ("selector", ""), "distance": ("float", 1.0)},
-        "inputs": ("shape",),
+        "inputs": {"shape": "solid"},
+        "output": "solid",
         "emit": _emit_chamfer,
+    },
+    "shell": {
+        "params": {"thickness": ("float", 2.0), "face": ("selector", ">Z")},
+        "inputs": {"shape": "solid"},
+        "output": "solid",
+        "emit": _emit_shell,
+    },
+    "hole": {
+        "params": {"diameter": ("float", 5.0)},
+        "inputs": {"shape": "solid"},
+        "output": "solid",
+        "emit": _emit_hole,
     },
 }
 
@@ -172,24 +328,50 @@ def _axis_literal(value, where: str) -> str:
     return _AXIS_TUPLES[value]
 
 
+def _plane_literal(value, where: str) -> str:
+    if value not in _PLANES:
+        raise GraphError(f"{where}: plane must be one of {sorted(_PLANES)}")
+    return json.dumps(value)
+
+
+def _count_literal(value, where: str) -> str:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise GraphError(f"{where}: expected a whole number, got {type(value).__name__}")
+    if not 1 <= value <= MAX_PATTERN_COUNT:
+        raise GraphError(f"{where}: count must be between 1 and {MAX_PATTERN_COUNT}")
+    return repr(value)
+
+
 def _literal(kind: str, value, where: str) -> str:
     if kind == "float":
         return _float_literal(value, where)
+    if kind == "count":
+        return _count_literal(value, where)
     if kind == "selector":
         return _selector_literal(value, where)
     if kind == "axis":
         return _axis_literal(value, where)
+    if kind == "plane":
+        return _plane_literal(value, where)
     raise GraphError(f"{where}: unknown param kind {kind!r}")  # pragma: no cover
 
 
 def _bound_expr(kind: str, pid: str, default_literal: str, where: str) -> str:
-    """Expression reading a manifest-bound parameter at render time."""
+    """Expression reading a manifest-bound parameter at render time.
+
+    Only numeric kinds are bindable. Structural params (selector, axis, plane)
+    stay literal so the emitted code's shape cannot change at render time.
+    Counts are clamped in the generated code: a slider wired to a pattern count
+    must never be able to detonate a union loop inside the render worker.
+    """
     if kind == "float":
         return f"float(_param(lambda: {pid}, {default_literal}))"
-    if kind == "selector":
-        raise GraphError(f"{where}: selector params cannot be bound to manifest parameters")
-    if kind == "axis":
-        raise GraphError(f"{where}: axis params cannot be bound to manifest parameters")
+    if kind == "count":
+        return (
+            f"min(max(int(_param(lambda: {pid}, {default_literal})), 1), {MAX_PATTERN_COUNT})"
+        )
+    if kind in ("selector", "axis", "plane"):
+        raise GraphError(f"{where}: {kind} params cannot be bound to manifest parameters")
     raise GraphError(f"{where}: unknown param kind {kind!r}")  # pragma: no cover
 
 
@@ -298,12 +480,20 @@ def _validate_nodes(nodes: list, where: str) -> dict:
 
         by_id[node_id] = node
 
-    # Dangling references (checked after all ids are known).
+    # Dangling references and socket-type agreement (both need every id known).
     for node_id, node in by_id.items():
+        spec = NODE_TYPES[node["type"]]
         for socket, ref in node.get("inputs", {}).items():
             if ref not in by_id:
                 raise GraphError(
                     f"{where}: node '{node_id}' input '{socket}' references unknown node '{ref}'"
+                )
+            wanted = spec["inputs"][socket]
+            got = NODE_TYPES[by_id[ref]["type"]]["output"]
+            if got != wanted:
+                raise GraphError(
+                    f"{where}: node '{node_id}' input '{socket}' wants a {wanted}, "
+                    f"but '{ref}' is a {got}"
                 )
     return by_id
 
@@ -341,6 +531,10 @@ def transpile(doc: dict, bindings: dict | None = None, source_name: str = "graph
             raise GraphError(f"{source_name}: output part ids must be non-empty strings")
         if ref not in by_id:
             raise GraphError(f"{source_name}: output '{part_id}' references unknown node '{ref}'")
+        if NODE_TYPES[by_id[ref]["type"]]["output"] != "solid":
+            raise GraphError(
+                f"{source_name}: output '{part_id}' is a profile; extrude it into a solid first"
+            )
 
     lines = [
         "# Generated by the Yantra4D graph engine - DO NOT EDIT.",
@@ -382,7 +576,8 @@ def transpile(doc: dict, bindings: dict | None = None, source_name: str = "graph
                 name: _param_expr(node, name, kind, default)
                 for name, (kind, default) in spec["params"].items()
             }
-            lines.append(spec["emit"](f"_n_{node['id']}", input_vars, param_exprs))
+            rendered = spec["emit"](f"_n_{node['id']}", input_vars, param_exprs)
+            lines.extend([rendered] if isinstance(rendered, str) else rendered)
             emitted.add(node["id"])
             progressed = True
         if not progressed:

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://yantra4d.com/schemas/graph.schema.json",
   "title": "Yantra4D Graph Document",
-  "description": "Node-graph geometry document (.graph.json) compiled by the graph engine into a sandboxed CadQuery script. Version 1.x. The enforcing validator is apps/api/services/engine/graph_engine.py; this schema is the public contract for authoring tools and the studio editor.",
+  "description": "Node-graph geometry document (.graph.json) compiled by the graph engine into a sandboxed CadQuery script. Version 1.x. The enforcing validator is apps/api/services/engine/graph_engine.py — it additionally checks socket types, cycles, and value ranges; this schema is the public contract for authoring tools and the studio editor.",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "nodes", "outputs"],
@@ -32,7 +32,7 @@
       "type": "object",
       "minProperties": 1,
       "maxProperties": 50,
-      "description": "Map of part id → node id. Part ids correspond to manifest parts[].id; the render selects one via the injected target_part.",
+      "description": "Map of part id → node id. Part ids correspond to manifest parts[].id; the render selects one via the injected target_part. Every referenced node must produce a solid, not a profile.",
       "additionalProperties": { "$ref": "#/$defs/nodeId" }
     }
   },
@@ -41,7 +41,17 @@
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
     },
-    "floatParam": { "type": "number" },
+    "float": { "type": "number" },
+    "count": { "type": "integer", "minimum": 1, "maximum": 200 },
+    "plane": { "type": "string", "enum": ["XY", "XZ", "YZ"] },
+    "selector": { "type": "string", "maxLength": 120 },
+    "shapeInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shape"],
+      "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
+    },
+    "noInputs": { "type": "object", "additionalProperties": false },
     "node": {
       "type": "object",
       "additionalProperties": false,
@@ -50,11 +60,14 @@
         "id": { "$ref": "#/$defs/nodeId" },
         "type": {
           "type": "string",
+          "description": "Node types produce either a solid or a profile. Profiles (profile_*) are 2D sketches consumed only by extrude.",
           "enum": [
             "box", "cylinder", "sphere",
+            "profile_rect", "profile_circle", "profile_polygon", "extrude",
             "union", "cut", "intersect",
-            "translate", "rotate",
-            "fillet", "chamfer"
+            "translate", "rotate", "mirror",
+            "pattern_linear", "pattern_polar",
+            "fillet", "chamfer", "shell", "hole"
           ]
         },
         "params": { "type": "object" },
@@ -70,15 +83,14 @@
           "then": {
             "properties": {
               "params": {
-                "type": "object",
-                "additionalProperties": false,
+                "type": "object", "additionalProperties": false,
                 "properties": {
-                  "w": { "$ref": "#/$defs/floatParam" },
-                  "d": { "$ref": "#/$defs/floatParam" },
-                  "h": { "$ref": "#/$defs/floatParam" }
+                  "w": { "$ref": "#/$defs/float" },
+                  "d": { "$ref": "#/$defs/float" },
+                  "h": { "$ref": "#/$defs/float" }
                 }
               },
-              "inputs": { "type": "object", "additionalProperties": false }
+              "inputs": { "$ref": "#/$defs/noInputs" }
             }
           }
         },
@@ -87,14 +99,13 @@
           "then": {
             "properties": {
               "params": {
-                "type": "object",
-                "additionalProperties": false,
+                "type": "object", "additionalProperties": false,
                 "properties": {
-                  "r": { "$ref": "#/$defs/floatParam" },
-                  "h": { "$ref": "#/$defs/floatParam" }
+                  "r": { "$ref": "#/$defs/float" },
+                  "h": { "$ref": "#/$defs/float" }
                 }
               },
-              "inputs": { "type": "object", "additionalProperties": false }
+              "inputs": { "$ref": "#/$defs/noInputs" }
             }
           }
         },
@@ -103,11 +114,79 @@
           "then": {
             "properties": {
               "params": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": { "r": { "$ref": "#/$defs/floatParam" } }
+                "type": "object", "additionalProperties": false,
+                "properties": { "r": { "$ref": "#/$defs/float" } }
               },
-              "inputs": { "type": "object", "additionalProperties": false }
+              "inputs": { "$ref": "#/$defs/noInputs" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "profile_rect" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "w": { "$ref": "#/$defs/float" },
+                  "d": { "$ref": "#/$defs/float" },
+                  "x": { "$ref": "#/$defs/float" },
+                  "y": { "$ref": "#/$defs/float" },
+                  "plane": { "$ref": "#/$defs/plane" }
+                }
+              },
+              "inputs": { "$ref": "#/$defs/noInputs" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "profile_circle" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "r": { "$ref": "#/$defs/float" },
+                  "x": { "$ref": "#/$defs/float" },
+                  "y": { "$ref": "#/$defs/float" },
+                  "plane": { "$ref": "#/$defs/plane" }
+                }
+              },
+              "inputs": { "$ref": "#/$defs/noInputs" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "profile_polygon" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "sides": { "$ref": "#/$defs/count" },
+                  "diameter": { "$ref": "#/$defs/float" },
+                  "x": { "$ref": "#/$defs/float" },
+                  "y": { "$ref": "#/$defs/float" },
+                  "plane": { "$ref": "#/$defs/plane" }
+                }
+              },
+              "inputs": { "$ref": "#/$defs/noInputs" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "extrude" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": { "height": { "$ref": "#/$defs/float" } }
+              },
+              "inputs": {
+                "type": "object", "additionalProperties": false,
+                "required": ["profile"],
+                "properties": { "profile": { "$ref": "#/$defs/nodeId" } }
+              }
             }
           }
         },
@@ -117,8 +196,7 @@
             "properties": {
               "params": { "type": "object", "additionalProperties": false },
               "inputs": {
-                "type": "object",
-                "additionalProperties": false,
+                "type": "object", "additionalProperties": false,
                 "required": ["a", "b"],
                 "properties": {
                   "a": { "$ref": "#/$defs/nodeId" },
@@ -133,20 +211,14 @@
           "then": {
             "properties": {
               "params": {
-                "type": "object",
-                "additionalProperties": false,
+                "type": "object", "additionalProperties": false,
                 "properties": {
-                  "x": { "$ref": "#/$defs/floatParam" },
-                  "y": { "$ref": "#/$defs/floatParam" },
-                  "z": { "$ref": "#/$defs/floatParam" }
+                  "x": { "$ref": "#/$defs/float" },
+                  "y": { "$ref": "#/$defs/float" },
+                  "z": { "$ref": "#/$defs/float" }
                 }
               },
-              "inputs": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["shape"],
-                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
-              }
+              "inputs": { "$ref": "#/$defs/shapeInput" }
             }
           }
         },
@@ -155,19 +227,57 @@
           "then": {
             "properties": {
               "params": {
-                "type": "object",
-                "additionalProperties": false,
+                "type": "object", "additionalProperties": false,
                 "properties": {
                   "axis": { "type": "string", "enum": ["x", "y", "z"] },
-                  "angle": { "$ref": "#/$defs/floatParam" }
+                  "angle": { "$ref": "#/$defs/float" }
                 }
               },
-              "inputs": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["shape"],
-                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
-              }
+              "inputs": { "$ref": "#/$defs/shapeInput" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "mirror" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": { "plane": { "$ref": "#/$defs/plane" } }
+              },
+              "inputs": { "$ref": "#/$defs/shapeInput" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "pattern_linear" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "count": { "$ref": "#/$defs/count" },
+                  "dx": { "$ref": "#/$defs/float" },
+                  "dy": { "$ref": "#/$defs/float" },
+                  "dz": { "$ref": "#/$defs/float" }
+                }
+              },
+              "inputs": { "$ref": "#/$defs/shapeInput" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "pattern_polar" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "count": { "$ref": "#/$defs/count" },
+                  "angle": { "$ref": "#/$defs/float" }
+                }
+              },
+              "inputs": { "$ref": "#/$defs/shapeInput" }
             }
           }
         },
@@ -176,19 +286,13 @@
           "then": {
             "properties": {
               "params": {
-                "type": "object",
-                "additionalProperties": false,
+                "type": "object", "additionalProperties": false,
                 "properties": {
-                  "edges": { "type": "string", "maxLength": 120 },
-                  "radius": { "$ref": "#/$defs/floatParam" }
+                  "edges": { "$ref": "#/$defs/selector" },
+                  "radius": { "$ref": "#/$defs/float" }
                 }
               },
-              "inputs": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["shape"],
-                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
-              }
+              "inputs": { "$ref": "#/$defs/shapeInput" }
             }
           }
         },
@@ -197,19 +301,40 @@
           "then": {
             "properties": {
               "params": {
-                "type": "object",
-                "additionalProperties": false,
+                "type": "object", "additionalProperties": false,
                 "properties": {
-                  "edges": { "type": "string", "maxLength": 120 },
-                  "distance": { "$ref": "#/$defs/floatParam" }
+                  "edges": { "$ref": "#/$defs/selector" },
+                  "distance": { "$ref": "#/$defs/float" }
                 }
               },
-              "inputs": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["shape"],
-                "properties": { "shape": { "$ref": "#/$defs/nodeId" } }
-              }
+              "inputs": { "$ref": "#/$defs/shapeInput" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "shell" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "thickness": { "$ref": "#/$defs/float" },
+                  "face": { "$ref": "#/$defs/selector" }
+                }
+              },
+              "inputs": { "$ref": "#/$defs/shapeInput" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "hole" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": { "diameter": { "$ref": "#/$defs/float" } }
+              },
+              "inputs": { "$ref": "#/$defs/shapeInput" }
             }
           }
         }

@@ -12,6 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
+from typing import ClassVar
 from unittest.mock import patch
 
 import pytest
@@ -407,6 +408,186 @@ class TestOrchestratorGating:
         assert actual is None
         assert err is not None
         assert err[1] == 400
+
+
+def solid_graph(nodes, out="o"):
+    return {"version": "1.0.0", "nodes": nodes, "outputs": {"part": out}}
+
+
+class TestProfilesAndExtrude:
+    def test_profile_rect_extrude(self):
+        script = transpile(solid_graph([
+            {"id": "p", "type": "profile_rect", "params": {"w": 40, "d": 20}},
+            {"id": "o", "type": "extrude", "inputs": {"profile": "p"}, "params": {"height": 8}},
+        ]))
+        assert '_n_p = cq.Workplane("XY").center(0.0, 0.0).rect(40.0, 20.0)' in script
+        assert "_n_o = _n_p.extrude(8.0)" in script
+
+    def test_profile_plane_and_offset(self):
+        script = transpile(solid_graph([
+            {"id": "p", "type": "profile_circle",
+             "params": {"r": 6, "x": 12, "y": -3, "plane": "XZ"}},
+            {"id": "o", "type": "extrude", "inputs": {"profile": "p"}, "params": {"height": 4}},
+        ]))
+        assert '_n_p = cq.Workplane("XZ").center(12.0, -3.0).circle(6.0)' in script
+
+    def test_polygon_sides_is_a_count(self):
+        script = transpile(solid_graph([
+            {"id": "p", "type": "profile_polygon", "params": {"sides": 8, "diameter": 30}},
+            {"id": "o", "type": "extrude", "inputs": {"profile": "p"}, "params": {"height": 3}},
+        ]))
+        assert ".polygon(8, 30.0)" in script
+
+    def test_extrude_rejects_a_solid_input(self):
+        with pytest.raises(GraphError, match="wants a profile"):
+            transpile(solid_graph([
+                {"id": "b", "type": "box", "params": {}},
+                {"id": "o", "type": "extrude", "inputs": {"profile": "b"}, "params": {}},
+            ]))
+
+    def test_boolean_rejects_a_profile_input(self):
+        with pytest.raises(GraphError, match="wants a solid"):
+            transpile(solid_graph([
+                {"id": "p", "type": "profile_rect", "params": {}},
+                {"id": "b", "type": "box", "params": {}},
+                {"id": "o", "type": "union", "inputs": {"a": "b", "b": "p"}},
+            ]))
+
+    def test_profile_cannot_be_an_output(self):
+        with pytest.raises(GraphError, match="extrude it into a solid"):
+            transpile({
+                "version": "1.0.0",
+                "nodes": [{"id": "p", "type": "profile_rect", "params": {}}],
+                "outputs": {"part": "p"},
+            })
+
+    @pytest.mark.parametrize("plane", ["xy", "ZZ", "", 4])
+    def test_bad_plane(self, plane):
+        with pytest.raises(GraphError, match="plane"):
+            transpile(solid_graph([
+                {"id": "p", "type": "profile_rect", "params": {"plane": plane}},
+                {"id": "o", "type": "extrude", "inputs": {"profile": "p"}, "params": {}},
+            ]))
+
+
+class TestSolidOperations:
+    def test_shell_hollows_with_negative_thickness(self):
+        script = transpile(solid_graph([
+            {"id": "b", "type": "box", "params": {}},
+            {"id": "o", "type": "shell", "inputs": {"shape": "b"},
+             "params": {"thickness": 2, "face": ">Z"}},
+        ]))
+        assert '_n_o = _n_b.faces(">Z").shell(-2.0)' in script
+
+    def test_hole(self):
+        script = transpile(solid_graph([
+            {"id": "b", "type": "box", "params": {}},
+            {"id": "o", "type": "hole", "inputs": {"shape": "b"}, "params": {"diameter": 6}},
+        ]))
+        assert '_n_o = _n_b.faces(">Z").workplane().hole(6.0)' in script
+
+    def test_mirror_unions_with_source(self):
+        script = transpile(solid_graph([
+            {"id": "b", "type": "box", "params": {}},
+            {"id": "o", "type": "mirror", "inputs": {"shape": "b"}, "params": {"plane": "YZ"}},
+        ]))
+        assert '_n_o = _n_b.union(_n_b.mirror("YZ"))' in script
+
+
+class TestPatterns:
+    def _pattern(self, ptype, params):
+        return transpile(solid_graph([
+            {"id": "b", "type": "box", "params": {}},
+            {"id": "o", "type": ptype, "inputs": {"shape": "b"}, "params": params},
+        ]))
+
+    def test_linear_pattern_emits_bounded_loop(self):
+        script = self._pattern("pattern_linear", {"count": 4, "dx": 15})
+        assert "for _i_n_o in range(1, 4):" in script
+        assert "_n_b.translate((15.0 * _i_n_o, 0.0 * _i_n_o, 0.0 * _i_n_o))" in script
+        compile(script, "<generated>", "exec")
+
+    def test_polar_pattern_emits_bounded_loop(self):
+        script = self._pattern("pattern_polar", {"count": 6, "angle": 60})
+        assert "for _i_n_o in range(1, 6):" in script
+        assert "rotate((0, 0, 0), (0, 0, 1), 60.0 * _i_n_o)" in script
+        compile(script, "<generated>", "exec")
+
+    @pytest.mark.parametrize("count", [0, -3, 201, 2.5, True, "4"])
+    def test_count_out_of_range_or_wrong_type(self, count):
+        with pytest.raises(GraphError):
+            self._pattern("pattern_linear", {"count": count})
+
+    def test_bound_count_is_clamped_in_generated_code(self):
+        bindings = extract_bindings([{"id": "copies", "binding": "o.count"}])
+        script = transpile(solid_graph([
+            {"id": "b", "type": "box", "params": {}},
+            {"id": "o", "type": "pattern_linear", "inputs": {"shape": "b"},
+             "params": {"count": 3}},
+        ]), bindings)
+        # A slider wired to a pattern count must not be able to detonate the worker.
+        assert "min(max(int(_param(lambda: copies, 3)), 1), 200)" in script
+        compile(script, "<generated>", "exec")
+
+    @pytest.mark.parametrize("kind_param", ["plane", "face"])
+    def test_structural_params_are_not_bindable(self, kind_param):
+        node = ({"id": "o", "type": "profile_rect", "params": {}} if kind_param == "plane"
+                else {"id": "o", "type": "shell", "inputs": {"shape": "b"}, "params": {}})
+        nodes = [{"id": "b", "type": "box", "params": {}}]
+        nodes.append(node)
+        if kind_param == "plane":
+            nodes.append({"id": "e", "type": "extrude", "inputs": {"profile": "o"}, "params": {}})
+            out = "e"
+        else:
+            out = "o"
+        bindings = extract_bindings([{"id": "p", "binding": f"o.{kind_param}"}])
+        with pytest.raises(GraphError, match="cannot be bound"):
+            transpile(solid_graph(nodes, out), bindings)
+
+
+@pytest.mark.skipif(not HAS_CADQUERY, reason="cadquery not installed")
+class TestVocabularyRendersRealGeometry:
+    """Every node type must produce real geometry, not just valid Python."""
+
+    CASES: ClassVar[dict] = {
+        "extrude_rect": [
+            {"id": "p", "type": "profile_rect", "params": {"w": 40, "d": 20}},
+            {"id": "o", "type": "extrude", "inputs": {"profile": "p"}, "params": {"height": 8}},
+        ],
+        "extrude_polygon": [
+            {"id": "p", "type": "profile_polygon", "params": {"sides": 6, "diameter": 24}},
+            {"id": "o", "type": "extrude", "inputs": {"profile": "p"}, "params": {"height": 5}},
+        ],
+        "shell": [
+            {"id": "b", "type": "box", "params": {"w": 40, "d": 30, "h": 20}},
+            {"id": "o", "type": "shell", "inputs": {"shape": "b"}, "params": {"thickness": 2}},
+        ],
+        "hole": [
+            {"id": "b", "type": "box", "params": {"w": 40, "d": 30, "h": 10}},
+            {"id": "o", "type": "hole", "inputs": {"shape": "b"}, "params": {"diameter": 8}},
+        ],
+        "pattern_polar": [
+            {"id": "b", "type": "box", "params": {"w": 8, "d": 8, "h": 4}},
+            {"id": "t", "type": "translate", "inputs": {"shape": "b"}, "params": {"x": 25}},
+            {"id": "o", "type": "pattern_polar", "inputs": {"shape": "t"},
+             "params": {"count": 6, "angle": 60}},
+        ],
+    }
+
+    @pytest.mark.parametrize("case", sorted(CASES))
+    def test_renders_stl(self, case, tmp_path):
+        script = transpile(solid_graph(self.CASES[case]), {}, case)
+        script_path = tmp_path / f"{case}.py"
+        script_path.write_text(script)
+        runner = Path(__file__).resolve().parents[2] / "services" / "engine" / "cq_runner.py"
+        out_path = tmp_path / f"{case}.stl"
+        result = subprocess.run(
+            [sys.executable, str(runner), str(script_path), str(out_path),
+             json.dumps({"target_part": "part"}), "stl"],
+            capture_output=True, text=True, timeout=180, check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert out_path.stat().st_size > 500
 
 
 @pytest.mark.skipif(not HAS_CADQUERY, reason="cadquery not installed")

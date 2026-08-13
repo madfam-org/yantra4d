@@ -4,7 +4,7 @@
 
 Yantra4D is not just a CAD tool; it is a **Poly-Kernel Engine**, a **Continuous SDF Geometry Compiler**, and a thriving **Hyperobjects Commons**. It bridges the mathematical precision of programmatic CAD with the accessibility of a visual, web-native storefront — integrating **material metadata** into the geometry pipeline, with **interactive Digital Twin simulation** in progress (see "Current status" below: parts of the simulation stack are heuristic or mocked today).
 
-[![Astro](https://img.shields.io/badge/Docs-Starlight-blueviolet)](https://docs.yantra4d.com)
+[![Astro](https://img.shields.io/badge/Docs-Starlight%20source-blueviolet)](apps/docs/)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-red.svg)](./LICENSE)
 [![React](https://img.shields.io/badge/Studio-React%2019-61dafb)](https://app.yantra4d.com)
 
@@ -35,7 +35,7 @@ The vision: apply simulated energy to any hyperobject and watch the continuous S
 - **CAD Engines**: Tri-kernel execution via [OpenSCAD](https://openscad.org/) (CSG), [CadQuery](https://cadquery.readthedocs.io/) (B-Rep), and a native **Implicit SDF Engine** (TPMS/Lattice).
 - **The Studio**: React 19 + Three.js + Manifold-3d for blisteringly fast volumetric browser rendering.
 - **The API**: Python Flask backend with Docker-orchestrated render clusters and slicer-grade physics estimation.
-- **The Knowledge Base**: [4D Docs](https://docs.yantra4d.com) — Powered by Astro Starlight.
+- **The Knowledge Base**: [4D Docs source](apps/docs/) — Astro Starlight; the public docs site is not deployed yet (see "Deep Documentation" below).
 
 ---
 

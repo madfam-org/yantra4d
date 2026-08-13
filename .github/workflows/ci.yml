@@ -387,7 +387,9 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install openapi-spec-validator
-      - run: python -m openapi_spec_validator docs/reference/openapi.yaml
+      # Also rejects duplicate mapping keys, which PyYAML resolves silently
+      # by keeping the last definition — the plain validator cannot see them.
+      - run: python3 scripts/qa/check_openapi.py
 
   ai-integration:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

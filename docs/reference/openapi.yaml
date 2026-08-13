@@ -339,8 +339,8 @@ paths:
   # ── Catalog ─────────────────────────────────────────────
   /api/catalog/nopscadlib:
     get:
-      tags: [projects]
-      summary: List catalog categories
+      tags: [catalog]
+      summary: List NopSCADlib catalog categories
       operationId: listCatalogCategories
       responses:
         "200":
@@ -357,8 +357,8 @@ paths:
   
   /api/catalog/nopscadlib/{category}:
     get:
-      tags: [projects]
-      summary: Get components for a category
+      tags: [catalog]
+      summary: List components in a catalog category
       operationId: getCatalogCategory
       parameters:
         - name: category
@@ -1915,39 +1915,3 @@ paths:
           description: Assembly steps written to manifest
         "404":
           description: Project not found
-
-  # ── Catalog ────────────────────────────────────────────
-  /api/catalog/nopscadlib:
-    get:
-      tags: [catalog]
-      summary: List NopSCADlib catalog categories
-      operationId: listCatalogCategories
-      responses:
-        "200":
-          description: Category list
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  categories:
-                    type: array
-                    items:
-                      type: string
-
-  /api/catalog/nopscadlib/{category}:
-    get:
-      tags: [catalog]
-      summary: List components in a catalog category
-      operationId: getCatalogCategory
-      parameters:
-        - name: category
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Components in category
-        "404":
-          description: Category not found

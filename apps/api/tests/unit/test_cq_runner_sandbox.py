@@ -52,6 +52,12 @@ class TestSafeBuiltins:
     def test_exec_not_in_builtins(self):
         assert "exec" not in _SAFE_BUILTINS
 
+    def test_nameerror_catchable_for_param_probe(self):
+        # The commons' PARAM idiom probes injected parameters and catches the
+        # NameError when one is absent; the class must be in the allowlist for
+        # scripts to catch it by name. An exception class grants no capability.
+        assert _SAFE_BUILTINS["NameError"] is NameError
+
     def test_compile_not_in_builtins(self):
         assert "compile" not in _SAFE_BUILTINS
 

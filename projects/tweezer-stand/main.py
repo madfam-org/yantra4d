@@ -1,17 +1,20 @@
-import cadquery as cq
 import math
+
+import cadquery as cq
 
 
 # ─── Sandbox-safe parameter access ───────────────────────────────────────────
 def PARAM(getter, default):
     try:
         return getter()
-    except Exception:
+    except Exception:  # noqa: BLE001 — NameError is absent from older
+        # cq_runner sandbox builtin allowlists, so catching it by name raises
+        # inside the sandbox; the broad catch is the portable probe.
         return default
 
 
 target_part   = PARAM(lambda: target_part, "angled_stand")
-slot_count    = int(str(PARAM(lambda: slot_count, 6)))
+slot_count    = int(float(PARAM(lambda: slot_count, 6)))
 slot_length   = float(PARAM(lambda: slot_length, 10.0))
 slot_width    = float(PARAM(lambda: slot_width, 3.0))
 slot_pitch    = float(PARAM(lambda: slot_pitch, 14.0))

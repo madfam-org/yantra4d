@@ -45,8 +45,13 @@ _SAFE_BUILTINS = {
     # String and repr
     "repr": repr, "format": format, "chr": chr, "ord": ord,
     "print": print,
-    # Exceptions (scripts may catch/raise)
+    # Exceptions (scripts may catch/raise). NameError is included so the
+    # commons' PARAM idiom — probing an injected parameter and catching the
+    # NameError when it is absent — can catch precisely instead of broadly.
+    # Exception classes grant no capabilities; exposing them does not widen
+    # the sandbox.
     "Exception": Exception, "ValueError": ValueError, "TypeError": TypeError,
+    "NameError": NameError,
     "RuntimeError": RuntimeError, "KeyError": KeyError, "IndexError": IndexError,
     "AttributeError": AttributeError, "StopIteration": StopIteration,
 }

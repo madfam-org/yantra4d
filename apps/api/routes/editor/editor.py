@@ -1,5 +1,9 @@
 """
-SCAD File CRUD API — read/write/create/delete .scad files within a project.
+Project source CRUD API — read/write/create/delete editable files in a project.
+
+Handles OpenSCAD scripts and node-graph documents. A graph document is
+validated against the transpiler's own rules before it is written, so the
+editor cannot leave a cartridge in a state that fails at render time.
 """
 import logging
 from pathlib import Path
@@ -18,7 +22,10 @@ logger = logging.getLogger(__name__)
 editor_bp = Blueprint("editor", __name__)
 
 MAX_FILE_SIZE = 512 * 1024  # 512KB
+# ``.graph.json`` is matched on the full suffix chain, not ``Path.suffix``
+# (which would see only ``.json``), so an arbitrary ``.json`` stays rejected.
 ALLOWED_EXTENSIONS = {".scad"}
+GRAPH_SUFFIX = ".graph.json"
 
 
 def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
@@ -26,9 +33,33 @@ def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
     resolved = safe_join_path(str(project_dir), filepath)
     if resolved is None:
         return None
-    if resolved.suffix not in ALLOWED_EXTENSIONS:
+    if resolved.suffix not in ALLOWED_EXTENSIONS and not resolved.name.endswith(GRAPH_SUFFIX):
         return None
     return resolved
+
+
+def _graph_rejection(resolved: Path, content: str) -> str | None:
+    """Return why this graph document must not be saved, or None if it is fine.
+
+    The transpiler is the authority: validating here means the editor reports a
+    dangling input or a cycle immediately, instead of the author discovering it
+    when a render fails.
+    """
+    if not resolved.name.endswith(GRAPH_SUFFIX):
+        return None
+    import json
+
+    from services.engine.graph_engine import GraphError, transpile
+
+    try:
+        document = json.loads(content)
+    except json.JSONDecodeError as exc:
+        return f"That is not valid JSON: {exc}"
+    try:
+        transpile(document, {}, resolved.name)
+    except GraphError as exc:
+        return str(exc)
+    return None
 
 
 @editor_bp.route("/api/projects/<slug>/files", methods=["GET"])
@@ -39,7 +70,7 @@ def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
 def list_files(slug, project_dir):
 
     files = []
-    for p in project_dir.rglob("*.scad"):
+    for p in sorted([*project_dir.rglob("*.scad"), *project_dir.rglob(f"*{GRAPH_SUFFIX}")]):
         rel = p.relative_to(project_dir)
         # Skip hidden dirs, node_modules, .git
         if any(part.startswith(".") or part == "node_modules" for part in rel.parts):
@@ -95,6 +126,10 @@ def write_file(slug, filepath, project_dir):
     if len(content.encode("utf-8")) > MAX_FILE_SIZE:
         return error_response(f"File exceeds maximum size of {MAX_FILE_SIZE // 1024}KB", 400)
 
+    rejection = _graph_rejection(resolved, content)
+    if rejection:
+        return error_response(rejection, 400)
+
     try:
         resolved.write_text(content, encoding="utf-8")
     except OSError as e:
@@ -119,12 +154,16 @@ def create_file(slug, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
     if not resolved:
-        return error_response("Invalid file path (must be .scad)", 400)
+        return error_response("Invalid file path (must be .scad or .graph.json)", 400)
     if resolved.exists():
         return error_response("File already exists", 409)
 
     if len(content.encode("utf-8")) > MAX_FILE_SIZE:
         return error_response(f"File exceeds maximum size of {MAX_FILE_SIZE // 1024}KB", 400)
+
+    rejection = _graph_rejection(resolved, content)
+    if rejection:
+        return error_response(rejection, 400)
 
     try:
         resolved.parent.mkdir(parents=True, exist_ok=True)

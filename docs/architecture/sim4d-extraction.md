@@ -4,9 +4,16 @@
 then archived. MADFAM maintains one repo. This document records what was taken,
 what was deliberately left behind, and how to retrieve anything left.
 
-Source: `madfam-org/sim4d` @ `8780dd85ec212b916b26e6936f036610604cf470`
-(last commit 2026-07-04). Archiving a GitHub repository makes it read-only —
-it stays clonable, so nothing here is lost, only frozen.
+Source: `madfam-org/sim4d` @ `cd116386e22c758c26d06286a7dfd7fd0cd2f8fb` — the
+`main` HEAD frozen by archiving. The audit was performed at `8780dd85` (last
+substantive commit, 2026-07-04); the only change between the two is a
+Dependabot config consolidation, so no code went unexamined.
+
+Archiving a GitHub repository makes it read-only, not invisible: it stays
+clonable, so nothing recorded here is lost, only frozen. Checked before
+archiving — no open pull requests, no open issues, and the single leftover
+branch (`docs/truthful-status`) differs from `main` only by a reverted
+Dependabot config, its documentation commit having already landed.
 
 ## Why extraction rather than integration
 
@@ -81,7 +88,7 @@ stays in the archived repo), CuraEngine LGPL-3.0 (never shipped compiled), and
 
 ```bash
 git clone https://github.com/madfam-org/sim4d
-cd sim4d && git checkout 8780dd85ec212b916b26e6936f036610604cf470
+cd sim4d && git checkout cd116386e22c758c26d06286a7dfd7fd0cd2f8fb
 ```
 
 Treat that repository's prose as unverified: its `.enclii.yml` describes a

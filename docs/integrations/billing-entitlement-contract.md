@@ -10,6 +10,14 @@ then configured in Dhanam — never set in this platform's code. The "from
 $9/mo" copy currently visible in the product is a legacy anchor pending
 tulana validation.
 
+> **A proposed answer now exists.** ADR-006 (`internal-devops/decisions/
+> adr-006-entitlement-claim-and-tier-naming.md`, 2026-08-13) proposes the push
+> model, the five-event set, `<product>_tier` as the claim-name pattern, and a
+> `madfam` → `premium` rename. It also records a hazard this document did not:
+> **`essentials` is a PAID tier on dhanam and a FREE tier here**, on shared
+> identity infrastructure. Any dhanam→Janua mapping must be an explicit table,
+> never a pass-through of the tier string.
+
 Parties:
 
 - **Dhanam** — billing: checkout, subscription lifecycle, payment webhooks.

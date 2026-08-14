@@ -8,7 +8,12 @@ from flask import Blueprint, jsonify, request
 from config import Config
 from extensions import db
 from middleware.auth import optional_auth, require_auth
-from services.core.tier_service import get_tier_limits, load_tiers, resolve_tier
+from services.core.tier_service import (
+    describe_entitlement,
+    get_tier_limits,
+    load_tiers,
+    resolve_tier,
+)
 from services.core.user_service import get_user_projects
 from utils.route_helpers import error_response
 
@@ -42,6 +47,7 @@ def get_me():
 
     claims = getattr(request, "auth_claims", None)
     tier = resolve_tier(claims)
+    entitlement = describe_entitlement(claims)
 
     # Use the persistent user record if available (set by auth middleware upsert)
     current_user = getattr(request, "current_user", None)
@@ -66,6 +72,7 @@ def get_me():
         "user": user_data,
         "projects": projects,
         "limits": get_tier_limits(tier),
+        "entitlement": entitlement,
     })
 
 

@@ -2,14 +2,14 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 326,
-    "with_cdg_interfaces": 312,
-    "with_commons_license": 326,
+    "cartridges": 327,
+    "with_cdg_interfaces": 313,
+    "with_commons_license": 327,
     "dual_engine": 23
   },
   "domains": {
     "household": 113,
-    "industrial": 80,
+    "industrial": 81,
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
@@ -210,6 +210,7 @@
     "internal peg grid 8mm",
     "internal solids 40mm",
     "internal/aocl",
+    "iso_8559",
     "low / high shank (19 / 32 mm bar-to-plate)",
     "playing card 63x88mm",
     "ppf-contact-solver (SIGGRAPH Asia 2024)",
@@ -1880,6 +1881,108 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bobbin-holder"
+      }
+    },
+    {
+      "slug": "body-form",
+      "name": "Body Form",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 15,
+      "export_formats": [
+        "glb",
+        "gltf",
+        "stl",
+        "step",
+        "3mf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A dress form is the one tool that makes home and small-shop garment-making possible, and a good one is expensive and made only in a few fixed sizes. This regenerating form gives every body its own fitting surface from plain measurements — the neck, bust, waist, and hip rings are the real ISO-8559 girths, verified — so a maker can 3-D print (or foam-cut) a form to their own measurements, and the same numbers drive both this body and the flat patterns of the Fashion Cabinet commons. It is the physical anchor that turns a pattern library into clothes that fit a specific person.",
+        "es": "Un maniquí es la herramienta que hace posible la confección en casa y en taller pequeño, y uno bueno es caro y viene solo en pocas tallas fijas. Esta forma regenerativa da a cada cuerpo su propia superficie de ajuste a partir de medidas simples — los anillos de cuello, busto, cintura y cadera son los contornos ISO-8559 reales, verificados — para que quien confecciona imprima en 3-D (o corte en espuma) un maniquí a su medida, y los mismos números manejen tanto este cuerpo como los patrones planos del común Fashion Cabinet. Es el ancla física que convierte una biblioteca de patrones en ropa que le queda a una persona concreta."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "neck_ring",
+          "label": "Neck landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "neck_girth"
+          ]
+        },
+        {
+          "id": "bust_ring",
+          "label": "Bust landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "bust_girth",
+            "bust_depth_ratio"
+          ]
+        },
+        {
+          "id": "chest_ring",
+          "label": "Chest landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "chest_girth"
+          ]
+        },
+        {
+          "id": "waist_ring",
+          "label": "Waist landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "waist_girth",
+            "back_waist_length"
+          ]
+        },
+        {
+          "id": "hip_ring",
+          "label": "Hip landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "hip_girth",
+            "seat_depth_ratio"
+          ]
+        },
+        {
+          "id": "shoulder_line",
+          "label": "Shoulder line",
+          "geometry_type": "profile",
+          "standard": "iso_8559",
+          "parameters": [
+            "shoulder_width",
+            "back_waist_length"
+          ]
+        }
+      ],
+      "standards": [
+        "iso_8559"
+      ],
+      "source": {
+        "manifest": "projects/body-form/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/body-form"
       }
     },
     {

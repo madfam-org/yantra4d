@@ -73,12 +73,12 @@ Counts below are generated from the manifests, not maintained by hand — see
 
 | | |
 | :-- | --: |
-| Cartridges | 326 |
-| With declared CDG interfaces | 312 |
-| Carrying an explicit license | 326 |
+| Cartridges | 327 |
+| With declared CDG interfaces | 313 |
+| Carrying an explicit license | 327 |
 | Dual-engine (CadQuery B-Rep + OpenSCAD CSG) | 23 |
-| Distinct external standards referenced | 208 |
-| Licensed CERN-OHL-W-2.0 | 322 of 326 |
+| Distinct external standards referenced | 209 |
+| Licensed CERN-OHL-W-2.0 | 323 of 327 |
 
 <!-- END COMMONS_COUNTS -->
 

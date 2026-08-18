@@ -1,0 +1,561 @@
+{
+  "project": {
+    "name": "Body Form",
+    "slug": "body-form",
+    "version": "0.1.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric dress form (tailor's torso) — the mannequin the Fashion Cabinet soft-goods commons drapes its patterns onto. Deliberately an abstract form, not a figure: its value is its interfaces — the neck, shoulder, bust, waist, and hip LANDMARK RINGS. Each ring's girth is an ISO-8559 body measurement, so the same numbers that draft a flat pattern in Fashion Cabinet also size this solid, and a garment edge wraps to the ring that carries its measurement. Built as a loft through named elliptical cross-sections whose perimeters equal their girths; verified so every measured ring is dimensionally exact. Modes: a bare torso, a torso on a stand, and a bifurcated trouser form with thigh stumps.\n\nOfficial visualizer and configurator: Yantra4D.",
+      "es": "Un maniquí de sastre (torso) paramétrico — el maniquí sobre el que el común de bienes blandos Fashion Cabinet coloca sus patrones. Deliberadamente una forma abstracta, no una figura: su valor son sus interfaces — los ANILLOS DE REFERENCIA de cuello, hombro, busto, cintura y cadera. El contorno de cada anillo es una medida corporal ISO-8559, así que los mismos números que trazan un patrón plano en Fashion Cabinet dimensionan este sólido, y el canto de una prenda envuelve al anillo que lleva su medida. Construido como un loft a través de secciones elípticas cuyos perímetros igualan sus contornos; verificado para que cada anillo medido sea dimensionalmente exacto. Modos: torso simple, torso con pedestal, y forma bifurcada con muslos.\n\nVisualizador y configurador oficial: Yantra4D."
+    },
+    "difficulty": "advanced",
+    "tags": [
+      "dress-form",
+      "mannequin",
+      "body",
+      "tailoring",
+      "fashion",
+      "iso-8559",
+      "landmark-rings",
+      "hyperobject",
+      "commons",
+      "cadquery"
+    ],
+    "attribution": {
+      "author": "Innovaciones MADFAM",
+      "license": "CERN-OHL-W-2.0"
+    },
+    "thumbnail": "/projects/body-form.webp"
+  },
+  "modes": [
+    {
+      "id": "torso",
+      "label": {
+        "en": "Torso (dress form)",
+        "es": "Torso (maniquí)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "torso"
+      ],
+      "estimate": {
+        "base_time": 180,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    },
+    {
+      "id": "torso_stand",
+      "label": {
+        "en": "Torso on stand",
+        "es": "Torso con pedestal"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "torso_stand"
+      ],
+      "estimate": {
+        "base_time": 220,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    },
+    {
+      "id": "bifurcated",
+      "label": {
+        "en": "Trouser form (with thighs)",
+        "es": "Forma con muslos"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bifurcated"
+      ],
+      "estimate": {
+        "base_time": 260,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "torso",
+      "name": {
+        "en": "Torso",
+        "es": "Torso"
+      }
+    },
+    {
+      "id": "torso_stand",
+      "name": {
+        "en": "Torso on stand",
+        "es": "Torso con pedestal"
+      }
+    },
+    {
+      "id": "bifurcated",
+      "name": {
+        "en": "Trouser form",
+        "es": "Forma con muslos"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "target_part",
+      "type": "select",
+      "default": "torso",
+      "options": [
+        {
+          "value": "torso",
+          "label": {
+            "en": "Torso",
+            "es": "Torso"
+          }
+        },
+        {
+          "value": "torso_stand",
+          "label": {
+            "en": "Torso on stand",
+            "es": "Torso con pedestal"
+          }
+        },
+        {
+          "value": "bifurcated",
+          "label": {
+            "en": "Trouser form",
+            "es": "Forma con muslos"
+          }
+        }
+      ],
+      "label": {
+        "en": "Form",
+        "es": "Forma"
+      }
+    },
+    {
+      "id": "neck_girth",
+      "type": "slider",
+      "default": 360,
+      "min": 240,
+      "max": 560,
+      "step": 5,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "neck_girth"
+      },
+      "label": {
+        "en": "Neck girth (mm)",
+        "es": "Contorno de cuello (mm)"
+      }
+    },
+    {
+      "id": "chest_girth",
+      "type": "slider",
+      "default": 900,
+      "min": 460,
+      "max": 1900,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "chest_bust_girth"
+      },
+      "label": {
+        "en": "Chest girth (mm)",
+        "es": "Contorno de pecho (mm)"
+      }
+    },
+    {
+      "id": "bust_girth",
+      "type": "slider",
+      "default": 920,
+      "min": 460,
+      "max": 1960,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "bust_girth"
+      },
+      "label": {
+        "en": "Bust girth (mm)",
+        "es": "Contorno de busto (mm)"
+      }
+    },
+    {
+      "id": "waist_girth",
+      "type": "slider",
+      "default": 720,
+      "min": 380,
+      "max": 1600,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "waist_girth"
+      },
+      "label": {
+        "en": "Waist girth (mm)",
+        "es": "Contorno de cintura (mm)"
+      }
+    },
+    {
+      "id": "hip_girth",
+      "type": "slider",
+      "default": 980,
+      "min": 440,
+      "max": 1800,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "hip_girth"
+      },
+      "label": {
+        "en": "Hip girth (mm)",
+        "es": "Contorno de cadera (mm)"
+      }
+    },
+    {
+      "id": "back_waist_length",
+      "type": "slider",
+      "default": 410,
+      "min": 200,
+      "max": 620,
+      "step": 5,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "back_neck_to_waist"
+      },
+      "label": {
+        "en": "Back waist length, nape→waist (mm)",
+        "es": "Talle de espalda, nuca→cintura (mm)"
+      }
+    },
+    {
+      "id": "shoulder_width",
+      "type": "slider",
+      "default": 400,
+      "min": 240,
+      "max": 620,
+      "step": 5,
+      "group": "measurements",
+      "label": {
+        "en": "Shoulder width, point→point (mm)",
+        "es": "Ancho de hombros (mm)"
+      }
+    },
+    {
+      "id": "thigh_girth",
+      "type": "slider",
+      "default": 580,
+      "min": 300,
+      "max": 900,
+      "step": 10,
+      "group": "measurements",
+      "modes": [
+        "bifurcated"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "thigh_girth"
+      },
+      "label": {
+        "en": "Thigh girth (mm)",
+        "es": "Contorno de muslo (mm)"
+      }
+    },
+    {
+      "id": "bust_depth_ratio",
+      "type": "slider",
+      "default": 0.72,
+      "min": 0.55,
+      "max": 0.98,
+      "step": 0.01,
+      "group": "shape",
+      "advanced": true,
+      "label": {
+        "en": "Bust depth : width",
+        "es": "Profundidad : ancho de busto"
+      }
+    },
+    {
+      "id": "seat_depth_ratio",
+      "type": "slider",
+      "default": 0.74,
+      "min": 0.55,
+      "max": 0.98,
+      "step": 0.01,
+      "group": "shape",
+      "advanced": true,
+      "label": {
+        "en": "Seat depth : width",
+        "es": "Profundidad : ancho de asiento"
+      }
+    },
+    {
+      "id": "post_dia",
+      "type": "slider",
+      "default": 32,
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "group": "stand",
+      "modes": [
+        "torso_stand"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Stand post Ø (mm)",
+        "es": "Ø del poste (mm)"
+      }
+    },
+    {
+      "id": "base_dia",
+      "type": "slider",
+      "default": 340,
+      "min": 180,
+      "max": 600,
+      "step": 10,
+      "group": "stand",
+      "modes": [
+        "torso_stand"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Stand base Ø (mm)",
+        "es": "Ø de la base (mm)"
+      }
+    },
+    {
+      "id": "base_th",
+      "type": "slider",
+      "default": 18,
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "group": "stand",
+      "modes": [
+        "torso_stand"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Stand base thickness (mm)",
+        "es": "Grosor de la base (mm)"
+      }
+    },
+    {
+      "id": "target_material",
+      "type": "select",
+      "default": "polymaker-polylite-pla",
+      "hidden": true,
+      "options": [
+        {
+          "value": "polymaker-polylite-pla",
+          "label": "Polymaker PolyLite PLA"
+        },
+        {
+          "value": "polymaker-polylite-petg",
+          "label": "Polymaker PolyLite PETG"
+        }
+      ],
+      "label": {
+        "en": "Target material",
+        "es": "Material objetivo"
+      }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "measurements",
+      "label": {
+        "en": "Body measurements (ISO 8559)",
+        "es": "Medidas corporales (ISO 8559)"
+      }
+    },
+    {
+      "id": "shape",
+      "label": {
+        "en": "Form shaping",
+        "es": "Modelado"
+      }
+    },
+    {
+      "id": "stand",
+      "label": {
+        "en": "Stand",
+        "es": "Pedestal"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "straight-w-m",
+      "label": {
+        "en": "Women's M",
+        "es": "Mujer M"
+      },
+      "values": {
+        "neck_girth": 360,
+        "chest_girth": 900,
+        "bust_girth": 920,
+        "waist_girth": 720,
+        "hip_girth": 980,
+        "back_waist_length": 410
+      }
+    },
+    {
+      "id": "straight-m-m",
+      "label": {
+        "en": "Men's M",
+        "es": "Hombre M"
+      },
+      "values": {
+        "neck_girth": 400,
+        "chest_girth": 1020,
+        "bust_girth": 1020,
+        "waist_girth": 860,
+        "hip_girth": 1000,
+        "back_waist_length": 450,
+        "shoulder_width": 460
+      }
+    },
+    {
+      "id": "child-6y",
+      "label": {
+        "en": "Child 6Y",
+        "es": "Infantil 6A"
+      },
+      "values": {
+        "neck_girth": 290,
+        "chest_girth": 640,
+        "bust_girth": 640,
+        "waist_girth": 580,
+        "hip_girth": 680,
+        "back_waist_length": 290
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bust_girth >= chest_girth",
+      "message": {
+        "en": "Bust girth is measured over the fullest part and is at least the chest girth.",
+        "es": "El contorno de busto se mide en la parte más llena y es al menos el de pecho."
+      }
+    },
+    {
+      "expression": "hip_girth >= waist_girth * 0.9",
+      "message": {
+        "en": "A hip much smaller than the waist makes an unnatural seat curve.",
+        "es": "Una cadera mucho menor que la cintura crea una curva de asiento poco natural."
+      }
+    }
+  ],
+  "export_formats": [
+    "glb",
+    "gltf",
+    "stl",
+    "step",
+    "3mf",
+    "obj"
+  ],
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "neck_ring",
+        "label": {
+          "en": "Neck landmark ring",
+          "es": "Anillo de cuello"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "neck_girth"
+        ]
+      },
+      {
+        "id": "bust_ring",
+        "label": {
+          "en": "Bust landmark ring",
+          "es": "Anillo de busto"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "bust_girth",
+          "bust_depth_ratio"
+        ]
+      },
+      {
+        "id": "chest_ring",
+        "label": {
+          "en": "Chest landmark ring",
+          "es": "Anillo de pecho"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "chest_girth"
+        ]
+      },
+      {
+        "id": "waist_ring",
+        "label": {
+          "en": "Waist landmark ring",
+          "es": "Anillo de cintura"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "waist_girth",
+          "back_waist_length"
+        ]
+      },
+      {
+        "id": "hip_ring",
+        "label": {
+          "en": "Hip landmark ring",
+          "es": "Anillo de cadera"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "hip_girth",
+          "seat_depth_ratio"
+        ]
+      },
+      {
+        "id": "shoulder_line",
+        "label": {
+          "en": "Shoulder line",
+          "es": "Línea de hombro"
+        },
+        "geometry_type": "profile",
+        "standard": "iso_8559",
+        "parameters": [
+          "shoulder_width",
+          "back_waist_length"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A dress form is the one tool that makes home and small-shop garment-making possible, and a good one is expensive and made only in a few fixed sizes. This regenerating form gives every body its own fitting surface from plain measurements — the neck, bust, waist, and hip rings are the real ISO-8559 girths, verified — so a maker can 3-D print (or foam-cut) a form to their own measurements, and the same numbers drive both this body and the flat patterns of the Fashion Cabinet commons. It is the physical anchor that turns a pattern library into clothes that fit a specific person.",
+      "es": "Un maniquí es la herramienta que hace posible la confección en casa y en taller pequeño, y uno bueno es caro y viene solo en pocas tallas fijas. Esta forma regenerativa da a cada cuerpo su propia superficie de ajuste a partir de medidas simples — los anillos de cuello, busto, cintura y cadera son los contornos ISO-8559 reales, verificados — para que quien confecciona imprima en 3-D (o corte en espuma) un maniquí a su medida, y los mismos números manejen tanto este cuerpo como los patrones planos del común Fashion Cabinet. Es el ancla física que convierte una biblioteca de patrones en ropa que le queda a una persona concreta."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

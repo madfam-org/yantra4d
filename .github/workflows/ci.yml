@@ -217,6 +217,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y openscad
           pip install -r requirements.txt
+          pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
       - name: Start backend
         working-directory: apps/api
         env:
@@ -328,6 +329,8 @@ jobs:
           python-version: "3.12"
       - run: sudo apt-get update && sudo apt-get install -y openscad
       - run: pip install -r requirements.txt
+      - name: Install the shared sandbox core (cq_runner subprocess imports it)
+        run: pip install -e ../../packages/commons-sandbox
       - name: Run Geometric Regression Parity Tests
         run: python3 tests/scripts/geometric_regression.py --tolerance 0.05
 

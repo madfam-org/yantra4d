@@ -2,10 +2,10 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 327,
-    "with_cdg_interfaces": 313,
-    "with_commons_license": 327,
-    "dual_engine": 23
+    "cartridges": 331,
+    "with_cdg_interfaces": 316,
+    "with_commons_license": 330,
+    "dual_engine": 24
   },
   "domains": {
     "household": 113,
@@ -13,8 +13,9 @@
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
-    "uncategorized": 13,
+    "uncategorized": 14,
     "hybrid": 7,
+    "wearable": 3,
     "soft-robotics": 1
   },
   "standards": [
@@ -9145,6 +9146,68 @@
       }
     },
     {
+      "slug": "hook-and-eye",
+      "name": "Hook & Eye",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 2,
+      "parameters": 6,
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Bra and waistband closures are a frequent point of garment failure and a common accessibility barrier — a snapped hook or a band that no longer fits ends the garment's life. A printable hook-and-eye sized to the band, with the exact number of adjustment columns the wearer needs, restores the piece and adapts it, and closes the loop from Fashion Cabinet's band pattern to working hardware.",
+        "es": "Los cierres de brasier y pretina son un punto frecuente de falla y una barrera de accesibilidad común — un gancho roto o una banda que ya no ajusta terminan la vida de la prenda. Un corchete imprimible dimensionado a la banda, con el número exacto de columnas de ajuste que la persona necesita, restaura y adapta la pieza, y cierra el ciclo del patrón de banda de Fashion Cabinet al herraje funcional."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_plate",
+          "label": "Sewing Plate",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "size_mm",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "hook_catch",
+          "label": "Hook / Bar Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "wire_d",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/hook-and-eye/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hook-and-eye"
+      }
+    },
+    {
       "slug": "hopper-feeder",
       "name": "Hopper / Funnel Feeder",
       "domain": "industrial",
@@ -16658,6 +16721,68 @@
       }
     },
     {
+      "slug": "shank-button-solid",
+      "name": "Button",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A lost button is the most common and most fixable garment failure; a matching printable button sized to the placket's own ligne keeps a shirt, coat, or child's garment in service. Buttons also print cleanly in recycled and offcut material, and the ligne bridge means the button always matches the Fashion Cabinet placement guide that laid out the placket.",
+        "es": "Un botón perdido es la falla de prenda más común y más reparable; un botón imprimible dimensionado a la propia línea de la cartera mantiene en uso una camisa, abrigo o prenda infantil. Los botones también se imprimen bien en material reciclado y de retazo, y el puente de líneas hace que el botón siempre coincida con la guía de colocación de Fashion Cabinet que trazó la cartera."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "thread_path",
+          "label": "Thread Path",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "hole_dia",
+            "holes"
+          ]
+        },
+        {
+          "id": "button_face",
+          "label": "Button Face",
+          "geometry_type": "boss",
+          "standard": "internal",
+          "parameters": [
+            "diameter_mm",
+            "thickness"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/shank-button-solid/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shank-button-solid"
+      }
+    },
+    {
       "slug": "shelf-bracket",
       "name": "Shelf Bracket",
       "domain": "household",
@@ -18279,6 +18404,39 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/switch-mount"
+      }
+    },
+    {
+      "slug": "tablaco-v2",
+      "name": "Tablaco v2",
+      "domain": null,
+      "engines": [
+        "cadquery",
+        "openscad"
+      ],
+      "dual_engine": true,
+      "modes": 5,
+      "parts": 10,
+      "parameters": 8,
+      "export_formats": [
+        "stl",
+        "step",
+        "glb",
+        "3mf"
+      ],
+      "commons_license": null,
+      "societal_benefit": null,
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tablaco-v2/project.json",
+        "has_cadquery": true,
+        "has_openscad": true
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tablaco-v2"
       }
     },
     {
@@ -20344,6 +20502,69 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/yarn-guide"
+      }
+    },
+    {
+      "slug": "zipper",
+      "name": "Zipper",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 4,
+      "parameters": 5,
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A failed zipper is the single most common reason a jacket, bag, or dress is thrown away. A printable zipper sized to the garment's own opening — not just a replacement pull, but the whole closure — lets a home or repair-shop maker restore the piece and closes the loop from Fashion Cabinet's pattern to working hardware.",
+        "es": "Una cremallera rota es la razón más común por la que se desecha una chamarra, bolsa o vestido. Una cremallera imprimible dimensionada a la propia abertura de la prenda — no solo un tirador de repuesto, sino el cierre completo — permite a un maker de casa o taller restaurar la pieza y cierra el ciclo del patrón de Fashion Cabinet al herraje funcional."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "tape_edge",
+          "label": "Sewn Tape Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "tape_width",
+            "tape_thick",
+            "zip_length"
+          ]
+        },
+        {
+          "id": "slider_channel",
+          "label": "Slider Channel",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "chain_size",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/zipper/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/zipper"
       }
     },
     {

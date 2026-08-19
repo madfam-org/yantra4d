@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 336,
-    "with_cdg_interfaces": 321,
-    "with_commons_license": 335,
+    "cartridges": 340,
+    "with_cdg_interfaces": 325,
+    "with_commons_license": 339,
     "dual_engine": 24
   },
   "domains": {
@@ -14,7 +14,7 @@
     "medical": 29,
     "infrastructure": 20,
     "uncategorized": 14,
-    "wearable": 8,
+    "wearable": 12,
     "hybrid": 7,
     "soft-robotics": 1
   },
@@ -4801,6 +4801,77 @@
       }
     },
     {
+      "slug": "corset-busk",
+      "name": "Corset Busk",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "busk_len",
+        "plate_w",
+        "plate_t",
+        "knobs",
+        "knob_dia",
+        "post_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable busk turns corsetry's signature front closure — historically a spring-steel part sourced from a handful of suppliers — into an open, made-to-measure finding anyone can print and repair. Sized to the corset front it is a hard good that is simultaneously a Fashion Cabinet notion and a Yantra4D solid, opening historical and adaptive garment construction to everyone.",
+        "es": "Un busco imprimible convierte el cierre frontal característico de la corsetería — históricamente una pieza de acero de pocos proveedores — en un herraje abierto a la medida que cualquiera puede imprimir y reparar. Dimensionado al frente del corsé es un herraje que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, abriendo la construcción histórica y adaptativa a todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "busk_edge",
+          "label": "Sewn Busk Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "busk_len",
+            "plate_w",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "closure_cell",
+          "label": "Knob-and-Keyhole Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "knob_dia",
+            "post_dia"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/corset-busk/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/corset-busk"
+      }
+    },
+    {
       "slug": "cup-lid",
       "name": "Universal Cup Lid",
       "domain": "household",
@@ -7508,6 +7579,78 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/engine-clip"
+      }
+    },
+    {
+      "slug": "epaulette-board",
+      "name": "Epaulette Board",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 7,
+      "parameter_ids": [
+        "board_len",
+        "wide_w",
+        "narrow_w",
+        "plate_t",
+        "rim_h",
+        "rim_w",
+        "button_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable shoulder board turns rank insignia and costume structure — historically stiffened by hand with buckram and wire — into an open, made-to-measure finding. Sized to the shoulder it is a hard good that is simultaneously a Fashion Cabinet notion and a Yantra4D solid, opening uniform, cosplay, and performance costume to everyone.",
+        "es": "Una charretera imprimible convierte la insignia de rango y la estructura de disfraz — históricamente rigidizadas a mano con entretela y alambre — en un herraje abierto a la medida. Dimensionada al hombro es un herraje que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, abriendo el uniforme, el cosplay y el vestuario a todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "shoulder_edge",
+          "label": "Shoulder-Seam Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "board_len",
+            "wide_w",
+            "narrow_w"
+          ]
+        },
+        {
+          "id": "button_boss",
+          "label": "Collar Button Boss",
+          "geometry_type": "boss",
+          "standard": "internal",
+          "parameters": [
+            "button_dia",
+            "plate_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/epaulette-board/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/epaulette-board"
       }
     },
     {
@@ -22670,6 +22813,151 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-flexure-cuff"
+      }
+    },
+    {
+      "slug": "tpu-gusset-flexure",
+      "name": "TPU Gusset Flexure",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "diag_w",
+        "diag_h",
+        "wall",
+        "slit_rows",
+        "slit_cols",
+        "slit_len"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable stretch gusset turns range-of-motion tailoring — a bias-cut insert a skilled maker fits by hand — into an open, made-to-measure part that stretches biaxially and never frays. Sized to the seam it is an insert that is simultaneously a Fashion Cabinet notion and a Yantra4D solid, opening adaptive, athletic, and workwear construction to everyone.",
+        "es": "Un refuerzo elástico imprimible convierte la sastrería de movilidad — un inserto al bies que un artesano ajusta a mano — en una pieza abierta a la medida que estira biaxialmente y nunca se deshilacha. Dimensionado a la costura es un inserto que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, abriendo la construcción adaptativa, atlética y de ropa de trabajo a todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "gusset_edge",
+          "label": "Sewn Gusset Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "diag_w",
+            "diag_h",
+            "wall"
+          ]
+        },
+        {
+          "id": "stretch_cell",
+          "label": "Slit-Lattice Stretch Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "slit_rows",
+            "slit_cols",
+            "slit_len",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tpu-gusset-flexure/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-gusset-flexure"
+      }
+    },
+    {
+      "slug": "tpu-hinge-collar",
+      "name": "TPU Hinge Collar",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "collar_len",
+        "stand_h",
+        "band_h",
+        "wall",
+        "fold_slots",
+        "slot_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable stand collar turns the crisp roll line of a tailored collar — historically achieved with fusible interfacing and skilled pressing — into an open, made-to-measure trim that holds its fold and never delaminates. Sized to the neckline it is a trim that is simultaneously a Fashion Cabinet notion and a Yantra4D solid.",
+        "es": "Un cuello de parada imprimible convierte la línea de rodillo nítida de un cuello sastre — históricamente lograda con entretela fusionable y planchado experto — en un avío abierto a la medida que mantiene su doblez y nunca se delamina. Dimensionado al escote es un avío que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "collar_edge",
+          "label": "Sewn Collar Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "collar_len",
+            "band_h",
+            "wall"
+          ]
+        },
+        {
+          "id": "fold_cell",
+          "label": "Living-Hinge Fold Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "fold_slots",
+            "slot_w",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tpu-hinge-collar/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-hinge-collar"
       }
     },
     {

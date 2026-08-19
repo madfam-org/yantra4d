@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "Corset Busk",
+    "slug": "corset-busk",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The two-part front-closure busk of a corset — the rigid hard good the Fashion Cabinet `printed-corset-busk` notion places and bridges to here for its geometry. One plate carries stud knobs; the mating plate carries keyhole slots that drop over them, so the corset front opens and closes without unlacing. A hard finding printed rigid, it replaces the traditional spring-steel busk. Sized by busk length so a corset front's finished length drives the closure. One material identity — rigid PLA/PETG — spans the FC notion and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El busco de cierre frontal de dos partes de un corsé — el herraje rígido que el avío `printed-corset-busk` de Fashion Cabinet coloca y al que se puentea aquí para su geometría. Una placa lleva pernos; la placa opuesta lleva ranuras de ojo de cerradura que caen sobre ellos, para que el frente del corsé abra y cierre sin desamarrar. Un herraje impreso rígido, reemplaza el busco tradicional de acero. Dimensionado por largo para que el frente terminado de un corsé determine el cierre. Una identidad de material — PLA/PETG rígido — abarca el avío de FC y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/corset-busk.webp",
+    "difficulty": "advanced",
+    "tags": ["corset", "busk", "closure", "hardware", "am-fashion", "finding", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    { "id": "busk", "label": { "en": "Busk (both plates)", "es": "Busco (ambas placas)" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["busk"], "estimate": { "base_time": 40, "per_unit": 3, "per_part": 20 } },
+    { "id": "knob_side", "label": { "en": "Knob plate", "es": "Placa de pernos" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["knob_side"], "estimate": { "base_time": 24, "per_unit": 3, "per_part": 12 } },
+    { "id": "loop_side", "label": { "en": "Keyhole plate", "es": "Placa de ojales" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["loop_side"], "estimate": { "base_time": 24, "per_unit": 3, "per_part": 12 } }
+  ],
+  "parts": [
+    { "id": "busk", "label": { "en": "Busk", "es": "Busco" }, "render_mode": 0, "color": "#b0a08a" },
+    { "id": "knob_side", "label": { "en": "Knob plate", "es": "Placa de pernos" }, "render_mode": 0, "color": "#b0a08a" },
+    { "id": "loop_side", "label": { "en": "Keyhole plate", "es": "Placa de ojales" }, "render_mode": 0, "color": "#b0a08a" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } },
+    { "id": "closure", "label": { "en": "Closure", "es": "Cierre" } }
+  ],
+  "parameters": [
+    { "id": "busk_len", "type": "slider", "default": 300.0, "min": 120.0, "max": 500.0, "step": 5.0, "group": "size", "modes": ["busk", "knob_side", "loop_side"], "label": { "en": "Busk length (mm)", "es": "Largo del busco (mm)" }, "tooltip": { "en": "Length down the corset front", "es": "Largo por el frente del corsé" } },
+    { "id": "plate_w", "type": "slider", "default": 16.0, "min": 8.0, "max": 40.0, "step": 1.0, "group": "size", "modes": ["busk", "knob_side", "loop_side"], "label": { "en": "Plate width (mm)", "es": "Ancho de placa (mm)" }, "tooltip": { "en": "Width of each busk plate", "es": "Ancho de cada placa" } },
+    { "id": "plate_t", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.1, "group": "size", "modes": ["busk", "knob_side", "loop_side"], "label": { "en": "Plate thickness (mm)", "es": "Espesor de placa (mm)" }, "tooltip": { "en": "Thicker = stiffer front", "es": "Más grueso = frente más rígido" } },
+    { "id": "knobs", "type": "slider", "default": 5, "min": 2, "max": 12, "step": 1, "group": "closure", "modes": ["busk", "knob_side", "loop_side"], "label": { "en": "Knobs / keyholes", "es": "Pernos / ojales" }, "tooltip": { "en": "Number of closure points", "es": "Número de puntos de cierre" } },
+    { "id": "knob_dia", "type": "slider", "default": 6.0, "min": 3.0, "max": 14.0, "step": 0.5, "group": "closure", "modes": ["busk", "knob_side", "loop_side"], "label": { "en": "Knob diameter (mm)", "es": "Diámetro del perno (mm)" }, "tooltip": { "en": "Knob head size", "es": "Tamaño de la cabeza del perno" } },
+    { "id": "post_dia", "type": "slider", "default": 3.5, "min": 1.5, "max": 8.0, "step": 0.5, "group": "closure", "modes": ["busk", "knob_side", "loop_side"], "label": { "en": "Post diameter (mm)", "es": "Diámetro del poste (mm)" }, "tooltip": { "en": "Knob post; the keyhole slot fits this", "es": "Poste del perno; la ranura ajusta a esto" } }
+  ],
+  "presets": [
+    { "id": "standard", "mode": "busk", "label": { "en": "Standard (300, 5 knobs)", "es": "Estándar (300, 5 pernos)" }, "values": { "busk_len": 300, "knobs": 5 } },
+    { "id": "long_line", "mode": "busk", "label": { "en": "Long-line (360, 7 knobs)", "es": "Línea larga (360, 7 pernos)" }, "values": { "busk_len": 360, "knobs": 7 } }
+  ],
+  "constraints": [
+    { "expression": "post_dia < knob_dia", "severity": "error", "message": { "en": "Post must be narrower than the knob head so the keyhole holds", "es": "El poste debe ser más angosto que la cabeza para que el ojal sostenga" } }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [80, 200, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frente" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": { "base_time": 40, "per_unit": 3, "per_part": 20, "fn_factor": 16, "wasm_multiplier": 4, "warning_threshold_seconds": 150 },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      { "id": "busk_edge", "label": { "en": "Sewn Busk Edge", "es": "Canto cosido del busco" }, "geometry_type": "flange", "standard": "internal", "parameters": ["busk_len", "plate_w", "plate_t"] },
+      { "id": "closure_cell", "label": { "en": "Knob-and-Keyhole Cell", "es": "Celda de perno y ojal" }, "geometry_type": "snap", "standard": "internal", "parameters": ["knob_dia", "post_dia"] }
+    ],
+    "material_awareness": { "shrinkage_compensation": false, "recycled_material_toggle": true, "tolerance_by_material": true },
+    "societal_benefit": {
+      "en": "A printable busk turns corsetry's signature front closure — historically a spring-steel part sourced from a handful of suppliers — into an open, made-to-measure finding anyone can print and repair. Sized to the corset front it is a hard good that is simultaneously a Fashion Cabinet notion and a Yantra4D solid, opening historical and adaptive garment construction to everyone.",
+      "es": "Un busco imprimible convierte el cierre frontal característico de la corsetería — históricamente una pieza de acero de pocos proveedores — en un herraje abierto a la medida que cualquiera puede imprimir y reparar. Dimensionado al frente del corsé es un herraje que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, abriendo la construcción histórica y adaptativa a todas las personas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["corset", "busk", "closure", "hardware", "am-fashion", "finding", "wearable", "hyperobject", "commons"]
+}

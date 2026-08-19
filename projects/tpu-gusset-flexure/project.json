@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "TPU Gusset Flexure",
+    "slug": "tpu-gusset-flexure",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place stretch gusset — the additive-manufacturing insert the Fashion Cabinet `printed-gusset-flexure` notion describes and bridges to here for its geometry. A diamond gusset (the four-point insert sewn into an underarm, crotch, or side vent for range of motion) printed as a thin TPU panel cut with a slit lattice, so it stretches biaxially where a woven gusset only eases on the bias. Sewn into the seam it opens as the wearer moves. Sized by its two diagonals so a garment's finished gusset drives the panel. One material identity — Bambu TPU 95A — spans the FC notion and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un refuerzo elástico impreso en sitio — el inserto de manufactura aditiva que el avío `printed-gusset-flexure` de Fashion Cabinet describe y al que se puentea aquí para su geometría. Un refuerzo de diamante (el inserto de cuatro puntas cosido en axila, entrepierna o abertura lateral para dar movilidad) impreso como panel TPU delgado cortado con una retícula de ranuras, para que estire biaxialmente donde un refuerzo de tela solo cede al bies. Cosido en la costura, se abre al moverse. Dimensionado por sus dos diagonales. Una identidad de material — Bambu TPU 95A — abarca el avío de FC y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tpu-gusset-flexure.webp",
+    "difficulty": "advanced",
+    "tags": ["gusset", "flexure", "stretch", "print-in-place", "flexible", "tpu", "am-fashion", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    { "id": "gusset", "label": { "en": "Stretch Gusset", "es": "Refuerzo elástico" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["gusset"], "estimate": { "base_time": 45, "per_unit": 4, "per_part": 22 } },
+    { "id": "swatch", "label": { "en": "Slit Swatch", "es": "Muestra de ranuras" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["swatch"], "estimate": { "base_time": 14, "per_unit": 3, "per_part": 8 } },
+    { "id": "solid", "label": { "en": "Plain Diamond (no slits)", "es": "Diamante liso (sin ranuras)" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["solid"], "estimate": { "base_time": 18, "per_unit": 3, "per_part": 10 } }
+  ],
+  "parts": [
+    { "id": "gusset", "label": { "en": "Stretch Gusset", "es": "Refuerzo elástico" }, "render_mode": 0, "color": "#7f9a8f" },
+    { "id": "swatch", "label": { "en": "Swatch", "es": "Muestra" }, "render_mode": 0, "color": "#7f9a8f" },
+    { "id": "solid", "label": { "en": "Diamond", "es": "Diamante" }, "render_mode": 0, "color": "#7f9a8f" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } },
+    { "id": "stretch", "label": { "en": "Stretch", "es": "Elasticidad" } }
+  ],
+  "parameters": [
+    { "id": "diag_w", "type": "slider", "default": 70.0, "min": 20.0, "max": 200.0, "step": 2.0, "group": "size", "modes": ["gusset", "solid"], "label": { "en": "Width diagonal (mm)", "es": "Diagonal de ancho (mm)" }, "tooltip": { "en": "Horizontal diagonal of the diamond", "es": "Diagonal horizontal del diamante" } },
+    { "id": "diag_h", "type": "slider", "default": 90.0, "min": 20.0, "max": 260.0, "step": 2.0, "group": "size", "modes": ["gusset", "solid"], "label": { "en": "Height diagonal (mm)", "es": "Diagonal de alto (mm)" }, "tooltip": { "en": "Vertical diagonal of the diamond", "es": "Diagonal vertical del diamante" } },
+    { "id": "wall", "type": "slider", "default": 1.4, "min": 0.8, "max": 4.0, "step": 0.1, "group": "size", "modes": ["gusset", "swatch", "solid"], "label": { "en": "Panel thickness (mm)", "es": "Espesor del panel (mm)" }, "tooltip": { "en": "Thinner = more stretch", "es": "Más delgado = más elasticidad" } },
+    { "id": "slit_rows", "type": "slider", "default": 5, "min": 1, "max": 16, "step": 1, "group": "stretch", "modes": ["gusset"], "label": { "en": "Slit rows", "es": "Filas de ranuras" }, "tooltip": { "en": "Rows of stretch slits", "es": "Filas de ranuras de estiramiento" } },
+    { "id": "slit_cols", "type": "slider", "default": 4, "min": 1, "max": 12, "step": 1, "group": "stretch", "modes": ["gusset"], "label": { "en": "Slits per row", "es": "Ranuras por fila" }, "tooltip": { "en": "Slits per row; more = softer stretch", "es": "Ranuras por fila; más = estiramiento más suave" } },
+    { "id": "slit_len", "type": "slider", "default": 9.0, "min": 2.0, "max": 40.0, "step": 0.5, "group": "stretch", "modes": ["gusset", "swatch"], "label": { "en": "Slit length (mm)", "es": "Largo de ranura (mm)" }, "tooltip": { "en": "Slit length; longer = more stretch, less coverage", "es": "Largo de la ranura; mayor = más estiramiento, menos cobertura" } }
+  ],
+  "presets": [
+    { "id": "underarm", "mode": "gusset", "label": { "en": "Underarm (70×90)", "es": "Axila (70×90)" }, "values": { "diag_w": 70, "diag_h": 90 } },
+    { "id": "crotch", "mode": "gusset", "label": { "en": "Crotch (90×110)", "es": "Entrepierna (90×110)" }, "values": { "diag_w": 90, "diag_h": 110, "slit_rows": 6 } }
+  ],
+  "constraints": [
+    { "expression": "slit_len < diag_w", "severity": "error", "message": { "en": "Slit length must be smaller than the width diagonal", "es": "El largo de la ranura debe ser menor que la diagonal de ancho" } }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [100, 100, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": { "base_time": 45, "per_unit": 4, "per_part": 22, "fn_factor": 12, "wasm_multiplier": 5, "warning_threshold_seconds": 150 },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      { "id": "gusset_edge", "label": { "en": "Sewn Gusset Edge", "es": "Canto cosido del refuerzo" }, "geometry_type": "flange", "standard": "internal", "parameters": ["diag_w", "diag_h", "wall"] },
+      { "id": "stretch_cell", "label": { "en": "Slit-Lattice Stretch Cell", "es": "Celda de estiramiento de ranuras" }, "geometry_type": "snap", "standard": "internal", "parameters": ["slit_rows", "slit_cols", "slit_len", "wall"] }
+    ],
+    "material_awareness": { "shrinkage_compensation": false, "recycled_material_toggle": true, "tolerance_by_material": true },
+    "societal_benefit": {
+      "en": "A printable stretch gusset turns range-of-motion tailoring — a bias-cut insert a skilled maker fits by hand — into an open, made-to-measure part that stretches biaxially and never frays. Sized to the seam it is an insert that is simultaneously a Fashion Cabinet notion and a Yantra4D solid, opening adaptive, athletic, and workwear construction to everyone.",
+      "es": "Un refuerzo elástico imprimible convierte la sastrería de movilidad — un inserto al bies que un artesano ajusta a mano — en una pieza abierta a la medida que estira biaxialmente y nunca se deshilacha. Dimensionado a la costura es un inserto que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, abriendo la construcción adaptativa, atlética y de ropa de trabajo a todas las personas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["gusset", "flexure", "stretch", "print-in-place", "flexible", "tpu", "am-fashion", "wearable", "hyperobject", "commons"]
+}

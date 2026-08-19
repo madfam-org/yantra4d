@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "TPU Hinge Collar",
+    "slug": "tpu-hinge-collar",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place stand-or-fold collar band — the additive-manufacturing trim the Fashion Cabinet `printed-hinge-collar` notion describes and bridges to here for its geometry. A flat collar band with a printed living-hinge fold line: the upper stand and the lower sewn band are stiff, the thin slotted line between them lets the collar stand up or fold down and hold its crease. No interfacing, no topstitched roll line. Sized by collar length so a neckline's finished length drives the band. One material identity — Bambu TPU 95A — spans the FC notion and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una pretina de cuello de parar o doblar impresa en sitio — el avío de manufactura aditiva que el avío `printed-hinge-collar` de Fashion Cabinet describe y al que se puentea aquí para su geometría. Una pretina plana con una línea de doblez de bisagra viva impresa: la parte de parada superior y la pretina cosida inferior son rígidas, la línea ranurada delgada entre ellas deja que el cuello se pare o doble y mantenga su pliegue. Sin entretela, sin línea de rodillo pespunteada. Dimensionada por largo para que el escote terminado determine la pretina. Una identidad de material — Bambu TPU 95A — abarca el avío de FC y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tpu-hinge-collar.webp",
+    "difficulty": "advanced",
+    "tags": ["collar", "hinge", "print-in-place", "flexible", "tpu", "am-fashion", "trim", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    { "id": "collar", "label": { "en": "Hinge Collar", "es": "Cuello con bisagra" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["collar"], "estimate": { "base_time": 55, "per_unit": 4, "per_part": 28 } },
+    { "id": "swatch", "label": { "en": "Fold Swatch", "es": "Muestra de doblez" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["swatch"], "estimate": { "base_time": 16, "per_unit": 3, "per_part": 10 } },
+    { "id": "band", "label": { "en": "Plain Band (no fold)", "es": "Pretina lisa (sin doblez)" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["band"], "estimate": { "base_time": 24, "per_unit": 3, "per_part": 12 } }
+  ],
+  "parts": [
+    { "id": "collar", "label": { "en": "Hinge Collar", "es": "Cuello con bisagra" }, "render_mode": 0, "color": "#8a94a0" },
+    { "id": "swatch", "label": { "en": "Swatch", "es": "Muestra" }, "render_mode": 0, "color": "#8a94a0" },
+    { "id": "band", "label": { "en": "Band", "es": "Pretina" }, "render_mode": 0, "color": "#8a94a0" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Size", "es": "Tamaño" } },
+    { "id": "fold", "label": { "en": "Fold Line", "es": "Línea de doblez" } }
+  ],
+  "parameters": [
+    { "id": "collar_len", "type": "slider", "default": 400.0, "min": 120.0, "max": 700.0, "step": 5.0, "group": "size", "modes": ["collar", "band"], "label": { "en": "Collar length (mm)", "es": "Largo del cuello (mm)" }, "tooltip": { "en": "Length around the neckline", "es": "Largo alrededor del escote" } },
+    { "id": "stand_h", "type": "slider", "default": 35.0, "min": 10.0, "max": 120.0, "step": 1.0, "group": "size", "modes": ["collar", "swatch", "band"], "label": { "en": "Stand height (mm)", "es": "Alto de parada (mm)" }, "tooltip": { "en": "Height above the fold line", "es": "Alto sobre la línea de doblez" } },
+    { "id": "band_h", "type": "slider", "default": 30.0, "min": 10.0, "max": 120.0, "step": 1.0, "group": "size", "modes": ["collar", "swatch", "band"], "label": { "en": "Band height (mm)", "es": "Alto de pretina (mm)" }, "tooltip": { "en": "Sewn band below the fold line", "es": "Pretina cosida bajo la línea de doblez" } },
+    { "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.1, "group": "size", "modes": ["collar", "swatch", "band"], "label": { "en": "Wall thickness (mm)", "es": "Espesor de pared (mm)" }, "tooltip": { "en": "Plate thickness; thinner stands soften", "es": "Espesor de placa; paradas más delgadas se suavizan" } },
+    { "id": "fold_slots", "type": "slider", "default": 28, "min": 2, "max": 80, "step": 1, "group": "fold", "modes": ["collar", "swatch"], "label": { "en": "Fold slots", "es": "Ranuras de doblez" }, "tooltip": { "en": "Slots along the fold line; more = softer fold", "es": "Ranuras a lo largo del doblez; más = doblez más suave" } },
+    { "id": "slot_w", "type": "slider", "default": 6.0, "min": 1.0, "max": 20.0, "step": 0.5, "group": "fold", "modes": ["collar", "swatch"], "label": { "en": "Slot length (mm)", "es": "Largo de ranura (mm)" }, "tooltip": { "en": "Slot length along the collar", "es": "Largo de la ranura a lo largo del cuello" } }
+  ],
+  "presets": [
+    { "id": "shirt_collar", "mode": "collar", "label": { "en": "Shirt collar (400)", "es": "Cuello de camisa (400)" }, "values": { "collar_len": 400, "stand_h": 35, "band_h": 30 } },
+    { "id": "mandarin", "mode": "collar", "label": { "en": "Mandarin (stand only)", "es": "Mao (solo parada)" }, "values": { "stand_h": 45, "band_h": 20 } }
+  ],
+  "constraints": [
+    { "expression": "slot_w < collar_len", "severity": "error", "message": { "en": "Slot length must be far smaller than the collar length", "es": "El largo de la ranura debe ser mucho menor que el largo del cuello" } }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 120, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frente" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": { "base_time": 55, "per_unit": 4, "per_part": 28, "fn_factor": 20, "wasm_multiplier": 6, "warning_threshold_seconds": 160 },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      { "id": "collar_edge", "label": { "en": "Sewn Collar Edge", "es": "Canto cosido del cuello" }, "geometry_type": "flange", "standard": "internal", "parameters": ["collar_len", "band_h", "wall"] },
+      { "id": "fold_cell", "label": { "en": "Living-Hinge Fold Cell", "es": "Celda de doblez de bisagra" }, "geometry_type": "snap", "standard": "internal", "parameters": ["fold_slots", "slot_w", "wall"] }
+    ],
+    "material_awareness": { "shrinkage_compensation": false, "recycled_material_toggle": true, "tolerance_by_material": true },
+    "societal_benefit": {
+      "en": "A printable stand collar turns the crisp roll line of a tailored collar — historically achieved with fusible interfacing and skilled pressing — into an open, made-to-measure trim that holds its fold and never delaminates. Sized to the neckline it is a trim that is simultaneously a Fashion Cabinet notion and a Yantra4D solid.",
+      "es": "Un cuello de parada imprimible convierte la línea de rodillo nítida de un cuello sastre — históricamente lograda con entretela fusionable y planchado experto — en un avío abierto a la medida que mantiene su doblez y nunca se delamina. Dimensionado al escote es un avío que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["collar", "hinge", "print-in-place", "flexible", "tpu", "am-fashion", "trim", "wearable", "hyperobject", "commons"]
+}

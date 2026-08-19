@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 340,
-    "with_cdg_interfaces": 325,
-    "with_commons_license": 339,
+    "cartridges": 345,
+    "with_cdg_interfaces": 330,
+    "with_commons_license": 344,
     "dual_engine": 24
   },
   "domains": {
@@ -13,8 +13,8 @@
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
+    "wearable": 17,
     "uncategorized": 14,
-    "wearable": 12,
     "hybrid": 7,
     "soft-robotics": 1
   },
@@ -5301,6 +5301,75 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/cuvette-rack"
+      }
+    },
+    {
+      "slug": "d-ring",
+      "name": "D-Ring",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 4,
+      "parameter_ids": [
+        "webbing",
+        "bow_depth",
+        "wire_t",
+        "wire_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable D-ring turns strap hardware — a bulk-bought metal part — into an open, made-to-measure loop sized exactly to your webbing, repairable and reprintable per bag.",
+        "es": "Una argolla D imprimible convierte el herraje de correas — una pieza metálica a granel — en un anillo abierto a la medida exacta de tu correa, reparable y reimprimible por bolsa."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "bar_edge",
+          "label": "Webbing Bar Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing",
+            "wire_t",
+            "wire_h"
+          ]
+        },
+        {
+          "id": "bow_loop",
+          "label": "Bow Loop",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "bow_depth",
+            "wire_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/d-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/d-ring"
       }
     },
     {
@@ -11382,6 +11451,77 @@
       }
     },
     {
+      "slug": "jeans-button",
+      "name": "Jeans Tack Button",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "head_dia",
+        "head_h",
+        "socket_dia",
+        "socket_h",
+        "tack_dia",
+        "tack_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable tack button turns the jeans closure — a hammered no-sew part from a handful of suppliers — into an open, made-to-measure finding anyone can print, size, and set.",
+        "es": "Un botón de clavo imprimible convierte el cierre de los jeans — una pieza sin costura de pocos proveedores — en un herraje abierto a la medida que cualquiera puede imprimir, dimensionar y colocar."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "set_face",
+          "label": "Set Face (through the waistband)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "head_dia",
+            "socket_dia",
+            "socket_h"
+          ]
+        },
+        {
+          "id": "tack_bore",
+          "label": "Tack Bore",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "tack_dia",
+            "socket_dia"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/jeans-button/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/jeans-button"
+      }
+    },
+    {
       "slug": "jewelry-blank",
       "name": "Jewelry Blanks",
       "domain": "household",
@@ -15113,6 +15253,76 @@
       }
     },
     {
+      "slug": "overall-buckle",
+      "name": "Overall Buckle",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "strap_w",
+        "frame_h",
+        "wire_t",
+        "depth",
+        "button_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable overall buckle turns dungaree hardware — a specialist metal set — into an open, made-to-measure finding, so bib-and-brace workwear and its repairs are open to everyone.",
+        "es": "Una hebilla de overol imprimible convierte el herraje de peto — un juego metálico especializado — en un herraje abierto a la medida, para que la ropa de trabajo de peto y sus reparaciones estén al alcance de todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "strap_slot",
+          "label": "Strap Slot",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "strap_w",
+            "frame_h",
+            "wire_t"
+          ]
+        },
+        {
+          "id": "button_catch",
+          "label": "Button Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "button_dia",
+            "depth"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/overall-buckle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/overall-buckle"
+      }
+    },
+    {
       "slug": "paint-rack",
       "name": "Paint Rack",
       "domain": "household",
@@ -18304,6 +18514,77 @@
       "clone": {
         "kind": "submodule",
         "command": "git clone https://github.com/madfam-org/relief.git"
+      }
+    },
+    {
+      "slug": "rivet",
+      "name": "Rivet + Burr",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "cap_dia",
+        "cap_h",
+        "post_dia",
+        "post_h",
+        "bore_dia",
+        "burr_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable rivet turns denim reinforcement — a specialist press-set part — into an open, made-to-measure finding, so a repair or a custom garment needs no rivet press or supplier.",
+        "es": "Un remache imprimible convierte el refuerzo de mezclilla — una pieza de prensa especializada — en un herraje abierto a la medida, para que una reparación o prenda a medida no requiera prensa ni proveedor de remaches."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "set_face",
+          "label": "Set Face (through the fabric)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "cap_dia",
+            "post_dia",
+            "post_h"
+          ]
+        },
+        {
+          "id": "rivet_bore",
+          "label": "Rivet Bore",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "post_dia",
+            "bore_dia"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/rivet/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/rivet"
       }
     },
     {
@@ -21750,6 +22031,76 @@
       "clone": {
         "kind": "submodule",
         "command": "git clone https://github.com/madfam-org/superformula.git"
+      }
+    },
+    {
+      "slug": "suspender-clip",
+      "name": "Suspender Clip",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 5,
+      "parameter_ids": [
+        "webbing",
+        "body_h",
+        "plate_t",
+        "teeth",
+        "slot_gap"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable suspender clip turns brace hardware — a spring-metal part — into an open, made-to-measure finding, repairable and reprintable, so braces and mitten-clips are open to everyone.",
+        "es": "Un clip de tirante imprimible convierte el herraje de tirantes — una pieza de resorte metálico — en un herraje abierto a la medida, reparable y reimprimible, para que los tirantes estén al alcance de todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "webbing_slot",
+          "label": "Webbing Slot",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing",
+            "body_h",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "grip_jaw",
+          "label": "Grip Jaw",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "teeth",
+            "plate_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/suspender-clip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/suspender-clip"
       }
     },
     {

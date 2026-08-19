@@ -1,0 +1,305 @@
+{
+  "project": {
+    "name": "Suspender Clip",
+    "slug": "suspender-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed the clasp clip of suspenders and braces — the metal clip made printable — the rigid hard good the Fashion Cabinet `suspender-clip` notion places and bridges to here for its geometry. Sized so a garment's finished dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un the clasp clip of suspenders and braces — the metal clip made printable impreso en 3D — el herraje rígido que el avío `suspender-clip` de Fashion Cabinet coloca y al que se puentea aquí para su geometría. Dimensionado para que la medida terminada de una prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/suspender-clip.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "suspender-clip",
+      "braces",
+      "clip",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": {
+        "en": "Clip",
+        "es": "Clip"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "clip"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate (no teeth)",
+        "es": "Placa (sin dientes)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "plate"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "clip",
+      "label": {
+        "en": "Clip",
+        "es": "Clip"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Plate"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "size",
+      "label": {
+        "en": "Size",
+        "es": "Size"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Grip"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing",
+      "type": "slider",
+      "default": 25.0,
+      "min": 10.0,
+      "max": 50.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": [
+        "clip",
+        "plate"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de correa (mm)"
+      },
+      "tooltip": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de correa (mm)"
+      }
+    },
+    {
+      "id": "body_h",
+      "type": "slider",
+      "default": 45.0,
+      "min": 25.0,
+      "max": 90.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": [
+        "clip",
+        "plate"
+      ],
+      "label": {
+        "en": "Body height (mm)",
+        "es": "Alto del cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Body height (mm)",
+        "es": "Alto del cuerpo (mm)"
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "size",
+      "modes": [
+        "clip",
+        "plate"
+      ],
+      "label": {
+        "en": "Plate thickness (mm)",
+        "es": "Espesor de placa (mm)"
+      },
+      "tooltip": {
+        "en": "Plate thickness (mm)",
+        "es": "Espesor de placa (mm)"
+      }
+    },
+    {
+      "id": "teeth",
+      "type": "slider",
+      "default": 5,
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "group": "grip",
+      "modes": [
+        "clip",
+        "plate"
+      ],
+      "label": {
+        "en": "Grip teeth",
+        "es": "Dientes de agarre"
+      },
+      "tooltip": {
+        "en": "Grip teeth",
+        "es": "Dientes de agarre"
+      }
+    },
+    {
+      "id": "slot_gap",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "grip",
+      "modes": [
+        "clip",
+        "plate"
+      ],
+      "label": {
+        "en": "Slot bar width (mm)",
+        "es": "Ancho de barra de ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Slot bar width (mm)",
+        "es": "Ancho de barra de ranura (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "clip",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "webbing": 25.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "webbing_slot",
+        "label": {
+          "en": "Webbing Slot",
+          "es": "Webbing Slot"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing",
+          "body_h",
+          "plate_t"
+        ]
+      },
+      {
+        "id": "grip_jaw",
+        "label": {
+          "en": "Grip Jaw",
+          "es": "Grip Jaw"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "teeth",
+          "plate_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable suspender clip turns brace hardware — a spring-metal part — into an open, made-to-measure finding, repairable and reprintable, so braces and mitten-clips are open to everyone.",
+      "es": "Un clip de tirante imprimible convierte el herraje de tirantes — una pieza de resorte metálico — en un herraje abierto a la medida, reparable y reimprimible, para que los tirantes estén al alcance de todas las personas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "suspender-clip",
+    "braces",
+    "clip",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

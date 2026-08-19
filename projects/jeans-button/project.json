@@ -1,0 +1,360 @@
+{
+  "project": {
+    "name": "Jeans Tack Button",
+    "slug": "jeans-button",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed the no-sew tack button of jeans and workwear — the metal jeans button made printable — the rigid hard good the Fashion Cabinet `jeans-button` notion places and bridges to here for its geometry. Sized so a garment's finished dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un the no-sew tack button of jeans and workwear — the metal jeans button made printable impreso en 3D — el herraje rígido que el avío `jeans-button` de Fashion Cabinet coloca y al que se puentea aquí para su geometría. Dimensionado para que la medida terminada de una prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/jeans-button.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "jeans-button",
+      "tack-button",
+      "denim",
+      "no-sew",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Button + Tack",
+        "es": "Botón + clavo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "button",
+      "label": {
+        "en": "Button",
+        "es": "Botón"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "button"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "tack",
+      "label": {
+        "en": "Tack",
+        "es": "Clavo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tack"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Button + Tack",
+        "es": "Button + Tack"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "button",
+      "label": {
+        "en": "Button",
+        "es": "Button"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "tack",
+      "label": {
+        "en": "Tack",
+        "es": "Tack"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "head",
+      "label": {
+        "en": "Head",
+        "es": "Head"
+      }
+    },
+    {
+      "id": "tack",
+      "label": {
+        "en": "Tack",
+        "es": "Tack"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "head_dia",
+      "type": "slider",
+      "default": 17.0,
+      "min": 10.0,
+      "max": 28.0,
+      "step": 0.5,
+      "group": "head",
+      "modes": [
+        "set",
+        "button",
+        "tack"
+      ],
+      "label": {
+        "en": "Head diameter (mm)",
+        "es": "Diámetro de cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Head diameter (mm)",
+        "es": "Diámetro de cabeza (mm)"
+      }
+    },
+    {
+      "id": "head_h",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.2,
+      "group": "head",
+      "modes": [
+        "set",
+        "button",
+        "tack"
+      ],
+      "label": {
+        "en": "Head height (mm)",
+        "es": "Alto de cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Head height (mm)",
+        "es": "Alto de cabeza (mm)"
+      }
+    },
+    {
+      "id": "socket_dia",
+      "type": "slider",
+      "default": 9.0,
+      "min": 5.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "head",
+      "modes": [
+        "set",
+        "button",
+        "tack"
+      ],
+      "label": {
+        "en": "Socket diameter (mm)",
+        "es": "Diámetro de casquillo (mm)"
+      },
+      "tooltip": {
+        "en": "Socket diameter (mm)",
+        "es": "Diámetro de casquillo (mm)"
+      }
+    },
+    {
+      "id": "socket_h",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.2,
+      "group": "head",
+      "modes": [
+        "set",
+        "button",
+        "tack"
+      ],
+      "label": {
+        "en": "Socket height (mm)",
+        "es": "Alto de casquillo (mm)"
+      },
+      "tooltip": {
+        "en": "Socket height (mm)",
+        "es": "Alto de casquillo (mm)"
+      }
+    },
+    {
+      "id": "tack_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.2,
+      "group": "tack",
+      "modes": [
+        "set",
+        "button",
+        "tack"
+      ],
+      "label": {
+        "en": "Tack diameter (mm)",
+        "es": "Diámetro de clavo (mm)"
+      },
+      "tooltip": {
+        "en": "Tack diameter (mm)",
+        "es": "Diámetro de clavo (mm)"
+      }
+    },
+    {
+      "id": "tack_h",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "tack",
+      "modes": [
+        "set",
+        "button",
+        "tack"
+      ],
+      "label": {
+        "en": "Tack length (mm)",
+        "es": "Largo de clavo (mm)"
+      },
+      "tooltip": {
+        "en": "Tack length (mm)",
+        "es": "Largo de clavo (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "head_dia": 17.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "set_face",
+        "label": {
+          "en": "Set Face (through the waistband)",
+          "es": "Set Face (through the waistband)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "head_dia",
+          "socket_dia",
+          "socket_h"
+        ]
+      },
+      {
+        "id": "tack_bore",
+        "label": {
+          "en": "Tack Bore",
+          "es": "Tack Bore"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "tack_dia",
+          "socket_dia"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable tack button turns the jeans closure — a hammered no-sew part from a handful of suppliers — into an open, made-to-measure finding anyone can print, size, and set.",
+      "es": "Un botón de clavo imprimible convierte el cierre de los jeans — una pieza sin costura de pocos proveedores — en un herraje abierto a la medida que cualquiera puede imprimir, dimensionar y colocar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "jeans-button",
+    "tack-button",
+    "denim",
+    "no-sew",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

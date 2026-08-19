@@ -158,6 +158,17 @@ def create_app():
 
     limiter.init_app(app)
 
+    # Dev only: never let /api responses sit in the browser HTTP cache, so manifest
+    # and parameter edits are picked up on reload without a stale cache. Guarded by
+    # FLASK_DEBUG, so production caching is unaffected.
+    if os.getenv("FLASK_DEBUG", "").lower() in ("1", "true", "yes"):
+        @app.after_request
+        def _dev_no_store_api(resp):
+            from flask import request as _req
+            if _req.path.startswith("/api/"):
+                resp.headers["Cache-Control"] = "no-store"
+            return resp
+
     # ── Observability ──────────────────────────────────────────────────
     # Sentry error tracking (no-op when SENTRY_DSN is unset)
     _sentry_dsn = os.environ.get("SENTRY_DSN")

@@ -44,6 +44,16 @@ def _make_rate_limit_headers(tier: str) -> dict:
     }
 
 
+def _effective_tier() -> str:
+    """Gating tier. In local dev (AUTH_ENABLED off) unlock top tier so the CadQuery /
+    server-render path is not 403-gated — mirrors require_tier() and /api/me, which
+    both grant madfam when AUTH_ENABLED is false. No effect in production."""
+    from config import Config
+    if not Config.AUTH_ENABLED:
+        return "madfam"
+    return resolve_tier(getattr(request, "auth_claims", None))
+
+
 def _get_tiered_limit() -> str:
     """Return dynamic rate limit string based on user tier (backend renders only).
 
@@ -121,7 +131,7 @@ def estimate_render_time():
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
-    tier = resolve_tier(getattr(request, "auth_claims", None))
+    tier = _effective_tier()
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
@@ -183,7 +193,7 @@ def render_stl_stream():
     if isinstance(payload, RenderPayloadError):
         return error_response(payload.message, 400)
 
-    tier = resolve_tier(getattr(request, "auth_claims", None))
+    tier = _effective_tier()
     # Gate on the tier's export_formats list — the same source the UI unlocks
     # buttons from — rather than the blanket premium_export boolean over a
     # hardcoded set, which 403'd formats the essentials tier advertises.

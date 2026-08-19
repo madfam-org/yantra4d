@@ -148,6 +148,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+      - name: Install the shared sandbox core (cq_runner imports it)
+        run: pip install -e ../../packages/commons-sandbox
       - run: pip install ruff pip-audit
       - run: pip-audit --desc || true
       - run: ruff check .
@@ -337,12 +339,21 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.MADFAM_BOT_PAT }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Check manifest sync
         run: python3 scripts/qa/sync_fallback_manifest.py --check
       - name: Check commons catalog is current
         run: python3 scripts/qa/generate_commons_catalog.py --check
       - name: Check graph node catalog matches the engine
         run: python3 scripts/qa/generate_graph_catalog.py --check
+      - name: Shared sandbox core has not drifted from its lock
+        run: python3 scripts/qa/check_sandbox_sync.py
+      - name: Commons-sandbox tests
+        run: |
+          pip install -e 'packages/commons-sandbox[dev]'
+          pytest packages/commons-sandbox/tests -q
 
   manifest-validation:
     runs-on: ubuntu-latest

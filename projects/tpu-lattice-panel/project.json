@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "TPU Lattice Panel",
+    "slug": "tpu-lattice-panel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place flexible armor lattice — the additive-manufacturing textile the Fashion Cabinet `lattice-armor-panel` notion describes and bridges to here for its geometry. A grid of rigid tiles joined by thin flexure bridges prints flat and drapes like a scale garment: rigid plate, flexible seam. Sized by tile count so a garment panel's finished dimensions drive the grid. One material identity — Bambu TPU 95A — spans the FC notion and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una retícula de armadura flexible impresa en sitio — el textil de manufactura aditiva que el avío `lattice-armor-panel` de Fashion Cabinet describe y al que se puentea aquí para su geometría. Una cuadrícula de placas rígidas unidas por puentes de flexión delgados se imprime plana y cae como una prenda de escamas: placa rígida, costura flexible. Dimensionada por número de placas para que las medidas de un panel determinen la cuadrícula. Una identidad de material — Bambu TPU 95A — abarca el avío de FC y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tpu-lattice-panel.webp",
+    "difficulty": "advanced",
+    "tags": ["lattice", "armor", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "panel",
+      "label": { "en": "Lattice Panel", "es": "Panel reticular" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["panel"],
+      "estimate": { "base_time": 60, "per_unit": 4, "per_part": 30 }
+    },
+    {
+      "id": "swatch",
+      "label": { "en": "3×3 Swatch", "es": "Muestra 3×3" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["swatch"],
+      "estimate": { "base_time": 18, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "cell",
+      "label": { "en": "2×2 Cell", "es": "Celda 2×2" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cell"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "panel", "label": { "en": "Lattice Panel", "es": "Panel reticular" }, "render_mode": 0, "color": "#6f7f8a" },
+    { "id": "swatch", "label": { "en": "Swatch", "es": "Muestra" }, "render_mode": 0, "color": "#6f7f8a" },
+    { "id": "cell", "label": { "en": "Cell", "es": "Celda" }, "render_mode": 0, "color": "#6f7f8a" }
+  ],
+  "parameter_groups": [
+    { "id": "grid", "label": { "en": "Grid", "es": "Cuadrícula" } },
+    { "id": "tile", "label": { "en": "Tile", "es": "Placa" } },
+    { "id": "flex", "label": { "en": "Flexure", "es": "Flexión" } }
+  ],
+  "parameters": [
+    {
+      "id": "rows", "type": "slider", "default": 8, "min": 1, "max": 40, "step": 1,
+      "group": "grid", "modes": ["panel"],
+      "label": { "en": "Rows (tiles down)", "es": "Filas (placas a lo alto)" },
+      "tooltip": { "en": "Tile rows down the panel; with the tile size sets the height", "es": "Filas de placas a lo alto; con el tamaño de placa define el alto" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 6, "min": 1, "max": 40, "step": 1,
+      "group": "grid", "modes": ["panel"],
+      "label": { "en": "Columns (tiles across)", "es": "Columnas (placas a lo ancho)" },
+      "tooltip": { "en": "Tile columns across; the width follows", "es": "Columnas de placas a lo ancho; el ancho sigue" }
+    },
+    {
+      "id": "tile", "type": "slider", "default": 18.0, "min": 6.0, "max": 60.0, "step": 1.0,
+      "group": "tile", "modes": ["panel", "swatch", "cell"],
+      "label": { "en": "Tile size (mm)", "es": "Tamaño de placa (mm)" },
+      "tooltip": { "en": "Tile edge length; larger = stiffer, more armored", "es": "Lado de la placa; mayor = más rígida y protegida" }
+    },
+    {
+      "id": "tile_thick", "type": "slider", "default": 2.5, "min": 1.0, "max": 10.0, "step": 0.1,
+      "group": "tile", "modes": ["panel", "swatch", "cell"],
+      "label": { "en": "Tile thickness (mm)", "es": "Espesor de placa (mm)" },
+      "tooltip": { "en": "Plate thickness; thicker = more protection", "es": "Espesor de la placa; mayor = más protección" }
+    },
+    {
+      "id": "gap", "type": "slider", "default": 3.0, "min": 1.0, "max": 12.0, "step": 0.5,
+      "group": "flex", "modes": ["panel", "swatch", "cell"],
+      "label": { "en": "Tile gap (mm)", "es": "Separación de placas (mm)" },
+      "tooltip": { "en": "Gap between tiles the bridge spans; more = more drape", "es": "Separación entre placas que el puente cruza; más = más caída" }
+    },
+    {
+      "id": "bridge_w", "type": "slider", "default": 5.0, "min": 1.0, "max": 40.0, "step": 0.5,
+      "group": "flex", "modes": ["panel", "swatch", "cell"],
+      "label": { "en": "Bridge width (mm)", "es": "Ancho de puente (mm)" },
+      "tooltip": { "en": "Flexure bridge width; wider = stiffer seam", "es": "Ancho del puente de flexión; más ancho = costura más rígida" }
+    },
+    {
+      "id": "bridge_t", "type": "slider", "default": 0.8, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "flex", "modes": ["panel", "swatch", "cell"],
+      "label": { "en": "Bridge thickness (mm)", "es": "Espesor de puente (mm)" },
+      "tooltip": { "en": "Thin bridge that flexes; thinner = softer drape", "es": "Puente delgado que flexiona; más delgado = caída más suave" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "scale_armor", "mode": "panel",
+      "label": { "en": "Scale Armor (18 mm tiles)", "es": "Armadura de escamas (placas 18 mm)" },
+      "values": { "rows": 8, "cols": 6, "tile": 18, "tile_thick": 2.5 }
+    },
+    {
+      "id": "fine_drape", "mode": "panel",
+      "label": { "en": "Fine Drape (10 mm tiles)", "es": "Caída fina (placas 10 mm)" },
+      "values": { "rows": 12, "cols": 10, "tile": 10, "bridge_t": 0.6 }
+    },
+    {
+      "id": "print_test", "mode": "swatch",
+      "label": { "en": "Print Test Swatch", "es": "Muestra de prueba" },
+      "values": { "tile": 18, "gap": 3, "bridge_t": 0.8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bridge_t < tile_thick",
+      "severity": "error",
+      "message": { "en": "Bridge must be thinner than the tile so it flexes, not the plate", "es": "El puente debe ser más delgado que la placa para que flexione él, no la placa" }
+    },
+    {
+      "expression": "bridge_w <= tile",
+      "severity": "warning",
+      "message": { "en": "Bridges as wide as the tile stiffen the sheet; narrow them for drape", "es": "Puentes tan anchos como la placa endurecen la lámina; redúcelos para caída" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "detail", "label": { "en": "Tile Detail", "es": "Detalle de placa" }, "position": [40, 40, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 60, "per_unit": 4, "per_part": 30,
+    "fn_factor": 8, "wasm_multiplier": 5, "warning_threshold_seconds": 180
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "panel_edge",
+        "label": { "en": "Sewable Panel Edge", "es": "Canto de panel cosible" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["rows", "cols", "tile", "gap"]
+      },
+      {
+        "id": "flex_cell",
+        "label": { "en": "Tile-and-Bridge Cell", "es": "Celda de placa y puente" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["tile", "gap", "bridge_w", "bridge_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A flexible protective lattice anyone can print turns scale armor and impact-protective wear from a specialist craft into an open, made-to-measure pattern: rigid tiles where you need protection, thin bridges where you need to move. Printed in TPU it is washable, repairable tile-by-tile, and recyclable; sized to a garment panel it is a fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid.",
+      "es": "Una retícula protectora flexible que cualquiera puede imprimir convierte la armadura de escamas y la ropa de protección contra impactos de un oficio especializado en un patrón abierto a la medida: placas rígidas donde necesitas protección, puentes delgados donde necesitas moverte. Impresa en TPU es lavable, reparable placa por placa y reciclable; dimensionada a un panel es una tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["lattice", "armor", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "wearable", "hyperobject", "commons"]
+}

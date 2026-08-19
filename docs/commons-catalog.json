@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 334,
-    "with_cdg_interfaces": 319,
-    "with_commons_license": 333,
+    "cartridges": 336,
+    "with_cdg_interfaces": 321,
+    "with_commons_license": 335,
     "dual_engine": 24
   },
   "domains": {
@@ -14,8 +14,8 @@
     "medical": 29,
     "infrastructure": 20,
     "uncategorized": 14,
+    "wearable": 8,
     "hybrid": 7,
-    "wearable": 6,
     "soft-robotics": 1
   },
   "standards": [
@@ -22673,6 +22673,81 @@
       }
     },
     {
+      "slug": "tpu-lattice-panel",
+      "name": "TPU Lattice Panel",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "rows",
+        "cols",
+        "tile",
+        "tile_thick",
+        "gap",
+        "bridge_w",
+        "bridge_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A flexible protective lattice anyone can print turns scale armor and impact-protective wear from a specialist craft into an open, made-to-measure pattern: rigid tiles where you need protection, thin bridges where you need to move. Printed in TPU it is washable, repairable tile-by-tile, and recyclable; sized to a garment panel it is a fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid.",
+        "es": "Una retícula protectora flexible que cualquiera puede imprimir convierte la armadura de escamas y la ropa de protección contra impactos de un oficio especializado en un patrón abierto a la medida: placas rígidas donde necesitas protección, puentes delgados donde necesitas moverte. Impresa en TPU es lavable, reparable placa por placa y reciclable; dimensionada a un panel es una tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "panel_edge",
+          "label": "Sewable Panel Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "rows",
+            "cols",
+            "tile",
+            "gap"
+          ]
+        },
+        {
+          "id": "flex_cell",
+          "label": "Tile-and-Bridge Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "tile",
+            "gap",
+            "bridge_w",
+            "bridge_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tpu-lattice-panel/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-lattice-panel"
+      }
+    },
+    {
       "slug": "tpu-pleat-panel",
       "name": "TPU Pleat Panel",
       "domain": "wearable",
@@ -22742,6 +22817,83 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-pleat-panel"
+      }
+    },
+    {
+      "slug": "tpu-scale-mail",
+      "name": "TPU Scale Mail",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "rows",
+        "cols",
+        "scale_w",
+        "scale_h",
+        "scale_t",
+        "overlap",
+        "neck_w",
+        "back_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A scale-mail fabric anyone can print turns dragon-scale armor and expressive scalework — historically painstaking hand assembly — into an open, made-to-measure pattern: independently articulating scales that protect and move. Printed in TPU it is washable, repairable scale-by-scale, and recyclable; sized to a garment panel it is a fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid.",
+        "es": "Una tela de cota de escamas que cualquiera puede imprimir convierte la armadura de escamas de dragón y la escamería expresiva — históricamente un ensamble manual laborioso — en un patrón abierto a la medida: escamas que articulan de forma independiente, que protegen y se mueven. Impresa en TPU es lavable, reparable escama por escama y reciclable; dimensionada a un panel es una tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "panel_edge",
+          "label": "Sewable Panel Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "rows",
+            "cols",
+            "scale_w",
+            "scale_h",
+            "overlap"
+          ]
+        },
+        {
+          "id": "scale_cell",
+          "label": "Scale-and-Neck Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "scale_w",
+            "scale_h",
+            "neck_w",
+            "back_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tpu-scale-mail/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-scale-mail"
       }
     },
     {

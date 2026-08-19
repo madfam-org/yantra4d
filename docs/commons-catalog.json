@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 331,
-    "with_cdg_interfaces": 316,
-    "with_commons_license": 330,
+    "cartridges": 332,
+    "with_cdg_interfaces": 317,
+    "with_commons_license": 331,
     "dual_engine": 24
   },
   "domains": {
@@ -15,7 +15,7 @@
     "infrastructure": 20,
     "uncategorized": 14,
     "hybrid": 7,
-    "wearable": 3,
+    "wearable": 4,
     "soft-robotics": 1
   },
   "standards": [
@@ -22525,6 +22525,78 @@
       "clone": {
         "kind": "submodule",
         "command": "git clone https://github.com/madfam-org/torus-knot.git"
+      }
+    },
+    {
+      "slug": "tpu-chainmail-panel",
+      "name": "TPU Chainmail Panel",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "rows",
+        "cols",
+        "ring_id",
+        "wire_d",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A flexible metal-like fabric that anyone can print at home turns armor, protective wear, and expressive fashion from a specialist craft into an open, made-to-measure pattern. Printed in TPU it is washable, repairable link-by-link, and recyclable; sized to a garment panel it is the first fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid — the additive-manufacturing frontier of clothing, open to everyone.",
+        "es": "Una tela flexible tipo metal que cualquiera puede imprimir en casa convierte la armadura, la ropa de protección y la moda expresiva de un oficio especializado en un patrón abierto a la medida. Impresa en TPU es lavable, reparable eslabón por eslabón y reciclable; dimensionada a un panel de prenda es la primera tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D — la frontera de manufactura aditiva de la ropa, abierta a todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "panel_edge",
+          "label": "Sewable Panel Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "rows",
+            "cols",
+            "ring_id",
+            "wire_d"
+          ]
+        },
+        {
+          "id": "link_cell",
+          "label": "4-in-1 Link Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "ring_id",
+            "wire_d",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tpu-chainmail-panel/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-chainmail-panel"
       }
     },
     {

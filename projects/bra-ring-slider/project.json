@@ -1,0 +1,287 @@
+{
+  "project": {
+    "name": "Bra Ring & Slider",
+    "slug": "bra-ring-slider",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed the ring-and-slider set that adjusts bra and lingerie straps — the rigid hard good the Fashion Cabinet `bra-ring-slider` notion places and bridges to here for its geometry. Sized so a garment's finished dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un the ring-and-slider set that adjusts bra and lingerie straps impreso en 3D — el herraje rígido que el avío `bra-ring-slider` de Fashion Cabinet coloca y al que se puentea aquí. Dimensionado para que la medida terminada de una prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bra-ring-slider.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bra-ring-slider",
+      "lingerie",
+      "strap-adjuster",
+      "ring",
+      "slider",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Ring + Slider",
+        "es": "Argolla + corredera"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "ring",
+      "label": {
+        "en": "Ring",
+        "es": "Argolla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "ring"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "slider",
+      "label": {
+        "en": "Slider",
+        "es": "Corredera"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "slider"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Ring + Slider",
+        "es": "Ring + Slider"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "ring",
+      "label": {
+        "en": "Ring",
+        "es": "Ring"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "slider",
+      "label": {
+        "en": "Slider",
+        "es": "Slider"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "size",
+      "label": {
+        "en": "Size",
+        "es": "Size"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strap_w",
+      "type": "slider",
+      "default": 12.0,
+      "min": 5.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "size",
+      "modes": [
+        "set",
+        "ring",
+        "slider"
+      ],
+      "label": {
+        "en": "Strap width (mm)",
+        "es": "Ancho de tirante (mm)"
+      },
+      "tooltip": {
+        "en": "Strap width (mm)",
+        "es": "Ancho de tirante (mm)"
+      }
+    },
+    {
+      "id": "wire_d",
+      "type": "slider",
+      "default": 2.6,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "size",
+      "modes": [
+        "set",
+        "ring",
+        "slider"
+      ],
+      "label": {
+        "en": "Section diameter (mm)",
+        "es": "Diámetro de sección (mm)"
+      },
+      "tooltip": {
+        "en": "Section diameter (mm)",
+        "es": "Diámetro de sección (mm)"
+      }
+    },
+    {
+      "id": "slider_h",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "size",
+      "modes": [
+        "set",
+        "ring",
+        "slider"
+      ],
+      "label": {
+        "en": "Slider height (mm)",
+        "es": "Alto de corredera (mm)"
+      },
+      "tooltip": {
+        "en": "Slider height (mm)",
+        "es": "Alto de corredera (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "strap_w": 12.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "strap_face",
+        "label": {
+          "en": "Strap Attachment Face",
+          "es": "Strap Attachment Face"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "strap_w",
+          "wire_d",
+          "slider_h"
+        ]
+      },
+      {
+        "id": "ring_loop",
+        "label": {
+          "en": "Ring Loop",
+          "es": "Ring Loop"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "strap_w",
+          "wire_d"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable ring-and-slider turns lingerie strap hardware — a tiny metal/plastic part — into an open, made-to-measure adjuster sized to any strap, repairable and reprintable.",
+      "es": "Una argolla y corredera imprimibles convierten el herraje de tirantes de lencería — una pieza diminuta — en un ajustador abierto a la medida de cualquier tirante, reparable y reimprimible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bra-ring-slider",
+    "lingerie",
+    "strap-adjuster",
+    "ring",
+    "slider",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

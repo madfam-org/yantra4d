@@ -1,0 +1,65 @@
+{
+  "project": {
+    "name": "Epaulette Board",
+    "slug": "epaulette-board",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A structured shoulder board — the rigid hard good the Fashion Cabinet `printed-epaulette` notion places and bridges to here for its geometry. A tapered plate (wide at the shoulder seam, narrow at the collar) with a raised rim and a collar button post gives a uniform or costume shoulder its crisp military line. A hard finding printed rigid, it slips under a fabric epaulette or is worn bare. Sized by board length so a garment shoulder's finished length drives the board. One material identity — rigid PLA/PETG — spans the FC notion and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una charretera estructurada — el herraje rígido que el avío `printed-epaulette` de Fashion Cabinet coloca y al que se puentea aquí para su geometría. Una placa cónica (ancha en la costura del hombro, angosta en el cuello) con un reborde elevado y un poste de botón da al hombro de uniforme o disfraz su línea militar. Un herraje impreso rígido, se desliza bajo una charretera de tela o se usa desnudo. Dimensionada por largo para que el hombro terminado de una prenda determine la placa. Una identidad de material — PLA/PETG rígido — abarca el avío de FC y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/epaulette-board.webp",
+    "difficulty": "intermediate",
+    "tags": ["epaulette", "shoulder", "uniform", "hardware", "am-fashion", "finding", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    { "id": "board", "label": { "en": "Shoulder Board", "es": "Charretera" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["board"], "estimate": { "base_time": 30, "per_unit": 3, "per_part": 16 } },
+    { "id": "plate", "label": { "en": "Flat Plate (no rim)", "es": "Placa lisa (sin reborde)" }, "scad_file": "main.py", "cq_file": "main.py", "parts": ["plate"], "estimate": { "base_time": 18, "per_unit": 3, "per_part": 10 } }
+  ],
+  "parts": [
+    { "id": "board", "label": { "en": "Shoulder Board", "es": "Charretera" }, "render_mode": 0, "color": "#8a7a5a" },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" }, "render_mode": 0, "color": "#8a7a5a" }
+  ],
+  "parameter_groups": [
+    { "id": "shape", "label": { "en": "Shape", "es": "Forma" } },
+    { "id": "detail", "label": { "en": "Detail", "es": "Detalle" } }
+  ],
+  "parameters": [
+    { "id": "board_len", "type": "slider", "default": 140.0, "min": 60.0, "max": 260.0, "step": 5.0, "group": "shape", "modes": ["board", "plate"], "label": { "en": "Board length (mm)", "es": "Largo de la placa (mm)" }, "tooltip": { "en": "Shoulder seam to collar", "es": "De la costura del hombro al cuello" } },
+    { "id": "wide_w", "type": "slider", "default": 60.0, "min": 20.0, "max": 120.0, "step": 1.0, "group": "shape", "modes": ["board", "plate"], "label": { "en": "Shoulder width (mm)", "es": "Ancho del hombro (mm)" }, "tooltip": { "en": "Width at the shoulder seam", "es": "Ancho en la costura del hombro" } },
+    { "id": "narrow_w", "type": "slider", "default": 40.0, "min": 15.0, "max": 120.0, "step": 1.0, "group": "shape", "modes": ["board", "plate"], "label": { "en": "Collar width (mm)", "es": "Ancho del cuello (mm)" }, "tooltip": { "en": "Width at the collar end", "es": "Ancho en el extremo del cuello" } },
+    { "id": "plate_t", "type": "slider", "default": 2.5, "min": 1.5, "max": 6.0, "step": 0.1, "group": "shape", "modes": ["board", "plate"], "label": { "en": "Plate thickness (mm)", "es": "Espesor de placa (mm)" }, "tooltip": { "en": "Thicker = stiffer board", "es": "Más grueso = placa más rígida" } },
+    { "id": "rim_h", "type": "slider", "default": 3.0, "min": 1.0, "max": 8.0, "step": 0.5, "group": "detail", "modes": ["board"], "label": { "en": "Rim height (mm)", "es": "Alto del reborde (mm)" }, "tooltip": { "en": "Raised edge height", "es": "Alto del borde elevado" } },
+    { "id": "rim_w", "type": "slider", "default": 3.0, "min": 1.5, "max": 8.0, "step": 0.5, "group": "detail", "modes": ["board"], "label": { "en": "Rim width (mm)", "es": "Ancho del reborde (mm)" }, "tooltip": { "en": "Rim wall width", "es": "Ancho de la pared del reborde" } },
+    { "id": "button_dia", "type": "slider", "default": 10.0, "min": 4.0, "max": 24.0, "step": 0.5, "group": "detail", "modes": ["board"], "label": { "en": "Button diameter (mm)", "es": "Diámetro del botón (mm)" }, "tooltip": { "en": "Collar button post size", "es": "Tamaño del poste del botón" } }
+  ],
+  "presets": [
+    { "id": "dress_uniform", "mode": "board", "label": { "en": "Dress uniform", "es": "Uniforme de gala" }, "values": { "board_len": 140, "wide_w": 60, "narrow_w": 40 } },
+    { "id": "costume", "mode": "board", "label": { "en": "Costume (bold)", "es": "Disfraz (llamativo)" }, "values": { "board_len": 170, "wide_w": 80, "narrow_w": 50, "rim_h": 5 } }
+  ],
+  "constraints": [
+    { "expression": "narrow_w <= wide_w", "severity": "warning", "message": { "en": "Collar end wider than the shoulder inverts the taper", "es": "Un cuello más ancho que el hombro invierte la conicidad" } }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 60, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": { "base_time": 30, "per_unit": 3, "per_part": 16, "fn_factor": 16, "wasm_multiplier": 4, "warning_threshold_seconds": 120 },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      { "id": "shoulder_edge", "label": { "en": "Shoulder-Seam Edge", "es": "Canto de la costura del hombro" }, "geometry_type": "flange", "standard": "internal", "parameters": ["board_len", "wide_w", "narrow_w"] },
+      { "id": "button_boss", "label": { "en": "Collar Button Boss", "es": "Poste del botón del cuello" }, "geometry_type": "boss", "standard": "internal", "parameters": ["button_dia", "plate_t"] }
+    ],
+    "material_awareness": { "shrinkage_compensation": false, "recycled_material_toggle": true, "tolerance_by_material": true },
+    "societal_benefit": {
+      "en": "A printable shoulder board turns rank insignia and costume structure — historically stiffened by hand with buckram and wire — into an open, made-to-measure finding. Sized to the shoulder it is a hard good that is simultaneously a Fashion Cabinet notion and a Yantra4D solid, opening uniform, cosplay, and performance costume to everyone.",
+      "es": "Una charretera imprimible convierte la insignia de rango y la estructura de disfraz — históricamente rigidizadas a mano con entretela y alambre — en un herraje abierto a la medida. Dimensionada al hombro es un herraje que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, abriendo el uniforme, el cosplay y el vestuario a todas las personas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["epaulette", "shoulder", "uniform", "hardware", "am-fashion", "finding", "wearable", "hyperobject", "commons"]
+}

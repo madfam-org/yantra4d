@@ -18,8 +18,9 @@ Modes (dispatched via `target_part`):
                   of hooks/eyes, the standard bra-back closure with `columns`
                   positions of band adjustment. Returned as an Assembly.
 
-Every part is a watertight solid. The hook nose is a swept-then-thickened curl,
-fused to the plate by volumetric overlap.
+Every part is a watertight solid. The hook nose is a half-torus curl (built from
+makeTorus primitives, not a fragile swept arc), fused to the plate by volumetric
+overlap.
 
 Sandbox contract (apps/api/services/engine/cq_runner.py):
   - `cq` and `math` are pre-injected globals.

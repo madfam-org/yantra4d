@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "TPU Chainmail Panel",
+    "slug": "tpu-chainmail-panel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place flexible chainmail panel — the additive-manufacturing fabric the Fashion Cabinet `tpu-panel-impreso` fabric card describes as cloth and bridges to here for its geometry. A grid of interlocked rings (the 4-in-1 European weave) prints in one job as separate, already-linked solids and drapes like a textile: rigid link, flexible sheet. Sized by ring count so a garment panel's finished dimensions drive the weave. One material identity — Bambu TPU 95A — spans the fabric card and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un panel de cota de malla flexible impreso en sitio — la tela de manufactura aditiva que la ficha `tpu-panel-impreso` de Fashion Cabinet describe como tela y a la que se puentea aquí para su geometría. Una rejilla de anillos entrelazados (el tejido europeo 4-en-1) se imprime en un solo trabajo como sólidos separados ya enlazados y cae como un textil: eslabón rígido, lámina flexible. Dimensionada por número de anillos para que las medidas terminadas de un panel de prenda determinen el tejido. Una identidad de material — Bambu TPU 95A — abarca la ficha de tela y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tpu-chainmail-panel.webp",
+    "difficulty": "advanced",
+    "tags": ["chainmail", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "fabric", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "panel",
+      "label": { "en": "Chainmail Panel", "es": "Panel de cota" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["panel"],
+      "estimate": { "base_time": 60, "per_unit": 4, "per_part": 30 }
+    },
+    {
+      "id": "swatch",
+      "label": { "en": "3×3 Swatch", "es": "Muestra 3×3" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["swatch"],
+      "estimate": { "base_time": 20, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "ring",
+      "label": { "en": "Single Ring (unit cell)", "es": "Anillo único (celda)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["ring"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "panel", "label": { "en": "Chainmail Panel", "es": "Panel de cota" }, "render_mode": 0, "color": "#8a8f94" },
+    { "id": "swatch", "label": { "en": "Swatch", "es": "Muestra" }, "render_mode": 0, "color": "#8a8f94" },
+    { "id": "ring", "label": { "en": "Ring", "es": "Anillo" }, "render_mode": 0, "color": "#9aa0a6" }
+  ],
+  "parameter_groups": [
+    { "id": "weave", "label": { "en": "Weave", "es": "Tejido" } },
+    { "id": "ring", "label": { "en": "Ring", "es": "Anillo" } },
+    { "id": "fit", "label": { "en": "Print Fit", "es": "Ajuste de impresión" } }
+  ],
+  "parameters": [
+    {
+      "id": "rows", "type": "slider", "default": 10, "min": 1, "max": 40, "step": 1,
+      "group": "weave", "modes": ["panel"],
+      "label": { "en": "Rows (rings down)", "es": "Filas (anillos a lo alto)" },
+      "tooltip": { "en": "Ring rows down the panel; with the ring size this sets the finished height", "es": "Filas de anillos a lo alto; con el tamaño de anillo define el alto terminado" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 8, "min": 1, "max": 40, "step": 1,
+      "group": "weave", "modes": ["panel"],
+      "label": { "en": "Columns (rings across)", "es": "Columnas (anillos a lo ancho)" },
+      "tooltip": { "en": "Ring columns across the panel; the width follows", "es": "Columnas de anillos a lo ancho; el ancho sigue" }
+    },
+    {
+      "id": "ring_id", "type": "slider", "default": 9.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "ring", "modes": ["panel", "swatch", "ring"],
+      "label": { "en": "Ring inner diameter (mm)", "es": "Diámetro interior del anillo (mm)" },
+      "tooltip": { "en": "Inner diameter of each ring; larger = looser, drapier weave", "es": "Diámetro interior de cada anillo; mayor = tejido más suelto y con más caída" }
+    },
+    {
+      "id": "wire_d", "type": "slider", "default": 2.4, "min": 1.2, "max": 6.0, "step": 0.1,
+      "group": "ring", "modes": ["panel", "swatch", "ring"],
+      "label": { "en": "Wire diameter (mm)", "es": "Diámetro de alambre (mm)" },
+      "tooltip": { "en": "Cross-section of the ring; thicker = stiffer, stronger", "es": "Sección del anillo; más grueso = más rígido y resistente" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.45, "min": 0.2, "max": 1.5, "step": 0.05,
+      "group": "fit", "modes": ["panel", "swatch"],
+      "label": { "en": "Print Clearance (mm)", "es": "Holgura de impresión (mm)" },
+      "tooltip": { "en": "Gap between linked rings so they print free and articulate — tune to your printer", "es": "Espacio entre anillos enlazados para que impriman libres y articulen — ajusta a tu impresora" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "fine_drape", "mode": "panel",
+      "label": { "en": "Fine Drape (9L, 2.4 wire)", "es": "Caída fina (9L, alambre 2.4)" },
+      "values": { "rows": 12, "cols": 10, "ring_id": 9, "wire_d": 2.4 }
+    },
+    {
+      "id": "armor_grade", "mode": "panel",
+      "label": { "en": "Armor Grade (thicker wire)", "es": "Grado armadura (alambre grueso)" },
+      "values": { "rows": 10, "cols": 8, "ring_id": 10, "wire_d": 3.4 }
+    },
+    {
+      "id": "print_test", "mode": "swatch",
+      "label": { "en": "Print Test Swatch", "es": "Muestra de prueba" },
+      "values": { "ring_id": 9, "wire_d": 2.4, "clearance": 0.45 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wire_d < ring_id",
+      "severity": "error",
+      "message": { "en": "Wire diameter must be smaller than the ring inner diameter", "es": "El diámetro del alambre debe ser menor que el diámetro interior del anillo" }
+    },
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Large clearances make a floppy weave; tighten if links slop", "es": "Holguras grandes hacen un tejido flojo; reduce si los eslabones bailan" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "detail", "label": { "en": "Weave Detail", "es": "Detalle del tejido" }, "position": [30, 30, 25] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 60, "per_unit": 4, "per_part": 30,
+    "fn_factor": 24, "wasm_multiplier": 6, "warning_threshold_seconds": 180
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "panel_edge",
+        "label": { "en": "Sewable Panel Edge", "es": "Canto de panel cosible" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["rows", "cols", "ring_id", "wire_d"]
+      },
+      {
+        "id": "link_cell",
+        "label": { "en": "4-in-1 Link Cell", "es": "Celda de enlace 4-en-1" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["ring_id", "wire_d", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A flexible metal-like fabric that anyone can print at home turns armor, protective wear, and expressive fashion from a specialist craft into an open, made-to-measure pattern. Printed in TPU it is washable, repairable link-by-link, and recyclable; sized to a garment panel it is the first fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid — the additive-manufacturing frontier of clothing, open to everyone.",
+      "es": "Una tela flexible tipo metal que cualquiera puede imprimir en casa convierte la armadura, la ropa de protección y la moda expresiva de un oficio especializado en un patrón abierto a la medida. Impresa en TPU es lavable, reparable eslabón por eslabón y reciclable; dimensionada a un panel de prenda es la primera tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D — la frontera de manufactura aditiva de la ropa, abierta a todas las personas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["chainmail", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "fabric", "wearable", "hyperobject", "commons"]
+}

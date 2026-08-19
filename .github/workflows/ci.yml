@@ -148,6 +148,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+      - name: Install the shared sandbox core (cq_runner imports it)
+        run: pip install -e ../../packages/commons-sandbox
       - run: pip install ruff pip-audit
       - run: pip-audit --desc || true
       - run: ruff check .
@@ -215,6 +217,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y openscad
           pip install -r requirements.txt
+          pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
       - name: Start backend
         working-directory: apps/api
         env:
@@ -326,6 +329,8 @@ jobs:
           python-version: "3.12"
       - run: sudo apt-get update && sudo apt-get install -y openscad
       - run: pip install -r requirements.txt
+      - name: Install the shared sandbox core (cq_runner subprocess imports it)
+        run: pip install -e ../../packages/commons-sandbox
       - name: Run Geometric Regression Parity Tests
         run: python3 tests/scripts/geometric_regression.py --tolerance 0.05
 
@@ -337,12 +342,21 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.MADFAM_BOT_PAT }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Check manifest sync
         run: python3 scripts/qa/sync_fallback_manifest.py --check
       - name: Check commons catalog is current
         run: python3 scripts/qa/generate_commons_catalog.py --check
       - name: Check graph node catalog matches the engine
         run: python3 scripts/qa/generate_graph_catalog.py --check
+      - name: Shared sandbox core has not drifted from its lock
+        run: python3 scripts/qa/check_sandbox_sync.py
+      - name: Commons-sandbox tests
+        run: |
+          pip install -e 'packages/commons-sandbox[dev]'
+          pytest packages/commons-sandbox/tests -q
 
   manifest-validation:
     runs-on: ubuntu-latest

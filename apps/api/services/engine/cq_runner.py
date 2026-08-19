@@ -1,75 +1,12 @@
-import builtins as _builtins
 import json
 import logging
 import math
 import os
 import sys
 
+from commons_sandbox import build_sandbox_builtins, read_script, validate_script_path
+
 logger = logging.getLogger(__name__)
-
-
-def _safe_type(obj, *args):
-    """Restricted type() — returns type name only, blocks metaclass access."""
-    if args:
-        raise TypeError("type() with 3 arguments is not allowed in sandboxed scripts")
-    return _builtins.type(obj)
-
-
-def _safe_isinstance(obj, classinfo):
-    """Restricted isinstance() — no metaclass traversal exposure."""
-    return _builtins.isinstance(obj, classinfo)
-
-
-def _safe_issubclass(cls, classinfo):
-    """Restricted issubclass() — no class hierarchy exposure."""
-    return _builtins.issubclass(cls, classinfo)
-
-
-# Restricted builtins for CadQuery script execution — blocks file I/O,
-# network access, code generation, and import of dangerous modules.
-_SAFE_BUILTINS = {
-    # Core types and constructors
-    "True": True, "False": False, "None": None,
-    "int": int, "float": float, "str": str, "bool": bool,
-    "list": list, "dict": dict, "tuple": tuple, "set": set, "frozenset": frozenset,
-    "bytes": bytes, "bytearray": bytearray, "complex": complex,
-    # Iteration and ranges
-    "range": range, "enumerate": enumerate, "zip": zip, "map": map, "filter": filter,
-    "reversed": reversed, "sorted": sorted, "iter": iter, "next": next,
-    # Math and numeric
-    "abs": abs, "round": round, "min": min, "max": max, "sum": sum, "pow": pow,
-    "divmod": divmod,
-    # Length and membership
-    "len": len, "any": any, "all": all, "isinstance": _safe_isinstance, "issubclass": _safe_issubclass,
-    "type": _safe_type, "id": id, "hash": hash,
-    # String and repr
-    "repr": repr, "format": format, "chr": chr, "ord": ord,
-    "print": print,
-    # Exceptions (scripts may catch/raise). NameError is included so the
-    # commons' PARAM idiom — probing an injected parameter and catching the
-    # NameError when it is absent — can catch precisely instead of broadly.
-    # Exception classes grant no capabilities; exposing them does not widen
-    # the sandbox.
-    "Exception": Exception, "ValueError": ValueError, "TypeError": TypeError,
-    "NameError": NameError,
-    "RuntimeError": RuntimeError, "KeyError": KeyError, "IndexError": IndexError,
-    "AttributeError": AttributeError, "StopIteration": StopIteration,
-}
-
-_BLOCKED_MODULES = frozenset({
-    "os", "sys", "subprocess", "shutil", "socket", "http", "urllib",
-    "importlib", "ctypes", "signal", "multiprocessing", "threading",
-    "pickle", "shelve", "code", "codeop", "compile", "compileall",
-})
-
-
-def _restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
-    """Import guard that blocks dangerous modules."""
-    top = name.split(".")[0]
-    if top in _BLOCKED_MODULES:
-        raise ImportError(f"Import of '{name}' is not allowed in CadQuery scripts")
-    return __builtins__["__import__"](name, globals, locals, fromlist, level) if isinstance(__builtins__, dict) \
-        else __builtins__.__import__(name, globals, locals, fromlist, level)
 
 
 def run_cadquery_script(script_path, output_path, params_json, export_format):
@@ -82,21 +19,19 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     print(f"Loading parameters: {params_json}")
     params = json.loads(params_json)
 
-    # Validate script path is within the projects directory
-    script_real = os.path.realpath(script_path)
-    if not script_real.endswith(('.py', '.cq')):
-        print(f"Error: Script must be a .py or .cq file, got: {script_path}")
+    # The restricted-execution security core is the shared commons-sandbox package
+    # (one authored source with Fashion Cabinet's fc_runner). validate_script_path
+    # is realpath-checked; CadQuery cartridges may be .py or .cq.
+    try:
+        validate_script_path(script_path, {".py", ".cq"})
+    except ValueError as exc:
+        print(f"Error: {exc}")
         sys.exit(1)
 
     print(f"Executing CadQuery script: {script_path}")
+    script_content = read_script(script_path)
 
-    # Read the script
-    with open(script_path) as f:
-        script_content = f.read()
-
-    # Create a sandboxed execution environment with restricted builtins
-    safe_builtins = dict(_SAFE_BUILTINS)
-    safe_builtins["__import__"] = _restricted_import
+    safe_builtins = build_sandbox_builtins("CadQuery scripts")
 
     exec_globals = {
         "__builtins__": safe_builtins,

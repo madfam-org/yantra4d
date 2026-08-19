@@ -1,0 +1,158 @@
+{
+  "project": {
+    "name": "Button",
+    "slug": "shank-button-solid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The printable solid button. Fashion Cabinet's shank-button notion owns the fashion semantics — ligne sizing and the placket placement guide — and bridges to this solid for the hardware. Sized in ligne (1 L = 0.635 mm, the button trade's unit): a shank button with a closed back loop, a flat 2- or 4-hole sew-through, and a barrel toggle for duffle-coat closures. The same ligne that lays out a Fashion Cabinet placket makes the matching button here.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El botón sólido imprimible. El avío de botón de pie de Fashion Cabinet posee la semántica de moda — talla en líneas y la guía de colocación en la cartera — y se puentea a este sólido para el herraje. Dimensionado en líneas (1 L = 0.635 mm, la unidad del oficio del botón): un botón de pie con lazo trasero cerrado, un botón plano de 2 o 4 agujeros, y un botón de barra para cierres de trenca. La misma línea que traza una cartera en Fashion Cabinet hace el botón correspondiente aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shank-button-solid.webp",
+    "difficulty": "beginner",
+    "tags": ["button", "shank", "sew-through", "toggle", "notion", "closure", "ligne", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "shank",
+      "label": { "en": "Shank Button", "es": "Botón de pie" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shank"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "sew_through",
+      "label": { "en": "Sew-through (2 / 4 hole)", "es": "De agujeros (2 / 4)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["sew_through"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "toggle",
+      "label": { "en": "Barrel Toggle", "es": "Botón de barra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["toggle"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "shank", "label": { "en": "Shank Button", "es": "Botón de pie" }, "render_mode": 0, "color": "#8a6d3b" },
+    { "id": "sew_through", "label": { "en": "Sew-through Button", "es": "Botón de agujeros" }, "render_mode": 0, "color": "#a5844a" },
+    { "id": "toggle", "label": { "en": "Barrel Toggle", "es": "Botón de barra" }, "render_mode": 0, "color": "#7a5c30" }
+  ],
+  "parameter_groups": [
+    { "id": "size", "label": { "en": "Size", "es": "Talla" } },
+    { "id": "holes", "label": { "en": "Holes", "es": "Agujeros" } }
+  ],
+  "parameters": [
+    {
+      "id": "diameter_mm", "type": "slider", "default": 15.24, "min": 6.0, "max": 60.0, "step": 0.5,
+      "group": "size", "modes": ["shank", "sew_through", "toggle"],
+      "label": { "en": "Diameter (mm)", "es": "Diámetro (mm)" },
+      "tooltip": { "en": "Button diameter. 24 L ≈ 15.24 mm (1 L = 0.635 mm). Fashion Cabinet maps diameter_mm = button_ligne × 0.635.", "es": "Diámetro del botón. 24 L ≈ 15.24 mm (1 L = 0.635 mm). Fashion Cabinet mapea diameter_mm = button_ligne × 0.635." },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "thickness", "type": "slider", "default": 3.2, "min": 1.5, "max": 12.0, "step": 0.1,
+      "group": "size", "modes": ["shank", "sew_through", "toggle"],
+      "label": { "en": "Thickness (mm)", "es": "Grosor (mm)" },
+      "tooltip": { "en": "Body thickness (also sets the toggle barrel radius)", "es": "Grosor del cuerpo (también define el radio del barril del toggle)" }
+    },
+    {
+      "id": "holes", "type": "select", "default": "4",
+      "group": "holes", "modes": ["sew_through"],
+      "label": { "en": "Hole Count", "es": "Número de agujeros" },
+      "tooltip": { "en": "2-hole or 4-hole sew-through", "es": "Botón de 2 o 4 agujeros" },
+      "options": [
+        { "value": "2", "label": { "en": "2 holes", "es": "2 agujeros" } },
+        { "value": "4", "label": { "en": "4 holes", "es": "4 agujeros" } }
+      ]
+    },
+    {
+      "id": "hole_dia", "type": "slider", "default": 1.6, "min": 0.8, "max": 4.0, "step": 0.1,
+      "group": "holes", "modes": ["shank", "sew_through", "toggle"],
+      "label": { "en": "Hole / Bore Diameter (mm)", "es": "Diámetro de agujero / orificio (mm)" },
+      "tooltip": { "en": "Sew-hole diameter, shank bore, and toggle thread channel", "es": "Diámetro de agujero de costura, orificio del pie y canal del toggle" }
+    },
+    {
+      "id": "rim", "type": "slider", "default": 0.8, "min": 0.0, "max": 2.0, "step": 0.1,
+      "group": "size", "modes": ["sew_through"],
+      "label": { "en": "Rim Height (mm)", "es": "Altura del borde (mm)" },
+      "tooltip": { "en": "Raised rim proud of the face on a sew-through button", "es": "Borde elevado sobre la cara en un botón de agujeros" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shirt_18l", "mode": "sew_through",
+      "label": { "en": "Shirt Button (18 L, 4-hole)", "es": "Botón de camisa (18 L, 4 agujeros)" },
+      "values": { "diameter_mm": 11.43, "thickness": 2.4, "holes": "4", "hole_dia": 1.4 }
+    },
+    {
+      "id": "coat_36l", "mode": "shank",
+      "label": { "en": "Coat Button (36 L, shank)", "es": "Botón de abrigo (36 L, de pie)" },
+      "values": { "diameter_mm": 22.86, "thickness": 5.0, "hole_dia": 2.0 }
+    },
+    {
+      "id": "duffle_toggle", "mode": "toggle",
+      "label": { "en": "Duffle Toggle", "es": "Toggle de trenca" },
+      "values": { "diameter_mm": 40, "thickness": 6.0, "hole_dia": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hole_dia < diameter_mm / 3",
+      "severity": "error",
+      "message": { "en": "Holes are too large for the button diameter", "es": "Los agujeros son demasiado grandes para el diámetro del botón" }
+    },
+    {
+      "expression": "thickness >= 1.5",
+      "severity": "warning",
+      "message": { "en": "Thin buttons are fragile when printed", "es": "Los botones delgados son frágiles al imprimirse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [40, 40, 35] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 70] },
+    { "id": "back", "label": { "en": "Back (shank)", "es": "Reverso (pie)" }, "position": [0, 0, -70] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "thread_path",
+        "label": { "en": "Thread Path", "es": "Paso del hilo" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["hole_dia", "holes"]
+      },
+      {
+        "id": "button_face",
+        "label": { "en": "Button Face", "es": "Cara del botón" },
+        "geometry_type": "boss",
+        "standard": "internal",
+        "parameters": ["diameter_mm", "thickness"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A lost button is the most common and most fixable garment failure; a matching printable button sized to the placket's own ligne keeps a shirt, coat, or child's garment in service. Buttons also print cleanly in recycled and offcut material, and the ligne bridge means the button always matches the Fashion Cabinet placement guide that laid out the placket.",
+      "es": "Un botón perdido es la falla de prenda más común y más reparable; un botón imprimible dimensionado a la propia línea de la cartera mantiene en uso una camisa, abrigo o prenda infantil. Los botones también se imprimen bien en material reciclado y de retazo, y el puente de líneas hace que el botón siempre coincida con la guía de colocación de Fashion Cabinet que trazó la cartera."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["button", "shank", "sew-through", "toggle", "notion", "closure", "ligne", "wearable", "hyperobject", "commons"]
+}

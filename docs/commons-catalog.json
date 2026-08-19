@@ -2,10 +2,10 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 327,
-    "with_cdg_interfaces": 313,
-    "with_commons_license": 327,
-    "dual_engine": 23
+    "cartridges": 331,
+    "with_cdg_interfaces": 316,
+    "with_commons_license": 330,
+    "dual_engine": 24
   },
   "domains": {
     "household": 113,
@@ -13,8 +13,9 @@
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
-    "uncategorized": 13,
+    "uncategorized": 14,
     "hybrid": 7,
+    "wearable": 3,
     "soft-robotics": 1
   },
   "standards": [
@@ -240,6 +241,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "thread_std",
+        "thread_mode",
+        "clearance",
+        "wall",
+        "housing_h",
+        "cache_depth",
+        "knurl"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -295,6 +305,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "bore_dia",
+        "stem_dia",
+        "wall",
+        "flange_dia",
+        "groove_w",
+        "clearance",
+        "barb_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -350,6 +369,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "angles",
+        "size",
+        "width",
+        "base_t",
+        "single_ang"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -413,6 +439,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "tube_dia",
+        "rim_th",
+        "hook_depth",
+        "wall",
+        "clearance",
+        "width",
+        "ring_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -467,6 +502,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "plate_w",
+        "flank_ang",
+        "plate_h",
+        "plate_len",
+        "slot_w",
+        "slot_len",
+        "clamp_clear",
+        "wall",
+        "clamp_bolt_d",
+        "leg_h",
+        "leg_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -533,6 +581,26 @@
       "modes": 3,
       "parts": 3,
       "parameters": 18,
+      "parameter_ids": [
+        "base_w",
+        "base_d",
+        "base_t",
+        "pin_pattern",
+        "pin_dia",
+        "pin_height",
+        "pin_inset",
+        "grid_cols",
+        "grid_rows",
+        "pin_count",
+        "stops",
+        "stop_h",
+        "stop_t",
+        "v_angle",
+        "v_stock_dia",
+        "mount_holes",
+        "mount_dia",
+        "mount_inset"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -609,6 +677,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "handle_dia",
+        "clearance",
+        "grip_dia",
+        "length",
+        "shape",
+        "bulb_gain",
+        "strap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -661,6 +738,16 @@
       "modes": 2,
       "parts": 2,
       "parameters": 8,
+      "parameter_ids": [
+        "clip_width",
+        "jaw_length",
+        "jaw_height",
+        "beam_thick",
+        "mouth_gap",
+        "tail_len",
+        "catch",
+        "grip_teeth"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -716,6 +803,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "clip_width",
+        "depth",
+        "wall",
+        "channel",
+        "lip",
+        "grip_ribs",
+        "style",
+        "spout_dia",
+        "spout_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -771,6 +869,15 @@
       "modes": 4,
       "parts": 4,
       "parameters": 7,
+      "parameter_ids": [
+        "end_type",
+        "ball_dia",
+        "socket_grip",
+        "socket_clear",
+        "stem_len",
+        "stem_dia",
+        "base_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -835,6 +942,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "ball_dia",
+        "prongs",
+        "prong_w",
+        "prong_t",
+        "wall",
+        "plate_w",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -900,6 +1016,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "pipe",
+        "fit",
+        "jaw_w",
+        "pad_h",
+        "wall",
+        "depth",
+        "screw_bore"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -965,6 +1090,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "bar_od",
+        "bar_id",
+        "wall",
+        "clamp_w",
+        "bolt_d",
+        "acc_bolt_d",
+        "plate_len",
+        "plate_wid",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1031,6 +1167,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cell",
+        "count",
+        "clearance",
+        "bore_depth",
+        "wall",
+        "floor",
+        "contact_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1096,6 +1241,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "pack_w",
+        "pack_l",
+        "strap_w",
+        "margin",
+        "pad_thick",
+        "grip_depth",
+        "grip_pitch",
+        "wall",
+        "wall_h",
+        "wedge_rise"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1159,6 +1316,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "bearing",
+        "mount_style",
+        "wall",
+        "back_wall",
+        "press_fit",
+        "mount_holes",
+        "bolt_dia",
+        "riser"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1224,6 +1391,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "board_t",
+        "board_w",
+        "slot_depth",
+        "wall",
+        "clearance",
+        "corner_r",
+        "screw_dia",
+        "stack_lug"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1279,6 +1456,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "belt",
+        "teeth",
+        "belt_w",
+        "wall",
+        "floor",
+        "bolt_d",
+        "slot_len",
+        "mount_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1344,6 +1531,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "belt_w",
+        "belt_t",
+        "loop_clear",
+        "clip_reach",
+        "clip_clear",
+        "pocket_w",
+        "pocket_d",
+        "pocket_h",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1411,6 +1609,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "hole",
+        "fit",
+        "shank_len",
+        "head_h",
+        "head_w",
+        "reach",
+        "face_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1478,6 +1685,16 @@
       "modes": 2,
       "parts": 2,
       "parameters": 8,
+      "parameter_ids": [
+        "m",
+        "teeth",
+        "pressure_angle",
+        "shaft_angle",
+        "face_width",
+        "back_height",
+        "bore",
+        "flank_pts"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1544,6 +1761,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "bar_dia",
+        "interface",
+        "phone_w",
+        "clamp_w",
+        "wall",
+        "bolt_dia",
+        "grip_pad"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1598,6 +1824,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "tube_w",
+        "tire_w",
+        "arm_len",
+        "arm_w",
+        "thickness",
+        "lip_h",
+        "plate_w",
+        "plate_h",
+        "stud",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1666,6 +1904,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "turns",
+        "clearance",
+        "wall",
+        "port_count",
+        "port_size",
+        "tray_dia",
+        "tray_wall_h",
+        "perch_len",
+        "perch_dia",
+        "tube_h",
+        "tube_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1721,6 +1972,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "board_t",
+        "clearance",
+        "grip_depth",
+        "foot_h",
+        "riser_h",
+        "pad_grip",
+        "clip_len",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1775,6 +2036,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "slot_w",
+        "arm_len",
+        "arm_w",
+        "lip_h",
+        "wall",
+        "plate_h",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1840,6 +2110,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "bobbin_type",
+        "count",
+        "rows",
+        "peg_h",
+        "peg_clear",
+        "base_th",
+        "pin_h",
+        "pin_tilt"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -1894,6 +2174,23 @@
       "modes": 3,
       "parts": 3,
       "parameters": 15,
+      "parameter_ids": [
+        "target_part",
+        "neck_girth",
+        "chest_girth",
+        "bust_girth",
+        "waist_girth",
+        "hip_girth",
+        "back_waist_length",
+        "shoulder_width",
+        "thigh_girth",
+        "bust_depth_ratio",
+        "seat_depth_ratio",
+        "post_dia",
+        "base_dia",
+        "base_th",
+        "target_material"
+      ],
       "export_formats": [
         "glb",
         "gltf",
@@ -1996,6 +2293,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "bottle_d",
+        "neck_d",
+        "count",
+        "wall",
+        "depth",
+        "plate_h",
+        "screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2068,6 +2374,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "bottle_dia",
+        "grip",
+        "band_w",
+        "band_t",
+        "tool_dia",
+        "boss_space",
+        "spine_w",
+        "bolt_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2135,6 +2451,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "cap_dia",
+        "clearance",
+        "wall",
+        "bell_h",
+        "neck_dia",
+        "seat_depth",
+        "grip_knurl",
+        "count"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2189,6 +2515,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "neck_standard",
+        "neck_standard_b",
+        "clearance",
+        "wall",
+        "top_th",
+        "extra_turns",
+        "grip_knurl",
+        "domed_top",
+        "vent_hole",
+        "vent_dia",
+        "spout_dia",
+        "spout_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2245,6 +2585,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "finger_w",
+        "mat_thick",
+        "n_fingers",
+        "fence_len",
+        "fence_h",
+        "base_t",
+        "bolt_bore",
+        "slot_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2308,6 +2658,18 @@
       "modes": 4,
       "parts": 4,
       "parameters": 10,
+      "parameter_ids": [
+        "bracket_type",
+        "leg_a",
+        "leg_b",
+        "width",
+        "thickness",
+        "angle",
+        "holes_per_leg",
+        "screw_dia",
+        "counterbore",
+        "gusset"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2377,6 +2739,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "bb_size",
+        "board_th",
+        "clearance",
+        "wall",
+        "floor",
+        "lip_h",
+        "screw_ears",
+        "ear_bore",
+        "tilt_deg"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2452,6 +2825,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "cols",
+        "rows",
+        "pitch",
+        "stud_dia",
+        "stud_h",
+        "plate_h",
+        "wall",
+        "tube_od",
+        "tube_id",
+        "adapter_h",
+        "mount_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2517,6 +2903,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "bar_size",
+        "clearance",
+        "stand_h",
+        "wall",
+        "base_w",
+        "screw_dia",
+        "phases",
+        "phase_pitch"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2581,6 +2977,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "inner_w",
+        "inner_d",
+        "inner_h",
+        "wall",
+        "corner_r",
+        "style",
+        "lip",
+        "lip_clear",
+        "front_cut",
+        "div_x",
+        "div_y",
+        "div_thick"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2648,6 +3058,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "gland_size",
+        "cable_dia",
+        "clearance",
+        "wall",
+        "thread_turns",
+        "head_flats"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2713,6 +3131,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "style",
+        "cable_dia",
+        "clip_wall",
+        "clip_len",
+        "gap_frac",
+        "plate_w",
+        "plate_h",
+        "plate_t",
+        "text",
+        "text_mode",
+        "text_depth"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2781,6 +3212,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "cable_dia",
+        "wall",
+        "mount_type",
+        "clip_gap",
+        "clip_len",
+        "slot_count",
+        "comb_h",
+        "comb_t",
+        "channel_w",
+        "channel_h",
+        "raceway_len",
+        "raceway_lid"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2846,6 +3291,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cable_dia",
+        "wall",
+        "wrap_len",
+        "spool_dia",
+        "label_text",
+        "label_dia",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2909,6 +3363,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cam_type",
+        "base_radius",
+        "lift",
+        "dwell_angle",
+        "thickness",
+        "bore",
+        "hub"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -2963,6 +3426,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "target_part",
+        "adapter_top",
+        "thread_style",
+        "thread_len",
+        "chamfer_lead",
+        "ring_count",
+        "base_shape",
+        "base_size",
+        "base_thick"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3032,6 +3506,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "fret_radius",
+        "neck_w",
+        "neck_th",
+        "pad_w",
+        "strings",
+        "screw_d",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3085,6 +3568,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "length",
+        "spine",
+        "inner_w",
+        "gate_type",
+        "opening"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3138,6 +3628,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "base_len",
+        "base_depth",
+        "base_h",
+        "card_t",
+        "groove_gap",
+        "groove_ang",
+        "n_grooves",
+        "lip_h",
+        "stand_ang"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3193,6 +3694,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "card_w",
+        "slot_w",
+        "lean_deg",
+        "depth",
+        "height",
+        "slot_depth",
+        "slots",
+        "step",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3249,6 +3761,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "stock_max",
+        "thick",
+        "scribe_w",
+        "beam_len",
+        "fence_h",
+        "mortise_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3312,6 +3832,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "rotor_bore",
+        "clearance",
+        "wall_min",
+        "depth",
+        "floor"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3368,6 +3895,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "chain_w",
+        "chain_h",
+        "chain_hole",
+        "plate_t",
+        "margin",
+        "mount_d",
+        "slot_len",
+        "foot_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3432,6 +3969,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "pitch",
+        "scale",
+        "hole_dia",
+        "bb_cols",
+        "bb_rows",
+        "bb_thick",
+        "gutter",
+        "comp_pitches",
+        "comp_len",
+        "comp_dia",
+        "leg_len",
+        "bus_holes"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3497,6 +4048,15 @@
       "modes": 2,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "diameter",
+        "thickness",
+        "shape",
+        "lip_height",
+        "lip_wall",
+        "pattern",
+        "pattern_depth"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3552,6 +4112,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "basket",
+        "clearance",
+        "grip",
+        "wall",
+        "ring_h",
+        "funnel_h",
+        "flare",
+        "magnets",
+        "magnet_d",
+        "magnet_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3607,6 +4179,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cap_d",
+        "cap_depth",
+        "fit",
+        "wall",
+        "store_depth",
+        "clip_w",
+        "lanyard_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3671,6 +4252,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "spring_type",
+        "thickness",
+        "waves",
+        "amplitude",
+        "free_length",
+        "width",
+        "pad"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3725,6 +4315,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "tube_a",
+        "tube_b",
+        "barb_count",
+        "wall",
+        "bend_radius",
+        "socket_od",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3791,6 +4390,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "conduit_size",
+        "clearance",
+        "wall",
+        "width",
+        "mouth_frac",
+        "screw_dia",
+        "standoff",
+        "gang_count"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3855,6 +4464,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "shape",
+        "size",
+        "cutter_h",
+        "wall",
+        "flange_w",
+        "flange_h",
+        "stamp_depth",
+        "gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3908,6 +4527,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "cable_dia",
+        "clearance",
+        "wall",
+        "length",
+        "split",
+        "pitch"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -3962,6 +4589,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "lock_style",
+        "cord_dia",
+        "cords",
+        "body_size",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4026,6 +4660,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "angle",
+        "leg_a",
+        "leg_b",
+        "width",
+        "thickness",
+        "holes_per_leg",
+        "screw_dia",
+        "countersink",
+        "gusset"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4094,6 +4739,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "mat_thick",
+        "mat_width",
+        "wall",
+        "height",
+        "screw_bore",
+        "band_w",
+        "band_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4157,6 +4811,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "rim_dia",
+        "rim_wall",
+        "skirt_h",
+        "interference",
+        "top_dome",
+        "sip_dia",
+        "straw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4211,6 +4874,21 @@
       "modes": 3,
       "parts": 3,
       "parameters": 13,
+      "parameter_ids": [
+        "holder_dia",
+        "stem_depth",
+        "taper",
+        "wall",
+        "base_dia",
+        "base_thick",
+        "phone_thick",
+        "phone_len",
+        "slot_height",
+        "coin_wells",
+        "tray_depth",
+        "pen_holes",
+        "pen_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4277,6 +4955,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "rod_dia",
+        "cradle_style",
+        "cradle_wall",
+        "projection",
+        "arm_w",
+        "arm_thick",
+        "plate_w",
+        "plate_thick",
+        "hole_spacing",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4343,6 +5033,31 @@
       "modes": 6,
       "parts": 6,
       "parameters": 23,
+      "parameter_ids": [
+        "assembly_level",
+        "substrate_length",
+        "substrate_width",
+        "stack_along_y",
+        "tolerance_xy",
+        "tolerance_z",
+        "wall_thickness",
+        "holder_thickness",
+        "label_area",
+        "chamfer_pocket",
+        "num_slots",
+        "handle",
+        "open_bottom",
+        "drainage_angle",
+        "show_numbers",
+        "numbering_start",
+        "divider_style",
+        "num_racks",
+        "multi_num_racks",
+        "multi_stack_y",
+        "fn",
+        "frame_base_grid",
+        "side_guards"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4394,6 +5109,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "inner_w",
+        "inner_d",
+        "inner_h",
+        "cols",
+        "rows",
+        "rake_deg",
+        "seg_w",
+        "wall",
+        "corner_r"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4450,6 +5176,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "cuvette",
+        "vial_dia",
+        "cols",
+        "rows",
+        "clearance",
+        "wall",
+        "depth",
+        "floor"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4507,6 +5243,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "card",
+        "deck_count",
+        "per_card",
+        "clearance",
+        "wall",
+        "floor",
+        "corner_r",
+        "lid_h",
+        "lid_clear",
+        "tray_h",
+        "tray_div"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4572,6 +5321,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "cable_dia",
+        "boss_h",
+        "seal_step",
+        "cable_count",
+        "plate_t",
+        "margin",
+        "bolt_dia",
+        "bolt_dx",
+        "bolt_dy"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4637,6 +5397,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "bore_dia",
+        "depth",
+        "wall",
+        "fit_clear",
+        "flange",
+        "flange_t",
+        "slot",
+        "slot_w",
+        "lid",
+        "lid_slot_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4713,6 +5485,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "height",
+        "plat_w",
+        "plat_d",
+        "plat_t",
+        "leg_style",
+        "leg_t",
+        "cable_slot",
+        "cable_w",
+        "vents",
+        "kbd_slot",
+        "tilt"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4789,6 +5574,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "board",
+        "standoff_h",
+        "boss_d",
+        "plate_t",
+        "margin",
+        "mount_bore"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4863,6 +5656,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "device_t",
+        "angle",
+        "width",
+        "lip_h",
+        "depth",
+        "height",
+        "wall",
+        "cable_slot",
+        "cable_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4927,6 +5731,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "tower_h",
+        "bore",
+        "wall",
+        "baffles",
+        "baffle_slope",
+        "tray_w",
+        "tray_d",
+        "tray_rim",
+        "tray_wall",
+        "tray_floor"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -4990,6 +5806,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "bay_w",
+        "bay_h",
+        "pcb_w",
+        "pcb_th",
+        "wall",
+        "plate_th",
+        "spring_thick"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5066,6 +5891,15 @@
       "modes": 4,
       "parts": 4,
       "parameters": 7,
+      "parameter_ids": [
+        "rail_standard",
+        "mount_width",
+        "bolt_spacing",
+        "bolt_size",
+        "plate_thickness",
+        "spring_thickness",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5151,6 +5985,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "edge_t",
+        "grip_depth",
+        "width",
+        "reach",
+        "lip",
+        "slot_w",
+        "slots",
+        "cradle_w",
+        "thick"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5205,6 +6050,14 @@
       "modes": 2,
       "parts": 2,
       "parameters": 6,
+      "parameter_ids": [
+        "length",
+        "width",
+        "height",
+        "grip",
+        "finger_hole",
+        "heel_height"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5258,6 +6111,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "aid_type",
+        "barrel_dia",
+        "shaft_dia",
+        "stop_depth",
+        "cup_ml",
+        "wall",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5313,6 +6175,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "tube_od",
+        "wall",
+        "clip_w",
+        "mouth",
+        "clearance",
+        "rim_th",
+        "hook_drop",
+        "n_clips",
+        "clip_pitch"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5369,6 +6242,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "joint_type",
+        "dt_width",
+        "dt_depth",
+        "angle",
+        "length",
+        "clearance",
+        "plate_thick",
+        "block_extra"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5425,6 +6308,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "spout_w",
+        "spout_d",
+        "outlet_dia",
+        "trans_len",
+        "flange_w",
+        "wall",
+        "collar_len",
+        "screen"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5480,6 +6373,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "inner_w",
+        "inner_h",
+        "pitch",
+        "wall",
+        "bend_radius",
+        "pin_dia",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5534,6 +6436,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "tube_size",
+        "clearance",
+        "socket_depth",
+        "wall",
+        "bend_radius",
+        "leg"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5590,6 +6500,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "overall_w",
+        "overall_d",
+        "overall_h",
+        "cols",
+        "rows",
+        "interlock",
+        "wall",
+        "floor"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5646,6 +6566,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "handle_len",
+        "handle_dia",
+        "loop_dia",
+        "thick",
+        "hook_r",
+        "hook_open",
+        "reach"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5700,6 +6629,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "hole_dia",
+        "bushing_fit",
+        "block_thick",
+        "wall",
+        "pitch",
+        "holes",
+        "rows",
+        "cols",
+        "edge_offset",
+        "fence",
+        "fence_h",
+        "fence_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5769,6 +6712,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "tube_id",
+        "fitting",
+        "barb_count",
+        "prong_len",
+        "grip",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5826,6 +6777,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "thread_std",
+        "clearance",
+        "rod_len",
+        "sleeve_len",
+        "post_d",
+        "wall",
+        "sq_drive"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5881,6 +6841,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "barrel_d",
+        "handle_d",
+        "wall",
+        "plate_h",
+        "depth",
+        "screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -5952,6 +6920,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "inlet_dia",
+        "inlet_depth",
+        "branches",
+        "branch_dia",
+        "branch_len",
+        "branch_ang",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6006,6 +6983,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "round_a",
+        "round_b",
+        "rect_size",
+        "length",
+        "collar",
+        "wall",
+        "corner_r",
+        "flange"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6074,6 +7061,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "fan_size",
+        "thickness",
+        "rim",
+        "snap_depth",
+        "ring_count",
+        "spoke_count",
+        "bar_w",
+        "magnet_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6148,6 +7145,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "edge_t",
+        "grip",
+        "fit",
+        "cushion",
+        "wall",
+        "length",
+        "corner_arm"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6202,6 +7208,24 @@
       "modes": 2,
       "parts": 2,
       "parameters": 16,
+      "parameter_ids": [
+        "inner_w",
+        "inner_d",
+        "inner_h",
+        "wall",
+        "floor",
+        "corner_r",
+        "pcb_w",
+        "pcb_d",
+        "standoff_h",
+        "screw_size",
+        "lid_mount",
+        "port_count",
+        "port_w",
+        "port_h",
+        "port_z",
+        "vents"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6281,6 +7305,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "panel_w",
+        "panel_h",
+        "thick",
+        "border",
+        "open_size",
+        "rib",
+        "louvre_ang",
+        "screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6345,6 +7379,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "hole_span",
+        "switch_hole",
+        "plate_t",
+        "plate_w",
+        "slot_len",
+        "mount_d",
+        "board_len",
+        "board_hole",
+        "foot_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6410,6 +7455,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "hose_od",
+        "wall",
+        "clip_w",
+        "mouth",
+        "edge_th",
+        "edge_reach",
+        "screw_d",
+        "n_clips",
+        "clip_pitch",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6464,6 +7521,12 @@
       "modes": 3,
       "parts": 3,
       "parameters": 4,
+      "parameter_ids": [
+        "extrusion_length",
+        "profile_scale",
+        "degradation_state",
+        "wall_thickness"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6528,6 +7591,18 @@
       "modes": 4,
       "parts": 4,
       "parameters": 10,
+      "parameter_ids": [
+        "filter_type",
+        "housing_od",
+        "housing_length",
+        "clearance",
+        "wall",
+        "seat_lip",
+        "nozzle_bore",
+        "nozzle_len",
+        "housing_od_mm",
+        "housing_length_mm"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6594,6 +7669,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "fan_size",
+        "thickness",
+        "ring_count",
+        "spoke_count",
+        "bar_w",
+        "duct_len",
+        "outlet_dia",
+        "duct_wall",
+        "filter_depth"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6670,6 +7756,24 @@
       "modes": 5,
       "parts": 5,
       "parameters": 16,
+      "parameter_ids": [
+        "diameter",
+        "length",
+        "pitch",
+        "thread_enabled",
+        "thread_style",
+        "clearance",
+        "head_style",
+        "nut_style",
+        "washer_type",
+        "head_style_id",
+        "head_diameter",
+        "head_height",
+        "nut_style_id",
+        "width",
+        "height",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6749,6 +7853,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "feather_n",
+        "kerf",
+        "finger_ang",
+        "finger_len",
+        "body_w",
+        "body_len",
+        "thick"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6817,6 +7930,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "rod_d",
+        "fit",
+        "socket_depth",
+        "wall",
+        "grip_len",
+        "grub_d",
+        "lanyard_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6882,6 +8004,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "thread_d",
+        "pitch",
+        "turns",
+        "wall",
+        "cap_h",
+        "straw_d",
+        "barb_d",
+        "fit"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -6947,6 +8079,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "optic_diameter",
+        "positions",
+        "wheel_thickness",
+        "bore_diameter",
+        "cuvette_wells"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7015,6 +8154,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "finger_dia",
+        "finger_len",
+        "blister",
+        "wall",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7069,6 +8215,16 @@
       "modes": 2,
       "parts": 2,
       "parameters": 8,
+      "parameter_ids": [
+        "plate_radius",
+        "thickness",
+        "bore_radius",
+        "bolt_circle_radius",
+        "bolt_hole_radius",
+        "bolt_count",
+        "bolt_spacing_deg",
+        "edge_chamfer"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7129,6 +8285,12 @@
       "modes": 3,
       "parts": 3,
       "parameters": 4,
+      "parameter_ids": [
+        "vessel_diameter",
+        "rod_diameter",
+        "neck_diameter",
+        "neck_holes"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7207,6 +8369,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "connector",
+        "stalk_h",
+        "stalk_d",
+        "back_angle",
+        "base_w",
+        "base_l",
+        "bolt_d",
+        "bolt_span",
+        "tube_d",
+        "tube_len",
+        "clip_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7272,6 +8447,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "cam_size",
+        "tilt",
+        "lens_hole",
+        "wall",
+        "cam_clear",
+        "base_h",
+        "mount_width",
+        "tab_thick",
+        "tab_hole_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7338,6 +8524,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "disc_dia",
+        "disc_h",
+        "stem_dia",
+        "stem_h",
+        "hole_dia",
+        "rack_cols",
+        "rack_rows",
+        "rack_pitch"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7392,6 +8588,17 @@
       "modes": 1,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "target_material",
+        "width",
+        "height",
+        "depth",
+        "profile_style",
+        "mounting_style",
+        "container_type",
+        "mat_width",
+        "glazing_thickness"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7488,6 +8695,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "angle",
+        "cleat_h",
+        "cleat_depth",
+        "strip_len",
+        "screw_dia",
+        "screw_count",
+        "accessory",
+        "back_w",
+        "wall",
+        "fit",
+        "tool_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7541,6 +8761,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "can_dia",
+        "can_len",
+        "capacity",
+        "incline",
+        "clearance",
+        "front_lip",
+        "feed",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7598,6 +8828,15 @@
       "modes": 2,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "top_dia",
+        "total_h",
+        "wall",
+        "spout_dia",
+        "spout_len",
+        "vent",
+        "nesting_rim"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7653,6 +8892,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "nominal",
+        "tol_plus",
+        "tol_minus",
+        "pin_len",
+        "blade_h",
+        "frame",
+        "handle_dia",
+        "handle_len",
+        "knurl_flat"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7716,6 +8966,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "blade_width",
+        "blade_count",
+        "slot_pitch",
+        "wall",
+        "body_height",
+        "index_cols",
+        "index_rows",
+        "max_bit_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7787,6 +9047,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "gauge_dia",
+        "wall",
+        "face_ring",
+        "back_depth",
+        "vent_tab_w",
+        "vent_tab_len",
+        "rake_deg",
+        "pillar_h",
+        "base_pad"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7854,6 +9125,23 @@
       "modes": 3,
       "parts": 3,
       "parameters": 15,
+      "parameter_ids": [
+        "grid_pitch",
+        "peg_dia",
+        "peg_clear",
+        "module",
+        "teeth",
+        "pressure_angle",
+        "gear_thick",
+        "hub_height",
+        "crank",
+        "link_holes",
+        "link_thick",
+        "base_cols",
+        "base_rows",
+        "base_thick",
+        "peg_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7921,6 +9209,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "m",
+        "pressure_angle",
+        "rack_teeth",
+        "width",
+        "height",
+        "mount_holes",
+        "hole_dia",
+        "hole_count",
+        "include_pinion",
+        "pinion_teeth",
+        "bore",
+        "flank_pts"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -7988,6 +9290,17 @@
       "modes": 3,
       "parts": 5,
       "parameters": 9,
+      "parameter_ids": [
+        "input_teeth",
+        "output_teeth",
+        "module_size",
+        "gear_thickness",
+        "shaft_diameter",
+        "bore_diameter",
+        "wall_thickness",
+        "pressure_angle",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8022,6 +9335,28 @@
       "modes": 6,
       "parts": 6,
       "parameters": 20,
+      "parameter_ids": [
+        "m",
+        "teeth",
+        "pressure_angle",
+        "helix",
+        "thickness",
+        "bore",
+        "hub_enabled",
+        "hub_diameter",
+        "hub_height",
+        "setscrew",
+        "setscrew_dia",
+        "rim_width",
+        "rack_teeth",
+        "rack_height",
+        "flank_pts",
+        "teeth_count",
+        "module_size",
+        "bore_diameter",
+        "helical_angle",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8091,6 +9426,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "hub_style",
+        "strut_dia",
+        "struts",
+        "socket_depth",
+        "socket_wall",
+        "clearance",
+        "cone_angle",
+        "pin_holes",
+        "pin_dia",
+        "anchor_dia",
+        "anchor_thick"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8157,6 +9505,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "vessel_dia",
+        "cup_h",
+        "wall",
+        "pivot_gap",
+        "ring_gap",
+        "pin_dia",
+        "base_dia",
+        "base_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8221,6 +9579,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "temple_w",
+        "temple_t",
+        "cradle_w",
+        "mount",
+        "visor_t",
+        "stand_h",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8286,6 +9653,11 @@
       "modes": 2,
       "parts": 2,
       "parameters": 3,
+      "parameter_ids": [
+        "diaphragm_size_mm",
+        "speculum_size_mm",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8347,6 +9719,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "ball_dia",
+        "tee_dia",
+        "tee_count",
+        "wall",
+        "marker_dia",
+        "slot_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8401,6 +9781,23 @@
       "modes": 4,
       "parts": 4,
       "parameters": 15,
+      "parameter_ids": [
+        "finger_thick",
+        "finger_gap",
+        "knuckle_d",
+        "bolt_hole_d",
+        "reach",
+        "base_thick",
+        "base_len",
+        "base_margin",
+        "plate_len",
+        "plate_width",
+        "screw_holes",
+        "screw_hole_d",
+        "adapter_prongs",
+        "quarter20_d",
+        "quarter20_depth"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8468,6 +9865,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "gx",
+        "gy",
+        "base_th",
+        "back_th",
+        "cleat_ang",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8556,6 +9961,45 @@
       "modes": 5,
       "parts": 5,
       "parameters": 37,
+      "parameter_ids": [
+        "target_part",
+        "grid_x",
+        "grid_y",
+        "grid_z",
+        "wall",
+        "floor_th",
+        "lip_enabled",
+        "enable_magnets",
+        "finger_scoop",
+        "bp_thickness",
+        "width_units",
+        "depth_units",
+        "height_units",
+        "cup_wall_thickness",
+        "cup_floor_thickness",
+        "vertical_chambers",
+        "horizontal_chambers",
+        "lip_style_id",
+        "headroom",
+        "efficient_floor_id",
+        "fingerslide_enabled",
+        "label_enabled",
+        "sliding_lid_enabled",
+        "wallpattern_enabled",
+        "wallpattern_style_id",
+        "tapered_corner_id",
+        "tapered_corner_size",
+        "enable_screws",
+        "bp_enable_magnets",
+        "bp_enable_screws",
+        "bp_corner_radius",
+        "bp_reduced_wall",
+        "bp_reduced_wall_taper",
+        "lid_include_magnets",
+        "lid_efficient_floor",
+        "lid_type_id",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8644,6 +10088,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "grip_len",
+        "grip_w",
+        "thick",
+        "tab_w",
+        "tab_t",
+        "tab_depth",
+        "pin_dia",
+        "loop_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8697,6 +10151,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "cord_dia",
+        "thick",
+        "holes",
+        "tarp_gap",
+        "pole_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8759,6 +10220,25 @@
       "modes": 3,
       "parts": 3,
       "parameters": 17,
+      "parameter_ids": [
+        "bore_dia",
+        "bore_type",
+        "bore_fit",
+        "setscrew",
+        "setscrew_d",
+        "hub_dia",
+        "hub_len",
+        "wheel_dia",
+        "rim_t",
+        "rim_w",
+        "spokes",
+        "spoke_w",
+        "handle",
+        "handle_off",
+        "handle_dia",
+        "handle_len",
+        "crank_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8825,6 +10305,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "strap_len",
+        "strap_w",
+        "plate_t",
+        "shackle_d",
+        "staple_bar",
+        "screw_d",
+        "screw_head_d",
+        "hinge_d",
+        "pin_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8889,6 +10380,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "mount",
+        "cradle_w",
+        "reach",
+        "drop",
+        "thick",
+        "plate_w",
+        "plate_len",
+        "screw_dia",
+        "desk_t",
+        "clamp_depth"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -8964,6 +10467,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cradle_w",
+        "post_h",
+        "post_dia",
+        "base_dia",
+        "base_h",
+        "wall",
+        "desk_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9028,6 +10540,17 @@
       "modes": 3,
       "parts": 1,
       "parameters": 9,
+      "parameter_ids": [
+        "hinge_width",
+        "hinge_thickness",
+        "leaf_length",
+        "pin_diameter",
+        "clearance",
+        "bend_angle",
+        "num_knuckles",
+        "socket_diameter",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9089,6 +10612,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "plug",
+        "wall",
+        "clearance",
+        "socket_depth",
+        "bracket_h",
+        "bolt_dia",
+        "tether_hole"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9145,6 +10677,76 @@
       }
     },
     {
+      "slug": "hook-and-eye",
+      "name": "Hook & Eye",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 2,
+      "parameters": 6,
+      "parameter_ids": [
+        "columns",
+        "rows",
+        "size_mm",
+        "plate_t",
+        "wire_d",
+        "gap"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Bra and waistband closures are a frequent point of garment failure and a common accessibility barrier — a snapped hook or a band that no longer fits ends the garment's life. A printable hook-and-eye sized to the band, with the exact number of adjustment columns the wearer needs, restores the piece and adapts it, and closes the loop from Fashion Cabinet's band pattern to working hardware.",
+        "es": "Los cierres de brasier y pretina son un punto frecuente de falla y una barrera de accesibilidad común — un gancho roto o una banda que ya no ajusta terminan la vida de la prenda. Un corchete imprimible dimensionado a la banda, con el número exacto de columnas de ajuste que la persona necesita, restaura y adapta la pieza, y cierra el ciclo del patrón de banda de Fashion Cabinet al herraje funcional."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_plate",
+          "label": "Sewing Plate",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "size_mm",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "hook_catch",
+          "label": "Hook / Bar Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "wire_d",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/hook-and-eye/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hook-and-eye"
+      }
+    },
+    {
       "slug": "hopper-feeder",
       "name": "Hopper / Funnel Feeder",
       "domain": "industrial",
@@ -9155,6 +10757,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "top_w",
+        "top_d",
+        "outlet_dia",
+        "outlet_len",
+        "slot_len",
+        "height",
+        "wall_angle",
+        "wall",
+        "rim",
+        "shape"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9218,6 +10832,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "thread_a",
+        "thread_b",
+        "bore_dia",
+        "barb_dia",
+        "barb_count",
+        "wall",
+        "clearance",
+        "grip_knurl"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9274,6 +10898,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "hub_dia",
+        "axle_dia",
+        "drum_width",
+        "hub_wall",
+        "flange_dia",
+        "flange_th",
+        "spokes",
+        "crank_len",
+        "crank_th",
+        "mount_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9330,6 +10966,11 @@
       "modes": 1,
       "parts": 1,
       "parameters": 3,
+      "parameter_ids": [
+        "target_material",
+        "topology_type",
+        "frequency"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9383,6 +11024,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "stem_dia",
+        "post_height",
+        "base_width",
+        "base_depth",
+        "base_thick",
+        "column_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9450,6 +11099,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "neck_w",
+        "arm_gap",
+        "arm_thick",
+        "reach",
+        "plate_w",
+        "plate_h",
+        "plate_t",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9516,6 +11175,15 @@
       "modes": 2,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "jar_dia",
+        "clearance",
+        "cols",
+        "rows",
+        "wall",
+        "shelf_thick",
+        "magnet"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9581,6 +11249,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "ring_size",
+        "band_w",
+        "band_t",
+        "profile",
+        "signet_w",
+        "signet_l",
+        "signet_h",
+        "wrist_dia",
+        "gap_deg"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9649,6 +11328,16 @@
       "modes": 1,
       "parts": 1,
       "parameters": 8,
+      "parameter_ids": [
+        "height",
+        "base_radius",
+        "twist_angle",
+        "wave_frequency",
+        "wave_amplitude",
+        "wall_thickness",
+        "fn",
+        "resolution"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9684,6 +11373,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "body_len",
+        "body_w",
+        "plate_t",
+        "pivot_d",
+        "pivot_head_d",
+        "key_blade_w",
+        "key_blade_t",
+        "key_count",
+        "hex_af",
+        "bit_count"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9749,6 +11450,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "shape",
+        "size",
+        "thick",
+        "text",
+        "text2",
+        "text_mode",
+        "text_depth",
+        "hole_dia",
+        "hole_pos"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9803,6 +11515,20 @@
       "modes": 1,
       "parts": 1,
       "parameters": 12,
+      "parameter_ids": [
+        "profile_id",
+        "row_id",
+        "key_size_id",
+        "stem_type_id",
+        "legend_enabled",
+        "legend_text",
+        "font_size",
+        "dish_depth",
+        "wall_thickness",
+        "keytop_thickness",
+        "stem_slop",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9836,6 +11562,18 @@
       "modes": 2,
       "parts": 2,
       "parameters": 10,
+      "parameter_ids": [
+        "knob_dia",
+        "knob_height",
+        "style",
+        "top_round",
+        "bore_type",
+        "shaft_dia",
+        "flat_depth",
+        "bore_depth",
+        "setscrew",
+        "setscrew_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9893,6 +11631,16 @@
       "modes": 2,
       "parts": 2,
       "parameters": 8,
+      "parameter_ids": [
+        "inner_dia",
+        "outer_dia",
+        "height",
+        "taper",
+        "wall",
+        "fit_clear",
+        "base",
+        "base_th"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -9948,6 +11696,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "top_dia",
+        "bottom_dia",
+        "height",
+        "wall",
+        "socket",
+        "pattern",
+        "pat_rows",
+        "pat_cols",
+        "pat_size"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10005,6 +11764,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "skid_h",
+        "leg_w",
+        "leg_t",
+        "foot_len",
+        "foot_w",
+        "splay",
+        "boom_dia",
+        "clamp_wall",
+        "motor_pattern",
+        "tall_extra"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10068,6 +11839,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "thread_spec",
+        "clearance",
+        "height",
+        "body_dia",
+        "flange",
+        "flange_dia",
+        "hole_count",
+        "bolt_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10123,6 +11904,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "strip_width",
+        "length",
+        "depth",
+        "wall",
+        "floor",
+        "lip",
+        "screw_pilots"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10188,6 +11978,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "filter_thread",
+        "thread_a",
+        "thread_b",
+        "thread_turns",
+        "clearance",
+        "wall",
+        "cap_depth",
+        "top_th",
+        "grip_teeth",
+        "body_cap_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10244,6 +12046,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "wheel_type",
+        "outer_dia",
+        "width",
+        "v_angle",
+        "bearing_bore",
+        "counterbore",
+        "cb_depth",
+        "axle_bore"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10312,6 +12124,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "panel_w",
+        "panel_h",
+        "panel_t",
+        "slot_fit",
+        "frame_w",
+        "depth",
+        "reveal",
+        "style"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10367,6 +12189,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "hinge_type",
+        "panel_w",
+        "panel_len",
+        "panel_thick",
+        "web_thick",
+        "hinge_len",
+        "seg_count",
+        "seg_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10431,6 +12263,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "body_d",
+        "cam_reach",
+        "cam_w",
+        "cam_t",
+        "tail_w",
+        "tail_len",
+        "screw_d",
+        "offset_z"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10495,6 +12337,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "door_gap",
+        "catch_hook",
+        "body_w",
+        "body_h",
+        "base_t",
+        "screw_dia",
+        "hub_dia",
+        "cam_reach",
+        "spring_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10549,6 +12402,23 @@
       "modes": 7,
       "parts": 20,
       "parameters": 15,
+      "parameter_ids": [
+        "latch_width",
+        "hook_depth",
+        "spring_angle",
+        "over_center_offset",
+        "clearance",
+        "wall_thickness",
+        "lever_length",
+        "base_length",
+        "fn",
+        "material_modulus",
+        "shrinkage_factor",
+        "num_pins",
+        "matrix_size",
+        "cdg_mount_type",
+        "kinematic_value"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10612,6 +12482,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "terminal",
+        "stud",
+        "clearance",
+        "wall",
+        "cover_h",
+        "lug_len",
+        "notch_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10676,6 +12555,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "length",
+        "height",
+        "thickness",
+        "magnet_dia",
+        "magnet_th",
+        "magnet_count",
+        "magnet_wall",
+        "wall_screw",
+        "countersink",
+        "ledge_depth",
+        "leg_b"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10741,6 +12633,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "marker_dia",
+        "markers",
+        "clearance",
+        "tray_h",
+        "eraser_w",
+        "eraser_d",
+        "magnets",
+        "magnet_dia",
+        "magnet_t",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10809,6 +12713,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "solid",
+        "size",
+        "sides",
+        "prism_dia",
+        "prism_h",
+        "denominator",
+        "tile_dia",
+        "tile_h",
+        "tile_hole"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10874,6 +12789,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cols",
+        "rows",
+        "pitch",
+        "wall",
+        "depth",
+        "lip",
+        "screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10940,6 +12864,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "rows",
+        "cols",
+        "cell_size",
+        "wall_thickness",
+        "wall_height",
+        "base_thickness",
+        "seed",
+        "diameter"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -10975,6 +12909,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "socket_dia",
+        "clearance",
+        "wall",
+        "depth",
+        "socket_count",
+        "pitch",
+        "cable_dia",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11041,6 +12985,15 @@
       "modes": 2,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "target_ml",
+        "shape",
+        "wall",
+        "handle_length",
+        "handle_width",
+        "handle_thick",
+        "hang_hole"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11094,6 +13047,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "length",
+        "width",
+        "height",
+        "wall",
+        "hole_dia",
+        "hole_pitch",
+        "media_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11147,6 +13109,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "media",
+        "slots",
+        "rows",
+        "pocket_depth",
+        "base",
+        "wall",
+        "clear"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11214,6 +13185,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "mic_dia",
+        "grip_wrap",
+        "wall",
+        "clearance",
+        "stem_len",
+        "extra_turns"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11270,6 +13249,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "plate_format",
+        "plate_h",
+        "well_depth",
+        "wall",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11326,6 +13312,36 @@
       "modes": 7,
       "parts": 10,
       "parameters": 28,
+      "parameter_ids": [
+        "slide_standard",
+        "custom_slide_length",
+        "custom_slide_width",
+        "custom_slide_thickness",
+        "num_slots",
+        "wall",
+        "tolerance_xy",
+        "tolerance_z",
+        "density",
+        "lid_snap",
+        "tray_columns",
+        "tray_rows",
+        "finger_notch",
+        "handle",
+        "open_bottom",
+        "drainage_angle",
+        "wall_thickness",
+        "label_area",
+        "fn",
+        "rib_profile",
+        "rib_width",
+        "lid_latch",
+        "stackable",
+        "numbering_start",
+        "anti_capillary",
+        "rail_profile",
+        "backstop",
+        "drawers_per_shell"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11407,6 +13423,12 @@
       "modes": 1,
       "parts": 1,
       "parameters": 4,
+      "parameter_ids": [
+        "slide_standard",
+        "custom_slide_length",
+        "custom_slide_width",
+        "custom_slide_thickness"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11464,6 +13486,22 @@
       "modes": 3,
       "parts": 3,
       "parameters": 14,
+      "parameter_ids": [
+        "base_size",
+        "thickness",
+        "bevel",
+        "lip",
+        "lip_h",
+        "textured",
+        "magnet",
+        "magnet_d",
+        "magnet_h",
+        "tray_cols",
+        "tray_rows",
+        "tray_gap",
+        "tray_wall",
+        "tray_seat_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11528,6 +13566,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "tube_dia",
+        "clamp_wall",
+        "clamp_w",
+        "opening",
+        "clearance",
+        "cup_dia",
+        "cup_h",
+        "tray_w",
+        "tray_d",
+        "cane_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11584,6 +13634,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "tube_dia",
+        "clearance",
+        "wall",
+        "socket_h",
+        "floor",
+        "tread",
+        "foot_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11638,6 +13697,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "cavity",
+        "cavity_sz",
+        "depth",
+        "draft",
+        "cols",
+        "rows",
+        "wall",
+        "floor"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11692,6 +13761,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "geometry",
+        "atom_dia",
+        "socket_dia",
+        "socket_depth",
+        "bond_len",
+        "bond_dia",
+        "plug_fit",
+        "plug_len",
+        "double_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11758,6 +13838,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "row_h",
+        "row_pitch",
+        "col_pitch",
+        "strap_t",
+        "clearance",
+        "weave_rows",
+        "panel_rows",
+        "panel_cols"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11826,6 +13916,13 @@
       "modes": 1,
       "parts": 2,
       "parameters": 5,
+      "parameter_ids": [
+        "nema_size",
+        "wall_thickness",
+        "base_thickness",
+        "mounting_style",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11902,6 +13999,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "motor_pattern",
+        "plate_thick",
+        "bore_d",
+        "arm_width",
+        "arm_thick",
+        "clamp_wall",
+        "iso_gap",
+        "flex_slots",
+        "foot_dia",
+        "foot_drop"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -11967,6 +14076,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "movement_dia",
+        "movement_height",
+        "wall",
+        "base_height",
+        "stem_relief_dia",
+        "station_count"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12036,6 +14153,13 @@
       "modes": 1,
       "parts": 1,
       "parameters": 5,
+      "parameter_ids": [
+        "x_cells",
+        "y_cells",
+        "cell_size",
+        "height",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12069,6 +14193,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "system",
+        "plate_w",
+        "plate_h",
+        "plate_t",
+        "snap_rows",
+        "snap_w",
+        "slot_pitch",
+        "hook_len",
+        "hook_dia",
+        "bin_depth",
+        "bin_height",
+        "bin_wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12139,6 +14277,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "text",
+        "size",
+        "text_mode",
+        "text_depth",
+        "plate_t",
+        "margin",
+        "style"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12194,6 +14341,21 @@
       "modes": 3,
       "parts": 3,
       "parameters": 13,
+      "parameter_ids": [
+        "rail_w",
+        "flank_ang",
+        "rail_h",
+        "rail_len",
+        "notch_w",
+        "notch_count",
+        "base_th",
+        "mount_hole_d",
+        "clamp_clear",
+        "wall",
+        "clamp_bolt_d",
+        "face_th",
+        "face_hole_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12260,6 +14422,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "size_min",
+        "size_max",
+        "clear",
+        "plate_th",
+        "window"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12315,6 +14484,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "nema",
+        "pilot_open",
+        "plate_t",
+        "margin",
+        "base_len",
+        "base_t",
+        "base_bolt_d",
+        "gusset"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12379,6 +14558,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "top_od",
+        "base_od",
+        "cup_h",
+        "wall",
+        "lip_w",
+        "lip_h",
+        "slot_w",
+        "slot_rows",
+        "slot_cols"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12435,6 +14625,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "dongle_w",
+        "dongle_h",
+        "dongle_d",
+        "wall",
+        "clearance",
+        "obd_w",
+        "obd_h",
+        "ato_count",
+        "mini_count",
+        "screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12502,6 +14704,12 @@
       "modes": 3,
       "parts": 3,
       "parameters": 4,
+      "parameter_ids": [
+        "thread_standard",
+        "clearance",
+        "nest_count",
+        "well_depth"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12560,6 +14768,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "lid_min",
+        "lid_max",
+        "steps",
+        "wall",
+        "grip_h",
+        "flutes",
+        "lever_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12614,6 +14831,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "post_height",
+        "post_diameter",
+        "grid_pitch",
+        "mount_thread",
+        "grid_cols",
+        "grid_rows"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12684,6 +14909,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "device",
+        "thickness",
+        "oversize",
+        "corner_r",
+        "eu_dia",
+        "countersink"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12747,6 +14980,21 @@
       "modes": 3,
       "parts": 3,
       "parameters": 13,
+      "parameter_ids": [
+        "bottle",
+        "cols",
+        "rows",
+        "hole_clear",
+        "recess",
+        "gap",
+        "margin",
+        "base_th",
+        "step_rise",
+        "step_run",
+        "wall_h",
+        "wall_th",
+        "screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12814,6 +15062,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "connector",
+        "plate_t",
+        "margin",
+        "corner_r",
+        "mount_bore",
+        "pair_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12878,6 +15134,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "hole_dia",
+        "panel_t",
+        "hole_fit",
+        "snap_fit",
+        "flange_w",
+        "flange_t",
+        "wall",
+        "cable_dia",
+        "vents"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -12943,6 +15210,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cord_d",
+        "wall",
+        "clearance",
+        "strap_w",
+        "jig_len",
+        "pin_count",
+        "lock_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13007,6 +15283,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "profile",
+        "base_dia",
+        "height",
+        "wall",
+        "floor_t",
+        "twist",
+        "lobes",
+        "lobe_amp"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13062,6 +15348,21 @@
       "modes": 2,
       "parts": 2,
       "parameters": 13,
+      "parameter_ids": [
+        "inner_w",
+        "inner_d",
+        "inner_h",
+        "wall",
+        "floor",
+        "corner_r",
+        "fillet_top",
+        "div_x",
+        "div_y",
+        "div_thick",
+        "lid_enabled",
+        "lid_height",
+        "lid_clear"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13129,6 +15430,21 @@
       "modes": 4,
       "parts": 4,
       "parameters": 13,
+      "parameter_ids": [
+        "pipe_od",
+        "wall",
+        "insertion_depth",
+        "clearance",
+        "elbow_angle",
+        "heavy_load",
+        "pin_holes",
+        "pin_dia",
+        "pipe_od_mm",
+        "connector_type",
+        "wall_thickness_mm",
+        "insertion_depth_mm",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13193,6 +15509,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "spike_len",
+        "spike_dia",
+        "fins",
+        "socket_dia",
+        "socket_depth",
+        "wall",
+        "clearance",
+        "head_dia",
+        "head_h",
+        "sign_w",
+        "sign_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13247,6 +15576,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "pattern",
+        "rect_w",
+        "rect_d",
+        "grid_rows",
+        "grid_cols",
+        "grid_pitch",
+        "standoff_h",
+        "screw_size",
+        "plate_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13316,6 +15656,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "mount",
+        "pedal_w",
+        "pedal_d",
+        "grip_h",
+        "wall",
+        "rail_w",
+        "rail_t",
+        "riser_angle",
+        "brick_w",
+        "brick_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13380,6 +15732,21 @@
       "modes": 3,
       "parts": 3,
       "parameters": 13,
+      "parameter_ids": [
+        "board_standard",
+        "peg_count",
+        "plate_w",
+        "plate_thick",
+        "hook_reach",
+        "hook_dia",
+        "hook_up",
+        "bin_w",
+        "bin_d",
+        "bin_h",
+        "bin_wall",
+        "tool_dia",
+        "tool_ring"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13445,6 +15812,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "pen_dia",
+        "clearance",
+        "height",
+        "cup_dia",
+        "divider",
+        "cols",
+        "rows",
+        "rake_deg",
+        "grip_len",
+        "grip_dia",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13500,6 +15880,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "neck_standard",
+        "trough_dia",
+        "trough_h",
+        "gap",
+        "wall",
+        "clearance",
+        "extra_turns"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13556,6 +15945,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "bowl_dia",
+        "bowl_depth",
+        "wall",
+        "maze_rings",
+        "maze_spokes",
+        "ridge_h",
+        "ridge_t",
+        "stand_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13611,6 +16010,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "webbing",
+        "web_th",
+        "wall",
+        "clearance",
+        "ring_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13667,6 +16073,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "orientation",
+        "dish_dia",
+        "dish_h",
+        "stacks",
+        "slot_gap",
+        "wall",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13723,6 +16138,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "stack",
+        "standoff_h",
+        "boss_d",
+        "wall",
+        "floor",
+        "corner_r",
+        "screen_w",
+        "screen_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13788,6 +16213,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "standard",
+        "slots",
+        "base_th",
+        "extra_w",
+        "bolt_dia",
+        "bolt_count"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13842,6 +16275,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "pick_size",
+        "pick_count",
+        "pick_th",
+        "wall",
+        "mount",
+        "screw_dia",
+        "plate_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13894,6 +16336,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "pill_dia",
+        "pill_th",
+        "blade_slot",
+        "wall",
+        "cup_ml"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -13947,6 +16396,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "days",
+        "custom_cols",
+        "custom_rows",
+        "cell",
+        "cell_depth",
+        "wall",
+        "floor",
+        "lid",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14012,6 +16472,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "collet_bore",
+        "body_dia",
+        "body_length",
+        "flute_count",
+        "handle_bore",
+        "jaw_opening"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14080,6 +16548,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "pipe",
+        "clearance",
+        "mouth",
+        "wall",
+        "depth",
+        "standoff"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14135,6 +16611,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "pipe_size",
+        "pipe_od",
+        "wall",
+        "socket_depth",
+        "clearance",
+        "stop_ring",
+        "elbow_angle"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14192,6 +16677,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "pipette_slots",
+        "body_diameter",
+        "tip_cols",
+        "tip_rows",
+        "tip_hole"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14262,6 +16754,18 @@
       "modes": 4,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "m",
+        "pressure_angle",
+        "sun_teeth",
+        "planet_teeth",
+        "planets",
+        "thickness",
+        "sun_bore",
+        "planet_bore",
+        "rim_width",
+        "flank_pts"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14330,6 +16834,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "stem_dia",
+        "stake_dia",
+        "wire_dia",
+        "mouth",
+        "width",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14383,6 +16895,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "pot_dia",
+        "pot_h",
+        "taper",
+        "wall",
+        "floor",
+        "rim_lip",
+        "foot_ring",
+        "drain_dia",
+        "drain_ring",
+        "saucer_h",
+        "hang_lugs",
+        "lug_hole"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14437,6 +16963,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "shape",
+        "pot_dia",
+        "height",
+        "reservoir_h",
+        "wick_count",
+        "wick_dia",
+        "drainage",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14491,6 +17027,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "module_w",
+        "module_h",
+        "pocket_d",
+        "wall",
+        "peg",
+        "fit",
+        "screw_dia",
+        "drain_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14545,6 +17091,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "plate",
+        "frame_thick",
+        "border",
+        "slim_border",
+        "lip",
+        "corner_r",
+        "slot_len",
+        "filler_inset"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14611,6 +17167,15 @@
       "modes": 5,
       "parts": 5,
       "parameters": 7,
+      "parameter_ids": [
+        "die_size",
+        "font_depth",
+        "font_size",
+        "rounding_corner",
+        "rounding_edge",
+        "fn",
+        "dice_gradient"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14644,6 +17209,27 @@
       "modes": 3,
       "parts": 6,
       "parameters": 19,
+      "parameter_ids": [
+        "tray_width",
+        "tray_depth",
+        "wall_height",
+        "wall_thickness",
+        "pen_count",
+        "pen_diameter",
+        "pen_style",
+        "phone_width",
+        "phone_angle",
+        "charging_slot",
+        "card_width",
+        "card_depth",
+        "card_angle",
+        "clip_count",
+        "clip_diameter",
+        "label_text",
+        "label_depth",
+        "rows",
+        "cols"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14677,6 +17263,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "cup_dia",
+        "cup_depth",
+        "cols",
+        "rows",
+        "wall",
+        "floor",
+        "stack_lip",
+        "compart_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14730,6 +17326,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "prop_dia",
+        "clearance",
+        "ring_wall",
+        "ring_height",
+        "motor_pattern",
+        "hub_bore",
+        "arm_count",
+        "arm_width",
+        "duct_depth",
+        "duct_lip"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14797,6 +17405,28 @@
       "modes": 5,
       "parts": 4,
       "parameters": 20,
+      "parameter_ids": [
+        "proximal_dia",
+        "distal_dia",
+        "socket_len",
+        "wall",
+        "floor",
+        "ovality",
+        "brim_flare",
+        "adapter_plate_dia",
+        "bolt_circle_dia",
+        "bolt_dia",
+        "pyramid",
+        "ventilation",
+        "vent_density",
+        "amputation_level",
+        "circumference_top",
+        "circumference_bottom",
+        "length",
+        "voronoi_density",
+        "wall_thickness",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14867,6 +17497,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "psu_size",
+        "custom_w",
+        "custom_d",
+        "custom_px",
+        "custom_py",
+        "case_screw_dia",
+        "thickness",
+        "foot_h",
+        "strap_gap",
+        "panel_screw"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -14944,6 +17586,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "neck_a",
+        "neck_b",
+        "clearance",
+        "wall",
+        "top_th",
+        "turns",
+        "pump_bore",
+        "knurl"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15009,6 +17661,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "length",
+        "body_h",
+        "thick",
+        "block_w",
+        "heel",
+        "grip_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15072,6 +17732,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "bar_w",
+        "bar_h",
+        "saddle_w",
+        "wall",
+        "bolt_d",
+        "acc_slot_w",
+        "plat_h",
+        "clearance"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15128,6 +17798,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "width",
+        "height",
+        "thickness",
+        "louver_count",
+        "louver_angle",
+        "tab"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15183,6 +17861,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "rail_dia",
+        "grip_fit",
+        "wall",
+        "clamp_len",
+        "bolt_dia",
+        "rod_dia",
+        "rod_angle",
+        "cup_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15249,6 +17937,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "outer_dia",
+        "teeth",
+        "rake_angle",
+        "tooth_depth",
+        "thickness",
+        "bore",
+        "pawl_length"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15303,6 +18000,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "bottle_dia",
+        "neck_dia",
+        "label_w",
+        "label_h",
+        "wall",
+        "clearance",
+        "clip_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15357,6 +18063,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "mp_type",
+        "cap_clear",
+        "cap_len",
+        "wall",
+        "reed_ct",
+        "reed_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15413,6 +18127,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "message",
+        "font_size",
+        "text_depth",
+        "base_width",
+        "base_height",
+        "base_thickness",
+        "raised",
+        "border_width",
+        "hole_diameter",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15448,6 +18174,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "sensor",
+        "plate_t",
+        "margin",
+        "tilt_deg",
+        "ear_h",
+        "base_len",
+        "base_t",
+        "mount_d",
+        "pivot_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15513,6 +18250,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "rod_dia",
+        "socket_len",
+        "wall",
+        "lean",
+        "plate_w",
+        "screw_dia",
+        "rail_dia",
+        "stake_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15566,6 +18313,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "rod_d",
+        "rod_clear",
+        "rod_spacing",
+        "body_th",
+        "wall",
+        "clamp_bolt_d",
+        "slit_w",
+        "face_th",
+        "face_hole_d",
+        "riser_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15631,6 +18390,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "core_dia",
+        "spindle_len",
+        "clearance",
+        "mount",
+        "screw_dia",
+        "plate_w",
+        "post_h",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15685,6 +18454,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "shaft_dia",
+        "open_slot",
+        "bearing_seat",
+        "mount_height",
+        "web_thick",
+        "web_width",
+        "foot_len",
+        "foot_thick",
+        "mount",
+        "mount_dia",
+        "pair_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15761,6 +18543,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "radius",
+        "rect_w",
+        "rect_d",
+        "corner_r",
+        "slot_len",
+        "slot_w",
+        "bushing_offset",
+        "plate_t",
+        "border",
+        "mount_holes",
+        "mount_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15829,6 +18624,82 @@
       "modes": 6,
       "parts": 17,
       "parameters": 74,
+      "parameter_ids": [
+        "N",
+        "size",
+        "clearance",
+        "corner_rounding",
+        "sticker_depth",
+        "rotate_top",
+        "rotate_front",
+        "rotate_right",
+        "rotate_bottom",
+        "rotate_back",
+        "rotate_left",
+        "rotate_x_1",
+        "rotate_x_2",
+        "rotate_x_3",
+        "rotate_x_4",
+        "rotate_x_5",
+        "rotate_x_6",
+        "rotate_x_7",
+        "rotate_y_1",
+        "rotate_y_2",
+        "rotate_y_3",
+        "rotate_y_4",
+        "rotate_y_5",
+        "rotate_y_6",
+        "rotate_y_7",
+        "rotate_z_1",
+        "rotate_z_2",
+        "rotate_z_3",
+        "rotate_z_4",
+        "rotate_z_5",
+        "rotate_z_6",
+        "rotate_z_7",
+        "color_top",
+        "color_bottom",
+        "color_front",
+        "color_back",
+        "color_left",
+        "color_right",
+        "explode_factor",
+        "sphere_band_count",
+        "rotate_band_1",
+        "rotate_band_2",
+        "rotate_band_3",
+        "rotate_band_4",
+        "sticker_style",
+        "mechanism_detail",
+        "spring_dia",
+        "spring_length",
+        "screw_dia",
+        "mechanism_clearance",
+        "show_sockets",
+        "insert_pocket_depth",
+        "insert_pin_dia",
+        "show_notation",
+        "show_cubies",
+        "show_core",
+        "show_segments",
+        "show_bands",
+        "enable_torpedoes",
+        "torpedo_length",
+        "torpedo_thickness",
+        "enable_corner_cutting",
+        "corner_cut_angle",
+        "track_bevel",
+        "enable_magnets",
+        "magnet_dia",
+        "magnet_depth",
+        "enable_core_magnets",
+        "core_magnet_dia",
+        "core_magnet_depth",
+        "enable_maglev",
+        "maglev_ring_dia",
+        "maglev_ring_height",
+        "maglev_gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15908,6 +18779,40 @@
       "modes": 7,
       "parts": 7,
       "parameters": 32,
+      "parameter_ids": [
+        "internalBoxWidthXMm",
+        "internalboxLengthYMm",
+        "internalBoxTopHeightZMm",
+        "internalboxBottomHeightZMm",
+        "boxWallWidthMm",
+        "boxChamferRadiusMm",
+        "boxSealType",
+        "gasketSlotWidth",
+        "gasketSlotDepth",
+        "rimWidthMm",
+        "rimHeightMm",
+        "numSideSupportRibs",
+        "supportRibThickness",
+        "supportRibWidth",
+        "countainerWidthXSections",
+        "boxLengthYSections",
+        "numCountainerWidthXSectionsToSkip",
+        "numBoxLengthYSectionsToSkip",
+        "numberOfHinges",
+        "hingeTotalWidthMm",
+        "hingeRadiusMm",
+        "hingeCenterOffsetMm",
+        "numberOfLatches",
+        "latchSupportTotalWidth",
+        "latchCenterOffsetMm",
+        "latchClipCutoutAngle",
+        "latchOpenerLengthMultiplier",
+        "isFeetAdded",
+        "feetwidthMm",
+        "feetLengthMm",
+        "boxGapMm",
+        "BoxPolygonStyle"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -15942,6 +18847,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "block_l",
+        "block_w",
+        "block_h",
+        "face_r",
+        "contour_d",
+        "grip_scoop",
+        "clamp_slot"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16006,6 +18920,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "channel_w",
+        "body_len",
+        "body_h",
+        "arm_len",
+        "arm_t",
+        "snap_clear",
+        "barb",
+        "pin_d",
+        "wedge_rise"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16068,6 +18993,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "board",
+        "gen_pcb_w",
+        "gen_pcb_d",
+        "gen_hole_x",
+        "gen_hole_y",
+        "wall",
+        "floor",
+        "clearance",
+        "standoff_h",
+        "wall_h",
+        "port_cutout",
+        "vents"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16147,6 +19086,19 @@
       "modes": 3,
       "parts": 10,
       "parameters": 11,
+      "parameter_ids": [
+        "target_material",
+        "num_teeth",
+        "harmonic_ratio",
+        "module",
+        "bore_diameter",
+        "link1_length",
+        "link2_length",
+        "z_travel",
+        "motor_frame_size",
+        "drive_type",
+        "rail_width"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16228,6 +19180,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "cols",
+        "rows",
+        "cell_top",
+        "cell_taper",
+        "depth",
+        "drainage",
+        "fit_1020",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16284,6 +19246,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "base_w",
+        "base_d",
+        "base_dia",
+        "base_thick",
+        "corner_r",
+        "boss_h",
+        "thread_relief",
+        "screw_holes",
+        "screw_dia",
+        "screw_inset",
+        "device_screw"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16353,6 +19328,13 @@
       "modes": 3,
       "parts": 4,
       "parameters": 5,
+      "parameter_ids": [
+        "target_material",
+        "finger_count",
+        "finger_length",
+        "base_radius",
+        "flexure_thickness"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16417,6 +19399,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "servo",
+        "wall",
+        "floor",
+        "clear",
+        "tab_len",
+        "arm_len",
+        "boss_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16482,6 +19473,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "spline",
+        "hub_d",
+        "horn_t",
+        "screw_d",
+        "tooth_h",
+        "arm_len",
+        "arm_w",
+        "hole_d",
+        "hole_count",
+        "hole_pitch",
+        "wheel_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16548,6 +19552,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "shank_type",
+        "bar_clear",
+        "seam_dist",
+        "screw_d",
+        "wall",
+        "fence_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16603,6 +19615,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "bore_a",
+        "bore_a_type",
+        "bore_b",
+        "bore_b_type",
+        "outer_dia",
+        "length",
+        "flat_depth",
+        "clamp_style",
+        "setscrew_dia",
+        "flexible"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16658,6 +19682,75 @@
       }
     },
     {
+      "slug": "shank-button-solid",
+      "name": "Button",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "diameter_mm",
+        "thickness",
+        "holes",
+        "hole_dia",
+        "rim"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A lost button is the most common and most fixable garment failure; a matching printable button sized to the placket's own ligne keeps a shirt, coat, or child's garment in service. Buttons also print cleanly in recycled and offcut material, and the ligne bridge means the button always matches the Fashion Cabinet placement guide that laid out the placket.",
+        "es": "Un botón perdido es la falla de prenda más común y más reparable; un botón imprimible dimensionado a la propia línea de la cartera mantiene en uso una camisa, abrigo o prenda infantil. Los botones también se imprimen bien en material reciclado y de retazo, y el puente de líneas hace que el botón siempre coincida con la guía de colocación de Fashion Cabinet que trazó la cartera."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "thread_path",
+          "label": "Thread Path",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "hole_dia",
+            "holes"
+          ]
+        },
+        {
+          "id": "button_face",
+          "label": "Button Face",
+          "geometry_type": "boss",
+          "standard": "internal",
+          "parameters": [
+            "diameter_mm",
+            "thickness"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/shank-button-solid/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shank-button-solid"
+      }
+    },
+    {
       "slug": "shelf-bracket",
       "name": "Shelf Bracket",
       "domain": "household",
@@ -16668,6 +19761,16 @@
       "modes": 2,
       "parts": 2,
       "parameters": 8,
+      "parameter_ids": [
+        "arm_h",
+        "arm_v",
+        "width",
+        "thickness",
+        "brace",
+        "screw_d",
+        "holes_per_arm",
+        "gap"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16724,6 +19827,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "lace_w",
+        "lace_t",
+        "heel_w",
+        "heel_h",
+        "sole_t",
+        "shaft_h",
+        "shaft_w",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16789,6 +19902,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "shoe_type",
+        "foot_width",
+        "channel_w",
+        "flange_th",
+        "shoe_len",
+        "corner_r",
+        "base_th",
+        "base_pad",
+        "quarter_d",
+        "wall",
+        "clearance",
+        "bar_span"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16856,6 +19983,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "snap_type",
+        "beam_len",
+        "beam_thick",
+        "beam_width",
+        "hook_depth",
+        "insert_angle",
+        "clearance",
+        "wall",
+        "bore_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16924,6 +20062,15 @@
       "modes": 2,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "width",
+        "depth",
+        "height",
+        "wall",
+        "drain_density",
+        "spout",
+        "mount"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -16978,6 +20125,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "edison_a",
+        "edison_b",
+        "bayo",
+        "clearance",
+        "wall",
+        "turns",
+        "bore",
+        "height"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17055,6 +20212,23 @@
       "modes": 4,
       "parts": 4,
       "parameters": 15,
+      "parameter_ids": [
+        "vise_model",
+        "jaw_width",
+        "jaw_height",
+        "jaw_thickness",
+        "workpiece",
+        "workpiece_dia",
+        "workpiece_w",
+        "workpiece_h",
+        "pocket_depth",
+        "face_pattern",
+        "serration_pitch",
+        "vee_angle",
+        "magnet_pockets",
+        "pair_gap",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17123,6 +20297,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "edge_t",
+        "grip_depth",
+        "fit",
+        "wall",
+        "bolt_dia",
+        "leg_len",
+        "tilt_angle"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17187,6 +20370,13 @@
       "modes": 2,
       "parts": 2,
       "parameters": 5,
+      "parameter_ids": [
+        "width",
+        "depth",
+        "height",
+        "bore_radius",
+        "chamfer_size"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17221,6 +20411,21 @@
       "modes": 3,
       "parts": 3,
       "parameters": 13,
+      "parameter_ids": [
+        "wall_w",
+        "wall_h",
+        "thickness",
+        "speaker_w",
+        "speaker_d",
+        "shelf_depth",
+        "lip_h",
+        "tilt",
+        "keyhole_dia",
+        "keyhole_slot",
+        "keyhole_drop",
+        "speaker_screw",
+        "speaker_bolt_span"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17301,6 +20506,22 @@
       "modes": 3,
       "parts": 3,
       "parameters": 14,
+      "parameter_ids": [
+        "jar_dia",
+        "jar_h",
+        "wall",
+        "floor",
+        "mouth_dia",
+        "pitch",
+        "turns",
+        "clearance",
+        "lid_h",
+        "lid_type",
+        "hole_dia",
+        "hole_ring",
+        "spout_dia",
+        "knurl"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17355,6 +20576,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "spigot_d",
+        "spigot_len",
+        "groove_depth",
+        "groove_pos",
+        "hub_d",
+        "hub_h",
+        "hub_shape",
+        "thread_len",
+        "thread_form",
+        "thread_style",
+        "chamfer_lead"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17424,6 +20658,15 @@
       "modes": 1,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "turns",
+        "spacing",
+        "wall_thickness",
+        "base_diameter",
+        "height",
+        "drainage",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17459,6 +20702,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "bore_type",
+        "shaft_dia",
+        "clearance",
+        "spline_teeth",
+        "key_width",
+        "key_depth",
+        "hub_od",
+        "length",
+        "flange",
+        "flange_bolts",
+        "flange_bolt_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17528,6 +20784,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "splint_type",
+        "limb_dia",
+        "clearance",
+        "length",
+        "wrap",
+        "wall",
+        "vents",
+        "straps"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17582,6 +20848,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "turns",
+        "clearance",
+        "wall",
+        "bore_dia",
+        "grip_knurl",
+        "spout_dia",
+        "barb_count",
+        "split_ang"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17638,6 +20914,25 @@
       "modes": 3,
       "parts": 3,
       "parameters": 17,
+      "parameter_ids": [
+        "tray_w",
+        "tray_d",
+        "tray_h",
+        "wall",
+        "floor",
+        "corner_r",
+        "cols",
+        "rows",
+        "div_th",
+        "magnet_d",
+        "magnet_h",
+        "mag_n",
+        "fine_cols",
+        "fine_rows",
+        "fine_depth",
+        "lid_skirt",
+        "lid_clear"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17702,6 +20997,17 @@
       "modes": 2,
       "parts": 2,
       "parameters": 9,
+      "parameter_ids": [
+        "inner_w",
+        "inner_d",
+        "inner_h",
+        "front_cut",
+        "label",
+        "lip",
+        "lip_clear",
+        "wall",
+        "dividers"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17757,6 +21063,15 @@
       "modes": 2,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "inner_w",
+        "inner_d",
+        "inner_h",
+        "wall",
+        "clear",
+        "rail",
+        "interlock"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17815,6 +21130,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "length_units",
+        "width_units",
+        "height_units",
+        "holes_x",
+        "holes_y",
+        "holes_z",
+        "arm_a_units",
+        "arm_b_units",
+        "thickness_units",
+        "holes_enabled",
+        "fastener_type_id",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17893,6 +21222,12 @@
       "modes": 3,
       "parts": 3,
       "parameters": 4,
+      "parameter_ids": [
+        "bar_diameter",
+        "slot_count",
+        "max_bar_length",
+        "magnet_diameter"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -17962,6 +21297,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "cable_dia",
+        "grip",
+        "wall",
+        "panel_hole",
+        "panel_t",
+        "bolt_dia",
+        "bend_r",
+        "segments"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18016,6 +21361,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "webbing",
+        "web_t",
+        "snap_clear",
+        "snap_ledge",
+        "show_gap",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18082,6 +21435,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "plate_w",
+        "plate_h",
+        "plate_t",
+        "bolt_bore_d",
+        "latch_bore_w",
+        "screw_d",
+        "screw_head_d",
+        "corner_r",
+        "box_screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18146,6 +21510,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "button_w",
+        "socket_dep",
+        "fit_clear",
+        "handle_len",
+        "pin_slot",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18202,6 +21574,17 @@
       "modes": 1,
       "parts": 1,
       "parameters": 9,
+      "parameter_ids": [
+        "m1",
+        "m2",
+        "n1",
+        "n2",
+        "n3",
+        "height",
+        "wall_thickness",
+        "radius",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18237,6 +21620,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "switch_dia",
+        "recess_depth",
+        "clearance",
+        "cable_dia",
+        "wall",
+        "flange",
+        "screw_dia",
+        "tilt_ang",
+        "strap_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18282,6 +21676,49 @@
       }
     },
     {
+      "slug": "tablaco-v2",
+      "name": "Tablaco v2",
+      "domain": null,
+      "engines": [
+        "cadquery",
+        "openscad"
+      ],
+      "dual_engine": true,
+      "modes": 5,
+      "parts": 10,
+      "parameters": 8,
+      "parameter_ids": [
+        "cell",
+        "tightness",
+        "glyph",
+        "notation",
+        "corner",
+        "rows",
+        "cols",
+        "connective"
+      ],
+      "export_formats": [
+        "stl",
+        "step",
+        "glb",
+        "3mf"
+      ],
+      "commons_license": null,
+      "societal_benefit": null,
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tablaco-v2/project.json",
+        "has_cadquery": true,
+        "has_openscad": true
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tablaco-v2"
+      }
+    },
+    {
       "slug": "tape-dispenser",
       "name": "Label / Tape Dispenser",
       "domain": "household",
@@ -18292,6 +21729,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "core_dia",
+        "roll_w",
+        "roll_od",
+        "clearance",
+        "base_len",
+        "blade_ramp",
+        "teeth",
+        "screw_dia",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18347,6 +21795,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "pole_count",
+        "pitch",
+        "height",
+        "depth",
+        "wall",
+        "slot_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18413,6 +21869,23 @@
       "modes": 3,
       "parts": 3,
       "parameters": 15,
+      "parameter_ids": [
+        "magnet_d",
+        "magnet_h",
+        "plate_th",
+        "mag_cols",
+        "mag_rows",
+        "mag_pitch",
+        "mag_margin",
+        "peg_d",
+        "peg_h",
+        "peg_span",
+        "bar_th",
+        "clip_gap",
+        "clip_arm",
+        "clip_w",
+        "clip_wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18477,6 +21950,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "thread_a",
+        "thread_b",
+        "clearance",
+        "wall",
+        "turns",
+        "bore",
+        "hex_grip"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18552,6 +22034,15 @@
       "modes": 3,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "inner_dia",
+        "inner_len",
+        "wall",
+        "clearance",
+        "oring",
+        "oring_dia",
+        "loop"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18606,6 +22097,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "insert_size",
+        "boss_od",
+        "boss_height",
+        "through",
+        "mount",
+        "base_thick",
+        "base_margin",
+        "ribs",
+        "rib_count",
+        "strip_count",
+        "strip_pitch"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18660,6 +22164,20 @@
       "modes": 3,
       "parts": 3,
       "parameters": 12,
+      "parameter_ids": [
+        "belt_type",
+        "teeth",
+        "width",
+        "bore",
+        "flanges",
+        "flange_h",
+        "hub",
+        "hub_dia",
+        "hub_height",
+        "setscrew",
+        "setscrew_dia",
+        "bearing_od"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18737,6 +22255,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "hole_d",
+        "hole_count",
+        "wall",
+        "height",
+        "depth",
+        "screw_d"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18800,6 +22326,17 @@
       "modes": 2,
       "parts": 2,
       "parameters": 9,
+      "parameter_ids": [
+        "handle_dia",
+        "mouth_factor",
+        "jaw_wall",
+        "jaw_depth",
+        "plate_thick",
+        "plate_margin",
+        "screw_dia",
+        "count",
+        "spacing"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18865,6 +22402,22 @@
       "modes": 3,
       "parts": 3,
       "parameters": 14,
+      "parameter_ids": [
+        "tool_type",
+        "shank_dia",
+        "er_series",
+        "insert_w",
+        "drill_min",
+        "drill_step",
+        "slots",
+        "rows",
+        "pitch",
+        "bore_depth",
+        "block_h",
+        "margin",
+        "wall_mount",
+        "screw_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18942,6 +22495,14 @@
       "modes": 1,
       "parts": 1,
       "parameters": 6,
+      "parameter_ids": [
+        "p",
+        "q",
+        "tube_radius",
+        "torus_radius",
+        "segments",
+        "scale_factor"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -18977,6 +22538,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "hole_dia",
+        "hole_shape",
+        "panel_t",
+        "barb_count",
+        "barb_grip",
+        "head_dia",
+        "head_thick",
+        "shank_len",
+        "wall",
+        "edge_gap",
+        "edge_reach"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19043,6 +22617,18 @@
       "modes": 4,
       "parts": 4,
       "parameters": 10,
+      "parameter_ids": [
+        "slot_series",
+        "slot_fit_clearance",
+        "screw_size",
+        "nut_length",
+        "tapped",
+        "bracket_leg",
+        "bracket_thick",
+        "bracket_gusset",
+        "cable_dia",
+        "panel_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19098,6 +22684,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "tube_dia",
+        "clearance",
+        "well_depth",
+        "cols",
+        "rows",
+        "well_pitch",
+        "wall",
+        "floor",
+        "feet",
+        "drain"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19155,6 +22753,15 @@
       "modes": 2,
       "parts": 2,
       "parameters": 7,
+      "parameter_ids": [
+        "tube_width",
+        "slot_width",
+        "wall_margin",
+        "bar_thick",
+        "bar_height",
+        "handle",
+        "rod_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19208,6 +22815,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "slot_count",
+        "slot_length",
+        "slot_width",
+        "slot_pitch",
+        "body_height",
+        "wall",
+        "rake_angle"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19268,6 +22884,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "radio_w",
+        "radio_d",
+        "cradle_h",
+        "wall",
+        "radio_clear",
+        "tilt",
+        "strap_loop",
+        "loop_w",
+        "stand_depth",
+        "phone_w",
+        "phone_t"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19332,6 +22961,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "payload",
+        "surface_t",
+        "grip_len",
+        "clamp_clear",
+        "width",
+        "wall_t",
+        "screw_dia",
+        "payload_depth",
+        "payload_height"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19411,6 +23051,20 @@
       "modes": 2,
       "parts": 2,
       "parameters": 12,
+      "parameter_ids": [
+        "mount_type",
+        "hook_reach",
+        "hook_curl_r",
+        "hook_thick",
+        "hook_width",
+        "plate_thick",
+        "plate_w",
+        "plate_h",
+        "screw_dia",
+        "door_thick",
+        "count",
+        "spacing"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19479,6 +23133,22 @@
       "modes": 3,
       "parts": 3,
       "parameters": 14,
+      "parameter_ids": [
+        "belt_profile",
+        "outer_dia",
+        "groove_angle",
+        "groove_width",
+        "groove_depth",
+        "belt_dia",
+        "grooves",
+        "groove_pitch",
+        "bore",
+        "hub",
+        "hub_dia",
+        "hub_height",
+        "setscrew",
+        "setscrew_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19557,6 +23227,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "open_w",
+        "open_h",
+        "frame_w",
+        "depth",
+        "blade_count",
+        "blade_angle",
+        "blade_thick",
+        "rim_lip",
+        "hood_len"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19623,6 +23304,16 @@
       "modes": 3,
       "parts": 3,
       "parameters": 8,
+      "parameter_ids": [
+        "blade_t",
+        "clip_w",
+        "clip_drop",
+        "clip_clear",
+        "wall",
+        "phone_w",
+        "magnet_d",
+        "magnet_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19676,6 +23367,17 @@
       "modes": 3,
       "parts": 3,
       "parameters": 9,
+      "parameter_ids": [
+        "vesa",
+        "dest_vesa",
+        "offset",
+        "plate_thick",
+        "web_thick",
+        "plate_margin",
+        "corner_r",
+        "cable_slot",
+        "slot_w"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19753,6 +23455,21 @@
       "modes": 2,
       "parts": 2,
       "parameters": 13,
+      "parameter_ids": [
+        "mode",
+        "vesa_size",
+        "dest_vesa_size",
+        "plate_thick",
+        "plate_margin",
+        "corner_r",
+        "countersink",
+        "cs_diameter",
+        "cs_depth",
+        "extra_holes",
+        "extra_hole_dia",
+        "center_hole",
+        "center_hole_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19833,6 +23550,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "cell_count",
+        "size",
+        "thickness",
+        "cell_wall",
+        "seed",
+        "height",
+        "fn"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19866,6 +23592,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "style",
+        "dev_w",
+        "dev_d",
+        "dev_h",
+        "wall_t",
+        "margin",
+        "clearance",
+        "lip_h",
+        "screw_dia",
+        "adhesive"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19932,6 +23670,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "tile_size",
+        "base_t",
+        "interlock",
+        "fit",
+        "pattern",
+        "relief_h",
+        "cells"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -19986,6 +23733,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "dpi",
+        "width_in",
+        "frame_h",
+        "thick",
+        "hole_d",
+        "peg_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -20039,6 +23794,15 @@
       "modes": 3,
       "parts": 3,
       "parameters": 7,
+      "parameter_ids": [
+        "lug_width",
+        "pin_dia",
+        "ear_h",
+        "strap_t",
+        "watch_dia",
+        "stand_angle",
+        "wall"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -20105,6 +23869,19 @@
       "modes": 3,
       "parts": 3,
       "parameters": 11,
+      "parameter_ids": [
+        "pole_dia",
+        "clamp_wall",
+        "clamp_h",
+        "bolt_dia",
+        "boss_dia",
+        "boss_len",
+        "clearance",
+        "cradle_dia",
+        "cradle_h",
+        "plate_w",
+        "plate_h"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -20170,6 +23947,18 @@
       "modes": 3,
       "parts": 3,
       "parameters": 10,
+      "parameter_ids": [
+        "shaft",
+        "bore_clear",
+        "set_d",
+        "wheel_d",
+        "wheel_w",
+        "groove_d",
+        "hub_d",
+        "bolt_circle",
+        "bolt_d",
+        "bolt_n"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -20236,6 +24025,18 @@
       "modes": 3,
       "parts": 2,
       "parameters": 10,
+      "parameter_ids": [
+        "m",
+        "pressure_angle",
+        "starts",
+        "worm_dia",
+        "worm_turns",
+        "worm_bore",
+        "teeth",
+        "thickness",
+        "wheel_bore",
+        "flank_pts"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -20304,6 +24105,14 @@
       "modes": 3,
       "parts": 3,
       "parameters": 6,
+      "parameter_ids": [
+        "base_dia",
+        "taper",
+        "eyelet_d",
+        "arm_h",
+        "wall",
+        "eyelets"
+      ],
       "export_formats": [
         "stl",
         "3mf",
@@ -20347,6 +24156,76 @@
       }
     },
     {
+      "slug": "zipper",
+      "name": "Zipper",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 4,
+      "parameters": 5,
+      "parameter_ids": [
+        "zip_length",
+        "chain_size",
+        "tape_width",
+        "tape_thick",
+        "gap"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A failed zipper is the single most common reason a jacket, bag, or dress is thrown away. A printable zipper sized to the garment's own opening — not just a replacement pull, but the whole closure — lets a home or repair-shop maker restore the piece and closes the loop from Fashion Cabinet's pattern to working hardware.",
+        "es": "Una cremallera rota es la razón más común por la que se desecha una chamarra, bolsa o vestido. Una cremallera imprimible dimensionada a la propia abertura de la prenda — no solo un tirador de repuesto, sino el cierre completo — permite a un maker de casa o taller restaurar la pieza y cierra el ciclo del patrón de Fashion Cabinet al herraje funcional."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "tape_edge",
+          "label": "Sewn Tape Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "tape_width",
+            "tape_thick",
+            "zip_length"
+          ]
+        },
+        {
+          "id": "slider_channel",
+          "label": "Slider Channel",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "chain_size",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/zipper/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/zipper"
+      }
+    },
+    {
       "slug": "zipper-pull",
       "name": "Zipper Pull & Cord Ends",
       "domain": "household",
@@ -20357,6 +24236,13 @@
       "modes": 3,
       "parts": 3,
       "parameters": 5,
+      "parameter_ids": [
+        "loop_dia",
+        "grip_len",
+        "grip_w",
+        "thick",
+        "cord_dia"
+      ],
       "export_formats": [
         "stl",
         "3mf",

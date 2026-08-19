@@ -186,6 +186,13 @@ def build_entry(manifest_path: Path, submodules: dict[str, str]) -> dict:
         "modes": _len(m.get("modes")),
         "parts": _len(m.get("parts")),
         "parameters": _len(m.get("parameters")),
+        # The parameter ids themselves — the contract surface a downstream
+        # consumer (e.g. a Fashion Cabinet hardware_ref params_map) resolves
+        # against. `parameters` stays a count for backward compatibility.
+        "parameter_ids": [
+            p["id"] for p in (m.get("parameters") or [])
+            if isinstance(p, dict) and isinstance(p.get("id"), str)
+        ],
         "export_formats": m.get("export_formats") or [],
         "commons_license": commons_license,
         # Documented NC exposure from vendored upstream files, if any.

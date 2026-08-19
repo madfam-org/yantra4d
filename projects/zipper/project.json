@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "Zipper",
+    "slug": "zipper",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The zipper closure itself — not just the pull. A parametric printable zipper: two tapes carrying a molded coil of interlocking teeth plus the slider that mates them. Choose a continuous (closed-end) chain, a separating (jacket) zipper with a pin box, or the slider alone. Sized to real chain gauges (#3 / #5 / #8 / #10) and to a garment's tape width and length, so the same numbers that draft a placket in Fashion Cabinet size this hardware. This is the solid the Fashion Cabinet zipper notion bridges to.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El cierre de cremallera en sí — no solo el tirador. Una cremallera imprimible paramétrica: dos cintas con una espiral de dientes entrelazados más el deslizador que las une. Elige una cadena continua (extremo cerrado), una cremallera separable (de chamarra) con caja de inserción, o solo el deslizador. Dimensionada a calibres reales (#3 / #5 / #8 / #10) y al ancho y largo de cinta de una prenda, de modo que los mismos números que trazan una cartera en Fashion Cabinet dimensionan este herraje. Este es el sólido al que el avío de cremallera de Fashion Cabinet se puentea.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/zipper.webp",
+    "difficulty": "intermediate",
+    "tags": ["zipper", "closure", "coil", "slider", "separating", "garment", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "closed",
+      "label": { "en": "Closed-end chain", "es": "Cadena de extremo cerrado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tape_left", "tape_right", "slider"],
+      "estimate": { "base_time": 40, "per_unit": 3, "per_part": 20 }
+    },
+    {
+      "id": "separating",
+      "label": { "en": "Separating (jacket)", "es": "Separable (chamarra)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tape_left", "tape_right", "slider", "pin_box"],
+      "estimate": { "base_time": 44, "per_unit": 3, "per_part": 20 }
+    },
+    {
+      "id": "slider",
+      "label": { "en": "Slider only", "es": "Solo deslizador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["slider"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "tape_left", "label": { "en": "Left Tape + Coil", "es": "Cinta + espiral izquierda" }, "render_mode": 0, "color": "#3a5468" },
+    { "id": "tape_right", "label": { "en": "Right Tape + Coil", "es": "Cinta + espiral derecha" }, "render_mode": 0, "color": "#3a5468" },
+    { "id": "slider", "label": { "en": "Slider", "es": "Deslizador" }, "render_mode": 0, "color": "#8a99a6" },
+    { "id": "pin_box", "label": { "en": "Pin Box", "es": "Caja de inserción" }, "render_mode": 0, "color": "#26333f" }
+  ],
+  "parameter_groups": [
+    { "id": "chain", "label": { "en": "Chain", "es": "Cadena" } },
+    { "id": "tape", "label": { "en": "Tape", "es": "Cinta" } },
+    { "id": "fit", "label": { "en": "Print Fit", "es": "Ajuste de impresión" } }
+  ],
+  "parameters": [
+    {
+      "id": "zip_length", "type": "slider", "default": 200, "min": 20, "max": 1200, "step": 5,
+      "group": "chain", "modes": ["closed", "separating"],
+      "label": { "en": "Zipper Length (mm)", "es": "Largo de cremallera (mm)" },
+      "tooltip": { "en": "Working coil length — maps from a garment opening's length", "es": "Largo útil de la espiral — se mapea del largo de una abertura de prenda" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "chain_size", "type": "select", "default": "5",
+      "group": "chain", "modes": ["closed", "separating", "slider"],
+      "label": { "en": "Chain Size (gauge)", "es": "Calibre de cadena" },
+      "tooltip": { "en": "Nominal gauge = closed-chain width in mm (#5 ≈ 5 mm, the jacket standard)", "es": "Calibre nominal = ancho de cadena cerrada en mm (#5 ≈ 5 mm, estándar de chamarra)" },
+      "options": [
+        { "value": "3", "label": { "en": "#3 (light / dresses)", "es": "#3 (ligera / vestidos)" } },
+        { "value": "5", "label": { "en": "#5 (jackets)", "es": "#5 (chamarras)" } },
+        { "value": "8", "label": { "en": "#8 (bags / heavy)", "es": "#8 (bolsas / pesada)" } },
+        { "value": "10", "label": { "en": "#10 (outerwear)", "es": "#10 (abrigos)" } }
+      ]
+    },
+    {
+      "id": "tape_width", "type": "slider", "default": 6.0, "min": 4.0, "max": 20.0, "step": 0.5,
+      "group": "tape", "modes": ["closed", "separating"],
+      "label": { "en": "Tape Width (mm)", "es": "Ancho de cinta (mm)" },
+      "tooltip": { "en": "Width of one tape strip, the sewn allowance beside the coil", "es": "Ancho de una cinta, el margen cosido junto a la espiral" }
+    },
+    {
+      "id": "tape_thick", "type": "slider", "default": 1.4, "min": 1.0, "max": 3.0, "step": 0.1,
+      "group": "tape", "modes": ["closed", "separating"],
+      "label": { "en": "Tape Thickness (mm)", "es": "Grosor de cinta (mm)" },
+      "tooltip": { "en": "Tape thickness", "es": "Grosor de la cinta" }
+    },
+    {
+      "id": "gap", "type": "slider", "default": 0.35, "min": 0.15, "max": 0.8, "step": 0.05,
+      "group": "fit", "modes": ["closed", "separating", "slider"],
+      "label": { "en": "Print Clearance (mm)", "es": "Holgura de impresión (mm)" },
+      "tooltip": { "en": "Clearance between the two halves and inside the slider channel — tune to your printer", "es": "Holgura entre las dos mitades y dentro del canal del deslizador — ajusta a tu impresora" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "dress_back", "mode": "closed",
+      "label": { "en": "Dress Back (#3, 55 cm)", "es": "Espalda de vestido (#3, 55 cm)" },
+      "values": { "zip_length": 550, "chain_size": "3", "tape_width": 5, "tape_thick": 1.2 }
+    },
+    {
+      "id": "jacket_front", "mode": "separating",
+      "label": { "en": "Jacket Front (#5, 65 cm)", "es": "Frente de chamarra (#5, 65 cm)" },
+      "values": { "zip_length": 650, "chain_size": "5", "tape_width": 6, "tape_thick": 1.4 }
+    },
+    {
+      "id": "duffel", "mode": "closed",
+      "label": { "en": "Duffel Bag (#8, 80 cm)", "es": "Bolsa de viaje (#8, 80 cm)" },
+      "values": { "zip_length": 800, "chain_size": "8", "tape_width": 8, "tape_thick": 1.8 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tape_thick >= 1.0",
+      "severity": "error",
+      "message": { "en": "Tape must be at least 1 mm to print without gaps", "es": "La cinta debe medir al menos 1 mm para imprimirse sin huecos" }
+    },
+    {
+      "expression": "gap <= 0.6",
+      "severity": "warning",
+      "message": { "en": "Large clearances let the coil slip; tighten if the zip won't hold", "es": "Holguras grandes hacen que la espiral se zafe; reduce si la cremallera no sostiene" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 120] },
+    { "id": "detail", "label": { "en": "Slider Detail", "es": "Detalle del deslizador" }, "position": [40, -60, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 40, "per_unit": 3, "per_part": 20,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "tape_edge",
+        "label": { "en": "Sewn Tape Edge", "es": "Canto de cinta cosido" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["tape_width", "tape_thick", "zip_length"]
+      },
+      {
+        "id": "slider_channel",
+        "label": { "en": "Slider Channel", "es": "Canal del deslizador" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["chain_size", "gap"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A failed zipper is the single most common reason a jacket, bag, or dress is thrown away. A printable zipper sized to the garment's own opening — not just a replacement pull, but the whole closure — lets a home or repair-shop maker restore the piece and closes the loop from Fashion Cabinet's pattern to working hardware.",
+      "es": "Una cremallera rota es la razón más común por la que se desecha una chamarra, bolsa o vestido. Una cremallera imprimible dimensionada a la propia abertura de la prenda — no solo un tirador de repuesto, sino el cierre completo — permite a un maker de casa o taller restaurar la pieza y cierra el ciclo del patrón de Fashion Cabinet al herraje funcional."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["zipper", "closure", "coil", "slider", "separating", "garment", "wearable", "hyperobject", "commons"]
+}

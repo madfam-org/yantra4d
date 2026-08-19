@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 332,
-    "with_cdg_interfaces": 317,
-    "with_commons_license": 331,
+    "cartridges": 334,
+    "with_cdg_interfaces": 319,
+    "with_commons_license": 333,
     "dual_engine": 24
   },
   "domains": {
@@ -15,7 +15,7 @@
     "infrastructure": 20,
     "uncategorized": 14,
     "hybrid": 7,
-    "wearable": 4,
+    "wearable": 6,
     "soft-robotics": 1
   },
   "standards": [
@@ -22597,6 +22597,151 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-chainmail-panel"
+      }
+    },
+    {
+      "slug": "tpu-flexure-cuff",
+      "name": "TPU Flexure Cuff",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "cuff_circum",
+        "cuff_height",
+        "wall",
+        "slot_rows",
+        "slot_cols",
+        "slot_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A stretch cuff anyone can print replaces sewn elastic — which perishes and is rarely repairable — with an open, made-to-measure flexure band that is washable, recyclable, and springs back for the life of the garment. Sized to a sleeve or hem it is a trim that is simultaneously a Fashion Cabinet notion and a Yantra4D solid.",
+        "es": "Un puño elástico que cualquiera puede imprimir reemplaza el elástico cosido — que se degrada y rara vez se repara — con una banda de flexión abierta y a la medida, lavable, reciclable y que recupera durante toda la vida de la prenda. Dimensionada a una manga o ruedo es un avío que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "cuff_edge",
+          "label": "Sewable Cuff Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "cuff_circum",
+            "cuff_height",
+            "wall"
+          ]
+        },
+        {
+          "id": "flex_cell",
+          "label": "Flexure Slot Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "slot_rows",
+            "slot_cols",
+            "slot_w",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tpu-flexure-cuff/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-flexure-cuff"
+      }
+    },
+    {
+      "slug": "tpu-pleat-panel",
+      "name": "TPU Pleat Panel",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "pleats",
+        "pleat_depth",
+        "pleat_pitch",
+        "panel_width",
+        "wall"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A pleated fabric anyone can print turns permanent-pleat construction — historically a specialist heat-set craft — into an open, made-to-measure pattern. Printed in TPU the pleats never fall out, are washable and recyclable, and sized to a garment panel it is a fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid: the additive-manufacturing frontier of clothing, open to everyone.",
+        "es": "Una tela plisada que cualquiera puede imprimir convierte la construcción de pliegue permanente — históricamente un oficio de termofijado especializado — en un patrón abierto a la medida. Impresa en TPU los pliegues nunca se caen, es lavable y reciclable, y dimensionada a un panel de prenda es una tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D: la frontera de manufactura aditiva de la ropa, abierta a todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "panel_edge",
+          "label": "Sewable Panel Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "pleats",
+            "pleat_pitch",
+            "panel_width",
+            "wall"
+          ]
+        },
+        {
+          "id": "fold_cell",
+          "label": "Knife-Fold Cell",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "pleat_depth",
+            "pleat_pitch",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tpu-pleat-panel/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tpu-pleat-panel"
       }
     },
     {

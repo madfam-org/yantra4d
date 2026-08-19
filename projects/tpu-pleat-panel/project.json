@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "TPU Pleat Panel",
+    "slug": "tpu-pleat-panel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place accordion-pleated textile panel — the additive-manufacturing fabric the Fashion Cabinet `tpu-pleat-panel` fabric card describes as cloth and bridges to here for its geometry. A run of alternating knife folds prints flat and concertinas like a pleated skirt panel: rigid facet, flexible crease. Sized by pleat count and depth so a garment panel's finished dimensions drive the fold. One material identity — Bambu TPU 95A — spans the fabric card and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un panel textil plisado en acordeón impreso en sitio — la tela de manufactura aditiva que la ficha `tpu-pleat-panel` de Fashion Cabinet describe como tela y a la que se puentea aquí para su geometría. Una serie de pliegues alternos se imprime plana y se pliega como un panel de falda plisada: faceta rígida, pliegue flexible. Dimensionada por número y profundidad de pliegue para que las medidas de un panel de prenda determinen el plisado. Una identidad de material — Bambu TPU 95A — abarca la ficha de tela y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tpu-pleat-panel.webp",
+    "difficulty": "advanced",
+    "tags": ["pleat", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "fabric", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "panel",
+      "label": { "en": "Pleat Panel", "es": "Panel plisado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["panel"],
+      "estimate": { "base_time": 50, "per_unit": 4, "per_part": 25 }
+    },
+    {
+      "id": "swatch",
+      "label": { "en": "3-Pleat Swatch", "es": "Muestra de 3 pliegues" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["swatch"],
+      "estimate": { "base_time": 18, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "pleat",
+      "label": { "en": "Single Pleat (unit fold)", "es": "Pliegue único" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pleat"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "panel", "label": { "en": "Pleat Panel", "es": "Panel plisado" }, "render_mode": 0, "color": "#8f86a8" },
+    { "id": "swatch", "label": { "en": "Swatch", "es": "Muestra" }, "render_mode": 0, "color": "#8f86a8" },
+    { "id": "pleat", "label": { "en": "Pleat", "es": "Pliegue" }, "render_mode": 0, "color": "#9a92b2" }
+  ],
+  "parameter_groups": [
+    { "id": "pleating", "label": { "en": "Pleating", "es": "Plisado" } },
+    { "id": "panel", "label": { "en": "Panel", "es": "Panel" } },
+    { "id": "print", "label": { "en": "Print", "es": "Impresión" } }
+  ],
+  "parameters": [
+    {
+      "id": "pleats", "type": "slider", "default": 8, "min": 1, "max": 40, "step": 1,
+      "group": "pleating", "modes": ["panel"],
+      "label": { "en": "Pleats (fold count)", "es": "Pliegues (número)" },
+      "tooltip": { "en": "Number of knife folds along the run; with the pitch this sets the run length", "es": "Número de pliegues a lo largo; con el paso define el largo" }
+    },
+    {
+      "id": "pleat_depth", "type": "slider", "default": 12.0, "min": 3.0, "max": 40.0, "step": 0.5,
+      "group": "pleating", "modes": ["panel", "swatch", "pleat"],
+      "label": { "en": "Pleat depth (mm)", "es": "Profundidad de pliegue (mm)" },
+      "tooltip": { "en": "Peak-to-valley fold depth; deeper = more compression range", "es": "Profundidad pico a valle; mayor = más rango de compresión" }
+    },
+    {
+      "id": "pleat_pitch", "type": "slider", "default": 16.0, "min": 4.0, "max": 40.0, "step": 0.5,
+      "group": "pleating", "modes": ["panel", "swatch", "pleat"],
+      "label": { "en": "Pleat pitch (mm)", "es": "Paso de pliegue (mm)" },
+      "tooltip": { "en": "Crease-to-crease spacing along the run", "es": "Separación cresta a cresta a lo largo" }
+    },
+    {
+      "id": "panel_width", "type": "slider", "default": 200.0, "min": 20.0, "max": 300.0, "step": 5.0,
+      "group": "panel", "modes": ["panel", "swatch", "pleat"],
+      "label": { "en": "Panel width (mm)", "es": "Ancho del panel (mm)" },
+      "tooltip": { "en": "Width across the pleats (the un-pleated span)", "es": "Ancho a través de los pliegues" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.2, "min": 0.6, "max": 4.0, "step": 0.1,
+      "group": "print", "modes": ["panel", "swatch", "pleat"],
+      "label": { "en": "Wall thickness (mm)", "es": "Espesor de pared (mm)" },
+      "tooltip": { "en": "Facet wall; thin walls flex at the fold lines like a living hinge", "es": "Pared de faceta; paredes delgadas flexionan en los pliegues como bisagra viva" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "fine_pleat", "mode": "panel",
+      "label": { "en": "Fine Pleats (12, 10 mm)", "es": "Pliegues finos (12, 10 mm)" },
+      "values": { "pleats": 12, "pleat_depth": 10, "pleat_pitch": 12 }
+    },
+    {
+      "id": "deep_accordion", "mode": "panel",
+      "label": { "en": "Deep Accordion", "es": "Acordeón profundo" },
+      "values": { "pleats": 8, "pleat_depth": 24, "pleat_pitch": 20 }
+    },
+    {
+      "id": "print_test", "mode": "swatch",
+      "label": { "en": "Print Test Swatch", "es": "Muestra de prueba" },
+      "values": { "pleat_depth": 12, "pleat_pitch": 16, "wall": 1.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall < pleat_depth",
+      "severity": "error",
+      "message": { "en": "Wall must be thinner than the pleat depth", "es": "La pared debe ser más delgada que la profundidad del pliegue" }
+    },
+    {
+      "expression": "wall <= 1.6",
+      "severity": "warning",
+      "message": { "en": "Thick walls stiffen the folds; thin them if it won't concertina", "es": "Paredes gruesas endurecen los pliegues; adelgázalas si no se pliega" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [140, 140, 90] },
+    { "id": "side", "label": { "en": "Fold Profile", "es": "Perfil de pliegue" }, "position": [0, 200, 0] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 50, "per_unit": 4, "per_part": 25,
+    "fn_factor": 12, "wasm_multiplier": 5, "warning_threshold_seconds": 150
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "panel_edge",
+        "label": { "en": "Sewable Panel Edge", "es": "Canto de panel cosible" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["pleats", "pleat_pitch", "panel_width", "wall"]
+      },
+      {
+        "id": "fold_cell",
+        "label": { "en": "Knife-Fold Cell", "es": "Celda de pliegue" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["pleat_depth", "pleat_pitch", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A pleated fabric anyone can print turns permanent-pleat construction — historically a specialist heat-set craft — into an open, made-to-measure pattern. Printed in TPU the pleats never fall out, are washable and recyclable, and sized to a garment panel it is a fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid: the additive-manufacturing frontier of clothing, open to everyone.",
+      "es": "Una tela plisada que cualquiera puede imprimir convierte la construcción de pliegue permanente — históricamente un oficio de termofijado especializado — en un patrón abierto a la medida. Impresa en TPU los pliegues nunca se caen, es lavable y reciclable, y dimensionada a un panel de prenda es una tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D: la frontera de manufactura aditiva de la ropa, abierta a todas las personas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pleat", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "fabric", "wearable", "hyperobject", "commons"]
+}

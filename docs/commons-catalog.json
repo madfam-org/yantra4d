@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 345,
-    "with_cdg_interfaces": 330,
-    "with_commons_license": 344,
+    "cartridges": 349,
+    "with_cdg_interfaces": 334,
+    "with_commons_license": 348,
     "dual_engine": 24
   },
   "domains": {
@@ -12,8 +12,8 @@
     "industrial": 81,
     "commercial": 63,
     "medical": 29,
+    "wearable": 21,
     "infrastructure": 20,
-    "wearable": 17,
     "uncategorized": 14,
     "hybrid": 7,
     "soft-robotics": 1
@@ -2648,6 +2648,74 @@
       }
     },
     {
+      "slug": "bra-ring-slider",
+      "name": "Bra Ring & Slider",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 3,
+      "parameter_ids": [
+        "strap_w",
+        "wire_d",
+        "slider_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable ring-and-slider turns lingerie strap hardware — a tiny metal/plastic part — into an open, made-to-measure adjuster sized to any strap, repairable and reprintable.",
+        "es": "Una argolla y corredera imprimibles convierten el herraje de tirantes de lencería — una pieza diminuta — en un ajustador abierto a la medida de cualquier tirante, reparable y reimprimible."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "strap_face",
+          "label": "Strap Attachment Face",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "strap_w",
+            "wire_d",
+            "slider_h"
+          ]
+        },
+        {
+          "id": "ring_loop",
+          "label": "Ring Loop",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "strap_w",
+            "wire_d"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/bra-ring-slider/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bra-ring-slider"
+      }
+    },
+    {
       "slug": "bracket-generator",
       "name": "Universal Bracket Generator",
       "domain": "industrial",
@@ -4166,6 +4234,75 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/coffee-funnel"
+      }
+    },
+    {
+      "slug": "collar-stay",
+      "name": "Collar Stay",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 4,
+      "parameter_ids": [
+        "stay_len",
+        "base_w",
+        "tip_w",
+        "stay_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable collar stay turns a tiny consumable — the metal or plastic blade lost in the wash — into an open, made-to-measure finding sized exactly to your collar point.",
+        "es": "Una ballena de cuello imprimible convierte un consumible diminuto — la lámina que se pierde en el lavado — en un herraje abierto a la medida exacta de la punta de tu cuello."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "collar_slot",
+          "label": "Collar-Point Slot",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "stay_len",
+            "base_w",
+            "tip_w"
+          ]
+        },
+        {
+          "id": "stay_blade",
+          "label": "Stay Blade",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "tip_w",
+            "stay_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/collar-stay/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/collar-stay"
       }
     },
     {
@@ -12825,6 +12962,76 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/lug-cover"
+      }
+    },
+    {
+      "slug": "magnetic-clasp",
+      "name": "Magnetic Clasp",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 5,
+      "parameter_ids": [
+        "disc_dia",
+        "disc_h",
+        "magnet_dia",
+        "magnet_h",
+        "sew_holes"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable magnetic clasp turns a metal snap — bought in bulk — into an open, made-to-measure housing you print and drop magnets into, sized to any garment or bag.",
+        "es": "Un broche magnético imprimible convierte un broche metálico — comprado a granel — en una carcasa abierta a la medida que imprimes y en la que colocas imanes, dimensionada a cualquier prenda o bolsa."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_face",
+          "label": "Sew Face (rim holes)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "disc_dia",
+            "disc_h",
+            "sew_holes"
+          ]
+        },
+        {
+          "id": "magnet_pocket",
+          "label": "Magnet Pocket",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "magnet_dia",
+            "magnet_h"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/magnetic-clasp/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/magnetic-clasp"
       }
     },
     {
@@ -22736,6 +22943,75 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/timing-pulley"
+      }
+    },
+    {
+      "slug": "toggle",
+      "name": "Toggle",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 4,
+      "parameter_ids": [
+        "barrel_len",
+        "barrel_dia",
+        "cord_dia",
+        "cords"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable toggle turns duffle and drawstring closures — a horn/wood part — into an open, made-to-measure finding anyone can print and size.",
+        "es": "Un alamar imprimible convierte los cierres de trenca y jareta — una pieza de asta o madera — en un herraje abierto a la medida que cualquiera puede imprimir y dimensionar."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "cord_face",
+          "label": "Cord Attachment Face",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "barrel_len",
+            "barrel_dia",
+            "cord_dia"
+          ]
+        },
+        {
+          "id": "cord_channel",
+          "label": "Cord Channel",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "cord_dia",
+            "cords"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/toggle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/toggle"
       }
     },
     {

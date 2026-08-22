@@ -102,7 +102,9 @@ export default function ProjectGalleryGrid({ lang = 'es', t, projects, activeCat
               <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
                 {isEs ? project.descriptionEs : project.description}
               </p>
-              <span className="text-xs text-primary group-hover:underline">{openLabel}</span>
+              {/* 12px call-to-action: text-primary measures 3.83:1 on the
+                  card surface, under the 4.5:1 small-text floor. */}
+              <span className="text-xs text-primary-readable group-hover:underline">{openLabel}</span>
             </div>
           </a>
         ))}

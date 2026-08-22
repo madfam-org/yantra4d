@@ -136,8 +136,12 @@ jobs:
           provenance: false
           sbom: false
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |
@@ -208,8 +212,12 @@ jobs:
             VITE_DHANAM_CHECKOUT_URL=https://app.dhan.am/checkout
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |
@@ -275,8 +283,12 @@ jobs:
           build-args: |
             PUBLIC_STUDIO_URL=https://app.yantra4d.com
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |
@@ -347,8 +359,12 @@ jobs:
             VITE_AUTH_ENABLED=true
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |

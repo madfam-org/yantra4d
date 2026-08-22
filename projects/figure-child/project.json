@@ -1,0 +1,701 @@
+{
+  "project": {
+    "name": "Figure Child",
+    "slug": "figure-child",
+    "version": "0.1.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric CHILD dress form — the small sibling of Body Form, and the honest way to stage the Fashion Cabinet kids_baby garments. Deliberately an abstract form, not a figure: no head, no arms beyond a shoulder shelf. A child is not a scaled adult, so this is its own cartridge: the head-to-body ratio (about 4 head-lengths at one year, 6.3 at ten) makes the child's torso proportionally longer and the legs shorter; the toddler has essentially no waist until five to seven years; and the infant belly projects forward, so the waist section is nearly round and slims with age. One size_age parameter (0.5-10 years) drives those three responses, while the girths stay independently settable ISO-8559 measurements — every landmark ring measures its exact girth, verified. Modes: a torso for tees and polos, a bifurcated form with a real crotch for snap-crotch bodysuits, and a full figure with legs to the ankle and flat foot blocks for footed sleepers.\n\nOfficial visualizer and configurator: Yantra4D.",
+      "es": "Un maniquí INFANTIL paramétrico — el hermano pequeño de Body Form, y la forma honesta de presentar las prendas kids_baby del común Fashion Cabinet. Deliberadamente una forma abstracta, no una figura: sin cabeza, sin brazos más allá del apoyo de hombro. Un niño no es un adulto a escala, por eso es su propio cartucho: la proporción cabeza-cuerpo (unas 4 cabezas al año, 6.3 a los diez) hace que el torso infantil sea proporcionalmente más largo y las piernas más cortas; el infante casi no tiene cintura hasta los cinco o siete años; y el vientre proyecta hacia adelante, así que la sección de cintura es casi redonda y se afina con la edad. Un parámetro size_age (0.5-10 años) maneja esas tres respuestas, mientras los contornos siguen siendo medidas ISO-8559 independientes — cada anillo de referencia mide su contorno exacto, verificado. Modos: torso para playeras y polos, forma bifurcada con entrepierna real para pañaleros de broches, y figura completa con piernas hasta el tobillo y pies planos para mamelucos con pie.\n\nVisualizador y configurador oficial: Yantra4D."
+    },
+    "difficulty": "advanced",
+    "tags": [
+      "dress-form",
+      "mannequin",
+      "child",
+      "kids",
+      "body",
+      "tailoring",
+      "fashion",
+      "iso-8559",
+      "landmark-rings",
+      "anthropometry",
+      "hyperobject",
+      "commons",
+      "cadquery"
+    ],
+    "attribution": {
+      "author": "Innovaciones MADFAM",
+      "license": "CERN-OHL-W-2.0"
+    },
+    "thumbnail": "/projects/figure-child.webp"
+  },
+  "modes": [
+    {
+      "id": "torso",
+      "label": {
+        "en": "Torso (child dress form)",
+        "es": "Torso (maniquí infantil)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "torso"
+      ],
+      "estimate": {
+        "base_time": 150,
+        "per_unit": 2,
+        "per_part": 50
+      }
+    },
+    {
+      "id": "bifurcated",
+      "label": {
+        "en": "Bodysuit form (with crotch)",
+        "es": "Forma para pañalero (con entrepierna)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bifurcated"
+      ],
+      "estimate": {
+        "base_time": 210,
+        "per_unit": 2,
+        "per_part": 50
+      }
+    },
+    {
+      "id": "full_figure",
+      "label": {
+        "en": "Full figure (legs and feet)",
+        "es": "Figura completa (piernas y pies)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "full_figure"
+      ],
+      "estimate": {
+        "base_time": 280,
+        "per_unit": 2,
+        "per_part": 50
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "torso",
+      "name": {
+        "en": "Torso",
+        "es": "Torso"
+      }
+    },
+    {
+      "id": "bifurcated",
+      "name": {
+        "en": "Bodysuit form",
+        "es": "Forma para pañalero"
+      }
+    },
+    {
+      "id": "full_figure",
+      "name": {
+        "en": "Full figure",
+        "es": "Figura completa"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "target_part",
+      "type": "select",
+      "default": "torso",
+      "options": [
+        {
+          "value": "torso",
+          "label": {
+            "en": "Torso",
+            "es": "Torso"
+          }
+        },
+        {
+          "value": "bifurcated",
+          "label": {
+            "en": "Bodysuit form",
+            "es": "Forma para pañalero"
+          }
+        },
+        {
+          "value": "full_figure",
+          "label": {
+            "en": "Full figure",
+            "es": "Figura completa"
+          }
+        }
+      ],
+      "label": {
+        "en": "Form",
+        "es": "Forma"
+      }
+    },
+    {
+      "id": "size_age",
+      "type": "slider",
+      "default": 4,
+      "min": 0.5,
+      "max": 10,
+      "step": 0.5,
+      "group": "growth",
+      "label": {
+        "en": "Age (years) — sets child proportions",
+        "es": "Edad (años) — define proporciones infantiles"
+      }
+    },
+    {
+      "id": "neck_girth",
+      "type": "slider",
+      "default": 265,
+      "min": 180,
+      "max": 380,
+      "step": 5,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "neck_girth"
+      },
+      "label": {
+        "en": "Neck girth (mm)",
+        "es": "Contorno de cuello (mm)"
+      }
+    },
+    {
+      "id": "chest_girth",
+      "type": "slider",
+      "default": 550,
+      "min": 380,
+      "max": 820,
+      "step": 5,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "chest_bust_girth"
+      },
+      "label": {
+        "en": "Chest girth (mm)",
+        "es": "Contorno de pecho (mm)"
+      }
+    },
+    {
+      "id": "waist_girth",
+      "type": "slider",
+      "default": 530,
+      "min": 340,
+      "max": 780,
+      "step": 5,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "waist_girth"
+      },
+      "label": {
+        "en": "Waist girth (mm)",
+        "es": "Contorno de cintura (mm)"
+      }
+    },
+    {
+      "id": "hip_girth",
+      "type": "slider",
+      "default": 570,
+      "min": 360,
+      "max": 860,
+      "step": 5,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "hip_girth"
+      },
+      "label": {
+        "en": "Hip girth (mm)",
+        "es": "Contorno de cadera (mm)"
+      }
+    },
+    {
+      "id": "back_waist_length",
+      "type": "slider",
+      "default": 265,
+      "min": 150,
+      "max": 400,
+      "step": 5,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "back_neck_to_waist"
+      },
+      "label": {
+        "en": "Back waist length, nape→waist (mm)",
+        "es": "Talle de espalda, nuca→cintura (mm)"
+      }
+    },
+    {
+      "id": "shoulder_width",
+      "type": "slider",
+      "default": 275,
+      "min": 160,
+      "max": 400,
+      "step": 5,
+      "group": "measurements",
+      "label": {
+        "en": "Shoulder width, point→point (mm)",
+        "es": "Ancho de hombros (mm)"
+      }
+    },
+    {
+      "id": "crotch_height",
+      "type": "slider",
+      "default": 145,
+      "min": 80,
+      "max": 260,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "bifurcated",
+        "full_figure"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "crotch_height"
+      },
+      "label": {
+        "en": "Crotch depth, waist→crotch (mm)",
+        "es": "Tiro, cintura→entrepierna (mm)"
+      }
+    },
+    {
+      "id": "thigh_girth",
+      "type": "slider",
+      "default": 330,
+      "min": 180,
+      "max": 520,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "bifurcated",
+        "full_figure"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "thigh_girth"
+      },
+      "label": {
+        "en": "Thigh girth (mm)",
+        "es": "Contorno de muslo (mm)"
+      }
+    },
+    {
+      "id": "inside_leg_length",
+      "type": "slider",
+      "default": 430,
+      "min": 120,
+      "max": 700,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "full_figure"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "inside_leg_length"
+      },
+      "label": {
+        "en": "Inside leg, crotch→ankle (mm)",
+        "es": "Entrepierna, tiro→tobillo (mm)"
+      }
+    },
+    {
+      "id": "knee_girth",
+      "type": "slider",
+      "default": 250,
+      "min": 150,
+      "max": 400,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "full_figure"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "knee_girth"
+      },
+      "label": {
+        "en": "Knee girth (mm)",
+        "es": "Contorno de rodilla (mm)"
+      }
+    },
+    {
+      "id": "ankle_girth",
+      "type": "slider",
+      "default": 165,
+      "min": 90,
+      "max": 280,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "full_figure"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "ankle_girth"
+      },
+      "label": {
+        "en": "Ankle girth (mm)",
+        "es": "Contorno de tobillo (mm)"
+      }
+    },
+    {
+      "id": "foot_length",
+      "type": "slider",
+      "default": 165,
+      "min": 70,
+      "max": 260,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "full_figure"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "foot_length"
+      },
+      "label": {
+        "en": "Foot length (mm)",
+        "es": "Largo de pie (mm)"
+      }
+    },
+    {
+      "id": "belly_depth_ratio",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 0.98,
+      "step": 0.01,
+      "group": "shape",
+      "advanced": true,
+      "label": {
+        "en": "Belly depth : width (0 = by age)",
+        "es": "Profundidad : ancho de vientre (0 = por edad)"
+      }
+    },
+    {
+      "id": "seat_depth_ratio",
+      "type": "slider",
+      "default": 0.8,
+      "min": 0.6,
+      "max": 0.98,
+      "step": 0.01,
+      "group": "shape",
+      "advanced": true,
+      "label": {
+        "en": "Seat depth : width",
+        "es": "Profundidad : ancho de asiento"
+      }
+    },
+    {
+      "id": "target_material",
+      "type": "select",
+      "default": "polymaker-polylite-pla",
+      "hidden": true,
+      "options": [
+        {
+          "value": "polymaker-polylite-pla",
+          "label": "Polymaker PolyLite PLA"
+        },
+        {
+          "value": "polymaker-polylite-petg",
+          "label": "Polymaker PolyLite PETG"
+        }
+      ],
+      "label": {
+        "en": "Target material",
+        "es": "Material objetivo"
+      }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "growth",
+      "label": {
+        "en": "Growth stage",
+        "es": "Etapa de crecimiento"
+      }
+    },
+    {
+      "id": "measurements",
+      "label": {
+        "en": "Body measurements (ISO 8559)",
+        "es": "Medidas corporales (ISO 8559)"
+      }
+    },
+    {
+      "id": "shape",
+      "label": {
+        "en": "Form shaping",
+        "es": "Modelado"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "infant-6m",
+      "label": {
+        "en": "Infant 6M",
+        "es": "Bebé 6M"
+      },
+      "values": {
+        "size_age": 0.5,
+        "neck_girth": 215,
+        "chest_girth": 440,
+        "waist_girth": 440,
+        "hip_girth": 450,
+        "back_waist_length": 185,
+        "shoulder_width": 200,
+        "crotch_height": 95,
+        "thigh_girth": 240,
+        "knee_girth": 195,
+        "ankle_girth": 120,
+        "inside_leg_length": 175,
+        "foot_length": 100
+      }
+    },
+    {
+      "id": "toddler-18m",
+      "label": {
+        "en": "Toddler 18M",
+        "es": "Bebé 18M"
+      },
+      "values": {
+        "size_age": 1.5,
+        "neck_girth": 235,
+        "chest_girth": 480,
+        "waist_girth": 480,
+        "hip_girth": 490,
+        "back_waist_length": 210,
+        "shoulder_width": 225,
+        "crotch_height": 110,
+        "thigh_girth": 270,
+        "knee_girth": 210,
+        "ankle_girth": 135,
+        "inside_leg_length": 240,
+        "foot_length": 120
+      }
+    },
+    {
+      "id": "child-4y",
+      "label": {
+        "en": "Child 4Y",
+        "es": "Infantil 4A"
+      },
+      "values": {
+        "size_age": 4,
+        "neck_girth": 265,
+        "chest_girth": 550,
+        "waist_girth": 530,
+        "hip_girth": 570,
+        "back_waist_length": 265,
+        "shoulder_width": 275,
+        "crotch_height": 145,
+        "thigh_girth": 330,
+        "knee_girth": 250,
+        "ankle_girth": 165,
+        "inside_leg_length": 430,
+        "foot_length": 165
+      }
+    },
+    {
+      "id": "child-8y",
+      "label": {
+        "en": "Child 8Y",
+        "es": "Infantil 8A"
+      },
+      "values": {
+        "size_age": 8,
+        "neck_girth": 300,
+        "chest_girth": 660,
+        "waist_girth": 590,
+        "hip_girth": 690,
+        "back_waist_length": 320,
+        "shoulder_width": 325,
+        "crotch_height": 180,
+        "thigh_girth": 400,
+        "knee_girth": 300,
+        "ankle_girth": 195,
+        "inside_leg_length": 585,
+        "foot_length": 210
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "hip_girth >= waist_girth * 0.85",
+      "message": {
+        "en": "A hip much smaller than the waist makes an unnatural seat curve.",
+        "es": "Una cadera mucho menor que la cintura crea una curva de asiento poco natural."
+      }
+    },
+    {
+      "expression": "knee_girth <= thigh_girth",
+      "message": {
+        "en": "The knee is narrower than the thigh on every child body.",
+        "es": "La rodilla es más estrecha que el muslo en todo cuerpo infantil."
+      }
+    },
+    {
+      "expression": "ankle_girth <= knee_girth",
+      "message": {
+        "en": "The ankle is narrower than the knee on every child body.",
+        "es": "El tobillo es más estrecho que la rodilla en todo cuerpo infantil."
+      }
+    }
+  ],
+  "export_formats": [
+    "glb",
+    "gltf",
+    "stl",
+    "step",
+    "3mf",
+    "obj"
+  ],
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "neck_ring",
+        "label": {
+          "en": "Neck landmark ring",
+          "es": "Anillo de cuello"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "neck_girth"
+        ]
+      },
+      {
+        "id": "chest_ring",
+        "label": {
+          "en": "Chest landmark ring",
+          "es": "Anillo de pecho"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "chest_girth"
+        ]
+      },
+      {
+        "id": "waist_ring",
+        "label": {
+          "en": "Waist landmark ring",
+          "es": "Anillo de cintura"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "waist_girth",
+          "back_waist_length",
+          "size_age",
+          "belly_depth_ratio"
+        ]
+      },
+      {
+        "id": "hip_ring",
+        "label": {
+          "en": "Hip landmark ring",
+          "es": "Anillo de cadera"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "hip_girth",
+          "seat_depth_ratio"
+        ]
+      },
+      {
+        "id": "crotch_ring",
+        "label": {
+          "en": "Crotch landmark ring",
+          "es": "Anillo de entrepierna"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "crotch_height",
+          "thigh_girth"
+        ]
+      },
+      {
+        "id": "knee_ring",
+        "label": {
+          "en": "Knee landmark ring",
+          "es": "Anillo de rodilla"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "knee_girth",
+          "inside_leg_length"
+        ]
+      },
+      {
+        "id": "ankle_ring",
+        "label": {
+          "en": "Ankle landmark ring",
+          "es": "Anillo de tobillo"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "ankle_girth",
+          "inside_leg_length"
+        ]
+      },
+      {
+        "id": "sole_plane",
+        "label": {
+          "en": "Sole plane (footed garments)",
+          "es": "Plano de planta (prendas con pie)"
+        },
+        "geometry_type": "profile",
+        "standard": "iso_8559",
+        "parameters": [
+          "foot_length",
+          "ankle_girth"
+        ]
+      },
+      {
+        "id": "shoulder_line",
+        "label": {
+          "en": "Shoulder line",
+          "es": "Línea de hombro"
+        },
+        "geometry_type": "profile",
+        "standard": "iso_8559",
+        "parameters": [
+          "shoulder_width",
+          "back_waist_length"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "Children's clothing is the hardest thing to fit and the fastest thing outgrown, and a child dress form is the one tool almost nobody can buy — commercial ones exist in a handful of fixed sizes at adult-form prices. This regenerating form gives any child body its own fitting surface from plain measurements, and refuses the shortcut of shrinking an adult: the proportions that actually make a child a child — the longer torso, the shorter legs, the absent toddler waist, the projecting belly — are modelled from real growth relations rather than a scale factor, so a garment fitted here fits the child rather than a small adult. The same numbers drive both this body and the flat patterns of the Fashion Cabinet commons, which means a caregiver, a school-uniform co-op, or a small maker can size, fit, and sew for a growing child from one shared set of measurements — and re-render the form a size up next year instead of buying another.",
+      "es": "La ropa infantil es lo más difícil de ajustar y lo que más rápido se queda chico, y un maniquí infantil es la herramienta que casi nadie puede comprar — los comerciales existen en unas pocas tallas fijas a precio de maniquí adulto. Esta forma regenerativa da a cualquier cuerpo infantil su propia superficie de ajuste a partir de medidas simples, y rechaza el atajo de encoger un adulto: las proporciones que de verdad hacen que un niño sea un niño — el torso más largo, las piernas más cortas, la cintura ausente del infante, el vientre que proyecta — se modelan desde relaciones de crecimiento reales y no desde un factor de escala, así que una prenda ajustada aquí le queda al niño y no a un adulto pequeño. Los mismos números manejan este cuerpo y los patrones planos del común Fashion Cabinet, de modo que una persona cuidadora, una cooperativa de uniformes escolares o un taller pequeño pueden medir, ajustar y coser para un niño en crecimiento desde un solo juego de medidas — y regenerar la forma una talla más grande el año siguiente en vez de comprar otra."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

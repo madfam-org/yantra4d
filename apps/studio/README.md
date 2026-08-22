@@ -42,6 +42,43 @@ ThemeProvider → ManifestProvider → LanguageProvider → App
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
+| `VITE_RENDER_MODE` | _(unset)_ | Pins the render path to `backend` or `wasm` for the whole build. Any other value is ignored. |
+
+### Render Mode Override
+
+The studio renders either in the browser (`wasm`) or on the server (`backend`).
+By default it picks for you from the device's core count and memory
+(`hardwareConcurrency >= 4 && deviceMemory >= 4` → WASM). The override forces
+one path instead.
+
+| Precedence | Mechanism | Values | Scope |
+|-----------|-----------|--------|-------|
+| 1 (highest) | `?render=` query param | `backend`, `wasm` | One browser session |
+| 2 | `VITE_RENDER_MODE` env | `backend`, `wasm` | Whole build |
+| 3 | hardware heuristic | — | Per device |
+
+```
+https://studio.yantra4d.com/project/gridfinity?render=backend
+```
+
+The value is read **once at page load**. Reload after changing it; navigating
+within the app will not re-read it. Unrecognised values (`?render=serverr`) are
+ignored and detection proceeds normally, so a typo degrades to the default
+rather than silently pinning the wrong path.
+
+**When support should use it:**
+
+- `?render=backend` — the user's browser can't run WASM: renders hang at
+  "Compilando...", die with an OpenSCAD/WASM error, or the tab runs out of
+  memory on a large grid. This also stops the app from falling back to WASM if a
+  backend render later fails, so the user stays on the working path.
+- `?render=wasm` — the server render queue is rate-limited or degraded and the
+  user's machine is capable, or you need to reproduce a WASM-only bug on a
+  machine the heuristic would route to the backend.
+
+Two cases the override cannot change: projects whose engine is `cadquery` or
+`graph` always render on the backend (no browser kernel exists), and a project
+manifest's `force_backend` still applies where the override is absent.
 
 ### Updating the Fallback Manifest
 

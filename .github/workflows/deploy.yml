@@ -31,7 +31,7 @@ concurrency:
 jobs:
   detect-changes:
     name: Detect Changes
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     outputs:
       backend: ${{ steps.decide.outputs.backend }}
       studio: ${{ steps.decide.outputs.studio }}
@@ -78,7 +78,7 @@ jobs:
 
   build-backend:
     name: Build Backend
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.backend == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -146,7 +146,7 @@ jobs:
 
   build-studio:
     name: Build Studio
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.studio == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -218,7 +218,7 @@ jobs:
 
   build-landing:
     name: Build Landing
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.landing == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -285,7 +285,7 @@ jobs:
 
   build-admin:
     name: Build Admin
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.admin == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -357,7 +357,7 @@ jobs:
 
   commit-digests:
     name: Commit Image Digests
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: [detect-changes, build-backend, build-studio, build-landing, build-admin]
     if: |
       always() &&
@@ -421,7 +421,7 @@ jobs:
 
   verify-deploy:
     name: Post-Deploy Health Check
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: [commit-digests]
     if: needs.commit-digests.result == 'success'
     steps:
@@ -438,7 +438,7 @@ jobs:
 
   lifecycle-events:
     name: Report Lifecycle Events
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: [build-backend, build-studio, build-landing, build-admin]
     if: always()
     steps:

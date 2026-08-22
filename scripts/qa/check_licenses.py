@@ -72,6 +72,7 @@ COMMONS_DEFAULT = "CERN-OHL-W-2.0"
 # Kept in step with NOT_COMMONS in scripts/qa/generate_commons_catalog.py.
 NOT_COMMONS = {
     "tablaco": "client engagement — client retains all private rights",
+    "tablaco-v2": "client engagement — client retains all private rights",
     "cq-hyperobject-test": "engine test fixture, not a Commons object; repo archived",
 }
 CLIENT_PRIVATE = set(NOT_COMMONS)

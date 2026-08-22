@@ -10,138 +10,406 @@
     },
     "thumbnail": "/projects/hook-and-eye.webp",
     "difficulty": "intermediate",
-    "tags": ["hook", "eye", "hook-and-eye", "closure", "fastener", "bra", "lingerie", "wearable", "hyperobject", "commons"],
-    "hyperobject": { "is_hyperobject": true },
+    "tags": [
+      "hook",
+      "eye",
+      "hook-and-eye",
+      "closure",
+      "fastener",
+      "bra",
+      "lingerie",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
     "force_backend": true
   },
   "modes": [
     {
       "id": "hook",
-      "label": { "en": "Hook", "es": "Gancho" },
+      "label": {
+        "en": "Hook",
+        "es": "Gancho"
+      },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["hook_plate"],
-      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+      "parts": [
+        "hook"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
     },
     {
       "id": "eye",
-      "label": { "en": "Eye (bar)", "es": "Ojal (barra)" },
+      "label": {
+        "en": "Eye (bar)",
+        "es": "Ojal (barra)"
+      },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["eye_plate"],
-      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+      "parts": [
+        "eye"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
     },
     {
       "id": "bra_tape",
-      "label": { "en": "Bra-back tape (N×M)", "es": "Cinta de espalda (N×M)" },
+      "label": {
+        "en": "Bra-back tape (N×M)",
+        "es": "Cinta de espalda (N×M)"
+      },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["hook_plate", "eye_plate"],
-      "estimate": { "base_time": 18, "per_unit": 2, "per_part": 12 }
+      "parts": [
+        "tape_hook_plate",
+        "tape_eye_plate"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 2,
+        "per_part": 12
+      }
     }
   ],
   "parts": [
-    { "id": "hook_plate", "label": { "en": "Hook Plate", "es": "Placa de ganchos" }, "render_mode": 0, "color": "#b8a1c8" },
-    { "id": "eye_plate", "label": { "en": "Eye Plate", "es": "Placa de ojales" }, "render_mode": 0, "color": "#c8b1d8" }
+    {
+      "id": "hook",
+      "label": {
+        "en": "Hook plate",
+        "es": "Placa de ganchos"
+      }
+    },
+    {
+      "id": "eye",
+      "label": {
+        "en": "Eye plate",
+        "es": "Placa de ojales"
+      }
+    },
+    {
+      "id": "tape_hook_plate",
+      "label": {
+        "en": "Hook plate (tape)",
+        "es": "Placa de ganchos (cinta)"
+      }
+    },
+    {
+      "id": "tape_eye_plate",
+      "label": {
+        "en": "Eye plate (tape, adjustable)",
+        "es": "Placa de ojales (cinta, ajustable)"
+      }
+    }
   ],
   "parameter_groups": [
-    { "id": "closure", "label": { "en": "Closure Grid", "es": "Rejilla de cierre" } },
-    { "id": "size", "label": { "en": "Size", "es": "Talla" } },
-    { "id": "fit", "label": { "en": "Print Fit", "es": "Ajuste de impresión" } }
+    {
+      "id": "closure",
+      "label": {
+        "en": "Closure Grid",
+        "es": "Rejilla de cierre"
+      }
+    },
+    {
+      "id": "size",
+      "label": {
+        "en": "Size",
+        "es": "Talla"
+      }
+    },
+    {
+      "id": "fit",
+      "label": {
+        "en": "Print Fit",
+        "es": "Ajuste de impresión"
+      }
+    }
   ],
   "parameters": [
     {
-      "id": "columns", "type": "slider", "default": 3, "min": 1, "max": 6, "step": 1,
-      "group": "closure", "modes": ["bra_tape"],
-      "label": { "en": "Adjustment Columns (N)", "es": "Columnas de ajuste (N)" },
-      "tooltip": { "en": "Columns of eyes on the band side — each is one band-size step (bras use 2–3)", "es": "Columnas de ojales en el lado de la banda — cada una es un paso de talla (los brasieres usan 2–3)" }
+      "id": "columns",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "closure",
+      "modes": [
+        "bra_tape"
+      ],
+      "label": {
+        "en": "Adjustment Columns (N)",
+        "es": "Columnas de ajuste (N)"
+      },
+      "tooltip": {
+        "en": "Columns of eyes on the band side — each is one band-size step (bras use 2–3)",
+        "es": "Columnas de ojales en el lado de la banda — cada una es un paso de talla (los brasieres usan 2–3)"
+      }
     },
     {
-      "id": "rows", "type": "slider", "default": 2, "min": 1, "max": 4, "step": 1,
-      "group": "closure", "modes": ["hook", "eye", "bra_tape"],
-      "label": { "en": "Hook Rows (M)", "es": "Filas de ganchos (M)" },
-      "tooltip": { "en": "Rows of hooks up the band height (a 2-row bra band uses 2)", "es": "Filas de ganchos a lo alto de la banda (una banda de 2 filas usa 2)" }
+      "id": "rows",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "group": "closure",
+      "modes": [
+        "hook",
+        "eye",
+        "bra_tape"
+      ],
+      "label": {
+        "en": "Hook Rows (M)",
+        "es": "Filas de ganchos (M)"
+      },
+      "tooltip": {
+        "en": "Rows of hooks up the band height (a 2-row bra band uses 2)",
+        "es": "Filas de ganchos a lo alto de la banda (una banda de 2 filas usa 2)"
+      }
     },
     {
-      "id": "size_mm", "type": "slider", "default": 7.0, "min": 4.0, "max": 20.0, "step": 0.5,
-      "group": "size", "modes": ["hook", "eye", "bra_tape"],
-      "label": { "en": "Hook Size (mm)", "es": "Tamaño de gancho (mm)" },
-      "tooltip": { "en": "Nominal hook width / bar length; drives grid pitch", "es": "Ancho nominal de gancho / largo de barra; define el paso de la rejilla" }
+      "id": "size_mm",
+      "type": "slider",
+      "default": 7.0,
+      "min": 4.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "size",
+      "modes": [
+        "hook",
+        "eye",
+        "bra_tape"
+      ],
+      "label": {
+        "en": "Hook Size (mm)",
+        "es": "Tamaño de gancho (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal hook width / bar length; drives grid pitch",
+        "es": "Ancho nominal de gancho / largo de barra; define el paso de la rejilla"
+      }
     },
     {
-      "id": "plate_t", "type": "slider", "default": 1.6, "min": 1.0, "max": 3.0, "step": 0.1,
-      "group": "size", "modes": ["hook", "eye", "bra_tape"],
-      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de placa (mm)" },
-      "tooltip": { "en": "Sewing plate thickness", "es": "Grosor de la placa de costura" }
+      "id": "plate_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "size",
+      "modes": [
+        "hook",
+        "eye",
+        "bra_tape"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de placa (mm)"
+      },
+      "tooltip": {
+        "en": "Sewing plate thickness",
+        "es": "Grosor de la placa de costura"
+      }
     },
     {
-      "id": "wire_d", "type": "slider", "default": 1.6, "min": 1.0, "max": 4.0, "step": 0.1,
-      "group": "size", "modes": ["hook", "eye", "bra_tape"],
-      "label": { "en": "Wire Diameter (mm)", "es": "Diámetro de alambre (mm)" },
-      "tooltip": { "en": "Diameter of the hook curl and eye bar", "es": "Diámetro de la curva del gancho y la barra del ojal" }
+      "id": "wire_d",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "size",
+      "modes": [
+        "hook",
+        "eye",
+        "bra_tape"
+      ],
+      "label": {
+        "en": "Wire Diameter (mm)",
+        "es": "Diámetro de alambre (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the hook curl and eye bar",
+        "es": "Diámetro de la curva del gancho y la barra del ojal"
+      }
     },
     {
-      "id": "gap", "type": "slider", "default": 0.35, "min": 0.15, "max": 0.8, "step": 0.05,
-      "group": "fit", "modes": ["hook", "eye", "bra_tape"],
-      "label": { "en": "Print Clearance (mm)", "es": "Holgura de impresión (mm)" },
-      "tooltip": { "en": "Hook-to-bar clearance; tune to your printer so it clips but holds", "es": "Holgura gancho-barra; ajusta a tu impresora para que enganche pero sostenga" }
+      "id": "gap",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.15,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "fit",
+      "modes": [
+        "hook",
+        "eye",
+        "bra_tape"
+      ],
+      "label": {
+        "en": "Print Clearance (mm)",
+        "es": "Holgura de impresión (mm)"
+      },
+      "tooltip": {
+        "en": "Hook-to-bar clearance; tune to your printer so it clips but holds",
+        "es": "Holgura gancho-barra; ajusta a tu impresora para que enganche pero sostenga"
+      }
     }
   ],
   "presets": [
     {
-      "id": "bra_3x2", "mode": "bra_tape",
-      "label": { "en": "Bra Back 3×2", "es": "Espalda de brasier 3×2" },
-      "values": { "columns": 3, "rows": 2, "size_mm": 7, "wire_d": 1.6 }
+      "id": "bra_3x2",
+      "mode": "bra_tape",
+      "label": {
+        "en": "Bra Back 3×2",
+        "es": "Espalda de brasier 3×2"
+      },
+      "values": {
+        "columns": 3,
+        "rows": 2,
+        "size_mm": 7,
+        "wire_d": 1.6
+      }
     },
     {
-      "id": "bra_2x3", "mode": "bra_tape",
-      "label": { "en": "Wide Band 2×3", "es": "Banda ancha 2×3" },
-      "values": { "columns": 2, "rows": 3, "size_mm": 7, "wire_d": 1.6 }
+      "id": "bra_2x3",
+      "mode": "bra_tape",
+      "label": {
+        "en": "Wide Band 2×3",
+        "es": "Banda ancha 2×3"
+      },
+      "values": {
+        "columns": 2,
+        "rows": 3,
+        "size_mm": 7,
+        "wire_d": 1.6
+      }
     },
     {
-      "id": "waistband_hook", "mode": "hook",
-      "label": { "en": "Trouser Waistband Hook", "es": "Gancho de pretina" },
-      "values": { "rows": 1, "size_mm": 12, "plate_t": 2.0, "wire_d": 2.4 }
+      "id": "waistband_hook",
+      "mode": "hook",
+      "label": {
+        "en": "Trouser Waistband Hook",
+        "es": "Gancho de pretina"
+      },
+      "values": {
+        "rows": 1,
+        "size_mm": 12,
+        "plate_t": 2.0,
+        "wire_d": 2.4
+      }
     }
   ],
   "constraints": [
     {
       "expression": "wire_d < size_mm",
       "severity": "error",
-      "message": { "en": "Wire diameter must be smaller than the hook size", "es": "El diámetro del alambre debe ser menor que el tamaño del gancho" }
+      "message": {
+        "en": "Wire diameter must be smaller than the hook size",
+        "es": "El diámetro del alambre debe ser menor que el tamaño del gancho"
+      }
     },
     {
       "expression": "gap <= 0.6",
       "severity": "warning",
-      "message": { "en": "Large clearances let the hook slip off; tighten if it won't hold", "es": "Holguras grandes hacen que el gancho se zafe; reduce si no sostiene" }
+      "message": {
+        "en": "Large clearances let the hook slip off; tighten if it won't hold",
+        "es": "Holguras grandes hacen que el gancho se zafe; reduce si no sostiene"
+      }
     }
   ],
   "camera_views": [
-    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [60, 60, 45] },
-    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 90] },
-    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -90, 25] }
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        60,
+        45
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -90,
+        25
+      ]
+    }
   ],
-  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
   "estimate_constants": {
-    "base_time": 12, "per_unit": 2, "per_part": 10,
-    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
   },
   "hyperobject": {
     "domain": "wearable",
     "cdg_interfaces": [
       {
         "id": "sew_plate",
-        "label": { "en": "Sewing Plate", "es": "Placa de costura" },
+        "label": {
+          "en": "Sewing Plate",
+          "es": "Placa de costura"
+        },
         "geometry_type": "flange",
         "standard": "internal",
-        "parameters": ["size_mm", "plate_t"]
+        "parameters": [
+          "size_mm",
+          "plate_t"
+        ]
       },
       {
         "id": "hook_catch",
-        "label": { "en": "Hook / Bar Catch", "es": "Enganche gancho / barra" },
+        "label": {
+          "en": "Hook / Bar Catch",
+          "es": "Enganche gancho / barra"
+        },
         "geometry_type": "snap",
         "standard": "internal",
-        "parameters": ["wire_d", "gap"]
+        "parameters": [
+          "wire_d",
+          "gap"
+        ]
       }
     ],
     "material_awareness": {
@@ -155,5 +423,16 @@
     },
     "commons_license": "CERN-OHL-W-2.0"
   },
-  "tags": ["hook", "eye", "hook-and-eye", "closure", "fastener", "bra", "lingerie", "wearable", "hyperobject", "commons"]
+  "tags": [
+    "hook",
+    "eye",
+    "hook-and-eye",
+    "closure",
+    "fastener",
+    "bra",
+    "lingerie",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
 }

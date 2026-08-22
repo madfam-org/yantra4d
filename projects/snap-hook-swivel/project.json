@@ -1,0 +1,420 @@
+{
+  "project": {
+    "name": "Snap Hook with Swivel",
+    "slug": "snap-hook-swivel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed bolt-snap hook with a swivel eye — the clip that joins a bag strap to its D-ring, a lanyard to a key ring or a lead to a collar, with a swivel behind it so the strap never winds into a twist. The gate is a compliant flexure moulded into the hook, so nothing loose is needed. This is the rigid hard good the Fashion Cabinet `snap-hook-swivel` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un mosquetón de gancho con ojal giratorio impreso en 3D — el broche que une la correa de un bolso a su argolla, un cordón a un llavero o una traílla a un collar, con un giratorio detrás para que la correa nunca se retuerza. La lengüeta es un resorte flexible integrado en el gancho, así que no hace falta ninguna pieza suelta. Es el herraje rígido que el avío `snap-hook-swivel` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/snap-hook-swivel.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "snap-hook-swivel",
+      "snap-hook",
+      "bolt-snap",
+      "swivel",
+      "webbing",
+      "bag-strap",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Hook + Swivel Eye",
+        "es": "Gancho + ojal giratorio"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "hook",
+      "label": {
+        "en": "Hook (with gate and post)",
+        "es": "Gancho (con lengüeta y poste)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "hook"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "eye",
+      "label": {
+        "en": "Swivel Eye",
+        "es": "Ojal giratorio"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "eye"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Snap Hook Set",
+        "es": "Juego de mosquetón"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "hook",
+      "label": {
+        "en": "Hook",
+        "es": "Gancho"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "eye",
+      "label": {
+        "en": "Swivel Eye",
+        "es": "Ojal giratorio"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "webbing",
+      "label": {
+        "en": "Webbing",
+        "es": "Cincha"
+      }
+    },
+    {
+      "id": "hook",
+      "label": {
+        "en": "Hook",
+        "es": "Gancho"
+      }
+    },
+    {
+      "id": "swivel",
+      "label": {
+        "en": "Swivel",
+        "es": "Giratorio"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 10.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "webbing",
+      "modes": [
+        "set",
+        "hook",
+        "eye"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal webbing width (mm). The swivel eye's tape slot spans this plus 1 mm.",
+        "es": "Ancho nominal de la cincha (mm). La ranura del ojal mide esto más 1 mm."
+      }
+    },
+    {
+      "id": "webbing_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "webbing",
+      "modes": [
+        "set",
+        "hook",
+        "eye"
+      ],
+      "label": {
+        "en": "Webbing thickness (mm)",
+        "es": "Espesor de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the tape (mm). The eye's slot opens to twice this, because the strap end is folded back and stitched.",
+        "es": "Espesor de la cincha (mm). La ranura del ojal abre al doble, porque el extremo de la correa se dobla y se cose."
+      }
+    },
+    {
+      "id": "hook_r",
+      "type": "slider",
+      "default": 9.0,
+      "min": 5.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "hook",
+      "modes": [
+        "set",
+        "hook",
+        "eye"
+      ],
+      "label": {
+        "en": "Hook throat radius (mm)",
+        "es": "Radio de la garganta del gancho (mm)"
+      },
+      "tooltip": {
+        "en": "Inner radius of the hook's C (mm). It must clear whatever the hook clips onto — a D-ring bar, a split ring, a collar loop.",
+        "es": "Radio interior de la C del gancho (mm). Debe librar aquello donde se engancha — la barra de una argolla, un llavero, la presilla de un collar."
+      }
+    },
+    {
+      "id": "stock_d",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 9.0,
+      "step": 0.1,
+      "group": "hook",
+      "modes": [
+        "set",
+        "hook",
+        "eye"
+      ],
+      "label": {
+        "en": "Stock diameter (mm)",
+        "es": "Diámetro del alambre (mm)"
+      },
+      "tooltip": {
+        "en": "Section diameter of the hook rod (mm). This is the whole strength of the part; under 4 mm it suits key fobs only, not a loaded bag strap.",
+        "es": "Diámetro de la sección del gancho (mm). Es toda la resistencia de la pieza; por debajo de 4 mm sólo sirve para llaveros, no para una correa cargada."
+      }
+    },
+    {
+      "id": "gate_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "hook",
+      "modes": [
+        "set",
+        "hook",
+        "eye"
+      ],
+      "label": {
+        "en": "Gate flexure thickness (mm)",
+        "es": "Espesor del resorte de la lengüeta (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the compliant gate spring (mm). Thinner opens with less thumb pressure but fatigues sooner; keep it at or above 1.4 mm in PLA.",
+        "es": "Espesor del resorte flexible de la lengüeta (mm). Más delgado abre con menos presión pero se fatiga antes; mantenlo en 1.4 mm o más en PLA."
+      }
+    },
+    {
+      "id": "swivel_d",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 9.0,
+      "step": 0.1,
+      "group": "swivel",
+      "modes": [
+        "set",
+        "hook",
+        "eye"
+      ],
+      "label": {
+        "en": "Swivel post diameter (mm)",
+        "es": "Diámetro del poste giratorio (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the swivel post the eye turns on (mm). The eye's bore is this plus a 0.4 mm running clearance, and the retaining head flares wider still.",
+        "es": "Diámetro del poste sobre el que gira el ojal (mm). El barreno del ojal es esto más 0.4 mm de holgura de giro, y la cabeza de retención abre aún más."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "bag25",
+      "mode": "set",
+      "label": {
+        "en": "Bag Strap (25 mm)",
+        "es": "Correa de bolso (25 mm)"
+      },
+      "values": {
+        "webbing_w": 25.0,
+        "webbing_t": 1.6,
+        "hook_r": 9.0,
+        "stock_d": 5.0,
+        "gate_t": 1.6,
+        "swivel_d": 5.0
+      }
+    },
+    {
+      "id": "lanyard10",
+      "mode": "set",
+      "label": {
+        "en": "Lanyard Clip (10 mm)",
+        "es": "Broche de cordón (10 mm)"
+      },
+      "values": {
+        "webbing_w": 10.0,
+        "webbing_t": 1.0,
+        "hook_r": 5.5,
+        "stock_d": 3.2,
+        "gate_t": 1.2,
+        "swivel_d": 3.2
+      }
+    },
+    {
+      "id": "lead38",
+      "mode": "set",
+      "label": {
+        "en": "Dog Lead (38 mm)",
+        "es": "Traílla canina (38 mm)"
+      },
+      "values": {
+        "webbing_w": 38.0,
+        "webbing_t": 2.4,
+        "hook_r": 14.0,
+        "stock_d": 7.5,
+        "gate_t": 2.2,
+        "swivel_d": 7.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "eye_webbing_slot",
+        "label": {
+          "en": "Eye Webbing Slot (tape edge)",
+          "es": "Ranura del ojal (canto de la cinta)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing_w",
+          "webbing_t",
+          "stock_d"
+        ]
+      },
+      {
+        "id": "swivel_joint",
+        "label": {
+          "en": "Swivel Joint",
+          "es": "Unión giratoria"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "swivel_d",
+          "stock_d"
+        ]
+      },
+      {
+        "id": "gate_flexure",
+        "label": {
+          "en": "Gate Flexure",
+          "es": "Resorte de la lengüeta"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "gate_t",
+          "hook_r",
+          "stock_d"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Bag hooks and swivels are the parts that seize, snap or lose their tiny spring first, and no shop sells the one size you need; a printed hook with a moulded-in gate has no loose spring to lose and returns a bag, a lead or a lanyard to service.",
+      "es": "Los ganchos y giratorios de bolso son las piezas que primero se traban, se rompen o pierden su resortito, y ninguna tienda vende la medida exacta que necesitas; un gancho impreso con lengüeta integrada no tiene resorte suelto que perder y devuelve al uso un bolso, una traílla o un cordón."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "snap-hook-swivel",
+    "snap-hook",
+    "bolt-snap",
+    "swivel",
+    "webbing",
+    "bag-strap",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

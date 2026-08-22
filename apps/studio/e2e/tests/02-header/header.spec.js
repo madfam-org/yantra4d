@@ -1,10 +1,13 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, enableClipboard } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, enableClipboard, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 test.describe('Studio Header', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
+    // The dock shows Processing/Procesando while the auto-render is in flight;
+    // settle before any test asserts Generate/Generar text (ARC race class, #43).
+    await waitForRenderSettled(page)
   })
 
   test('displays project name from manifest', async ({ header }) => {

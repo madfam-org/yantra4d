@@ -12,8 +12,11 @@ logger = logging.getLogger(__name__)
 def run_cadquery_script(script_path, output_path, params_json, export_format):
     try:
         import cadquery as cq
-    except ImportError:
-        print("Error: CadQuery is not installed.")
+    except ImportError as exc:
+        # The bare message hid a week of CI archaeology: an import can fail for
+        # reasons other than absence (missing libGL on a slim runner image, a
+        # failed dlopen under a pod memory limit). Always surface the cause.
+        print(f"Error: CadQuery is not installed. ({exc})")
         sys.exit(1)
 
     print(f"Loading parameters: {params_json}")

@@ -7,6 +7,11 @@
     --popover-foreground: 240 10% 3.9%;
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
+    /* Accent safe for SMALL TEXT — see the note beside its dark counterpart.
+       Same hue/saturation as the dark accent blue, darkened until it clears
+       4.5:1 on white and on the tinted surfaces the landing paints
+       (worst measured case: 6.08:1 on bg-primary/10). */
+    --primary-readable: 221 83% 42%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
@@ -33,8 +38,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    /* Accent Blue for Primary */
+    /* Accent Blue for Primary.
+       NOTE: this colour is a SURFACE and LARGE-TEXT accent, not a body-text
+       colour. It measures 3.83:1 against --background/--card and as low as
+       3.60:1 on the tinted surfaces the landing paints (bg-primary/10,
+       bg-secondary/30). That clears the 3.0:1 floor for non-text and large
+       text, but sits under the 4.5:1 floor for small text. For accent-
+       coloured copy below 24px (or below 18.66px bold), use
+       --primary-readable instead. */
     --primary: 221 83% 53%;
+    /* Small-text-safe accent: identical hue (221) and saturation (83%) to
+       --primary, lightened until it clears 4.5:1 on every surface the
+       landing composes — worst measured case 6.37:1 on bg-primary/10. */
+    --primary-readable: 221 83% 68%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;

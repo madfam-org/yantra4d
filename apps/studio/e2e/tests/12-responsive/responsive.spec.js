@@ -100,10 +100,17 @@ test.describe('Responsive Design', () => {
     // The overflow "..." menu should be visible on mobile
     const overflowBtn = page.locator('button[title="More actions"]')
     await expect(overflowBtn).toBeVisible({ timeout: 5000 })
-    // Click to open dropdown
-    await overflowBtn.click()
-    // Dropdown menu content should appear
+    // Open the dropdown. A click fired before React attaches the trigger's
+    // handler is silently lost on the slowest engine (webkit on the shared
+    // runner) — and a lost click leaves the menu closed, so re-clicking until
+    // it opens is convergent. The visibility check up front means a click that
+    // DID land is never repeated (which would toggle the menu shut again).
     const menu = page.locator('[role="menu"]')
+    await expect.poll(async () => {
+      if (await menu.isVisible()) return true
+      await overflowBtn.click()
+      return menu.isVisible()
+    }, { timeout: 15000 }).toBe(true)
     await expect(menu).toBeVisible({ timeout: 3000 })
     // Should contain undo, share, etc.
     await expect(menu.locator('[role="menuitem"]').first()).toBeVisible()

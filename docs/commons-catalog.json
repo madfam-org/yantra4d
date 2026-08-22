@@ -2,10 +2,10 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 401,
+    "cartridges": 400,
     "with_cdg_interfaces": 386,
     "with_commons_license": 400,
-    "dual_engine": 24
+    "dual_engine": 23
   },
   "domains": {
     "household": 113,
@@ -14,7 +14,7 @@
     "commercial": 63,
     "medical": 29,
     "infrastructure": 20,
-    "uncategorized": 14,
+    "uncategorized": 13,
     "hybrid": 7,
     "soft-robotics": 1
   },
@@ -26126,49 +26126,6 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/switch-mount"
-      }
-    },
-    {
-      "slug": "tablaco-v2",
-      "name": "Tablaco v2",
-      "domain": null,
-      "engines": [
-        "cadquery",
-        "openscad"
-      ],
-      "dual_engine": true,
-      "modes": 5,
-      "parts": 10,
-      "parameters": 8,
-      "parameter_ids": [
-        "cell",
-        "tightness",
-        "glyph",
-        "notation",
-        "corner",
-        "rows",
-        "cols",
-        "connective"
-      ],
-      "export_formats": [
-        "stl",
-        "step",
-        "glb",
-        "3mf"
-      ],
-      "commons_license": null,
-      "societal_benefit": null,
-      "material_awareness": null,
-      "cdg_interfaces": [],
-      "standards": [],
-      "source": {
-        "manifest": "projects/tablaco-v2/project.json",
-        "has_cadquery": true,
-        "has_openscad": true
-      },
-      "clone": {
-        "kind": "sparse",
-        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tablaco-v2"
       }
     },
     {

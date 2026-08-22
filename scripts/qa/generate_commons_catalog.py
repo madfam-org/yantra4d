@@ -45,6 +45,7 @@ NOT_COMMONS = {
     # repo, and an entry here would advertise a private repo, its name, and a
     # clone command for it.
     "tablaco": "client engagement — client retains all private rights",
+    "tablaco-v2": "client engagement — client retains all private rights",
     # Test fixture (box.py + box.step), not a Bounded 4D Hyperobject. Its repo
     # is archived and therefore read-only, so it cannot be corrected in place.
     "cq-hyperobject-test": "engine test fixture, not a Commons object; repo archived",

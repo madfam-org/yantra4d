@@ -2,14 +2,19 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from services.engine.cq_runner import (
-    _BLOCKED_MODULES,
-    _SAFE_BUILTINS,
-    _restricted_import,
-    _safe_type,
-    run_cadquery_script,
+from commons_sandbox import (
+    BLOCKED_MODULES,
+    SAFE_BUILTINS,
+    make_restricted_import,
+    safe_type,
 )
+
+from services.engine.cq_runner import run_cadquery_script
+
+# The sandbox policy moved to the shared commons_sandbox package (#30); the
+# runner composes it via build_sandbox_builtins("CadQuery scripts"). These tests
+# hold the same security invariants against the package the runner now uses.
+_restricted_import = make_restricted_import("CadQuery scripts")
 
 
 class TestRestrictedImport:
@@ -44,54 +49,54 @@ class TestSafeBuiltins:
     """Tests for the restricted builtins allowlist."""
 
     def test_open_not_in_builtins(self):
-        assert "open" not in _SAFE_BUILTINS
+        assert "open" not in SAFE_BUILTINS
 
     def test_eval_not_in_builtins(self):
-        assert "eval" not in _SAFE_BUILTINS
+        assert "eval" not in SAFE_BUILTINS
 
     def test_exec_not_in_builtins(self):
-        assert "exec" not in _SAFE_BUILTINS
+        assert "exec" not in SAFE_BUILTINS
 
     def test_nameerror_catchable_for_param_probe(self):
         # The commons' PARAM idiom probes injected parameters and catches the
         # NameError when one is absent; the class must be in the allowlist for
         # scripts to catch it by name. An exception class grants no capability.
-        assert _SAFE_BUILTINS["NameError"] is NameError
+        assert SAFE_BUILTINS["NameError"] is NameError
 
     def test_compile_not_in_builtins(self):
-        assert "compile" not in _SAFE_BUILTINS
+        assert "compile" not in SAFE_BUILTINS
 
     def test___import___not_in_base(self):
-        assert "__import__" not in _SAFE_BUILTINS
+        assert "__import__" not in SAFE_BUILTINS
 
     def test_getattr_not_in_builtins(self):
-        assert "getattr" not in _SAFE_BUILTINS
+        assert "getattr" not in SAFE_BUILTINS
 
     def test_safe_builtins_include_basics(self):
         for name in ["int", "float", "str", "list", "dict", "len", "range", "print"]:
-            assert name in _SAFE_BUILTINS, f"{name} should be in safe builtins"
+            assert name in SAFE_BUILTINS, f"{name} should be in safe builtins"
 
 
 class TestBlockedModules:
     """Tests for the blocked modules set."""
 
     def test_os_blocked(self):
-        assert "os" in _BLOCKED_MODULES
+        assert "os" in BLOCKED_MODULES
 
     def test_subprocess_blocked(self):
-        assert "subprocess" in _BLOCKED_MODULES
+        assert "subprocess" in BLOCKED_MODULES
 
     def test_socket_blocked(self):
-        assert "socket" in _BLOCKED_MODULES
+        assert "socket" in BLOCKED_MODULES
 
     def test_pickle_blocked(self):
-        assert "pickle" in _BLOCKED_MODULES
+        assert "pickle" in BLOCKED_MODULES
 
     def test_math_not_blocked(self):
-        assert "math" not in _BLOCKED_MODULES
+        assert "math" not in BLOCKED_MODULES
 
     def test_cadquery_not_blocked(self):
-        assert "cadquery" not in _BLOCKED_MODULES
+        assert "cadquery" not in BLOCKED_MODULES
 
 
 @pytest.fixture
@@ -187,17 +192,17 @@ class TestSandboxedExecution:
 class TestMetaclassEscapeVectors:
     """Tests that metaclass and class hierarchy escape vectors are blocked."""
 
-    def test_safe_type_returns_type_object(self):
-        assert _safe_type(42) is int
-        assert _safe_type("hello") is str
-        assert _safe_type([]) is list
+    def testsafe_type_returns_type_object(self):
+        assert safe_type(42) is int
+        assert safe_type("hello") is str
+        assert safe_type([]) is list
 
-    def test_safe_type_blocks_three_arg_form(self):
+    def testsafe_type_blocks_three_arg_form(self):
         with pytest.raises(TypeError, match="3 arguments is not allowed"):
-            _safe_type("MyClass", (object,), {})
+            safe_type("MyClass", (object,), {})
 
-    def test_type_in_builtins_is_safe_type(self):
-        assert _SAFE_BUILTINS["type"] is _safe_type
+    def test_type_in_builtins_issafe_type(self):
+        assert SAFE_BUILTINS["type"] is safe_type
 
     def test_script_cannot_use_type_subclasses(self, mock_cq_env, tmp_path):
         script = tmp_path / "escape.py"

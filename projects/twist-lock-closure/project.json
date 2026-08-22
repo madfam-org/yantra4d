@@ -1,0 +1,560 @@
+{
+  "project": {
+    "name": "Twist-Lock Closure",
+    "slug": "twist-lock-closure",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The classic handbag twist lock in three printable parts — an oval turn-piece that rotates a quarter turn to trap the flap, a backplate with a matching oval keeper slot riveted through the flap, and a spreader washer for the reverse of the leather. This is the rigid hard good the Fashion Cabinet `twist-lock-closure` notion places and bridges to here for its geometry; satchels, messenger flaps and portfolio cases all set one.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El clásico cierre de giro para bolso en tres piezas imprimibles — una pieza ovalada que gira un cuarto de vuelta para atrapar la solapa, una contraplaca con la ranura ovalada correspondiente remachada a la solapa, y una arandela repartidora para el revés de la piel. Es el herraje rígido que el avío `twist-lock-closure` de Fashion Cabinet coloca y al que se puentea aquí; carteras, solapas de mensajero y portafolios lo montan.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/twist-lock-closure.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "twist-lock-closure",
+      "turn-lock",
+      "bag-hardware",
+      "closure",
+      "flap",
+      "leather",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "turn_lock",
+      "label": {
+        "en": "Turn Lock",
+        "es": "Pieza de giro"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "turn_lock"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "backplate",
+      "label": {
+        "en": "Backplate",
+        "es": "Contraplaca"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "backplate"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "washer",
+      "label": {
+        "en": "Spreader Washer",
+        "es": "Arandela repartidora"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "washer"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set (all three)",
+        "es": "Juego completo (las tres)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "turn_lock",
+      "label": {
+        "en": "Turn Lock",
+        "es": "Pieza de giro"
+      },
+      "render_mode": 0,
+      "color": "#b9922f"
+    },
+    {
+      "id": "backplate",
+      "label": {
+        "en": "Backplate",
+        "es": "Contraplaca"
+      },
+      "render_mode": 0,
+      "color": "#a8862b"
+    },
+    {
+      "id": "washer",
+      "label": {
+        "en": "Spreader Washer",
+        "es": "Arandela repartidora"
+      },
+      "render_mode": 0,
+      "color": "#8f7526"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set",
+        "es": "Juego completo"
+      },
+      "render_mode": 0,
+      "color": "#b9922f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "turn",
+      "label": {
+        "en": "Turn Piece",
+        "es": "Pieza de giro"
+      }
+    },
+    {
+      "id": "setting",
+      "label": {
+        "en": "Setting",
+        "es": "Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "plate_l",
+      "type": "slider",
+      "default": 34.0,
+      "min": 20.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Plate length (mm)",
+        "es": "Largo de la placa (mm)"
+      },
+      "tooltip": {
+        "en": "Plate length across the bag (mm). Commercial twist locks run 25-45 mm; below that reads as a purse catch, above it as luggage furniture.",
+        "es": "Largo de la placa a lo ancho del bolso (mm). Los cierres comerciales van de 25 a 45 mm; por debajo parece broche de monedero y por encima, herraje de maleta."
+      }
+    },
+    {
+      "id": "plate_w",
+      "type": "slider",
+      "default": 22.0,
+      "min": 14.0,
+      "max": 45.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Plate width (mm)",
+        "es": "Ancho de la placa (mm)"
+      },
+      "tooltip": {
+        "en": "Plate width up the bag face (mm). This is the dimension the flap edge must clear, so keep it under the flap's own overlap.",
+        "es": "Ancho de la placa hacia arriba en la cara del bolso (mm). Es la dimensión que debe librar el canto de la solapa, así que mantenla menor que el traslape de la solapa."
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.8,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Plate thickness (mm)",
+        "es": "Espesor de la placa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the body and back plates (mm). A printed plate needs more section than a stamped brass one — 3 mm is the sensible floor for a bag that gets carried.",
+        "es": "Espesor de las placas del cuerpo y del respaldo (mm). Una placa impresa necesita más sección que una de latón troquelado — 3 mm es el mínimo sensato para un bolso de uso diario."
+      }
+    },
+    {
+      "id": "turn_l",
+      "type": "slider",
+      "default": 24.0,
+      "min": 10.0,
+      "max": 56.0,
+      "step": 0.5,
+      "group": "turn",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Turn-piece length (mm)",
+        "es": "Largo de la pieza de giro (mm)"
+      },
+      "tooltip": {
+        "en": "Long axis of the oval turn-piece (mm). Clamped to the plate length minus 4 mm. The keeper slot in the backplate is cut 0.5 mm larger on both axes.",
+        "es": "Eje largo de la pieza ovalada de giro (mm). Se limita al largo de la placa menos 4 mm. La ranura de la contraplaca se corta 0.5 mm mayor en ambos ejes."
+      }
+    },
+    {
+      "id": "turn_w",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 20.0,
+      "step": 0.2,
+      "group": "turn",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Turn-piece width (mm)",
+        "es": "Ancho de la pieza de giro (mm)"
+      },
+      "tooltip": {
+        "en": "Short axis of the oval turn-piece (mm). This is what passes through the keeper slot when the lock is turned to open.",
+        "es": "Eje corto de la pieza ovalada (mm). Es lo que atraviesa la ranura cuando el cierre se gira para abrir."
+      }
+    },
+    {
+      "id": "turn_t",
+      "type": "slider",
+      "default": 3.2,
+      "min": 1.8,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "turn",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Turn-piece thickness (mm)",
+        "es": "Espesor de la pieza de giro (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the turn-piece slab (mm). Thicker survives more open/close cycles at the pivot root, which is the part that fails first.",
+        "es": "Espesor de la lámina de la pieza de giro (mm). Más gruesa aguanta más ciclos de apertura en la raíz del pivote, que es donde primero falla."
+      }
+    },
+    {
+      "id": "pivot_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "setting",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Pivot diameter (mm)",
+        "es": "Diámetro del pivote (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the pivot post and of the washer bore it passes through (mm). Clamped to the turn-piece width minus 1.5 mm.",
+        "es": "Diámetro del poste pivote y del barreno de la arandela que atraviesa (mm). Se limita al ancho de la pieza de giro menos 1.5 mm."
+      }
+    },
+    {
+      "id": "leather_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.8,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "setting",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Leather thickness (mm)",
+        "es": "Espesor de la piel (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the bag panel the lock is set through (mm). Sets the pivot post height so the turn-piece lands proud of the leather, not buried in it. 3 mm suits 7-8 oz veg-tan.",
+        "es": "Espesor del panel del bolso donde se monta el cierre (mm). Determina la altura del poste para que la pieza de giro quede sobre la piel y no hundida. 3 mm corresponde a curtido vegetal de 7-8 onzas."
+      }
+    },
+    {
+      "id": "rivet_dia",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "setting",
+      "modes": [
+        "turn_lock",
+        "backplate",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Rivet bore diameter (mm)",
+        "es": "Diámetro del barreno del remache (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the two rivet bores that hold each plate to the leather (mm). 3 mm takes a standard double-cap rapid rivet post; match this to the rivet you actually own.",
+        "es": "Diámetro de los dos barrenos que sujetan cada placa a la piel (mm). 3 mm acepta el poste de un remache rápido de doble cabeza estándar; ajústalo al remache que realmente tengas."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "messenger_flap",
+      "mode": "set",
+      "label": {
+        "en": "Messenger Flap (34 mm)",
+        "es": "Solapa de mensajero (34 mm)"
+      },
+      "values": {
+        "plate_l": 34.0,
+        "plate_w": 22.0,
+        "plate_t": 3.0,
+        "turn_l": 24.0,
+        "turn_w": 8.0,
+        "turn_t": 3.2,
+        "pivot_dia": 5.0,
+        "leather_t": 3.0,
+        "rivet_dia": 3.0
+      }
+    },
+    {
+      "id": "small_satchel",
+      "mode": "set",
+      "label": {
+        "en": "Small Satchel (26 mm)",
+        "es": "Cartera pequeña (26 mm)"
+      },
+      "values": {
+        "plate_l": 26.0,
+        "plate_w": 17.0,
+        "plate_t": 2.4,
+        "turn_l": 18.0,
+        "turn_w": 6.0,
+        "turn_t": 2.6,
+        "pivot_dia": 4.0,
+        "leather_t": 2.0,
+        "rivet_dia": 2.5
+      }
+    },
+    {
+      "id": "portfolio_case",
+      "mode": "set",
+      "label": {
+        "en": "Portfolio Case (48 mm)",
+        "es": "Portafolios (48 mm)"
+      },
+      "values": {
+        "plate_l": 48.0,
+        "plate_w": 32.0,
+        "plate_t": 4.0,
+        "turn_l": 36.0,
+        "turn_w": 12.0,
+        "turn_t": 4.0,
+        "pivot_dia": 7.0,
+        "leather_t": 4.5,
+        "rivet_dia": 4.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "turn_l <= plate_l - 4",
+      "severity": "error",
+      "message": {
+        "en": "The turn-piece must stay inside the plate footprint by at least 2 mm per side.",
+        "es": "La pieza de giro debe quedar dentro de la placa con al menos 2 mm por lado."
+      }
+    },
+    {
+      "expression": "pivot_dia <= turn_w - 1.5",
+      "severity": "error",
+      "message": {
+        "en": "The pivot post must leave wall on both sides of the turn-piece.",
+        "es": "El poste pivote debe dejar pared a ambos lados de la pieza de giro."
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        120
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 18,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "keeper_slot",
+        "label": {
+          "en": "Keeper Slot",
+          "es": "Ranura de retención"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "turn_l",
+          "turn_w",
+          "plate_t"
+        ]
+      },
+      {
+        "id": "rivet_pattern",
+        "label": {
+          "en": "Rivet Pattern",
+          "es": "Patrón de remaches"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "plate_l",
+          "rivet_dia",
+          "leather_t"
+        ]
+      },
+      {
+        "id": "pivot_seat",
+        "label": {
+          "en": "Pivot Seat",
+          "es": "Asiento del pivote"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "pivot_dia",
+          "leather_t",
+          "turn_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A twist lock is the single component that decides whether a leather flap bag can be repaired: the plate is riveted, so when the turn-piece snaps the whole bag is usually discarded because the exact size is unbuyable. Printing the three parts to the existing rivet spacing returns a dead bag to service without re-punching the leather.",
+      "es": "El cierre de giro es la pieza que decide si un bolso de solapa se puede reparar: la placa va remachada, así que cuando la pieza de giro se rompe suele desecharse el bolso entero porque no se consigue la medida exacta. Imprimir las tres piezas al paso de remache existente devuelve el bolso al uso sin volver a perforar la piel."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "twist-lock-closure",
+    "turn-lock",
+    "bag-hardware",
+    "closure",
+    "flap",
+    "leather",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

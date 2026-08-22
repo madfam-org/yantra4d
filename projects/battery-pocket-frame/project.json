@@ -1,0 +1,482 @@
+{
+  "project": {
+    "name": "Battery Pocket Frame",
+    "slug": "battery-pocket-frame",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed stiffener frame for an in-garment battery pocket. A soft pocket sewn into a heated jacket or a sensing vest sags around the pack, lets it rotate, and lets it slide out the mouth — and a lithium pack that rotates chafes its own leads. This rounded-rect frame is stitched into the pocket through perimeter sew holes and gives the pack a defined bay, with a retention lip stepping inward at the mouth and a depth skirt the pack registers against. This is the rigid hard good the Fashion Cabinet battery-pocket notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un marco rigidizador impreso en 3D para la bolsa de batería dentro de una prenda. Una bolsa suave cosida en una chamarra térmica o un chaleco con sensores se descuelga alrededor del paquete, lo deja girar y lo deja salirse por la boca — y un paquete de litio que gira roza sus propios cables. Este marco rectangular redondeado se cose a la bolsa por sus ojales perimetrales y da al paquete un alojamiento definido, con un labio de retención escalonado hacia adentro en la boca y una falda de profundidad contra la que asienta el paquete. Es el herraje rígido que el avío de bolsa de batería de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/battery-pocket-frame.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "battery-pocket-frame",
+      "battery",
+      "pocket",
+      "stiffener",
+      "frame",
+      "e-textile",
+      "wearable-electronics",
+      "sew-on",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "frame",
+      "label": {
+        "en": "Pocket Frame",
+        "es": "Marco de la bolsa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "frame"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "frame_lid",
+      "label": {
+        "en": "Frame + Retainer Strap",
+        "es": "Marco y tira de retención"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "frame_lid"
+      ],
+      "estimate": {
+        "base_time": 13,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set (frame + 2 straps)",
+        "es": "Juego completo (marco y 2 tiras)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 15,
+        "per_unit": 2,
+        "per_part": 7
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "frame",
+      "label": {
+        "en": "Pocket Frame",
+        "es": "Marco de la bolsa"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "frame_lid",
+      "label": {
+        "en": "Frame + Strap",
+        "es": "Marco y tira"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set",
+        "es": "Juego completo"
+      },
+      "render_mode": 0,
+      "color": "#9c9482"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bay",
+      "label": {
+        "en": "Battery Bay",
+        "es": "Alojamiento de la batería"
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame",
+        "es": "Marco"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bay_w",
+      "type": "slider",
+      "default": 62.0,
+      "min": 20.0,
+      "max": 140.0,
+      "step": 1.0,
+      "group": "bay",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Bay width (mm)",
+        "es": "Ancho del alojamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the battery bay opening (mm) — measure the pack and add about 1 mm. A 10000 mAh USB power bank is roughly 62 mm wide; a flat 2S heated-vest pack is 45-55 mm.",
+        "es": "Ancho de la abertura del alojamiento (mm) — mide el paquete y suma cerca de 1 mm. Una batería portátil USB de 10000 mAh mide unos 62 mm de ancho; un paquete plano 2S para chaleco térmico mide de 45 a 55 mm."
+      }
+    },
+    {
+      "id": "bay_h",
+      "type": "slider",
+      "default": 92.0,
+      "min": 20.0,
+      "max": 180.0,
+      "step": 1.0,
+      "group": "bay",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Bay height (mm)",
+        "es": "Alto del alojamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the battery bay opening (mm) — the long dimension the pack drops in along. A 10000 mAh bank is roughly 92 mm tall.",
+        "es": "Alto de la abertura del alojamiento (mm) — la dimensión larga por la que entra el paquete. Una batería de 10000 mAh mide unos 92 mm de alto."
+      }
+    },
+    {
+      "id": "bay_t",
+      "type": "slider",
+      "default": 12.0,
+      "min": 4.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "bay",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Bay depth / pack thickness (mm)",
+        "es": "Profundidad del alojamiento / grosor del paquete (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the pack (mm). Drives the depth skirt the pack registers against and caps how tall the retention lip can be. Slim banks are 12-15 mm; pouch cells are 6-10 mm.",
+        "es": "Grosor del paquete (mm). Determina la falda de profundidad contra la que asienta el paquete y limita la altura del labio de retención. Las baterías delgadas miden de 12 a 15 mm; las celdas de bolsa de 6 a 10 mm."
+      }
+    },
+    {
+      "id": "frame_w",
+      "type": "slider",
+      "default": 6.0,
+      "min": 4.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Frame rail width (mm)",
+        "es": "Ancho del riel del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the rail around the bay (mm) — the land the stitch holes live in. Auto-raised so a hole always has wall on both sides.",
+        "es": "Ancho del riel alrededor del alojamiento (mm) — la superficie donde viven los ojales. Se eleva automáticamente para que cada ojal tenga pared a ambos lados."
+      }
+    },
+    {
+      "id": "frame_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.4,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Frame thickness (mm)",
+        "es": "Espesor del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the frame plate (mm). Thicker resists the pocket sagging around the pack; thinner is less noticeable through the garment shell.",
+        "es": "Espesor de la placa del marco (mm). Más grueso evita que la bolsa se descuelgue alrededor del paquete; más delgado se nota menos a través de la prenda."
+      }
+    },
+    {
+      "id": "lip",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Retention lip step (mm)",
+        "es": "Escalón del labio de retención (mm)"
+      },
+      "tooltip": {
+        "en": "How far the retention lip steps inward over the bay (mm). The pack pushes past the lip and is then held against the mouth. Set 0 for a plain open frame.",
+        "es": "Cuánto se mete el labio de retención sobre el alojamiento (mm). El paquete pasa a presión el labio y luego queda retenido contra la boca. Usa 0 para un marco abierto liso."
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 5.0,
+      "min": 1.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Bay corner radius (mm)",
+        "es": "Radio de esquina del alojamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Corner radius of the bay opening (mm). Match the pack's own corner so it seats without a gap. Clamped to a third of the shorter bay dimension.",
+        "es": "Radio de las esquinas de la abertura (mm). Iguálalo a la esquina del paquete para que asiente sin holgura. Se limita a un tercio de la dimensión menor del alojamiento."
+      }
+    },
+    {
+      "id": "sew_pitch",
+      "type": "slider",
+      "default": 12.0,
+      "min": 5.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "sewing",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Sew hole pitch (mm)",
+        "es": "Paso entre ojales (mm)"
+      },
+      "tooltip": {
+        "en": "Spacing between perimeter stitch holes (mm). Tighter pitch spreads the pack's weight over more of the pocket; 10-14 mm suits a mid-weight shell.",
+        "es": "Separación entre los ojales perimetrales (mm). Un paso más cerrado reparte el peso del paquete en más área de la bolsa; de 10 a 14 mm conviene a una prenda de peso medio."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.8,
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "frame",
+        "frame_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Sew hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each stitch hole (mm). 1.8 mm passes doubled upholstery thread comfortably — a battery pocket carries real weight, so do not go finer.",
+        "es": "Diámetro de cada ojal (mm). 1.8 mm deja pasar cómodamente hilo de tapicería doble — una bolsa de batería carga peso real, así que no uses menos."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "usb_power_bank",
+      "mode": "frame",
+      "label": {
+        "en": "10000 mAh USB Bank",
+        "es": "Batería USB de 10000 mAh"
+      },
+      "values": {
+        "bay_w": 62.0,
+        "bay_h": 92.0,
+        "bay_t": 14.0,
+        "frame_w": 6.0,
+        "frame_t": 2.4,
+        "lip": 2.0,
+        "corner_r": 5.0,
+        "sew_pitch": 12.0,
+        "hole_dia": 1.8
+      }
+    },
+    {
+      "id": "heated_vest_pouch",
+      "mode": "set",
+      "label": {
+        "en": "Heated Vest Pouch Pack",
+        "es": "Paquete de bolsa para chaleco térmico"
+      },
+      "values": {
+        "bay_w": 48.0,
+        "bay_h": 68.0,
+        "bay_t": 8.0,
+        "frame_w": 7.0,
+        "frame_t": 2.0,
+        "lip": 1.5,
+        "corner_r": 4.0,
+        "sew_pitch": 10.0,
+        "hole_dia": 1.8
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        110
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 7,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "pocket_edge",
+        "label": {
+          "en": "Sewn Pocket-Bag Edge",
+          "es": "Canto cosido de la bolsa"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "bay_w",
+          "bay_h",
+          "frame_w",
+          "sew_pitch",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "battery_bay",
+        "label": {
+          "en": "Battery Bay",
+          "es": "Alojamiento de la batería"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "bay_w",
+          "bay_h",
+          "bay_t",
+          "corner_r"
+        ]
+      },
+      {
+        "id": "retention_lip",
+        "label": {
+          "en": "Retention Lip",
+          "es": "Labio de retención"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "lip",
+          "bay_t",
+          "frame_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Heated and powered garments are sold locked to one proprietary pack; when that pack is discontinued the garment becomes waste. A frame you print to whatever battery you already own decouples the garment from the battery market, and lets a repairer refit an old jacket to a current cell instead of scrapping it.",
+      "es": "Las prendas térmicas y con electrónica se venden atadas a un paquete propietario; cuando ese paquete se descontinúa, la prenda se vuelve basura. Un marco que imprimes para la batería que ya tienes desacopla la prenda del mercado de baterías y permite readaptar una chamarra vieja a una celda actual en vez de desecharla."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "battery-pocket-frame",
+    "battery",
+    "pocket",
+    "stiffener",
+    "frame",
+    "e-textile",
+    "wearable-electronics",
+    "sew-on",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

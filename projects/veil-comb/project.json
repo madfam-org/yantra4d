@@ -1,0 +1,447 @@
+{
+  "project": {
+    "name": "Veil Comb",
+    "slug": "veil-comb",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A hair comb whose spine is a veil-gathering bar. The tulle of a birdcage veil, a blusher or a mantilla is gathered along the bar and sewn through a row of slots cut down it, so the gather is anchored to the hardware instead of hanging off a few tacking stitches. Stock combs give you a plain spine and a needle; here the gather pitch is a stated number, and the teeth are sized to the real article — 25 to 40 mm long on a 35 to 50 mm spine, tapered to a rounded flat tip that parts hair instead of catching it.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una peineta cuyo lomo es la barra de fruncido del velo. El tul de un velo jaula, de una caída corta o de una mantilla se frunce a lo largo de la barra y se cose por una fila de ranuras abiertas en ella, de modo que el frunce queda anclado al herraje y no colgando de unas pocas puntadas. Las peinetas comerciales dan un lomo liso y una aguja; aquí el paso del frunce es un número declarado, y los dientes van dimensionados como los reales: de 25 a 40 mm de largo sobre un lomo de 35 a 50 mm, afinados a una punta plana y redondeada que abre el cabello sin engancharlo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/veil-comb.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "veil-comb",
+      "veil",
+      "bridal",
+      "millinery",
+      "hair-comb",
+      "gathering",
+      "tulle",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "comb",
+      "label": {
+        "en": "Veil Comb",
+        "es": "Peineta de velo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "comb"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Comb Pair (wide veil)",
+        "es": "Par de peinetas (velo ancho)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pair"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "comb",
+      "label": {
+        "en": "Veil Comb",
+        "es": "Peineta de velo"
+      },
+      "render_mode": 0,
+      "color": "#d8d0c0"
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Comb Pair",
+        "es": "Par de peinetas"
+      },
+      "render_mode": 0,
+      "color": "#d8d0c0"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bar",
+      "label": {
+        "en": "Gathering Bar",
+        "es": "Barra de fruncido"
+      }
+    },
+    {
+      "id": "gather",
+      "label": {
+        "en": "Gather Slots",
+        "es": "Ranuras de frunce"
+      }
+    },
+    {
+      "id": "teeth",
+      "label": {
+        "en": "Teeth",
+        "es": "Dientes"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bar_length",
+      "type": "slider",
+      "default": 44.0,
+      "min": 20.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "bar",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Gathering bar length (mm)",
+        "es": "Longitud de la barra (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the spine the veil gathers onto (mm). Standard millinery combs run 35-50 mm; this is the length of tulle the gather is compressed into.",
+        "es": "Longitud del lomo sobre el que se frunce el velo (mm). Las peinetas de sombrerería van de 35 a 50 mm; es la longitud en la que se comprime el frunce del tul."
+      }
+    },
+    {
+      "id": "bar_h",
+      "type": "slider",
+      "default": 7.0,
+      "min": 4.0,
+      "max": 18.0,
+      "step": 0.5,
+      "group": "bar",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Bar height (mm)",
+        "es": "Altura de la barra (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the bar above the tooth roots (mm). It must hold the sew slots with a rail above and below, so raising it lengthens the slots.",
+        "es": "Altura de la barra sobre la raíz de los dientes (mm). Debe alojar las ranuras dejando un riel arriba y otro abajo, así que subirla alarga las ranuras."
+      }
+    },
+    {
+      "id": "bar_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.4,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "bar",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Bar thickness (mm)",
+        "es": "Espesor de la barra (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the spine (mm). 2.4 mm sits flat against the head; thicker bars carry a heavy cathedral veil but stand proud under the hair.",
+        "es": "Espesor del lomo (mm). 2.4 mm asienta plano contra la cabeza; más grueso soporta un velo catedral pesado pero se nota bajo el cabello."
+      }
+    },
+    {
+      "id": "slot_count",
+      "type": "slider",
+      "default": 7,
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "group": "gather",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Sew slots (count)",
+        "es": "Ranuras de costura (cantidad)"
+      },
+      "tooltip": {
+        "en": "Slots cut down the bar for the gathering stitches. Each slot is one anchored gather point; zero leaves a plain spine for a hand-tacked veil.",
+        "es": "Ranuras abiertas en la barra para las puntadas del frunce. Cada ranura es un punto de frunce anclado; cero deja el lomo liso para un velo hilvanado a mano."
+      }
+    },
+    {
+      "id": "slot_pitch",
+      "type": "slider",
+      "default": 5.5,
+      "min": 2.5,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "gather",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Slot pitch (mm)",
+        "es": "Paso entre ranuras (mm)"
+      },
+      "tooltip": {
+        "en": "Centre-to-centre spacing of the sew slots (mm). This is the gather pitch: the tulle between two slots becomes one pleat. Auto-reduced if the row would run off the bar.",
+        "es": "Distancia entre centros de las ranuras (mm). Es el paso del frunce: el tul entre dos ranuras forma un pliegue. Se reduce automáticamente si la fila se saldría de la barra."
+      }
+    },
+    {
+      "id": "slot_w",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "gather",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Slot width (mm)",
+        "es": "Ancho de la ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each slot along the bar (mm). 1.6 mm passes a millinery needle and lets the gathering thread be drawn along the slot as the pleat is set.",
+        "es": "Ancho de cada ranura a lo largo de la barra (mm). 1.6 mm deja pasar la aguja de sombrerería y permite correr el hilo del frunce por la ranura al formar el pliegue."
+      }
+    },
+    {
+      "id": "teeth",
+      "type": "slider",
+      "default": 7,
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "group": "teeth",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Teeth (count)",
+        "es": "Dientes (cantidad)"
+      },
+      "tooltip": {
+        "en": "Number of comb teeth. Seven on a 44 mm bar matches a stock bridal comb; more teeth grip fine hair, fewer grip thick hair.",
+        "es": "Cantidad de dientes de la peineta. Siete en una barra de 44 mm iguala a una peineta de novia comercial; más dientes sujetan cabello fino, menos sujetan cabello grueso."
+      }
+    },
+    {
+      "id": "tooth_len",
+      "type": "slider",
+      "default": 30.0,
+      "min": 8.0,
+      "max": 70.0,
+      "step": 1.0,
+      "group": "teeth",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Tooth length (mm)",
+        "es": "Largo del diente (mm)"
+      },
+      "tooltip": {
+        "en": "Length of each tooth below the bar (mm). Real combs run 25-40 mm; a heavy veil wants long teeth so the comb does not lever out of the hair.",
+        "es": "Largo de cada diente bajo la barra (mm). Las peinetas reales van de 25 a 40 mm; un velo pesado pide dientes largos para que la peineta no se apalanque fuera del cabello."
+      }
+    },
+    {
+      "id": "tooth_w",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "teeth",
+      "modes": [
+        "comb",
+        "pair"
+      ],
+      "label": {
+        "en": "Tooth root width (mm)",
+        "es": "Ancho del diente en la raíz (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each tooth where it meets the bar (mm). The tooth tapers to about 45 % of this at the tip. Auto-clamped to 80 % of the tooth pitch so teeth never merge.",
+        "es": "Ancho de cada diente donde encuentra la barra (mm). El diente se afina a cerca del 45 % de esta medida en la punta. Se limita al 80 % del paso para que los dientes nunca se junten."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "birdcage_veil",
+      "mode": "comb",
+      "label": {
+        "en": "Birdcage Veil (44 mm)",
+        "es": "Velo jaula (44 mm)"
+      },
+      "values": {
+        "bar_length": 44.0,
+        "bar_h": 7.0,
+        "bar_t": 2.4,
+        "slot_count": 7,
+        "slot_pitch": 5.5,
+        "slot_w": 1.6,
+        "teeth": 7,
+        "tooth_len": 30.0,
+        "tooth_w": 2.2
+      }
+    },
+    {
+      "id": "cathedral_veil",
+      "mode": "pair",
+      "label": {
+        "en": "Cathedral Veil (pair, 70 mm)",
+        "es": "Velo catedral (par, 70 mm)"
+      },
+      "values": {
+        "bar_length": 70.0,
+        "bar_h": 11.0,
+        "bar_t": 3.4,
+        "slot_count": 12,
+        "slot_pitch": 5.0,
+        "slot_w": 2.0,
+        "teeth": 11,
+        "tooth_len": 42.0,
+        "tooth_w": 2.6
+      }
+    },
+    {
+      "id": "mantilla_fine",
+      "mode": "comb",
+      "label": {
+        "en": "Mantilla, Fine Gather",
+        "es": "Mantilla, frunce fino"
+      },
+      "values": {
+        "bar_length": 55.0,
+        "bar_h": 9.0,
+        "bar_t": 2.6,
+        "slot_count": 14,
+        "slot_pitch": 3.5,
+        "slot_w": 1.2,
+        "teeth": 9,
+        "tooth_len": 35.0,
+        "tooth_w": 2.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        50
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "veil_gather_bar",
+        "label": {
+          "en": "Veil Gather Bar (sew slots)",
+          "es": "Barra de frunce del velo (ranuras)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "bar_length",
+          "slot_count",
+          "slot_pitch",
+          "slot_w",
+          "bar_t"
+        ]
+      },
+      {
+        "id": "hair_engagement",
+        "label": {
+          "en": "Hair Engagement (tooth row)",
+          "es": "Agarre en el cabello (fila de dientes)"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "teeth",
+          "tooth_len",
+          "tooth_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Veil attachment is the part of bridal millinery that nobody sells a tool for: the gather is done by eye onto a plain plastic comb, and if it comes out uneven the veil is remade. A comb whose spine states the gather pitch turns a craft secret into a measurement, and makes a veil a thing a person can attach, detach and reattach to a different comb across a lifetime.",
+      "es": "La sujeción del velo es la parte de la sombrerería nupcial para la que nadie vende herramienta: el frunce se hace a ojo sobre una peineta de plástico lisa, y si sale disparejo se rehace el velo. Una peineta cuyo lomo declara el paso del frunce convierte un secreto de oficio en una medida, y hace del velo algo que se puede poner, quitar y volver a poner en otra peineta a lo largo de una vida."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "veil-comb",
+    "veil",
+    "bridal",
+    "millinery",
+    "hair-comb",
+    "gathering",
+    "tulle",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,448 @@
+{
+  "project": {
+    "name": "Kiss-Lock Frame",
+    "slug": "kiss-lock-frame",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A simplified printable purse frame — two mirror half-frames that pivot on a pin-bore hinge at each outer corner and meet at a ball-clasp kiss in the middle. A sew channel runs the whole underside of each arch; the purse fabric is folded into that groove and glued or whip-stitched exactly the way a metal kiss-lock frame is set. This is the rigid hard good the Fashion Cabinet `kiss-lock-frame` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un armazón de bolso imprimible simplificado — dos medios marcos espejo que giran sobre una bisagra de pasador en cada esquina exterior y se encuentran en un beso de broche de bola al centro. Un canal de costura recorre todo el bajo de cada arco; la tela del bolso se dobla dentro de esa ranura y se pega o se hilvana igual que se monta un armazón metálico de boquilla. Es el herraje rígido que el avío `kiss-lock-frame` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/kiss-lock-frame.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "kiss-lock-frame",
+      "purse-frame",
+      "clasp",
+      "bag-hardware",
+      "hinge",
+      "leather",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "half_frame",
+      "label": {
+        "en": "Half Frame",
+        "es": "Medio marco"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "half_frame"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 9
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Frame Set (both halves)",
+        "es": "Juego de marco (ambas mitades)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "half_frame",
+      "label": {
+        "en": "Half Frame",
+        "es": "Medio marco"
+      },
+      "render_mode": 0,
+      "color": "#c9b48a"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Frame Set",
+        "es": "Juego de marco"
+      },
+      "render_mode": 0,
+      "color": "#b8a377"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "mouth",
+      "label": {
+        "en": "Mouth",
+        "es": "Boquilla"
+      }
+    },
+    {
+      "id": "section",
+      "label": {
+        "en": "Rod Section",
+        "es": "Sección de la varilla"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    },
+    {
+      "id": "hardware",
+      "label": {
+        "en": "Hinge & Clasp",
+        "es": "Bisagra y broche"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "frame_w",
+      "type": "slider",
+      "default": 90.0,
+      "min": 50.0,
+      "max": 220.0,
+      "step": 1.0,
+      "group": "mouth",
+      "modes": [
+        "half_frame",
+        "set"
+      ],
+      "label": {
+        "en": "Mouth width (mm)",
+        "es": "Ancho de la boquilla (mm)"
+      },
+      "tooltip": {
+        "en": "Finished mouth width, hinge pin centre to hinge pin centre (mm). Commercial frames run 60-100 mm for coin purses and clutches, 140-200 mm for doctor bags.",
+        "es": "Ancho terminado de la boquilla, de centro a centro de pasador (mm). Los armazones comerciales van de 60 a 100 mm para monederos y clutches, y de 140 a 200 mm para bolsos de médico."
+      }
+    },
+    {
+      "id": "arch_h",
+      "type": "slider",
+      "default": 22.0,
+      "min": 8.0,
+      "max": 90.0,
+      "step": 0.5,
+      "group": "mouth",
+      "modes": [
+        "half_frame",
+        "set"
+      ],
+      "label": {
+        "en": "Arch rise (mm)",
+        "es": "Altura del arco (mm)"
+      },
+      "tooltip": {
+        "en": "How far the arch crown rises above the hinge line (mm). Auto-clamped to 45 % of the mouth width so the arch never folds over on itself.",
+        "es": "Cuánto sube la corona del arco sobre la línea de bisagra (mm). Se limita al 45 % del ancho de la boquilla para que el arco nunca se doble sobre sí mismo."
+      }
+    },
+    {
+      "id": "rod_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.2,
+      "group": "section",
+      "modes": [
+        "half_frame",
+        "set"
+      ],
+      "label": {
+        "en": "Rod thickness (mm)",
+        "es": "Espesor de la varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Front-to-back thickness of the frame rod (mm). This is the dimension the sew channel is cut into, so it must exceed the channel width by at least 1.6 mm.",
+        "es": "Espesor de la varilla del marco de frente a fondo (mm). Es la dimensión donde se corta el canal de costura, así que debe superar el ancho del canal por al menos 1.6 mm."
+      }
+    },
+    {
+      "id": "rod_h",
+      "type": "slider",
+      "default": 7.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.2,
+      "group": "section",
+      "modes": [
+        "half_frame",
+        "set"
+      ],
+      "label": {
+        "en": "Rod height (mm)",
+        "es": "Altura de la varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Radial height of the frame rod, top face down to the channel lip (mm). Taller reads as a heavier frame and gives the sew channel more depth to grip the folded fabric.",
+        "es": "Altura radial de la varilla, de la cara superior al labio del canal (mm). Más alta se ve como un armazón más pesado y da al canal más profundidad para sujetar la tela doblada."
+      }
+    },
+    {
+      "id": "channel_w",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "half_frame",
+        "set"
+      ],
+      "label": {
+        "en": "Sew channel width (mm)",
+        "es": "Ancho del canal de costura (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the fabric groove along the underside of the arch (mm). Allow roughly two plies of the shell fabric plus the lining plus glue; 2.4 mm suits quilting cotton over fusible, 3.5 mm suits garment leather.",
+        "es": "Ancho de la ranura para la tela en el bajo del arco (mm). Considera dos capas de la tela exterior más el forro y el pegamento; 2.4 mm sirve para algodón entretelado y 3.5 mm para piel de confección."
+      }
+    },
+    {
+      "id": "pin_dia",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "hardware",
+      "modes": [
+        "half_frame",
+        "set"
+      ],
+      "label": {
+        "en": "Hinge pin bore (mm)",
+        "es": "Barreno del pasador (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the hinge pin bore (mm). 2 mm takes a cut length of 2 mm brass rod or a 2 mm steel dowel; leave the bore as printed and ream to a running fit.",
+        "es": "Diámetro del barreno del pasador de bisagra (mm). 2 mm acepta un tramo de varilla de latón de 2 mm o un pasador de acero de 2 mm; deja el barreno impreso y escaría hasta ajuste giratorio."
+      }
+    },
+    {
+      "id": "ball_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "hardware",
+      "modes": [
+        "half_frame",
+        "set"
+      ],
+      "label": {
+        "en": "Clasp ball diameter (mm)",
+        "es": "Diámetro de la bola del broche (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the kiss-clasp ball nub (mm). The matching half is cut as a dished cup 0.25 mm larger, so the pair snaps rather than jams.",
+        "es": "Diámetro de la bola del broche de beso (mm). La mitad correspondiente se corta como una copa 0.25 mm mayor, para que el par cierre a presión en vez de atorarse."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "coin_purse",
+      "mode": "set",
+      "label": {
+        "en": "Coin Purse (70 mm)",
+        "es": "Monedero (70 mm)"
+      },
+      "values": {
+        "frame_w": 70.0,
+        "arch_h": 16.0,
+        "rod_t": 4.0,
+        "rod_h": 5.5,
+        "channel_w": 2.0,
+        "pin_dia": 1.6,
+        "ball_dia": 3.2
+      }
+    },
+    {
+      "id": "clutch",
+      "mode": "set",
+      "label": {
+        "en": "Evening Clutch (120 mm)",
+        "es": "Clutch de noche (120 mm)"
+      },
+      "values": {
+        "frame_w": 120.0,
+        "arch_h": 26.0,
+        "rod_t": 5.5,
+        "rod_h": 8.0,
+        "channel_w": 2.8,
+        "pin_dia": 2.0,
+        "ball_dia": 4.5
+      }
+    },
+    {
+      "id": "doctor_bag",
+      "mode": "set",
+      "label": {
+        "en": "Doctor Bag (180 mm, leather)",
+        "es": "Bolso de médico (180 mm, piel)"
+      },
+      "values": {
+        "frame_w": 180.0,
+        "arch_h": 40.0,
+        "rod_t": 8.0,
+        "rod_h": 12.0,
+        "channel_w": 4.0,
+        "pin_dia": 3.0,
+        "ball_dia": 6.5
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "channel_w <= rod_t - 1.6",
+      "severity": "error",
+      "message": {
+        "en": "The sew channel must leave at least 0.8 mm of wall on each side of the rod.",
+        "es": "El canal de costura debe dejar al menos 0.8 mm de pared a cada lado de la varilla."
+      }
+    },
+    {
+      "expression": "arch_h <= frame_w * 0.45",
+      "severity": "error",
+      "message": {
+        "en": "The arch rise cannot exceed 45 % of the mouth width or the arch folds over itself.",
+        "es": "La altura del arco no puede superar el 45 % del ancho de la boquilla o el arco se dobla sobre sí mismo."
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        110
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frente"
+      },
+      "position": [
+        0,
+        -220,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 9,
+    "fn_factor": 20,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_channel",
+        "label": {
+          "en": "Sew Channel (fabric flange)",
+          "es": "Canal de costura (pestaña de tela)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "frame_w",
+          "channel_w",
+          "rod_t"
+        ]
+      },
+      {
+        "id": "hinge_bore",
+        "label": {
+          "en": "Hinge Pin Bore",
+          "es": "Barreno del pasador de bisagra"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "pin_dia",
+          "frame_w",
+          "rod_h"
+        ]
+      },
+      {
+        "id": "kiss_clasp",
+        "label": {
+          "en": "Kiss Clasp",
+          "es": "Broche de beso"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "ball_dia",
+          "rod_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Metal purse frames are sold in a handful of fixed widths, so a maker either redraws the whole bag pattern to fit the frame or abandons the design; printing the frame to the pattern's own mouth width flips that dependency and keeps small leather and textile workshops off a narrow import supply chain.",
+      "es": "Los armazones metálicos se venden en unas pocas medidas fijas, así que quien confecciona rediseña todo el patrón del bolso para que quepa o abandona el diseño; imprimir el armazón al ancho de boquilla del propio patrón invierte esa dependencia y libera a los talleres pequeños de piel y textil de una cadena de importación estrecha."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "kiss-lock-frame",
+    "purse-frame",
+    "clasp",
+    "bag-hardware",
+    "hinge",
+    "leather",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

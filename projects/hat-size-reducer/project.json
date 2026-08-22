@@ -1,0 +1,379 @@
+{
+  "project": {
+    "name": "Hat Size Reducer",
+    "slug": "hat-size-reducer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A ribbed C-profile sizing strip that clips inside a hatband to take a hat down a size or two. One US/UK hat size is about 10 mm of head circumference, so the take-up is set directly in millimetres of circumference and the strip converts it to radial build-up. The C hooks the sweatband's free edges — friction fit, no glue, removable — and the inner ribs spread the take-up and vent so the fit stays comfortable.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tira reductora de perfil en C con nervios que se sujeta dentro de la tafilete para bajar una o dos tallas al sombrero. Una talla de sombrero equivale a unos 10 mm de circunferencia de cabeza, así que la reducción se indica directamente en milímetros de circunferencia y la tira la convierte en espesor radial. La C engancha los bordes libres del tafilete —ajuste por fricción, sin pegamento, desmontable— y los nervios interiores reparten la reducción y ventilan para que quede cómoda.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hat-size-reducer.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "hat-size-reducer",
+      "millinery",
+      "hat",
+      "sizing",
+      "sweatband",
+      "hatband",
+      "fit",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "strip",
+      "label": {
+        "en": "Single Strip",
+        "es": "Tira individual"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "strip"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Fitting Pair (two strips)",
+        "es": "Par de ajuste (dos tiras)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pair"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "strip",
+      "label": {
+        "en": "Sizing Strip",
+        "es": "Tira reductora"
+      },
+      "render_mode": 0,
+      "color": "#c8b8a0"
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Fitting Pair",
+        "es": "Par de ajuste"
+      },
+      "render_mode": 0,
+      "color": "#c8b8a0"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "strip",
+      "label": {
+        "en": "Strip",
+        "es": "Tira"
+      }
+    },
+    {
+      "id": "fit",
+      "label": {
+        "en": "Fit",
+        "es": "Ajuste"
+      }
+    },
+    {
+      "id": "ribs",
+      "label": {
+        "en": "Ribs",
+        "es": "Nervios"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strip_length",
+      "type": "slider",
+      "default": 90.0,
+      "min": 40.0,
+      "max": 200.0,
+      "step": 5.0,
+      "group": "strip",
+      "modes": [
+        "strip",
+        "pair"
+      ],
+      "label": {
+        "en": "Strip arc length (mm)",
+        "es": "Longitud de arco de la tira (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the strip measured along the head curve (mm). 80-100 mm covers one temple; go longer only if a single strip is doing the whole reduction.",
+        "es": "Longitud de la tira medida sobre la curva de la cabeza (mm). De 80 a 100 mm cubre una sien; alárgala sólo si una sola tira hace toda la reducción."
+      }
+    },
+    {
+      "id": "strip_height",
+      "type": "slider",
+      "default": 12.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "strip",
+      "modes": [
+        "strip",
+        "pair"
+      ],
+      "label": {
+        "en": "Strip height (mm)",
+        "es": "Altura de la tira (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the strip across the sweatband (mm). Match the visible sweatband height so the grip lips land on its free edges.",
+        "es": "Altura de la tira sobre el tafilete (mm). Iguálala a la altura visible del tafilete para que los labios de sujeción caigan en sus bordes libres."
+      }
+    },
+    {
+      "id": "reduction_mm",
+      "type": "slider",
+      "default": 10.0,
+      "min": 3.0,
+      "max": 25.0,
+      "step": 1.0,
+      "group": "fit",
+      "modes": [
+        "strip",
+        "pair"
+      ],
+      "label": {
+        "en": "Circumference take-up (mm)",
+        "es": "Reducción de circunferencia (mm)"
+      },
+      "tooltip": {
+        "en": "How much head circumference the strip absorbs (mm). About 10 mm is one full hat size and 5 mm is a half size; two strips share the total between them.",
+        "es": "Cuánta circunferencia de cabeza absorbe la tira (mm). Unos 10 mm son una talla completa y 5 mm media talla; dos tiras se reparten el total."
+      }
+    },
+    {
+      "id": "band_t",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.0,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "fit",
+      "modes": [
+        "strip",
+        "pair"
+      ],
+      "label": {
+        "en": "Sweatband thickness (mm)",
+        "es": "Espesor del tafilete (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the sweatband the C profile grips (mm). Sets the grip lip depth; measure a doubled grosgrain or leather band with a caliper.",
+        "es": "Espesor del tafilete que sujeta el perfil en C (mm). Fija la profundidad del labio; mide con calibrador una cinta de grogrén doble o de piel."
+      }
+    },
+    {
+      "id": "rib_count",
+      "type": "slider",
+      "default": 7,
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "group": "ribs",
+      "modes": [
+        "strip",
+        "pair"
+      ],
+      "label": {
+        "en": "Rib count",
+        "es": "Cantidad de nervios"
+      },
+      "tooltip": {
+        "en": "Vertical comfort ribs on the head side. Zero gives a plain smooth strip; more ribs spread the pressure and vent better.",
+        "es": "Nervios verticales de confort del lado de la cabeza. Cero da una tira lisa; más nervios reparten la presión y ventilan mejor."
+      }
+    },
+    {
+      "id": "rib_depth",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.4,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "ribs",
+      "modes": [
+        "strip",
+        "pair"
+      ],
+      "label": {
+        "en": "Rib depth (mm)",
+        "es": "Altura del nervio (mm)"
+      },
+      "tooltip": {
+        "en": "How far each rib stands proud of the web (mm). Ribs are part of the take-up: deeper ribs bite more, but past 2 mm they print as visible ridges.",
+        "es": "Cuánto sobresale cada nervio del alma (mm). Los nervios forman parte de la reducción: más altos aprietan más, pero pasados 2 mm se notan como crestas."
+      }
+    },
+    {
+      "id": "head_circ",
+      "type": "slider",
+      "default": 580.0,
+      "min": 480.0,
+      "max": 680.0,
+      "step": 5.0,
+      "group": "fit",
+      "modes": [
+        "strip",
+        "pair"
+      ],
+      "label": {
+        "en": "Hat head circumference (mm)",
+        "es": "Circunferencia de la horma (mm)"
+      },
+      "tooltip": {
+        "en": "Circumference of the hat as it is now (mm), before reduction. Sets the arc the strip is struck on so it lies flush inside the band. 580 mm is a US 7 1/4.",
+        "es": "Circunferencia actual del sombrero (mm), antes de reducir. Fija el arco con que se traza la tira para que asiente al ras dentro de la tafilete. 580 mm es una talla EU 58."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "one_full_size",
+      "mode": "pair",
+      "label": {
+        "en": "One Full Size Down (pair)",
+        "es": "Una talla menos (par)"
+      },
+      "values": {
+        "strip_length": 90.0,
+        "strip_height": 12.0,
+        "reduction_mm": 5.0,
+        "band_t": 2.2,
+        "rib_count": 7,
+        "rib_depth": 1.2,
+        "head_circ": 580.0
+      }
+    },
+    {
+      "id": "vintage_felt_two_sizes",
+      "mode": "strip",
+      "label": {
+        "en": "Vintage Felt, Two Sizes",
+        "es": "Fieltro vintage, dos tallas"
+      },
+      "values": {
+        "strip_length": 140.0,
+        "strip_height": 18.0,
+        "reduction_mm": 20.0,
+        "band_t": 3.0,
+        "rib_count": 12,
+        "rib_depth": 1.6,
+        "head_circ": 600.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        90
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sweatband_clip",
+        "label": {
+          "en": "Sweatband Clip (C profile)",
+          "es": "Pinza de tafilete (perfil en C)"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "strip_height",
+          "band_t",
+          "strip_length"
+        ]
+      },
+      {
+        "id": "head_arc",
+        "label": {
+          "en": "Head Arc",
+          "es": "Arco de cabeza"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "head_circ",
+          "reduction_mm"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Hats are sized in whole steps and second-hand hats come in whatever size they were made; a strip that absorbs a stated number of millimetres lets an inherited or thrifted hat fit its new wearer instead of sitting in a box.",
+      "es": "Los sombreros vienen en tallas enteras y los de segunda mano en la talla en que se hicieron; una tira que absorbe un número dado de milímetros permite que un sombrero heredado o de segunda mano le quede a quien lo usa ahora, en lugar de quedarse guardado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "hat-size-reducer",
+    "millinery",
+    "hat",
+    "sizing",
+    "sweatband",
+    "hatband",
+    "fit",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

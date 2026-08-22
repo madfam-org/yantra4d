@@ -1,0 +1,496 @@
+{
+  "project": {
+    "name": "Magnetic Button Cover",
+    "slug": "magnetic-button-cover",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The two-part adaptive conversion that turns an existing buttoned garment into a magnetic one without unpicking a single button: a cap that snaps over the sew-through button already on the shirt, and a magnet carrier plate sewn behind the buttonhole side. The button stays where it is and still looks like a button; the placket now closes by bringing two magnets together. Both magnet pockets open downward, so they drain, print without a bridge, and capture the disc against the mating part instead of needing glue.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La conversión adaptativa de dos piezas que vuelve magnética una prenda abotonada sin descoser un solo botón: una tapa que entra a presión sobre el botón de coser que ya trae la camisa, y una placa portaimán que se cose detrás del lado del ojal. El botón se queda donde está y sigue pareciendo un botón; la cartera ahora cierra al juntar dos imanes. Ambas cavidades de imán abren hacia abajo, así que drenan, se imprimen sin puente y retienen el disco contra la pieza que las acompaña en vez de necesitar pegamento.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/magnetic-button-cover.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "magnetic-button-cover",
+      "magnetic-closure",
+      "button",
+      "accessibility",
+      "adaptive",
+      "assistive",
+      "arthritis",
+      "dressing",
+      "placket",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cap",
+      "label": {
+        "en": "Snap-On Cap",
+        "es": "Tapa a presión"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cap"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Sew-On Magnet Plate",
+        "es": "Placa portaimán de coser"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "plate"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Conversion Set (cap + plate)",
+        "es": "Juego de conversión (tapa y placa)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "cap",
+      "label": {
+        "en": "Snap-On Cap",
+        "es": "Tapa a presión"
+      },
+      "render_mode": 0,
+      "color": "#8f8f9f"
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Magnet Plate",
+        "es": "Placa portaimán"
+      },
+      "render_mode": 0,
+      "color": "#7f7f8f"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Conversion Set",
+        "es": "Juego de conversión"
+      },
+      "render_mode": 0,
+      "color": "#8f8f9f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "button",
+      "label": {
+        "en": "Existing Button",
+        "es": "Botón existente"
+      }
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "en": "Magnet",
+        "es": "Imán"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "button_dia",
+      "type": "slider",
+      "default": 11.0,
+      "min": 7.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "button",
+      "modes": [
+        "cap",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Existing button diameter (mm)",
+        "es": "Diámetro del botón existente (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the button already on the garment (mm). Shirt buttons are 11 mm (18 ligne), jacket 20 mm (32 ligne), coat 25 mm. The cap bore is cut 0.4 mm larger.",
+        "es": "Diámetro del botón que ya trae la prenda (mm). Los de camisa miden 11 mm (18 líneas), los de saco 20 mm (32 líneas), los de abrigo 25 mm. El alojamiento se corta 0.4 mm mayor."
+      }
+    },
+    {
+      "id": "button_t",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "button",
+      "modes": [
+        "cap",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Existing button thickness (mm)",
+        "es": "Espesor del botón existente (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the button the cap swallows (mm). Sets the socket depth; measure the button itself, not the button plus the fabric it sits on.",
+        "es": "Espesor del botón que aloja la tapa (mm). Define la profundidad del alojamiento; mide el botón solo, no el botón más la tela sobre la que va."
+      }
+    },
+    {
+      "id": "snap_lip",
+      "type": "slider",
+      "default": 0.7,
+      "min": 0.2,
+      "max": 2.0,
+      "step": 0.05,
+      "group": "button",
+      "modes": [
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Retaining lip depth (mm)",
+        "es": "Profundidad del labio de retención (mm)"
+      },
+      "tooltip": {
+        "en": "How far the cap's mouth steps in past the button rim (mm). This is the interference that keeps the cap on: 0.7 mm springs on by hand and stays, 1.5 mm is a fight, 0.3 mm may fall off.",
+        "es": "Cuánto se cierra la boca de la tapa por dentro del borde del botón (mm). Es la interferencia que la mantiene puesta: 0.7 mm entra a mano y se queda, 1.5 mm cuesta trabajo, 0.3 mm puede caerse."
+      }
+    },
+    {
+      "id": "magnet_dia",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "magnet",
+      "modes": [
+        "cap",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Disc magnet diameter (mm)",
+        "es": "Diámetro del imán de disco (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the neodymium disc (mm). 6 mm holds a shirt placket, 8 mm a jacket, 10 mm a coat. Auto-clamped to fit inside the button it hides behind.",
+        "es": "Diámetro del disco de neodimio (mm). 6 mm sujeta una cartera de camisa, 8 mm un saco, 10 mm un abrigo. Se limita automáticamente para caber dentro del botón que lo oculta."
+      }
+    },
+    {
+      "id": "magnet_t",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "magnet",
+      "modes": [
+        "cap",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Disc magnet thickness (mm)",
+        "es": "Espesor del imán de disco (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the disc (mm). 6x2 mm and 8x3 mm N42 are the common adaptive-closure sizes; thicker discs hold harder but stand proud under the placket.",
+        "es": "Espesor del disco (mm). Los N42 de 6x2 mm y 8x3 mm son las medidas comunes para cierres adaptados; los discos más gruesos sujetan más pero se notan bajo la cartera."
+      }
+    },
+    {
+      "id": "magnet_fit",
+      "type": "slider",
+      "default": 0.15,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05,
+      "group": "magnet",
+      "modes": [
+        "cap",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Magnet pocket clearance (mm)",
+        "es": "Holgura de la cavidad del imán (mm)"
+      },
+      "tooltip": {
+        "en": "Diametral clearance on the magnet pocket (mm). 0.15 mm is a press fit that needs no glue; raise it for materials that shrink, lower it to zero for a friction fit in TPU.",
+        "es": "Holgura diametral de la cavidad del imán (mm). 0.15 mm da un ajuste a presión sin pegamento; auméntala en materiales que contraen, bájala a cero para ajuste por fricción en TPU."
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 1.4,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "magnet",
+      "modes": [
+        "cap",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Wall thickness (mm)",
+        "es": "Espesor de pared (mm)"
+      },
+      "tooltip": {
+        "en": "Working wall thickness (mm). This is the material between the magnets when the placket is closed, so it directly weakens or strengthens the hold — thinner walls hold harder.",
+        "es": "Espesor de pared de trabajo (mm). Es el material que queda entre los imanes con la cartera cerrada, así que debilita o refuerza directamente la sujeción: paredes más delgadas sujetan más."
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 6,
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "group": "sewing",
+      "modes": [
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Plate sew holes (count)",
+        "es": "Ojales de la placa (cantidad)"
+      },
+      "tooltip": {
+        "en": "Stitch holes around the plate. Six spreads the pull that a magnet exerts on the placket lining; fewer holes concentrate it and eventually tear the fabric.",
+        "es": "Ojales de costura alrededor de la placa. Seis reparten el jalón que ejerce el imán sobre el forro de la cartera; menos ojales lo concentran y con el tiempo rompen la tela."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Sew hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each stitch hole (mm). 1.6 mm passes a doubled all-purpose thread on a hand needle; auto-clamped to keep wall at the plate rim.",
+        "es": "Diámetro de cada ojal (mm). 1.6 mm deja pasar hilo multiuso doble con aguja de mano; se limita para conservar pared en el borde de la placa."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "dress_shirt",
+      "mode": "set",
+      "label": {
+        "en": "Dress Shirt (11 mm, 6x2 magnet)",
+        "es": "Camisa de vestir (11 mm, imán 6x2)"
+      },
+      "values": {
+        "button_dia": 11.0,
+        "button_t": 2.2,
+        "magnet_dia": 6.0,
+        "magnet_t": 2.0,
+        "wall": 1.2,
+        "snap_lip": 0.7,
+        "sew_holes": 6,
+        "hole_dia": 1.6,
+        "magnet_fit": 0.15
+      }
+    },
+    {
+      "id": "jacket",
+      "mode": "set",
+      "label": {
+        "en": "Jacket (20 mm, 8x3 magnet)",
+        "es": "Saco (20 mm, imán 8x3)"
+      },
+      "values": {
+        "button_dia": 20.0,
+        "button_t": 3.5,
+        "magnet_dia": 8.0,
+        "magnet_t": 3.0,
+        "wall": 1.6,
+        "snap_lip": 0.9,
+        "sew_holes": 8,
+        "hole_dia": 1.8,
+        "magnet_fit": 0.15
+      }
+    },
+    {
+      "id": "winter_coat",
+      "mode": "set",
+      "label": {
+        "en": "Winter Coat (25 mm, 10x3 magnet)",
+        "es": "Abrigo de invierno (25 mm, imán 10x3)"
+      },
+      "values": {
+        "button_dia": 25.0,
+        "button_t": 5.0,
+        "magnet_dia": 10.0,
+        "magnet_t": 3.0,
+        "wall": 1.8,
+        "snap_lip": 1.1,
+        "sew_holes": 10,
+        "hole_dia": 2.0,
+        "magnet_fit": 0.2
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        35,
+        35,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "plate_sew_ring",
+        "label": {
+          "en": "Plate Sew Ring",
+          "es": "Anillo de costura de la placa"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "button_dia",
+          "wall",
+          "sew_holes",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "button_snap",
+        "label": {
+          "en": "Existing Button Snap",
+          "es": "Encaje sobre el botón existente"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "button_dia",
+          "button_t",
+          "snap_lip"
+        ]
+      },
+      {
+        "id": "magnet_pocket",
+        "label": {
+          "en": "Disc Magnet Pocket",
+          "es": "Cavidad del imán de disco"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "magnet_dia",
+          "magnet_t",
+          "magnet_fit"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Adaptive magnetic shirts are sold as whole garments at several times the price of the shirt someone already owns, and converting a shirt by replacing its buttons alters it permanently — impossible for a uniform, a school shirt, or something borrowed or inherited. A cap that snaps on and a plate that stitches behind the buttonhole convert any placket reversibly, in minutes, and move to the next shirt when that one wears out.",
+      "es": "Las camisas magnéticas adaptadas se venden como prendas completas a varias veces el precio de la camisa que alguien ya tiene, y convertir una camisa cambiándole los botones la altera de forma permanente: imposible en un uniforme, una camisa escolar o algo prestado o heredado. Una tapa que entra a presión y una placa que se cose detrás del ojal convierten cualquier cartera de manera reversible, en minutos, y pasan a la siguiente camisa cuando aquélla se acaba."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "magnetic-button-cover",
+    "magnetic-closure",
+    "button",
+    "accessibility",
+    "adaptive",
+    "assistive",
+    "arthritis",
+    "dressing",
+    "placket",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

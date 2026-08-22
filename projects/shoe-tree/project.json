@@ -1,0 +1,435 @@
+{
+  "project": {
+    "name": "Shoe Tree",
+    "slug": "shoe-tree",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A one-piece compliant shoe tree — a toe form that fills the vamp, a flat-spring shank that stores the preload, and a heel pad that presses back into the counter. A commercial cedar tree is a two-piece block on a sprung spindle and cannot print as one solid, so here the spring IS the shank: a wide thin ribbon of material. Sized directly from the shoe's inside length and ball width, including the sizes cedar trees are never stocked in.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una horma de zapato flexible de una sola pieza — una forma de puntera que llena la pala, un enfranque de resorte plano que almacena la precarga y una almohadilla de talón que empuja el contrafuerte. Una horma comercial de cedro es un bloque de dos piezas sobre un husillo con muelle y no puede imprimirse como un solo sólido, así que aquí el resorte ES el enfranque: una cinta ancha y delgada de material. Se dimensiona directamente a partir del largo interior y el ancho de planta del zapato, incluidas las tallas que nunca hay en existencia.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shoe-tree.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "shoe-tree",
+      "shoe",
+      "footwear",
+      "last",
+      "garment-care",
+      "compliant",
+      "spring",
+      "shoe-care",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "solid",
+      "label": {
+        "en": "Solid Tree",
+        "es": "Horma maciza"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "solid"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "vented",
+      "label": {
+        "en": "Vented (drying holes)",
+        "es": "Ventilada (orificios de secado)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "vented"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Pair (left + right)",
+        "es": "Par (izquierda y derecha)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pair"
+      ],
+      "estimate": {
+        "base_time": 22,
+        "per_unit": 4,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "solid",
+      "label": {
+        "en": "Shoe Tree",
+        "es": "Horma"
+      },
+      "render_mode": 0,
+      "color": "#c2b49a"
+    },
+    {
+      "id": "vented",
+      "label": {
+        "en": "Vented Shoe Tree",
+        "es": "Horma ventilada"
+      },
+      "render_mode": 0,
+      "color": "#c2b49a"
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Pair",
+        "es": "Par"
+      },
+      "render_mode": 0,
+      "color": "#b6a88e"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "shoe",
+      "label": {
+        "en": "Shoe",
+        "es": "Zapato"
+      }
+    },
+    {
+      "id": "spring",
+      "label": {
+        "en": "Spring",
+        "es": "Resorte"
+      }
+    },
+    {
+      "id": "venting",
+      "label": {
+        "en": "Venting",
+        "es": "Ventilación"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "shoe_len",
+      "type": "slider",
+      "default": 270.0,
+      "min": 200.0,
+      "max": 340.0,
+      "step": 2.0,
+      "group": "shoe",
+      "modes": [
+        "solid",
+        "vented",
+        "pair"
+      ],
+      "label": {
+        "en": "Shoe inside length (mm)",
+        "es": "Largo interior del zapato (mm)"
+      },
+      "tooltip": {
+        "en": "Inside length of the shoe, toe to heel (mm). EU 42 is about 270 mm, EU 38 about 245 mm, EU 34 about 215 mm. Measure the insole, not the outsole — the outsole is longer than the space the tree has to fill.",
+        "es": "Largo interior del zapato, de la puntera al talón (mm). El EU 42 mide unos 270 mm, el EU 38 unos 245 mm y el EU 34 unos 215 mm. Mide la plantilla, no la suela — la suela es más larga que el espacio que la horma debe llenar."
+      }
+    },
+    {
+      "id": "ball_w",
+      "type": "slider",
+      "default": 98.0,
+      "min": 60.0,
+      "max": 135.0,
+      "step": 1.0,
+      "group": "shoe",
+      "modes": [
+        "solid",
+        "vented",
+        "pair"
+      ],
+      "label": {
+        "en": "Ball width (mm)",
+        "es": "Ancho de planta (mm)"
+      },
+      "tooltip": {
+        "en": "Width across the ball of the foot (mm) — the widest point of the last, which the tree reproduces at about 30 % back from the toe. Auto-clamped to 48 % of the length so the form never inverts.",
+        "es": "Ancho a la altura de la planta (mm) — el punto más ancho de la horma, que se reproduce a cerca del 30 % desde la puntera. Se limita al 48 % del largo para que la forma nunca se invierta."
+      }
+    },
+    {
+      "id": "toe_h",
+      "type": "slider",
+      "default": 40.0,
+      "min": 20.0,
+      "max": 70.0,
+      "step": 1.0,
+      "group": "shoe",
+      "modes": [
+        "solid",
+        "vented",
+        "pair"
+      ],
+      "label": {
+        "en": "Toe box height (mm)",
+        "es": "Altura de la puntera (mm)"
+      },
+      "tooltip": {
+        "en": "Internal height of the toe box (mm). This is what actually pushes the vamp creases out — a dress oxford wants 35-42 mm, a boot 55-70 mm.",
+        "es": "Altura interior de la puntera (mm). Es lo que realmente estira los pliegues de la pala — un oxford de vestir pide de 35 a 42 mm y una bota de 55 a 70 mm."
+      }
+    },
+    {
+      "id": "heel_h",
+      "type": "slider",
+      "default": 52.0,
+      "min": 28.0,
+      "max": 90.0,
+      "step": 1.0,
+      "group": "shoe",
+      "modes": [
+        "solid",
+        "vented",
+        "pair"
+      ],
+      "label": {
+        "en": "Heel counter height (mm)",
+        "es": "Altura del contrafuerte (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the heel pad (mm). Match the shoe's counter so the pad presses on the stiffened back seam rather than on the soft collar above it.",
+        "es": "Altura de la almohadilla de talón (mm). Iguala el contrafuerte del zapato para que la almohadilla empuje la costura trasera reforzada y no el collarín blando de arriba."
+      }
+    },
+    {
+      "id": "shank_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.4,
+      "max": 9.0,
+      "step": 0.2,
+      "group": "spring",
+      "modes": [
+        "solid",
+        "vented",
+        "pair"
+      ],
+      "label": {
+        "en": "Spring shank thickness (mm)",
+        "es": "Espesor del enfranque de resorte (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flat spring ribbon (mm) — the single number that sets how hard the tree pushes. Thinner flexes further and pushes less; thicker holds a stretched boot open. Below 2.4 mm the ribbon is a knife edge and delaminates, so it is clamped there.",
+        "es": "Espesor de la cinta de resorte plana (mm) — el único número que fija con cuánta fuerza empuja la horma. Más delgada flexiona más y empuja menos; más gruesa mantiene abierta una bota estirada. Por debajo de 2.4 mm la cinta queda como filo y se delamina, así que ahí se limita."
+      }
+    },
+    {
+      "id": "vent_rows",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "group": "venting",
+      "modes": [
+        "vented",
+        "pair"
+      ],
+      "label": {
+        "en": "Vent rows",
+        "es": "Filas de ventilación"
+      },
+      "tooltip": {
+        "en": "Rows of through-vents bored across the toe form so a damp shoe dries through the tree rather than around it. Every vent cuts clean through both faces — there are no sealed pockets to trap moisture.",
+        "es": "Filas de orificios pasantes en la forma de puntera para que un zapato húmedo se seque a través de la horma y no alrededor. Cada orificio atraviesa ambas caras — no hay bolsas selladas que retengan humedad."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "mens_oxford",
+      "mode": "vented",
+      "label": {
+        "en": "Men's Oxford (EU 42)",
+        "es": "Oxford de caballero (EU 42)"
+      },
+      "values": {
+        "shoe_len": 270.0,
+        "ball_w": 98.0,
+        "toe_h": 38.0,
+        "shank_t": 4.0,
+        "heel_h": 50.0,
+        "vent_rows": 3
+      }
+    },
+    {
+      "id": "womens_pump",
+      "mode": "solid",
+      "label": {
+        "en": "Women's Pump (EU 38)",
+        "es": "Zapatilla de dama (EU 38)"
+      },
+      "values": {
+        "shoe_len": 245.0,
+        "ball_w": 82.0,
+        "toe_h": 30.0,
+        "shank_t": 3.2,
+        "heel_h": 42.0
+      }
+    },
+    {
+      "id": "work_boot",
+      "mode": "vented",
+      "label": {
+        "en": "Work Boot (EU 45)",
+        "es": "Bota de trabajo (EU 45)"
+      },
+      "values": {
+        "shoe_len": 295.0,
+        "ball_w": 112.0,
+        "toe_h": 62.0,
+        "shank_t": 6.5,
+        "heel_h": 78.0,
+        "vent_rows": 4
+      }
+    },
+    {
+      "id": "child_pair",
+      "mode": "pair",
+      "label": {
+        "en": "Child Pair (EU 34)",
+        "es": "Par infantil (EU 34)"
+      },
+      "values": {
+        "shoe_len": 215.0,
+        "ball_w": 70.0,
+        "toe_h": 26.0,
+        "shank_t": 2.8,
+        "heel_h": 34.0,
+        "vent_rows": 2
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        260,
+        220,
+        180
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "last_profile",
+        "label": {
+          "en": "Last Profile (the toe-form section chain)",
+          "es": "Perfil de horma (la cadena de secciones de la puntera)"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "shoe_len",
+          "ball_w",
+          "toe_h"
+        ]
+      },
+      {
+        "id": "counter_pad",
+        "label": {
+          "en": "Counter Pad (heel bearing face)",
+          "es": "Almohadilla de contrafuerte (cara de apoyo del talón)"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "heel_h",
+          "ball_w",
+          "shoe_len"
+        ]
+      },
+      {
+        "id": "spring_shank",
+        "label": {
+          "en": "Spring Shank (compliant preload ribbon)",
+          "es": "Enfranque de resorte (cinta flexible de precarga)"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "shank_t",
+          "shoe_len",
+          "ball_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Most footwear is retired not because the sole failed but because the upper creased permanently across the vamp. Cedar trees are sold in whole-size steps and rarely below a child's EU 34 or above an EU 46, so the shoes most likely to be handed down are exactly the ones with no tree available. A tree generated from a measured insole keeps those uppers in shape, and the vented mode dries a wet shoe from the inside instead of on a radiator, which is what cracks the leather.",
+      "es": "La mayoría del calzado se retira no porque falle la suela sino porque el corte se marcó de forma permanente en la pala. Las hormas de cedro se venden en tallas enteras y casi nunca por debajo de un EU 34 infantil ni por encima de un EU 46, así que los zapatos que más se heredan son justamente los que no tienen horma disponible. Una horma generada a partir de una plantilla medida conserva la forma de esos cortes, y la versión ventilada seca el zapato mojado desde dentro en vez de sobre un radiador, que es lo que agrieta la piel."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "shoe-tree",
+    "shoe",
+    "footwear",
+    "last",
+    "garment-care",
+    "compliant",
+    "spring",
+    "shoe-care",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

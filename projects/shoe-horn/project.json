@@ -1,0 +1,414 @@
+{
+  "project": {
+    "name": "Shoe Horn",
+    "slug": "shoe-horn",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed classic curved shoe horn — a lofted blade that widens and dishes as it runs from a narrow handle to a broad heel scoop, so a foot glides into a shoe without folding the heel counter under. Folding a counter once is what kills a dress shoe: the crease never comes out and the shoe stops holding the heel. Short and long modes; the long one is used standing up and needs no bending, which makes it the accessible version for anyone who cannot reach their own heel.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un calzador curvo clásico impreso en 3D — una hoja generada por transición que se ensancha y se acucharilla al pasar de un mango angosto a una pala amplia de talón, para que el pie entre al zapato sin doblar el contrafuerte. Doblar un contrafuerte una sola vez es lo que mata un zapato de vestir: el pliegue nunca sale y el zapato deja de sujetar el talón. Modos corto y largo; el largo se usa de pie y no exige agacharse, lo que lo vuelve la versión accesible para quien no alcanza su propio talón.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/shoe-horn.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "shoe-horn",
+      "shoehorn",
+      "shoe",
+      "footwear",
+      "dressing-aid",
+      "accessibility",
+      "heel-counter",
+      "leather",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "short",
+      "label": {
+        "en": "Short (pocket / travel)",
+        "es": "Corto (bolsillo / viaje)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "short"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "long",
+      "label": {
+        "en": "Long (standing / accessible)",
+        "es": "Largo (de pie / accesible)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "long"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Short + Long Set",
+        "es": "Juego corto y largo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 24,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "short",
+      "label": {
+        "en": "Short Shoe Horn",
+        "es": "Calzador corto"
+      },
+      "render_mode": 0,
+      "color": "#8a7a63"
+    },
+    {
+      "id": "long",
+      "label": {
+        "en": "Long Shoe Horn",
+        "es": "Calzador largo"
+      },
+      "render_mode": 0,
+      "color": "#8a7a63"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Short + Long Set",
+        "es": "Juego corto y largo"
+      },
+      "render_mode": 0,
+      "color": "#7a6c58"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "blade",
+      "label": {
+        "en": "Blade",
+        "es": "Hoja"
+      }
+    },
+    {
+      "id": "curve",
+      "label": {
+        "en": "Curve",
+        "es": "Curvatura"
+      }
+    },
+    {
+      "id": "handle",
+      "label": {
+        "en": "Handle",
+        "es": "Mango"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "horn_len",
+      "type": "slider",
+      "default": 190.0,
+      "min": 90.0,
+      "max": 620.0,
+      "step": 5.0,
+      "group": "blade",
+      "modes": [
+        "short",
+        "long",
+        "set"
+      ],
+      "label": {
+        "en": "Blade length (mm)",
+        "es": "Largo de la hoja (mm)"
+      },
+      "tooltip": {
+        "en": "Length measured along the curved spine (mm). A pocket horn is 120-200 mm; a standing horn is 400-600 mm. The long mode raises this to at least 380 mm on its own.",
+        "es": "Largo medido a lo largo del eje curvo (mm). Un calzador de bolsillo mide de 120 a 200 mm; uno de pie de 400 a 600 mm. El modo largo lo eleva por sí solo a un mínimo de 380 mm."
+      }
+    },
+    {
+      "id": "handle_w",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "handle",
+      "modes": [
+        "short",
+        "long",
+        "set"
+      ],
+      "label": {
+        "en": "Handle width (mm)",
+        "es": "Ancho del mango (mm)"
+      },
+      "tooltip": {
+        "en": "Width at the handle end (mm). Wider is easier to hold with a weak grip; narrower slips into a pocket or a boot shaft.",
+        "es": "Ancho en el extremo del mango (mm). Más ancho es más fácil de sujetar con poca fuerza de agarre; más angosto entra en un bolsillo o en la caña de una bota."
+      }
+    },
+    {
+      "id": "scoop_w",
+      "type": "slider",
+      "default": 42.0,
+      "min": 14.0,
+      "max": 80.0,
+      "step": 0.5,
+      "group": "blade",
+      "modes": [
+        "short",
+        "long",
+        "set"
+      ],
+      "label": {
+        "en": "Heel scoop width (mm)",
+        "es": "Ancho de la pala del talón (mm)"
+      },
+      "tooltip": {
+        "en": "Width at the heel scoop (mm) — the part that sits between heel and counter. 38-46 mm suits most adult shoes; go wider for a broad boot counter. Auto-raised above the handle width.",
+        "es": "Ancho en la pala del talón (mm) — la parte que va entre el talón y el contrafuerte. De 38 a 46 mm conviene a la mayoría de los zapatos de adulto; más ancho para un contrafuerte de bota. Se eleva automáticamente por encima del ancho del mango."
+      }
+    },
+    {
+      "id": "blade_t",
+      "type": "slider",
+      "default": 3.4,
+      "min": 1.8,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "blade",
+      "modes": [
+        "short",
+        "long",
+        "set"
+      ],
+      "label": {
+        "en": "Blade thickness (mm)",
+        "es": "Espesor de la hoja (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness at the handle (mm); the blade tapers about 35 % thinner toward the scoop so the tip slips behind the counter. Thicker resists snapping on a long horn but is harder to work into a tight shoe.",
+        "es": "Espesor en el mango (mm); la hoja adelgaza cerca de 35 % hacia la pala para que la punta entre tras el contrafuerte. Más grueso resiste la rotura en un calzador largo pero cuesta más meterlo en un zapato ajustado."
+      }
+    },
+    {
+      "id": "curve_deg",
+      "type": "slider",
+      "default": 62.0,
+      "min": 15.0,
+      "max": 110.0,
+      "step": 1.0,
+      "group": "curve",
+      "modes": [
+        "short",
+        "long",
+        "set"
+      ],
+      "label": {
+        "en": "Total curvature (degrees)",
+        "es": "Curvatura total (grados)"
+      },
+      "tooltip": {
+        "en": "How far the spine turns from handle to scoop (degrees). A tighter curve hugs a dress-shoe counter; a flatter curve reaches further. The long mode caps this at 40 degrees so the horn still reaches the floor.",
+        "es": "Cuánto gira el eje del mango a la pala (grados). Una curva cerrada abraza el contrafuerte de un zapato de vestir; una curva plana alcanza más lejos. El modo largo lo limita a 40 grados para que el calzador aún llegue al piso."
+      }
+    },
+    {
+      "id": "hang_hole",
+      "type": "slider",
+      "default": 6.0,
+      "min": 0.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "handle",
+      "modes": [
+        "short",
+        "long",
+        "set"
+      ],
+      "label": {
+        "en": "Hang hole diameter, 0 = none (mm)",
+        "es": "Diámetro del ojal de colgar, 0 = ninguno (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the hole through the handle end for a lace or a hook (mm). Set 0 for a plain handle. Auto-clamped to half the handle width.",
+        "es": "Diámetro del ojal en el extremo del mango para una cinta o un gancho (mm). Usa 0 para un mango liso. Se limita automáticamente a la mitad del ancho del mango."
+      }
+    },
+    {
+      "id": "sections",
+      "type": "slider",
+      "default": 14,
+      "min": 8,
+      "max": 28,
+      "step": 1,
+      "group": "curve",
+      "modes": [
+        "short",
+        "long",
+        "set"
+      ],
+      "label": {
+        "en": "Loft sections (count)",
+        "es": "Secciones de transición (cantidad)"
+      },
+      "tooltip": {
+        "en": "How many cross sections the blade is lofted through. More sections give a smoother curve at the cost of render time; 14 is plenty for a short horn, raise it for a long one.",
+        "es": "Cuántas secciones transversales componen la hoja. Más secciones dan una curva más suave a costa del tiempo de render; 14 basta para un calzador corto, súbelo para uno largo."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "pocket_horn",
+      "mode": "short",
+      "label": {
+        "en": "Pocket Horn (150 mm)",
+        "es": "Calzador de bolsillo (150 mm)"
+      },
+      "values": {
+        "horn_len": 150.0,
+        "handle_w": 14.0,
+        "scoop_w": 38.0,
+        "blade_t": 3.0,
+        "curve_deg": 70.0,
+        "hang_hole": 5.0,
+        "sections": 14
+      }
+    },
+    {
+      "id": "standing_horn",
+      "mode": "long",
+      "label": {
+        "en": "Standing Horn (520 mm)",
+        "es": "Calzador de pie (520 mm)"
+      },
+      "values": {
+        "horn_len": 520.0,
+        "handle_w": 22.0,
+        "scoop_w": 46.0,
+        "blade_t": 5.0,
+        "curve_deg": 34.0,
+        "hang_hole": 8.0,
+        "sections": 20
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        260,
+        260,
+        180
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "counter_scoop",
+        "label": {
+          "en": "Heel-Counter Scoop",
+          "es": "Pala del contrafuerte"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "scoop_w",
+          "blade_t",
+          "curve_deg"
+        ]
+      },
+      {
+        "id": "hang_point",
+        "label": {
+          "en": "Hang Point",
+          "es": "Punto de colgado"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "hang_hole",
+          "handle_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A folded heel counter is a permanent injury to a shoe, and the tool that prevents it costs almost nothing to make. The long mode matters more: it lets someone with limited hip, knee or back mobility put on their own shoes standing up, which is the difference between dressing independently and waiting for help.",
+      "es": "Un contrafuerte doblado es una lesión permanente para un zapato, y la herramienta que lo evita cuesta casi nada de fabricar. El modo largo importa aún más: permite que alguien con movilidad limitada de cadera, rodilla o espalda se ponga sus propios zapatos de pie, que es la diferencia entre vestirse solo y esperar ayuda."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "shoe-horn",
+    "shoehorn",
+    "shoe",
+    "footwear",
+    "dressing-aid",
+    "accessibility",
+    "heel-counter",
+    "leather",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

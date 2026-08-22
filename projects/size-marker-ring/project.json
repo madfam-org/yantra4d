@@ -1,0 +1,489 @@
+{
+  "project": {
+    "name": "Size Marker Ring",
+    "slug": "size-marker-ring",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed rack size divider — a C-ring that springs over a closet or shop rail and carries a debossed size label, so a rail of mixed stock reads at a glance and goes back in order after a customer has been through it. The label is cut into the tab, never raised, because a proud character on a divider snags knitwear. Sized to the rail you actually have, across the 19 / 25 / 32 mm rods that shop fittings never quite agree on.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un separador de talla para riel impreso en 3D — un aro en C que entra a presión en el tubo de un clóset o una tienda y lleva la talla grabada en bajorrelieve, para que un riel con surtido mezclado se lea de un vistazo y vuelva a su orden después de que pasó un cliente. La etiqueta va cortada en la lengüeta, nunca en relieve, porque un carácter saliente en un separador engancha el tejido de punto. Se dimensiona al tubo que realmente tienes, entre los rieles de 19, 25 y 32 mm en los que los herrajes de tienda nunca terminan de coincidir.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/size-marker-ring.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "size-marker-ring",
+      "size-divider",
+      "rack-divider",
+      "retail-display",
+      "sizing",
+      "closet",
+      "wardrobe",
+      "shop-fitting",
+      "snap-ring",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "ring",
+      "label": {
+        "en": "Labelled Divider",
+        "es": "Separador con talla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "ring"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "blank",
+      "label": {
+        "en": "Blank Divider",
+        "es": "Separador en blanco"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "blank"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Set of Three",
+        "es": "Juego de tres"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "ring",
+      "label": {
+        "en": "Labelled Divider",
+        "es": "Separador con talla"
+      },
+      "render_mode": 0,
+      "color": "#8fa4b8"
+    },
+    {
+      "id": "blank",
+      "label": {
+        "en": "Blank Divider",
+        "es": "Separador en blanco"
+      },
+      "render_mode": 0,
+      "color": "#a0b2c4"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Set of Three",
+        "es": "Juego de tres"
+      },
+      "render_mode": 0,
+      "color": "#8fa4b8"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "rail",
+      "label": {
+        "en": "Rail",
+        "es": "Riel"
+      }
+    },
+    {
+      "id": "ring",
+      "label": {
+        "en": "Ring",
+        "es": "Aro"
+      }
+    },
+    {
+      "id": "label",
+      "label": {
+        "en": "Label",
+        "es": "Etiqueta"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "rod_dia",
+      "type": "slider",
+      "default": 32.0,
+      "min": 12.0,
+      "max": 50.0,
+      "step": 1.0,
+      "group": "rail",
+      "modes": [
+        "ring",
+        "blank",
+        "set"
+      ],
+      "label": {
+        "en": "Rail diameter (mm)",
+        "es": "Diámetro del riel (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the rail the ring snaps over (mm). 19 mm and 25 mm are shop hanging rails, 32 mm a timber closet dowel. The bore adds 0.5 mm of running clearance so the divider slides without binding.",
+        "es": "Diámetro exterior del riel donde entra el aro (mm). Los rieles de tienda son de 19 y 25 mm; 32 mm corresponde a una barra de madera de clóset. El barreno añade 0.5 mm de holgura para que el separador deslice sin trabarse."
+      }
+    },
+    {
+      "id": "mouth_pct",
+      "type": "slider",
+      "default": 62.0,
+      "min": 45.0,
+      "max": 92.0,
+      "step": 1.0,
+      "group": "rail",
+      "modes": [
+        "ring",
+        "blank",
+        "set"
+      ],
+      "label": {
+        "en": "Snap mouth (% of rail)",
+        "es": "Boca de presión (% del riel)"
+      },
+      "tooltip": {
+        "en": "Width of the opening as a percentage of the rail diameter. Below 100 % the ring must spring over the rail and then grips it — 60-70 % holds firmly in PETG. Above 85 % it slips on freely and can also slip off; below 50 % a printed ring cracks going on.",
+        "es": "Ancho de la abertura como porcentaje del diámetro del riel. Por debajo del 100 % el aro debe abrirse para entrar y luego sujeta — de 60 a 70 % agarra bien en PETG. Por arriba del 85 % entra suelto y también puede zafarse; por debajo del 50 % un aro impreso se agrieta al montarlo."
+      }
+    },
+    {
+      "id": "ring_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.25,
+      "group": "ring",
+      "modes": [
+        "ring",
+        "blank",
+        "set"
+      ],
+      "label": {
+        "en": "Ring wall thickness (mm)",
+        "es": "Espesor de pared del aro (mm)"
+      },
+      "tooltip": {
+        "en": "Radial wall of the C-ring (mm). This is what springs when the divider goes on: thinner opens more easily but fatigues, thicker grips harder but can crack on a tight mouth.",
+        "es": "Pared radial del aro en C (mm). Es lo que flexiona al montar el separador: más delgada abre con más facilidad pero se fatiga, más gruesa sujeta con más fuerza pero puede agrietarse con una boca cerrada."
+      }
+    },
+    {
+      "id": "ring_w",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "ring",
+      "modes": [
+        "ring",
+        "blank",
+        "set"
+      ],
+      "label": {
+        "en": "Ring width (mm)",
+        "es": "Ancho del aro (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the ring along the rail (mm). Wider keeps the divider square to the rail instead of cocking under the weight of the tab.",
+        "es": "Ancho del aro a lo largo del riel (mm). Más ancho mantiene el separador perpendicular al riel en lugar de ladearse por el peso de la lengüeta."
+      }
+    },
+    {
+      "id": "tab_h",
+      "type": "slider",
+      "default": 24.0,
+      "min": 10.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "label",
+      "modes": [
+        "ring",
+        "blank",
+        "set"
+      ],
+      "label": {
+        "en": "Label tab height (mm)",
+        "es": "Alto de la lengüeta (mm)"
+      },
+      "tooltip": {
+        "en": "How far the label paddle hangs below the rail (mm). It must clear the shoulders of the hangers on either side or the divider disappears between them.",
+        "es": "Cuánto cuelga la paleta de etiqueta por debajo del riel (mm). Debe librar los hombros de los ganchos a ambos lados o el separador desaparece entre ellos."
+      }
+    },
+    {
+      "id": "size_label",
+      "type": "select",
+      "default": "M",
+      "options": [
+        { "value": "XXS", "label": { "en": "XXS", "es": "XXS" } },
+        { "value": "XS", "label": { "en": "XS", "es": "XS" } },
+        { "value": "S", "label": { "en": "S", "es": "CH" } },
+        { "value": "M", "label": { "en": "M", "es": "M" } },
+        { "value": "L", "label": { "en": "L", "es": "G" } },
+        { "value": "XL", "label": { "en": "XL", "es": "XG" } },
+        { "value": "2XL", "label": { "en": "2XL", "es": "2XG" } },
+        { "value": "3XL", "label": { "en": "3XL", "es": "3XG" } },
+        { "value": "4XL", "label": { "en": "4XL", "es": "4XG" } },
+        { "value": "0", "label": { "en": "US 0", "es": "EE. UU. 0" } },
+        { "value": "2", "label": { "en": "US 2", "es": "EE. UU. 2" } },
+        { "value": "4", "label": { "en": "US 4", "es": "EE. UU. 4" } },
+        { "value": "6", "label": { "en": "US 6", "es": "EE. UU. 6" } },
+        { "value": "8", "label": { "en": "US 8", "es": "EE. UU. 8" } },
+        { "value": "10", "label": { "en": "US 10", "es": "EE. UU. 10" } },
+        { "value": "12", "label": { "en": "US 12", "es": "EE. UU. 12" } },
+        { "value": "14", "label": { "en": "US 14", "es": "EE. UU. 14" } },
+        { "value": "16", "label": { "en": "US 16", "es": "EE. UU. 16" } },
+        { "value": "18", "label": { "en": "US 18", "es": "EE. UU. 18" } },
+        { "value": "20", "label": { "en": "US 20", "es": "EE. UU. 20" } },
+        { "value": "28", "label": { "en": "Waist 28", "es": "Cintura 28" } },
+        { "value": "30", "label": { "en": "Waist 30", "es": "Cintura 30" } },
+        { "value": "32", "label": { "en": "Waist 32", "es": "Cintura 32" } },
+        { "value": "34", "label": { "en": "Waist 34", "es": "Cintura 34" } },
+        { "value": "36", "label": { "en": "Waist 36", "es": "Cintura 36" } },
+        { "value": "38", "label": { "en": "Waist 38", "es": "Cintura 38" } },
+        { "value": "40", "label": { "en": "Waist 40", "es": "Cintura 40" } },
+        { "value": "42", "label": { "en": "Waist 42", "es": "Cintura 42" } },
+        { "value": "44", "label": { "en": "Waist 44", "es": "Cintura 44" } },
+        { "value": "46", "label": { "en": "Waist 46", "es": "Cintura 46" } }
+      ],
+      "group": "label",
+      "modes": [
+        "ring",
+        "set"
+      ],
+      "label": {
+        "en": "Size label",
+        "es": "Talla"
+      },
+      "tooltip": {
+        "en": "The size debossed into both faces of the tab. Alpha sizes XXS-4XL, US numeric 0-20, and waist/EU numeric 28-46 are all carried. Anything outside the list renders as a blank tab rather than failing.",
+        "es": "La talla grabada en bajorrelieve en ambas caras de la lengüeta. Incluye tallas alfabéticas XXS-4XL, numéricas de EE. UU. 0-20 y numéricas de cintura/EU 28-46. Cualquier valor fuera de la lista se imprime como lengüeta en blanco en lugar de fallar."
+      }
+    },
+    {
+      "id": "text_depth",
+      "type": "slider",
+      "default": 0.9,
+      "min": 0.3,
+      "max": 2.0,
+      "step": 0.1,
+      "group": "label",
+      "modes": [
+        "ring",
+        "set"
+      ],
+      "label": {
+        "en": "Deboss depth (mm)",
+        "es": "Profundidad del grabado (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the characters are cut into the tab (mm). Deeper reads better from across a shop floor and holds a paint fill; auto-clamped to 40 % of the ring wall so the tab never perforates.",
+        "es": "Qué tan profundo se cortan los caracteres en la lengüeta (mm). Más profundo se lee mejor de lejos y retiene pintura de relleno; se limita al 40 % de la pared del aro para que la lengüeta nunca se perfore."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shop_rail_medium",
+      "mode": "ring",
+      "label": {
+        "en": "Shop Rail 25 mm — M",
+        "es": "Riel de tienda 25 mm — M"
+      },
+      "values": {
+        "rod_dia": 25.0,
+        "size_label": "M",
+        "ring_t": 4.0,
+        "ring_w": 8.0,
+        "tab_h": 22.0,
+        "mouth_pct": 62.0,
+        "text_depth": 0.9
+      }
+    },
+    {
+      "id": "closet_dowel_large",
+      "mode": "ring",
+      "label": {
+        "en": "Closet Dowel 32 mm — L",
+        "es": "Barra de clóset 32 mm — L"
+      },
+      "values": {
+        "rod_dia": 32.0,
+        "size_label": "L",
+        "ring_t": 5.0,
+        "ring_w": 10.0,
+        "tab_h": 26.0,
+        "mouth_pct": 65.0,
+        "text_depth": 1.0
+      }
+    },
+    {
+      "id": "waist_run",
+      "mode": "set",
+      "label": {
+        "en": "Waist Run (32) x3",
+        "es": "Corrida de cintura (32) x3"
+      },
+      "values": {
+        "rod_dia": 25.0,
+        "size_label": "32",
+        "ring_t": 4.0,
+        "ring_w": 8.0,
+        "tab_h": 24.0,
+        "mouth_pct": 62.0,
+        "text_depth": 1.0
+      }
+    },
+    {
+      "id": "hand_marked",
+      "mode": "blank",
+      "label": {
+        "en": "Blank (hand-marked)",
+        "es": "En blanco (marcado a mano)"
+      },
+      "values": {
+        "rod_dia": 25.0,
+        "ring_t": 4.0,
+        "ring_w": 9.0,
+        "tab_h": 30.0,
+        "mouth_pct": 62.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        55
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 5,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "rail_snap",
+        "label": {
+          "en": "Rail Snap (C-ring mouth on the rod)",
+          "es": "Presión al riel (boca del aro en C sobre el tubo)"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "rod_dia",
+          "mouth_pct",
+          "ring_t"
+        ]
+      },
+      {
+        "id": "label_face",
+        "label": {
+          "en": "Label Face (debossed size tab)",
+          "es": "Cara de etiqueta (lengüeta con talla grabada)"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "size_label",
+          "tab_h",
+          "text_depth"
+        ]
+      },
+      {
+        "id": "rail_seat",
+        "label": {
+          "en": "Rail Seat (bore riding the rod)",
+          "es": "Asiento del riel (barreno que monta sobre el tubo)"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "rod_dia",
+          "ring_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Size dividers are the difference between a rail a customer can shop and a rail they give up on, and giving up on a rail is how second-hand and repaired clothing loses to new. They are sold in fixed alpha runs for one rod diameter, so a charity shop, a market stall, or a repair co-op running odd rails and non-standard size systems has none. Generating them from the rail on hand — and from the size system in use, alpha or numeric — is a few grams of filament that keeps used stock findable and therefore sellable.",
+      "es": "Los separadores de talla son la diferencia entre un riel que un cliente puede recorrer y uno en el que se rinde, y rendirse ante un riel es como la ropa de segunda mano y reparada pierde frente a la nueva. Se venden en corridas alfabéticas fijas para un solo diámetro de tubo, así que una tienda de beneficencia, un puesto de mercado o una cooperativa de compostura con rieles dispares y sistemas de talla no estándar simplemente no tiene. Generarlos a partir del riel disponible — y del sistema de tallas en uso, alfabético o numérico — cuesta unos gramos de filamento y mantiene el inventario usado localizable y por tanto vendible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "size-marker-ring",
+    "size-divider",
+    "rack-divider",
+    "retail-display",
+    "sizing",
+    "closet",
+    "wardrobe",
+    "shop-fitting",
+    "snap-ring",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

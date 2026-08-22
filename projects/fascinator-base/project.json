@@ -1,0 +1,435 @@
+{
+  "project": {
+    "name": "Fascinator Base",
+    "slug": "fascinator-base",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The small millinery base a fascinator is built on: a shallow disc or dome with a flat sewing brim, a pair of slots underneath that a hair comb's spine slides into, and a ring of sew holes around the brim so sinamay, feathers, veiling and trim are stitched on rather than hot-glued. Commercial bases come in four diameters, one crown height and no comb provision at all; this one takes the diameter, the crown rise and the comb it will actually be worn with as parameters.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La base pequeña de sombrerería sobre la que se arma un tocado: un disco o cúpula baja con ala plana de costura, un par de ranuras por debajo por donde entra el lomo de una peineta, y un anillo de ojales alrededor del ala para coser sinamay, plumas, velo y adornos en lugar de pegarlos con silicón. Las bases comerciales vienen en cuatro diámetros, una sola altura de copa y sin previsión de peineta; ésta toma como parámetros el diámetro, la altura de copa y la peineta con la que se va a usar.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/fascinator-base.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "fascinator-base",
+      "fascinator",
+      "millinery",
+      "hat",
+      "pillbox",
+      "hair-comb",
+      "veiling",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "base",
+      "label": {
+        "en": "Fascinator Base",
+        "es": "Base de tocado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "base"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Base Pair",
+        "es": "Par de bases"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pair"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 5,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "base",
+      "label": {
+        "en": "Fascinator Base",
+        "es": "Base de tocado"
+      },
+      "render_mode": 0,
+      "color": "#c4b0c8"
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Base Pair",
+        "es": "Par de bases"
+      },
+      "render_mode": 0,
+      "color": "#c4b0c8"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "base",
+      "label": {
+        "en": "Base",
+        "es": "Base"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    },
+    {
+      "id": "comb",
+      "label": {
+        "en": "Comb Fit",
+        "es": "Ajuste de peineta"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "base_dia",
+      "type": "slider",
+      "default": 90.0,
+      "min": 40.0,
+      "max": 200.0,
+      "step": 2.0,
+      "group": "base",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Base diameter (mm)",
+        "es": "Diámetro de la base (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the base (mm). Millinery stocks 60, 80, 100 and 120 mm; 90 mm is a good mid-size cocktail fascinator.",
+        "es": "Diámetro exterior de la base (mm). La sombrerería surte 60, 80, 100 y 120 mm; 90 mm es un buen tamaño medio para tocado de coctel."
+      }
+    },
+    {
+      "id": "dome_h",
+      "type": "slider",
+      "default": 14.0,
+      "min": 0.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "base",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Crown rise (mm)",
+        "es": "Altura de la copa (mm)"
+      },
+      "tooltip": {
+        "en": "How far the crown rises above the brim (mm). Under 1 mm gives a flat plate base worn tilted; 12-20 mm is the pillbox dome. Clamped to 45 % of the diameter.",
+        "es": "Cuánto se eleva la copa sobre el ala (mm). Menos de 1 mm da una base plana que se usa ladeada; de 12 a 20 mm es la cúpula tipo pillbox. Se limita al 45 % del diámetro."
+      }
+    },
+    {
+      "id": "base_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "base",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Shell thickness (mm)",
+        "es": "Espesor del casco (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the shell and brim (mm). 2.4 mm is stiff enough to carry feathers without flexing; go thinner only for very small bases.",
+        "es": "Espesor de pared del casco y del ala (mm). 2.4 mm resiste el peso de las plumas sin flexionar; adelgázalo sólo en bases muy pequeñas."
+      }
+    },
+    {
+      "id": "brim_w",
+      "type": "slider",
+      "default": 9.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "sewing",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Sewing brim width (mm)",
+        "es": "Ancho del ala de costura (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the flat land the sew holes run down (mm). Auto-widened to hold the hole ring with wall on both sides, and never more than 60 % of the radius.",
+        "es": "Ancho de la superficie plana por donde corre el anillo de ojales (mm). Se ensancha automáticamente para dejar pared a ambos lados y nunca pasa del 60 % del radio."
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 16,
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "group": "sewing",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Perimeter sew holes",
+        "es": "Ojales del perímetro"
+      },
+      "tooltip": {
+        "en": "Stitch holes around the brim. Sixteen gives a stitch roughly every 18 mm on a 90 mm base — enough to hold sinamay flat. Zero leaves a plain brim.",
+        "es": "Ojales de costura alrededor del ala. Dieciséis dan una puntada cada 18 mm en una base de 90 mm, suficiente para asentar el sinamay. Cero deja el ala lisa."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Sew hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each stitch hole (mm). 2 mm passes a millinery needle with doubled thread; auto-clamped to keep wall inside the brim.",
+        "es": "Diámetro de cada ojal (mm). 2 mm deja pasar una aguja de sombrerería con hilo doble; se limita para conservar pared dentro del ala."
+      }
+    },
+    {
+      "id": "comb_w",
+      "type": "slider",
+      "default": 38.0,
+      "min": 15.0,
+      "max": 90.0,
+      "step": 1.0,
+      "group": "comb",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Comb spine width (mm)",
+        "es": "Ancho del lomo de la peineta (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the hair comb's spine the slots must pass (mm). Measure the comb you own; standard millinery combs run 35-45 mm. Clamped to 75 % of the base diameter.",
+        "es": "Ancho del lomo de la peineta que deben dejar pasar las ranuras (mm). Mide la peineta que tengas; las de sombrerería van de 35 a 45 mm. Se limita al 75 % del diámetro."
+      }
+    },
+    {
+      "id": "comb_t",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "comb",
+      "modes": [
+        "base",
+        "pair"
+      ],
+      "label": {
+        "en": "Comb spine thickness (mm)",
+        "es": "Espesor del lomo de la peineta (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the comb spine (mm). The slot is cut 0.4 mm wider so the comb slides in without forcing and can be swapped later.",
+        "es": "Espesor del lomo de la peineta (mm). La ranura se corta 0.4 mm más ancha para que la peineta entre sin forzar y pueda cambiarse después."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "cocktail_dome",
+      "mode": "base",
+      "label": {
+        "en": "Cocktail Dome (90 mm)",
+        "es": "Cúpula de coctel (90 mm)"
+      },
+      "values": {
+        "base_dia": 90.0,
+        "dome_h": 14.0,
+        "base_t": 2.4,
+        "brim_w": 9.0,
+        "sew_holes": 16,
+        "hole_dia": 2.0,
+        "comb_w": 38.0,
+        "comb_t": 2.2
+      }
+    },
+    {
+      "id": "flat_teardrop_plate",
+      "mode": "base",
+      "label": {
+        "en": "Flat Plate Base (70 mm)",
+        "es": "Base plana (70 mm)"
+      },
+      "values": {
+        "base_dia": 70.0,
+        "dome_h": 0.0,
+        "base_t": 2.0,
+        "brim_w": 8.0,
+        "sew_holes": 14,
+        "hole_dia": 1.8,
+        "comb_w": 35.0,
+        "comb_t": 2.0
+      }
+    },
+    {
+      "id": "pillbox",
+      "mode": "base",
+      "label": {
+        "en": "Pillbox Crown (130 mm)",
+        "es": "Copa pillbox (130 mm)"
+      },
+      "values": {
+        "base_dia": 130.0,
+        "dome_h": 34.0,
+        "base_t": 3.0,
+        "brim_w": 12.0,
+        "sew_holes": 26,
+        "hole_dia": 2.4,
+        "comb_w": 45.0,
+        "comb_t": 2.6
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        130,
+        130,
+        100
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 4,
+    "per_part": 10,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "trim_sew_ring",
+        "label": {
+          "en": "Trim Sew Ring (brim)",
+          "es": "Anillo de costura del ala"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "base_dia",
+          "brim_w",
+          "sew_holes",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "comb_slot",
+        "label": {
+          "en": "Hair Comb Slot Pair",
+          "es": "Par de ranuras para peineta"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "comb_w",
+          "comb_t"
+        ]
+      },
+      {
+        "id": "crown_profile",
+        "label": {
+          "en": "Crown Profile",
+          "es": "Perfil de la copa"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "base_dia",
+          "dome_h",
+          "base_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A fascinator base is a two-dollar piece of stiffened card that is sold in four sizes and thrown away after one wedding; printing it to the diameter the outfit wants, with a comb slot that fits the comb already in the drawer, turns occasion millinery into something a person can make, remake and re-trim at home.",
+      "es": "Una base de tocado es un trozo de cartón entelado de dos dólares que se vende en cuatro medidas y se tira después de una boda; imprimirla al diámetro que pide el atuendo, con una ranura que ajusta a la peineta que ya está en el cajón, convierte la sombrerería de ocasión en algo que se puede hacer, rehacer y volver a adornar en casa."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "fascinator-base",
+    "fascinator",
+    "millinery",
+    "hat",
+    "pillbox",
+    "hair-comb",
+    "veiling",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

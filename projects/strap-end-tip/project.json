@@ -1,0 +1,461 @@
+{
+  "project": {
+    "name": "Strap End Tip",
+    "slug": "strap-end-tip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The cap that finishes the raw end of a leather strap or a length of webbing — it stops the end fraying, gives the strap a silhouette, and on a belt it is the piece that leads the tongue through the keeper. The strap slides into a channel running the full width of the tip, so a garment's finished strap width and thickness size the hardware directly. This is the rigid hard good the Fashion Cabinet `strap-end-tip` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La contera que remata el extremo crudo de una correa de piel o de una cincha — evita que se deshilache, le da silueta a la correa y, en un cinturón, es la pieza que guía la punta por el pasador. La correa entra en un canal que recorre todo el ancho de la contera, así que el ancho y el espesor terminados de la correa dimensionan el herraje directamente. Es el herraje rígido que el avío `strap-end-tip` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/strap-end-tip.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "strap-end-tip",
+      "belt-tip",
+      "webbing",
+      "strap",
+      "leather",
+      "bag-hardware",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rounded",
+      "label": {
+        "en": "Rounded Nose",
+        "es": "Punta redonda"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rounded"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "pointed",
+      "label": {
+        "en": "English Point",
+        "es": "Punta inglesa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pointed"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "square",
+      "label": {
+        "en": "Square Nose",
+        "es": "Punta cuadrada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "square"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "rounded",
+      "label": {
+        "en": "Rounded Nose",
+        "es": "Punta redonda"
+      },
+      "render_mode": 0,
+      "color": "#8f7f6a"
+    },
+    {
+      "id": "pointed",
+      "label": {
+        "en": "English Point",
+        "es": "Punta inglesa"
+      },
+      "render_mode": 0,
+      "color": "#9c8b74"
+    },
+    {
+      "id": "square",
+      "label": {
+        "en": "Square Nose",
+        "es": "Punta cuadrada"
+      },
+      "render_mode": 0,
+      "color": "#7f7060"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "strap",
+      "label": {
+        "en": "Strap",
+        "es": "Correa"
+      }
+    },
+    {
+      "id": "tip",
+      "label": {
+        "en": "Tip",
+        "es": "Contera"
+      }
+    },
+    {
+      "id": "setting",
+      "label": {
+        "en": "Setting",
+        "es": "Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strap_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 10.0,
+      "max": 75.0,
+      "step": 0.5,
+      "group": "strap",
+      "modes": [
+        "rounded",
+        "pointed",
+        "square"
+      ],
+      "label": {
+        "en": "Strap width (mm)",
+        "es": "Ancho de la correa (mm)"
+      },
+      "tooltip": {
+        "en": "Finished strap or webbing width (mm). Webbing is sold in nominal 20, 25, 38 and 50 mm widths; belt leather runs 25-45 mm. The channel is cut 0.6 mm wider for a slip fit.",
+        "es": "Ancho terminado de la correa o cincha (mm). La cincha se vende en anchos nominales de 20, 25, 38 y 50 mm; la piel de cinturón va de 25 a 45 mm. El canal se corta 0.6 mm más ancho para ajuste deslizante."
+      }
+    },
+    {
+      "id": "strap_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.8,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "strap",
+      "modes": [
+        "rounded",
+        "pointed",
+        "square"
+      ],
+      "label": {
+        "en": "Strap thickness (mm)",
+        "es": "Espesor de la correa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the strap the channel must take (mm). Garment leather 1.2-2 mm, belt veg-tan 3-4.5 mm, seatbelt-grade webbing about 1.2 mm. The channel is cut 0.4 mm taller.",
+        "es": "Espesor de la correa que debe recibir el canal (mm). Piel de confección 1.2-2 mm, curtido vegetal de cinturón 3-4.5 mm, cincha tipo cinturón de seguridad alrededor de 1.2 mm. El canal se corta 0.4 mm más alto."
+      }
+    },
+    {
+      "id": "wall_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "tip",
+      "modes": [
+        "rounded",
+        "pointed",
+        "square"
+      ],
+      "label": {
+        "en": "Wall thickness (mm)",
+        "es": "Espesor de la pared (mm)"
+      },
+      "tooltip": {
+        "en": "Wall around the strap channel (mm). This is what the tip's whole outside dimension is built from, so raising it makes a visibly chunkier tip.",
+        "es": "Pared alrededor del canal de la correa (mm). De ella se construye toda la dimensión exterior de la contera, así que aumentarla la hace visiblemente más robusta."
+      }
+    },
+    {
+      "id": "tip_len",
+      "type": "slider",
+      "default": 26.0,
+      "min": 8.0,
+      "max": 120.0,
+      "step": 0.5,
+      "group": "tip",
+      "modes": [
+        "rounded",
+        "pointed",
+        "square"
+      ],
+      "label": {
+        "en": "Tip length (mm)",
+        "es": "Largo de la contera (mm)"
+      },
+      "tooltip": {
+        "en": "Overall length of the tip along the strap (mm). Auto-clamped between half and three times the strap width, which is the range real belt tips live in.",
+        "es": "Largo total de la contera a lo largo de la correa (mm). Se limita entre la mitad y el triple del ancho de la correa, que es el rango de las conteras reales."
+      }
+    },
+    {
+      "id": "nose_len",
+      "type": "slider",
+      "default": 14.0,
+      "min": 2.0,
+      "max": 90.0,
+      "step": 0.5,
+      "group": "tip",
+      "modes": [
+        "rounded",
+        "pointed",
+        "square"
+      ],
+      "label": {
+        "en": "Nose length (mm)",
+        "es": "Largo de la punta (mm)"
+      },
+      "tooltip": {
+        "en": "How much of the tip length is the shaped nose (mm). Clamped so a straight riveted shank always survives behind it. Ignored on the square nose, which is straight all the way.",
+        "es": "Cuánto del largo total es la punta formada (mm). Se limita para que siempre quede atrás un cuerpo recto donde remachar. Se ignora en la punta cuadrada, que es recta en todo su largo."
+      }
+    },
+    {
+      "id": "rivet_dia",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "setting",
+      "modes": [
+        "rounded",
+        "pointed",
+        "square"
+      ],
+      "label": {
+        "en": "Rivet bore diameter (mm)",
+        "es": "Diámetro del barreno del remache (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each rivet bore through the tip and the strap (mm). 3 mm takes a standard double-cap rapid rivet post; auto-clamped to a quarter of the strap width.",
+        "es": "Diámetro de cada barreno que atraviesa la contera y la correa (mm). 3 mm acepta el poste de un remache rápido de doble cabeza; se limita a un cuarto del ancho de la correa."
+      }
+    },
+    {
+      "id": "rivets",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "group": "setting",
+      "modes": [
+        "rounded",
+        "pointed",
+        "square"
+      ],
+      "label": {
+        "en": "Rivets (count)",
+        "es": "Remaches (cantidad)"
+      },
+      "tooltip": {
+        "en": "How many rivets hold the tip on. One centred rivet suits a narrow strap; two spread across the width stop the tip rotating, which is what you want on a belt.",
+        "es": "Cuántos remaches sujetan la contera. Uno centrado sirve para correa angosta; dos repartidos a lo ancho impiden que la contera gire, que es lo deseable en un cinturón."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "belt_tip_38",
+      "mode": "pointed",
+      "label": {
+        "en": "Dress Belt Tip (38 mm)",
+        "es": "Contera de cinturón de vestir (38 mm)"
+      },
+      "values": {
+        "strap_w": 38.0,
+        "strap_t": 3.6,
+        "wall_t": 2.0,
+        "tip_len": 46.0,
+        "nose_len": 26.0,
+        "rivet_dia": 3.0,
+        "rivets": 2
+      }
+    },
+    {
+      "id": "webbing_25",
+      "mode": "square",
+      "label": {
+        "en": "Webbing End (25 mm)",
+        "es": "Remate de cincha (25 mm)"
+      },
+      "values": {
+        "strap_w": 25.0,
+        "strap_t": 1.4,
+        "wall_t": 1.4,
+        "tip_len": 16.0,
+        "nose_len": 4.0,
+        "rivet_dia": 2.5,
+        "rivets": 2
+      }
+    },
+    {
+      "id": "bag_strap_20",
+      "mode": "rounded",
+      "label": {
+        "en": "Bag Strap (20 mm)",
+        "es": "Correa de bolso (20 mm)"
+      },
+      "values": {
+        "strap_w": 20.0,
+        "strap_t": 2.2,
+        "wall_t": 1.4,
+        "tip_len": 22.0,
+        "nose_len": 12.0,
+        "rivet_dia": 2.5,
+        "rivets": 1
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "nose_len <= tip_len - rivet_dia - 4",
+      "severity": "error",
+      "message": {
+        "en": "The nose cannot swallow the whole tip — leave a shank long enough to rivet through.",
+        "es": "La punta no puede consumir toda la contera — deja cuerpo suficiente para remachar."
+      }
+    },
+    {
+      "expression": "rivet_dia <= strap_w * 0.25",
+      "severity": "error",
+      "message": {
+        "en": "The rivet bore must stay under a quarter of the strap width.",
+        "es": "El barreno del remache debe quedar por debajo de un cuarto del ancho de la correa."
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        60,
+        45
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        100
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 5,
+    "fn_factor": 14,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "strap_channel",
+        "label": {
+          "en": "Strap Channel (slide-on flange)",
+          "es": "Canal de la correa (pestaña deslizante)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "strap_w",
+          "strap_t",
+          "wall_t"
+        ]
+      },
+      {
+        "id": "rivet_pattern",
+        "label": {
+          "en": "Rivet Pattern",
+          "es": "Patrón de remaches"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "rivets",
+          "rivet_dia",
+          "strap_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A frayed strap end is the most common reason a perfectly good bag strap or belt gets binned, and metal tips are sold only in a few widths that rarely match what you have. Printing the tip to the strap you already own turns a five-minute repair into something anyone can do, and lets a workshop finish odd-width straps it would otherwise have to refuse.",
+      "es": "Un extremo deshilachado es la razón más común por la que se tira una correa o cinturón en buen estado, y las conteras metálicas se venden en unos pocos anchos que rara vez coinciden con lo que uno tiene. Imprimir la contera a la correa que ya se posee convierte la reparación en algo de cinco minutos al alcance de cualquiera, y permite a un taller rematar correas de ancho raro que de otro modo rechazaría."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "strap-end-tip",
+    "belt-tip",
+    "webbing",
+    "strap",
+    "leather",
+    "bag-hardware",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

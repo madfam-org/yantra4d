@@ -1,0 +1,469 @@
+{
+  "project": {
+    "name": "Seam Conduit Clip",
+    "slug": "seam-conduit-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed sew-on C-clip that routes a wire bundle along a garment's seam allowance. An e-textile harness that is not captured migrates inside the shell, snags in the wash, and eventually pulls a solder joint apart. Two flanking sew tabs stitch the clip flat to the seam allowance; the open C channel above them takes the bundle so it stays put while still sliding enough for the garment to move. This is the rigid hard good the Fashion Cabinet harness-routing notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una grapa en C de coser impresa en 3D que encamina un mazo de cables por el margen de costura de una prenda. Un arnés textil sin sujetar migra dentro de la prenda, se atora en el lavado y termina arrancando una soldadura. Dos lengüetas laterales cosen la grapa plana al margen de costura; el canal en C abierto sobre ellas recibe el mazo para que quede fijo pero aún deslice lo suficiente para que la prenda se mueva. Es el herraje rígido que el avío de ruteo de arnés de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/seam-conduit-clip.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "seam-conduit-clip",
+      "harness",
+      "wire-routing",
+      "e-textile",
+      "wearable-electronics",
+      "seam",
+      "clip",
+      "sew-on",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": {
+        "en": "Single Clip",
+        "es": "Grapa individual"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "clip"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "clip_run",
+      "label": {
+        "en": "Harness Run",
+        "es": "Tramo de arnés"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "clip_run"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Open + Closed Pair",
+        "es": "Par abierta y cerrada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "clip",
+      "label": {
+        "en": "Sew-On C-Clip",
+        "es": "Grapa en C de coser"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "clip_run",
+      "label": {
+        "en": "Harness Run",
+        "es": "Tramo de arnés"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Open + Closed Pair",
+        "es": "Par abierta y cerrada"
+      },
+      "render_mode": 0,
+      "color": "#9c9482"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bundle",
+      "label": {
+        "en": "Bundle",
+        "es": "Mazo"
+      }
+    },
+    {
+      "id": "clip",
+      "label": {
+        "en": "Clip",
+        "es": "Grapa"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    },
+    {
+      "id": "run",
+      "label": {
+        "en": "Run Layout",
+        "es": "Disposición del tramo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bundle_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "bundle",
+      "modes": [
+        "clip",
+        "clip_run",
+        "set"
+      ],
+      "label": {
+        "en": "Wire bundle diameter (mm)",
+        "es": "Diámetro del mazo de cables (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the wire bundle the channel carries (mm). Four thin silicone leads bundle to about 4-5 mm; a sleeved harness with a charge pair runs 7-10 mm.",
+        "es": "Diámetro exterior del mazo de cables que recibe el canal (mm). Cuatro conductores delgados de silicón forman un mazo de 4 a 5 mm; un arnés enfundado con par de carga mide de 7 a 10 mm."
+      }
+    },
+    {
+      "id": "mouth_frac",
+      "type": "slider",
+      "default": 0.62,
+      "min": 0.35,
+      "max": 0.9,
+      "step": 0.01,
+      "group": "bundle",
+      "modes": [
+        "clip",
+        "clip_run",
+        "set"
+      ],
+      "label": {
+        "en": "Mouth opening (fraction of bundle)",
+        "es": "Abertura de la boca (fracción del mazo)"
+      },
+      "tooltip": {
+        "en": "Width of the C mouth as a fraction of the bundle diameter. Below 0.6 the bundle must be squeezed in and cannot fall out; above 0.8 it drops in freely but can also drop out.",
+        "es": "Ancho de la boca de la C como fracción del diámetro del mazo. Por debajo de 0.6 el mazo entra a presión y no se sale; por encima de 0.8 entra libremente pero también puede salirse."
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 1.4,
+      "min": 0.8,
+      "max": 3.5,
+      "step": 0.1,
+      "group": "clip",
+      "modes": [
+        "clip",
+        "clip_run",
+        "set"
+      ],
+      "label": {
+        "en": "Channel wall thickness (mm)",
+        "es": "Espesor de la pared del canal (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the C channel (mm). Thin walls let the mouth spring open around the bundle; thick walls hold a heavy harness but stop flexing.",
+        "es": "Espesor de la pared del canal en C (mm). Las paredes delgadas dejan que la boca se abra elásticamente alrededor del mazo; las gruesas sujetan un arnés pesado pero dejan de flexionar."
+      }
+    },
+    {
+      "id": "clip_len",
+      "type": "slider",
+      "default": 9.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "clip",
+      "modes": [
+        "clip",
+        "clip_run",
+        "set"
+      ],
+      "label": {
+        "en": "Clip length along bundle (mm)",
+        "es": "Largo de la grapa a lo largo del mazo (mm)"
+      },
+      "tooltip": {
+        "en": "How far the clip runs along the bundle (mm). Short clips let the harness curve tightly; long clips resist twisting under a snapped-on lead.",
+        "es": "Cuánto recorre la grapa a lo largo del mazo (mm). Las grapas cortas permiten curvas cerradas en el arnés; las largas resisten la torsión bajo un cable acoplado."
+      }
+    },
+    {
+      "id": "tab_w",
+      "type": "slider",
+      "default": 7.0,
+      "min": 4.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "sewing",
+      "modes": [
+        "clip",
+        "clip_run",
+        "set"
+      ],
+      "label": {
+        "en": "Sew tab width per side (mm)",
+        "es": "Ancho de lengüeta por lado (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each sew tab flanking the channel (mm). Wider tabs spread the load over more seam allowance; narrower tabs disappear under a narrow allowance.",
+        "es": "Ancho de cada lengüeta de costura junto al canal (mm). Las lengüetas anchas reparten la carga en más margen de costura; las angostas desaparecen bajo un margen estrecho."
+      }
+    },
+    {
+      "id": "tab_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "clip",
+        "clip_run",
+        "set"
+      ],
+      "label": {
+        "en": "Sew tab thickness (mm)",
+        "es": "Espesor de la lengüeta (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flat tab plate (mm). Keep it thin so the clip follows the seam rather than levering on it.",
+        "es": "Espesor de la placa plana de lengüetas (mm). Mantenlo delgado para que la grapa siga la costura en vez de hacer palanca sobre ella."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "clip",
+        "clip_run",
+        "set"
+      ],
+      "label": {
+        "en": "Stitch hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the stitch hole in each tab (mm). Auto-clamped to fit the tab width.",
+        "es": "Diámetro del ojal en cada lengüeta (mm). Se limita automáticamente para caber en el ancho de la lengüeta."
+      }
+    },
+    {
+      "id": "run_count",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "group": "run",
+      "modes": [
+        "clip_run"
+      ],
+      "label": {
+        "en": "Clips in the run (count)",
+        "es": "Grapas en el tramo (cantidad)"
+      },
+      "tooltip": {
+        "en": "How many clips the harness-run layout puts on one plate. A sleeve run typically needs three to five.",
+        "es": "Cuántas grapas coloca en una sola placa la disposición de tramo de arnés. Un tramo de manga suele necesitar de tres a cinco."
+      }
+    },
+    {
+      "id": "run_pitch",
+      "type": "slider",
+      "default": 45.0,
+      "min": 15.0,
+      "max": 140.0,
+      "step": 1.0,
+      "group": "run",
+      "modes": [
+        "clip_run"
+      ],
+      "label": {
+        "en": "Run pitch (mm)",
+        "es": "Paso del tramo (mm)"
+      },
+      "tooltip": {
+        "en": "Spacing between clips along the harness run (mm) — the layout mirrors the spacing you will actually sew. 40-60 mm keeps a light bundle from sagging between clips.",
+        "es": "Separación entre grapas a lo largo del tramo (mm) — la disposición refleja la separación que realmente coserás. De 40 a 60 mm evita que un mazo ligero se descuelgue entre grapas."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sleeve_harness",
+      "mode": "clip_run",
+      "label": {
+        "en": "Sleeve Harness Run (5 mm × 5)",
+        "es": "Tramo de arnés de manga (5 mm × 5)"
+      },
+      "values": {
+        "bundle_dia": 5.0,
+        "mouth_frac": 0.62,
+        "wall": 1.4,
+        "clip_len": 9.0,
+        "tab_w": 7.0,
+        "tab_t": 1.6,
+        "hole_dia": 1.6,
+        "run_count": 5,
+        "run_pitch": 50.0
+      }
+    },
+    {
+      "id": "heated_vest_trunk",
+      "mode": "set",
+      "label": {
+        "en": "Heated Vest Trunk (9 mm)",
+        "es": "Tronco de chaleco térmico (9 mm)"
+      },
+      "values": {
+        "bundle_dia": 9.0,
+        "mouth_frac": 0.55,
+        "wall": 2.0,
+        "clip_len": 14.0,
+        "tab_w": 9.0,
+        "tab_t": 2.0,
+        "hole_dia": 1.8,
+        "run_count": 4,
+        "run_pitch": 60.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        60,
+        45
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 5,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "seam_tabs",
+        "label": {
+          "en": "Sewn Seam-Allowance Tabs",
+          "es": "Lengüetas cosidas al margen de costura"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "tab_w",
+          "tab_t",
+          "clip_len",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "bundle_channel",
+        "label": {
+          "en": "Open C Bundle Channel",
+          "es": "Canal en C abierto para el mazo"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "bundle_dia",
+          "mouth_frac",
+          "wall"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Commercial e-textile garments hide their harness in glued channels nobody can open, so a single chafed wire condemns the whole garment. Sew-on clips make the harness visible, re-routable, and repairable with a seam ripper and a needle — the difference between a garment that lasts a decade and one that lasts a season.",
+      "es": "Las prendas comerciales con electrónica esconden su arnés en canales pegados que nadie puede abrir, así que un solo cable rozado condena toda la prenda. Las grapas de coser hacen el arnés visible, reencaminable y reparable con un descosedor y una aguja — la diferencia entre una prenda que dura una década y una que dura una temporada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "seam-conduit-clip",
+    "harness",
+    "wire-routing",
+    "e-textile",
+    "wearable-electronics",
+    "seam",
+    "clip",
+    "sew-on",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

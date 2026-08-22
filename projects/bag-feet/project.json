@@ -1,0 +1,507 @@
+{
+  "project": {
+    "name": "Bag Feet",
+    "slug": "bag-feet",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The dome studs set into the base of a handbag or briefcase so the bag stands off the floor and the leather does not scuff. A foot is a shallow dome on a flange with a boss underneath that passes through a punched hole; a backing washer inside the bag spreads the load so the foot does not pull through. Two boss styles: a cosmetically threaded screw post, or two splayable prongs folded over the washer in the traditional way. This is the rigid hard good the Fashion Cabinet `bag-feet` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Los tachones de domo que se montan en la base de un bolso o portafolios para que la bolsa no toque el piso y la piel no se raspe. Un pie es un domo bajo sobre una pestaña, con un poste debajo que atraviesa un barreno; una arandela de respaldo dentro de la bolsa reparte la carga para que el pie no se desprenda. Dos estilos de poste: un tornillo con rosca cosmética o dos patas abatibles dobladas sobre la arandela al modo tradicional. Es el herraje rígido que el avío `bag-feet` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bag-feet.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bag-feet",
+      "bag-foot",
+      "stud",
+      "bag-hardware",
+      "leather",
+      "briefcase",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "foot",
+      "label": {
+        "en": "Foot",
+        "es": "Pie"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "foot"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "washer",
+      "label": {
+        "en": "Backing Washer",
+        "es": "Arandela de respaldo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "washer"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Foot Set (foot + washer)",
+        "es": "Juego de pie (pie + arandela)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "foot",
+      "label": {
+        "en": "Foot",
+        "es": "Pie"
+      },
+      "render_mode": 0,
+      "color": "#8a7a55"
+    },
+    {
+      "id": "washer",
+      "label": {
+        "en": "Backing Washer",
+        "es": "Arandela de respaldo"
+      },
+      "render_mode": 0,
+      "color": "#a3924c"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Foot Set",
+        "es": "Juego de pie"
+      },
+      "render_mode": 0,
+      "color": "#8a7a55"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "dome",
+      "label": {
+        "en": "Dome",
+        "es": "Domo"
+      }
+    },
+    {
+      "id": "boss",
+      "label": {
+        "en": "Boss",
+        "es": "Poste"
+      }
+    },
+    {
+      "id": "washer",
+      "label": {
+        "en": "Washer",
+        "es": "Arandela"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "foot_dia",
+      "type": "slider",
+      "default": 14.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.2,
+      "group": "dome",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Foot diameter (mm)",
+        "es": "Diámetro del pie (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the dome and its flange (mm). Commercial bag feet run 10-20 mm; luggage studs go to 25 mm. Wider spreads the standing load over softer base leather.",
+        "es": "Diámetro exterior del domo y su pestaña (mm). Los pies comerciales van de 10 a 20 mm; los tachones de maleta llegan a 25 mm. Más ancho reparte la carga sobre pieles de base más blandas."
+      }
+    },
+    {
+      "id": "foot_h",
+      "type": "slider",
+      "default": 7.0,
+      "min": 2.0,
+      "max": 22.0,
+      "step": 0.2,
+      "group": "dome",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Dome height (mm)",
+        "es": "Altura del domo (mm)"
+      },
+      "tooltip": {
+        "en": "How far the dome stands above the flange (mm) — this is the clearance the bag base gets off the floor. Auto-clamped to 75 % of the foot diameter so the dome stays a dome.",
+        "es": "Cuánto se eleva el domo sobre la pestaña (mm) — es la separación que gana la base de la bolsa respecto al piso. Se limita al 75 % del diámetro del pie para que el domo siga siendo domo."
+      }
+    },
+    {
+      "id": "flange_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "dome",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Flange thickness (mm)",
+        "es": "Espesor de la pestaña (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flat flange under the dome (mm). This is what bears against the outside of the base panel, so it must not be so thin it dishes under load.",
+        "es": "Espesor de la pestaña plana bajo el domo (mm). Es lo que apoya contra el exterior del panel de la base, así que no debe ser tan delgada que se hunda bajo carga."
+      }
+    },
+    {
+      "id": "boss_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.5,
+      "max": 26.0,
+      "step": 0.1,
+      "group": "boss",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Boss diameter (mm)",
+        "es": "Diámetro del poste (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the boss that passes through the punched hole (mm). Clamped to the foot diameter minus 4 mm so real flange survives around it. Match it to your hole punch.",
+        "es": "Diámetro del poste que atraviesa el barreno (mm). Se limita al diámetro del pie menos 4 mm para conservar pestaña real alrededor. Ajústalo a tu sacabocados."
+      }
+    },
+    {
+      "id": "panel_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.8,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "boss",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Base panel thickness (mm)",
+        "es": "Espesor del panel de la base (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the base panel the boss spans (mm). Includes the lining and any stiffener board. This drives the boss length, so getting it right is what stops the foot rattling or bottoming out.",
+        "es": "Espesor del panel de la base que atraviesa el poste (mm). Incluye el forro y cualquier cartón rigidizante. Determina el largo del poste, así que acertarlo es lo que evita que el pie baile o toque fondo."
+      }
+    },
+    {
+      "id": "prong_style",
+      "type": "select",
+      "default": "screw",
+      "options": [
+        {
+          "value": "screw",
+          "label": {
+            "en": "Screw post",
+            "es": "Poste roscado"
+          }
+        },
+        {
+          "value": "prong",
+          "label": {
+            "en": "Splayable prongs",
+            "es": "Patas abatibles"
+          }
+        }
+      ],
+      "group": "boss",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Boss style",
+        "es": "Estilo del poste"
+      },
+      "tooltip": {
+        "en": "Screw post gives a cosmetic thread the washer twists onto — removable, good for a bag you expect to repair. Splayable prongs are two flat tabs you bend over the washer with pliers — the traditional setting, faster and flatter inside.",
+        "es": "El poste roscado da una rosca cosmética sobre la que gira la arandela — desmontable, ideal para una bolsa que esperas reparar. Las patas abatibles son dos lengüetas planas que se doblan sobre la arandela con pinzas — el montaje tradicional, más rápido y más plano por dentro."
+      }
+    },
+    {
+      "id": "washer_dia",
+      "type": "slider",
+      "default": 16.0,
+      "min": 7.0,
+      "max": 40.0,
+      "step": 0.2,
+      "group": "washer",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Washer diameter (mm)",
+        "es": "Diámetro de la arandela (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the backing washer (mm). Make it larger than the foot so the load spreads over more lining than the foot concentrates — that is the whole job of the washer.",
+        "es": "Diámetro exterior de la arandela de respaldo (mm). Hazla mayor que el pie para que la carga se reparta sobre más forro del que concentra el pie — esa es toda la función de la arandela."
+      }
+    },
+    {
+      "id": "washer_t",
+      "type": "slider",
+      "default": 1.8,
+      "min": 0.8,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "washer",
+      "modes": [
+        "foot",
+        "washer",
+        "set"
+      ],
+      "label": {
+        "en": "Washer thickness (mm)",
+        "es": "Espesor de la arandela (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the backing washer (mm). Also part of the boss length calculation, so a thicker washer automatically gets a longer boss.",
+        "es": "Espesor de la arandela de respaldo (mm). También entra en el cálculo del largo del poste, así que una arandela más gruesa obtiene automáticamente un poste más largo."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "handbag_14",
+      "mode": "set",
+      "label": {
+        "en": "Handbag Foot (14 mm)",
+        "es": "Pie de bolso (14 mm)"
+      },
+      "values": {
+        "foot_dia": 14.0,
+        "foot_h": 7.0,
+        "flange_t": 1.6,
+        "boss_dia": 5.0,
+        "panel_t": 3.0,
+        "prong_style": "screw",
+        "washer_dia": 16.0,
+        "washer_t": 1.8
+      }
+    },
+    {
+      "id": "briefcase_20",
+      "mode": "set",
+      "label": {
+        "en": "Briefcase Stud (20 mm, prongs)",
+        "es": "Tachón de portafolios (20 mm, patas)"
+      },
+      "values": {
+        "foot_dia": 20.0,
+        "foot_h": 9.0,
+        "flange_t": 2.2,
+        "boss_dia": 8.0,
+        "panel_t": 5.0,
+        "prong_style": "prong",
+        "washer_dia": 24.0,
+        "washer_t": 2.4
+      }
+    },
+    {
+      "id": "clutch_10",
+      "mode": "set",
+      "label": {
+        "en": "Small Clutch (10 mm)",
+        "es": "Clutch pequeño (10 mm)"
+      },
+      "values": {
+        "foot_dia": 10.0,
+        "foot_h": 4.0,
+        "flange_t": 1.0,
+        "boss_dia": 3.5,
+        "panel_t": 1.6,
+        "prong_style": "screw",
+        "washer_dia": 12.0,
+        "washer_t": 1.2
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "boss_dia <= foot_dia - 4",
+      "severity": "error",
+      "message": {
+        "en": "The boss must leave at least 2 mm of flange on each side of the foot.",
+        "es": "El poste debe dejar al menos 2 mm de pestaña a cada lado del pie."
+      }
+    },
+    {
+      "expression": "foot_h <= foot_dia * 0.75",
+      "severity": "error",
+      "message": {
+        "en": "The dome height cannot exceed 75 % of the foot diameter or it stops reading as a dome.",
+        "es": "La altura del domo no puede superar el 75 % del diámetro del pie o deja de leerse como domo."
+      }
+    },
+    {
+      "expression": "washer_dia >= boss_dia + 4",
+      "severity": "error",
+      "message": {
+        "en": "The washer must overhang the boss by at least 2 mm per side to spread any load.",
+        "es": "La arandela debe sobresalir del poste al menos 2 mm por lado para repartir alguna carga."
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        34
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frente"
+      },
+      "position": [
+        0,
+        -60,
+        6
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 20,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "panel_bore",
+        "label": {
+          "en": "Panel Bore",
+          "es": "Barreno del panel"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "boss_dia",
+          "panel_t",
+          "flange_t"
+        ]
+      },
+      {
+        "id": "washer_engage",
+        "label": {
+          "en": "Washer Engagement",
+          "es": "Acoplamiento de la arandela"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "boss_dia",
+          "washer_t",
+          "prong_style"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Bag feet are the first hardware to be torn off a bag and the least likely to be found again in the right size, and a missing foot is what starts the base leather wearing through. Printing a replacement to the hole already punched keeps a bag in service for years past the point where its feet went, and lets a repairer stock one printer instead of a drawer of brass studs.",
+      "es": "Los pies son el primer herraje que se arranca de una bolsa y el más difícil de reponer en la medida correcta, y un pie faltante es lo que inicia el desgaste de la piel de la base. Imprimir un repuesto al barreno ya perforado mantiene la bolsa en servicio años después de que se perdieron sus pies, y permite a quien repara tener una impresora en lugar de un cajón de tachones de latón."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bag-feet",
+    "bag-foot",
+    "stud",
+    "bag-hardware",
+    "leather",
+    "briefcase",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

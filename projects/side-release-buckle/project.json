@@ -1,0 +1,409 @@
+{
+  "project": {
+    "name": "Side-Release Buckle",
+    "slug": "side-release-buckle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed side-release buckle — the two-part snap closure on pack straps, sternum straps, dog collars and duffel lids, whose sprung prongs click out through the housing windows when you squeeze them. Sized for trade webbing widths 20, 25, 38 and 50 mm. This is the rigid hard good the Fashion Cabinet `side-release-buckle` notion places and bridges to here for its geometry, so a garment's finished strap width drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una hebilla de liberación lateral impresa en 3D — el cierre de dos piezas de las correas de mochila, los pectorales, los collares de perro y las tapas de maletín, cuyas lengüetas elásticas salen por las ventanas del alojamiento al apretarlas. Dimensionada para los anchos de cincha comerciales de 20, 25, 38 y 50 mm. Es el herraje rígido que el avío `side-release-buckle` de Fashion Cabinet coloca y al que se puentea aquí, para que el ancho terminado de la correa determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/side-release-buckle.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "side-release-buckle",
+      "buckle",
+      "webbing",
+      "snap-buckle",
+      "strap",
+      "closure",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Buckle Set (male + female)",
+        "es": "Juego de hebilla (macho + hembra)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "male",
+      "label": {
+        "en": "Male Half (prongs)",
+        "es": "Mitad macho (lengüetas)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "male"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "female",
+      "label": {
+        "en": "Female Half (housing)",
+        "es": "Mitad hembra (alojamiento)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "female"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Buckle Set",
+        "es": "Juego de hebilla"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "male",
+      "label": {
+        "en": "Male Half",
+        "es": "Mitad macho"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "female",
+      "label": {
+        "en": "Female Half",
+        "es": "Mitad hembra"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "webbing",
+      "label": {
+        "en": "Webbing",
+        "es": "Cincha"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    },
+    {
+      "id": "snap",
+      "label": {
+        "en": "Snap Action",
+        "es": "Acción del broche"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 15.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "webbing",
+      "modes": [
+        "set",
+        "male",
+        "female"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal webbing width (mm). The trade sells 20, 25, 38 and 50 mm; the buckle channel and both halves size from this.",
+        "es": "Ancho nominal de la cincha (mm). El comercio vende 20, 25, 38 y 50 mm; el canal de la hebilla y ambas mitades se dimensionan a partir de esto."
+      }
+    },
+    {
+      "id": "webbing_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "webbing",
+      "modes": [
+        "set",
+        "male",
+        "female"
+      ],
+      "label": {
+        "en": "Webbing thickness (mm)",
+        "es": "Espesor de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the tape (mm). 1.2–1.8 mm covers most polypropylene and nylon webbing; heavy seatbelt tape runs thicker.",
+        "es": "Espesor de la cincha (mm). De 1.2 a 1.8 mm cubre casi toda la cincha de polipropileno y nailon; la cinta pesada tipo cinturón es más gruesa."
+      }
+    },
+    {
+      "id": "body_t",
+      "type": "slider",
+      "default": 8.0,
+      "min": 5.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "set",
+        "male",
+        "female"
+      ],
+      "label": {
+        "en": "Body thickness (mm)",
+        "es": "Espesor del cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Overall thickness of both halves (mm). Thicker bodies take more load but sit prouder of the strap.",
+        "es": "Espesor total de ambas mitades (mm). Un cuerpo más grueso resiste más carga pero sobresale más de la correa."
+      }
+    },
+    {
+      "id": "wall_t",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.4,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "body",
+      "modes": [
+        "set",
+        "male",
+        "female"
+      ],
+      "label": {
+        "en": "Wall thickness (mm)",
+        "es": "Espesor de pared (mm)"
+      },
+      "tooltip": {
+        "en": "Housing wall and prong stock thickness (mm). Below 2 mm the prongs get whippy; above 3 mm they get stiff to squeeze.",
+        "es": "Espesor de la pared del alojamiento y de las lengüetas (mm). Por debajo de 2 mm las lengüetas quedan flojas; por encima de 3 mm cuesta apretarlas."
+      }
+    },
+    {
+      "id": "prong_len",
+      "type": "slider",
+      "default": 20.0,
+      "min": 10.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "snap",
+      "modes": [
+        "set",
+        "male",
+        "female"
+      ],
+      "label": {
+        "en": "Prong length (mm)",
+        "es": "Largo de la lengüeta (mm)"
+      },
+      "tooltip": {
+        "en": "Free length of each sprung cantilever prong (mm). Longer prongs flex further for the same stress — the usual fix for a buckle that feels too stiff.",
+        "es": "Largo libre de cada lengüeta en voladizo (mm). Las lengüetas largas flexionan más con el mismo esfuerzo — el remedio habitual cuando la hebilla se siente dura."
+      }
+    },
+    {
+      "id": "snap_clear",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.15,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "snap",
+      "modes": [
+        "set",
+        "male",
+        "female"
+      ],
+      "label": {
+        "en": "Snap clearance (mm)",
+        "es": "Holgura del broche (mm)"
+      },
+      "tooltip": {
+        "en": "Sliding clearance between the male nose and the female cavity (mm). Raise it for stiff or shrink-prone filaments; lower it for a crisper click.",
+        "es": "Holgura de deslizamiento entre la nariz macho y la cavidad hembra (mm). Auméntala para filamentos rígidos o que contraen; redúcela para un chasquido más nítido."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sr25",
+      "mode": "set",
+      "label": {
+        "en": "SR25 Pack Strap (25 mm)",
+        "es": "Correa de mochila SR25 (25 mm)"
+      },
+      "values": {
+        "webbing_w": 25.0,
+        "webbing_t": 1.6,
+        "body_t": 8.0,
+        "wall_t": 2.2,
+        "prong_len": 20.0,
+        "snap_clear": 0.35
+      }
+    },
+    {
+      "id": "sr50",
+      "mode": "set",
+      "label": {
+        "en": "SR50 Duffel Lid (50 mm)",
+        "es": "Tapa de maletín SR50 (50 mm)"
+      },
+      "values": {
+        "webbing_w": 50.0,
+        "webbing_t": 2.2,
+        "body_t": 11.0,
+        "wall_t": 3.0,
+        "prong_len": 28.0,
+        "snap_clear": 0.4
+      }
+    },
+    {
+      "id": "sr20",
+      "mode": "set",
+      "label": {
+        "en": "SR20 Sternum Strap (20 mm)",
+        "es": "Correa pectoral SR20 (20 mm)"
+      },
+      "values": {
+        "webbing_w": 20.0,
+        "webbing_t": 1.2,
+        "body_t": 6.5,
+        "wall_t": 1.8,
+        "prong_len": 16.0,
+        "snap_clear": 0.3
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "webbing_channel",
+        "label": {
+          "en": "Webbing Channel (tape edge)",
+          "es": "Canal de la cincha (canto de la cinta)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing_w",
+          "webbing_t",
+          "body_t"
+        ]
+      },
+      {
+        "id": "prong_catch",
+        "label": {
+          "en": "Prong Catch",
+          "es": "Enganche de la lengüeta"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "prong_len",
+          "wall_t",
+          "snap_clear"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Side-release buckles are the single most-broken part on a pack or a duffel, and a snapped one usually retires an otherwise perfect bag; printing a replacement to the exact webbing width keeps the bag in service instead of in landfill.",
+      "es": "La hebilla de liberación lateral es la pieza que más se rompe en una mochila o un maletín, y una rota suele jubilar una bolsa por lo demás perfecta; imprimir el repuesto al ancho exacto de la cincha la mantiene en uso en lugar de tirarla."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "side-release-buckle",
+    "buckle",
+    "webbing",
+    "snap-buckle",
+    "strap",
+    "closure",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

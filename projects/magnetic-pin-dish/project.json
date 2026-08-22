@@ -1,0 +1,386 @@
+{
+  "project": {
+    "name": "Magnetic Pin Dish",
+    "slug": "magnetic-pin-dish",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed magnetic pin dish: a shallow bowl with a disc magnet in a pocket underneath, so dressmaker pins and machine needles jump to it instead of ending up in the carpet — and a spilled tin can be swept up by waving the dish over the floor.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un platillo imantado para alfileres impreso en 3D: un cuenco bajo con un imán de disco en un alojamiento inferior, para que alfileres y agujas salten a él en vez de acabar en la alfombra — y para barrer un derrame pasando el platillo sobre el piso.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/magnetic-pin-dish.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "magnetic-pin-dish",
+      "pin-dish",
+      "magnet",
+      "sewing",
+      "atelier",
+      "safety",
+      "tool",
+      "notion",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dish",
+      "label": {
+        "en": "Single Dish",
+        "es": "Platillo único"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "dish"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "twin",
+      "label": {
+        "en": "Twin Dishes",
+        "es": "Platillos gemelos"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "twin"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "sharps",
+      "label": {
+        "en": "Sharps Cup",
+        "es": "Vaso para punzantes"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "sharps"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "dish",
+      "label": {
+        "en": "Dish",
+        "es": "Platillo"
+      },
+      "render_mode": 0,
+      "color": "#7a6a86"
+    },
+    {
+      "id": "twin",
+      "label": {
+        "en": "Twin Dishes",
+        "es": "Platillos gemelos"
+      },
+      "render_mode": 0,
+      "color": "#7a6a86"
+    },
+    {
+      "id": "sharps",
+      "label": {
+        "en": "Sharps Cup",
+        "es": "Vaso para punzantes"
+      },
+      "render_mode": 0,
+      "color": "#7a6a86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "bowl",
+      "label": {
+        "en": "Bowl",
+        "es": "Cuenco"
+      }
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "en": "Magnet",
+        "es": "Imán"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "dish_dia",
+      "type": "slider",
+      "default": 84.0,
+      "min": 40.0,
+      "max": 160.0,
+      "step": 1.0,
+      "group": "bowl",
+      "modes": [
+        "dish",
+        "twin",
+        "sharps"
+      ],
+      "label": {
+        "en": "Rim diameter (mm)",
+        "es": "Diámetro del borde (mm)"
+      },
+      "tooltip": {
+        "en": "Rim diameter (mm)",
+        "es": "Diámetro del borde (mm)"
+      }
+    },
+    {
+      "id": "dish_h",
+      "type": "slider",
+      "default": 18.0,
+      "min": 8.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "bowl",
+      "modes": [
+        "dish",
+        "twin",
+        "sharps"
+      ],
+      "label": {
+        "en": "Overall height (mm)",
+        "es": "Altura total (mm)"
+      },
+      "tooltip": {
+        "en": "Overall height (mm)",
+        "es": "Altura total (mm)"
+      }
+    },
+    {
+      "id": "bowl_d",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "bowl",
+      "modes": [
+        "dish",
+        "twin",
+        "sharps"
+      ],
+      "label": {
+        "en": "Bowl depth (mm)",
+        "es": "Profundidad del cuenco (mm)"
+      },
+      "tooltip": {
+        "en": "Bowl depth (mm)",
+        "es": "Profundidad del cuenco (mm)"
+      }
+    },
+    {
+      "id": "magnet_dia",
+      "type": "slider",
+      "default": 20.0,
+      "min": 6.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "magnet",
+      "modes": [
+        "dish",
+        "twin",
+        "sharps"
+      ],
+      "label": {
+        "en": "Magnet diameter (mm)",
+        "es": "Diámetro del imán (mm)"
+      },
+      "tooltip": {
+        "en": "Magnet diameter (mm)",
+        "es": "Diámetro del imán (mm)"
+      }
+    },
+    {
+      "id": "magnet_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "magnet",
+      "modes": [
+        "dish",
+        "twin",
+        "sharps"
+      ],
+      "label": {
+        "en": "Magnet thickness (mm)",
+        "es": "Espesor del imán (mm)"
+      },
+      "tooltip": {
+        "en": "Magnet thickness (mm)",
+        "es": "Espesor del imán (mm)"
+      }
+    },
+    {
+      "id": "floor_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "magnet",
+      "modes": [
+        "dish",
+        "twin",
+        "sharps"
+      ],
+      "label": {
+        "en": "Floor over magnet (mm)",
+        "es": "Piso sobre el imán (mm)"
+      },
+      "tooltip": {
+        "en": "Floor over magnet (mm)",
+        "es": "Piso sobre el imán (mm)"
+      }
+    },
+    {
+      "id": "magnet_clr",
+      "type": "slider",
+      "default": 0.25,
+      "min": 0.05,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "magnet",
+      "modes": [
+        "dish",
+        "twin",
+        "sharps"
+      ],
+      "label": {
+        "en": "Magnet pocket clearance (mm)",
+        "es": "Holgura del alojamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Magnet pocket clearance (mm)",
+        "es": "Holgura del alojamiento (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "dish",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "dish_dia": 84.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        110,
+        110,
+        80
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "magnet_pocket",
+        "label": {
+          "en": "Magnet Pocket (downward-opening)",
+          "es": "Alojamiento del imán (abierto hacia abajo)"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "magnet_dia",
+          "magnet_t",
+          "magnet_clr",
+          "floor_t"
+        ]
+      },
+      {
+        "id": "pin_bowl",
+        "label": {
+          "en": "Pin Bowl",
+          "es": "Cuenco de alfileres"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "dish_dia",
+          "dish_h",
+          "bowl_d"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Loose dressmaker pins are the cutting room's most reliable injury and the most reliable way to wreck a vacuum. A magnetic dish costs a few dollars and is the one tool people improvise badly; printed around whatever disc magnet is on hand, it costs almost nothing.",
+      "es": "Los alfileres sueltos son la lesión más fiable del taller de corte y la forma más fiable de arruinar una aspiradora. Un platillo imantado cuesta unos dólares y es la herramienta que peor se improvisa; impreso alrededor del imán que haya a mano, casi no cuesta nada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "magnetic-pin-dish",
+    "pin-dish",
+    "magnet",
+    "sewing",
+    "atelier",
+    "safety",
+    "tool",
+    "notion",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

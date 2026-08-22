@@ -147,6 +147,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # OCP (cadquery's kernel) dlopens libGL at import; the ARC runner image
+      # ships without it, so cq_runner subprocesses died with "CadQuery is not
+      # installed (libGL.so.1: cannot open shared object file)". The parity and
+      # e2e-audit jobs never hit this only because their openscad apt install
+      # pulls libGL transitively.
+      - run: sudo apt-get update && sudo apt-get install -y libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox

@@ -44,7 +44,7 @@
       "label": { "en": "Single Tape + Coil", "es": "Cinta con espiral (una sola)" },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["tape_left"],
+      "parts": ["tape_left", "tape_right"],
       "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
     },
     {

@@ -35,7 +35,7 @@
       "label": { "en": "Hook & Bar Set", "es": "Juego de gancho y barra" },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["hook_plate", "bar_plate"],
+      "parts": ["hook", "bar"],
       "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
     },
     {
@@ -43,7 +43,7 @@
       "label": { "en": "Hook Plate", "es": "Placa de gancho" },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["hook_plate"],
+      "parts": ["hook"],
       "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
     },
     {
@@ -51,19 +51,19 @@
       "label": { "en": "Bar Plate", "es": "Placa de barra" },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["bar_plate"],
+      "parts": ["bar"],
       "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
     }
   ],
   "parts": [
     {
-      "id": "hook_plate",
+      "id": "hook",
       "label": { "en": "Hook Plate", "es": "Placa de gancho" },
       "render_mode": 0,
       "color": "#b0a890"
     },
     {
-      "id": "bar_plate",
+      "id": "bar",
       "label": { "en": "Bar Plate", "es": "Placa de barra" },
       "render_mode": 0,
       "color": "#a09880"

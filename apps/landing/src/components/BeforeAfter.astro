@@ -1,4 +1,12 @@
 ---
+// Syntax highlighting in the OpenSCAD sample below is contrast-checked
+// against bg-card. Keywords use `text-primary-readable`, not `text-primary`:
+// the latter measures 3.83:1 on this surface, under the 4.5:1 floor for 14px
+// code. Numerals previously used `text-accent`, but --accent is a *surface*
+// token (dark 240 3.7% 15.9% on a 240 10% 3.9% card), which measured 1.34:1
+// dark / 1.10:1 light — effectively invisible. They now use text-foreground,
+// which also keeps them visually distinct from the keywords.
+// Locked by src/components/contrast.test.ts.
 import type { Translations } from '../lib/i18n';
 
 interface Props {
@@ -19,13 +27,13 @@ const { t } = Astro.props;
         <div class="border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground bg-secondary/50">
           {t?.beforeAfter.codeSide ?? 'Código OpenSCAD'}
         </div>
-        <pre class="p-4 text-sm font-mono text-muted-foreground overflow-x-auto leading-relaxed"><code><span class="text-primary">module</span> <span class="text-foreground">gridfinity_bin</span>(
-  width    = <span class="text-accent">3</span>,
-  depth    = <span class="text-accent">2</span>,
-  height   = <span class="text-accent">6</span>,
-  dividers = <span class="text-accent">2</span>,
-  lip      = <span class="text-primary">true</span>,
-  magnet   = <span class="text-primary">true</span>
+        <pre class="p-4 text-sm font-mono text-muted-foreground overflow-x-auto leading-relaxed"><code><span class="text-primary-readable">module</span> <span class="text-foreground">gridfinity_bin</span>(
+  width    = <span class="text-foreground">3</span>,
+  depth    = <span class="text-foreground">2</span>,
+  height   = <span class="text-foreground">6</span>,
+  dividers = <span class="text-foreground">2</span>,
+  lip      = <span class="text-primary-readable">true</span>,
+  magnet   = <span class="text-primary-readable">true</span>
 ) &#123;
   <span class="text-muted-foreground/60">// 200+ lines of geometry...</span>
 &#125;</code></pre>

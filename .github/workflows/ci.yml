@@ -152,7 +152,7 @@ jobs:
       # installed (libGL.so.1: cannot open shared object file)". The parity and
       # e2e-audit jobs never hit this only because their openscad apt install
       # pulls libGL transitively.
-      - run: sudo apt-get update && sudo apt-get install -y libgl1
+      - run: sudo apt-get update && sudo apt-get install -y libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox

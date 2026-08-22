@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, goToProjects, setLanguage, waitForAppReady } from '../../helpers/test-utils.js'
+import { goToStudio, goToProjects, setLanguage, waitForAppReady, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 /**
  * Lightweight studio navigation for mobile viewports.
@@ -254,6 +254,12 @@ test.describe('Responsive Design', () => {
   test('desktop: all action buttons visible without scroll', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await goToStudio(page)
+    // The ActionDock's primary button reads "Processing..." for as long as the
+    // initial auto-render is in flight, so asking for "Generate" before the
+    // render settles is asking for a button that is not in the DOM yet. On the
+    // ARC pods that render outlived the default 5s expect timeout (run
+    // 32565668502, firefox shard 2).
+    await waitForRenderSettled(page)
     await expect(page.getByRole('button', { name: 'Generate', exact: true })).toBeVisible()
     await expect(page.locator('[data-testid="studio-sidebar"]')).toBeVisible()
   })
@@ -291,9 +297,18 @@ test.describe('Responsive Design', () => {
     // Sheet should contain the drag handle indicator
     const dragHandle = sheet.locator('.bg-muted-foreground\\/30').first()
     await expect(dragHandle).toBeVisible({ timeout: 3000 })
-    // Sheet should contain Generate button
-    const generateBtn = sheet.locator('button', { hasText: /Generate|Generar/ })
-    await expect(generateBtn.first()).toBeVisible({ timeout: 3000 })
+    // Sheet should contain Generate button.
+    //
+    // The sheet mounts its own ActionDock, whose primary button renders
+    // "Processing..." while a render is in flight — so on a slow runner the
+    // sheet opened onto a dock that had no "Generate" button at all. The
+    // post-failure snapshot from run 32565668502 shows exactly that: the
+    // dialog is open and correct, containing `button "Processing..." [disabled]`
+    // and `button "Cancel"` where Generate was expected. The assertion is
+    // about the sheet's contents, not about render speed, so wait for the
+    // render to settle rather than widening the timeout.
+    const generateBtn = sheet.locator('button').filter({ hasText: /Generate|Generar/ }).first()
+    await expect(generateBtn).toBeVisible({ timeout: 30_000 })
   })
 
   test('mobile: console expand/collapse works', async ({ page }) => {

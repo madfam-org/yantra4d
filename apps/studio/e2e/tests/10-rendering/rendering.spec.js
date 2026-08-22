@@ -1,9 +1,16 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, forceBackendRender, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 test.describe('Rendering Flow', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
+    // Every test in this file asserts on the behaviour of a MOCKED render.
+    // detectMode() only consults those mocks on the 'backend' path, and it
+    // chooses between backend and WASM by reading navigator.hardwareConcurrency
+    // — so without this pin the whole file silently tested the WASM path on any
+    // runner with >= 4 cores, where the mocks are never fetched and the render
+    // ends in "OpenSCAD exited with code 1" at machine-dependent speed.
+    await forceBackendRender(page)
     await goToStudio(page)
   })
 
@@ -36,25 +43,37 @@ test.describe('Rendering Flow', () => {
   })
 
   test('cancel aborts render', async ({ page, sidebar }) => {
-    // Setup slow mock
+    // Hold the render open until the test releases it, instead of betting that
+    // a fixed 10s sleep outlasts however long the runner takes to get here.
+    let releaseRender = () => { }
+    const renderHeld = new Promise((resolve) => { releaseRender = resolve })
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 10000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
+      await renderHeld
+      await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
 
-    // Trigger auto-render
-    await sidebar.editSliderValue('width', 124)
+    try {
+      // The initial auto-render has to finish first, or the Cancel button we
+      // wait for below may belong to it rather than to the held render.
+      await waitForRenderSettled(page)
 
-    // Wait for render to start
-    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+      // Trigger auto-render
+      await sidebar.editSliderValue('width', 124)
 
-    // Cancel
-    await sidebar.clickCancel()
+      // Wait for render to start
+      await expect(sidebar.cancelButton).toBeVisible({ timeout: 15_000 })
 
-    // Verify loading cleared
-    await expect(sidebar.generateButton).toBeVisible({ timeout: 5000 })
-    await expect(sidebar.generateButton).toBeEnabled({ timeout: 5000 })
+      // Cancel
+      await sidebar.clickCancel()
+
+      // Verify loading cleared. The app aborts the in-flight fetch, so this
+      // holds while the route is still held open.
+      await expect(sidebar.generateButton).toBeVisible({ timeout: 10_000 })
+      await expect(sidebar.generateButton).toBeEnabled({ timeout: 10_000 })
+    } finally {
+      releaseRender()
+    }
   })
 
   test('console logs render progress', async ({ page, sidebar, viewer }) => {
@@ -118,11 +137,22 @@ test.describe('Rendering Flow', () => {
     await page.route('**/api/render-stream', (route) => {
       route.fulfill({ status: 500, json: { error: 'OpenSCAD crashed' } })
     })
+    // Let the initial (successful) auto-render finish first, so the failure
+    // below is unambiguously the one produced by the error mock.
+    await waitForRenderSettled(page)
     // Change param to bust cache, triggering a fresh render with the error mock
     await sidebar.editSliderValue('width', 55)
-    await page.waitForTimeout(2000)
-    const logs = await viewer.getConsoleLogs()
-    expect(logs).toContain('Error')
+    // Poll the console rather than sleeping for a fixed 2s. In run 32565668502
+    // the error DID arrive — the post-failure snapshot shows
+    //   "Ready. Generating (cup)... [body] Starting... (1/1) Starting OpenSCAD...
+    //    Error: OpenSCAD exited with code 1"
+    // — but at t=2s the log still read only "Ready. / Generating (cup)... /
+    // [body] Starting... (1/1)", which is exactly the string the failure
+    // reported as "Received".
+    await expect.poll(
+      async () => viewer.getConsoleLogs(),
+      { timeout: 20_000, message: 'render console never reported an error' },
+    ).toContain('Error')
   })
 
   test('render timeout shows error', async ({ page, sidebar }) => {

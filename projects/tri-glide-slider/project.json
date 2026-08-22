@@ -1,0 +1,340 @@
+{
+  "project": {
+    "name": "Tri-Glide Slider",
+    "slug": "tri-glide-slider",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed tri-glide — the flat three-bar webbing slider that holds a length setting by reversing the tape twice, on sternum straps, apron ties, camera slings, dog harnesses and overall straps. Distinct from the `d-ring` anchor loop, the `bra-ring-slider` lingerie pair and the one-bar `ladder-lock`. Sized for trade webbing widths 20, 25, 38 and 50 mm. This is the rigid hard good the Fashion Cabinet `tri-glide-slider` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un tri-glide impreso en 3D — la corredera plana de tres barras que fija el largo de una cincha invirtiendo la cinta dos veces, en pectorales, tiras de mandil, correas de cámara, arneses caninos y tirantes de overol. Distinta de la argolla `d-ring`, del par de lencería `bra-ring-slider` y del `ladder-lock` de una barra. Dimensionada para los anchos comerciales de 20, 25, 38 y 50 mm. Es el herraje rígido que el avío `tri-glide-slider` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tri-glide-slider.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "tri-glide-slider",
+      "tri-glide",
+      "webbing",
+      "strap-adjuster",
+      "slider",
+      "strap",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "glide",
+      "label": {
+        "en": "Tri-Glide",
+        "es": "Tri-glide"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "glide"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "glide",
+      "label": {
+        "en": "Tri-Glide",
+        "es": "Tri-glide"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "webbing",
+      "label": {
+        "en": "Webbing",
+        "es": "Cincha"
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame",
+        "es": "Marco"
+      }
+    },
+    {
+      "id": "style",
+      "label": {
+        "en": "Style",
+        "es": "Estilo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 15.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "webbing",
+      "modes": [
+        "glide"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal webbing width (mm). All three openings span this plus 1 mm so the tape tracks straight without curling at the edges.",
+        "es": "Ancho nominal de la cincha (mm). Las tres aberturas miden esto más 1 mm para que la cinta corra derecha sin enrollarse en los cantos."
+      }
+    },
+    {
+      "id": "webbing_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "webbing",
+      "modes": [
+        "glide"
+      ],
+      "label": {
+        "en": "Webbing thickness (mm)",
+        "es": "Espesor de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the tape (mm). The two outer openings pass one thickness; the middle opening passes two, because the tape reverses there.",
+        "es": "Espesor de la cincha (mm). Las dos aberturas exteriores pasan un espesor; la del centro pasa dos, porque ahí la cinta se invierte."
+      }
+    },
+    {
+      "id": "rail_t",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "glide"
+      ],
+      "label": {
+        "en": "Frame rail thickness (mm)",
+        "es": "Espesor del riel del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the outer frame rails (mm) — the load path under strap tension.",
+        "es": "Espesor de los rieles exteriores (mm) — la vía de carga bajo tensión."
+      }
+    },
+    {
+      "id": "bar_w",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "glide"
+      ],
+      "label": {
+        "en": "Bar width (mm)",
+        "es": "Ancho de la barra (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each internal bar along the pull (mm). Wider bars spread the wrap and resist creeping, at the cost of a longer glide.",
+        "es": "Ancho de cada barra interior en el sentido del tiro (mm). Barras más anchas reparten el envolvimiento y resisten el deslizamiento, a costa de un tri-glide más largo."
+      }
+    },
+    {
+      "id": "body_h",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 9.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "glide"
+      ],
+      "label": {
+        "en": "Frame height (mm)",
+        "es": "Altura del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the glide (mm) — the print height when it lies flat. A flatter glide sits better under a shoulder pad.",
+        "es": "Altura del tri-glide (mm) — la altura de impresión al quedar plano. Uno más plano queda mejor bajo una hombrera."
+      }
+    },
+    {
+      "id": "round_bar",
+      "type": "checkbox",
+      "default": true,
+      "group": "style",
+      "modes": [
+        "glide"
+      ],
+      "label": {
+        "en": "Round the bar sections",
+        "es": "Redondear la sección de las barras"
+      },
+      "tooltip": {
+        "en": "Fillet the internal bars' long edges so the tape rolls over a rounded section rather than a square corner — kinder to lightweight webbing.",
+        "es": "Redondea los cantos largos de las barras interiores para que la cinta gire sobre una sección redondeada y no sobre una esquina viva — mejor para cinchas ligeras."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "sternum25",
+      "mode": "glide",
+      "label": {
+        "en": "Sternum Strap (25 mm)",
+        "es": "Correa pectoral (25 mm)"
+      },
+      "values": {
+        "webbing_w": 25.0,
+        "webbing_t": 1.6,
+        "rail_t": 3.2,
+        "bar_w": 4.0,
+        "body_h": 4.0,
+        "round_bar": true
+      }
+    },
+    {
+      "id": "apron38",
+      "mode": "glide",
+      "label": {
+        "en": "Apron Tie (38 mm)",
+        "es": "Tira de mandil (38 mm)"
+      },
+      "values": {
+        "webbing_w": 38.0,
+        "webbing_t": 1.8,
+        "rail_t": 3.6,
+        "bar_w": 5.0,
+        "body_h": 5.0,
+        "round_bar": true
+      }
+    },
+    {
+      "id": "harness50",
+      "mode": "glide",
+      "label": {
+        "en": "Harness Glide (50 mm)",
+        "es": "Corredera de arnés (50 mm)"
+      },
+      "values": {
+        "webbing_w": 50.0,
+        "webbing_t": 2.4,
+        "rail_t": 4.5,
+        "bar_w": 6.5,
+        "body_h": 6.0,
+        "round_bar": false
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "webbing_openings",
+        "label": {
+          "en": "Webbing Openings (tape edge)",
+          "es": "Aberturas de la cincha (canto de la cinta)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing_w",
+          "webbing_t",
+          "rail_t"
+        ]
+      },
+      {
+        "id": "bar_profile",
+        "label": {
+          "en": "Bar Profile",
+          "es": "Perfil de la barra"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "bar_w",
+          "body_h",
+          "round_bar"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A tri-glide is a few grams of moulded plastic that no shop sells loose in the size you need; printing one to your own tape width lets a maker finish an apron, a sling or a harness without ordering a whole bag of the wrong size.",
+      "es": "Un tri-glide son unos gramos de plástico moldeado que ninguna tienda vende suelto en la medida que necesitas; imprimirlo al ancho de tu propia cinta permite terminar un mandil, una correa o un arnés sin pedir una bolsa entera de la medida equivocada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "tri-glide-slider",
+    "tri-glide",
+    "webbing",
+    "strap-adjuster",
+    "slider",
+    "strap",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

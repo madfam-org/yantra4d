@@ -11,37 +11,70 @@ export async function waitForAppReady(page) {
 }
 
 /**
+ * Pages that asked for the backend render path, so goToStudio knows to append
+ * `?render=backend`. A WeakMap rather than a flag on the page object: it keeps
+ * the marker out of Playwright's own surface and lets it be collected with the
+ * page. Set by forceBackendRender, read by studioUrl.
+ */
+const _forcedBackendPages = new WeakMap()
+
+/**
+ * Build the studio URL for a slug, carrying the render-mode override when the
+ * test asked for one. Kept next to goToStudio because they must agree about
+ * where the `render` param goes.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string} slug
+ */
+function studioUrl(page, slug) {
+  const base = `/project/${slug}`
+  return _forcedBackendPages.get(page) ? `${base}?render=backend` : base
+}
+
+/**
  * Pin the render pipeline to the backend (SSE) path so route mocks govern it.
  *
- * renderService.detectMode() picks between 'backend' and 'wasm', and with no
- * VITE_API_BASE set (the E2E build) the deciding branch is:
+ * PRIMARY MECHANISM: the app's own `?render=backend` override, which
+ * detectMode() consults before it probes /api/health and before the hardware
+ * heuristic. This is a supported product feature (see apps/studio/README.md,
+ * "Render Mode Override"), so the tests now pin the path the same way support
+ * tells a user to, instead of lying to the app about the machine.
+ *
+ * Why the override was needed at all: detectMode() picks between 'backend' and
+ * 'wasm', and with no VITE_API_BASE set (the E2E build) the deciding branch was
  *
  *   hasWasmCapabilities() = navigator.hardwareConcurrency >= 4 && deviceMemory >= 4
  *
- * That makes the render path a property of the RUNNER, not of the test. On a
+ * which makes the render path a property of the RUNNER, not of the test. On a
  * GitHub-hosted runner (2 cores) the app chose 'backend' and every
  * `page.route('**\/api/render-stream')` mock in the suite applied; on the
  * madfam-runners-blue ARC pods — and on any developer laptop with >= 4 cores —
- * it chooses 'wasm' instead, the render never touches the network, and the
- * mocks are dead code. The WASM path then fails with "OpenSCAD exited with
- * code 1" (no WASM binary is shipped to the E2E environment) after an
- * unbounded, machine-dependent delay.
+ * it chose 'wasm' instead, the render never touched the network, and the mocks
+ * were dead code. The WASM path then fails with "OpenSCAD exited with code 1"
+ * (no WASM binary is shipped to the E2E environment) after an unbounded,
+ * machine-dependent delay.
  *
- * Verified locally: with default hardware the probe logged
- *   RENDER_REQUESTS: []            (WASM, console ends in "OpenSCAD exited with code 1")
- * and with hardwareConcurrency pinned to 2
- *   RENDER_REQUESTS: ["/api/render-stream", "/api/render/body.stl", ...]
+ * FALLBACK: the hardwareConcurrency spoof stays, deliberately. It is what makes
+ * this helper work for a navigation that does NOT go through goToStudio — a
+ * bare `page.goto('/project/test')`, a `page.goto(landingUrl())`, an in-app
+ * click-through — since only goToStudio knows to append the query param. It
+ * also keeps the helper honest against a build predating the override. The two
+ * agree by construction: both select 'backend', so whichever one the app reads
+ * first gives the same answer.
  *
- * Must be called BEFORE the navigation whose render it should govern, because
- * addInitScript only applies to subsequent page loads.
+ * Must be called BEFORE the navigation whose render it should govern:
+ * addInitScript only applies to subsequent page loads, and the URL is only read
+ * at app startup.
  *
- * 05-export already did this inline for one test; this is the shared version.
- * Do NOT use it in 19-wasm-fallback, which deliberately exercises the WASM
- * path (it forces it by aborting /api/health, independent of core count).
+ * 05-export still does the spoof inline for one test; this is the shared version.
+ *
+ * Do NOT use it in 19-wasm-fallback, which deliberately exercises the WASM path
+ * (it forces it by aborting /api/health, independent of both mechanisms here).
  *
  * @param {import('@playwright/test').Page} page
  */
 export async function forceBackendRender(page) {
+  _forcedBackendPages.set(page, true)
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'hardwareConcurrency', { value: 2, configurable: true })
   })
@@ -91,11 +124,13 @@ export async function waitForRenderSettled(page, timeout = 30_000) {
  * Navigate to studio view and ensure mock manifest is loaded.
  * Clicks the first mode tab to activate it, since the fallback manifest's
  * modes may differ from the mock manifest, leaving tabs in inactive state.
+ * Carries `?render=backend` when forceBackendRender() was called for this page.
+ *
  * @param {import('@playwright/test').Page} page
  * @param {string} [slug='test']
  */
 export async function goToStudio(page, slug = 'test') {
-  await page.goto(`/project/${slug}`)
+  await page.goto(studioUrl(page, slug))
   await waitForAppReady(page)
   // Wait for mock manifest to load (Test Project appears in header).
   // The fallback manifest loads instantly but the mock API response takes

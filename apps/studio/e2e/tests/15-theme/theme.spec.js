@@ -74,7 +74,6 @@ test.describe('Theme System', () => {
     const initial = await page.evaluate(() => localStorage.getItem('vite-ui-theme')) || 'light'
     const startIdx = themes.indexOf(initial)
 
-    // Click theme button and verify it advances to next theme in cycle
     const clickThemeBtn = () => page.evaluate(() => {
       const btn = document.querySelector('header button:has(.lucide-sun)')
         || document.querySelector('header button:has(.lucide-moon)')
@@ -82,17 +81,24 @@ test.describe('Theme System', () => {
       if (btn) btn.click()
     })
 
-    // First cycle
-    const next1 = themes[(startIdx + 1) % 3]
-    await clickThemeBtn()
-    await expect(page.locator(`header button:has(${icons[next1]})`)).toBeVisible({ timeout: 3000 })
-    expect(await page.evaluate(() => localStorage.getItem('vite-ui-theme'))).toBe(next1)
+    // A DOM-level click fired before React attaches the handler is silently
+    // lost (webkit on the shared runner hydrates slowest) — and a lost click
+    // leaves state unchanged, so re-clicking until localStorage moves is
+    // convergent: the provider writes the key synchronously inside the
+    // handler, so the read right after a landed click always sees the change.
+    const cycleOnce = async (expected) => {
+      const before = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
+      await expect.poll(async () => {
+        const now = await page.evaluate(() => localStorage.getItem('vite-ui-theme'))
+        if (now === before) await clickThemeBtn()
+        return page.evaluate(() => localStorage.getItem('vite-ui-theme'))
+      }, { timeout: 15000 }).not.toBe(before)
+      await expect(page.locator(`header button:has(${icons[expected]})`)).toBeVisible({ timeout: 3000 })
+      expect(await page.evaluate(() => localStorage.getItem('vite-ui-theme'))).toBe(expected)
+    }
 
-    // Second cycle
-    const next2 = themes[(startIdx + 2) % 3]
-    await clickThemeBtn()
-    await expect(page.locator(`header button:has(${icons[next2]})`)).toBeVisible({ timeout: 3000 })
-    expect(await page.evaluate(() => localStorage.getItem('vite-ui-theme'))).toBe(next2)
+    await cycleOnce(themes[(startIdx + 1) % 3])
+    await cycleOnce(themes[(startIdx + 2) % 3])
   })
 
   test('dark theme changes canvas background', async ({ page }) => {

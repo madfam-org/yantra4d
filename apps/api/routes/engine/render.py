@@ -45,11 +45,16 @@ def _make_rate_limit_headers(tier: str) -> dict:
 
 
 def _effective_tier() -> str:
-    """Gating tier. In local dev (AUTH_ENABLED off) unlock top tier so the CadQuery /
-    server-render path is not 403-gated — mirrors require_tier() and /api/me, which
-    both grant madfam when AUTH_ENABLED is false. No effect in production."""
+    """Gating tier. In local dev (AUTH_ENABLED off AND debug on) unlock top tier so
+    the CadQuery / server-render path is not 403-gated — mirrors require_tier() and
+    /api/me. The debug condition is load-bearing: auth-off with debug off is the
+    exact state app startup flags as must-never-run (CI and tests use it), and an
+    auth-off-only unlock silently disabled every tier gate there — guests became
+    madfam and the tier-enforcement suite could never see a 403 again."""
+    from flask import current_app
+
     from config import Config
-    if not Config.AUTH_ENABLED:
+    if not Config.AUTH_ENABLED and current_app.debug:
         return "madfam"
     return resolve_tier(getattr(request, "auth_claims", None))
 

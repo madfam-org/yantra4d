@@ -8,6 +8,35 @@ By aligning the tenets of Object-Oriented Ontology (OOO) with strictly defined o
 
 ---
 
+### On the Word: Why *Hyperobjects*
+
+We borrow the word from the philosopher Timothy Morton, who coined it for
+entities so vast in time and space that they can never be pointed at — climate,
+plutonium, the sum of all Styrofoam (*Hyperobjects: Philosophy and Ecology
+after the End of the World*, University of Minnesota Press, 2013). Our objects
+are humbler, and the borrowing is deliberate, scaled to the workbench: call
+them **domestic hyperobjects**.
+
+A cartridge in this commons is never the thing on your desk. It is the whole
+family of things it can regenerate into — a region of parameter space, sliced
+into a particular size, material, and body every time someone renders it. Like
+Morton's giants, it is *nonlocal* (your print is a manifestation, not the
+object), *interobjective* (it exists only in the mesh of manifests, kernels,
+printers, and measurements), *viscous* (a reciprocal license means derivatives
+never detach), and built for timescales longer than its authors. Unlike
+Morton's giants, it fits in your hand — which is the point of the homage, not a
+failure of it.
+
+We also lean on an older, plainer lineage: *hyper-* as in hypertext and
+hyperparameter — the object above objects, the link that generates. Both
+meanings are load-bearing. Neither is a claim to metaphysics: we do not claim
+strict Object-Oriented Ontology; we claim a working conversation with it,
+precise on our own terms. Where this manifesto speaks of flat ontology and
+boundaries, read it as engineering that found its best vocabulary in
+philosophy — and cited its sources.
+
+---
+
 ### I. The Ontological Premise: The Object and the Bounder
 
 In a flat ontology, objects—whether they are algorithmic node-graphs, mathematical manifests, or physical biophilic structural joints—exist independently and equally. They interact, they aggregate, but they maintain their distinct boundaries.

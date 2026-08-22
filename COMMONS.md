@@ -6,6 +6,8 @@
 
 The machine-readable form, including per-object CDG interfaces, standards, and clone instructions, is [`docs/commons-catalog.json`](docs/commons-catalog.json).
 
+*A hyperobject here is never the thing on your desk — it is the family the thing regenerates into. On the word, its philosophy (Morton, 2013), and its hypertext lineage: [Why "Hyperobjects"](docs/strategy/MANIFESTO.md#on-the-word-why-hyperobjects).*
+
 † Carries vendored upstream files under a NonCommercial license, so commercial use is constrained by those files' terms despite the cartridge's own license — see the cartridge's `NOTICE` and the `license_exposure` field in the JSON catalog.
 
 ## Standards referenced

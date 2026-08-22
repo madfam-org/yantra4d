@@ -1,0 +1,361 @@
+{
+  "project": {
+    "name": "Point Turner",
+    "slug": "point-turner",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed collar point turner and seam presser — one flat blade with a blunt point for pushing out collar, cuff, and lapel corners without bursting the stitching, and a broad rounded paddle for holding a seam open under the iron.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un vuelve-puntas y plegador de costuras impreso en 3D — una hoja plana con punta roma para sacar esquinas de cuello, puño y solapa sin reventar la costura, y una paleta redondeada ancha para abrir la costura bajo la plancha.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/point-turner.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "point-turner",
+      "presser",
+      "sewing",
+      "atelier",
+      "pressing",
+      "tool",
+      "notion",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "turner",
+      "label": {
+        "en": "Full Turner",
+        "es": "Vuelve-puntas completo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "turner"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "point",
+      "label": {
+        "en": "Pocket Point",
+        "es": "Punta de bolsillo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "point"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Tools",
+        "es": "Ambas herramientas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "turner",
+      "label": {
+        "en": "Full Turner",
+        "es": "Vuelve-puntas completo"
+      },
+      "render_mode": 0,
+      "color": "#d8c9a8"
+    },
+    {
+      "id": "point",
+      "label": {
+        "en": "Pocket Point",
+        "es": "Punta de bolsillo"
+      },
+      "render_mode": 0,
+      "color": "#d8c9a8"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Tools",
+        "es": "Ambas herramientas"
+      },
+      "render_mode": 0,
+      "color": "#d8c9a8"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "blade",
+      "label": {
+        "en": "Blade",
+        "es": "Hoja"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Agarre"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "tool_len",
+      "type": "slider",
+      "default": 150.0,
+      "min": 70.0,
+      "max": 260.0,
+      "step": 1.0,
+      "group": "blade",
+      "modes": [
+        "turner",
+        "point",
+        "set"
+      ],
+      "label": {
+        "en": "Overall length (mm)",
+        "es": "Longitud total (mm)"
+      },
+      "tooltip": {
+        "en": "Overall length (mm)",
+        "es": "Longitud total (mm)"
+      }
+    },
+    {
+      "id": "presser_w",
+      "type": "slider",
+      "default": 34.0,
+      "min": 16.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "blade",
+      "modes": [
+        "turner",
+        "point",
+        "set"
+      ],
+      "label": {
+        "en": "Presser paddle width (mm)",
+        "es": "Ancho de la paleta (mm)"
+      },
+      "tooltip": {
+        "en": "Presser paddle width (mm)",
+        "es": "Ancho de la paleta (mm)"
+      }
+    },
+    {
+      "id": "point_w",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "blade",
+      "modes": [
+        "turner",
+        "point",
+        "set"
+      ],
+      "label": {
+        "en": "Blunt point width (mm)",
+        "es": "Ancho de la punta roma (mm)"
+      },
+      "tooltip": {
+        "en": "Blunt point width (mm)",
+        "es": "Ancho de la punta roma (mm)"
+      }
+    },
+    {
+      "id": "tool_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.2,
+      "group": "blade",
+      "modes": [
+        "turner",
+        "point",
+        "set"
+      ],
+      "label": {
+        "en": "Blade thickness (mm)",
+        "es": "Espesor de la hoja (mm)"
+      },
+      "tooltip": {
+        "en": "Blade thickness (mm)",
+        "es": "Espesor de la hoja (mm)"
+      }
+    },
+    {
+      "id": "edge_bevel",
+      "type": "slider",
+      "default": 1.4,
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "blade",
+      "modes": [
+        "turner",
+        "point",
+        "set"
+      ],
+      "label": {
+        "en": "Working-edge bevel (mm)",
+        "es": "Bisel del canto de trabajo (mm)"
+      },
+      "tooltip": {
+        "en": "Working-edge bevel (mm)",
+        "es": "Bisel del canto de trabajo (mm)"
+      }
+    },
+    {
+      "id": "grip_pocket",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "grip",
+      "modes": [
+        "turner",
+        "point",
+        "set"
+      ],
+      "label": {
+        "en": "Thumb pocket depth (mm)",
+        "es": "Profundidad del hueco del pulgar (mm)"
+      },
+      "tooltip": {
+        "en": "Thumb pocket depth (mm)",
+        "es": "Profundidad del hueco del pulgar (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "turner",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "tool_len": 150.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        140,
+        90
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "corner_point",
+        "label": {
+          "en": "Corner Point (blunt tip)",
+          "es": "Punta de esquina (roma)"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "point_w",
+          "tool_t",
+          "edge_bevel"
+        ]
+      },
+      {
+        "id": "seam_face",
+        "label": {
+          "en": "Seam Presser Face",
+          "es": "Cara de plegado de costura"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "presser_w",
+          "tool_t",
+          "edge_bevel"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A blunt point turner is what keeps a hand-turned collar corner sharp without a scissor tip going through the stitching — the single most common way a home-sewn shirt is ruined at the last step. It is a two-dollar bamboo stick that is nonetheless never in the drawer.",
+      "es": "Un vuelve-puntas romo es lo que mantiene la esquina del cuello nítida sin que la punta de la tijera atraviese la costura — la forma más común de arruinar una camisa en el último paso. Es una vara de bambú de dos dólares que nunca está en el cajón."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "point-turner",
+    "presser",
+    "sewing",
+    "atelier",
+    "pressing",
+    "tool",
+    "notion",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

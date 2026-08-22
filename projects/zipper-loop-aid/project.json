@@ -1,0 +1,393 @@
+{
+  "project": {
+    "name": "Zipper Loop Aid",
+    "slug": "zipper-loop-aid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A large finger ring that clips onto any zipper pull tab. One piece: a C-clip that springs over the tab and a generous ring for a finger, two fingers or a thumb. A standard pull tab is a 2 mm slip of metal that needs a fine thumb-and-forefinger pinch; arthritis, tremor, neuropathy, hemiparesis, a cast, thick gloves or a back zipper all defeat that pinch. The usual improvisation is a loop of cord that slides and has to be knotted on with the same fingers that cannot work the zipper — this clips on and stays put.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un aro grande que se prende a cualquier jaladera de cierre. Una sola pieza: una pinza en C que entra a presión sobre la jaladera y un aro amplio para un dedo, dos dedos o el pulgar. Una jaladera estándar es una lámina de 2 mm que exige una pinza fina de pulgar e índice; la artritis, el temblor, la neuropatía, la hemiparesia, un yeso, guantes gruesos o un cierre en la espalda derrotan esa pinza. La solución improvisada de siempre es un lazo de cordón que se corre y hay que anudar con los mismos dedos que no pueden con el cierre; ésta se prende y se queda.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/zipper-loop-aid.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "zipper-loop-aid",
+      "zipper",
+      "accessibility",
+      "adaptive",
+      "assistive",
+      "arthritis",
+      "one-handed",
+      "dressing",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "aid",
+      "label": {
+        "en": "Loop Aid",
+        "es": "Aro auxiliar"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "aid"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Loop Aid Pair",
+        "es": "Par de aros auxiliares"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pair"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "aid",
+      "label": {
+        "en": "Loop Aid",
+        "es": "Aro auxiliar"
+      },
+      "render_mode": 0,
+      "color": "#c86f4f"
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Loop Aid Pair",
+        "es": "Par de aros auxiliares"
+      },
+      "render_mode": 0,
+      "color": "#c86f4f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "ring",
+      "label": {
+        "en": "Finger Ring",
+        "es": "Aro"
+      }
+    },
+    {
+      "id": "clip",
+      "label": {
+        "en": "Tab Clip",
+        "es": "Pinza de jaladera"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "ring_id",
+      "type": "slider",
+      "default": 28.0,
+      "min": 14.0,
+      "max": 70.0,
+      "step": 1.0,
+      "group": "ring",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Ring inside diameter (mm)",
+        "es": "Diámetro interior del aro (mm)"
+      },
+      "tooltip": {
+        "en": "Inside diameter of the finger ring (mm). 22 mm takes one finger, 28 mm two, 40 mm a gloved hand or a hooked thumb. Bigger is easier — that is the whole point.",
+        "es": "Diámetro interior del aro (mm). 22 mm admite un dedo, 28 mm dos, 40 mm una mano enguantada o el pulgar en gancho. Más grande es más fácil: de eso se trata."
+      }
+    },
+    {
+      "id": "ring_w",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.5,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "ring",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Ring wall width (mm)",
+        "es": "Ancho de pared del aro (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the ring wall in the plane of the part (mm). Wider walls spread the pull across the finger instead of cutting into it.",
+        "es": "Ancho de la pared del aro en el plano de la pieza (mm). Paredes más anchas reparten el jalón sobre el dedo en vez de clavarse en él."
+      }
+    },
+    {
+      "id": "part_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "ring",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Part thickness (mm)",
+        "es": "Espesor de la pieza (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the ring out of the plane (mm). Together with the wall width this is the section the finger bears on; 4 mm is comfortable, 8 mm is a full grip bar.",
+        "es": "Espesor del aro fuera del plano (mm). Junto con el ancho de pared define la sección sobre la que apoya el dedo; 4 mm es cómodo, 8 mm es una barra de agarre completa."
+      }
+    },
+    {
+      "id": "tab_t",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.8,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "clip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Pull tab thickness (mm)",
+        "es": "Espesor de la jaladera (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the zipper pull tab the clip grips (mm). A YKK #5 tab is about 1.5-2 mm; #8 and #10 outerwear tabs run 2-3 mm. Measure with a caliper.",
+        "es": "Espesor de la jaladera que sujeta la pinza (mm). Una YKK #5 mide entre 1.5 y 2 mm; las #8 y #10 de exterior van de 2 a 3 mm. Mídela con calibrador."
+      }
+    },
+    {
+      "id": "tab_w",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "clip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Pull tab width (mm)",
+        "es": "Ancho de la jaladera (mm)"
+      },
+      "tooltip": {
+        "en": "Width of tab the clip spans (mm). It does not have to be the tab's full width — 10 mm of grip on a 20 mm tab is plenty, and a shorter clip is easier to snap on.",
+        "es": "Ancho de jaladera que abarca la pinza (mm). No tiene que ser el ancho total: 10 mm de agarre sobre una jaladera de 20 mm bastan, y una pinza más corta entra más fácil."
+      }
+    },
+    {
+      "id": "clip_wrap",
+      "type": "slider",
+      "default": 0.7,
+      "min": 0.35,
+      "max": 0.92,
+      "step": 0.01,
+      "group": "clip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Mouth ratio (of tab thickness)",
+        "es": "Razón de la boca (sobre el espesor)"
+      },
+      "tooltip": {
+        "en": "Mouth opening as a fraction of tab thickness. Below 1 the clip snaps on with interference: 0.7 is a firm grip that still goes on by hand, 0.9 slips on and off easily, 0.4 needs pliers.",
+        "es": "Apertura de la boca como fracción del espesor de la jaladera. Bajo 1 la pinza entra a presión: 0.7 sujeta firme y aún se pone a mano, 0.9 entra y sale con facilidad, 0.4 requiere pinzas."
+      }
+    },
+    {
+      "id": "clip_arm",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.4,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "clip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Clip arm thickness (mm)",
+        "es": "Espesor de los brazos (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the clip arms (mm). Thin arms spring open easily but fatigue; 3 mm in PETG survives daily use, and thicker arms in TPU stay springy indefinitely.",
+        "es": "Espesor de pared de los brazos de la pinza (mm). Los brazos delgados abren fácil pero se fatigan; 3 mm en PETG aguantan el uso diario, y más gruesos en TPU se mantienen elásticos indefinidamente."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "jacket_ykk5",
+      "mode": "aid",
+      "label": {
+        "en": "Jacket Zip (YKK #5)",
+        "es": "Cierre de chamarra (YKK #5)"
+      },
+      "values": {
+        "ring_id": 28.0,
+        "ring_w": 5.0,
+        "part_t": 4.0,
+        "tab_t": 1.8,
+        "tab_w": 10.0,
+        "clip_wrap": 0.7,
+        "clip_arm": 3.0
+      }
+    },
+    {
+      "id": "gloved_outerwear",
+      "mode": "aid",
+      "label": {
+        "en": "Gloved Outerwear (#10)",
+        "es": "Exterior con guantes (#10)"
+      },
+      "values": {
+        "ring_id": 45.0,
+        "ring_w": 8.0,
+        "part_t": 7.0,
+        "tab_t": 3.0,
+        "tab_w": 16.0,
+        "clip_wrap": 0.75,
+        "clip_arm": 4.5
+      }
+    },
+    {
+      "id": "back_dress_pair",
+      "mode": "pair",
+      "label": {
+        "en": "Back Dress Zip (pair)",
+        "es": "Cierre de espalda (par)"
+      },
+      "values": {
+        "ring_id": 22.0,
+        "ring_w": 4.0,
+        "part_t": 3.0,
+        "tab_t": 1.4,
+        "tab_w": 7.0,
+        "clip_wrap": 0.65,
+        "clip_arm": 2.2
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        70,
+        50
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "pull_tab_clip",
+        "label": {
+          "en": "Pull Tab C-Clip",
+          "es": "Pinza en C para jaladera"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "tab_t",
+          "tab_w",
+          "clip_wrap",
+          "clip_arm"
+        ]
+      },
+      {
+        "id": "finger_ring",
+        "label": {
+          "en": "Finger Ring Section",
+          "es": "Sección del aro"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "ring_id",
+          "ring_w",
+          "part_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Adaptive zipper pulls are sold as a bag of identical plastic loops that fit one tab size and fall off the rest, so people replace whole garments with pull-on ones rather than fight a zipper. A clip measured to the tab already on the coat turns any existing zipper into an accessible one without altering the garment, and a coat that stays in service is a coat that is not replaced.",
+      "es": "Los jaladores adaptados se venden como una bolsa de aros de plástico idénticos que ajustan a un solo tamaño de jaladera y se caen de los demás, así que la gente reemplaza prendas enteras por otras de meter por la cabeza en lugar de pelear con un cierre. Una pinza medida a la jaladera que ya trae el abrigo vuelve accesible cualquier cierre existente sin alterar la prenda, y un abrigo que sigue en uso es un abrigo que no se reemplaza."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "zipper-loop-aid",
+    "zipper",
+    "accessibility",
+    "adaptive",
+    "assistive",
+    "arthritis",
+    "one-handed",
+    "dressing",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

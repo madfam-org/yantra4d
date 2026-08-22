@@ -1,0 +1,406 @@
+{
+  "project": {
+    "name": "Strap Ring",
+    "slug": "strap-ring",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The strap-ring family — the plain loops a bag maker sews webbing or a leather tab around to anchor a strap, hang a clip, or turn a corner. Three shapes cover almost every commercial part: the O-ring (round, free-swivelling), the rectangular ring (keeps the webbing flat and square to the panel), and the triangle ring (apex takes the clip, flat base takes the sewn tape). This is the rigid hard good the Fashion Cabinet `strap-ring` notion places and bridges to here for its geometry. The sibling `d-ring` cartridge covers the flat-bar D shape.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La familia de argollas para correa — los aros lisos alrededor de los cuales se cose una cincha o una lengüeta de piel para anclar una correa, colgar un mosquetón o dar vuelta a una esquina. Tres formas cubren casi toda la herrajería comercial: la argolla redonda (gira libre), la rectangular (mantiene la cincha plana y a escuadra con el panel) y la triangular (el vértice recibe el gancho y la base plana recibe la cinta cosida). Es el herraje rígido que el avío `strap-ring` de Fashion Cabinet coloca y al que se puentea aquí. El cartucho hermano `d-ring` cubre la forma de D con barra plana.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/strap-ring.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "strap-ring",
+      "o-ring",
+      "rectangular-ring",
+      "triangle-ring",
+      "webbing",
+      "strap",
+      "bag-hardware",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "o_ring",
+      "label": {
+        "en": "O-Ring",
+        "es": "Argolla redonda"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "o_ring"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    },
+    {
+      "id": "rect_ring",
+      "label": {
+        "en": "Rectangular Ring",
+        "es": "Argolla rectangular"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rect_ring"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    },
+    {
+      "id": "triangle_ring",
+      "label": {
+        "en": "Triangle Ring",
+        "es": "Argolla triangular"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "triangle_ring"
+      ],
+      "estimate": {
+        "base_time": 7,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "o_ring",
+      "label": {
+        "en": "O-Ring",
+        "es": "Argolla redonda"
+      },
+      "render_mode": 0,
+      "color": "#7d8890"
+    },
+    {
+      "id": "rect_ring",
+      "label": {
+        "en": "Rectangular Ring",
+        "es": "Argolla rectangular"
+      },
+      "render_mode": 0,
+      "color": "#6e7a83"
+    },
+    {
+      "id": "triangle_ring",
+      "label": {
+        "en": "Triangle Ring",
+        "es": "Argolla triangular"
+      },
+      "render_mode": 0,
+      "color": "#8b959c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "opening",
+      "label": {
+        "en": "Opening",
+        "es": "Abertura"
+      }
+    },
+    {
+      "id": "section",
+      "label": {
+        "en": "Rod Section",
+        "es": "Sección de la varilla"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 10.0,
+      "max": 75.0,
+      "step": 0.5,
+      "group": "opening",
+      "modes": [
+        "o_ring",
+        "rect_ring",
+        "triangle_ring"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the webbing or leather tab the ring must pass (mm). Webbing is sold in nominal 20, 25, 38 and 50 mm widths — match the ring to the tape you own, not the other way round.",
+        "es": "Ancho de la cincha o lengüeta de piel que debe pasar la argolla (mm). La cincha se vende en anchos nominales de 20, 25, 38 y 50 mm — ajusta la argolla a la cinta que tengas, no al revés."
+      }
+    },
+    {
+      "id": "opening",
+      "type": "slider",
+      "default": 18.0,
+      "min": 6.0,
+      "max": 150.0,
+      "step": 0.5,
+      "group": "opening",
+      "modes": [
+        "o_ring",
+        "rect_ring",
+        "triangle_ring"
+      ],
+      "label": {
+        "en": "Clear opening (mm)",
+        "es": "Abertura libre (mm)"
+      },
+      "tooltip": {
+        "en": "Clear opening across the loop, perpendicular to the webbing bar (mm). Auto-clamped to twice the webbing width. On the O-ring the bore takes the larger of the two so a folded tape passes either way.",
+        "es": "Abertura libre a través del aro, perpendicular a la barra de la cincha (mm). Se limita al doble del ancho de la cincha. En la argolla redonda el barreno toma el mayor de los dos, para que una cinta doblada pase en cualquier sentido."
+      }
+    },
+    {
+      "id": "wire_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "section",
+      "modes": [
+        "o_ring",
+        "rect_ring",
+        "triangle_ring"
+      ],
+      "label": {
+        "en": "Rod thickness (mm)",
+        "es": "Espesor de la varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Rod thickness measured in plan (mm). A printed ring needs roughly twice the section of a cast metal one for the same load, so 4 mm is the sensible floor on a 25 mm strap.",
+        "es": "Espesor de la varilla medido en planta (mm). Una argolla impresa necesita casi el doble de sección que una metálica fundida para la misma carga, así que 4 mm es el mínimo sensato en una correa de 25 mm."
+      }
+    },
+    {
+      "id": "wire_h",
+      "type": "slider",
+      "default": 4.5,
+      "min": 2.0,
+      "max": 14.0,
+      "step": 0.1,
+      "group": "section",
+      "modes": [
+        "o_ring",
+        "rect_ring",
+        "triangle_ring"
+      ],
+      "label": {
+        "en": "Rod height (mm)",
+        "es": "Altura de la varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Rod height out of plan, which is also the print height (mm). Taller is stronger in a printed ring because the load runs along the layer lines rather than across them.",
+        "es": "Altura de la varilla fuera del plano, que es también la altura de impresión (mm). Más alta es más fuerte en una argolla impresa porque la carga corre a lo largo de las capas y no en su contra."
+      }
+    },
+    {
+      "id": "round_r",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.2,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "section",
+      "modes": [
+        "o_ring",
+        "rect_ring",
+        "triangle_ring"
+      ],
+      "label": {
+        "en": "Section rounding (mm)",
+        "es": "Redondeo de la sección (mm)"
+      },
+      "tooltip": {
+        "en": "Rounding radius on the rod section (mm). Rounding the bearing edge is what stops a printed ring sawing through the webbing; clamped to 45 % of the smaller rod dimension.",
+        "es": "Radio de redondeo de la sección de la varilla (mm). Redondear el canto de apoyo es lo que evita que una argolla impresa corte la cincha; se limita al 45 % de la dimensión menor de la varilla."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "webbing_25_rect",
+      "mode": "rect_ring",
+      "label": {
+        "en": "25 mm Webbing Rectangle",
+        "es": "Rectangular para cincha de 25 mm"
+      },
+      "values": {
+        "webbing_w": 25.0,
+        "opening": 14.0,
+        "wire_t": 4.0,
+        "wire_h": 4.5,
+        "round_r": 1.2
+      }
+    },
+    {
+      "id": "pack_38_triangle",
+      "mode": "triangle_ring",
+      "label": {
+        "en": "38 mm Pack Triangle",
+        "es": "Triangular para mochila de 38 mm"
+      },
+      "values": {
+        "webbing_w": 38.0,
+        "opening": 30.0,
+        "wire_t": 5.5,
+        "wire_h": 6.0,
+        "round_r": 1.8
+      }
+    },
+    {
+      "id": "handbag_20_o",
+      "mode": "o_ring",
+      "label": {
+        "en": "20 mm Handbag O-Ring",
+        "es": "Argolla redonda de bolso 20 mm"
+      },
+      "values": {
+        "webbing_w": 20.0,
+        "opening": 20.0,
+        "wire_t": 3.5,
+        "wire_h": 3.5,
+        "round_r": 1.4
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "opening <= webbing_w * 2",
+      "severity": "error",
+      "message": {
+        "en": "The clear opening cannot exceed twice the webbing width or the ring stops holding the tape square.",
+        "es": "La abertura libre no puede superar el doble del ancho de la cincha o la argolla deja de sostener la cinta a escuadra."
+      }
+    },
+    {
+      "expression": "round_r <= wire_t * 0.45",
+      "severity": "error",
+      "message": {
+        "en": "Section rounding cannot exceed 45 % of the rod thickness.",
+        "es": "El redondeo de la sección no puede superar el 45 % del espesor de la varilla."
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        55,
+        55,
+        45
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        90
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 7,
+    "per_unit": 2,
+    "per_part": 4,
+    "fn_factor": 14,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "tape_bar",
+        "label": {
+          "en": "Tape Bar (sewn flange)",
+          "es": "Barra de cinta (pestaña cosida)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing_w",
+          "wire_t",
+          "wire_h"
+        ]
+      },
+      {
+        "id": "clip_opening",
+        "label": {
+          "en": "Clip Opening",
+          "es": "Abertura para gancho"
+        },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": [
+          "opening",
+          "wire_t",
+          "round_r"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Rings are the cheapest part of a bag and the hardest to source in an odd size, so a repair that needs a 32 mm rectangle usually ends with the whole strap being replaced at a metric width. Printing the ring to the tape already in hand means an existing bag keeps its own webbing, and a small workshop can quote a repair without a hardware inventory.",
+      "es": "Las argollas son la pieza más barata de un bolso y la más difícil de conseguir en medida rara, así que una reparación que necesita una rectangular de 32 mm suele terminar cambiando toda la correa a un ancho métrico. Imprimir la argolla a la cinta que ya se tiene permite que el bolso conserve su propia cincha y que un taller pequeño cotice la reparación sin inventario de herrajes."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "strap-ring",
+    "o-ring",
+    "rectangular-ring",
+    "triangle-ring",
+    "webbing",
+    "strap",
+    "bag-hardware",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

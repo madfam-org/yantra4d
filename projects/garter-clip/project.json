@@ -1,0 +1,407 @@
+{
+  "project": {
+    "name": "Garter Clip",
+    "slug": "garter-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed garter grip — the two-part suspender clip on garter belts, sock suspenders and shirt stays. A nub plate carries a mushroom-headed button; a loop plate with a keyhole slot drops over the head and slides so its narrow throat traps the nub, pinching the stocking welt between the two plates. This is the rigid hard good the Fashion Cabinet `garter-clip` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un broche de liga impreso en 3D — la pinza de dos piezas de los portaligas, las ligas de calcetín y los sujetacamisas. Una placa lleva un botón de cabeza de hongo; una placa de presilla con ranura en ojo de cerradura cae sobre la cabeza y se desliza para que su garganta angosta atrape el botón, prensando el borde de la media entre ambas placas. Es el herraje rígido que el avío `garter-clip` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/garter-clip.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "garter-clip",
+      "suspender-clip",
+      "garter",
+      "lingerie",
+      "sock-suspender",
+      "shirt-stay",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Clip Set (nub + loop)",
+        "es": "Juego de broche (botón + presilla)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "nub",
+      "label": {
+        "en": "Nub Plate (button)",
+        "es": "Placa del botón"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "nub"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "loop",
+      "label": {
+        "en": "Loop Plate (keyhole)",
+        "es": "Placa de presilla (ojo de cerradura)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "loop"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Garter Clip Set",
+        "es": "Juego de broche de liga"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "nub",
+      "label": {
+        "en": "Nub Plate",
+        "es": "Placa del botón"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "loop",
+      "label": {
+        "en": "Loop Plate",
+        "es": "Placa de presilla"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "strap",
+      "label": {
+        "en": "Strap",
+        "es": "Tirante"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Agarre"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strap_w",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "strap",
+      "modes": [
+        "set",
+        "nub",
+        "loop"
+      ],
+      "label": {
+        "en": "Garter strap width (mm)",
+        "es": "Ancho del tirante (mm)"
+      },
+      "tooltip": {
+        "en": "Finished width of the garter elastic (mm). Lingerie suspenders run 10–16 mm; sock suspenders and shirt stays run narrower.",
+        "es": "Ancho terminado del elástico de la liga (mm). Los portaligas de lencería van de 10 a 16 mm; las ligas de calcetín y los sujetacamisas son más angostos."
+      }
+    },
+    {
+      "id": "strap_t",
+      "type": "slider",
+      "default": 1.4,
+      "min": 0.6,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "strap",
+      "modes": [
+        "set",
+        "nub",
+        "loop"
+      ],
+      "label": {
+        "en": "Strap thickness (mm)",
+        "es": "Espesor del tirante (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the elastic (mm). It also sets the fabric gap the button post must stand clear of, so a plush elastic needs a taller post.",
+        "es": "Espesor del elástico (mm). También fija el hueco de tela que el poste debe librar, así que un elástico grueso pide un poste más alto."
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.5,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "set",
+        "nub",
+        "loop"
+      ],
+      "label": {
+        "en": "Plate thickness (mm)",
+        "es": "Espesor de la placa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of both plates (mm). Thin plates lie flat and invisible under a skirt; thicker plates resist bending open under a heavy stocking.",
+        "es": "Espesor de ambas placas (mm). Las delgadas quedan planas e invisibles bajo la falda; las gruesas resisten abrirse con una media pesada."
+      }
+    },
+    {
+      "id": "nub_d",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "grip",
+      "modes": [
+        "set",
+        "nub",
+        "loop"
+      ],
+      "label": {
+        "en": "Button post diameter (mm)",
+        "es": "Diámetro del poste del botón (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the button post (mm). The keyhole throat is sized to this plus the grip clearance, so the post is what actually holds the load.",
+        "es": "Diámetro del poste del botón (mm). La garganta del ojo de cerradura se dimensiona a esto más la holgura, así que el poste es lo que realmente sostiene la carga."
+      }
+    },
+    {
+      "id": "head_over",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.0,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "grip",
+      "modes": [
+        "set",
+        "nub",
+        "loop"
+      ],
+      "label": {
+        "en": "Head overhang (mm)",
+        "es": "Vuelo de la cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "How far the mushroom head flares past the post on each side (mm). More overhang grips harder but needs a bigger keyhole eye to pass.",
+        "es": "Cuánto sobresale la cabeza de hongo del poste por cada lado (mm). Más vuelo agarra mejor pero exige un ojo más grande para pasar."
+      }
+    },
+    {
+      "id": "grip_clear",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.15,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "grip",
+      "modes": [
+        "set",
+        "nub",
+        "loop"
+      ],
+      "label": {
+        "en": "Keyhole clearance (mm)",
+        "es": "Holgura del ojo de cerradura (mm)"
+      },
+      "tooltip": {
+        "en": "Running clearance in the keyhole (mm). Small values grip a fine stocking; raise it if the loop plate will not slide home after printing.",
+        "es": "Holgura de deslizamiento en el ojo de cerradura (mm). Un valor pequeño agarra una media fina; auméntalo si la placa no corre tras imprimir."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "lingerie12",
+      "mode": "set",
+      "label": {
+        "en": "Lingerie Suspender (12 mm)",
+        "es": "Portaligas de lencería (12 mm)"
+      },
+      "values": {
+        "strap_w": 12.0,
+        "strap_t": 1.4,
+        "plate_t": 2.4,
+        "nub_d": 5.0,
+        "head_over": 2.2,
+        "grip_clear": 0.35
+      }
+    },
+    {
+      "id": "sock8",
+      "mode": "set",
+      "label": {
+        "en": "Sock Suspender (8 mm)",
+        "es": "Liga de calcetín (8 mm)"
+      },
+      "values": {
+        "strap_w": 8.0,
+        "strap_t": 1.0,
+        "plate_t": 1.8,
+        "nub_d": 3.6,
+        "head_over": 1.5,
+        "grip_clear": 0.3
+      }
+    },
+    {
+      "id": "shirtstay25",
+      "mode": "set",
+      "label": {
+        "en": "Shirt Stay (25 mm)",
+        "es": "Sujetacamisas (25 mm)"
+      },
+      "values": {
+        "strap_w": 25.0,
+        "strap_t": 2.4,
+        "plate_t": 3.2,
+        "nub_d": 7.0,
+        "head_over": 3.0,
+        "grip_clear": 0.45
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "strap_slot",
+        "label": {
+          "en": "Strap Slot (elastic edge)",
+          "es": "Ranura del tirante (canto del elástico)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "strap_w",
+          "strap_t",
+          "plate_t"
+        ]
+      },
+      {
+        "id": "keyhole_grip",
+        "label": {
+          "en": "Keyhole Grip",
+          "es": "Agarre del ojo de cerradura"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "nub_d",
+          "head_over",
+          "grip_clear"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Garter clips are the first thing to break on a suspender belt and are sold only in bulk, in one colour, in one size; a printed pair sized to your own elastic repairs lingerie that would otherwise be thrown away over a two-gram part.",
+      "es": "Los broches de liga son lo primero que se rompe en un portaligas y sólo se venden a granel, en un color y una medida; un par impreso a la medida de tu propio elástico repara lencería que si no se tiraría por una pieza de dos gramos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "garter-clip",
+    "suspender-clip",
+    "garter",
+    "lingerie",
+    "sock-suspender",
+    "shirt-stay",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,463 @@
+{
+  "project": {
+    "name": "Chicago Screw",
+    "slug": "chicago-screw",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The two-part binding post leatherworkers call a Chicago screw or sex bolt — a barrel with a flat head and an internal bore, and a cap screw that threads into it from the other side. Together they clamp a leather strap sandwich without a rivet setter, and unlike a rivet they come apart again, which is why every adjustable strap, watch band and knife sheath uses them. This is the rigid hard good the Fashion Cabinet `chicago-screw` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El poste de encuadernación en dos piezas que en marroquinería se llama tornillo Chicago o tornillo pasador — un barril con cabeza plana y barreno interior, y un tornillo tapa que enrosca desde el otro lado. Juntos aprietan un emparedado de correa de piel sin remachadora y, a diferencia de un remache, se vuelven a desarmar, por eso los usan todas las correas ajustables, extensibles de reloj y fundas de cuchillo. Es el herraje rígido que el avío `chicago-screw` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/chicago-screw.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "chicago-screw",
+      "binding-post",
+      "sex-bolt",
+      "leather",
+      "strap",
+      "bag-hardware",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "post",
+      "label": {
+        "en": "Barrel Post",
+        "es": "Poste barril"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "post"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "cap",
+      "label": {
+        "en": "Cap Screw",
+        "es": "Tornillo tapa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cap"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Screw Set (post + cap)",
+        "es": "Juego de tornillo (poste + tapa)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "post",
+      "label": {
+        "en": "Barrel Post",
+        "es": "Poste barril"
+      },
+      "render_mode": 0,
+      "color": "#9a9a9e"
+    },
+    {
+      "id": "cap",
+      "label": {
+        "en": "Cap Screw",
+        "es": "Tornillo tapa"
+      },
+      "render_mode": 0,
+      "color": "#b4b4b8"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Screw Set",
+        "es": "Juego de tornillo"
+      },
+      "render_mode": 0,
+      "color": "#9a9a9e"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "head",
+      "label": {
+        "en": "Head",
+        "es": "Cabeza"
+      }
+    },
+    {
+      "id": "barrel",
+      "label": {
+        "en": "Barrel",
+        "es": "Barril"
+      }
+    },
+    {
+      "id": "thread",
+      "label": {
+        "en": "Thread",
+        "es": "Rosca"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "head_dia",
+      "type": "slider",
+      "default": 10.0,
+      "min": 6.0,
+      "max": 20.0,
+      "step": 0.2,
+      "group": "head",
+      "modes": [
+        "post",
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Head diameter (mm)",
+        "es": "Diámetro de la cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Flat head diameter, identical on both parts (mm). Commercial Chicago screws run 8-12 mm; a wider head spreads the clamp load over softer leather.",
+        "es": "Diámetro de la cabeza plana, igual en ambas piezas (mm). Los tornillos Chicago comerciales van de 8 a 12 mm; una cabeza más ancha reparte la carga en pieles más blandas."
+      }
+    },
+    {
+      "id": "head_t",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "head",
+      "modes": [
+        "post",
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Head thickness (mm)",
+        "es": "Espesor de la cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of each flat head (mm). Also sets the driver slot depth, which is 55 % of this value.",
+        "es": "Espesor de cada cabeza plana (mm). También define la profundidad de la ranura del desarmador, que es el 55 % de este valor."
+      }
+    },
+    {
+      "id": "post_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 18.0,
+      "step": 0.1,
+      "group": "barrel",
+      "modes": [
+        "post",
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Barrel diameter (mm)",
+        "es": "Diámetro del barril (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the barrel that passes through the punched strap hole (mm). Clamped to the head diameter minus 2 mm so the head always reads as a head.",
+        "es": "Diámetro exterior del barril que atraviesa el barreno de la correa (mm). Se limita al diámetro de la cabeza menos 2 mm para que la cabeza siempre se lea como cabeza."
+      }
+    },
+    {
+      "id": "stack_t",
+      "type": "slider",
+      "default": 6.0,
+      "min": 1.5,
+      "max": 25.0,
+      "step": 0.1,
+      "group": "barrel",
+      "modes": [
+        "post",
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Leather stack (mm)",
+        "es": "Espesor del emparedado (mm)"
+      },
+      "tooltip": {
+        "en": "Total thickness of the leather sandwich the screw clamps (mm). Two plies of 8-9 oz veg-tan is about 7 mm; a single 4-5 oz strap end is about 2 mm. This drives the barrel and shank lengths.",
+        "es": "Espesor total del emparedado de piel que aprieta el tornillo (mm). Dos capas de curtido vegetal de 8-9 onzas son unos 7 mm; un extremo de correa de 4-5 onzas es unos 2 mm. Determina el largo del barril y del vástago."
+      }
+    },
+    {
+      "id": "thread_dia",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.6,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "thread",
+      "modes": [
+        "post",
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Thread diameter (mm)",
+        "es": "Diámetro de la rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal diameter of the cosmetic thread (mm). Clamped to the barrel diameter minus 1.8 mm so at least 0.9 mm of barrel wall survives all round.",
+        "es": "Diámetro nominal de la rosca cosmética (mm). Se limita al diámetro del barril menos 1.8 mm para conservar al menos 0.9 mm de pared en todo el contorno."
+      }
+    },
+    {
+      "id": "thread_len",
+      "type": "slider",
+      "default": 5.0,
+      "min": 1.5,
+      "max": 20.0,
+      "step": 0.1,
+      "group": "thread",
+      "modes": [
+        "post",
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Engaged thread length (mm)",
+        "es": "Largo de rosca engranada (mm)"
+      },
+      "tooltip": {
+        "en": "How far the cap shank threads into the barrel bore (mm). Auto-clamped to the stack thickness minus 0.8 mm so the bore never breaks through the post head.",
+        "es": "Cuánto entra el vástago de la tapa en el barreno del barril (mm). Se limita al espesor del emparedado menos 0.8 mm para que el barreno nunca atraviese la cabeza del poste."
+      }
+    },
+    {
+      "id": "slot_w",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.6,
+      "max": 3.5,
+      "step": 0.1,
+      "group": "head",
+      "modes": [
+        "post",
+        "cap",
+        "set"
+      ],
+      "label": {
+        "en": "Driver slot width (mm)",
+        "es": "Ancho de la ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the flat-blade driver slot across each head (mm). Match it to the screwdriver you actually own; 1.2 mm suits a 4 mm cabinet blade.",
+        "es": "Ancho de la ranura para desarmador plano en cada cabeza (mm). Ajústalo al desarmador que realmente tengas; 1.2 mm corresponde a una punta plana de 4 mm."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "watch_strap",
+      "mode": "set",
+      "label": {
+        "en": "Watch Strap (8 mm head)",
+        "es": "Correa de reloj (cabeza 8 mm)"
+      },
+      "values": {
+        "head_dia": 8.0,
+        "head_t": 1.6,
+        "post_dia": 4.0,
+        "stack_t": 3.0,
+        "thread_dia": 2.0,
+        "thread_len": 2.4,
+        "slot_w": 1.0
+      }
+    },
+    {
+      "id": "belt_keeper",
+      "mode": "set",
+      "label": {
+        "en": "Belt Keeper (10 mm head)",
+        "es": "Pasador de cinturón (cabeza 10 mm)"
+      },
+      "values": {
+        "head_dia": 10.0,
+        "head_t": 2.0,
+        "post_dia": 5.0,
+        "stack_t": 6.0,
+        "thread_dia": 3.0,
+        "thread_len": 5.0,
+        "slot_w": 1.2
+      }
+    },
+    {
+      "id": "knife_sheath",
+      "mode": "set",
+      "label": {
+        "en": "Knife Sheath (14 mm head, thick stack)",
+        "es": "Funda de cuchillo (cabeza 14 mm, emparedado grueso)"
+      },
+      "values": {
+        "head_dia": 14.0,
+        "head_t": 3.0,
+        "post_dia": 7.0,
+        "stack_t": 12.0,
+        "thread_dia": 4.5,
+        "thread_len": 8.0,
+        "slot_w": 1.8
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "thread_dia <= post_dia - 1.8",
+      "severity": "error",
+      "message": {
+        "en": "The thread must leave at least 0.9 mm of barrel wall all round.",
+        "es": "La rosca debe dejar al menos 0.9 mm de pared de barril en todo el contorno."
+      }
+    },
+    {
+      "expression": "post_dia <= head_dia - 2",
+      "severity": "error",
+      "message": {
+        "en": "The head must overhang the barrel by at least 1 mm per side.",
+        "es": "La cabeza debe sobresalir del barril al menos 1 mm por lado."
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        30,
+        30,
+        26
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frente"
+      },
+      "position": [
+        0,
+        -45,
+        6
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 20,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "binding_thread",
+        "label": {
+          "en": "Binding Thread",
+          "es": "Rosca de unión"
+        },
+        "geometry_type": "thread",
+        "standard": "internal",
+        "parameters": [
+          "thread_dia",
+          "thread_len",
+          "stack_t"
+        ]
+      },
+      {
+        "id": "strap_bore",
+        "label": {
+          "en": "Strap Bore",
+          "es": "Barreno de la correa"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "post_dia",
+          "stack_t",
+          "head_dia"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A Chicago screw is the difference between a strap that can be shortened, re-holed and re-used and one that is riveted shut for good. Printing them to an existing punched hole size means a strap outlives the bag it came on, and a repair shop stops needing a wall of size-specific brass hardware to take in one job.",
+      "es": "Un tornillo Chicago es la diferencia entre una correa que se puede acortar, reperforar y reutilizar y una remachada para siempre. Imprimirlos a la medida del barreno ya existente hace que una correa sobreviva al bolso original, y un taller deja de necesitar una pared de herrajes de latón por medida para aceptar un trabajo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "chicago-screw",
+    "binding-post",
+    "sex-bolt",
+    "leather",
+    "strap",
+    "bag-hardware",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

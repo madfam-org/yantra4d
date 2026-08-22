@@ -1,0 +1,467 @@
+{
+  "project": {
+    "name": "Folding Board",
+    "slug": "folding-board",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed garment folding board — a centre panel with a hinged wing on each side, so a shirt laid face-down folds to an identical rectangle every time. Retail boards come in one size, which is why a folded child's tee and a folded XXL sweatshirt never stack; this one is generated from the folded width and height you actually want on the shelf. Real pin-knuckle hinges, not living hinges: three printed parts, assembled in a minute.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tabla plegadora de ropa impresa en 3D — un panel central con un ala abisagrada a cada lado, para que una camisa boca abajo quede doblada en un rectángulo idéntico siempre. Las tablas comerciales vienen en una sola medida, y por eso una playera infantil doblada y una sudadera XXL doblada nunca se apilan; ésta se genera con el ancho y el alto doblados que realmente quieres en el estante. Bisagras reales de pasador y nudillos, no bisagras vivas: tres piezas impresas que se arman en un minuto.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/folding-board.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "folding-board",
+      "folding",
+      "garment-care",
+      "wardrobe",
+      "hinge",
+      "pin-hinge",
+      "laundry",
+      "retail-display",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set (all three parts)",
+        "es": "Juego completo (las tres piezas)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 4,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "center_panel",
+      "label": {
+        "en": "Center Panel",
+        "es": "Panel central"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "center_panel"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "side_panel",
+      "label": {
+        "en": "Side Panel (print 2)",
+        "es": "Panel lateral (imprime 2)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "side_panel"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "pin",
+      "label": {
+        "en": "Hinge Pin (print 2)",
+        "es": "Pasador de bisagra (imprime 2)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pin"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 1,
+        "per_part": 3
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set",
+        "es": "Juego completo"
+      },
+      "render_mode": 0,
+      "color": "#9fb0a8"
+    },
+    {
+      "id": "center_panel",
+      "label": {
+        "en": "Center Panel",
+        "es": "Panel central"
+      },
+      "render_mode": 0,
+      "color": "#9fb0a8"
+    },
+    {
+      "id": "side_panel",
+      "label": {
+        "en": "Side Panel",
+        "es": "Panel lateral"
+      },
+      "render_mode": 0,
+      "color": "#8da096"
+    },
+    {
+      "id": "pin",
+      "label": {
+        "en": "Hinge Pin",
+        "es": "Pasador de bisagra"
+      },
+      "render_mode": 0,
+      "color": "#6f8078"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "fold",
+      "label": {
+        "en": "Fold Size",
+        "es": "Medida del doblez"
+      }
+    },
+    {
+      "id": "hinge",
+      "label": {
+        "en": "Hinge",
+        "es": "Bisagra"
+      }
+    },
+    {
+      "id": "build",
+      "label": {
+        "en": "Build",
+        "es": "Construcción"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "fold_w",
+      "type": "slider",
+      "default": 200.0,
+      "min": 120.0,
+      "max": 340.0,
+      "step": 5.0,
+      "group": "fold",
+      "modes": [
+        "set",
+        "center_panel",
+        "side_panel"
+      ],
+      "label": {
+        "en": "Folded width (mm)",
+        "es": "Ancho doblado (mm)"
+      },
+      "tooltip": {
+        "en": "Finished folded width (mm) — the centre panel is exactly this wide. 200 mm suits an adult tee on a 30 cm shelf; 140 mm a child's tee; 300 mm a sweatshirt. Each wing is 46 % of this, which is what makes the sleeve fold overlap at the centre.",
+        "es": "Ancho doblado terminado (mm) — el panel central mide exactamente esto. 200 mm va bien para una playera de adulto en un estante de 30 cm; 140 mm para una playera infantil; 300 mm para una sudadera. Cada ala mide el 46 % de esta medida, que es lo que hace que el doblez de manga se traslape al centro."
+      }
+    },
+    {
+      "id": "fold_h",
+      "type": "slider",
+      "default": 280.0,
+      "min": 160.0,
+      "max": 460.0,
+      "step": 5.0,
+      "group": "fold",
+      "modes": [
+        "set",
+        "center_panel",
+        "side_panel",
+        "pin"
+      ],
+      "label": {
+        "en": "Folded height (mm)",
+        "es": "Alto doblado (mm)"
+      },
+      "tooltip": {
+        "en": "Finished folded height (mm) — the panel height, and what sets the hinge line length (72 % of it) and therefore the pin length.",
+        "es": "Alto doblado terminado (mm) — la altura del panel, que fija el largo de la línea de bisagra (el 72 %) y por tanto el largo del pasador."
+      }
+    },
+    {
+      "id": "panel_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.25,
+      "group": "build",
+      "modes": [
+        "set",
+        "center_panel",
+        "side_panel",
+        "pin"
+      ],
+      "label": {
+        "en": "Panel thickness (mm)",
+        "es": "Espesor del panel (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of each panel (mm). 4 mm is stiff enough for a 200 mm board; a 300 mm board wants 5-6 mm or it flexes mid-fold and the rectangle drifts.",
+        "es": "Espesor de cada panel (mm). 4 mm es suficientemente rígido para una tabla de 200 mm; una de 300 mm pide de 5 a 6 mm o se flexiona a mitad del doblez y el rectángulo se desalinea."
+      }
+    },
+    {
+      "id": "pin_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.25,
+      "group": "hinge",
+      "modes": [
+        "set",
+        "center_panel",
+        "side_panel",
+        "pin"
+      ],
+      "label": {
+        "en": "Hinge pin diameter (mm)",
+        "es": "Diámetro del pasador (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the printed hinge pin (mm). Auto-clamped to 1.6x the panel thickness so the knuckle always keeps a real wall around the bore. The bore adds 0.35 mm diametral clearance so the hinge swings without reaming.",
+        "es": "Diámetro del pasador impreso (mm). Se limita a 1.6 veces el espesor del panel para que el nudillo conserve pared real alrededor del barreno. El barreno añade 0.35 mm de holgura diametral para que la bisagra gire sin escariar."
+      }
+    },
+    {
+      "id": "knuckles",
+      "type": "slider",
+      "default": 3,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "group": "hinge",
+      "modes": [
+        "set",
+        "center_panel",
+        "side_panel",
+        "pin"
+      ],
+      "label": {
+        "en": "Knuckles per hinge",
+        "es": "Nudillos por bisagra"
+      },
+      "tooltip": {
+        "en": "Knuckles on the centre panel side of each hinge; the wing gets the complementary interleaving set. More knuckles spread the load on a tall board, fewer print faster and jam less.",
+        "es": "Nudillos del lado del panel central en cada bisagra; el ala recibe el juego intercalado complementario. Más nudillos reparten la carga en una tabla alta; menos se imprimen más rápido y se atoran menos."
+      }
+    },
+    {
+      "id": "lighten",
+      "type": "checkbox",
+      "default": true,
+      "min": 0,
+      "max": 1,
+      "step": 1,
+      "group": "build",
+      "modes": [
+        "set",
+        "center_panel",
+        "side_panel"
+      ],
+      "label": {
+        "en": "Lightening windows",
+        "es": "Ventanas de aligeramiento"
+      },
+      "tooltip": {
+        "en": "Cut two windows through each panel so a large board is not a solid slab of filament. Windows are skipped automatically whenever the remaining frame would be too thin to be stiff.",
+        "es": "Corta dos ventanas en cada panel para que una tabla grande no sea una losa maciza de filamento. Las ventanas se omiten automáticamente cuando el marco restante quedaría demasiado delgado para ser rígido."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "adult_tee",
+      "mode": "set",
+      "label": {
+        "en": "Adult Tee (200 x 280)",
+        "es": "Playera de adulto (200 x 280)"
+      },
+      "values": {
+        "fold_w": 200.0,
+        "fold_h": 280.0,
+        "panel_t": 4.0,
+        "pin_dia": 4.0,
+        "knuckles": 3,
+        "lighten": true
+      }
+    },
+    {
+      "id": "child_tee",
+      "mode": "set",
+      "label": {
+        "en": "Child Tee (140 x 190)",
+        "es": "Playera infantil (140 x 190)"
+      },
+      "values": {
+        "fold_w": 140.0,
+        "fold_h": 190.0,
+        "panel_t": 3.0,
+        "pin_dia": 3.0,
+        "knuckles": 2,
+        "lighten": false
+      }
+    },
+    {
+      "id": "sweatshirt",
+      "mode": "set",
+      "label": {
+        "en": "Sweatshirt (300 x 400)",
+        "es": "Sudadera (300 x 400)"
+      },
+      "values": {
+        "fold_w": 300.0,
+        "fold_h": 400.0,
+        "panel_t": 6.0,
+        "pin_dia": 5.5,
+        "knuckles": 4,
+        "lighten": true
+      }
+    },
+    {
+      "id": "retail_shelf",
+      "mode": "center_panel",
+      "label": {
+        "en": "Retail Shelf Gauge (240 x 320)",
+        "es": "Calibre de estante (240 x 320)"
+      },
+      "values": {
+        "fold_w": 240.0,
+        "fold_h": 320.0,
+        "panel_t": 5.0,
+        "pin_dia": 4.5,
+        "knuckles": 3,
+        "lighten": true
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        320,
+        320,
+        260
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 18,
+    "per_unit": 4,
+    "per_part": 10,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "fold_footprint",
+        "label": {
+          "en": "Fold Footprint (the finished folded rectangle)",
+          "es": "Huella de doblez (el rectángulo doblado terminado)"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "fold_w",
+          "fold_h"
+        ]
+      },
+      {
+        "id": "pin_knuckle",
+        "label": {
+          "en": "Pin Knuckle (interleaved hinge barrel)",
+          "es": "Nudillo de pasador (barril de bisagra intercalado)"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "pin_dia",
+          "knuckles",
+          "panel_t",
+          "fold_h"
+        ]
+      },
+      {
+        "id": "panel_face",
+        "label": {
+          "en": "Panel Face (the surface the garment lies on)",
+          "es": "Cara del panel (la superficie donde se apoya la prenda)"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "fold_w",
+          "fold_h",
+          "panel_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A folding board is the cheapest tool that makes a small clothing operation look like a large one: identical folds mean stock that stacks, photographs consistently, and ships in a smaller box. Because retail boards exist in one adult size, anyone folding children's wear, plus sizes, or a non-standard shelf depth has been folding by eye. Generating the board from the shelf dimension puts that consistency within reach of a market stall, a repair shop, or a household that just wants the drawer to close.",
+      "es": "Una tabla plegadora es la herramienta más barata que hace que una operación pequeña de ropa se vea como una grande: dobleces idénticos significan inventario que se apila, se fotografía igual y se envía en una caja más chica. Como las tablas comerciales existen en una sola medida de adulto, quien dobla ropa infantil, tallas extra o para un estante de fondo distinto lo ha hecho a ojo. Generar la tabla a partir de la medida del estante pone esa consistencia al alcance de un puesto de mercado, un taller de compostura o una casa que sólo quiere que cierre el cajón."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "folding-board",
+    "folding",
+    "garment-care",
+    "wardrobe",
+    "hinge",
+    "pin-hinge",
+    "laundry",
+    "retail-display",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,327 @@
+{
+  "project": {
+    "name": "Thimble",
+    "slug": "thimble",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed closed-top tailor's thimble with a debossed grip surface — the domed cap that rides the middle finger and drives a hand needle through heavy cloth. Sized from a measured finger girth rather than a retail size run, so a maker prints their own fit.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un dedal de sastre de copa cerrada impreso en 3D con superficie de agarre rehundida — la cúpula que monta en el dedo medio y empuja la aguja a través de tela pesada. Dimensionado a partir de un contorno de dedo medido, no de un tallaje comercial.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/thimble.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "thimble",
+      "sewing",
+      "atelier",
+      "hand-sewing",
+      "tool",
+      "notion",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "thimble",
+      "label": {
+        "en": "Single Thimble",
+        "es": "Dedal único"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "thimble"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Size Run (3)",
+        "es": "Corrida de tallas (3)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "thimble",
+      "label": {
+        "en": "Thimble",
+        "es": "Dedal"
+      },
+      "render_mode": 0,
+      "color": "#c8b89a"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Size Run",
+        "es": "Corrida de tallas"
+      },
+      "render_mode": 0,
+      "color": "#c8b89a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "fit",
+      "label": {
+        "en": "Fit",
+        "es": "Ajuste"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Agarre"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "finger_girth",
+      "type": "slider",
+      "default": 56.0,
+      "min": 40.0,
+      "max": 80.0,
+      "step": 0.5,
+      "group": "fit",
+      "modes": [
+        "thimble",
+        "set"
+      ],
+      "label": {
+        "en": "Finger girth (mm)",
+        "es": "Contorno del dedo (mm)"
+      },
+      "tooltip": {
+        "en": "Finger girth (mm)",
+        "es": "Contorno del dedo (mm)"
+      }
+    },
+    {
+      "id": "wall_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "fit",
+      "modes": [
+        "thimble",
+        "set"
+      ],
+      "label": {
+        "en": "Wall thickness (mm)",
+        "es": "Espesor de pared (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness (mm)",
+        "es": "Espesor de pared (mm)"
+      }
+    },
+    {
+      "id": "thimble_h",
+      "type": "slider",
+      "default": 22.0,
+      "min": 14.0,
+      "max": 32.0,
+      "step": 0.5,
+      "group": "fit",
+      "modes": [
+        "thimble",
+        "set"
+      ],
+      "label": {
+        "en": "Thimble height (mm)",
+        "es": "Altura del dedal (mm)"
+      },
+      "tooltip": {
+        "en": "Thimble height (mm)",
+        "es": "Altura del dedal (mm)"
+      }
+    },
+    {
+      "id": "taper",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "fit",
+      "modes": [
+        "thimble",
+        "set"
+      ],
+      "label": {
+        "en": "Crown taper per side (mm)",
+        "es": "Conicidad por lado (mm)"
+      },
+      "tooltip": {
+        "en": "Crown taper per side (mm)",
+        "es": "Conicidad por lado (mm)"
+      }
+    },
+    {
+      "id": "dimple_dia",
+      "type": "slider",
+      "default": 1.8,
+      "min": 0.8,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "grip",
+      "modes": [
+        "thimble",
+        "set"
+      ],
+      "label": {
+        "en": "Dimple diameter (mm)",
+        "es": "Diámetro del hoyuelo (mm)"
+      },
+      "tooltip": {
+        "en": "Dimple diameter (mm)",
+        "es": "Diámetro del hoyuelo (mm)"
+      }
+    },
+    {
+      "id": "dimple_rows",
+      "type": "slider",
+      "default": 4,
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "group": "grip",
+      "modes": [
+        "thimble",
+        "set"
+      ],
+      "label": {
+        "en": "Dimple rows",
+        "es": "Filas de hoyuelos"
+      },
+      "tooltip": {
+        "en": "Dimple rows",
+        "es": "Filas de hoyuelos"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "thimble",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "finger_girth": 56.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "finger_bore",
+        "label": {
+          "en": "Finger Bore",
+          "es": "Alojamiento del dedo"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "finger_girth",
+          "wall_t",
+          "thimble_h"
+        ]
+      },
+      {
+        "id": "needle_seat",
+        "label": {
+          "en": "Needle Seat (crown + dimples)",
+          "es": "Asiento de aguja (copa y hoyuelos)"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "dimple_dia",
+          "dimple_rows",
+          "taper"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A thimble that fits is the difference between hand-finishing a garment and giving up on it. Retail thimbles come in a coarse size run that fits few hands; measured from a finger girth, this one is printed to fit, in any material a maker has.",
+      "es": "Un dedal que ajusta es la diferencia entre rematar una prenda a mano y abandonarla. Los dedales comerciales vienen en un tallaje grueso que a pocas manos ajusta; medido desde el contorno del dedo, este se imprime a la medida, en cualquier material disponible."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "thimble",
+    "sewing",
+    "atelier",
+    "hand-sewing",
+    "tool",
+    "notion",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

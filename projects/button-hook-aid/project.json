@@ -1,0 +1,417 @@
+{
+  "project": {
+    "name": "Button Hook Aid",
+    "slug": "button-hook-aid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The one-hand buttoning aid: a generous built-up handle and a flat rigid hook loop. The loop goes through the buttonhole from the far side, hooks the button, and is pulled back so the button follows through the hole. Standard occupational-therapy hardware for arthritis, hemiparesis, tremor and limited fine motor control. Grip strength lost to arthritis is recovered by increasing grip circumference, so the handle is sized like a built-up handle — 28 to 38 mm across, not the pen-thin one nobody can hold — and the loop is sized to the button it must encircle.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El abotonador de una mano: un mango grueso y generoso con un aro rígido y plano. El aro pasa por el ojal desde el otro lado, engancha el botón y se jala de vuelta, de modo que el botón cruza el ojal. Es herramienta estándar de terapia ocupacional para artritis, hemiparesia, temblor y motricidad fina limitada. La fuerza de agarre que quita la artritis se recupera aumentando la circunferencia del mango, así que éste va dimensionado como mango engrosado —de 28 a 38 mm, no el delgadísimo que nadie puede sostener— y el aro se dimensiona al botón que debe rodear.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/button-hook-aid.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "button-hook-aid",
+      "buttoning-aid",
+      "accessibility",
+      "adaptive",
+      "assistive",
+      "arthritis",
+      "one-handed",
+      "dressing",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "aid",
+      "label": {
+        "en": "Buttoning Aid",
+        "es": "Abotonador"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "aid"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Aid Pair",
+        "es": "Par de abotonadores"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pair"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "aid",
+      "label": {
+        "en": "Buttoning Aid",
+        "es": "Abotonador"
+      },
+      "render_mode": 0,
+      "color": "#5f8fa8"
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Aid Pair",
+        "es": "Par de abotonadores"
+      },
+      "render_mode": 0,
+      "color": "#5f8fa8"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Mango"
+      }
+    },
+    {
+      "id": "hook",
+      "label": {
+        "en": "Hook Loop",
+        "es": "Aro"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "grip_len",
+      "type": "slider",
+      "default": 105.0,
+      "min": 50.0,
+      "max": 200.0,
+      "step": 5.0,
+      "group": "grip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Handle length (mm)",
+        "es": "Longitud del mango (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the handle (mm). It must clear the whole hand: 100-120 mm lets all four fingers wrap, which is what makes the aid usable with weak grip.",
+        "es": "Longitud del mango (mm). Debe rebasar toda la mano: de 100 a 120 mm permite envolverlo con los cuatro dedos, que es lo que lo hace usable con poca fuerza."
+      }
+    },
+    {
+      "id": "grip_w",
+      "type": "slider",
+      "default": 32.0,
+      "min": 18.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "grip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Handle width (mm)",
+        "es": "Ancho del mango (mm)"
+      },
+      "tooltip": {
+        "en": "Width across the palm (mm). Built-up handles run 28-38 mm; increasing the grip circumference is how grip strength lost to arthritis is recovered.",
+        "es": "Ancho a través de la palma (mm). Los mangos engrosados van de 28 a 38 mm; aumentar la circunferencia es como se recupera la fuerza que quita la artritis."
+      }
+    },
+    {
+      "id": "grip_t",
+      "type": "slider",
+      "default": 18.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 1.0,
+      "group": "grip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Handle thickness (mm)",
+        "es": "Espesor del mango (mm)"
+      },
+      "tooltip": {
+        "en": "Handle thickness (mm). Together with the width this sets the grip circumference; a hand that cannot close fully wants a thicker, not thinner, handle.",
+        "es": "Espesor del mango (mm). Junto con el ancho define la circunferencia de agarre; una mano que no cierra del todo pide un mango más grueso, no más delgado."
+      }
+    },
+    {
+      "id": "finger_scallops",
+      "type": "slider",
+      "default": 3,
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "group": "grip",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Finger scallops",
+        "es": "Muescas para dedos"
+      },
+      "tooltip": {
+        "en": "Scallops bitten out of both long sides of the handle. Fingers with limited motion find a scallop without having to close on it. Zero gives a plain handle for a hand that grips but cannot pinch.",
+        "es": "Muescas hechas en ambos lados largos del mango. Los dedos con movilidad limitada encuentran la muesca sin tener que cerrar sobre ella. Cero da un mango liso para una mano que agarra pero no pellizca."
+      }
+    },
+    {
+      "id": "loop_dia",
+      "type": "slider",
+      "default": 13.0,
+      "min": 6.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "hook",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Button diameter (mm)",
+        "es": "Diámetro del botón (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the button the loop must encircle (mm). Shirt buttons are 11 mm (18 ligne), jacket 20 mm (32 ligne), coat 25 mm. The loop is cut 1.2 mm larger all round.",
+        "es": "Diámetro del botón que debe rodear el aro (mm). Los de camisa miden 11 mm (18 líneas), los de saco 20 mm (32 líneas), los de abrigo 25 mm. El aro se abre 1.2 mm más por lado."
+      }
+    },
+    {
+      "id": "loop_t",
+      "type": "slider",
+      "default": 1.8,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "hook",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Loop wire thickness (mm)",
+        "es": "Espesor del alambre del aro (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the loop in the plane of the buttonhole (mm). This is what has to pass through the hole alongside the button, so keep it thin — 1.8 mm clears a machine buttonhole.",
+        "es": "Espesor del aro en el plano del ojal (mm). Es lo que debe pasar por el ojal junto al botón, así que déjalo delgado: 1.8 mm pasa un ojal de máquina."
+      }
+    },
+    {
+      "id": "loop_depth",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "hook",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Loop depth (mm)",
+        "es": "Profundidad del aro (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the loop and neck in the pull direction (mm). Deep in the direction of the pull is what stops the loop folding under load; it does not have to pass the buttonhole.",
+        "es": "Profundidad del aro y del cuello en el sentido del jalón (mm). Ser profundo en la dirección del jalón evita que el aro se doble bajo carga; esta medida no tiene que pasar por el ojal."
+      }
+    },
+    {
+      "id": "neck_len",
+      "type": "slider",
+      "default": 26.0,
+      "min": 8.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "hook",
+      "modes": [
+        "aid",
+        "pair"
+      ],
+      "label": {
+        "en": "Neck length (mm)",
+        "es": "Longitud del cuello (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the blade between the handle and the loop (mm). A long neck reaches a collar button or a cuff worn under a jacket sleeve without the hand having to follow.",
+        "es": "Longitud de la hoja entre el mango y el aro (mm). Un cuello largo alcanza el botón del cuello o un puño bajo la manga del saco sin que la mano tenga que seguirlo."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shirt_cuff",
+      "mode": "aid",
+      "label": {
+        "en": "Shirt & Cuff (11 mm buttons)",
+        "es": "Camisa y puño (botones de 11 mm)"
+      },
+      "values": {
+        "grip_len": 105.0,
+        "grip_w": 32.0,
+        "grip_t": 18.0,
+        "loop_dia": 11.0,
+        "loop_t": 1.6,
+        "loop_depth": 5.0,
+        "neck_len": 30.0,
+        "finger_scallops": 3
+      }
+    },
+    {
+      "id": "coat_heavy",
+      "mode": "aid",
+      "label": {
+        "en": "Coat, Heavy Grip (25 mm buttons)",
+        "es": "Abrigo, agarre grueso (botones de 25 mm)"
+      },
+      "values": {
+        "grip_len": 120.0,
+        "grip_w": 40.0,
+        "grip_t": 26.0,
+        "loop_dia": 25.0,
+        "loop_t": 2.6,
+        "loop_depth": 9.0,
+        "neck_len": 26.0,
+        "finger_scallops": 4
+      }
+    },
+    {
+      "id": "travel_slim",
+      "mode": "pair",
+      "label": {
+        "en": "Travel Pair (shirt + jacket)",
+        "es": "Par de viaje (camisa y saco)"
+      },
+      "values": {
+        "grip_len": 85.0,
+        "grip_w": 26.0,
+        "grip_t": 14.0,
+        "loop_dia": 16.0,
+        "loop_t": 1.8,
+        "loop_depth": 5.5,
+        "neck_len": 22.0,
+        "finger_scallops": 2
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        150,
+        110
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "button_capture",
+        "label": {
+          "en": "Button Capture Loop",
+          "es": "Aro de captura del botón"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "loop_dia",
+          "loop_t",
+          "loop_depth"
+        ]
+      },
+      {
+        "id": "hand_grip",
+        "label": {
+          "en": "Hand Grip Section",
+          "es": "Sección de agarre"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "grip_w",
+          "grip_t",
+          "grip_len",
+          "finger_scallops"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Buttoning aids are sold in one size with a handle nobody with arthritis can hold and a wire loop sized for shirt buttons only, so people give up on buttoned clothing and buy pull-on garments instead. A hook whose loop matches the buttons on the coat already in the closet, on a handle matched to the hand that has to hold it, keeps someone dressing themselves.",
+      "es": "Los abotonadores se venden en una sola medida, con un mango que nadie con artritis puede sostener y un aro de alambre dimensionado sólo para botones de camisa, así que la gente abandona la ropa abotonada y compra prendas de meter por la cabeza. Un gancho cuyo aro corresponde a los botones del abrigo que ya está en el clóset, en un mango a la medida de la mano que debe sostenerlo, mantiene a alguien vistiéndose por sí mismo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "button-hook-aid",
+    "buttoning-aid",
+    "accessibility",
+    "adaptive",
+    "assistive",
+    "arthritis",
+    "one-handed",
+    "dressing",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

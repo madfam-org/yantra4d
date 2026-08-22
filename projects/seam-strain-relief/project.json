@@ -1,0 +1,417 @@
+{
+  "project": {
+    "name": "Seam Strain Relief",
+    "slug": "seam-strain-relief",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed e-textile seam strain relief — two flat plates that sandwich a cable where it exits a garment seam, so a tug loads the seam allowance and the stitch line instead of the solder joint or the conductive-thread transition inside the garment. Each plate has a half-round cable groove and a ring of perimeter sew holes. This is the rigid hard good the Fashion Cabinet cable-exit notion places and bridges to here for its geometry, sized so the garment's seam-allowance width drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un sujetacables de costura para textiles electrónicos impreso en 3D — dos placas planas que emparedan el cable donde sale de una costura, de modo que un tirón cargue el margen de costura y la línea de pespunte en vez de la soldadura o la transición de hilo conductor dentro de la prenda. Cada placa lleva una canaleta semicircular para el cable y un anillo de ojales de costura perimetrales. Es el herraje rígido que el avío de salida de cable de Fashion Cabinet coloca y al que se puentea aquí, dimensionado para que el ancho del margen de costura determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/seam-strain-relief.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "seam-strain-relief",
+      "strain-relief",
+      "e-textile",
+      "wearable-electronics",
+      "cable",
+      "seam",
+      "clamp",
+      "sew-on",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "plate_pair",
+      "label": {
+        "en": "Plate Pair",
+        "es": "Par de placas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "plate_pair"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Single Plate",
+        "es": "Placa individual"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "plate"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set (pair + tail sleeve)",
+        "es": "Juego completo (par + funda de salida)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "plate_pair",
+      "label": {
+        "en": "Plate Pair",
+        "es": "Par de placas"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Clamp Plate",
+        "es": "Placa de sujeción"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Full Set",
+        "es": "Juego completo"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "cable",
+      "label": {
+        "en": "Cable",
+        "es": "Cable"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cable_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.5,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "cable",
+      "modes": [
+        "plate_pair",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Cable jacket diameter (mm)",
+        "es": "Diámetro de la funda del cable (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the cable jacket (mm). A 4-conductor silicone e-textile ribbon cable measures 3-5 mm; a USB-C tail measures 4-6 mm.",
+        "es": "Diámetro exterior de la funda del cable (mm). Un cable de silicón de 4 conductores para textiles electrónicos mide de 3 a 5 mm; una cola USB-C mide de 4 a 6 mm."
+      }
+    },
+    {
+      "id": "grip",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.0,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "cable",
+      "modes": [
+        "plate_pair",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Jacket squeeze (mm)",
+        "es": "Compresión de la funda (mm)"
+      },
+      "tooltip": {
+        "en": "How far under the jacket diameter the groove pair closes (mm). 0.3-0.4 mm grips a silicone jacket without crushing the conductors; set 0 for a stiff PVC jacket.",
+        "es": "Cuánto por debajo del diámetro de la funda cierra el par de canaletas (mm). De 0.3 a 0.4 mm sujeta una funda de silicón sin aplastar los conductores; usa 0 para una funda rígida de PVC."
+      }
+    },
+    {
+      "id": "plate_len",
+      "type": "slider",
+      "default": 26.0,
+      "min": 12.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "plate",
+      "modes": [
+        "plate_pair",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Plate length along cable (mm)",
+        "es": "Largo de la placa a lo largo del cable (mm)"
+      },
+      "tooltip": {
+        "en": "Length of each plate measured along the cable run (mm). Longer plates spread the pull over more stitches and resist peeling at the seam.",
+        "es": "Largo de cada placa medido a lo largo del cable (mm). Las placas largas reparten el tirón entre más puntadas y resisten el despegue en la costura."
+      }
+    },
+    {
+      "id": "plate_w",
+      "type": "slider",
+      "default": 14.0,
+      "min": 10.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "plate_pair",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Plate width across seam (mm)",
+        "es": "Ancho de la placa a través de la costura (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each plate measured across the seam allowance (mm). Auto-raised to the cable diameter plus 8 mm so a stitch lane always survives on both sides of the groove.",
+        "es": "Ancho de cada placa medido a través del margen de costura (mm). Se eleva automáticamente al diámetro del cable más 8 mm para conservar un carril de costura a ambos lados de la canaleta."
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.4,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "plate_pair",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Plate thickness (mm)",
+        "es": "Espesor de la placa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of each plate (mm). At 1.4-1.8 mm a PETG plate keeps a little live flex so the clamp follows the garment; above 3 mm it reads as a rigid boss.",
+        "es": "Espesor de cada placa (mm). De 1.4 a 1.8 mm una placa de PETG conserva algo de flexión viva y sigue la prenda; arriba de 3 mm se comporta como un poste rígido."
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 6,
+      "min": 4,
+      "max": 12,
+      "step": 2,
+      "group": "sewing",
+      "modes": [
+        "plate_pair",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Sew holes per plate (count)",
+        "es": "Ojales por placa (cantidad)"
+      },
+      "tooltip": {
+        "en": "Total stitch holes per plate, split evenly between the two stitch lanes flanking the groove. Six suits a 26 mm plate.",
+        "es": "Total de ojales por placa, repartidos por igual entre los dos carriles que flanquean la canaleta. Seis convienen a una placa de 26 mm."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "plate_pair",
+        "plate",
+        "set"
+      ],
+      "label": {
+        "en": "Sew hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each stitch hole (mm). 1.6 mm passes a doubled upholstery thread or a machine needle at reduced speed.",
+        "es": "Diámetro de cada ojal (mm). 1.6 mm deja pasar hilo de tapicería doble o una aguja de máquina a baja velocidad."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "ribbon_exit",
+      "mode": "plate_pair",
+      "label": {
+        "en": "Ribbon Cable Exit (3 mm)",
+        "es": "Salida de cable plano (3 mm)"
+      },
+      "values": {
+        "cable_dia": 3.0,
+        "grip": 0.3,
+        "plate_len": 20.0,
+        "plate_w": 12.0,
+        "plate_t": 1.8,
+        "sew_holes": 4,
+        "hole_dia": 1.4
+      }
+    },
+    {
+      "id": "usbc_tail",
+      "mode": "set",
+      "label": {
+        "en": "USB-C Charge Tail (5.5 mm)",
+        "es": "Cola de carga USB-C (5.5 mm)"
+      },
+      "values": {
+        "cable_dia": 5.5,
+        "grip": 0.4,
+        "plate_len": 34.0,
+        "plate_w": 18.0,
+        "plate_t": 2.6,
+        "sew_holes": 8,
+        "hole_dia": 1.8
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        50
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "seam_edge",
+        "label": {
+          "en": "Sewn Seam-Allowance Edge",
+          "es": "Canto cosido del margen de costura"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "plate_len",
+          "plate_w",
+          "sew_holes",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "cable_channel",
+        "label": {
+          "en": "Cable Clamp Channel",
+          "es": "Canal de sujeción del cable"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "cable_dia",
+          "grip"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Wearable-electronics garments almost always die at the cable exit: the jacket flexes, the solder joint fatigues, and the whole garment is scrapped over a two-cent joint. A printed seam clamp moves that load onto the stitch line and makes the failure repairable at a kitchen table instead of a repair depot.",
+      "es": "Las prendas con electrónica casi siempre mueren en la salida del cable: la funda se flexiona, la soldadura se fatiga y se desecha toda la prenda por una unión de dos centavos. Una mordaza de costura impresa traslada esa carga a la línea de pespunte y vuelve la falla reparable en la mesa de la cocina en lugar de en un taller."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "seam-strain-relief",
+    "strain-relief",
+    "e-textile",
+    "wearable-electronics",
+    "cable",
+    "seam",
+    "clamp",
+    "sew-on",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

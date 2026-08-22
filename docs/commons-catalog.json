@@ -2,16 +2,16 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 363,
-    "with_cdg_interfaces": 348,
-    "with_commons_license": 362,
+    "cartridges": 401,
+    "with_cdg_interfaces": 386,
+    "with_commons_license": 400,
     "dual_engine": 24
   },
   "domains": {
     "household": 113,
     "industrial": 84,
+    "wearable": 70,
     "commercial": 63,
-    "wearable": 32,
     "medical": 29,
     "infrastructure": 20,
     "uncategorized": 14,
@@ -794,6 +794,80 @@
       }
     },
     {
+      "slug": "bag-feet",
+      "name": "Bag Feet",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "foot_dia",
+        "foot_h",
+        "flange_t",
+        "boss_dia",
+        "panel_t",
+        "prong_style",
+        "washer_dia",
+        "washer_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Bag feet are the first hardware to be torn off a bag and the least likely to be found again in the right size, and a missing foot is what starts the base leather wearing through. Printing a replacement to the hole already punched keeps a bag in service for years past the point where its feet went, and lets a repairer stock one printer instead of a drawer of brass studs.",
+        "es": "Los pies son el primer herraje que se arranca de una bolsa y el más difícil de reponer en la medida correcta, y un pie faltante es lo que inicia el desgaste de la piel de la base. Imprimir un repuesto al barreno ya perforado mantiene la bolsa en servicio años después de que se perdieron sus pies, y permite a quien repara tener una impresora en lugar de un cajón de tachones de latón."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "panel_bore",
+          "label": "Panel Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "boss_dia",
+            "panel_t",
+            "flange_t"
+          ]
+        },
+        {
+          "id": "washer_engage",
+          "label": "Washer Engagement",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "boss_dia",
+            "washer_t",
+            "prong_style"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/bag-feet/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bag-feet"
+      }
+    },
+    {
       "slug": "bag-sealer",
       "name": "Bag Reseal & Pour Clip",
       "domain": "household",
@@ -1307,6 +1381,95 @@
       }
     },
     {
+      "slug": "battery-pocket-frame",
+      "name": "Battery Pocket Frame",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "bay_w",
+        "bay_h",
+        "bay_t",
+        "frame_w",
+        "frame_t",
+        "lip",
+        "corner_r",
+        "sew_pitch",
+        "hole_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Heated and powered garments are sold locked to one proprietary pack; when that pack is discontinued the garment becomes waste. A frame you print to whatever battery you already own decouples the garment from the battery market, and lets a repairer refit an old jacket to a current cell instead of scrapping it.",
+        "es": "Las prendas térmicas y con electrónica se venden atadas a un paquete propietario; cuando ese paquete se descontinúa, la prenda se vuelve basura. Un marco que imprimes para la batería que ya tienes desacopla la prenda del mercado de baterías y permite readaptar una chamarra vieja a una celda actual en vez de desecharla."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pocket_edge",
+          "label": "Sewn Pocket-Bag Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "bay_w",
+            "bay_h",
+            "frame_w",
+            "sew_pitch",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "battery_bay",
+          "label": "Battery Bay",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "bay_w",
+            "bay_h",
+            "bay_t",
+            "corner_r"
+          ]
+        },
+        {
+          "id": "retention_lip",
+          "label": "Retention Lip",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "lip",
+            "bay_t",
+            "frame_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/battery-pocket-frame/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/battery-pocket-frame"
+      }
+    },
+    {
       "slug": "bearing-housing",
       "name": "Bearing Housing / Pillow Block",
       "domain": "industrial",
@@ -1681,6 +1844,88 @@
       }
     },
     {
+      "slug": "belt-hanger",
+      "name": "Belt Hanger",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "hook_count",
+        "strap_w",
+        "hook_reach",
+        "spine_w",
+        "spine_t",
+        "rod_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Belts and scarves are the accessories that get thrown in a drawer, creased, and eventually discarded because nobody can find the one they want. Racks are sold for a nominal belt width that does not match 50 mm work webbing, a child's 20 mm belt, or a hand-woven sash, so the awkward widths stay in the drawer. A rack generated from the strap you own puts every accessory in view, which is the cheapest thing anyone can do to keep them in rotation instead of in a bin bag.",
+        "es": "Los cinturones y las mascadas son los accesorios que acaban en un cajón, arrugados y finalmente desechados porque nadie encuentra el que busca. Los organizadores se venden para un ancho de cinturón nominal que no coincide con una cincha de trabajo de 50 mm, un cinturón infantil de 20 mm o una faja tejida a mano, así que los anchos raros se quedan en el cajón. Un organizador generado a partir de la correa que sí tienes deja cada accesorio a la vista, que es lo más barato que se puede hacer para mantenerlos en uso en lugar de en una bolsa de basura."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "strap_throat",
+          "label": "Strap Throat (the open hook mouth)",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "strap_w",
+            "hook_reach",
+            "spine_t"
+          ]
+        },
+        {
+          "id": "rod_hook",
+          "label": "Rod Hook (closet rail engagement)",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "rod_dia",
+            "spine_t"
+          ]
+        },
+        {
+          "id": "hook_pitch",
+          "label": "Hook Pitch (spacing along the spine)",
+          "geometry_type": "grid",
+          "standard": "internal",
+          "parameters": [
+            "hook_count",
+            "strap_w",
+            "spine_w"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/belt-hanger/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/belt-hanger"
+      }
+    },
+    {
       "slug": "bench-dog",
       "name": "Bench Dog / Hold-Down",
       "domain": "industrial",
@@ -1830,6 +2075,78 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bevel-gear"
+      }
+    },
+    {
+      "slug": "bias-tape-maker",
+      "name": "Bias Tape Maker",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "tape_width",
+        "fabric_t",
+        "tool_len",
+        "wall_t",
+        "throat_len",
+        "hang_hole"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Bias binding is what finishes a raw edge on any curve — necklines, armholes, quilt edges. The tools are sold as a fixed size run in blister packs; one parametric object gives a maker the exact finished width their pattern calls for, including the sizes nobody sells.",
+        "es": "El bies es lo que remata un orillo en cualquier curva: escotes, sisas, orillas de acolchado. Las herramientas se venden en tallajes fijos y envase plástico; un objeto paramétrico da el ancho exacto que pide el patrón, incluidos los que nadie vende."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "strip_edge",
+          "label": "Bias Strip Edge (mouth)",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "tape_width",
+            "fabric_t",
+            "wall_t"
+          ]
+        },
+        {
+          "id": "tape_throat",
+          "label": "Folded Tape Throat",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "tape_width",
+            "fabric_t",
+            "throat_len"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/bias-tape-maker/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bias-tape-maker"
       }
     },
     {
@@ -2477,6 +2794,80 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/boning-stay"
+      }
+    },
+    {
+      "slug": "boot-hook-puller",
+      "name": "Boot Hook Puller",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "blade_len",
+        "blade_w",
+        "blade_t",
+        "handle_len",
+        "handle_dia",
+        "overlap_f",
+        "hook_r",
+        "hook_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A tall boot's pull loop is useless without something to hook it with, and commercial boot-pulls are sold as a curiosity rather than a tool. Printing a pair sized to the actual loop lets someone get their own work boots or waders on standing up, without a second person and without wrecking the loop by clawing at it with their fingers.",
+        "es": "La presilla de una bota alta no sirve de nada sin algo con qué engancharla, y los tirabotas comerciales se venden como curiosidad más que como herramienta. Imprimir un par a la medida de la presilla real permite calzarse las botas de trabajo o los vadeadores de pie, sin una segunda persona y sin destrozar la presilla arañándola con los dedos."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "loop_hook",
+          "label": "Boot-Loop Hook Throat",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "hook_r",
+            "hook_d",
+            "blade_t"
+          ]
+        },
+        {
+          "id": "grip",
+          "label": "T-Handle Grip",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "handle_len",
+            "handle_dia",
+            "overlap_f"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/boot-hook-puller/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/boot-hook-puller"
       }
     },
     {
@@ -3312,6 +3703,154 @@
       }
     },
     {
+      "slug": "button-hook-aid",
+      "name": "Button Hook Aid",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 8,
+      "parameter_ids": [
+        "grip_len",
+        "grip_w",
+        "grip_t",
+        "finger_scallops",
+        "loop_dia",
+        "loop_t",
+        "loop_depth",
+        "neck_len"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Buttoning aids are sold in one size with a handle nobody with arthritis can hold and a wire loop sized for shirt buttons only, so people give up on buttoned clothing and buy pull-on garments instead. A hook whose loop matches the buttons on the coat already in the closet, on a handle matched to the hand that has to hold it, keeps someone dressing themselves.",
+        "es": "Los abotonadores se venden en una sola medida, con un mango que nadie con artritis puede sostener y un aro de alambre dimensionado sólo para botones de camisa, así que la gente abandona la ropa abotonada y compra prendas de meter por la cabeza. Un gancho cuyo aro corresponde a los botones del abrigo que ya está en el clóset, en un mango a la medida de la mano que debe sostenerlo, mantiene a alguien vistiéndose por sí mismo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "button_capture",
+          "label": "Button Capture Loop",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "loop_dia",
+            "loop_t",
+            "loop_depth"
+          ]
+        },
+        {
+          "id": "hand_grip",
+          "label": "Hand Grip Section",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "grip_w",
+            "grip_t",
+            "grip_len",
+            "finger_scallops"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/button-hook-aid/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/button-hook-aid"
+      }
+    },
+    {
+      "slug": "buttonhole-spacer",
+      "name": "Buttonhole Spacer",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "rail_len",
+        "rail_w",
+        "rail_t",
+        "pitch",
+        "track_w",
+        "slide_clr",
+        "slider_len"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Even buttonhole spacing is the difference between a shirt front that lies flat and one that gapes at the bust. The commercial expander is a fiddly scissoring linkage; a rail and a detented slider does the same arithmetic and prints flat in two pieces.",
+        "es": "El reparto parejo de ojales es la diferencia entre un delantero que asienta plano y uno que se abre en el busto. El compás comercial es una articulación de lazo delicada; un riel con cursor de retenes hace la misma aritmética y se imprime plano en dos piezas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "dovetail_track",
+          "label": "Dovetail Track",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "track_w",
+            "rail_t",
+            "slide_clr"
+          ]
+        },
+        {
+          "id": "placket_edge",
+          "label": "Placket Edge Reference",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "rail_w",
+            "rail_len",
+            "pitch"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/buttonhole-spacer/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/buttonhole-spacer"
+      }
+    },
+    {
       "slug": "cabinet-bin",
       "name": "Cabinet Organizer Bin",
       "domain": "household",
@@ -3695,6 +4234,87 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/cable-wrap"
+      }
+    },
+    {
+      "slug": "cam-buckle",
+      "name": "Cam Buckle",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "webbing_w",
+        "webbing_t",
+        "cheek_t",
+        "pin_dia",
+        "cam_throw",
+        "pin_clear"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A cam buckle is what turns a length of plain webbing into a usable tie-down; printing one lets a maker build straps from salvaged tape instead of buying whole new ratchet straps whose only broken part is the buckle.",
+        "es": "Una hebilla de leva es lo que convierte un tramo de cincha simple en una amarra utilizable; imprimirla permite armar correas con cinta rescatada en lugar de comprar amarras nuevas cuya única pieza rota es la hebilla."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "webbing_throat",
+          "label": "Webbing Throat (tape edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing_w",
+            "webbing_t",
+            "cheek_t"
+          ]
+        },
+        {
+          "id": "pivot_bore",
+          "label": "Cam Pivot Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "pin_dia",
+            "pin_clear"
+          ]
+        },
+        {
+          "id": "cam_bite",
+          "label": "Cam Bite Face",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "cam_throw",
+            "webbing_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/cam-buckle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/cam-buckle"
       }
     },
     {
@@ -4301,6 +4921,79 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/chain-mount"
+      }
+    },
+    {
+      "slug": "chicago-screw",
+      "name": "Chicago Screw",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "head_dia",
+        "head_t",
+        "post_dia",
+        "stack_t",
+        "thread_dia",
+        "thread_len",
+        "slot_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A Chicago screw is the difference between a strap that can be shortened, re-holed and re-used and one that is riveted shut for good. Printing them to an existing punched hole size means a strap outlives the bag it came on, and a repair shop stops needing a wall of size-specific brass hardware to take in one job.",
+        "es": "Un tornillo Chicago es la diferencia entre una correa que se puede acortar, reperforar y reutilizar y una remachada para siempre. Imprimirlos a la medida del barreno ya existente hace que una correa sobreviva al bolso original, y un taller deja de necesitar una pared de herrajes de latón por medida para aceptar un trabajo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "binding_thread",
+          "label": "Binding Thread",
+          "geometry_type": "thread",
+          "standard": "internal",
+          "parameters": [
+            "thread_dia",
+            "thread_len",
+            "stack_t"
+          ]
+        },
+        {
+          "id": "strap_bore",
+          "label": "Strap Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "post_dia",
+            "stack_t",
+            "head_dia"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/chicago-screw/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/chicago-screw"
       }
     },
     {
@@ -8462,6 +9155,91 @@
       }
     },
     {
+      "slug": "fascinator-base",
+      "name": "Fascinator Base",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 8,
+      "parameter_ids": [
+        "base_dia",
+        "dome_h",
+        "base_t",
+        "brim_w",
+        "sew_holes",
+        "hole_dia",
+        "comb_w",
+        "comb_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A fascinator base is a two-dollar piece of stiffened card that is sold in four sizes and thrown away after one wedding; printing it to the diameter the outfit wants, with a comb slot that fits the comb already in the drawer, turns occasion millinery into something a person can make, remake and re-trim at home.",
+        "es": "Una base de tocado es un trozo de cartón entelado de dos dólares que se vende en cuatro medidas y se tira después de una boda; imprimirla al diámetro que pide el atuendo, con una ranura que ajusta a la peineta que ya está en el cajón, convierte la sombrerería de ocasión en algo que se puede hacer, rehacer y volver a adornar en casa."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "trim_sew_ring",
+          "label": "Trim Sew Ring (brim)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "base_dia",
+            "brim_w",
+            "sew_holes",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "comb_slot",
+          "label": "Hair Comb Slot Pair",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "comb_w",
+            "comb_t"
+          ]
+        },
+        {
+          "id": "crown_profile",
+          "label": "Crown Profile",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "base_dia",
+            "dome_h",
+            "base_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/fascinator-base/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/fascinator-base"
+      }
+    },
+    {
       "slug": "fasteners",
       "name": "Fastener Generator",
       "domain": "industrial",
@@ -9229,6 +10007,89 @@
       }
     },
     {
+      "slug": "folding-board",
+      "name": "Folding Board",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 4,
+      "parts": 4,
+      "parameters": 6,
+      "parameter_ids": [
+        "fold_w",
+        "fold_h",
+        "panel_t",
+        "pin_dia",
+        "knuckles",
+        "lighten"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A folding board is the cheapest tool that makes a small clothing operation look like a large one: identical folds mean stock that stacks, photographs consistently, and ships in a smaller box. Because retail boards exist in one adult size, anyone folding children's wear, plus sizes, or a non-standard shelf depth has been folding by eye. Generating the board from the shelf dimension puts that consistency within reach of a market stall, a repair shop, or a household that just wants the drawer to close.",
+        "es": "Una tabla plegadora es la herramienta más barata que hace que una operación pequeña de ropa se vea como una grande: dobleces idénticos significan inventario que se apila, se fotografía igual y se envía en una caja más chica. Como las tablas comerciales existen en una sola medida de adulto, quien dobla ropa infantil, tallas extra o para un estante de fondo distinto lo ha hecho a ojo. Generar la tabla a partir de la medida del estante pone esa consistencia al alcance de un puesto de mercado, un taller de compostura o una casa que sólo quiere que cierre el cajón."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "fold_footprint",
+          "label": "Fold Footprint (the finished folded rectangle)",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "fold_w",
+            "fold_h"
+          ]
+        },
+        {
+          "id": "pin_knuckle",
+          "label": "Pin Knuckle (interleaved hinge barrel)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "pin_dia",
+            "knuckles",
+            "panel_t",
+            "fold_h"
+          ]
+        },
+        {
+          "id": "panel_face",
+          "label": "Panel Face (the surface the garment lies on)",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "fold_w",
+            "fold_h",
+            "panel_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/folding-board/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/folding-board"
+      }
+    },
+    {
       "slug": "fpv-antenna-mount",
       "name": "FPV Antenna Mount",
       "domain": "commercial",
@@ -9752,6 +10613,91 @@
       }
     },
     {
+      "slug": "garment-clip",
+      "name": "Garment Clip",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "jaw_len",
+        "jaw_w",
+        "jaw_t",
+        "flex_t",
+        "flex_len",
+        "bite_gap",
+        "tooth_n",
+        "rod_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Clips are the disposable end of garment handling: a shop buys them by the thousand, snaps them, and bins them. A clip that prints in one piece with no spring and no rivet can be made where it is needed, in the width the garment actually needs, and reprinted from the same file when it eventually fatigues — and because the failure mode of a flexure is a visible crack rather than a lost spring, it is replaced deliberately instead of adding a steel wire to a bin of mixed waste.",
+        "es": "Las pinzas son el extremo desechable del manejo de prendas: una tienda las compra por millar, las truena y las tira. Una pinza que se imprime en una sola pieza, sin resorte y sin remache, puede fabricarse donde se necesita, en el ancho que la prenda realmente pide, y reimprimirse desde el mismo archivo cuando finalmente se fatiga — y como el modo de falla de una flexura es una grieta visible y no un resorte perdido, se reemplaza a propósito en vez de sumar un alambre de acero a un bote de residuos mezclados."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "bite_face",
+          "label": "Bite Face (the fabric the jaws close on)",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "jaw_w",
+            "jaw_len",
+            "bite_gap"
+          ]
+        },
+        {
+          "id": "flexure_hinge",
+          "label": "Flexure Hinge (the compliant spring web)",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "flex_t",
+            "flex_len",
+            "jaw_t"
+          ]
+        },
+        {
+          "id": "rod_loop",
+          "label": "Rod Loop (closed rail engagement)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "rod_dia",
+            "jaw_t",
+            "jaw_w"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/garment-clip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garment-clip"
+      }
+    },
+    {
       "slug": "garment-eyelet",
       "name": "Garment Eyelet and Washer",
       "domain": "wearable",
@@ -9819,6 +10765,102 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garment-eyelet"
+      }
+    },
+    {
+      "slug": "garment-hanger",
+      "name": "Garment Hanger",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 4,
+      "parameters": 8,
+      "parameter_ids": [
+        "shoulder_w",
+        "shoulder_t",
+        "shoulder_h",
+        "slope",
+        "hook_rod",
+        "hook_wire",
+        "notch_count",
+        "bar_drop"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A hanger that does not fit is how a garment acquires the shoulder bump that eventually retires it. Printing the hanger to the garment's own shoulder span — including child sizes and wide-shoulder coats that the two stocked sizes never covered — keeps clothes wearable longer, and lets a repair shop or a small label produce its own display hardware instead of buying injection-moulded plastic by the case.",
+        "es": "Un gancho que no queda es la razón por la que una prenda adquiere el bulto de hombro que acaba por retirarla. Imprimir el gancho a la envergadura de hombro de la propia prenda — incluidas tallas infantiles y abrigos de hombro ancho que las dos medidas de fábrica nunca cubrieron — alarga la vida útil de la ropa y permite a un taller o a una marca pequeña producir su propio herraje de exhibición en lugar de comprar plástico inyectado por caja."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "shoulder_seat",
+          "label": "Shoulder Seat (the line the garment hangs on)",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "shoulder_w",
+            "shoulder_t",
+            "shoulder_h",
+            "slope"
+          ]
+        },
+        {
+          "id": "rod_hook",
+          "label": "Rod Hook (closet rail engagement)",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "hook_rod",
+            "hook_wire"
+          ]
+        },
+        {
+          "id": "strap_notch",
+          "label": "Strap Notch (camisole/lingerie strap capture)",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "notch_count",
+            "shoulder_h",
+            "hook_wire"
+          ]
+        },
+        {
+          "id": "bar_socket",
+          "label": "Trouser Bar Socket (tip pin joint)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "shoulder_w",
+            "shoulder_t",
+            "bar_drop"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/garment-hanger/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garment-hanger"
       }
     },
     {
@@ -9932,6 +10974,78 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garment-stand"
+      }
+    },
+    {
+      "slug": "garter-clip",
+      "name": "Garter Clip",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "strap_w",
+        "strap_t",
+        "plate_t",
+        "nub_d",
+        "head_over",
+        "grip_clear"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Garter clips are the first thing to break on a suspender belt and are sold only in bulk, in one colour, in one size; a printed pair sized to your own elastic repairs lingerie that would otherwise be thrown away over a two-gram part.",
+        "es": "Los broches de liga son lo primero que se rompe en un portaligas y sólo se venden a granel, en un color y una medida; un par impreso a la medida de tu propio elástico repara lencería que si no se tiraría por una pieza de dos gramos."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "strap_slot",
+          "label": "Strap Slot (elastic edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "strap_w",
+            "strap_t",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "keyhole_grip",
+          "label": "Keyhole Grip",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "nub_d",
+            "head_over",
+            "grip_clear"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/garter-clip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garter-clip"
       }
     },
     {
@@ -11423,6 +12537,152 @@
       }
     },
     {
+      "slug": "hat-size-reducer",
+      "name": "Hat Size Reducer",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 7,
+      "parameter_ids": [
+        "strip_length",
+        "strip_height",
+        "reduction_mm",
+        "band_t",
+        "rib_count",
+        "rib_depth",
+        "head_circ"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Hats are sized in whole steps and second-hand hats come in whatever size they were made; a strip that absorbs a stated number of millimetres lets an inherited or thrifted hat fit its new wearer instead of sitting in a box.",
+        "es": "Los sombreros vienen en tallas enteras y los de segunda mano en la talla en que se hicieron; una tira que absorbe un número dado de milímetros permite que un sombrero heredado o de segunda mano le quede a quien lo usa ahora, en lugar de quedarse guardado."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sweatband_clip",
+          "label": "Sweatband Clip (C profile)",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "strip_height",
+            "band_t",
+            "strip_length"
+          ]
+        },
+        {
+          "id": "head_arc",
+          "label": "Head Arc",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "head_circ",
+            "reduction_mm"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/hat-size-reducer/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hat-size-reducer"
+      }
+    },
+    {
+      "slug": "headband-blank",
+      "name": "Headband Blank",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 7,
+      "parameter_ids": [
+        "head_width",
+        "band_w",
+        "band_t",
+        "taper_len",
+        "tip_w",
+        "sew_holes",
+        "hole_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Headband blanks are sold in two or three sizes and one shape, so anyone with a head outside the middle of the distribution wears something that pinches all day; printing the arc to a measured head width makes the covered headband a fitted garment rather than an approximation.",
+        "es": "Las bases de diadema se venden en dos o tres tallas y una sola forma, así que quien tiene una cabeza fuera del promedio pasa el día con algo que aprieta; imprimir el arco al ancho de cabeza medido convierte la diadema forrada en una prenda a medida y no en una aproximación."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "casing_sew_edge",
+          "label": "Fabric Casing Sew Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "band_w",
+            "band_t",
+            "tip_w",
+            "sew_holes",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "head_arc",
+          "label": "Elliptical Head Arc",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "head_width",
+            "band_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/headband-blank/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/headband-blank"
+      }
+    },
+    {
       "slug": "headphone-hook",
       "name": "Headphone / Headset Hook",
       "domain": "commercial",
@@ -11580,6 +12840,81 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/headphone-stand"
+      }
+    },
+    {
+      "slug": "heel-tip-blank",
+      "name": "Heel Tip Blank",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "tip_w",
+        "tip_l",
+        "tip_h",
+        "taper",
+        "pin_dia",
+        "pin_depth",
+        "corner_r",
+        "edge_ch"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Heel tips are the one component of a shoe designed to be consumed, yet their sizes are a manufacturer's private grid — so a pair of otherwise sound shoes is thrown out because nobody stocks the tip. A parametric blank makes the wearing part of a heel a printable consumable again, which is the difference between a shoe that lasts a decade and one that lasts a season.",
+        "es": "Las tapas de tacón son el único componente del zapato diseñado para consumirse, pero sus medidas son una cuadrícula privada de cada fabricante — así que un par de zapatos por lo demás sanos se tira porque nadie surte la tapa. Una pieza en bruto paramétrica devuelve a la parte de desgaste del tacón su condición de consumible imprimible, que es la diferencia entre un zapato que dura una década y uno que dura una temporada."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "heel_seat",
+          "label": "Heel Seat Face",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "tip_w",
+            "tip_l",
+            "corner_r",
+            "taper"
+          ]
+        },
+        {
+          "id": "pin_bore",
+          "label": "Steel Pin Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "pin_dia",
+            "pin_depth",
+            "tip_h"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/heel-tip-blank/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/heel-tip-blank"
       }
     },
     {
@@ -12822,6 +14157,89 @@
       }
     },
     {
+      "slug": "kiss-lock-frame",
+      "name": "Kiss-Lock Frame",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 7,
+      "parameter_ids": [
+        "frame_w",
+        "arch_h",
+        "rod_t",
+        "rod_h",
+        "channel_w",
+        "pin_dia",
+        "ball_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Metal purse frames are sold in a handful of fixed widths, so a maker either redraws the whole bag pattern to fit the frame or abandons the design; printing the frame to the pattern's own mouth width flips that dependency and keeps small leather and textile workshops off a narrow import supply chain.",
+        "es": "Los armazones metálicos se venden en unas pocas medidas fijas, así que quien confecciona rediseña todo el patrón del bolso para que quepa o abandona el diseño; imprimir el armazón al ancho de boquilla del propio patrón invierte esa dependencia y libera a los talleres pequeños de piel y textil de una cadena de importación estrecha."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_channel",
+          "label": "Sew Channel (fabric flange)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "frame_w",
+            "channel_w",
+            "rod_t"
+          ]
+        },
+        {
+          "id": "hinge_bore",
+          "label": "Hinge Pin Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "pin_dia",
+            "frame_w",
+            "rod_h"
+          ]
+        },
+        {
+          "id": "kiss_clasp",
+          "label": "Kiss Clasp",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "ball_dia",
+            "rod_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/kiss-lock-frame/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/kiss-lock-frame"
+      }
+    },
+    {
       "slug": "knob-dshaft",
       "name": "D-Shaft Replacement Knob",
       "domain": "household",
@@ -13024,6 +14442,78 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/lacing-hook"
+      }
+    },
+    {
+      "slug": "ladder-lock",
+      "name": "Ladder Lock",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "parts": 1,
+      "parameters": 6,
+      "parameter_ids": [
+        "webbing_w",
+        "webbing_t",
+        "frame_t",
+        "bar_w",
+        "body_h",
+        "teeth"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Ladder locks are sold moulded onto finished straps, so a worn one means replacing the whole strap; a printed adjuster sized to the tape you already own repairs the pack instead of retiring it.",
+        "es": "Los reguladores ladder-lock se venden moldeados en correas terminadas, así que uno gastado obliga a cambiar la correa entera; un ajustador impreso a la medida de la cinta que ya tienes repara la mochila en lugar de jubilarla."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "webbing_slots",
+          "label": "Webbing Slots (tape edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing_w",
+            "webbing_t",
+            "frame_t"
+          ]
+        },
+        {
+          "id": "bar_grip",
+          "label": "Center Bar Grip",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "bar_w",
+            "teeth",
+            "body_h"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/ladder-lock/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/ladder-lock"
       }
     },
     {
@@ -14009,6 +15499,93 @@
       }
     },
     {
+      "slug": "magnetic-button-cover",
+      "name": "Magnetic Button Cover",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "button_dia",
+        "button_t",
+        "snap_lip",
+        "magnet_dia",
+        "magnet_t",
+        "magnet_fit",
+        "wall",
+        "sew_holes",
+        "hole_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Adaptive magnetic shirts are sold as whole garments at several times the price of the shirt someone already owns, and converting a shirt by replacing its buttons alters it permanently — impossible for a uniform, a school shirt, or something borrowed or inherited. A cap that snaps on and a plate that stitches behind the buttonhole convert any placket reversibly, in minutes, and move to the next shirt when that one wears out.",
+        "es": "Las camisas magnéticas adaptadas se venden como prendas completas a varias veces el precio de la camisa que alguien ya tiene, y convertir una camisa cambiándole los botones la altera de forma permanente: imposible en un uniforme, una camisa escolar o algo prestado o heredado. Una tapa que entra a presión y una placa que se cose detrás del ojal convierten cualquier cartera de manera reversible, en minutos, y pasan a la siguiente camisa cuando aquélla se acaba."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "plate_sew_ring",
+          "label": "Plate Sew Ring",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "button_dia",
+            "wall",
+            "sew_holes",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "button_snap",
+          "label": "Existing Button Snap",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "button_dia",
+            "button_t",
+            "snap_lip"
+          ]
+        },
+        {
+          "id": "magnet_pocket",
+          "label": "Disc Magnet Pocket",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "magnet_dia",
+            "magnet_t",
+            "magnet_fit"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/magnetic-button-cover/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/magnetic-button-cover"
+      }
+    },
+    {
       "slug": "magnetic-clasp",
       "name": "Magnetic Clasp",
       "domain": "wearable",
@@ -14076,6 +15653,80 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/magnetic-clasp"
+      }
+    },
+    {
+      "slug": "magnetic-pin-dish",
+      "name": "Magnetic Pin Dish",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "dish_dia",
+        "dish_h",
+        "bowl_d",
+        "magnet_dia",
+        "magnet_t",
+        "floor_t",
+        "magnet_clr"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Loose dressmaker pins are the cutting room's most reliable injury and the most reliable way to wreck a vacuum. A magnetic dish costs a few dollars and is the one tool people improvise badly; printed around whatever disc magnet is on hand, it costs almost nothing.",
+        "es": "Los alfileres sueltos son la lesión más fiable del taller de corte y la forma más fiable de arruinar una aspiradora. Un platillo imantado cuesta unos dólares y es la herramienta que peor se improvisa; impreso alrededor del imán que haya a mano, casi no cuesta nada."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "magnet_pocket",
+          "label": "Magnet Pocket (downward-opening)",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "magnet_dia",
+            "magnet_t",
+            "magnet_clr",
+            "floor_t"
+          ]
+        },
+        {
+          "id": "pin_bowl",
+          "label": "Pin Bowl",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "dish_dia",
+            "dish_h",
+            "bowl_d"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/magnetic-pin-dish/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/magnetic-pin-dish"
       }
     },
     {
@@ -17170,6 +18821,78 @@
       }
     },
     {
+      "slug": "pattern-weight",
+      "name": "Pattern Weight",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "weight_dia",
+        "weight_h",
+        "rim_chamfer",
+        "recess_dia",
+        "recess_d",
+        "boss_h",
+        "stack_clear"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Pattern weights replace pins: no pin holes in cloth that shows them, no distortion of the grain, and a faster cut. Bought, they are a per-dozen cost that keeps home and small-shop cutters using pins; printed, a full set costs filament and an afternoon.",
+        "es": "Los pisapatrones sustituyen a los alfileres: sin agujeros en telas que los delatan, sin deformar el hilo y con un corte más rápido. Comprados, su costo por docena mantiene a talleres pequeños usando alfileres; impresos, un juego cuesta filamento y una tarde."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "stack_register",
+          "label": "Stacking Register",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "weight_dia",
+            "boss_h",
+            "stack_clear"
+          ]
+        },
+        {
+          "id": "table_face",
+          "label": "Table Face",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "weight_dia",
+            "rim_chamfer"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/pattern-weight/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pattern-weight"
+      }
+    },
+    {
       "slug": "pcb-standoff",
       "name": "PCB Standoff / Mounting Plate",
       "domain": "industrial",
@@ -18758,6 +20481,78 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/plate-frame"
+      }
+    },
+    {
+      "slug": "point-turner",
+      "name": "Point Turner",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "tool_len",
+        "presser_w",
+        "point_w",
+        "tool_t",
+        "edge_bevel",
+        "grip_pocket"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A blunt point turner is what keeps a hand-turned collar corner sharp without a scissor tip going through the stitching — the single most common way a home-sewn shirt is ruined at the last step. It is a two-dollar bamboo stick that is nonetheless never in the drawer.",
+        "es": "Un vuelve-puntas romo es lo que mantiene la esquina del cuello nítida sin que la punta de la tijera atraviese la costura — la forma más común de arruinar una camisa en el último paso. Es una vara de bambú de dos dólares que nunca está en el cajón."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "corner_point",
+          "label": "Corner Point (blunt tip)",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "point_w",
+            "tool_t",
+            "edge_bevel"
+          ]
+        },
+        {
+          "id": "seam_face",
+          "label": "Seam Presser Face",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "presser_w",
+            "tool_t",
+            "edge_bevel"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/point-turner/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/point-turner"
       }
     },
     {
@@ -20845,6 +22640,155 @@
       }
     },
     {
+      "slug": "seam-conduit-clip",
+      "name": "Seam Conduit Clip",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "bundle_dia",
+        "mouth_frac",
+        "wall",
+        "clip_len",
+        "tab_w",
+        "tab_t",
+        "hole_dia",
+        "run_count",
+        "run_pitch"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Commercial e-textile garments hide their harness in glued channels nobody can open, so a single chafed wire condemns the whole garment. Sew-on clips make the harness visible, re-routable, and repairable with a seam ripper and a needle — the difference between a garment that lasts a decade and one that lasts a season.",
+        "es": "Las prendas comerciales con electrónica esconden su arnés en canales pegados que nadie puede abrir, así que un solo cable rozado condena toda la prenda. Las grapas de coser hacen el arnés visible, reencaminable y reparable con un descosedor y una aguja — la diferencia entre una prenda que dura una década y una que dura una temporada."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "seam_tabs",
+          "label": "Sewn Seam-Allowance Tabs",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "tab_w",
+            "tab_t",
+            "clip_len",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "bundle_channel",
+          "label": "Open C Bundle Channel",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "bundle_dia",
+            "mouth_frac",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/seam-conduit-clip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/seam-conduit-clip"
+      }
+    },
+    {
+      "slug": "seam-strain-relief",
+      "name": "Seam Strain Relief",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "cable_dia",
+        "grip",
+        "plate_len",
+        "plate_w",
+        "plate_t",
+        "sew_holes",
+        "hole_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Wearable-electronics garments almost always die at the cable exit: the jacket flexes, the solder joint fatigues, and the whole garment is scrapped over a two-cent joint. A printed seam clamp moves that load onto the stitch line and makes the failure repairable at a kitchen table instead of a repair depot.",
+        "es": "Las prendas con electrónica casi siempre mueren en la salida del cable: la funda se flexiona, la soldadura se fatiga y se desecha toda la prenda por una unión de dos centavos. Una mordaza de costura impresa traslada esa carga a la línea de pespunte y vuelve la falla reparable en la mesa de la cocina en lugar de en un taller."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "seam_edge",
+          "label": "Sewn Seam-Allowance Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "plate_len",
+            "plate_w",
+            "sew_holes",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "cable_channel",
+          "label": "Cable Clamp Channel",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "cable_dia",
+            "grip"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/seam-strain-relief/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/seam-strain-relief"
+      }
+    },
+    {
       "slug": "seed-tray",
       "name": "Seed Tray / Cell Insert",
       "domain": "household",
@@ -21711,6 +23655,78 @@
       }
     },
     {
+      "slug": "shoe-horn",
+      "name": "Shoe Horn",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "horn_len",
+        "handle_w",
+        "scoop_w",
+        "blade_t",
+        "curve_deg",
+        "hang_hole",
+        "sections"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A folded heel counter is a permanent injury to a shoe, and the tool that prevents it costs almost nothing to make. The long mode matters more: it lets someone with limited hip, knee or back mobility put on their own shoes standing up, which is the difference between dressing independently and waiting for help.",
+        "es": "Un contrafuerte doblado es una lesión permanente para un zapato, y la herramienta que lo evita cuesta casi nada de fabricar. El modo largo importa aún más: permite que alguien con movilidad limitada de cadera, rodilla o espalda se ponga sus propios zapatos de pie, que es la diferencia entre vestirse solo y esperar ayuda."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "counter_scoop",
+          "label": "Heel-Counter Scoop",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "scoop_w",
+            "blade_t",
+            "curve_deg"
+          ]
+        },
+        {
+          "id": "hang_point",
+          "label": "Hang Point",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "hang_hole",
+            "handle_w"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/shoe-horn/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shoe-horn"
+      }
+    },
+    {
       "slug": "shoe-mount",
       "name": "Accessory Shoe Mount",
       "domain": "commercial",
@@ -21792,6 +23808,328 @@
       }
     },
     {
+      "slug": "shoe-tree",
+      "name": "Shoe Tree",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "shoe_len",
+        "ball_w",
+        "toe_h",
+        "heel_h",
+        "shank_t",
+        "vent_rows"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Most footwear is retired not because the sole failed but because the upper creased permanently across the vamp. Cedar trees are sold in whole-size steps and rarely below a child's EU 34 or above an EU 46, so the shoes most likely to be handed down are exactly the ones with no tree available. A tree generated from a measured insole keeps those uppers in shape, and the vented mode dries a wet shoe from the inside instead of on a radiator, which is what cracks the leather.",
+        "es": "La mayoría del calzado se retira no porque falle la suela sino porque el corte se marcó de forma permanente en la pala. Las hormas de cedro se venden en tallas enteras y casi nunca por debajo de un EU 34 infantil ni por encima de un EU 46, así que los zapatos que más se heredan son justamente los que no tienen horma disponible. Una horma generada a partir de una plantilla medida conserva la forma de esos cortes, y la versión ventilada seca el zapato mojado desde dentro en vez de sobre un radiador, que es lo que agrieta la piel."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "last_profile",
+          "label": "Last Profile (the toe-form section chain)",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "shoe_len",
+            "ball_w",
+            "toe_h"
+          ]
+        },
+        {
+          "id": "counter_pad",
+          "label": "Counter Pad (heel bearing face)",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "heel_h",
+            "ball_w",
+            "shoe_len"
+          ]
+        },
+        {
+          "id": "spring_shank",
+          "label": "Spring Shank (compliant preload ribbon)",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "shank_t",
+            "shoe_len",
+            "ball_w"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/shoe-tree/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shoe-tree"
+      }
+    },
+    {
+      "slug": "side-release-buckle",
+      "name": "Side-Release Buckle",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "webbing_w",
+        "webbing_t",
+        "body_t",
+        "wall_t",
+        "prong_len",
+        "snap_clear"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Side-release buckles are the single most-broken part on a pack or a duffel, and a snapped one usually retires an otherwise perfect bag; printing a replacement to the exact webbing width keeps the bag in service instead of in landfill.",
+        "es": "La hebilla de liberación lateral es la pieza que más se rompe en una mochila o un maletín, y una rota suele jubilar una bolsa por lo demás perfecta; imprimir el repuesto al ancho exacto de la cincha la mantiene en uso en lugar de tirarla."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "webbing_channel",
+          "label": "Webbing Channel (tape edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing_w",
+            "webbing_t",
+            "body_t"
+          ]
+        },
+        {
+          "id": "prong_catch",
+          "label": "Prong Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "prong_len",
+            "wall_t",
+            "snap_clear"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/side-release-buckle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/side-release-buckle"
+      }
+    },
+    {
+      "slug": "size-marker-ring",
+      "name": "Size Marker Ring",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "rod_dia",
+        "mouth_pct",
+        "ring_t",
+        "ring_w",
+        "tab_h",
+        "size_label",
+        "text_depth"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Size dividers are the difference between a rail a customer can shop and a rail they give up on, and giving up on a rail is how second-hand and repaired clothing loses to new. They are sold in fixed alpha runs for one rod diameter, so a charity shop, a market stall, or a repair co-op running odd rails and non-standard size systems has none. Generating them from the rail on hand — and from the size system in use, alpha or numeric — is a few grams of filament that keeps used stock findable and therefore sellable.",
+        "es": "Los separadores de talla son la diferencia entre un riel que un cliente puede recorrer y uno en el que se rinde, y rendirse ante un riel es como la ropa de segunda mano y reparada pierde frente a la nueva. Se venden en corridas alfabéticas fijas para un solo diámetro de tubo, así que una tienda de beneficencia, un puesto de mercado o una cooperativa de compostura con rieles dispares y sistemas de talla no estándar simplemente no tiene. Generarlos a partir del riel disponible — y del sistema de tallas en uso, alfabético o numérico — cuesta unos gramos de filamento y mantiene el inventario usado localizable y por tanto vendible."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "rail_snap",
+          "label": "Rail Snap (C-ring mouth on the rod)",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "rod_dia",
+            "mouth_pct",
+            "ring_t"
+          ]
+        },
+        {
+          "id": "label_face",
+          "label": "Label Face (debossed size tab)",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "size_label",
+            "tab_h",
+            "text_depth"
+          ]
+        },
+        {
+          "id": "rail_seat",
+          "label": "Rail Seat (bore riding the rod)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "rod_dia",
+            "ring_w"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/size-marker-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/size-marker-ring"
+      }
+    },
+    {
+      "slug": "snap-electrode-carrier",
+      "name": "Snap Electrode Carrier",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "disc_dia",
+        "disc_t",
+        "stud_shank",
+        "stud_flange",
+        "boss_h",
+        "sew_holes",
+        "hole_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Disposable gel electrodes are thrown away by the sheet every session, and reusable sensing garments are sold as sealed products nobody can repair. A printed carrier lets a clinic, a lab, or a person at home mount a standard snap stud on washable conductive fabric and replace only the patch, turning a consumable into a serviceable garment.",
+        "es": "Los electrodos desechables de gel se tiran por hojas en cada sesión, y las prendas con sensores reutilizables se venden como productos sellados que nadie puede reparar. Un portador impreso permite que una clínica, un laboratorio o una persona en su casa monte un broche estándar sobre tela conductora lavable y reemplace sólo el parche, convirtiendo un consumible en una prenda reparable."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_face",
+          "label": "Sewn Rim Face",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "disc_dia",
+            "sew_holes",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "stud_bore",
+          "label": "10 mm Snap Stud Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "stud_shank",
+            "stud_flange",
+            "boss_h"
+          ]
+        },
+        {
+          "id": "fabric_pocket",
+          "label": "Conductive-Fabric Pocket",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "stud_flange",
+            "disc_dia",
+            "disc_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/snap-electrode-carrier/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/snap-electrode-carrier"
+      }
+    },
+    {
       "slug": "snap-fit",
       "name": "Snap-Fit Cantilever Kit",
       "domain": "industrial",
@@ -21868,6 +24206,88 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/snap-fit"
+      }
+    },
+    {
+      "slug": "snap-hook-swivel",
+      "name": "Snap Hook with Swivel",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "webbing_w",
+        "webbing_t",
+        "hook_r",
+        "stock_d",
+        "gate_t",
+        "swivel_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Bag hooks and swivels are the parts that seize, snap or lose their tiny spring first, and no shop sells the one size you need; a printed hook with a moulded-in gate has no loose spring to lose and returns a bag, a lead or a lanyard to service.",
+        "es": "Los ganchos y giratorios de bolso son las piezas que primero se traban, se rompen o pierden su resortito, y ninguna tienda vende la medida exacta que necesitas; un gancho impreso con lengüeta integrada no tiene resorte suelto que perder y devuelve al uso un bolso, una traílla o un cordón."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "eye_webbing_slot",
+          "label": "Eye Webbing Slot (tape edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing_w",
+            "webbing_t",
+            "stock_d"
+          ]
+        },
+        {
+          "id": "swivel_joint",
+          "label": "Swivel Joint",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "swivel_d",
+            "stock_d"
+          ]
+        },
+        {
+          "id": "gate_flexure",
+          "label": "Gate Flexure",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "gate_t",
+            "hook_r",
+            "stock_d"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/snap-hook-swivel/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/snap-hook-swivel"
       }
     },
     {
@@ -23244,6 +25664,150 @@
       }
     },
     {
+      "slug": "strap-end-tip",
+      "name": "Strap End Tip",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "strap_w",
+        "strap_t",
+        "wall_t",
+        "tip_len",
+        "nose_len",
+        "rivet_dia",
+        "rivets"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A frayed strap end is the most common reason a perfectly good bag strap or belt gets binned, and metal tips are sold only in a few widths that rarely match what you have. Printing the tip to the strap you already own turns a five-minute repair into something anyone can do, and lets a workshop finish odd-width straps it would otherwise have to refuse.",
+        "es": "Un extremo deshilachado es la razón más común por la que se tira una correa o cinturón en buen estado, y las conteras metálicas se venden en unos pocos anchos que rara vez coinciden con lo que uno tiene. Imprimir la contera a la correa que ya se posee convierte la reparación en algo de cinco minutos al alcance de cualquiera, y permite a un taller rematar correas de ancho raro que de otro modo rechazaría."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "strap_channel",
+          "label": "Strap Channel (slide-on flange)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "strap_w",
+            "strap_t",
+            "wall_t"
+          ]
+        },
+        {
+          "id": "rivet_pattern",
+          "label": "Rivet Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "rivets",
+            "rivet_dia",
+            "strap_w"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/strap-end-tip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/strap-end-tip"
+      }
+    },
+    {
+      "slug": "strap-ring",
+      "name": "Strap Ring",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "webbing_w",
+        "opening",
+        "wire_t",
+        "wire_h",
+        "round_r"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Rings are the cheapest part of a bag and the hardest to source in an odd size, so a repair that needs a 32 mm rectangle usually ends with the whole strap being replaced at a metric width. Printing the ring to the tape already in hand means an existing bag keeps its own webbing, and a small workshop can quote a repair without a hardware inventory.",
+        "es": "Las argollas son la pieza más barata de un bolso y la más difícil de conseguir en medida rara, así que una reparación que necesita una rectangular de 32 mm suele terminar cambiando toda la correa a un ancho métrico. Imprimir la argolla a la cinta que ya se tiene permite que el bolso conserve su propia cincha y que un taller pequeño cotice la reparación sin inventario de herrajes."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "tape_bar",
+          "label": "Tape Bar (sewn flange)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing_w",
+            "wire_t",
+            "wire_h"
+          ]
+        },
+        {
+          "id": "clip_opening",
+          "label": "Clip Opening",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "opening",
+            "wire_t",
+            "round_r"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/strap-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/strap-ring"
+      }
+    },
+    {
       "slug": "strike-plate",
       "name": "Door Strike Plate",
       "domain": "infrastructure",
@@ -23826,6 +26390,78 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/terrain-clip"
+      }
+    },
+    {
+      "slug": "thimble",
+      "name": "Thimble",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 6,
+      "parameter_ids": [
+        "finger_girth",
+        "wall_t",
+        "thimble_h",
+        "taper",
+        "dimple_dia",
+        "dimple_rows"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A thimble that fits is the difference between hand-finishing a garment and giving up on it. Retail thimbles come in a coarse size run that fits few hands; measured from a finger girth, this one is printed to fit, in any material a maker has.",
+        "es": "Un dedal que ajusta es la diferencia entre rematar una prenda a mano y abandonarla. Los dedales comerciales vienen en un tallaje grueso que a pocas manos ajusta; medido desde el contorno del dedo, este se imprime a la medida, en cualquier material disponible."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "finger_bore",
+          "label": "Finger Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "finger_girth",
+            "wall_t",
+            "thimble_h"
+          ]
+        },
+        {
+          "id": "needle_seat",
+          "label": "Needle Seat (crown + dimples)",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "dimple_dia",
+            "dimple_rows",
+            "taper"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/thimble/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/thimble"
       }
     },
     {
@@ -25000,6 +27636,78 @@
       }
     },
     {
+      "slug": "tri-glide-slider",
+      "name": "Tri-Glide Slider",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "parts": 1,
+      "parameters": 6,
+      "parameter_ids": [
+        "webbing_w",
+        "webbing_t",
+        "rail_t",
+        "bar_w",
+        "body_h",
+        "round_bar"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A tri-glide is a few grams of moulded plastic that no shop sells loose in the size you need; printing one to your own tape width lets a maker finish an apron, a sling or a harness without ordering a whole bag of the wrong size.",
+        "es": "Un tri-glide son unos gramos de plástico moldeado que ninguna tienda vende suelto en la medida que necesitas; imprimirlo al ancho de tu propia cinta permite terminar un mandil, una correa o un arnés sin pedir una bolsa entera de la medida equivocada."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "webbing_openings",
+          "label": "Webbing Openings (tape edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "webbing_w",
+            "webbing_t",
+            "rail_t"
+          ]
+        },
+        {
+          "id": "bar_profile",
+          "label": "Bar Profile",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "bar_w",
+            "body_h",
+            "round_bar"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tri-glide-slider/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tri-glide-slider"
+      }
+    },
+    {
       "slug": "trim-clip",
       "name": "Trim Panel Clip",
       "domain": "commercial",
@@ -25417,6 +28125,92 @@
       }
     },
     {
+      "slug": "twist-lock-closure",
+      "name": "Twist-Lock Closure",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 4,
+      "parts": 4,
+      "parameters": 9,
+      "parameter_ids": [
+        "plate_l",
+        "plate_w",
+        "plate_t",
+        "turn_l",
+        "turn_w",
+        "turn_t",
+        "pivot_dia",
+        "leather_t",
+        "rivet_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A twist lock is the single component that decides whether a leather flap bag can be repaired: the plate is riveted, so when the turn-piece snaps the whole bag is usually discarded because the exact size is unbuyable. Printing the three parts to the existing rivet spacing returns a dead bag to service without re-punching the leather.",
+        "es": "El cierre de giro es la pieza que decide si un bolso de solapa se puede reparar: la placa va remachada, así que cuando la pieza de giro se rompe suele desecharse el bolso entero porque no se consigue la medida exacta. Imprimir las tres piezas al paso de remache existente devuelve el bolso al uso sin volver a perforar la piel."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "keeper_slot",
+          "label": "Keeper Slot",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "turn_l",
+            "turn_w",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "rivet_pattern",
+          "label": "Rivet Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "plate_l",
+            "rivet_dia",
+            "leather_t"
+          ]
+        },
+        {
+          "id": "pivot_seat",
+          "label": "Pivot Seat",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "pivot_dia",
+            "leather_t",
+            "turn_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/twist-lock-closure/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/twist-lock-closure"
+      }
+    },
+    {
       "slug": "tx-tray-mount",
       "name": "TX Tray Mount",
       "domain": "commercial",
@@ -25757,6 +28551,83 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/vbelt-pulley"
+      }
+    },
+    {
+      "slug": "veil-comb",
+      "name": "Veil Comb",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 9,
+      "parameter_ids": [
+        "bar_length",
+        "bar_h",
+        "bar_t",
+        "slot_count",
+        "slot_pitch",
+        "slot_w",
+        "teeth",
+        "tooth_len",
+        "tooth_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Veil attachment is the part of bridal millinery that nobody sells a tool for: the gather is done by eye onto a plain plastic comb, and if it comes out uneven the veil is remade. A comb whose spine states the gather pitch turns a craft secret into a measurement, and makes a veil a thing a person can attach, detach and reattach to a different comb across a lifetime.",
+        "es": "La sujeción del velo es la parte de la sombrerería nupcial para la que nadie vende herramienta: el frunce se hace a ojo sobre una peineta de plástico lisa, y si sale disparejo se rehace el velo. Una peineta cuyo lomo declara el paso del frunce convierte un secreto de oficio en una medida, y hace del velo algo que se puede poner, quitar y volver a poner en otra peineta a lo largo de una vida."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "veil_gather_bar",
+          "label": "Veil Gather Bar (sew slots)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "bar_length",
+            "slot_count",
+            "slot_pitch",
+            "slot_w",
+            "bar_t"
+          ]
+        },
+        {
+          "id": "hair_engagement",
+          "label": "Hair Engagement (tooth row)",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "teeth",
+            "tooth_len",
+            "tooth_w"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/veil-comb/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/veil-comb"
       }
     },
     {
@@ -26766,6 +29637,80 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/zipper"
+      }
+    },
+    {
+      "slug": "zipper-loop-aid",
+      "name": "Zipper Loop Aid",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 7,
+      "parameter_ids": [
+        "ring_id",
+        "ring_w",
+        "part_t",
+        "tab_t",
+        "tab_w",
+        "clip_wrap",
+        "clip_arm"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Adaptive zipper pulls are sold as a bag of identical plastic loops that fit one tab size and fall off the rest, so people replace whole garments with pull-on ones rather than fight a zipper. A clip measured to the tab already on the coat turns any existing zipper into an accessible one without altering the garment, and a coat that stays in service is a coat that is not replaced.",
+        "es": "Los jaladores adaptados se venden como una bolsa de aros de plástico idénticos que ajustan a un solo tamaño de jaladera y se caen de los demás, así que la gente reemplaza prendas enteras por otras de meter por la cabeza en lugar de pelear con un cierre. Una pinza medida a la jaladera que ya trae el abrigo vuelve accesible cualquier cierre existente sin alterar la prenda, y un abrigo que sigue en uso es un abrigo que no se reemplaza."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pull_tab_clip",
+          "label": "Pull Tab C-Clip",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "tab_t",
+            "tab_w",
+            "clip_wrap",
+            "clip_arm"
+          ]
+        },
+        {
+          "id": "finger_ring",
+          "label": "Finger Ring Section",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "ring_id",
+            "ring_w",
+            "part_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/zipper-loop-aid/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/zipper-loop-aid"
       }
     },
     {

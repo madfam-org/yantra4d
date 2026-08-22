@@ -31,7 +31,7 @@ concurrency:
 jobs:
   detect-changes:
     name: Detect Changes
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     outputs:
       backend: ${{ steps.decide.outputs.backend }}
       studio: ${{ steps.decide.outputs.studio }}
@@ -78,7 +78,7 @@ jobs:
 
   build-backend:
     name: Build Backend
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.backend == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -136,8 +136,12 @@ jobs:
           provenance: false
           sbom: false
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |
@@ -146,7 +150,7 @@ jobs:
 
   build-studio:
     name: Build Studio
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.studio == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -208,8 +212,12 @@ jobs:
             VITE_DHANAM_CHECKOUT_URL=https://app.dhan.am/checkout
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |
@@ -218,7 +226,7 @@ jobs:
 
   build-landing:
     name: Build Landing
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.landing == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -275,8 +283,12 @@ jobs:
           build-args: |
             PUBLIC_STUDIO_URL=https://app.yantra4d.com
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |
@@ -285,7 +297,7 @@ jobs:
 
   build-admin:
     name: Build Admin
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: detect-changes
     if: needs.detect-changes.outputs.admin == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -347,8 +359,12 @@ jobs:
             VITE_AUTH_ENABLED=true
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - name: Install cosign (checksum binary — the installer action dies on ARC runners)
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/cosign" \
+            https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          chmod +x "$RUNNER_TEMP/cosign"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Sign image with cosign
         run: |
@@ -357,7 +373,7 @@ jobs:
 
   commit-digests:
     name: Commit Image Digests
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: [detect-changes, build-backend, build-studio, build-landing, build-admin]
     if: |
       always() &&
@@ -421,7 +437,7 @@ jobs:
 
   verify-deploy:
     name: Post-Deploy Health Check
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: [commit-digests]
     if: needs.commit-digests.result == 'success'
     steps:
@@ -438,7 +454,7 @@ jobs:
 
   lifecycle-events:
     name: Report Lifecycle Events
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: [build-backend, build-studio, build-landing, build-admin]
     if: always()
     steps:

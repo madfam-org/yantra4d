@@ -7,7 +7,10 @@ export default defineConfig({
   testIgnore: [],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 0,
+  // CI-only retry budget: the self-hosted ARC pods are slower/more contended
+  // than GitHub-hosted runners, and tight expect timeouts flake across shards
+  // (2026-08-22, PR #41). A retried pass is reported as "flaky", not hidden.
+  retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['list'],

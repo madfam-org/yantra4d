@@ -8,7 +8,7 @@ on:
 
 jobs:
   studio:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
       run:
@@ -66,7 +66,7 @@ jobs:
           fi
 
   landing:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
       run:
@@ -90,7 +90,7 @@ jobs:
       - run: npm run build
 
   admin:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
       run:
@@ -133,7 +133,7 @@ jobs:
       - run: npm run test:coverage
 
   backend:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
       run:
@@ -190,7 +190,7 @@ jobs:
           - { project: webkit,   shard: 2, shards: 3 }
           - { project: webkit,   shard: 3, shards: 3 }
           - { project: mobile,   shard: 1, shards: 1 }
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 30
     defaults:
       run:
@@ -284,7 +284,7 @@ jobs:
   e2e-report:
     needs: e2e
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 10
     defaults:
       run:
@@ -314,7 +314,7 @@ jobs:
           retention-days: 14
 
   test-geometric-parity:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 30
     defaults:
       run:
@@ -335,7 +335,7 @@ jobs:
         run: python3 tests/scripts/geometric_regression.py --tolerance 0.05
 
   manifest-sync:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -359,7 +359,7 @@ jobs:
           pytest packages/commons-sandbox/tests -q
 
   manifest-validation:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -374,7 +374,7 @@ jobs:
         run: python3 scripts/qa/validate_manifests.py
 
   metadata-consistency:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -393,7 +393,7 @@ jobs:
         run: python3 scripts/qa/check_licenses.py --strict-all
 
   openapi-validation:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -407,7 +407,7 @@ jobs:
 
   ai-integration:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 10
     defaults:
       run:
@@ -428,7 +428,7 @@ jobs:
           AI_API_KEY: ${{ secrets.AI_API_KEY_TEST }}
 
   ci-success:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, metadata-consistency, openapi-validation]
     steps:
       - name: All checks passed

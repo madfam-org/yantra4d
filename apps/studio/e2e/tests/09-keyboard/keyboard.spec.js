@@ -1,9 +1,13 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, isMac } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, isMac, forceBackendRender, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 test.describe('Keyboard Shortcuts', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
+    // Pin the render path to the mocked backend. Without this, detectMode()
+    // reads navigator.hardwareConcurrency and picks WASM on any runner with
+    // >= 4 cores, so the per-test render mocks below never load.
+    await forceBackendRender(page)
     await goToStudio(page)
   })
 
@@ -54,23 +58,38 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('Escape cancels active render', async ({ page, sidebar }) => {
-    // Wait for initial auto-render to settle
-    await page.waitForTimeout(1000)
-    // Set up slow mock to catch new render
+    // Hold the render open until this test releases it, so the window in which
+    // Escape has something to cancel is set by the test rather than by how fast
+    // the runner happens to render. The previous version raced twice over: the
+    // initial auto-render might still be running when it pressed Escape (so the
+    // Cancel it saw belonged to the *un*mocked render), and on hardware where
+    // detectMode() picked WASM the 10s mock below was never consulted at all.
+    let releaseRender = () => { }
+    const renderHeld = new Promise((resolve) => { releaseRender = resolve })
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 10000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
+      await renderHeld
+      await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
 
-    // Change a param to bust render cache — debounced auto-render will use the slow mock
-    await sidebar.editSliderValue('width', 63)
-    // Wait for render to actually start (Cancel button appears)
-    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+    try {
+      // The initial auto-render must be finished before we can attribute the
+      // next Cancel button to our own slow mock.
+      await waitForRenderSettled(page)
 
-    await page.keyboard.press('Escape')
-    // Generate button should re-appear
-    await expect(page.locator('button', { hasText: /Generate|Generar/ })).toBeVisible({ timeout: 5000 })
+      // Change a param to bust render cache — debounced auto-render uses the held mock
+      await sidebar.editSliderValue('width', 63)
+      // Wait for render to actually start (Cancel button appears)
+      await expect(sidebar.cancelButton).toBeVisible({ timeout: 15_000 })
+
+      await page.keyboard.press('Escape')
+      // Generate button should re-appear — the app aborts the in-flight fetch,
+      // so this must not depend on the route ever being released.
+      await expect(sidebar.generateButton).toBeVisible({ timeout: 10_000 })
+      await expect(sidebar.generateButton).toBeEnabled({ timeout: 10_000 })
+    } finally {
+      releaseRender()
+    }
   })
 
   // The mode tabs are plain buttons carrying aria-selected; the only tabs with

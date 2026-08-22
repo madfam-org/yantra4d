@@ -89,14 +89,74 @@ function hasWasmCapabilities(): boolean {
 }
 
 /**
+ * The only two values the render-mode override accepts. Anything else is junk
+ * and is IGNORED rather than coerced: a typo'd `?render=wsam` must fall through
+ * to normal detection, not silently pin a path the operator did not ask for.
+ */
+function parseRenderMode(value: string | null | undefined): 'backend' | 'wasm' | null {
+  if (value === 'backend' || value === 'wasm') return value
+  return null
+}
+
+/**
+ * Explicit render-mode override, resolved ONCE at module load.
+ *
+ * Read once, not per render, so the answer cannot change underneath an
+ * in-flight session. The studio rewrites its own URL as the user picks a
+ * preset/mode (routes are `/project/:slug/:preset/:mode`), and those rewrites
+ * do not carry the query string; re-reading per render would let a pinned path
+ * silently evaporate on the first such rewrite — exactly when a user on a
+ * support-issued link starts clicking around. Page load is also the only moment
+ * at which the operator's intent (the link they opened) is unambiguous.
+ *
+ * Precedence, highest first:
+ *   1. `?render=backend` | `?render=wasm`  — per-session, what support hands a user
+ *   2. `VITE_RENDER_MODE=backend|wasm`     — build-time pin for a whole deployment
+ *   3. null                                — defer to the hardware heuristic
+ */
+const RENDER_MODE_OVERRIDE: 'backend' | 'wasm' | null = (() => {
+  let fromQuery: 'backend' | 'wasm' | null = null
+  if (typeof window !== 'undefined' && window.location) {
+    try {
+      fromQuery = parseRenderMode(new URLSearchParams(window.location.search).get('render'))
+    } catch { /* malformed search string — fall through to env */ }
+  }
+  if (fromQuery) return fromQuery
+  return parseRenderMode(import.meta.env.VITE_RENDER_MODE as string | undefined)
+})()
+
+/**
+ * The explicit override, or null when detection should decide.
+ * Exported for diagnostics and tests.
+ */
+export function getRenderModeOverride(): 'backend' | 'wasm' | null {
+  return RENDER_MODE_OVERRIDE
+}
+
+/**
  * Detect whether to use 'backend' or 'wasm' rendering mode.
- * Checks backend availability BEFORE respecting force_backend/API_BASE preferences,
- * so the app can fall back to WASM when the backend is unreachable.
+ *
+ * An explicit override (`?render=` / `VITE_RENDER_MODE`) wins over everything
+ * below it. Absent one, this checks backend availability BEFORE respecting
+ * force_backend/API_BASE preferences, so the app can fall back to WASM when the
+ * backend is unreachable.
  */
 async function detectMode(manifest: Manifest | null, mode: string, params: Record<string, unknown>): Promise<'backend' | 'wasm'> {
-  // Backend-only engines have no WASM path — always backend
+  // Backend-only engines have no WASM path — always backend.
+  // Deliberately ABOVE the override: `?render=wasm` on a CadQuery/graph project
+  // cannot be honoured (the kernel only exists server-side), and pretending
+  // otherwise would trade a working render for a guaranteed failure.
   if (manifest && BACKEND_ONLY_ENGINES.has(manifest.engine ?? '')) {
     return 'backend'
+  }
+
+  // Explicit override — consulted BEFORE backend probing and the hardware
+  // heuristic, so a pinned path is honoured regardless of core count, of
+  // whether /api/health answers, and of force_backend.
+  if (RENDER_MODE_OVERRIDE) {
+    console.warn(`[Render Mode] Override active: forcing '${RENDER_MODE_OVERRIDE}' rendering (hardware heuristic bypassed).`)
+    _hardwareMode = RENDER_MODE_OVERRIDE
+    return RENDER_MODE_OVERRIDE
   }
 
   // Check backend availability first (uses TTL-cached result)
@@ -513,8 +573,12 @@ export async function renderParts(
     } catch (err) {
       // If backend fails with network/capacity errors, try WASM fallback.
       const forceBackend = manifest?.project?.force_backend || manifest?.force_backend
+      // `?render=backend` is a deliberate "keep me off WASM" instruction —
+      // usually because WASM is exactly what broke for this user. Falling back
+      // to it here would quietly undo the override at the one moment it matters.
       const canFallbackToWasm = (
         !forceBackend
+        && RENDER_MODE_OVERRIDE !== 'backend'
         && !BACKEND_ONLY_ENGINES.has(manifest?.engine ?? '')
         && hasWasmCapabilities()
       )

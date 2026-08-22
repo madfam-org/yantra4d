@@ -1,0 +1,392 @@
+{
+  "project": {
+    "name": "Sew-On Snap",
+    "slug": "sew-on-snap",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed sew-on snap fastener — the stud-and-socket disc pair a sewer stitches through rim holes onto baby-bodysuit crotch plackets, varsity plackets, and lightweight closures. This is the rigid hard good the Fashion Cabinet `sew-on-snap` notion places and bridges to here for its geometry, sized so a garment's finished placket dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un broche de presión de coser impreso en 3D — el par de discos macho y hembra que se cose por los ojales del borde en las entrepiernas de pañaleros, en las carteras de chamarras universitarias y en cierres ligeros. Es el herraje rígido que el avío `sew-on-snap` de Fashion Cabinet coloca y al que se puentea aquí, dimensionado para que la medida terminada de la cartera determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sew-on-snap.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "sew-on-snap",
+      "snap",
+      "press-stud",
+      "closure",
+      "placket",
+      "bodysuit",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Snap Set (stud + socket)",
+        "es": "Juego de broche (macho + hembra)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "stud",
+      "label": {
+        "en": "Stud Disc",
+        "es": "Disco macho"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "stud"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "socket",
+      "label": {
+        "en": "Socket Disc",
+        "es": "Disco hembra"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "socket"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Snap Set",
+        "es": "Juego de broche"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "stud",
+      "label": {
+        "en": "Stud Disc",
+        "es": "Disco macho"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "socket",
+      "label": {
+        "en": "Socket Disc",
+        "es": "Disco hembra"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "disc",
+      "label": {
+        "en": "Disc",
+        "es": "Disco"
+      }
+    },
+    {
+      "id": "engagement",
+      "label": {
+        "en": "Engagement",
+        "es": "Acoplamiento"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "snap_dia",
+      "type": "slider",
+      "default": 12.0,
+      "min": 7.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "disc",
+      "modes": [
+        "set",
+        "stud",
+        "socket"
+      ],
+      "label": {
+        "en": "Snap disc diameter (mm)",
+        "es": "Diámetro del disco (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of each snap disc (mm). Sizes 9-12 mm suit bodysuit plackets; 15-20 mm suit varsity plackets and outerwear.",
+        "es": "Diámetro exterior de cada disco del broche (mm). De 9 a 12 mm para pañaleros; de 15 a 20 mm para carteras de chamarra y abrigo."
+      }
+    },
+    {
+      "id": "disc_t",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "disc",
+      "modes": [
+        "set",
+        "stud",
+        "socket"
+      ],
+      "label": {
+        "en": "Disc thickness (mm)",
+        "es": "Espesor del disco (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flat disc body (mm). Thinner discs sit flatter under a placket; thicker discs resist peeling open.",
+        "es": "Espesor del cuerpo plano del disco (mm). Los discos delgados quedan más planos bajo la cartera; los gruesos resisten mejor el despegue."
+      }
+    },
+    {
+      "id": "stud_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "engagement",
+      "modes": [
+        "set",
+        "stud",
+        "socket"
+      ],
+      "label": {
+        "en": "Stud diameter (mm)",
+        "es": "Diámetro del macho (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the central stud boss (mm). Clamped to at most the disc diameter minus 4 mm so a sewing rim always remains.",
+        "es": "Diámetro del saliente central macho (mm). Se limita al diámetro del disco menos 4 mm para conservar siempre un borde de costura."
+      }
+    },
+    {
+      "id": "engage_clear",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.1,
+      "max": 0.6,
+      "step": 0.05,
+      "group": "engagement",
+      "modes": [
+        "set",
+        "stud",
+        "socket"
+      ],
+      "label": {
+        "en": "Engagement clearance (mm)",
+        "es": "Holgura de acoplamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Diametral gap between stud and socket (mm). Smaller values snap harder; increase for stiff or shrink-prone filaments.",
+        "es": "Holgura diametral entre macho y hembra (mm). Un valor menor cierra con más fuerza; auméntalo para filamentos rígidos o que contraen."
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 4,
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "group": "sewing",
+      "modes": [
+        "set",
+        "stud",
+        "socket"
+      ],
+      "label": {
+        "en": "Sew holes (count)",
+        "es": "Ojales de costura (cantidad)"
+      },
+      "tooltip": {
+        "en": "Number of stitch holes around the rim. Four is the garment-industry standard for a sew-on snap.",
+        "es": "Cantidad de ojales de costura alrededor del borde. Cuatro es el estándar de la industria para un broche de coser."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.5,
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "set",
+        "stud",
+        "socket"
+      ],
+      "label": {
+        "en": "Sew hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each stitch hole (mm). 1.5 mm passes a doubled all-purpose thread on a hand needle.",
+        "es": "Diámetro de cada ojal de costura (mm). 1.5 mm deja pasar hilo multiuso doble con aguja de mano."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "bodysuit_placket",
+      "mode": "set",
+      "label": {
+        "en": "Bodysuit Placket (9 mm)",
+        "es": "Cartera de pañalero (9 mm)"
+      },
+      "values": {
+        "snap_dia": 9.0,
+        "disc_t": 1.6,
+        "stud_dia": 3.2,
+        "engage_clear": 0.3,
+        "sew_holes": 4,
+        "hole_dia": 1.4
+      }
+    },
+    {
+      "id": "varsity_placket",
+      "mode": "set",
+      "label": {
+        "en": "Varsity Placket (17 mm)",
+        "es": "Cartera universitaria (17 mm)"
+      },
+      "values": {
+        "snap_dia": 17.0,
+        "disc_t": 2.6,
+        "stud_dia": 6.0,
+        "engage_clear": 0.35,
+        "sew_holes": 4,
+        "hole_dia": 1.8
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_face",
+        "label": {
+          "en": "Sew Face (rim holes)",
+          "es": "Cara de costura (ojales del borde)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "snap_dia",
+          "sew_holes",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "stud_engage",
+        "label": {
+          "en": "Stud Engagement",
+          "es": "Acoplamiento del macho"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "stud_dia",
+          "engage_clear"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Sew-on snaps are sold only in a handful of fixed sizes, so a mender either buys a whole card or gives up; printing the pair to the exact placket size keeps baby clothes and jackets in service instead of in landfill.",
+      "es": "Los broches de coser sólo se venden en unas pocas medidas fijas, así que quien remienda compra una tarjeta entera o se rinde; imprimir el par a la medida exacta de la cartera mantiene en uso la ropa de bebé y las chamarras en lugar de tirarlas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "sew-on-snap",
+    "snap",
+    "press-stud",
+    "closure",
+    "placket",
+    "bodysuit",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

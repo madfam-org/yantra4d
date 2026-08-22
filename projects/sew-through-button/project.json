@@ -1,0 +1,399 @@
+{
+  "project": {
+    "name": "Sew-Through Button",
+    "slug": "sew-through-button",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The flat 2- or 4-hole button that closes shirts, blouses, trousers and coats — the rigid hard good the Fashion Cabinet `sew-through-button` notion places and bridges to here for its geometry. Sized in ligne, the button trade's unit (1 L = 0.635 mm), so `diameter_mm = button_ligne × 0.635`: the same ligne that lays out a Fashion Cabinet placket makes the matching button here. Print one button, or a whole card of them in a single run.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El botón plano de 2 o 4 agujeros que cierra camisas, blusas, pantalones y abrigos — el herraje rígido que el avío `sew-through-button` de Fashion Cabinet coloca y al que se puentea aquí. Dimensionado en líneas, la unidad del oficio del botón (1 L = 0.635 mm), de modo que `diameter_mm = button_ligne × 0.635`: la misma línea que traza una cartera en Fashion Cabinet hace el botón correspondiente aquí. Imprime un botón o una tarjeta entera de una sola vez.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sew-through-button.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "button",
+      "sew-through",
+      "notion",
+      "closure",
+      "ligne",
+      "placket",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "button",
+      "label": {
+        "en": "One Button",
+        "es": "Un botón"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "button"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "card",
+      "label": {
+        "en": "Button Card (batch)",
+        "es": "Tarjeta de botones (lote)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "card"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "button",
+      "label": {
+        "en": "Sew-Through Button",
+        "es": "Botón de agujeros"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "card",
+      "label": {
+        "en": "Button Card",
+        "es": "Tarjeta de botones"
+      },
+      "render_mode": 0,
+      "color": "#a89c84"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "size",
+      "label": {
+        "en": "Size",
+        "es": "Talla"
+      }
+    },
+    {
+      "id": "holes",
+      "label": {
+        "en": "Sew Holes",
+        "es": "Agujeros de costura"
+      }
+    },
+    {
+      "id": "batch",
+      "label": {
+        "en": "Batch",
+        "es": "Lote"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "button_ligne",
+      "type": "slider",
+      "default": 24,
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "group": "size",
+      "modes": [
+        "button",
+        "card"
+      ],
+      "label": {
+        "en": "Button size (ligne, L)",
+        "es": "Talla del botón (líneas, L)"
+      },
+      "tooltip": {
+        "en": "Button size in ligne, the button trade's unit: diameter_mm = button_ligne × 0.635. 24 L ≈ 15.24 mm. Shirt 16–20 L, jacket 24–30 L, coat 32–45 L.",
+        "es": "Talla del botón en líneas, la unidad del oficio del botón: diameter_mm = button_ligne × 0.635. 24 L ≈ 15.24 mm. Camisa 16–20 L, saco 24–30 L, abrigo 32–45 L."
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 0.635
+      }
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.0,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "size",
+      "modes": [
+        "button",
+        "card"
+      ],
+      "label": {
+        "en": "Thickness (mm)",
+        "es": "Espesor (mm)"
+      },
+      "tooltip": {
+        "en": "Body thickness of the button disc (mm). The thread dish is capped at 45% of this so the section under the holes stays printable.",
+        "es": "Espesor del disco del botón (mm). El hueco del hilo se limita al 45% de este valor para que la sección bajo los agujeros siga siendo imprimible."
+      }
+    },
+    {
+      "id": "hole_count",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 4,
+      "step": 2,
+      "group": "holes",
+      "modes": [
+        "button",
+        "card"
+      ],
+      "label": {
+        "en": "Hole count (2 or 4)",
+        "es": "Número de agujeros (2 o 4)"
+      },
+      "tooltip": {
+        "en": "Two holes sit on a line; four sit on a square. Both patterns use hole_spacing as the centre-to-centre distance.",
+        "es": "Dos agujeros van en línea; cuatro van en cuadro. Ambos patrones usan hole_spacing como distancia entre centros."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.5,
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "holes",
+      "modes": [
+        "button",
+        "card"
+      ],
+      "label": {
+        "en": "Hole diameter (mm)",
+        "es": "Diámetro del agujero (mm)"
+      },
+      "tooltip": {
+        "en": "Sew hole diameter (mm). Sized for the thread or cord passing through; automatically reduced on small buttons so the holes never break into the dish wall or each other.",
+        "es": "Diámetro del agujero de costura (mm). Dimensionado para el hilo o cordón que lo atraviesa; se reduce automáticamente en botones pequeños para que los agujeros nunca invadan la pared del hueco ni se unan entre sí."
+      }
+    },
+    {
+      "id": "hole_spacing",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "holes",
+      "modes": [
+        "button",
+        "card"
+      ],
+      "label": {
+        "en": "Hole spacing (mm)",
+        "es": "Separación entre agujeros (mm)"
+      },
+      "tooltip": {
+        "en": "Centre-to-centre distance between sew holes (mm). Clamped so the whole pattern stays well inside the thread dish on any button size.",
+        "es": "Distancia entre centros de los agujeros (mm). Se limita para que todo el patrón quede bien dentro del hueco del hilo en cualquier talla de botón."
+      }
+    },
+    {
+      "id": "dish_depth",
+      "type": "slider",
+      "default": 0.8,
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.1,
+      "group": "size",
+      "modes": [
+        "button",
+        "card"
+      ],
+      "label": {
+        "en": "Thread dish depth (mm)",
+        "es": "Profundidad del hueco del hilo (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the shallow concave face around the holes (mm), which keeps the finished stitch below the button's top plane. Set to 0 for a completely flat face.",
+        "es": "Profundidad de la cara cóncava alrededor de los agujeros (mm), que mantiene la puntada terminada por debajo del plano superior del botón. Usa 0 para una cara completamente plana."
+      }
+    },
+    {
+      "id": "card_count",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "group": "batch",
+      "modes": [
+        "card"
+      ],
+      "label": {
+        "en": "Buttons per card (count)",
+        "es": "Botones por tarjeta (cantidad)"
+      },
+      "tooltip": {
+        "en": "How many identical buttons to lay out for one print run. Up to 4 sit in a row; more are arranged in a grid with a computed gap.",
+        "es": "Cuántos botones idénticos colocar para una sola impresión. Hasta 4 van en fila; más se ordenan en cuadrícula con una separación calculada."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shirt_button",
+      "mode": "button",
+      "label": {
+        "en": "Shirt Button (18 L, 4-hole)",
+        "es": "Botón de camisa (18 L, 4 agujeros)"
+      },
+      "values": {
+        "button_ligne": 18,
+        "thickness": 2.0,
+        "hole_count": 4,
+        "hole_dia": 1.4,
+        "hole_spacing": 3.5,
+        "dish_depth": 0.6
+      }
+    },
+    {
+      "id": "coat_button",
+      "mode": "button",
+      "label": {
+        "en": "Coat Button (36 L, 2-hole)",
+        "es": "Botón de abrigo (36 L, 2 agujeros)"
+      },
+      "values": {
+        "button_ligne": 36,
+        "thickness": 4.0,
+        "hole_count": 2,
+        "hole_dia": 2.4,
+        "hole_spacing": 7.0,
+        "dish_depth": 1.2
+      }
+    },
+    {
+      "id": "shirt_card",
+      "mode": "card",
+      "label": {
+        "en": "Shirt Card (8 buttons)",
+        "es": "Tarjeta de camisa (8 botones)"
+      },
+      "values": {
+        "button_ligne": 18,
+        "thickness": 2.0,
+        "hole_count": 4,
+        "hole_dia": 1.4,
+        "hole_spacing": 3.5,
+        "dish_depth": 0.6,
+        "card_count": 8
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_face",
+        "label": {
+          "en": "Sew Face (hole pattern)",
+          "es": "Cara de costura (patrón de agujeros)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "button_ligne",
+          "hole_count",
+          "hole_dia",
+          "hole_spacing"
+        ]
+      },
+      {
+        "id": "placket_seat",
+        "label": {
+          "en": "Placket Seat (footprint on the garment)",
+          "es": "Asiento en la cartera (huella sobre la prenda)"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "button_ligne",
+          "thickness"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The sew-through button is the most-replaced part of any garment; printing one to the exact ligne keeps a shirt or coat in service instead of discarding it for a lost fastener.",
+      "es": "El botón de agujeros es la pieza que más se repone en cualquier prenda; imprimir uno en la línea exacta mantiene una camisa o un abrigo en uso en lugar de desecharlo por un cierre perdido."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "button",
+    "sew-through",
+    "notion",
+    "closure",
+    "ligne",
+    "placket",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

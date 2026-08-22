@@ -1,0 +1,259 @@
+{
+  "project": {
+    "name": "Invisible Zipper",
+    "slug": "invisible-zipper",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The concealed zipper of skirts and dresses — the closure whose coil rolls to the garment's inside so only a seam line shows on the face. Two tapes carry a coil bead along their back edge; a compact slider with a pull ring mates them. Choose the full set, a single tape for a repair length, or the slider alone. It complements the `zipper` cartridge (closed-end and separating chains) and shares its `zip_length` / `tape_width` / `tape_thick` / `gap` naming, so the same finished-opening number that drafts a skirt seam in Fashion Cabinet sizes this hardware. This is the solid the Fashion Cabinet invisible-zipper notion bridges to.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El cierre oculto de faldas y vestidos — la cremallera cuya espiral queda hacia el revés de la prenda, de modo que en la cara solo se ve la línea de costura. Dos cintas llevan un cordón de espiral en su canto posterior; un deslizador compacto con anillo de tirador las une. Elige el juego completo, una sola cinta para un tramo de reparación, o solo el deslizador. Complementa el cartucho `zipper` (cadenas de extremo cerrado y separables) y comparte su nomenclatura `zip_length` / `tape_width` / `tape_thick` / `gap`, de modo que la misma medida de abertura terminada que traza la costura de una falda en Fashion Cabinet dimensiona este herraje. Este es el sólido al que el avío de cremallera invisible de Fashion Cabinet se puentea.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/invisible-zipper.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "invisible-zipper",
+      "concealed-zipper",
+      "zipper",
+      "closure",
+      "coil",
+      "slider",
+      "skirt",
+      "dress",
+      "garment",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": { "en": "Full Set (both tapes + slider)", "es": "Juego completo (ambas cintas + deslizador)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tape_left", "tape_right", "slider"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "tape",
+      "label": { "en": "Single Tape + Coil", "es": "Cinta con espiral (una sola)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["tape_left"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "slider",
+      "label": { "en": "Slider Only", "es": "Solo deslizador" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["slider"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "tape_left",
+      "label": { "en": "Left Tape + Coil", "es": "Cinta con espiral izquierda" },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "tape_right",
+      "label": { "en": "Right Tape + Coil", "es": "Cinta con espiral derecha" },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "slider",
+      "label": { "en": "Slider + Pull Ring", "es": "Deslizador con anillo de tirador" },
+      "render_mode": 0,
+      "color": "#8a8578"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "chain", "label": { "en": "Chain", "es": "Cadena" } },
+    { "id": "tape", "label": { "en": "Tape", "es": "Cinta" } },
+    { "id": "pull", "label": { "en": "Pull", "es": "Tirador" } },
+    { "id": "fit", "label": { "en": "Print Fit", "es": "Ajuste de impresión" } }
+  ],
+  "parameters": [
+    {
+      "id": "zip_length",
+      "type": "slider",
+      "default": 200,
+      "min": 60,
+      "max": 600,
+      "step": 5,
+      "group": "chain",
+      "modes": ["set", "tape"],
+      "label": { "en": "Zipper Length (mm)", "es": "Largo de cremallera (mm)" },
+      "tooltip": {
+        "en": "Working coil length — maps from the garment opening's finished length. Same id as the `zipper` cartridge, so one Fashion Cabinet number drives both.",
+        "es": "Largo útil de la espiral — se mapea del largo terminado de la abertura de la prenda. Mismo id que el cartucho `zipper`, así una sola medida de Fashion Cabinet controla ambos."
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "tape_width",
+      "type": "slider",
+      "default": 7.0,
+      "min": 5.0,
+      "max": 15.0,
+      "step": 0.5,
+      "group": "tape",
+      "modes": ["set", "tape"],
+      "label": { "en": "Tape Width (mm)", "es": "Ancho de cinta (mm)" },
+      "tooltip": {
+        "en": "Width of one tape strip — the seam allowance stitched into the garment beside the coil.",
+        "es": "Ancho de una cinta — el margen de costura que se cose a la prenda junto a la espiral."
+      }
+    },
+    {
+      "id": "tape_thick",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "tape",
+      "modes": ["set", "tape", "slider"],
+      "label": { "en": "Tape Thickness (mm)", "es": "Grosor de cinta (mm)" },
+      "tooltip": {
+        "en": "Tape thickness. Thin tapes keep a concealed zip flat under the seam; it also sets the slider's tape channel.",
+        "es": "Grosor de la cinta. Las cintas delgadas mantienen plano un cierre oculto bajo la costura; también define el canal de cinta del deslizador."
+      }
+    },
+    {
+      "id": "coil_dia",
+      "type": "slider",
+      "default": 2.5,
+      "min": 1.5,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "chain",
+      "modes": ["set", "tape", "slider"],
+      "label": { "en": "Coil Bead Diameter (mm)", "es": "Diámetro del cordón de espiral (mm)" },
+      "tooltip": {
+        "en": "Diameter of the coil bead that rides the tape's back edge — the invisible-zip gauge. Clamped to stay thicker than the tape and no wider than 60% of it.",
+        "es": "Diámetro del cordón de espiral que corre por el canto posterior de la cinta — el calibre del cierre oculto. Se limita para superar el grosor de la cinta sin exceder el 60% de su ancho."
+      }
+    },
+    {
+      "id": "pull_length",
+      "type": "slider",
+      "default": 25,
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "group": "pull",
+      "modes": ["set", "slider"],
+      "label": { "en": "Pull Length (mm)", "es": "Largo del tirador (mm)" },
+      "tooltip": {
+        "en": "Overall length of the pull bar plus its ring, measured from the top of the slider body.",
+        "es": "Largo total de la barra del tirador más su anillo, medido desde la parte alta del deslizador."
+      }
+    },
+    {
+      "id": "gap",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "fit",
+      "modes": ["set", "tape", "slider"],
+      "label": { "en": "Print Clearance (mm)", "es": "Holgura de impresión (mm)" },
+      "tooltip": {
+        "en": "Clearance between the two closed beads and inside the slider channel — tune to your printer.",
+        "es": "Holgura entre los dos cordones cerrados y dentro del canal del deslizador — ajusta a tu impresora."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "skirt_back",
+      "mode": "set",
+      "label": { "en": "Skirt Back (22 cm)", "es": "Espalda de falda (22 cm)" },
+      "values": { "zip_length": 220, "tape_width": 6.0, "tape_thick": 1.0, "coil_dia": 2.0, "pull_length": 22, "gap": 0.3 }
+    },
+    {
+      "id": "dress_back",
+      "mode": "set",
+      "label": { "en": "Dress Back (55 cm)", "es": "Espalda de vestido (55 cm)" },
+      "values": { "zip_length": 550, "tape_width": 7.0, "tape_thick": 1.2, "coil_dia": 2.5, "pull_length": 28, "gap": 0.35 }
+    },
+    {
+      "id": "repair_slider",
+      "mode": "slider",
+      "label": { "en": "Replacement Slider", "es": "Deslizador de repuesto" },
+      "values": { "coil_dia": 2.5, "tape_thick": 1.2, "pull_length": 30, "gap": 0.3 }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [60, 60, 220]
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "tape_edge",
+        "label": { "en": "Sewn Tape Edge", "es": "Canto de cinta cosido" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["tape_width", "tape_thick", "zip_length"]
+      },
+      {
+        "id": "coil_channel",
+        "label": { "en": "Coil Channel", "es": "Canal de la espiral" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["coil_dia", "gap"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A concealed zipper is the part of a skirt or dress that fails first and is hardest to source in the right length, so the whole garment is discarded. Printing one sized to the seam it already has — or just the slider, the piece that actually wears out — keeps the dress in use and closes the loop from a Fashion Cabinet pattern to working hardware.",
+      "es": "El cierre oculto es la pieza de una falda o vestido que falla primero y es la más difícil de conseguir en el largo correcto, por lo que se desecha la prenda entera. Imprimir uno dimensionado a la costura que ya existe — o solo el deslizador, la pieza que de verdad se desgasta — mantiene el vestido en uso y cierra el ciclo del patrón de Fashion Cabinet al herraje funcional."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "invisible-zipper",
+    "concealed-zipper",
+    "zipper",
+    "closure",
+    "coil",
+    "slider",
+    "skirt",
+    "dress",
+    "garment",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

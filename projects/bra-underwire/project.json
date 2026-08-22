@@ -1,0 +1,377 @@
+{
+  "project": {
+    "name": "Bra Underwire + Tip Cap",
+    "slug": "bra-underwire",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed underwire arc and the pair of tip caps that protect its ends — the rigid hard good the Fashion Cabinet `bra-underwire` notion places and bridges to here for its geometry. The arc shapes and supports a wired cup; the caps stop the wire working through the channel. Sized so a garment's finished cup width drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un arco de varilla impreso en 3D con el par de topes que protegen sus puntas — el herraje rígido que el avío `bra-underwire` de Fashion Cabinet coloca y al que se puentea aquí. El arco da forma y sostén a la copa con varilla; los topes evitan que la varilla perfore el túnel. Dimensionado para que el ancho terminado de copa determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bra-underwire.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bra-underwire",
+      "underwire",
+      "bra",
+      "lingerie",
+      "underwear",
+      "support",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Wire + Two Tip Caps",
+        "es": "Varilla y dos topes"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "wire",
+      "label": {
+        "en": "Underwire Arc",
+        "es": "Arco de varilla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "wire"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "tip_cap",
+      "label": {
+        "en": "Tip Cap",
+        "es": "Tope de punta"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tip_cap"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Wire + Two Tip Caps",
+        "es": "Varilla y dos topes"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "wire",
+      "label": {
+        "en": "Underwire Arc",
+        "es": "Arco de varilla"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "tip_cap",
+      "label": {
+        "en": "Tip Cap",
+        "es": "Tope de punta"
+      },
+      "render_mode": 0,
+      "color": "#9a927f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "wire",
+      "label": {
+        "en": "Wire",
+        "es": "Varilla"
+      }
+    },
+    {
+      "id": "cap",
+      "label": {
+        "en": "Tip Cap",
+        "es": "Tope de punta"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cup_width",
+      "type": "slider",
+      "default": 120.0,
+      "min": 80.0,
+      "max": 160.0,
+      "step": 2.0,
+      "group": "wire",
+      "modes": [
+        "set",
+        "wire"
+      ],
+      "label": {
+        "en": "Cup width / wire span (mm)",
+        "es": "Ancho de copa / luz de la varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Straight-line span between the wire ends (mm) — the arc diameter. Driven by the finished cup width.",
+        "es": "Distancia en línea recta entre las puntas de la varilla (mm) — el diámetro del arco. La determina el ancho terminado de la copa."
+      }
+    },
+    {
+      "id": "wire_d",
+      "type": "slider",
+      "default": 2.5,
+      "min": 1.5,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "wire",
+      "modes": [
+        "set",
+        "wire",
+        "tip_cap"
+      ],
+      "label": {
+        "en": "Wire diameter (mm)",
+        "es": "Diámetro de la varilla (mm)"
+      },
+      "tooltip": {
+        "en": "Round section diameter of the wire (mm). Also sets the tip cap bore, so both parts stay a matched pair.",
+        "es": "Diámetro de la sección redonda de la varilla (mm). También define el barreno del tope, para que ambas piezas casen."
+      }
+    },
+    {
+      "id": "sweep_deg",
+      "type": "slider",
+      "default": 180.0,
+      "min": 150.0,
+      "max": 210.0,
+      "step": 5.0,
+      "group": "wire",
+      "modes": [
+        "set",
+        "wire"
+      ],
+      "label": {
+        "en": "Arc sweep (degrees)",
+        "es": "Barrido del arco (grados)"
+      },
+      "tooltip": {
+        "en": "Angular span of the arc in degrees. Under 180 gives a shallow open wire; over 180 wraps further under the cup.",
+        "es": "Amplitud angular del arco en grados. Menos de 180 da una varilla abierta y baja; más de 180 abraza más bajo la copa."
+      }
+    },
+    {
+      "id": "cap_len",
+      "type": "slider",
+      "default": 8.0,
+      "min": 5.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "cap",
+      "modes": [
+        "set",
+        "tip_cap"
+      ],
+      "label": {
+        "en": "Tip cap length (mm)",
+        "es": "Largo del tope (mm)"
+      },
+      "tooltip": {
+        "en": "Overall length of the tip cap (mm). Longer caps spread the end load over more of the channel.",
+        "es": "Largo total del tope (mm). Un tope más largo reparte la carga de la punta sobre más túnel."
+      }
+    },
+    {
+      "id": "cap_wall",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "group": "cap",
+      "modes": [
+        "set",
+        "tip_cap"
+      ],
+      "label": {
+        "en": "Tip cap wall (mm)",
+        "es": "Pared del tope (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the tip cap (mm), including the rounded closed end.",
+        "es": "Espesor de pared del tope (mm), incluida la punta cerrada redondeada."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "cup_width": 120.0,
+        "wire_d": 2.5,
+        "sweep_deg": 180.0
+      }
+    },
+    {
+      "id": "narrow_cup",
+      "mode": "wire",
+      "label": {
+        "en": "Narrow Cup",
+        "es": "Copa angosta"
+      },
+      "values": {
+        "cup_width": 92.0,
+        "wire_d": 2.0,
+        "sweep_deg": 165.0
+      }
+    },
+    {
+      "id": "full_cup",
+      "mode": "wire",
+      "label": {
+        "en": "Full Cup",
+        "es": "Copa completa"
+      },
+      "values": {
+        "cup_width": 148.0,
+        "wire_d": 3.0,
+        "sweep_deg": 200.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "channel_fit",
+        "label": {
+          "en": "Channel Fit (sewn wire casing)",
+          "es": "Ajuste al túnel (canal cosido de la varilla)"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "wire_d",
+          "cup_width"
+        ]
+      },
+      {
+        "id": "tip_bore",
+        "label": {
+          "en": "Tip Bore (cap over wire end)",
+          "es": "Barreno del tope (sobre la punta de la varilla)"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "wire_d",
+          "cap_len"
+        ]
+      },
+      {
+        "id": "cradle_seam",
+        "label": {
+          "en": "Cradle Seam Flange (sewn set edge)",
+          "es": "Pestaña de la costura del marco (borde de montaje cosido)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "cup_width",
+          "sweep_deg",
+          "wire_d"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Underwires are sold only in fixed retail sizes, so a bra that fits nowhere else is unfixable; a printable arc and tip caps let anyone make a wire to their own cup width and repair a poked-through bra instead of discarding it.",
+      "es": "Las varillas se venden solo en tallas comerciales fijas, así que un sostén que no calza en ninguna talla no tiene arreglo; un arco y unos topes imprimibles permiten hacer la varilla al ancho de copa propio y reparar un sostén perforado en vez de desecharlo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bra-underwire",
+    "underwire",
+    "bra",
+    "lingerie",
+    "underwear",
+    "support",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

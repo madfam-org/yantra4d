@@ -1,0 +1,249 @@
+{
+  "project": {
+    "name": "Trouser Hook & Bar",
+    "slug": "trouser-hook-bar",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The heavy waistband closure of tailored trousers, pencil skirts and culottes, made printable: a flat hook plate whose tongue folds back on itself, and a flat bar plate carrying a raised bridge the tongue drops behind. Wider and stiffer than a bra-weight hook-and-eye, it is sewn flat inside a waistband so the closure carries load without showing through. This is the rigid hard good the Fashion Cabinet waistband notions place and bridge to here for their geometry — sized so a garment's finished waistband dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El cierre pesado de pretina de pantalones de sastre, faldas de tubo y culotes, vuelto imprimible: una placa de gancho cuya lengüeta se dobla sobre sí misma, y una placa de barra con un puente elevado detrás del cual cae la lengüeta. Más ancho y más rígido que un corchete de brasier, se cose plano dentro de la pretina para que el cierre soporte carga sin marcarse. Este es el herraje rígido que los avíos de pretina de Fashion Cabinet colocan y al que se puentean aquí — dimensionado para que la medida terminada de la pretina determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/trouser-hook-bar.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "trouser-hook",
+      "hook-and-bar",
+      "waistband",
+      "trousers",
+      "skirt",
+      "closure",
+      "fastener",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": { "en": "Hook & Bar Set", "es": "Juego de gancho y barra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_plate", "bar_plate"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "hook",
+      "label": { "en": "Hook Plate", "es": "Placa de gancho" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_plate"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "bar",
+      "label": { "en": "Bar Plate", "es": "Placa de barra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bar_plate"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "hook_plate",
+      "label": { "en": "Hook Plate", "es": "Placa de gancho" },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "bar_plate",
+      "label": { "en": "Bar Plate", "es": "Placa de barra" },
+      "render_mode": 0,
+      "color": "#a09880"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa" } },
+    { "id": "closure", "label": { "en": "Closure", "es": "Cierre" } },
+    { "id": "fit", "label": { "en": "Print Fit", "es": "Ajuste de impresión" } }
+  ],
+  "parameters": [
+    {
+      "id": "hook_width",
+      "type": "slider",
+      "default": 10.0,
+      "min": 6.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": ["set", "hook", "bar"],
+      "label": { "en": "Hook Width (mm)", "es": "Ancho del gancho (mm)" },
+      "tooltip": {
+        "en": "Plate width across the waistband; keep it under the finished waistband height (mm)",
+        "es": "Ancho de la placa a lo ancho de la pretina; manténlo menor que el alto terminado de la pretina (mm)"
+      }
+    },
+    {
+      "id": "plate_len",
+      "type": "slider",
+      "default": 14.0,
+      "min": 8.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": ["set", "hook", "bar"],
+      "label": { "en": "Plate Length (mm)", "es": "Largo de la placa (mm)" },
+      "tooltip": {
+        "en": "Plate length along the waistband, sewing end to catch end (mm)",
+        "es": "Largo de la placa a lo largo de la pretina, del extremo de costura al de enganche (mm)"
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.2,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": ["set", "hook", "bar"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Grosor de la placa (mm)" },
+      "tooltip": {
+        "en": "Sewing plate thickness; thicker resists a heavy waistband but shows through more (mm)",
+        "es": "Grosor de la placa de costura; más grueso resiste una pretina pesada pero se marca más (mm)"
+      }
+    },
+    {
+      "id": "wire_d",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "closure",
+      "modes": ["set", "hook", "bar"],
+      "label": { "en": "Wire Diameter (mm)", "es": "Diámetro del alambre (mm)" },
+      "tooltip": {
+        "en": "Stock diameter of the folded tongue and the crossbar it catches on (mm)",
+        "es": "Diámetro del material de la lengüeta doblada y de la barra que engancha (mm)"
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "group": "plate",
+      "modes": ["set", "hook", "bar"],
+      "label": { "en": "Sew Holes", "es": "Ojales de costura" },
+      "tooltip": {
+        "en": "Stitch holes in the row along each plate; reduced automatically if they would not fit",
+        "es": "Ojales de puntada en la fila de cada placa; se reducen automáticamente si no caben"
+      }
+    },
+    {
+      "id": "gap",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.2,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "fit",
+      "modes": ["set", "hook", "bar"],
+      "label": { "en": "Print Clearance (mm)", "es": "Holgura de impresión (mm)" },
+      "tooltip": {
+        "en": "Hook-to-bar clearance; the hook mouth opens to wire diameter plus this value (mm)",
+        "es": "Holgura gancho-barra; la boca del gancho abre al diámetro del alambre más este valor (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "suit_trouser",
+      "mode": "set",
+      "label": { "en": "Suit Trouser Waistband", "es": "Pretina de pantalón de vestir" },
+      "values": { "hook_width": 10.0, "plate_len": 14.0, "plate_t": 1.6, "wire_d": 1.6, "sew_holes": 4, "gap": 0.35 }
+    },
+    {
+      "id": "pencil_skirt",
+      "mode": "set",
+      "label": { "en": "Pencil Skirt (slim band)", "es": "Falda de tubo (pretina angosta)" },
+      "values": { "hook_width": 7.5, "plate_len": 11.0, "plate_t": 1.4, "wire_d": 1.3, "sew_holes": 3, "gap": 0.3 }
+    },
+    {
+      "id": "heavy_culotte",
+      "mode": "set",
+      "label": { "en": "Heavy Culottes (wide band)", "es": "Culotes pesados (pretina ancha)" },
+      "values": { "hook_width": 16.0, "plate_len": 20.0, "plate_t": 2.4, "wire_d": 2.4, "sew_holes": 6, "gap": 0.45 }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [40, 40, 40]
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_plate",
+        "label": { "en": "Sewing Plate", "es": "Placa de costura" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["hook_width", "plate_t", "sew_holes"]
+      },
+      {
+        "id": "hook_catch",
+        "label": { "en": "Hook / Bar Catch", "es": "Enganche gancho / barra" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["wire_d", "gap"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A failed waistband hook retires an otherwise sound pair of trousers or a skirt, and off-the-shelf hooks come in one or two sizes that rarely match the band. Printing the closure to the band's own dimensions repairs the garment and lets a waist be let out or taken in without replacing the whole waistband.",
+      "es": "Un gancho de pretina roto retira del uso un pantalón o una falda que por lo demás están sanos, y los ganchos comerciales vienen en una o dos medidas que rara vez coinciden con la pretina. Imprimir el cierre a las medidas de la propia pretina repara la prenda y permite ensanchar o angostar la cintura sin reemplazar toda la pretina."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "trouser-hook",
+    "hook-and-bar",
+    "waistband",
+    "trousers",
+    "skirt",
+    "closure",
+    "fastener",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

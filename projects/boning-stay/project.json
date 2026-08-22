@@ -1,0 +1,239 @@
+{
+  "project": {
+    "name": "Boning Stay and Channel",
+    "slug": "boning-stay",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The boning of corsetry and structured garments — a flat flexible stay that holds a seam line straight, together with the sew-in channel casing that carries it. This is the rigid hard good the Fashion Cabinet `boning` notion places and bridges to here for its geometry. Printed in a springy filament a thin stay flexes around the body while resisting buckling edge-on, exactly as spiral steel or synthetic whalebone does. Sized by stay length so a garment's finished seam drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El ballenado de la corsetería y de las prendas estructuradas — una varilla plana y flexible que mantiene recta una línea de costura, junto con el canal de tela que la aloja. Es el herraje rígido que el avío `boning` de Fashion Cabinet coloca y al que se puentea aquí para su geometría. Impresa en un filamento elástico, una varilla delgada se flexiona alrededor del cuerpo pero resiste el pandeo de canto, igual que el acero espiral o la ballena sintética. Dimensionada por su largo para que la costura terminada de la prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/boning-stay.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "boning",
+      "stay",
+      "channel",
+      "casing",
+      "corsetry",
+      "structure",
+      "hardware",
+      "am-fashion",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": { "en": "Stay and Channel", "es": "Varilla y canal" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["set"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "stay",
+      "label": { "en": "Stay only", "es": "Solo varilla" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stay"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    },
+    {
+      "id": "channel",
+      "label": { "en": "Channel only", "es": "Solo canal" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["channel"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "set", "label": { "en": "Stay and Channel", "es": "Varilla y canal" }, "render_mode": 0, "color": "#b0a890" },
+    { "id": "stay", "label": { "en": "Stay", "es": "Varilla" }, "render_mode": 0, "color": "#b0a890" },
+    { "id": "channel", "label": { "en": "Channel", "es": "Canal" }, "render_mode": 0, "color": "#a89c84" }
+  ],
+  "parameter_groups": [
+    { "id": "stay", "label": { "en": "Stay", "es": "Varilla" } },
+    { "id": "channel", "label": { "en": "Channel", "es": "Canal" } }
+  ],
+  "parameters": [
+    {
+      "id": "stay_length",
+      "type": "slider",
+      "default": 150.0,
+      "min": 40.0,
+      "max": 400.0,
+      "step": 5.0,
+      "group": "stay",
+      "modes": ["set", "stay", "channel"],
+      "label": { "en": "Stay length (mm)", "es": "Largo de la varilla (mm)" },
+      "tooltip": {
+        "en": "Length along the seam; the channel is cut to match",
+        "es": "Largo a lo largo de la costura; el canal se corta igual"
+      }
+    },
+    {
+      "id": "stay_width",
+      "type": "slider",
+      "default": 7.0,
+      "min": 4.0,
+      "max": 15.0,
+      "step": 0.5,
+      "group": "stay",
+      "modes": ["set", "stay", "channel"],
+      "label": { "en": "Stay width (mm)", "es": "Ancho de la varilla (mm)" },
+      "tooltip": {
+        "en": "Flat face width; wider resists buckling edge-on",
+        "es": "Ancho de la cara plana; más ancho resiste el pandeo de canto"
+      }
+    },
+    {
+      "id": "stay_t",
+      "type": "slider",
+      "default": 1.5,
+      "min": 0.8,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "stay",
+      "modes": ["set", "stay", "channel"],
+      "label": { "en": "Stay thickness (mm)", "es": "Espesor de la varilla (mm)" },
+      "tooltip": {
+        "en": "Thinner flexes more around the body",
+        "es": "Más delgada se flexiona más alrededor del cuerpo"
+      }
+    },
+    {
+      "id": "tip_r",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.5,
+      "max": 7.0,
+      "step": 0.5,
+      "group": "stay",
+      "modes": ["set", "stay"],
+      "label": { "en": "Tip radius (mm)", "es": "Radio de la punta (mm)" },
+      "tooltip": {
+        "en": "Rounded tips so the stay never cuts the casing; clamped to half the stay width",
+        "es": "Puntas redondeadas para que la varilla no corte el canal; limitado a la mitad del ancho"
+      }
+    },
+    {
+      "id": "channel_wall",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "channel",
+      "modes": ["set", "channel"],
+      "label": { "en": "Channel wall (mm)", "es": "Pared del canal (mm)" },
+      "tooltip": {
+        "en": "Casing wall thickness; also sets the sew flange thickness",
+        "es": "Espesor de la pared del canal; define también el espesor de la pestaña de costura"
+      }
+    },
+    {
+      "id": "channel_clear",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.2,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "channel",
+      "modes": ["set", "channel"],
+      "label": { "en": "Channel clearance (mm)", "es": "Holgura del canal (mm)" },
+      "tooltip": {
+        "en": "Slip fit per side between the stay and the slot",
+        "es": "Holgura por lado entre la varilla y la ranura"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "corset_panel",
+      "mode": "set",
+      "label": { "en": "Corset panel (150 mm)", "es": "Panel de corsé (150 mm)" },
+      "values": { "stay_length": 150.0, "stay_width": 7.0, "stay_t": 1.5 }
+    },
+    {
+      "id": "long_line",
+      "mode": "set",
+      "label": { "en": "Long-line bodice (300 mm)", "es": "Cuerpo de línea larga (300 mm)" },
+      "values": { "stay_length": 300.0, "stay_width": 10.0, "stay_t": 2.0 }
+    },
+    {
+      "id": "collar_band",
+      "mode": "stay",
+      "label": { "en": "Collar band (60 mm)", "es": "Tira de cuello (60 mm)" },
+      "values": { "stay_length": 60.0, "stay_width": 5.0, "stay_t": 1.0 }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [60, 160, 90]
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "channel_slot",
+        "label": { "en": "Channel Slot (stay socket)", "es": "Ranura del canal (alojamiento de la varilla)" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["stay_width", "stay_t", "channel_clear"]
+      },
+      {
+        "id": "sew_face",
+        "label": { "en": "Sew Flange (stitched edge)", "es": "Pestaña de costura (canto cosido)" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["stay_length", "channel_wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Boning is sold by the roll in fixed widths, so a maker cuts and tips every length by hand and buys casing tape they may never use again; printing the stay and its channel together makes structured and adaptive garments buildable at home, at any length, from recycled filament.",
+      "es": "El ballenado se vende en rollo con anchos fijos, así que quien confecciona corta y remata cada tramo a mano y compra cinta de canal que quizá nunca vuelva a usar; imprimir la varilla y su canal juntos permite construir prendas estructuradas y adaptativas en casa, a cualquier largo y con filamento reciclado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "boning",
+    "stay",
+    "channel",
+    "casing",
+    "corsetry",
+    "structure",
+    "hardware",
+    "am-fashion",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

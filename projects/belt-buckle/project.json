@@ -1,0 +1,429 @@
+{
+  "project": {
+    "name": "Belt Buckle",
+    "slug": "belt-buckle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed center-bar belt buckle — the rounded frame, its center bar, and the prong that curls around that bar and drops into a punched belt hole. This is the rigid hard good the Fashion Cabinet `belt-buckle` notion places and bridges to here for its geometry, for kilts, belted coats and waistcoat cinches. Sized so a garment's finished strap width drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una hebilla de barra central impresa en 3D — el marco redondeado, su barra central y la espiga que se enrosca en esa barra y entra en el ojal del cinturón. Es el herraje rígido que el avío `belt-buckle` de Fashion Cabinet coloca y al que se puentea aquí, para kilts, abrigos con cinto y ajustes de chaleco. Dimensionada para que el ancho terminado de la correa determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/belt-buckle.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "belt-buckle",
+      "belt",
+      "buckle",
+      "prong",
+      "center-bar",
+      "strap",
+      "closure",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Frame + Prong",
+        "es": "Marco y espiga"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame Only",
+        "es": "Solo el marco"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "frame"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "prong",
+      "label": {
+        "en": "Prong Only",
+        "es": "Solo la espiga"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "prong"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Frame + Prong",
+        "es": "Marco y espiga"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame",
+        "es": "Marco"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "prong",
+      "label": {
+        "en": "Prong",
+        "es": "Espiga"
+      },
+      "render_mode": 0,
+      "color": "#9c9482"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "strap",
+      "label": {
+        "en": "Strap",
+        "es": "Correa"
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame",
+        "es": "Marco"
+      }
+    },
+    {
+      "id": "prong",
+      "label": {
+        "en": "Prong",
+        "es": "Espiga"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strap_width",
+      "type": "slider",
+      "default": 32.0,
+      "min": 15.0,
+      "max": 50.0,
+      "step": 1.0,
+      "group": "strap",
+      "modes": [
+        "set",
+        "frame",
+        "prong"
+      ],
+      "label": {
+        "en": "Strap width (mm)",
+        "es": "Ancho de la correa (mm)"
+      },
+      "tooltip": {
+        "en": "Finished belt or strap width (mm). The frame interior is cut to this plus a pass-through allowance.",
+        "es": "Ancho terminado del cinturón o correa (mm). El interior del marco se corta a esta medida más la holgura de paso."
+      }
+    },
+    {
+      "id": "frame_t",
+      "type": "slider",
+      "default": 3.5,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "set",
+        "frame"
+      ],
+      "label": {
+        "en": "Frame rod thickness (mm)",
+        "es": "Grosor de la varilla del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the frame rod section (mm). Thicker reads as heavier hardware and prints stronger.",
+        "es": "Grosor de la sección de la varilla del marco (mm). Más grueso da un herraje más robusto y se imprime más resistente."
+      }
+    },
+    {
+      "id": "bar_dia",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "set",
+        "frame",
+        "prong"
+      ],
+      "label": {
+        "en": "Center bar diameter (mm)",
+        "es": "Diámetro de la barra central (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the center bar the prong curls around (mm). The prong curl is sized to this plus running clearance.",
+        "es": "Diámetro de la barra central sobre la que se enrosca la espiga (mm). La curva de la espiga se dimensiona a esta medida más la holgura de giro."
+      }
+    },
+    {
+      "id": "prong_d",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "prong",
+      "modes": [
+        "set",
+        "prong"
+      ],
+      "label": {
+        "en": "Prong shaft diameter (mm)",
+        "es": "Diámetro del vástago de la espiga (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the prong shaft (mm). Must be smaller than the punched belt hole it drops into.",
+        "es": "Diámetro del vástago de la espiga (mm). Debe ser menor que el ojal perforado del cinturón donde entra."
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": [
+        "set",
+        "frame"
+      ],
+      "label": {
+        "en": "Frame corner radius (mm)",
+        "es": "Radio de esquina del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Corner radius of the frame opening (mm). Clamped to a third of the strap width so the opening never closes up.",
+        "es": "Radio de las esquinas de la abertura del marco (mm). Se limita a un tercio del ancho de la correa para que la abertura nunca se cierre."
+      }
+    },
+    {
+      "id": "roller",
+      "type": "checkbox",
+      "default": false,
+      "min": 0,
+      "max": 1,
+      "step": 1,
+      "group": "frame",
+      "modes": [
+        "set",
+        "frame"
+      ],
+      "label": {
+        "en": "Roller sleeve on outer bar",
+        "es": "Manguito rodillo en la barra exterior"
+      },
+      "tooltip": {
+        "en": "Replace the outer frame side with a fatter smooth sleeve that eases strap wear. The sleeve is fused, not free-spinning — a loose roller cannot print as one watertight solid.",
+        "es": "Sustituye el lado exterior del marco por un manguito liso más grueso que reduce el desgaste de la correa. El manguito va fundido, no gira libre — un rodillo suelto no se imprime como un solo sólido estanco."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default (32 mm belt)",
+        "es": "Predeterminado (cinturón de 32 mm)"
+      },
+      "values": {
+        "strap_width": 32.0,
+        "frame_t": 3.5,
+        "bar_dia": 3.0,
+        "prong_d": 3.0
+      }
+    },
+    {
+      "id": "kilt",
+      "mode": "set",
+      "label": {
+        "en": "Kilt Strap (50 mm)",
+        "es": "Correa de kilt (50 mm)"
+      },
+      "values": {
+        "strap_width": 50.0,
+        "frame_t": 5.0,
+        "bar_dia": 4.5,
+        "prong_d": 4.0,
+        "corner_r": 6.0
+      }
+    },
+    {
+      "id": "waistcoat",
+      "mode": "set",
+      "label": {
+        "en": "Waistcoat Cinch (18 mm)",
+        "es": "Ajuste de chaleco (18 mm)"
+      },
+      "values": {
+        "strap_width": 18.0,
+        "frame_t": 2.4,
+        "bar_dia": 2.4,
+        "prong_d": 2.2,
+        "corner_r": 2.0
+      }
+    },
+    {
+      "id": "roller_coat",
+      "mode": "frame",
+      "label": {
+        "en": "Roller Frame (belted coat)",
+        "es": "Marco con rodillo (abrigo con cinto)"
+      },
+      "values": {
+        "strap_width": 40.0,
+        "frame_t": 4.0,
+        "bar_dia": 3.5,
+        "roller": true
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "strap_slot",
+        "label": {
+          "en": "Strap Slot (frame opening)",
+          "es": "Ranura de la correa (abertura del marco)"
+        },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": [
+          "strap_width",
+          "frame_t"
+        ]
+      },
+      {
+        "id": "prong_seat",
+        "label": {
+          "en": "Prong Seat (curl on center bar)",
+          "es": "Asiento de la espiga (curva sobre la barra central)"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "prong_d",
+          "bar_dia"
+        ]
+      },
+      {
+        "id": "strap_anchor_flange",
+        "label": {
+          "en": "Strap Anchor Flange (bar the strap end folds over)",
+          "es": "Brida de anclaje de la correa (barra sobre la que se dobla el extremo)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "strap_width",
+          "bar_dia",
+          "frame_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable center-bar buckle lets a worn belt, kilt strap or coat cinch be repaired to its own measured width instead of discarding the garment over one broken piece of hardware.",
+      "es": "Una hebilla de barra central imprimible permite reparar un cinturón gastado, una correa de kilt o el cinto de un abrigo al ancho exacto medido, en vez de desechar la prenda por un solo herraje roto."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "belt-buckle",
+    "belt",
+    "buckle",
+    "prong",
+    "center-bar",
+    "strap",
+    "closure",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

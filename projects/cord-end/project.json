@@ -1,0 +1,398 @@
+{
+  "project": {
+    "name": "Cord End (Aglet & Bell Tip)",
+    "slug": "cord-end",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The tip that finishes a drawcord — a straight aglet like a shoelace point, or a flared bell tip for hoodie and waistband strings. It crimps onto the cord end so the braid cannot fray or vanish back into its channel, and it feeds the cord through eyelets. The Fashion Cabinet `cord-end` notion places the tip on a garment and bridges here for the solid; the companion `cord-lock` cartridge owns the stop function.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La punta que remata un cordón — un herrete recto como el de una agujeta, o una punta acampanada para cordones de sudadera y pretina. Se prensa sobre el extremo del cordón para que la trenza no se deshilache ni se pierda dentro de su canal, y facilita pasar el cordón por los ojales. El avío `cord-end` de Fashion Cabinet coloca la punta en la prenda y se puentea aquí para el sólido; el cartucho hermano `cord-lock` se encarga del tope.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cord-end.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "cord-end",
+      "aglet",
+      "bell-tip",
+      "drawcord",
+      "drawstring",
+      "hoodie",
+      "trim",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Tips",
+        "es": "Ambas puntas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "aglet",
+      "label": {
+        "en": "Aglet (straight tip)",
+        "es": "Herrete (punta recta)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "aglet"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "bell",
+      "label": {
+        "en": "Bell Tip (flared)",
+        "es": "Punta acampanada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bell"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Tips",
+        "es": "Ambas puntas"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "aglet",
+      "label": {
+        "en": "Aglet",
+        "es": "Herrete"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "bell",
+      "label": {
+        "en": "Bell Tip",
+        "es": "Punta acampanada"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "cord",
+      "label": {
+        "en": "Cord",
+        "es": "Cordón"
+      }
+    },
+    {
+      "id": "tip",
+      "label": {
+        "en": "Tip",
+        "es": "Punta"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cord_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "cord",
+      "modes": [
+        "set",
+        "aglet",
+        "bell"
+      ],
+      "label": {
+        "en": "Cord diameter (mm)",
+        "es": "Diámetro del cordón (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the drawcord the tip crimps onto (mm)",
+        "es": "Diámetro del cordón sobre el que se prensa la punta (mm)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 1.5,
+      "min": 0.8,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "cord",
+      "modes": [
+        "set",
+        "aglet",
+        "bell"
+      ],
+      "label": {
+        "en": "Wall thickness (mm)",
+        "es": "Grosor de pared (mm)"
+      },
+      "tooltip": {
+        "en": "Sleeve wall around the cord bore; also the solid thickness of the closed tip (mm)",
+        "es": "Pared del casquillo alrededor del taladro del cordón; también el espesor macizo de la punta cerrada (mm)"
+      }
+    },
+    {
+      "id": "tip_length",
+      "type": "slider",
+      "default": 15.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 1.0,
+      "group": "tip",
+      "modes": [
+        "set",
+        "aglet",
+        "bell"
+      ],
+      "label": {
+        "en": "Tip length (mm)",
+        "es": "Largo de la punta (mm)"
+      },
+      "tooltip": {
+        "en": "Overall length of the tip from open mouth to closed end (mm)",
+        "es": "Largo total de la punta, de la boca abierta al extremo cerrado (mm)"
+      }
+    },
+    {
+      "id": "bell_flare",
+      "type": "slider",
+      "default": 1.4,
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.05,
+      "group": "tip",
+      "modes": [
+        "set",
+        "bell"
+      ],
+      "label": {
+        "en": "Bell flare (mouth multiplier, mm/mm)",
+        "es": "Acampanado (multiplicador de boca, mm/mm)"
+      },
+      "tooltip": {
+        "en": "Mouth diameter as a multiple of the sleeve outer diameter; 1.0 is a straight sleeve",
+        "es": "Diámetro de la boca como múltiplo del diámetro exterior del casquillo; 1.0 es un casquillo recto"
+      }
+    },
+    {
+      "id": "lanyard_hole",
+      "type": "checkbox",
+      "default": false,
+      "group": "tip",
+      "modes": [
+        "set",
+        "aglet",
+        "bell"
+      ],
+      "label": {
+        "en": "Lanyard hole",
+        "es": "Ojal para cordel"
+      },
+      "tooltip": {
+        "en": "Cut a small cross-hole near the closed tip for a lanyard, charm, or zipper pull",
+        "es": "Corta un pequeño orificio transversal cerca del extremo cerrado para un cordel, dije o tirador"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "hoodie_bell",
+      "mode": "bell",
+      "label": {
+        "en": "Hoodie Bell Tip (4 mm cord)",
+        "es": "Punta acampanada de sudadera (cordón 4 mm)"
+      },
+      "values": {
+        "cord_dia": 4.0,
+        "wall": 1.5,
+        "tip_length": 15.0,
+        "bell_flare": 1.4,
+        "lanyard_hole": false
+      }
+    },
+    {
+      "id": "shoelace_aglet",
+      "mode": "aglet",
+      "label": {
+        "en": "Shoelace Aglet (2.5 mm cord)",
+        "es": "Herrete de agujeta (cordón 2.5 mm)"
+      },
+      "values": {
+        "cord_dia": 2.5,
+        "wall": 0.8,
+        "tip_length": 18.0,
+        "lanyard_hole": false
+      }
+    },
+    {
+      "id": "anorak_pair",
+      "mode": "set",
+      "label": {
+        "en": "Anorak Pair with Lanyard Hole (6 mm cord)",
+        "es": "Par para anorak con ojal (cordón 6 mm)"
+      },
+      "values": {
+        "cord_dia": 6.0,
+        "wall": 2.0,
+        "tip_length": 22.0,
+        "bell_flare": 1.6,
+        "lanyard_hole": true
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "cord_bore",
+        "label": {
+          "en": "Cord Bore",
+          "es": "Taladro del cordón"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "cord_dia",
+          "wall"
+        ]
+      },
+      {
+        "id": "tip_profile",
+        "label": {
+          "en": "Tip Profile",
+          "es": "Perfil de la punta"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "tip_length",
+          "bell_flare"
+        ]
+      },
+      {
+        "id": "cord_mouth",
+        "label": {
+          "en": "Cord Mouth (crimped edge)",
+          "es": "Boca del cordón (borde prensado)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "cord_dia",
+          "wall",
+          "bell_flare"
+        ]
+      },
+      {
+        "id": "lanyard_eye",
+        "label": {
+          "en": "Lanyard Eye",
+          "es": "Ojal del cordel"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "lanyard_hole",
+          "cord_dia",
+          "tip_length"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A lost cord tip lets a drawstring fray and disappear into its channel, retiring an otherwise sound garment — a printable aglet sized to any cord keeps hoodies, anoraks, and shoes in service.",
+      "es": "Una punta de cordón perdida deja que el cordón se deshilache y se pierda dentro de su canal, retirando una prenda que aún sirve — un herrete imprimible dimensionado a cualquier cordón mantiene sudaderas, anoraks y zapatos en uso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "cord-end",
+    "aglet",
+    "bell-tip",
+    "drawcord",
+    "drawstring",
+    "hoodie",
+    "trim",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,438 @@
+{
+  "project": {
+    "name": "Hook-and-Loop Tape",
+    "slug": "hook-loop-tape",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A printable analogue of hook-and-loop tape: two mating strips that peel apart and re-close. The hook strip carries a field of mushroom-headed pins; the loop strip carries a waffle grid of thin walls whose cells those heads snag on. This is the rigid hard good the Fashion Cabinet `hook-loop-tape` hardware reference bridges to — a garment's finished closure overlap drives the strip, and the garment keeps the placement math.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un análogo imprimible de la cinta de gancho y bucle (velcro): dos tiras que se despegan y vuelven a cerrar. La tira de ganchos lleva un campo de pines con cabeza de hongo; la tira de bucles lleva una retícula de paredes delgadas en cuyas celdas se enganchan esas cabezas. Este es el herraje rígido al que se puentea el avío `hook-loop-tape` de Fashion Cabinet — el traslape terminado de la prenda determina la tira, y la prenda conserva el cálculo de colocación.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hook-loop-tape.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "hook-loop-tape",
+      "velcro",
+      "hook-and-loop",
+      "closure",
+      "fastener",
+      "tape",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Strips",
+        "es": "Ambas tiras"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "hook_strip",
+      "label": {
+        "en": "Hook Strip",
+        "es": "Tira de ganchos"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "hook_strip"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "loop_strip",
+      "label": {
+        "en": "Loop Strip",
+        "es": "Tira de bucles"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "loop_strip"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Strips",
+        "es": "Ambas tiras"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "hook_strip",
+      "label": {
+        "en": "Hook Strip",
+        "es": "Tira de ganchos"
+      },
+      "render_mode": 0,
+      "color": "#a89880"
+    },
+    {
+      "id": "loop_strip",
+      "label": {
+        "en": "Loop Strip",
+        "es": "Tira de bucles"
+      },
+      "render_mode": 0,
+      "color": "#c0b8a4"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "strip",
+      "label": {
+        "en": "Strip",
+        "es": "Tira"
+      }
+    },
+    {
+      "id": "engagement",
+      "label": {
+        "en": "Engagement",
+        "es": "Enganche"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strip_length",
+      "type": "slider",
+      "default": 50.0,
+      "min": 20.0,
+      "max": 120.0,
+      "step": 5.0,
+      "group": "strip",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Strip length (mm)",
+        "es": "Largo de la tira (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the tape strip along the closure run (mm).",
+        "es": "Largo de la tira de cinta a lo largo del cierre (mm)."
+      }
+    },
+    {
+      "id": "strip_width",
+      "type": "slider",
+      "default": 20.0,
+      "min": 10.0,
+      "max": 50.0,
+      "step": 1.0,
+      "group": "strip",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Strip width (mm)",
+        "es": "Ancho de la tira (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the tape strip across the closure — usually the garment's finished overlap (mm).",
+        "es": "Ancho de la tira a través del cierre — normalmente el traslape terminado de la prenda (mm)."
+      }
+    },
+    {
+      "id": "base_t",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "group": "strip",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Base thickness (mm)",
+        "es": "Espesor de la base (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flat sewable base plate under the engaging field (mm).",
+        "es": "Espesor de la placa base plana y cosible bajo el campo de enganche (mm)."
+      }
+    },
+    {
+      "id": "sew_margin",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "strip",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Sew margin (mm)",
+        "es": "Margen de costura (mm)"
+      },
+      "tooltip": {
+        "en": "Plain border left free of pins or walls so the strip can be stitched down (mm).",
+        "es": "Borde liso sin pines ni paredes para poder pespuntear la tira (mm)."
+      }
+    },
+    {
+      "id": "pin_pitch",
+      "type": "slider",
+      "default": 3.5,
+      "min": 2.5,
+      "max": 6.0,
+      "step": 0.25,
+      "group": "engagement",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Pin pitch (mm)",
+        "es": "Paso entre pines (mm)"
+      },
+      "tooltip": {
+        "en": "Centre-to-centre spacing of the mushroom pins and of the matching waffle cells (mm).",
+        "es": "Separación centro a centro de los pines de hongo y de las celdas de la retícula (mm)."
+      }
+    },
+    {
+      "id": "pin_dia",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "group": "engagement",
+      "modes": [
+        "set",
+        "hook_strip"
+      ],
+      "label": {
+        "en": "Pin stem diameter (mm)",
+        "es": "Diámetro del vástago del pin (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the mushroom pin stem — thinner peels more easily (mm).",
+        "es": "Diámetro del vástago del pin de hongo — más delgado se despega más fácil (mm)."
+      }
+    },
+    {
+      "id": "head_dia",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.2,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "engagement",
+      "modes": [
+        "set",
+        "hook_strip"
+      ],
+      "label": {
+        "en": "Pin head diameter (mm)",
+        "es": "Diámetro de la cabeza del pin (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the mushroom cap — its overhang past the stem is what grips (mm).",
+        "es": "Diámetro de la cabeza de hongo — su voladizo sobre el vástago es lo que agarra (mm)."
+      }
+    },
+    {
+      "id": "pin_h",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "engagement",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Pin / wall height (mm)",
+        "es": "Altura de pin y pared (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the mushroom pins above the base, and of the matching waffle walls (mm).",
+        "es": "Altura de los pines de hongo sobre la base, y de las paredes de la retícula (mm)."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "strip_length": 50.0,
+        "strip_width": 20.0,
+        "pin_pitch": 3.5
+      }
+    },
+    {
+      "id": "vest_front",
+      "mode": "set",
+      "label": {
+        "en": "Vest Front Overlap",
+        "es": "Traslape delantero de chaleco"
+      },
+      "values": {
+        "strip_length": 60.0,
+        "strip_width": 30.0,
+        "pin_pitch": 4.0,
+        "pin_h": 2.5,
+        "sew_margin": 4.0
+      }
+    },
+    {
+      "id": "cuff_tab",
+      "mode": "hook_strip",
+      "label": {
+        "en": "Cuff Tab",
+        "es": "Lengüeta de puño"
+      },
+      "values": {
+        "strip_length": 25.0,
+        "strip_width": 14.0,
+        "pin_pitch": 3.0,
+        "pin_h": 1.6,
+        "sew_margin": 2.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        60,
+        60
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_face",
+        "label": {
+          "en": "Sew Face (plain margin)",
+          "es": "Cara de costura (margen liso)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "strip_length",
+          "strip_width",
+          "sew_margin"
+        ]
+      },
+      {
+        "id": "engage_field",
+        "label": {
+          "en": "Engagement Field (pins / waffle)",
+          "es": "Campo de enganche (pines / retícula)"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "pin_pitch",
+          "pin_dia",
+          "head_dia",
+          "pin_h"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Hook-and-loop tape is bought by the roll and cut to waste; printing it to length lets a repair or a made-to-measure garment carry only the closure it needs, in any material a maker already has.",
+      "es": "La cinta de gancho y bucle se compra por rollo y se corta con desperdicio; imprimirla a la medida permite que una reparación o una prenda a medida lleve solo el cierre que necesita, en el material que el fabricante ya tenga."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "hook-loop-tape",
+    "velcro",
+    "hook-and-loop",
+    "closure",
+    "fastener",
+    "tape",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -2,17 +2,17 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 349,
-    "with_cdg_interfaces": 334,
-    "with_commons_license": 348,
+    "cartridges": 360,
+    "with_cdg_interfaces": 345,
+    "with_commons_license": 359,
     "dual_engine": 24
   },
   "domains": {
     "household": 113,
     "industrial": 81,
     "commercial": 63,
+    "wearable": 32,
     "medical": 29,
-    "wearable": 21,
     "infrastructure": 20,
     "uncategorized": 14,
     "hybrid": 7,
@@ -1446,6 +1446,87 @@
       }
     },
     {
+      "slug": "belt-buckle",
+      "name": "Belt Buckle",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "strap_width",
+        "frame_t",
+        "bar_dia",
+        "prong_d",
+        "corner_r",
+        "roller"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable center-bar buckle lets a worn belt, kilt strap or coat cinch be repaired to its own measured width instead of discarding the garment over one broken piece of hardware.",
+        "es": "Una hebilla de barra central imprimible permite reparar un cinturón gastado, una correa de kilt o el cinto de un abrigo al ancho exacto medido, en vez de desechar la prenda por un solo herraje roto."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "strap_slot",
+          "label": "Strap Slot (frame opening)",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "strap_width",
+            "frame_t"
+          ]
+        },
+        {
+          "id": "prong_seat",
+          "label": "Prong Seat (curl on center bar)",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "prong_d",
+            "bar_dia"
+          ]
+        },
+        {
+          "id": "strap_anchor_flange",
+          "label": "Strap Anchor Flange (bar the strap end folds over)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "strap_width",
+            "bar_dia",
+            "frame_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/belt-buckle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/belt-buckle"
+      }
+    },
+    {
       "slug": "belt-clamp",
       "name": "Timing Belt Clamp",
       "domain": "industrial",
@@ -2283,6 +2364,77 @@
       }
     },
     {
+      "slug": "boning-stay",
+      "name": "Boning Stay and Channel",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "stay_length",
+        "stay_width",
+        "stay_t",
+        "tip_r",
+        "channel_wall",
+        "channel_clear"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Boning is sold by the roll in fixed widths, so a maker cuts and tips every length by hand and buys casing tape they may never use again; printing the stay and its channel together makes structured and adaptive garments buildable at home, at any length, from recycled filament.",
+        "es": "El ballenado se vende en rollo con anchos fijos, así que quien confecciona corta y remata cada tramo a mano y compra cinta de canal que quizá nunca vuelva a usar; imprimir la varilla y su canal juntos permite construir prendas estructuradas y adaptativas en casa, a cualquier largo y con filamento reciclado."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "channel_slot",
+          "label": "Channel Slot (stay socket)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "stay_width",
+            "stay_t",
+            "channel_clear"
+          ]
+        },
+        {
+          "id": "sew_face",
+          "label": "Sew Flange (stitched edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "stay_length",
+            "channel_wall"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/boning-stay/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/boning-stay"
+      }
+    },
+    {
       "slug": "bottle-bracket",
       "name": "Shampoo / Bottle Wall Bracket",
       "domain": "household",
@@ -2713,6 +2865,86 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bra-ring-slider"
+      }
+    },
+    {
+      "slug": "bra-underwire",
+      "name": "Bra Underwire + Tip Cap",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "cup_width",
+        "wire_d",
+        "sweep_deg",
+        "cap_len",
+        "cap_wall"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Underwires are sold only in fixed retail sizes, so a bra that fits nowhere else is unfixable; a printable arc and tip caps let anyone make a wire to their own cup width and repair a poked-through bra instead of discarding it.",
+        "es": "Las varillas se venden solo en tallas comerciales fijas, así que un sostén que no calza en ninguna talla no tiene arreglo; un arco y unos topes imprimibles permiten hacer la varilla al ancho de copa propio y reparar un sostén perforado en vez de desecharlo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "channel_fit",
+          "label": "Channel Fit (sewn wire casing)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "wire_d",
+            "cup_width"
+          ]
+        },
+        {
+          "id": "tip_bore",
+          "label": "Tip Bore (cap over wire end)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "wire_d",
+            "cap_len"
+          ]
+        },
+        {
+          "id": "cradle_seam",
+          "label": "Cradle Seam Flange (sewn set edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "cup_width",
+            "sweep_deg",
+            "wire_d"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/bra-underwire/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bra-underwire"
       }
     },
     {
@@ -4651,6 +4883,97 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/cookie-cutter"
+      }
+    },
+    {
+      "slug": "cord-end",
+      "name": "Cord End (Aglet & Bell Tip)",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "cord_dia",
+        "wall",
+        "tip_length",
+        "bell_flare",
+        "lanyard_hole"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A lost cord tip lets a drawstring fray and disappear into its channel, retiring an otherwise sound garment — a printable aglet sized to any cord keeps hoodies, anoraks, and shoes in service.",
+        "es": "Una punta de cordón perdida deja que el cordón se deshilache y se pierda dentro de su canal, retirando una prenda que aún sirve — un herrete imprimible dimensionado a cualquier cordón mantiene sudaderas, anoraks y zapatos en uso."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "cord_bore",
+          "label": "Cord Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "cord_dia",
+            "wall"
+          ]
+        },
+        {
+          "id": "tip_profile",
+          "label": "Tip Profile",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "tip_length",
+            "bell_flare"
+          ]
+        },
+        {
+          "id": "cord_mouth",
+          "label": "Cord Mouth (crimped edge)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "cord_dia",
+            "wall",
+            "bell_flare"
+          ]
+        },
+        {
+          "id": "lanyard_eye",
+          "label": "Lanyard Eye",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "lanyard_hole",
+            "cord_dia",
+            "tip_length"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/cord-end/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/cord-end"
       }
     },
     {
@@ -9231,6 +9554,76 @@
       }
     },
     {
+      "slug": "garment-eyelet",
+      "name": "Garment Eyelet and Washer",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "inner_dia",
+        "flange_dia",
+        "barrel_h",
+        "wall",
+        "washer_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable eyelet lets a mender or small maker finish a lace hole to the exact thickness of the garment in hand, instead of buying a boxed size that never quite fits.",
+        "es": "Un ojillo imprimible permite a quien repara o produce en pequeño terminar un ojal al espesor exacto de la prenda que tiene en las manos, en lugar de comprar una medida de caja que nunca ajusta del todo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "barrel",
+          "label": "Barrel (fabric stack passage)",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "inner_dia",
+            "barrel_h",
+            "wall"
+          ]
+        },
+        {
+          "id": "set_face",
+          "label": "Set Face (flange)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "flange_dia",
+            "washer_t"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/garment-eyelet/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garment-eyelet"
+      }
+    },
+    {
       "slug": "gauge-gonogo",
       "name": "Go/No-Go Gauge",
       "domain": "industrial",
@@ -11096,6 +11489,81 @@
       }
     },
     {
+      "slug": "hook-loop-tape",
+      "name": "Hook-and-Loop Tape",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "strip_length",
+        "strip_width",
+        "base_t",
+        "sew_margin",
+        "pin_pitch",
+        "pin_dia",
+        "head_dia",
+        "pin_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Hook-and-loop tape is bought by the roll and cut to waste; printing it to length lets a repair or a made-to-measure garment carry only the closure it needs, in any material a maker already has.",
+        "es": "La cinta de gancho y bucle se compra por rollo y se corta con desperdicio; imprimirla a la medida permite que una reparación o una prenda a medida lleve solo el cierre que necesita, en el material que el fabricante ya tenga."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_face",
+          "label": "Sew Face (plain margin)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "strip_length",
+            "strip_width",
+            "sew_margin"
+          ]
+        },
+        {
+          "id": "engage_field",
+          "label": "Engagement Field (pins / waffle)",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "pin_pitch",
+            "pin_dia",
+            "head_dia",
+            "pin_h"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/hook-loop-tape/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hook-loop-tape"
+      }
+    },
+    {
       "slug": "hopper-feeder",
       "name": "Hopper / Funnel Feeder",
       "domain": "industrial",
@@ -11511,6 +11979,77 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/instrument-hook"
+      }
+    },
+    {
+      "slug": "invisible-zipper",
+      "name": "Invisible Zipper",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "zip_length",
+        "tape_width",
+        "tape_thick",
+        "coil_dia",
+        "pull_length",
+        "gap"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A concealed zipper is the part of a skirt or dress that fails first and is hardest to source in the right length, so the whole garment is discarded. Printing one sized to the seam it already has — or just the slider, the piece that actually wears out — keeps the dress in use and closes the loop from a Fashion Cabinet pattern to working hardware.",
+        "es": "El cierre oculto es la pieza de una falda o vestido que falla primero y es la más difícil de conseguir en el largo correcto, por lo que se desecha la prenda entera. Imprimir uno dimensionado a la costura que ya existe — o solo el deslizador, la pieza que de verdad se desgasta — mantiene el vestido en uso y cierra el ciclo del patrón de Fashion Cabinet al herraje funcional."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "tape_edge",
+          "label": "Sewn Tape Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "tape_width",
+            "tape_thick",
+            "zip_length"
+          ]
+        },
+        {
+          "id": "coil_channel",
+          "label": "Coil Channel",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "coil_dia",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/invisible-zipper/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/invisible-zipper"
       }
     },
     {
@@ -12103,6 +12642,77 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/koozie-adapter"
+      }
+    },
+    {
+      "slug": "lacing-hook",
+      "name": "Lacing Hook",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 6,
+      "parameter_ids": [
+        "hook_count",
+        "pitch",
+        "cord_dia",
+        "plate_w",
+        "plate_t",
+        "rivet_hole_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Lacing hooks are a tiny stamped part that a mender or small workshop cannot buy in ones and twos; printing them to the exact cord and plate size keeps a corset, a bodice, or a pair of boots repairable instead of discarded.",
+        "es": "Los ganchos de cordón son una pieza troquelada diminuta que quien repara o un taller pequeño no puede comprar de una en una; imprimirlos a la medida exacta del cordón y de la placa mantiene reparables un corsé, un corpiño o unas botas en lugar de desecharlos."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_plate",
+          "label": "Sew / Rivet Plate",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "plate_w",
+            "plate_t",
+            "rivet_hole_dia"
+          ]
+        },
+        {
+          "id": "cord_catch",
+          "label": "Cord Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "cord_dia",
+            "pitch"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/lacing-hook/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/lacing-hook"
       }
     },
     {
@@ -20173,6 +20783,150 @@
       }
     },
     {
+      "slug": "sew-on-snap",
+      "name": "Sew-On Snap",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "snap_dia",
+        "disc_t",
+        "stud_dia",
+        "engage_clear",
+        "sew_holes",
+        "hole_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Sew-on snaps are sold only in a handful of fixed sizes, so a mender either buys a whole card or gives up; printing the pair to the exact placket size keeps baby clothes and jackets in service instead of in landfill.",
+        "es": "Los broches de coser sólo se venden en unas pocas medidas fijas, así que quien remienda compra una tarjeta entera o se rinde; imprimir el par a la medida exacta de la cartera mantiene en uso la ropa de bebé y las chamarras en lugar de tirarlas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_face",
+          "label": "Sew Face (rim holes)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "snap_dia",
+            "sew_holes",
+            "hole_dia"
+          ]
+        },
+        {
+          "id": "stud_engage",
+          "label": "Stud Engagement",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "stud_dia",
+            "engage_clear"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/sew-on-snap/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/sew-on-snap"
+      }
+    },
+    {
+      "slug": "sew-through-button",
+      "name": "Sew-Through Button",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 7,
+      "parameter_ids": [
+        "button_ligne",
+        "thickness",
+        "hole_count",
+        "hole_dia",
+        "hole_spacing",
+        "dish_depth",
+        "card_count"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The sew-through button is the most-replaced part of any garment; printing one to the exact ligne keeps a shirt or coat in service instead of discarding it for a lost fastener.",
+        "es": "El botón de agujeros es la pieza que más se repone en cualquier prenda; imprimir uno en la línea exacta mantiene una camisa o un abrigo en uso en lugar de desecharlo por un cierre perdido."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_face",
+          "label": "Sew Face (hole pattern)",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "button_ligne",
+            "hole_count",
+            "hole_dia",
+            "hole_spacing"
+          ]
+        },
+        {
+          "id": "placket_seat",
+          "label": "Placket Seat (footprint on the garment)",
+          "geometry_type": "surface",
+          "standard": "internal",
+          "parameters": [
+            "button_ligne",
+            "thickness"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/sew-through-button/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/sew-through-button"
+      }
+    },
+    {
       "slug": "sewing-guide",
       "name": "Sewing Machine Foot / Guide",
       "domain": "household",
@@ -23888,6 +24642,77 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/trim-clip"
+      }
+    },
+    {
+      "slug": "trouser-hook-bar",
+      "name": "Trouser Hook & Bar",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 2,
+      "parameters": 6,
+      "parameter_ids": [
+        "hook_width",
+        "plate_len",
+        "plate_t",
+        "wire_d",
+        "sew_holes",
+        "gap"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A failed waistband hook retires an otherwise sound pair of trousers or a skirt, and off-the-shelf hooks come in one or two sizes that rarely match the band. Printing the closure to the band's own dimensions repairs the garment and lets a waist be let out or taken in without replacing the whole waistband.",
+        "es": "Un gancho de pretina roto retira del uso un pantalón o una falda que por lo demás están sanos, y los ganchos comerciales vienen en una o dos medidas que rara vez coinciden con la pretina. Imprimir el cierre a las medidas de la propia pretina repara la prenda y permite ensanchar o angostar la cintura sin reemplazar toda la pretina."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_plate",
+          "label": "Sewing Plate",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "hook_width",
+            "plate_t",
+            "sew_holes"
+          ]
+        },
+        {
+          "id": "hook_catch",
+          "label": "Hook / Bar Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "wire_d",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/trouser-hook-bar/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/trouser-hook-bar"
       }
     },
     {

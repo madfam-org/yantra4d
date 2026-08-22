@@ -11,6 +11,83 @@ export async function waitForAppReady(page) {
 }
 
 /**
+ * Pin the render pipeline to the backend (SSE) path so route mocks govern it.
+ *
+ * renderService.detectMode() picks between 'backend' and 'wasm', and with no
+ * VITE_API_BASE set (the E2E build) the deciding branch is:
+ *
+ *   hasWasmCapabilities() = navigator.hardwareConcurrency >= 4 && deviceMemory >= 4
+ *
+ * That makes the render path a property of the RUNNER, not of the test. On a
+ * GitHub-hosted runner (2 cores) the app chose 'backend' and every
+ * `page.route('**\/api/render-stream')` mock in the suite applied; on the
+ * madfam-runners-blue ARC pods — and on any developer laptop with >= 4 cores —
+ * it chooses 'wasm' instead, the render never touches the network, and the
+ * mocks are dead code. The WASM path then fails with "OpenSCAD exited with
+ * code 1" (no WASM binary is shipped to the E2E environment) after an
+ * unbounded, machine-dependent delay.
+ *
+ * Verified locally: with default hardware the probe logged
+ *   RENDER_REQUESTS: []            (WASM, console ends in "OpenSCAD exited with code 1")
+ * and with hardwareConcurrency pinned to 2
+ *   RENDER_REQUESTS: ["/api/render-stream", "/api/render/body.stl", ...]
+ *
+ * Must be called BEFORE the navigation whose render it should govern, because
+ * addInitScript only applies to subsequent page loads.
+ *
+ * 05-export already did this inline for one test; this is the shared version.
+ * Do NOT use it in 19-wasm-fallback, which deliberately exercises the WASM
+ * path (it forces it by aborting /api/health, independent of core count).
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+export async function forceBackendRender(page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'hardwareConcurrency', { value: 2, configurable: true })
+  })
+}
+
+/**
+ * Locator for the sidebar's Generate button (the ActionDock primary action).
+ *
+ * While a render is in flight the same button renders `t("btn.proc")`
+ * ("Processing...") instead, so its presence is the app's own "render idle"
+ * signal — see StudioSidebar.ActionDock.
+ *
+ * @param {import('@playwright/test').Page | import('@playwright/test').Locator} scope
+ */
+export function generateButton(scope) {
+  return scope.locator('button').filter({ hasText: /Generate|Generar/ }).first()
+}
+
+/**
+ * Wait until no render is in flight: the Generate button is back and enabled.
+ *
+ * Replaces `await page.waitForTimeout(n)` before render-dependent assertions.
+ * A fixed sleep encodes one machine's render speed; on the slower ARC pods the
+ * auto-render that fires on manifest load was still running when the test
+ * looked, so the sidebar showed "Processing..." and every locator asking for
+ * "Generate" reported "element(s) not found" (run 32565668502:
+ * 12-responsive:281, 12-responsive:254, 09-keyboard:56).
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {number} [timeout]
+ */
+export async function waitForRenderSettled(page, timeout = 30_000) {
+  const generate = generateButton(page)
+  await generate.waitFor({ state: 'visible', timeout })
+  await page.waitForFunction(
+    () => {
+      const btns = [...document.querySelectorAll('button')]
+      const gen = btns.find((b) => /Generate|Generar/.test(b.textContent || ''))
+      return !!gen && !gen.disabled
+    },
+    null,
+    { timeout },
+  )
+}
+
+/**
  * Navigate to studio view and ensure mock manifest is loaded.
  * Clicks the first mode tab to activate it, since the fallback manifest's
  * modes may differ from the mock manifest, leaving tabs in inactive state.

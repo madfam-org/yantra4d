@@ -97,10 +97,20 @@ test.describe('Export Panel', () => {
     // invariant that holds either way: the panel always gives the user a way
     // forward. It previously ended in expect(true).toBe(true), which passes
     // just as happily when the panel renders nothing at all.
+    //
+    // Polled, not counted once: `locator.count()` does not retry, so this was
+    // really asserting that the export tabpanel had mounted by the instant the
+    // beforeEach's selectSection() returned (a click plus a 150ms sleep). On
+    // WebKit under ARC load it had not, and the sum read 0 on all three
+    // attempts (run 32565668502, webkit shard 1) — while 'download STL button
+    // is visible' above, which uses the auto-retrying toBeVisible(), passed in
+    // the same run.
     const signIn = page.locator('text=Sign in to download')
     const download = page.locator('button', { hasText: 'Download STL' })
-    const offered = (await signIn.count()) + (await download.count())
-    expect(offered).toBeGreaterThan(0)
+    await expect.poll(
+      async () => (await signIn.count()) + (await download.count()),
+      { timeout: 15_000, message: 'export panel offered neither a download control nor a sign-in prompt' },
+    ).toBeGreaterThan(0)
   })
 
   test('format label shows "Format:" prefix', async ({ page }) => {

@@ -41,7 +41,18 @@ export class StudioSidebarPage extends BasePage {
   async selectSection(value) {
     const tab = this.sidebar.locator(`[role="tab"][id$="-trigger-${value}"]`).first()
     await tab.click()
-    await this.page.waitForTimeout(150)
+    // Wait for the tab to actually report itself selected and for its panel to
+    // be on screen, rather than sleeping 150ms and hoping. Radix mounts
+    // TabsContent only for the active value, so callers that immediately take a
+    // non-retrying reading (locator.count()) were racing the mount — which is
+    // how 05-export:95 and 17-auth:90 both counted zero controls on WebKit
+    // under ARC load while their retrying siblings passed (run 32565668502).
+    await tab.and(this.page.locator('[data-state="active"]')).waitFor({ timeout: 10_000 }).catch(() => { })
+    await this.sidebar
+      .locator(`[role="tabpanel"][id$="-content-${value}"]`)
+      .first()
+      .waitFor({ state: 'visible', timeout: 10_000 })
+      .catch(() => { })
   }
 
   /** Locator for the mode tablist (distinguished from section tabs by aria-label). */
@@ -150,7 +161,15 @@ export class StudioSidebarPage extends BasePage {
   async editSliderValue(paramId, value) {
     const row = this.sidebar.locator(`.flex.justify-between:has(#param-label-${paramId})`)
     const valSpan = this.sliderValue(paramId)
-    await valSpan.waitFor({ state: 'visible', timeout: 5000 })
+    // 15s, not 5s. The param rows are re-rendered when the preset that
+    // goToStudio's URL settle step applies lands, and on a contended runner
+    // that re-render can arrive after the old 5s budget — the post-failure
+    // snapshot shows the row present and correct
+    // (`button "Width: 30. Click to edit"`), just later than the wait allowed.
+    // Every caller of this helper is asserting on what happens AFTER the edit,
+    // so waiting longer here costs nothing on a fast machine (the locator
+    // resolves as soon as it appears) and removes a whole class of ARC flake.
+    await valSpan.waitFor({ state: 'visible', timeout: 15_000 })
     await valSpan.click()
     // Scope input to the parameter's row to avoid matching other inputs
     const input = row.locator(`input[type="number"]`)

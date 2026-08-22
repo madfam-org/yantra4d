@@ -1,0 +1,421 @@
+{
+  "project": {
+    "name": "Cam Buckle",
+    "slug": "cam-buckle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed cam buckle — the lever-cam strap lock on tie-downs, luggage compression straps, roof-rack straps and camera slings. Pull the tape and the toothed cam rides up and lets it through; let go and the load rotates the cam down onto the tape and locks it. Two parts on one pin, sized for trade webbing widths 20, 25, 38 and 50 mm. This is the rigid hard good the Fashion Cabinet `cam-buckle` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una hebilla de leva impresa en 3D — el bloqueo de correa por palanca de las amarras, las correas de compresión de equipaje, las de portaequipajes y las de cámara. Jala la cinta y la leva dentada sube y la deja pasar; suéltala y la carga gira la leva sobre la cinta y la bloquea. Dos piezas sobre un pasador, dimensionadas para los anchos comerciales de 20, 25, 38 y 50 mm. Es el herraje rígido que el avío `cam-buckle` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/cam-buckle.webp",
+    "difficulty": "advanced",
+    "tags": [
+      "cam-buckle",
+      "cam",
+      "webbing",
+      "strap-lock",
+      "tie-down",
+      "buckle",
+      "strap",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Buckle Set (body + cam)",
+        "es": "Juego de hebilla (cuerpo + leva)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body (frame + anvil)",
+        "es": "Cuerpo (marco + yunque)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "body"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "cam",
+      "label": {
+        "en": "Cam Lever",
+        "es": "Palanca de leva"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "cam"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Cam Buckle Set",
+        "es": "Juego de hebilla de leva"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Buckle Body",
+        "es": "Cuerpo de la hebilla"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "cam",
+      "label": {
+        "en": "Cam Lever",
+        "es": "Palanca de leva"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "webbing",
+      "label": {
+        "en": "Webbing",
+        "es": "Cincha"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    },
+    {
+      "id": "cam",
+      "label": {
+        "en": "Cam",
+        "es": "Leva"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 15.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "webbing",
+      "modes": [
+        "set",
+        "body",
+        "cam"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal webbing width (mm). The throat between the cheeks spans this plus a 1.5 mm running allowance.",
+        "es": "Ancho nominal de la cincha (mm). La garganta entre las mejillas mide esto más 1.5 mm de tolerancia de paso."
+      }
+    },
+    {
+      "id": "webbing_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "webbing",
+      "modes": [
+        "set",
+        "body",
+        "cam"
+      ],
+      "label": {
+        "en": "Webbing thickness (mm)",
+        "es": "Espesor de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the tape (mm). The throat height and the tail slot both size from this, since the tape runs doubled through the buckle.",
+        "es": "Espesor de la cincha (mm). La altura de la garganta y la ranura de cola se dimensionan a partir de esto, porque la cinta pasa doblada por la hebilla."
+      }
+    },
+    {
+      "id": "cheek_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "body",
+      "modes": [
+        "set",
+        "body",
+        "cam"
+      ],
+      "label": {
+        "en": "Cheek thickness (mm)",
+        "es": "Espesor de la mejilla (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of each side cheek (mm). The cheeks carry the pin, so this is the part that fails first if it is too thin.",
+        "es": "Espesor de cada mejilla lateral (mm). Las mejillas sostienen el pasador, así que es la parte que falla primero si queda delgada."
+      }
+    },
+    {
+      "id": "pin_dia",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "cam",
+      "modes": [
+        "set",
+        "body",
+        "cam"
+      ],
+      "label": {
+        "en": "Pivot pin diameter (mm)",
+        "es": "Diámetro del pasador (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the cam pivot pin (mm). Use a printed rod, a cut nail or an M3 screw; the bore is sized from this plus the clearance.",
+        "es": "Diámetro del pasador de la leva (mm). Usa una varilla impresa, un clavo cortado o un tornillo M3; el barreno se dimensiona a partir de esto más la holgura."
+      }
+    },
+    {
+      "id": "cam_throw",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "cam",
+      "modes": [
+        "set",
+        "body",
+        "cam"
+      ],
+      "label": {
+        "en": "Cam throw (mm)",
+        "es": "Excentricidad de la leva (mm)"
+      },
+      "tooltip": {
+        "en": "Eccentricity of the cam lobe (mm) — how far it swings toward the anvil. More throw grips a thicker tape; too much and the lever will not clear the throat.",
+        "es": "Excentricidad del lóbulo de la leva (mm) — cuánto se acerca al yunque. Más excentricidad agarra cinta más gruesa; demasiada y la palanca no libra la garganta."
+      }
+    },
+    {
+      "id": "pin_clear",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.15,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "cam",
+      "modes": [
+        "set",
+        "body",
+        "cam"
+      ],
+      "label": {
+        "en": "Pin clearance (mm)",
+        "es": "Holgura del pasador (mm)"
+      },
+      "tooltip": {
+        "en": "Running clearance in the cam bore (mm). The cam must swing freely — raise this if the lever binds after printing.",
+        "es": "Holgura de giro en el barreno de la leva (mm). La leva debe girar libre — auméntala si la palanca se traba tras imprimir."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "tiedown25",
+      "mode": "set",
+      "label": {
+        "en": "Tie-Down (25 mm)",
+        "es": "Amarre (25 mm)"
+      },
+      "values": {
+        "webbing_w": 25.0,
+        "webbing_t": 1.6,
+        "cheek_t": 3.0,
+        "pin_dia": 3.0,
+        "cam_throw": 3.0,
+        "pin_clear": 0.35
+      }
+    },
+    {
+      "id": "roofrack50",
+      "mode": "set",
+      "label": {
+        "en": "Roof-Rack Strap (50 mm)",
+        "es": "Correa de portaequipajes (50 mm)"
+      },
+      "values": {
+        "webbing_w": 50.0,
+        "webbing_t": 2.6,
+        "cheek_t": 5.0,
+        "pin_dia": 5.0,
+        "cam_throw": 4.5,
+        "pin_clear": 0.45
+      }
+    },
+    {
+      "id": "sling20",
+      "mode": "set",
+      "label": {
+        "en": "Camera Sling (20 mm)",
+        "es": "Correa de cámara (20 mm)"
+      },
+      "values": {
+        "webbing_w": 20.0,
+        "webbing_t": 1.2,
+        "cheek_t": 2.4,
+        "pin_dia": 2.5,
+        "cam_throw": 2.0,
+        "pin_clear": 0.3
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "webbing_throat",
+        "label": {
+          "en": "Webbing Throat (tape edge)",
+          "es": "Garganta de la cincha (canto de la cinta)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing_w",
+          "webbing_t",
+          "cheek_t"
+        ]
+      },
+      {
+        "id": "pivot_bore",
+        "label": {
+          "en": "Cam Pivot Bore",
+          "es": "Barreno del pivote de la leva"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "pin_dia",
+          "pin_clear"
+        ]
+      },
+      {
+        "id": "cam_bite",
+        "label": {
+          "en": "Cam Bite Face",
+          "es": "Cara de mordida de la leva"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "cam_throw",
+          "webbing_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A cam buckle is what turns a length of plain webbing into a usable tie-down; printing one lets a maker build straps from salvaged tape instead of buying whole new ratchet straps whose only broken part is the buckle.",
+      "es": "Una hebilla de leva es lo que convierte un tramo de cincha simple en una amarra utilizable; imprimirla permite armar correas con cinta rescatada en lugar de comprar amarras nuevas cuya única pieza rota es la hebilla."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "cam-buckle",
+    "cam",
+    "webbing",
+    "strap-lock",
+    "tie-down",
+    "buckle",
+    "strap",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,521 @@
+{
+  "project": {
+    "name": "Garment Hanger",
+    "slug": "garment-hanger",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed parametric clothes hanger — a curved shoulder bar cut to a garment's own finished shoulder width, plus a rod hook sized to the closet rail it hangs on. Shop-bought hangers come in two sizes and crease everything that is not those two sizes; this one is generated from the shoulder span, with strap notches for camisoles and an optional trouser bar. This is the display hard good the Fashion Cabinet garment record bridges to when it needs a hanger that fits.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un gancho de ropa paramétrico impreso en 3D — una barra de hombro curva cortada al ancho de hombro terminado de la prenda, más un gancho dimensionado al tubo del clóset donde cuelga. Los ganchos comerciales vienen en dos medidas y marcan todo lo que no sea esas dos; éste se genera a partir de la envergadura de hombro, con muescas para tirantes y una barra para pantalón opcional. Es el herraje de exhibición al que la ficha de prenda de Fashion Cabinet se puentea cuando necesita un gancho a la medida.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/garment-hanger.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "garment-hanger",
+      "hanger",
+      "shoulder",
+      "closet",
+      "display",
+      "wardrobe",
+      "garment-care",
+      "trouser-bar",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "standard",
+      "label": {
+        "en": "Standard Hanger",
+        "es": "Gancho estándar"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "standard"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "notched",
+      "label": {
+        "en": "Notched (strap notches)",
+        "es": "Con muescas para tirantes"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "notched"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "trouser_bar",
+      "label": {
+        "en": "Trouser Bar (2-part)",
+        "es": "Con barra para pantalón (2 piezas)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "body",
+        "bar"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "standard",
+      "label": {
+        "en": "Hanger",
+        "es": "Gancho"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "notched",
+      "label": {
+        "en": "Notched Hanger",
+        "es": "Gancho con muescas"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Hanger Body",
+        "es": "Cuerpo del gancho"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "bar",
+      "label": {
+        "en": "Trouser Bar",
+        "es": "Barra para pantalón"
+      },
+      "render_mode": 0,
+      "color": "#9c9482"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "shoulder",
+      "label": {
+        "en": "Shoulder",
+        "es": "Hombro"
+      }
+    },
+    {
+      "id": "hook",
+      "label": {
+        "en": "Hook",
+        "es": "Gancho"
+      }
+    },
+    {
+      "id": "features",
+      "label": {
+        "en": "Features",
+        "es": "Prestaciones"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "shoulder_w",
+      "type": "slider",
+      "default": 420.0,
+      "min": 250.0,
+      "max": 500.0,
+      "step": 5.0,
+      "group": "shoulder",
+      "modes": [
+        "standard",
+        "notched",
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Shoulder span (mm)",
+        "es": "Envergadura de hombro (mm)"
+      },
+      "tooltip": {
+        "en": "Tip-to-tip shoulder span (mm). 420-445 mm is an adult jacket hanger, 400 mm a shirt hanger, 280-330 mm a child size. Match the garment's finished shoulder width so the tips end just inside the sleeve head.",
+        "es": "Envergadura de punta a punta (mm). De 420 a 445 mm para saco de adulto, 400 mm para camisa, de 280 a 330 mm para talla infantil. Iguala el ancho de hombro terminado para que las puntas queden justo dentro de la copa de la manga."
+      }
+    },
+    {
+      "id": "shoulder_t",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 22.0,
+      "step": 0.5,
+      "group": "shoulder",
+      "modes": [
+        "standard",
+        "notched",
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Shoulder thickness (mm)",
+        "es": "Espesor del hombro (mm)"
+      },
+      "tooltip": {
+        "en": "Front-to-back thickness of the shoulder bar (mm). Thin reads as a wire hanger; 14-20 mm is a suit hanger that supports a jacket's shoulder pad without a crease.",
+        "es": "Espesor de adelante hacia atrás de la barra de hombro (mm). Delgado parece gancho de alambre; de 14 a 20 mm es un gancho de saco que sostiene la hombrera sin marcarla."
+      }
+    },
+    {
+      "id": "shoulder_h",
+      "type": "slider",
+      "default": 16.0,
+      "min": 10.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "shoulder",
+      "modes": [
+        "standard",
+        "notched",
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Shoulder section height (mm)",
+        "es": "Altura de sección del hombro (mm)"
+      },
+      "tooltip": {
+        "en": "Vertical height of the shoulder bar section at the neck (mm). The section tapers to about 68 % of this at the tips, the way a moulded hanger does.",
+        "es": "Altura vertical de la sección de la barra de hombro en el cuello (mm). La sección se reduce a cerca del 68 % en las puntas, como en un gancho moldeado."
+      }
+    },
+    {
+      "id": "slope",
+      "type": "slider",
+      "default": 38.0,
+      "min": 10.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "shoulder",
+      "modes": [
+        "standard",
+        "notched",
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Shoulder drop (mm)",
+        "es": "Caída de hombro (mm)"
+      },
+      "tooltip": {
+        "en": "How far the tips fall below the neck (mm). Roughly matches the garment's own shoulder slope; auto-clamped to 16 % of the span so the hanger never folds double.",
+        "es": "Cuánto caen las puntas por debajo del cuello (mm). Corresponde aproximadamente a la caída de hombro de la prenda; se limita al 16 % de la envergadura para que el gancho nunca se doble."
+      }
+    },
+    {
+      "id": "hook_rod",
+      "type": "slider",
+      "default": 32.0,
+      "min": 18.0,
+      "max": 45.0,
+      "step": 1.0,
+      "group": "hook",
+      "modes": [
+        "standard",
+        "notched",
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Closet rod diameter (mm)",
+        "es": "Diámetro del tubo de clóset (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the rail the hook goes over (mm). A 25 mm steel rod and a 32 mm timber dowel are the two common closet rails; the hook adds 1.2 mm of running clearance.",
+        "es": "Diámetro del tubo por el que pasa el gancho (mm). Un tubo de acero de 25 mm y una barra de madera de 32 mm son los dos rieles habituales; el gancho añade 1.2 mm de holgura."
+      }
+    },
+    {
+      "id": "hook_wire",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.5,
+      "max": 10.0,
+      "step": 0.25,
+      "group": "hook",
+      "modes": [
+        "standard",
+        "notched",
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Hook wire diameter (mm)",
+        "es": "Diámetro del alambre del gancho (mm)"
+      },
+      "tooltip": {
+        "en": "Section diameter of the hook (mm). This is the whole load path for the garment's weight — 6 mm carries a shirt, 8-10 mm a wet-wool coat.",
+        "es": "Diámetro de sección del gancho (mm). Es toda la trayectoria de carga del peso de la prenda — 6 mm aguanta una camisa, de 8 a 10 mm un abrigo de lana mojada."
+      }
+    },
+    {
+      "id": "notch_count",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "group": "features",
+      "modes": [
+        "notched",
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Strap notches per shoulder",
+        "es": "Muescas por hombro"
+      },
+      "tooltip": {
+        "en": "Number of strap notches cut into each shoulder. Two lets one hanger take both a wide camisole strap and a narrow spaghetti strap. A notch is skipped automatically wherever the slope leaves no safe land beneath it.",
+        "es": "Cantidad de muescas para tirantes en cada hombro. Dos permiten que un mismo gancho reciba un tirante ancho y uno de espagueti. La muesca se omite automáticamente donde la caída no deja material seguro debajo."
+      }
+    },
+    {
+      "id": "bar_drop",
+      "type": "slider",
+      "default": 120.0,
+      "min": 50.0,
+      "max": 220.0,
+      "step": 5.0,
+      "group": "features",
+      "modes": [
+        "trouser_bar"
+      ],
+      "label": {
+        "en": "Trouser bar drop (mm)",
+        "es": "Caída de la barra de pantalón (mm)"
+      },
+      "tooltip": {
+        "en": "How far the trouser bar hangs below the shoulder tips (mm). Deeper drops keep a folded trouser leg clear of the jacket hem above it.",
+        "es": "Cuánto cuelga la barra de pantalón por debajo de las puntas del hombro (mm). Una caída mayor mantiene la pernera doblada libre del ruedo del saco."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shirt",
+      "mode": "standard",
+      "label": {
+        "en": "Shirt Hanger (400 mm)",
+        "es": "Gancho de camisa (400 mm)"
+      },
+      "values": {
+        "shoulder_w": 400.0,
+        "shoulder_t": 9.0,
+        "shoulder_h": 14.0,
+        "slope": 30.0,
+        "hook_rod": 25.0,
+        "hook_wire": 5.0
+      }
+    },
+    {
+      "id": "suit",
+      "mode": "standard",
+      "label": {
+        "en": "Suit Hanger (445 mm)",
+        "es": "Gancho de traje (445 mm)"
+      },
+      "values": {
+        "shoulder_w": 445.0,
+        "shoulder_t": 18.0,
+        "shoulder_h": 22.0,
+        "slope": 46.0,
+        "hook_rod": 32.0,
+        "hook_wire": 7.0
+      }
+    },
+    {
+      "id": "camisole",
+      "mode": "notched",
+      "label": {
+        "en": "Camisole (notched, 380 mm)",
+        "es": "Camisola (con muescas, 380 mm)"
+      },
+      "values": {
+        "shoulder_w": 380.0,
+        "shoulder_t": 8.0,
+        "shoulder_h": 14.0,
+        "slope": 26.0,
+        "hook_rod": 25.0,
+        "hook_wire": 4.5,
+        "notch_count": 2
+      }
+    },
+    {
+      "id": "child",
+      "mode": "standard",
+      "label": {
+        "en": "Child Size 4 (300 mm)",
+        "es": "Talla infantil 4 (300 mm)"
+      },
+      "values": {
+        "shoulder_w": 300.0,
+        "shoulder_t": 7.0,
+        "shoulder_h": 11.0,
+        "slope": 20.0,
+        "hook_rod": 25.0,
+        "hook_wire": 4.0
+      }
+    },
+    {
+      "id": "suit_with_trousers",
+      "mode": "trouser_bar",
+      "label": {
+        "en": "Suit + Trouser Bar",
+        "es": "Traje con barra de pantalón"
+      },
+      "values": {
+        "shoulder_w": 445.0,
+        "shoulder_t": 18.0,
+        "shoulder_h": 22.0,
+        "slope": 46.0,
+        "hook_rod": 32.0,
+        "hook_wire": 7.0,
+        "notch_count": 1,
+        "bar_drop": 150.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        400,
+        400,
+        300
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "shoulder_seat",
+        "label": {
+          "en": "Shoulder Seat (the line the garment hangs on)",
+          "es": "Asiento de hombro (la línea sobre la que cuelga la prenda)"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "shoulder_w",
+          "shoulder_t",
+          "shoulder_h",
+          "slope"
+        ]
+      },
+      {
+        "id": "rod_hook",
+        "label": {
+          "en": "Rod Hook (closet rail engagement)",
+          "es": "Gancho de tubo (acoplamiento al riel del clóset)"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "hook_rod",
+          "hook_wire"
+        ]
+      },
+      {
+        "id": "strap_notch",
+        "label": {
+          "en": "Strap Notch (camisole/lingerie strap capture)",
+          "es": "Muesca de tirante (retención de tirante de camisola/lencería)"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "notch_count",
+          "shoulder_h",
+          "hook_wire"
+        ]
+      },
+      {
+        "id": "bar_socket",
+        "label": {
+          "en": "Trouser Bar Socket (tip pin joint)",
+          "es": "Casquillo de la barra de pantalón (unión de pasador en la punta)"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "shoulder_w",
+          "shoulder_t",
+          "bar_drop"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A hanger that does not fit is how a garment acquires the shoulder bump that eventually retires it. Printing the hanger to the garment's own shoulder span — including child sizes and wide-shoulder coats that the two stocked sizes never covered — keeps clothes wearable longer, and lets a repair shop or a small label produce its own display hardware instead of buying injection-moulded plastic by the case.",
+      "es": "Un gancho que no queda es la razón por la que una prenda adquiere el bulto de hombro que acaba por retirarla. Imprimir el gancho a la envergadura de hombro de la propia prenda — incluidas tallas infantiles y abrigos de hombro ancho que las dos medidas de fábrica nunca cubrieron — alarga la vida útil de la ropa y permite a un taller o a una marca pequeña producir su propio herraje de exhibición en lugar de comprar plástico inyectado por caja."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "garment-hanger",
+    "hanger",
+    "shoulder",
+    "closet",
+    "display",
+    "wardrobe",
+    "garment-care",
+    "trouser-bar",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,385 @@
+{
+  "project": {
+    "name": "Buttonhole Spacer",
+    "slug": "buttonhole-spacer",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed buttonhole spacing gauge: a graduated rail and a detented slider that steps equal button intervals down a placket, so a shirt front never ends up with a gap that gapes. The printable equivalent of the scissoring lazy-tongs expander.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un compás de ojales impreso en 3D: un riel graduado y un cursor con retenes que reparte intervalos iguales de botones por la tapeta, para que el delantero de una camisa no termine con un hueco que se abra. Equivalente imprimible del compás de lazo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/buttonhole-spacer.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "buttonhole-spacer",
+      "buttonhole",
+      "gauge",
+      "sewing",
+      "atelier",
+      "marking",
+      "tool",
+      "notion",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rail",
+      "label": {
+        "en": "Graduated Rail",
+        "es": "Riel graduado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "rail"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "slider",
+      "label": {
+        "en": "Slider",
+        "es": "Cursor"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "slider"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Rail + Slider",
+        "es": "Riel y cursor"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "rail",
+      "label": {
+        "en": "Graduated Rail",
+        "es": "Riel graduado"
+      },
+      "render_mode": 0,
+      "color": "#5f7d95"
+    },
+    {
+      "id": "slider",
+      "label": {
+        "en": "Slider",
+        "es": "Cursor"
+      },
+      "render_mode": 0,
+      "color": "#c0703a"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Rail + Slider",
+        "es": "Riel y cursor"
+      },
+      "render_mode": 0,
+      "color": "#5f7d95"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "rail",
+      "label": {
+        "en": "Rail",
+        "es": "Riel"
+      }
+    },
+    {
+      "id": "slider",
+      "label": {
+        "en": "Slider",
+        "es": "Cursor"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "rail_len",
+      "type": "slider",
+      "default": 240.0,
+      "min": 80.0,
+      "max": 400.0,
+      "step": 5.0,
+      "group": "rail",
+      "modes": [
+        "rail",
+        "slider",
+        "set"
+      ],
+      "label": {
+        "en": "Rail length (mm)",
+        "es": "Longitud del riel (mm)"
+      },
+      "tooltip": {
+        "en": "Rail length (mm)",
+        "es": "Longitud del riel (mm)"
+      }
+    },
+    {
+      "id": "rail_w",
+      "type": "slider",
+      "default": 20.0,
+      "min": 12.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "rail",
+      "modes": [
+        "rail",
+        "slider",
+        "set"
+      ],
+      "label": {
+        "en": "Rail width (mm)",
+        "es": "Ancho del riel (mm)"
+      },
+      "tooltip": {
+        "en": "Rail width (mm)",
+        "es": "Ancho del riel (mm)"
+      }
+    },
+    {
+      "id": "rail_t",
+      "type": "slider",
+      "default": 6.0,
+      "min": 4.0,
+      "max": 12.0,
+      "step": 0.2,
+      "group": "rail",
+      "modes": [
+        "rail",
+        "slider",
+        "set"
+      ],
+      "label": {
+        "en": "Rail thickness (mm)",
+        "es": "Espesor del riel (mm)"
+      },
+      "tooltip": {
+        "en": "Rail thickness (mm)",
+        "es": "Espesor del riel (mm)"
+      }
+    },
+    {
+      "id": "pitch",
+      "type": "slider",
+      "default": 20.0,
+      "min": 8.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "rail",
+      "modes": [
+        "rail",
+        "slider",
+        "set"
+      ],
+      "label": {
+        "en": "Button interval (mm)",
+        "es": "Intervalo entre botones (mm)"
+      },
+      "tooltip": {
+        "en": "Button interval (mm)",
+        "es": "Intervalo entre botones (mm)"
+      }
+    },
+    {
+      "id": "track_w",
+      "type": "slider",
+      "default": 9.0,
+      "min": 5.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "rail",
+      "modes": [
+        "rail",
+        "slider",
+        "set"
+      ],
+      "label": {
+        "en": "Dovetail track width (mm)",
+        "es": "Ancho de la guía de cola de milano (mm)"
+      },
+      "tooltip": {
+        "en": "Dovetail track width (mm)",
+        "es": "Ancho de la guía de cola de milano (mm)"
+      }
+    },
+    {
+      "id": "slide_clr",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.15,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "slider",
+      "modes": [
+        "rail",
+        "slider",
+        "set"
+      ],
+      "label": {
+        "en": "Running clearance (mm)",
+        "es": "Holgura de deslizamiento (mm)"
+      },
+      "tooltip": {
+        "en": "Running clearance (mm)",
+        "es": "Holgura de deslizamiento (mm)"
+      }
+    },
+    {
+      "id": "slider_len",
+      "type": "slider",
+      "default": 22.0,
+      "min": 10.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "slider",
+      "modes": [
+        "rail",
+        "slider",
+        "set"
+      ],
+      "label": {
+        "en": "Slider length (mm)",
+        "es": "Longitud del cursor (mm)"
+      },
+      "tooltip": {
+        "en": "Slider length (mm)",
+        "es": "Longitud del cursor (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "pitch": 20.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        200,
+        90
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "dovetail_track",
+        "label": {
+          "en": "Dovetail Track",
+          "es": "Guía de cola de milano"
+        },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": [
+          "track_w",
+          "rail_t",
+          "slide_clr"
+        ]
+      },
+      {
+        "id": "placket_edge",
+        "label": {
+          "en": "Placket Edge Reference",
+          "es": "Referencia del canto de tapeta"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "rail_w",
+          "rail_len",
+          "pitch"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Even buttonhole spacing is the difference between a shirt front that lies flat and one that gapes at the bust. The commercial expander is a fiddly scissoring linkage; a rail and a detented slider does the same arithmetic and prints flat in two pieces.",
+      "es": "El reparto parejo de ojales es la diferencia entre un delantero que asienta plano y uno que se abre en el busto. El compás comercial es una articulación de lazo delicada; un riel con cursor de retenes hace la misma aritmética y se imprime plano en dos piezas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "buttonhole-spacer",
+    "buttonhole",
+    "gauge",
+    "sewing",
+    "atelier",
+    "marking",
+    "tool",
+    "notion",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

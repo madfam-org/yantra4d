@@ -1,0 +1,482 @@
+{
+  "project": {
+    "name": "Garment Clip",
+    "slug": "garment-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place spring clip for garments — two jaws joined by an integral flexure hinge, printed flat on the bed as one solid with no assembly and no separate spring. Squeeze the tails and the jaws open. It clips a hanger's shoulder to hold trousers, pins a size ticket to a sample, closes a bag of trim, or holds a hem while it is pressed. This is a flexure clip, not a torsion-spring clothespin, which is what lets it come off the bed finished.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una pinza de resorte para prendas que sale terminada de la impresora — dos mordazas unidas por una bisagra flexible integrada, impresa plana sobre la cama como un solo sólido, sin ensamble y sin resorte aparte. Aprieta las colas y las mordazas abren. Sujeta pantalones al hombro de un gancho, prende una etiqueta de talla en una muestra, cierra una bolsa de avíos o sostiene un ruedo mientras se plancha. Es una pinza de flexura, no un broche de resorte de torsión, y eso es lo que permite que salga terminada de la cama.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/garment-clip.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "garment-clip",
+      "clip",
+      "flexure",
+      "print-in-place",
+      "spring",
+      "compliant",
+      "garment-care",
+      "hanger-clip",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": {
+        "en": "Plain Clip",
+        "es": "Pinza lisa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "clip"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "toothed",
+      "label": {
+        "en": "Toothed (gripping ribs)",
+        "es": "Con dientes (nervaduras de agarre)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "toothed"
+      ],
+      "estimate": {
+        "base_time": 9,
+        "per_unit": 2,
+        "per_part": 5
+      }
+    },
+    {
+      "id": "hanger",
+      "label": {
+        "en": "Hanger Clip (rod loop)",
+        "es": "Pinza de gancho (aro para tubo)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "hanger"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "clip",
+      "label": {
+        "en": "Clip",
+        "es": "Pinza"
+      },
+      "render_mode": 0,
+      "color": "#b8927a"
+    },
+    {
+      "id": "toothed",
+      "label": {
+        "en": "Toothed Clip",
+        "es": "Pinza con dientes"
+      },
+      "render_mode": 0,
+      "color": "#b8927a"
+    },
+    {
+      "id": "hanger",
+      "label": {
+        "en": "Hanger Clip",
+        "es": "Pinza de gancho"
+      },
+      "render_mode": 0,
+      "color": "#a4826c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "jaw",
+      "label": {
+        "en": "Jaw",
+        "es": "Mordaza"
+      }
+    },
+    {
+      "id": "flexure",
+      "label": {
+        "en": "Flexure",
+        "es": "Flexura"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Agarre"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "jaw_len",
+      "type": "slider",
+      "default": 34.0,
+      "min": 16.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "jaw",
+      "modes": [
+        "clip",
+        "toothed",
+        "hanger"
+      ],
+      "label": {
+        "en": "Jaw length (mm)",
+        "es": "Largo de la mordaza (mm)"
+      },
+      "tooltip": {
+        "en": "Length of each jaw from nose to hinge (mm). Longer jaws give more leverage over the flexure, so a long clip is easier to squeeze but grips less hard for the same web thickness.",
+        "es": "Largo de cada mordaza, de la punta a la bisagra (mm). Las mordazas largas dan más palanca sobre la flexura, así que una pinza larga se aprieta más fácil pero sujeta con menos fuerza para el mismo espesor de alma."
+      }
+    },
+    {
+      "id": "jaw_w",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 45.0,
+      "step": 1.0,
+      "group": "jaw",
+      "modes": [
+        "clip",
+        "toothed",
+        "hanger"
+      ],
+      "label": {
+        "en": "Jaw width (mm)",
+        "es": "Ancho de la mordaza (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the bite across the fabric (mm). A wide jaw spreads the pressure so it does not leave a mark on a pressed hem; a narrow jaw fits between hanger notches.",
+        "es": "Ancho de la mordida sobre la tela (mm). Una mordaza ancha reparte la presión y no deja marca en un ruedo planchado; una angosta cabe entre las muescas de un gancho."
+      }
+    },
+    {
+      "id": "jaw_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 9.0,
+      "step": 0.25,
+      "group": "jaw",
+      "modes": [
+        "clip",
+        "toothed",
+        "hanger"
+      ],
+      "label": {
+        "en": "Jaw thickness (mm)",
+        "es": "Espesor de la mordaza (mm)"
+      },
+      "tooltip": {
+        "en": "Slab thickness of each jaw (mm). The jaws must stay stiff or the squeeze bends them instead of the flexure; keep this at least three times the web thickness.",
+        "es": "Espesor de la placa de cada mordaza (mm). Las mordazas deben permanecer rígidas o el apriete las dobla a ellas en lugar de a la flexura; mantén al menos el triple del espesor del alma."
+      }
+    },
+    {
+      "id": "flex_t",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "flexure",
+      "modes": [
+        "clip",
+        "toothed",
+        "hanger"
+      ],
+      "label": {
+        "en": "Flexure thickness (mm)",
+        "es": "Espesor de la flexura (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the spring web (mm) — the single number that sets clamping force, and the one thing that decides whether the clip survives. Below 0.8 mm the web is two extrusion widths and delaminates on the first squeeze, so it is clamped there; it is also capped at 55 % of the jaw thickness so it never stops being a spring.",
+        "es": "Espesor del alma del resorte (mm) — el único número que fija la fuerza de sujeción y el que decide si la pinza sobrevive. Por debajo de 0.8 mm el alma son dos anchos de extrusión y se delamina al primer apriete, así que ahí se limita; además se topa al 55 % del espesor de la mordaza para que nunca deje de ser un resorte."
+      }
+    },
+    {
+      "id": "flex_len",
+      "type": "slider",
+      "default": 16.0,
+      "min": 6.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "flexure",
+      "modes": [
+        "clip",
+        "toothed",
+        "hanger"
+      ],
+      "label": {
+        "en": "Flexure free length (mm)",
+        "es": "Largo libre de la flexura (mm)"
+      },
+      "tooltip": {
+        "en": "Free length of the spring web (mm). Longer spreads the bending strain over more material, which is how a printed flexure survives repeated use; auto-clamped to 90 % of the jaw length.",
+        "es": "Largo libre del alma del resorte (mm). Más largo reparte la deformación de flexión en más material, que es como una flexura impresa sobrevive al uso repetido; se limita al 90 % del largo de la mordaza."
+      }
+    },
+    {
+      "id": "bite_gap",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.6,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "jaw",
+      "modes": [
+        "clip",
+        "toothed",
+        "hanger"
+      ],
+      "label": {
+        "en": "Open bite gap (mm)",
+        "es": "Abertura de la mordida (mm)"
+      },
+      "tooltip": {
+        "en": "Gap between the jaw faces as printed (mm). This is the relaxed opening — the clip closes onto anything thinner and preloads onto anything thicker. 1.6 mm suits shirt fabric; open it to 4-6 mm for a folded trouser waistband.",
+        "es": "Separación entre las caras de las mordazas tal como se imprime (mm). Es la abertura en reposo — la pinza cierra sobre lo más delgado y precarga sobre lo más grueso. 1.6 mm va bien para tela de camisa; ábrela de 4 a 6 mm para una pretina de pantalón doblada."
+      }
+    },
+    {
+      "id": "tooth_n",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "group": "grip",
+      "modes": [
+        "toothed",
+        "hanger"
+      ],
+      "label": {
+        "en": "Gripping ribs per jaw",
+        "es": "Nervaduras de agarre por mordaza"
+      },
+      "tooltip": {
+        "en": "Ribs added across each jaw face for slippery fabric. The ribs are shallow on purpose — a rib deep enough to bite silk is also deep enough to mark it.",
+        "es": "Nervaduras añadidas en la cara de cada mordaza para telas resbalosas. Son deliberadamente poco profundas — una nervadura que muerda la seda también la marca."
+      }
+    },
+    {
+      "id": "rod_dia",
+      "type": "slider",
+      "default": 25.0,
+      "min": 12.0,
+      "max": 45.0,
+      "step": 1.0,
+      "group": "grip",
+      "modes": [
+        "hanger"
+      ],
+      "label": {
+        "en": "Rod diameter (mm)",
+        "es": "Diámetro del tubo (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the rail the loop goes over (mm). The loop is closed rather than an open hook — a small clip on an open hook shakes off a rail.",
+        "es": "Diámetro del tubo por el que pasa el aro (mm). El aro es cerrado y no un gancho abierto — una pinza pequeña en gancho abierto se zafa del riel."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shirt_clip",
+      "mode": "toothed",
+      "label": {
+        "en": "Shirt Clip (34 mm)",
+        "es": "Pinza de camisa (34 mm)"
+      },
+      "values": {
+        "jaw_len": 34.0,
+        "jaw_w": 16.0,
+        "jaw_t": 4.0,
+        "flex_t": 1.2,
+        "flex_len": 16.0,
+        "bite_gap": 1.6,
+        "tooth_n": 4
+      }
+    },
+    {
+      "id": "trouser_clip",
+      "mode": "hanger",
+      "label": {
+        "en": "Trouser Clip (rod loop)",
+        "es": "Pinza de pantalón (aro para tubo)"
+      },
+      "values": {
+        "jaw_len": 46.0,
+        "jaw_w": 24.0,
+        "jaw_t": 5.5,
+        "flex_t": 1.8,
+        "flex_len": 26.0,
+        "bite_gap": 3.5,
+        "tooth_n": 5,
+        "rod_dia": 32.0
+      }
+    },
+    {
+      "id": "ticket_clip",
+      "mode": "clip",
+      "label": {
+        "en": "Sample Ticket Clip (small)",
+        "es": "Pinza de etiqueta de muestra (chica)"
+      },
+      "values": {
+        "jaw_len": 20.0,
+        "jaw_w": 10.0,
+        "jaw_t": 2.4,
+        "flex_t": 0.9,
+        "flex_len": 9.0,
+        "bite_gap": 0.8
+      }
+    },
+    {
+      "id": "trim_bag_clip",
+      "mode": "toothed",
+      "label": {
+        "en": "Trim Bag Clip (wide)",
+        "es": "Pinza de bolsa de avíos (ancha)"
+      },
+      "values": {
+        "jaw_len": 55.0,
+        "jaw_w": 40.0,
+        "jaw_t": 6.0,
+        "flex_t": 2.0,
+        "flex_len": 34.0,
+        "bite_gap": 2.5,
+        "tooth_n": 7
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        60,
+        45
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 5,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "bite_face",
+        "label": {
+          "en": "Bite Face (the fabric the jaws close on)",
+          "es": "Cara de mordida (la tela que las mordazas cierran)"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "jaw_w",
+          "jaw_len",
+          "bite_gap"
+        ]
+      },
+      {
+        "id": "flexure_hinge",
+        "label": {
+          "en": "Flexure Hinge (the compliant spring web)",
+          "es": "Bisagra de flexura (el alma flexible del resorte)"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "flex_t",
+          "flex_len",
+          "jaw_t"
+        ]
+      },
+      {
+        "id": "rod_loop",
+        "label": {
+          "en": "Rod Loop (closed rail engagement)",
+          "es": "Aro para tubo (acoplamiento cerrado al riel)"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "rod_dia",
+          "jaw_t",
+          "jaw_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Clips are the disposable end of garment handling: a shop buys them by the thousand, snaps them, and bins them. A clip that prints in one piece with no spring and no rivet can be made where it is needed, in the width the garment actually needs, and reprinted from the same file when it eventually fatigues — and because the failure mode of a flexure is a visible crack rather than a lost spring, it is replaced deliberately instead of adding a steel wire to a bin of mixed waste.",
+      "es": "Las pinzas son el extremo desechable del manejo de prendas: una tienda las compra por millar, las truena y las tira. Una pinza que se imprime en una sola pieza, sin resorte y sin remache, puede fabricarse donde se necesita, en el ancho que la prenda realmente pide, y reimprimirse desde el mismo archivo cuando finalmente se fatiga — y como el modo de falla de una flexura es una grieta visible y no un resorte perdido, se reemplaza a propósito en vez de sumar un alambre de acero a un bote de residuos mezclados."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "garment-clip",
+    "clip",
+    "flexure",
+    "print-in-place",
+    "spring",
+    "compliant",
+    "garment-care",
+    "hanger-clip",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

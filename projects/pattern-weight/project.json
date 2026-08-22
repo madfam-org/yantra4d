@@ -1,0 +1,380 @@
+{
+  "project": {
+    "name": "Pattern Weight",
+    "slug": "pattern-weight",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed stackable tailor's pattern weight — the wide, low disc that pins a paper pattern to cloth without a single pin hole, so slippery silks and knits get cut on the true grain. Finger recess for one-handed lifting, stacking registration for storage.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un pisapatrones de sastre apilable impreso en 3D — el disco ancho y bajo que fija el patrón de papel a la tela sin un solo alfilerazo, para cortar sedas y puntos al hilo verdadero. Rebaje para el dedo y registro de apilado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pattern-weight.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "pattern-weight",
+      "sewing",
+      "atelier",
+      "cutting",
+      "tool",
+      "notion",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "weight",
+      "label": {
+        "en": "Single Weight",
+        "es": "Peso único"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "weight"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "stack",
+      "label": {
+        "en": "Stacked Pair",
+        "es": "Par apilado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "stack"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Set of Four",
+        "es": "Juego de cuatro"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "weight",
+      "label": {
+        "en": "Weight",
+        "es": "Peso"
+      },
+      "render_mode": 0,
+      "color": "#8a8f98"
+    },
+    {
+      "id": "stack",
+      "label": {
+        "en": "Stacked Pair",
+        "es": "Par apilado"
+      },
+      "render_mode": 0,
+      "color": "#8a8f98"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Set of Four",
+        "es": "Juego de cuatro"
+      },
+      "render_mode": 0,
+      "color": "#8a8f98"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    },
+    {
+      "id": "stacking",
+      "label": {
+        "en": "Stacking",
+        "es": "Apilado"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "weight_dia",
+      "type": "slider",
+      "default": 62.0,
+      "min": 30.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "body",
+      "modes": [
+        "weight",
+        "stack",
+        "set"
+      ],
+      "label": {
+        "en": "Outside diameter (mm)",
+        "es": "Diámetro exterior (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter (mm)",
+        "es": "Diámetro exterior (mm)"
+      }
+    },
+    {
+      "id": "weight_h",
+      "type": "slider",
+      "default": 16.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "weight",
+        "stack",
+        "set"
+      ],
+      "label": {
+        "en": "Body height (mm)",
+        "es": "Altura del cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Body height (mm)",
+        "es": "Altura del cuerpo (mm)"
+      }
+    },
+    {
+      "id": "rim_chamfer",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.0,
+      "max": 6.0,
+      "step": 0.2,
+      "group": "body",
+      "modes": [
+        "weight",
+        "stack",
+        "set"
+      ],
+      "label": {
+        "en": "Rim chamfer (mm)",
+        "es": "Chaflán del borde (mm)"
+      },
+      "tooltip": {
+        "en": "Rim chamfer (mm)",
+        "es": "Chaflán del borde (mm)"
+      }
+    },
+    {
+      "id": "recess_dia",
+      "type": "slider",
+      "default": 26.0,
+      "min": 10.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "body",
+      "modes": [
+        "weight",
+        "stack",
+        "set"
+      ],
+      "label": {
+        "en": "Finger recess diameter (mm)",
+        "es": "Diámetro del rebaje (mm)"
+      },
+      "tooltip": {
+        "en": "Finger recess diameter (mm)",
+        "es": "Diámetro del rebaje (mm)"
+      }
+    },
+    {
+      "id": "recess_d",
+      "type": "slider",
+      "default": 5.0,
+      "min": 1.0,
+      "max": 14.0,
+      "step": 0.2,
+      "group": "body",
+      "modes": [
+        "weight",
+        "stack",
+        "set"
+      ],
+      "label": {
+        "en": "Finger recess depth (mm)",
+        "es": "Profundidad del rebaje (mm)"
+      },
+      "tooltip": {
+        "en": "Finger recess depth (mm)",
+        "es": "Profundidad del rebaje (mm)"
+      }
+    },
+    {
+      "id": "boss_h",
+      "type": "slider",
+      "default": 2.4,
+      "min": 0.0,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "stacking",
+      "modes": [
+        "weight",
+        "stack",
+        "set"
+      ],
+      "label": {
+        "en": "Stacking boss height (mm)",
+        "es": "Altura del resalte de apilado (mm)"
+      },
+      "tooltip": {
+        "en": "Stacking boss height (mm)",
+        "es": "Altura del resalte de apilado (mm)"
+      }
+    },
+    {
+      "id": "stack_clear",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.1,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "stacking",
+      "modes": [
+        "weight",
+        "stack",
+        "set"
+      ],
+      "label": {
+        "en": "Stacking clearance (mm)",
+        "es": "Holgura de apilado (mm)"
+      },
+      "tooltip": {
+        "en": "Stacking clearance (mm)",
+        "es": "Holgura de apilado (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "weight",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "weight_dia": 62.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        70
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "stack_register",
+        "label": {
+          "en": "Stacking Register",
+          "es": "Registro de apilado"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "weight_dia",
+          "boss_h",
+          "stack_clear"
+        ]
+      },
+      {
+        "id": "table_face",
+        "label": {
+          "en": "Table Face",
+          "es": "Cara de mesa"
+        },
+        "geometry_type": "surface",
+        "standard": "internal",
+        "parameters": [
+          "weight_dia",
+          "rim_chamfer"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Pattern weights replace pins: no pin holes in cloth that shows them, no distortion of the grain, and a faster cut. Bought, they are a per-dozen cost that keeps home and small-shop cutters using pins; printed, a full set costs filament and an afternoon.",
+      "es": "Los pisapatrones sustituyen a los alfileres: sin agujeros en telas que los delatan, sin deformar el hilo y con un corte más rápido. Comprados, su costo por docena mantiene a talleres pequeños usando alfileres; impresos, un juego cuesta filamento y una tarde."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "pattern-weight",
+    "sewing",
+    "atelier",
+    "cutting",
+    "tool",
+    "notion",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

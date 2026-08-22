@@ -1,0 +1,361 @@
+{
+  "project": {
+    "name": "Bias Tape Maker",
+    "slug": "bias-tape-maker",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed folded-channel bias tape tool: a bias-cut strip feeds in the wide mouth, the tapering channel folds both raw edges to the centre, and single-fold tape comes out the throat under the iron. 18 mm and 25 mm modes, or any finished width you set.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una herramienta para cinta al bies impresa en 3D: la tira al bies entra por la boca ancha, el canal cónico dobla ambos orillos hacia el centro y sale cinta de un doblez bajo la plancha. Modos de 18 y 25 mm, o cualquier ancho terminado.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bias-tape-maker.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bias-tape-maker",
+      "bias-tape",
+      "sewing",
+      "atelier",
+      "pressing",
+      "tool",
+      "notion",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tool18",
+      "label": {
+        "en": "18 mm Tool",
+        "es": "Herramienta de 18 mm"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tool18"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "tool25",
+      "label": {
+        "en": "25 mm Tool",
+        "es": "Herramienta de 25 mm"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tool25"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Tools",
+        "es": "Ambas herramientas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "tool18",
+      "label": {
+        "en": "18 mm Tool",
+        "es": "Herramienta de 18 mm"
+      },
+      "render_mode": 0,
+      "color": "#b8724c"
+    },
+    {
+      "id": "tool25",
+      "label": {
+        "en": "25 mm Tool",
+        "es": "Herramienta de 25 mm"
+      },
+      "render_mode": 0,
+      "color": "#b8724c"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Tools",
+        "es": "Ambas herramientas"
+      },
+      "render_mode": 0,
+      "color": "#b8724c"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "tape",
+      "label": {
+        "en": "Tape",
+        "es": "Cinta"
+      }
+    },
+    {
+      "id": "shell",
+      "label": {
+        "en": "Shell",
+        "es": "Carcasa"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "tape_width",
+      "type": "slider",
+      "default": 18.0,
+      "min": 6.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "tape",
+      "modes": [
+        "tool18",
+        "tool25",
+        "set"
+      ],
+      "label": {
+        "en": "Finished tape width (mm)",
+        "es": "Ancho terminado de la cinta (mm)"
+      },
+      "tooltip": {
+        "en": "Finished tape width (mm)",
+        "es": "Ancho terminado de la cinta (mm)"
+      }
+    },
+    {
+      "id": "fabric_t",
+      "type": "slider",
+      "default": 0.9,
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "tape",
+      "modes": [
+        "tool18",
+        "tool25",
+        "set"
+      ],
+      "label": {
+        "en": "Folded fabric thickness (mm)",
+        "es": "Espesor de la tela doblada (mm)"
+      },
+      "tooltip": {
+        "en": "Folded fabric thickness (mm)",
+        "es": "Espesor de la tela doblada (mm)"
+      }
+    },
+    {
+      "id": "tool_len",
+      "type": "slider",
+      "default": 58.0,
+      "min": 30.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "shell",
+      "modes": [
+        "tool18",
+        "tool25",
+        "set"
+      ],
+      "label": {
+        "en": "Mouth-to-throat length (mm)",
+        "es": "Longitud boca-garganta (mm)"
+      },
+      "tooltip": {
+        "en": "Mouth-to-throat length (mm)",
+        "es": "Longitud boca-garganta (mm)"
+      }
+    },
+    {
+      "id": "wall_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "shell",
+      "modes": [
+        "tool18",
+        "tool25",
+        "set"
+      ],
+      "label": {
+        "en": "Shell wall thickness (mm)",
+        "es": "Espesor de la carcasa (mm)"
+      },
+      "tooltip": {
+        "en": "Shell wall thickness (mm)",
+        "es": "Espesor de la carcasa (mm)"
+      }
+    },
+    {
+      "id": "throat_len",
+      "type": "slider",
+      "default": 14.0,
+      "min": 6.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "shell",
+      "modes": [
+        "tool18",
+        "tool25",
+        "set"
+      ],
+      "label": {
+        "en": "Parallel throat length (mm)",
+        "es": "Longitud de la garganta (mm)"
+      },
+      "tooltip": {
+        "en": "Parallel throat length (mm)",
+        "es": "Longitud de la garganta (mm)"
+      }
+    },
+    {
+      "id": "hang_hole",
+      "type": "slider",
+      "default": 4.0,
+      "min": 0.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "shell",
+      "modes": [
+        "tool18",
+        "tool25",
+        "set"
+      ],
+      "label": {
+        "en": "Hang hole diameter (mm)",
+        "es": "Diámetro del colgadero (mm)"
+      },
+      "tooltip": {
+        "en": "Hang hole diameter (mm)",
+        "es": "Diámetro del colgadero (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "tool18",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "tape_width": 18.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        70,
+        70,
+        55
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "strip_edge",
+        "label": {
+          "en": "Bias Strip Edge (mouth)",
+          "es": "Orillo de la tira al bies (boca)"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "tape_width",
+          "fabric_t",
+          "wall_t"
+        ]
+      },
+      {
+        "id": "tape_throat",
+        "label": {
+          "en": "Folded Tape Throat",
+          "es": "Garganta de la cinta doblada"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "tape_width",
+          "fabric_t",
+          "throat_len"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Bias binding is what finishes a raw edge on any curve — necklines, armholes, quilt edges. The tools are sold as a fixed size run in blister packs; one parametric object gives a maker the exact finished width their pattern calls for, including the sizes nobody sells.",
+      "es": "El bies es lo que remata un orillo en cualquier curva: escotes, sisas, orillas de acolchado. Las herramientas se venden en tallajes fijos y envase plástico; un objeto paramétrico da el ancho exacto que pide el patrón, incluidos los que nadie vende."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bias-tape-maker",
+    "bias-tape",
+    "sewing",
+    "atelier",
+    "pressing",
+    "tool",
+    "notion",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

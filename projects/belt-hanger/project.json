@@ -1,0 +1,438 @@
+{
+  "project": {
+    "name": "Belt Hanger",
+    "slug": "belt-hanger",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed multi-loop belt and accessory rack — a vertical spine carrying a column of open hooks, topped by a rod hook for the closet rail. Each open hook takes one belt folded at its buckle, or a scarf, a tie, or a bag strap, and comes off the front without disturbing its neighbours, which is what an open hook does that a closed loop cannot. The hook throat is sized from the strap width you actually own, across the standard 20 / 25 / 38 / 50 mm webbing widths.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un organizador de cinturones y accesorios impreso en 3D — un espinazo vertical con una columna de ganchos abiertos y, arriba, un gancho para el tubo del clóset. Cada gancho abierto recibe un cinturón doblado en su hebilla, o una mascada, una corbata o el asa de una bolsa, y sale por el frente sin mover a sus vecinos, que es justo lo que un gancho abierto hace y un aro cerrado no. La garganta del gancho se dimensiona con el ancho de correa que realmente tienes, entre los anchos estándar de 20, 25, 38 y 50 mm.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/belt-hanger.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "belt-hanger",
+      "belt",
+      "rack",
+      "closet",
+      "accessory",
+      "scarf",
+      "tie",
+      "wardrobe",
+      "display",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "belt",
+      "label": {
+        "en": "Belt Rack",
+        "es": "Organizador de cinturones"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "belt"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 9
+      }
+    },
+    {
+      "id": "scarf",
+      "label": {
+        "en": "Scarf Rack (wide, shallow)",
+        "es": "Organizador de mascadas (ancho y de garganta baja)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "scarf"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 9
+      }
+    },
+    {
+      "id": "tie",
+      "label": {
+        "en": "Tie Rack (many small hooks)",
+        "es": "Corbatero (muchos ganchos pequeños)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "tie"
+      ],
+      "estimate": {
+        "base_time": 16,
+        "per_unit": 3,
+        "per_part": 9
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "belt",
+      "label": {
+        "en": "Belt Rack",
+        "es": "Organizador de cinturones"
+      },
+      "render_mode": 0,
+      "color": "#a09080"
+    },
+    {
+      "id": "scarf",
+      "label": {
+        "en": "Scarf Rack",
+        "es": "Organizador de mascadas"
+      },
+      "render_mode": 0,
+      "color": "#a89a88"
+    },
+    {
+      "id": "tie",
+      "label": {
+        "en": "Tie Rack",
+        "es": "Corbatero"
+      },
+      "render_mode": 0,
+      "color": "#948474"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "hooks",
+      "label": {
+        "en": "Hooks",
+        "es": "Ganchos"
+      }
+    },
+    {
+      "id": "spine",
+      "label": {
+        "en": "Spine",
+        "es": "Espinazo"
+      }
+    },
+    {
+      "id": "mount",
+      "label": {
+        "en": "Mount",
+        "es": "Montaje"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "hook_count",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 14,
+      "step": 1,
+      "group": "hooks",
+      "modes": [
+        "belt",
+        "scarf",
+        "tie"
+      ],
+      "label": {
+        "en": "Hook count",
+        "es": "Cantidad de ganchos"
+      },
+      "tooltip": {
+        "en": "Number of open hooks on the spine. The spine grows to fit; a 14-hook tie rack is tall, so check it against your print bed's Z before committing.",
+        "es": "Cantidad de ganchos abiertos en el espinazo. El espinazo crece para acomodarlos; un corbatero de 14 ganchos queda alto, así que revisa la altura contra el eje Z de tu cama antes de imprimir."
+      }
+    },
+    {
+      "id": "strap_w",
+      "type": "slider",
+      "default": 38.0,
+      "min": 12.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "hooks",
+      "modes": [
+        "belt",
+        "scarf",
+        "tie"
+      ],
+      "label": {
+        "en": "Strap width (mm)",
+        "es": "Ancho de la correa (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the widest strap the rack must take (mm). 20 / 25 / 38 / 50 mm are the standard webbing and belt widths. This sizes the hook throat and the pitch between hooks — get it from the belt, not from the buckle.",
+        "es": "Ancho de la correa más ancha que debe recibir el organizador (mm). Los anchos estándar de correa y cincha son 20, 25, 38 y 50 mm. Define la garganta del gancho y el paso entre ganchos — mídelo del cinturón, no de la hebilla."
+      }
+    },
+    {
+      "id": "hook_reach",
+      "type": "slider",
+      "default": 34.0,
+      "min": 14.0,
+      "max": 70.0,
+      "step": 1.0,
+      "group": "hooks",
+      "modes": [
+        "belt",
+        "scarf",
+        "tie"
+      ],
+      "label": {
+        "en": "Hook reach (mm)",
+        "es": "Alcance del gancho (mm)"
+      },
+      "tooltip": {
+        "en": "How far each hook stands off the spine (mm). A folded leather belt is bulky at the buckle — 34 mm clears most; a rolled scarf wants 50 mm or more.",
+        "es": "Cuánto sobresale cada gancho del espinazo (mm). Un cinturón de piel doblado abulta en la hebilla — 34 mm libra la mayoría; una mascada enrollada pide 50 mm o más."
+      }
+    },
+    {
+      "id": "spine_w",
+      "type": "slider",
+      "default": 26.0,
+      "min": 14.0,
+      "max": 50.0,
+      "step": 1.0,
+      "group": "spine",
+      "modes": [
+        "belt",
+        "scarf",
+        "tie"
+      ],
+      "label": {
+        "en": "Spine width (mm)",
+        "es": "Ancho del espinazo (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the vertical spine (mm). Wider resists the twist a heavy belt puts on a loaded hook.",
+        "es": "Ancho del espinazo vertical (mm). Más ancho resiste mejor la torsión que un cinturón pesado ejerce sobre un gancho cargado."
+      }
+    },
+    {
+      "id": "spine_t",
+      "type": "slider",
+      "default": 9.0,
+      "min": 5.0,
+      "max": 18.0,
+      "step": 0.5,
+      "group": "spine",
+      "modes": [
+        "belt",
+        "scarf",
+        "tie"
+      ],
+      "label": {
+        "en": "Spine thickness (mm)",
+        "es": "Espesor del espinazo (mm)"
+      },
+      "tooltip": {
+        "en": "Front-to-back thickness of the spine (mm). This is the bending stiffness of the whole rack and also sets the hook arm section, so it is the single parameter to raise if a loaded hook sags.",
+        "es": "Espesor de adelante hacia atrás del espinazo (mm). Es la rigidez a flexión de todo el organizador y también define la sección del brazo del gancho, así que es el parámetro a aumentar si un gancho cargado se vence."
+      }
+    },
+    {
+      "id": "rod_dia",
+      "type": "slider",
+      "default": 32.0,
+      "min": 18.0,
+      "max": 45.0,
+      "step": 1.0,
+      "group": "mount",
+      "modes": [
+        "belt",
+        "scarf",
+        "tie"
+      ],
+      "label": {
+        "en": "Closet rod diameter (mm)",
+        "es": "Diámetro del tubo de clóset (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the rail the top hook goes over (mm). A 25 mm steel rod and a 32 mm timber dowel are the two common closet rails; the hook adds 1.2 mm of running clearance.",
+        "es": "Diámetro del tubo por el que pasa el gancho superior (mm). Un tubo de acero de 25 mm y una barra de madera de 32 mm son los dos rieles habituales; el gancho añade 1.2 mm de holgura."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "leather_belts",
+      "mode": "belt",
+      "label": {
+        "en": "Leather Belts (38 mm x 6)",
+        "es": "Cinturones de piel (38 mm x 6)"
+      },
+      "values": {
+        "hook_count": 6,
+        "strap_w": 38.0,
+        "hook_reach": 34.0,
+        "spine_w": 26.0,
+        "spine_t": 9.0,
+        "rod_dia": 32.0
+      }
+    },
+    {
+      "id": "webbing_50",
+      "mode": "belt",
+      "label": {
+        "en": "50 mm Webbing (heavy)",
+        "es": "Cincha de 50 mm (pesada)"
+      },
+      "values": {
+        "hook_count": 4,
+        "strap_w": 50.0,
+        "hook_reach": 46.0,
+        "spine_w": 34.0,
+        "spine_t": 13.0,
+        "rod_dia": 32.0
+      }
+    },
+    {
+      "id": "scarves",
+      "mode": "scarf",
+      "label": {
+        "en": "Scarves and Shawls",
+        "es": "Mascadas y chales"
+      },
+      "values": {
+        "hook_count": 5,
+        "strap_w": 55.0,
+        "hook_reach": 58.0,
+        "spine_w": 32.0,
+        "spine_t": 10.0,
+        "rod_dia": 25.0
+      }
+    },
+    {
+      "id": "ties",
+      "mode": "tie",
+      "label": {
+        "en": "Ties (12 small hooks)",
+        "es": "Corbatas (12 ganchos pequeños)"
+      },
+      "values": {
+        "hook_count": 12,
+        "strap_w": 20.0,
+        "hook_reach": 22.0,
+        "spine_w": 20.0,
+        "spine_t": 7.0,
+        "rod_dia": 25.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        180,
+        180,
+        200
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 16,
+    "per_unit": 3,
+    "per_part": 9,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "strap_throat",
+        "label": {
+          "en": "Strap Throat (the open hook mouth)",
+          "es": "Garganta de la correa (la boca del gancho abierto)"
+        },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": [
+          "strap_w",
+          "hook_reach",
+          "spine_t"
+        ]
+      },
+      {
+        "id": "rod_hook",
+        "label": {
+          "en": "Rod Hook (closet rail engagement)",
+          "es": "Gancho de tubo (acoplamiento al riel del clóset)"
+        },
+        "geometry_type": "custom",
+        "standard": "internal",
+        "parameters": [
+          "rod_dia",
+          "spine_t"
+        ]
+      },
+      {
+        "id": "hook_pitch",
+        "label": {
+          "en": "Hook Pitch (spacing along the spine)",
+          "es": "Paso de ganchos (separación en el espinazo)"
+        },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": [
+          "hook_count",
+          "strap_w",
+          "spine_w"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Belts and scarves are the accessories that get thrown in a drawer, creased, and eventually discarded because nobody can find the one they want. Racks are sold for a nominal belt width that does not match 50 mm work webbing, a child's 20 mm belt, or a hand-woven sash, so the awkward widths stay in the drawer. A rack generated from the strap you own puts every accessory in view, which is the cheapest thing anyone can do to keep them in rotation instead of in a bin bag.",
+      "es": "Los cinturones y las mascadas son los accesorios que acaban en un cajón, arrugados y finalmente desechados porque nadie encuentra el que busca. Los organizadores se venden para un ancho de cinturón nominal que no coincide con una cincha de trabajo de 50 mm, un cinturón infantil de 20 mm o una faja tejida a mano, así que los anchos raros se quedan en el cajón. Un organizador generado a partir de la correa que sí tienes deja cada accesorio a la vista, que es lo más barato que se puede hacer para mantenerlos en uso en lugar de en una bolsa de basura."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "belt-hanger",
+    "belt",
+    "rack",
+    "closet",
+    "accessory",
+    "scarf",
+    "tie",
+    "wardrobe",
+    "display",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

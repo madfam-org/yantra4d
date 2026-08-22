@@ -5,8 +5,8 @@
     "version": "0.1.0",
     "engine": "cadquery",
     "description": {
-      "en": "A parametric dress form (tailor's torso) — the mannequin the Fashion Cabinet soft-goods commons drapes its patterns onto. Deliberately an abstract form, not a figure: its value is its interfaces — the neck, shoulder, bust, waist, and hip LANDMARK RINGS. Each ring's girth is an ISO-8559 body measurement, so the same numbers that draft a flat pattern in Fashion Cabinet also size this solid, and a garment edge wraps to the ring that carries its measurement. Built as a loft through named elliptical cross-sections whose perimeters equal their girths; verified so every measured ring is dimensionally exact. Modes: a bare torso, a torso on a stand, and a bifurcated trouser form with thigh stumps.\n\nOfficial visualizer and configurator: Yantra4D.",
-      "es": "Un maniquí de sastre (torso) paramétrico — el maniquí sobre el que el común de bienes blandos Fashion Cabinet coloca sus patrones. Deliberadamente una forma abstracta, no una figura: su valor son sus interfaces — los ANILLOS DE REFERENCIA de cuello, hombro, busto, cintura y cadera. El contorno de cada anillo es una medida corporal ISO-8559, así que los mismos números que trazan un patrón plano en Fashion Cabinet dimensionan este sólido, y el canto de una prenda envuelve al anillo que lleva su medida. Construido como un loft a través de secciones elípticas cuyos perímetros igualan sus contornos; verificado para que cada anillo medido sea dimensionalmente exacto. Modos: torso simple, torso con pedestal, y forma bifurcada con muslos.\n\nVisualizador y configurador oficial: Yantra4D."
+      "en": "A parametric dress form (tailor's torso) — the mannequin the Fashion Cabinet soft-goods commons drapes its patterns onto. Deliberately an abstract form, not a figure: its value is its interfaces — the neck, shoulder, bust, waist, and hip LANDMARK RINGS. Each ring's girth is an ISO-8559 body measurement, so the same numbers that draft a flat pattern in Fashion Cabinet also size this solid, and a garment edge wraps to the ring that carries its measurement. Built as a loft through named elliptical cross-sections whose perimeters equal their girths; verified so every measured ring is dimensionally exact. Modes: a bare torso, a torso on a stand, a bifurcated trouser form with thigh stumps, a full figure from shoulders to floor (shoulder cap, upper-arm stubs, and legs closed at the ankle), and a lower body from waist to ankle.\n\nOfficial visualizer and configurator: Yantra4D.",
+      "es": "Un maniquí de sastre (torso) paramétrico — el maniquí sobre el que el común de bienes blandos Fashion Cabinet coloca sus patrones. Deliberadamente una forma abstracta, no una figura: su valor son sus interfaces — los ANILLOS DE REFERENCIA de cuello, hombro, busto, cintura y cadera. El contorno de cada anillo es una medida corporal ISO-8559, así que los mismos números que trazan un patrón plano en Fashion Cabinet dimensionan este sólido, y el canto de una prenda envuelve al anillo que lleva su medida. Construido como un loft a través de secciones elípticas cuyos perímetros igualan sus contornos; verificado para que cada anillo medido sea dimensionalmente exacto. Modos: torso simple, torso con pedestal, forma bifurcada con muslos, figura completa de hombros al suelo (casquete de hombro, muñones de brazo y piernas cerradas en el tobillo), y cuerpo inferior de cintura a tobillo.\n\nVisualizador y configurador oficial: Yantra4D."
     },
     "difficulty": "advanced",
     "tags": [
@@ -78,6 +78,40 @@
         "per_unit": 2,
         "per_part": 60
       }
+    },
+    {
+      "id": "figure",
+      "label": {
+        "en": "Full figure (shoulders to floor)",
+        "es": "Figura completa (hombros al suelo)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "figure"
+      ],
+      "estimate": {
+        "base_time": 340,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    },
+    {
+      "id": "legs",
+      "label": {
+        "en": "Lower body (waist to ankle)",
+        "es": "Cuerpo inferior (cintura al tobillo)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "legs"
+      ],
+      "estimate": {
+        "base_time": 300,
+        "per_unit": 2,
+        "per_part": 60
+      }
     }
   ],
   "parts": [
@@ -100,6 +134,20 @@
       "name": {
         "en": "Trouser form",
         "es": "Forma con muslos"
+      }
+    },
+    {
+      "id": "figure",
+      "name": {
+        "en": "Full figure",
+        "es": "Figura completa"
+      }
+    },
+    {
+      "id": "legs",
+      "name": {
+        "en": "Lower body",
+        "es": "Cuerpo inferior"
       }
     }
   ],
@@ -128,6 +176,20 @@
           "label": {
             "en": "Trouser form",
             "es": "Forma con muslos"
+          }
+        },
+        {
+          "value": "figure",
+          "label": {
+            "en": "Full figure",
+            "es": "Figura completa"
+          }
+        },
+        {
+          "value": "legs",
+          "label": {
+            "en": "Lower body",
+            "es": "Cuerpo inferior"
           }
         }
       ],
@@ -260,7 +322,9 @@
       "step": 10,
       "group": "measurements",
       "modes": [
-        "bifurcated"
+        "bifurcated",
+        "figure",
+        "legs"
       ],
       "measurement": {
         "standard": "iso_8559",
@@ -269,6 +333,106 @@
       "label": {
         "en": "Thigh girth (mm)",
         "es": "Contorno de muslo (mm)"
+      }
+    },
+    {
+      "id": "knee_girth",
+      "type": "slider",
+      "default": 380,
+      "min": 220,
+      "max": 620,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "figure",
+        "legs"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "knee_girth"
+      },
+      "label": {
+        "en": "Knee girth (mm)",
+        "es": "Contorno de rodilla (mm)"
+      }
+    },
+    {
+      "id": "ankle_girth",
+      "type": "slider",
+      "default": 240,
+      "min": 150,
+      "max": 420,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "figure",
+        "legs"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "ankle_girth"
+      },
+      "label": {
+        "en": "Ankle girth (mm)",
+        "es": "Contorno de tobillo (mm)"
+      }
+    },
+    {
+      "id": "inside_leg_length",
+      "type": "slider",
+      "default": 780,
+      "min": 400,
+      "max": 1000,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "figure",
+        "legs"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "inside_leg_length"
+      },
+      "label": {
+        "en": "Inside leg length, crotch→floor (mm)",
+        "es": "Entrepierna, tiro→suelo (mm)"
+      }
+    },
+    {
+      "id": "upper_arm_girth",
+      "type": "slider",
+      "default": 300,
+      "min": 180,
+      "max": 560,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "figure"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "upper_arm_girth"
+      },
+      "label": {
+        "en": "Upper arm girth (mm)",
+        "es": "Contorno de brazo (mm)"
+      }
+    },
+    {
+      "id": "arm_stub_length",
+      "type": "slider",
+      "default": 120,
+      "min": 40,
+      "max": 320,
+      "step": 5,
+      "group": "shape",
+      "modes": [
+        "figure"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Arm stub length (mm)",
+        "es": "Largo del muñón de brazo (mm)"
       }
     },
     {
@@ -456,6 +620,20 @@
         "en": "A hip much smaller than the waist makes an unnatural seat curve.",
         "es": "Una cadera mucho menor que la cintura crea una curva de asiento poco natural."
       }
+    },
+    {
+      "expression": "knee_girth <= thigh_girth * 0.92",
+      "message": {
+        "en": "The leg must taper: the knee ring is smaller than the thigh ring.",
+        "es": "La pierna debe afinarse: el anillo de rodilla es menor que el de muslo."
+      }
+    },
+    {
+      "expression": "ankle_girth <= knee_girth * 0.92",
+      "message": {
+        "en": "The leg must taper: the ankle ring is smaller than the knee ring.",
+        "es": "La pierna debe afinarse: el anillo de tobillo es menor que el de rodilla."
+      }
     }
   ],
   "export_formats": [
@@ -544,6 +722,57 @@
         "parameters": [
           "shoulder_width",
           "back_waist_length"
+        ]
+      },
+      {
+        "id": "thigh_ring",
+        "label": {
+          "en": "Thigh landmark ring",
+          "es": "Anillo de muslo"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "thigh_girth"
+        ]
+      },
+      {
+        "id": "knee_ring",
+        "label": {
+          "en": "Knee landmark ring",
+          "es": "Anillo de rodilla"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "knee_girth",
+          "inside_leg_length"
+        ]
+      },
+      {
+        "id": "ankle_ring",
+        "label": {
+          "en": "Ankle landmark ring",
+          "es": "Anillo de tobillo"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "ankle_girth",
+          "inside_leg_length"
+        ]
+      },
+      {
+        "id": "upper_arm_ring",
+        "label": {
+          "en": "Upper-arm landmark ring",
+          "es": "Anillo de brazo"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "upper_arm_girth",
+          "arm_stub_length"
         ]
       }
     ],

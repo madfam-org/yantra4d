@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, goToProjects, setLanguage } from '../../helpers/test-utils.js'
+import { goToStudio, goToProjects, setLanguage, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 /** Click the globe button and select a language from the dropdown. */
 async function selectLanguageFromDropdown(page, langLabel) {
@@ -44,6 +44,9 @@ test.describe('Internationalization (i18n)', () => {
   test('default language renders all UI in Spanish', async ({ page, sidebar }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
+    // The dock shows "Procesando…" while the auto-render is in flight — settle
+    // first or the Generar/Verificación text assertions race it (ARC flake class).
+    await waitForRenderSettled(page)
     await expect(sidebar.generateButton).toBeVisible()
     await expect(sidebar.generateButton).toHaveText(/Generar/)
     await expect(sidebar.verifyButton).toHaveText(/Verificación/)
@@ -53,6 +56,7 @@ test.describe('Internationalization (i18n)', () => {
   test('English UI renders all buttons', async ({ page, sidebar }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
+    await waitForRenderSettled(page)
     await expect(sidebar.generateButton).toBeVisible()
     await expect(sidebar.generateButton).toHaveText(/Generate/)
     await expect(sidebar.verifyButton).toHaveText(/Verification/)
@@ -109,10 +113,12 @@ test.describe('Internationalization (i18n)', () => {
   test('language persists across page reload', async ({ page }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
+    await waitForRenderSettled(page)
     await expect(page.locator('text=Generar')).toBeVisible()
 
     await page.reload()
     await page.waitForSelector('header')
+    await waitForRenderSettled(page)
     await expect(page.locator('text=Generar')).toBeVisible()
   })
 

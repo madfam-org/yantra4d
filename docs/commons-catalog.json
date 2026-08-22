@@ -2,14 +2,14 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 360,
-    "with_cdg_interfaces": 345,
-    "with_commons_license": 359,
+    "cartridges": 363,
+    "with_cdg_interfaces": 348,
+    "with_commons_license": 362,
     "dual_engine": 24
   },
   "domains": {
     "household": 113,
-    "industrial": 81,
+    "industrial": 84,
     "commercial": 63,
     "wearable": 32,
     "medical": 29,
@@ -213,6 +213,7 @@
     "internal/aocl",
     "iso_8559",
     "low / high shank (19 / 32 mm bar-to-plate)",
+    "none",
     "playing card 63x88mm",
     "ppf-contact-solver (SIGGRAPH Asia 2024)",
     "single-channel micropipette (Ø3.8-6.0 mm shaft)",
@@ -2252,9 +2253,9 @@
         "cadquery"
       ],
       "dual_engine": false,
-      "modes": 3,
-      "parts": 3,
-      "parameters": 15,
+      "modes": 5,
+      "parts": 5,
+      "parameters": 20,
       "parameter_ids": [
         "target_part",
         "neck_girth",
@@ -2265,6 +2266,11 @@
         "back_waist_length",
         "shoulder_width",
         "thigh_girth",
+        "knee_girth",
+        "ankle_girth",
+        "inside_leg_length",
+        "upper_arm_girth",
+        "arm_stub_length",
         "bust_depth_ratio",
         "seat_depth_ratio",
         "post_dia",
@@ -2347,6 +2353,45 @@
           "parameters": [
             "shoulder_width",
             "back_waist_length"
+          ]
+        },
+        {
+          "id": "thigh_ring",
+          "label": "Thigh landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "thigh_girth"
+          ]
+        },
+        {
+          "id": "knee_ring",
+          "label": "Knee landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "knee_girth",
+            "inside_leg_length"
+          ]
+        },
+        {
+          "id": "ankle_ring",
+          "label": "Ankle landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "ankle_girth",
+            "inside_leg_length"
+          ]
+        },
+        {
+          "id": "upper_arm_ring",
+          "label": "Upper-arm landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "upper_arm_girth",
+            "arm_stub_length"
           ]
         }
       ],
@@ -8666,6 +8711,159 @@
       }
     },
     {
+      "slug": "figure-child",
+      "name": "Figure Child",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 17,
+      "parameter_ids": [
+        "target_part",
+        "size_age",
+        "neck_girth",
+        "chest_girth",
+        "waist_girth",
+        "hip_girth",
+        "back_waist_length",
+        "shoulder_width",
+        "crotch_height",
+        "thigh_girth",
+        "inside_leg_length",
+        "knee_girth",
+        "ankle_girth",
+        "foot_length",
+        "belly_depth_ratio",
+        "seat_depth_ratio",
+        "target_material"
+      ],
+      "export_formats": [
+        "glb",
+        "gltf",
+        "stl",
+        "step",
+        "3mf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Children's clothing is the hardest thing to fit and the fastest thing outgrown, and a child dress form is the one tool almost nobody can buy — commercial ones exist in a handful of fixed sizes at adult-form prices. This regenerating form gives any child body its own fitting surface from plain measurements, and refuses the shortcut of shrinking an adult: the proportions that actually make a child a child — the longer torso, the shorter legs, the absent toddler waist, the projecting belly — are modelled from real growth relations rather than a scale factor, so a garment fitted here fits the child rather than a small adult. The same numbers drive both this body and the flat patterns of the Fashion Cabinet commons, which means a caregiver, a school-uniform co-op, or a small maker can size, fit, and sew for a growing child from one shared set of measurements — and re-render the form a size up next year instead of buying another.",
+        "es": "La ropa infantil es lo más difícil de ajustar y lo que más rápido se queda chico, y un maniquí infantil es la herramienta que casi nadie puede comprar — los comerciales existen en unas pocas tallas fijas a precio de maniquí adulto. Esta forma regenerativa da a cualquier cuerpo infantil su propia superficie de ajuste a partir de medidas simples, y rechaza el atajo de encoger un adulto: las proporciones que de verdad hacen que un niño sea un niño — el torso más largo, las piernas más cortas, la cintura ausente del infante, el vientre que proyecta — se modelan desde relaciones de crecimiento reales y no desde un factor de escala, así que una prenda ajustada aquí le queda al niño y no a un adulto pequeño. Los mismos números manejan este cuerpo y los patrones planos del común Fashion Cabinet, de modo que una persona cuidadora, una cooperativa de uniformes escolares o un taller pequeño pueden medir, ajustar y coser para un niño en crecimiento desde un solo juego de medidas — y regenerar la forma una talla más grande el año siguiente en vez de comprar otra."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "neck_ring",
+          "label": "Neck landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "neck_girth"
+          ]
+        },
+        {
+          "id": "chest_ring",
+          "label": "Chest landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "chest_girth"
+          ]
+        },
+        {
+          "id": "waist_ring",
+          "label": "Waist landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "waist_girth",
+            "back_waist_length",
+            "size_age",
+            "belly_depth_ratio"
+          ]
+        },
+        {
+          "id": "hip_ring",
+          "label": "Hip landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "hip_girth",
+            "seat_depth_ratio"
+          ]
+        },
+        {
+          "id": "crotch_ring",
+          "label": "Crotch landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "crotch_height",
+            "thigh_girth"
+          ]
+        },
+        {
+          "id": "knee_ring",
+          "label": "Knee landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "knee_girth",
+            "inside_leg_length"
+          ]
+        },
+        {
+          "id": "ankle_ring",
+          "label": "Ankle landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "ankle_girth",
+            "inside_leg_length"
+          ]
+        },
+        {
+          "id": "sole_plane",
+          "label": "Sole plane (footed garments)",
+          "geometry_type": "profile",
+          "standard": "iso_8559",
+          "parameters": [
+            "foot_length",
+            "ankle_girth"
+          ]
+        },
+        {
+          "id": "shoulder_line",
+          "label": "Shoulder line",
+          "geometry_type": "profile",
+          "standard": "iso_8559",
+          "parameters": [
+            "shoulder_width",
+            "back_waist_length"
+          ]
+        }
+      ],
+      "standards": [
+        "iso_8559"
+      ],
+      "source": {
+        "manifest": "projects/figure-child/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/figure-child"
+      }
+    },
+    {
       "slug": "filter-straw",
       "name": "Water Filter / Straw Adapter",
       "domain": "household",
@@ -9621,6 +9819,119 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garment-eyelet"
+      }
+    },
+    {
+      "slug": "garment-stand",
+      "name": "Garment Stand",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 4,
+      "parts": 4,
+      "parameters": 15,
+      "parameter_ids": [
+        "target_part",
+        "head_girth",
+        "neck_dia",
+        "shoulder_width",
+        "yoke_drop",
+        "waist_girth",
+        "ring_tube_dia",
+        "post_dia",
+        "post_height",
+        "base_dia",
+        "base_th",
+        "plinth_w",
+        "plinth_d",
+        "plinth_h",
+        "target_material"
+      ],
+      "export_formats": [
+        "glb",
+        "gltf",
+        "stl",
+        "step",
+        "3mf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A shop that makes hats, bags, or belts needs display forms to sell them, and bought forms come in a few fixed sizes at prices a small maker cannot justify for a single window. These mounts regenerate from plain measurements — head girth for the block, shoulder width for the yoke, waist girth for the ring — so a maker prints the exact form the piece was cut for, and prints another when the size changes. The same numbers that draft a flat pattern in the Fashion Cabinet commons size the stand it will be photographed on, which means a small workshop can present its work as well as a brand can, without buying a prop closet.",
+        "es": "Un taller que hace sombreros, bolsos o cinturones necesita expositores para venderlos, y los expositores comerciales vienen en pocas tallas fijas a precios que un pequeño productor no justifica para un solo escaparate. Estos soportes se regeneran a partir de medidas simples — contorno de cabeza para la horma, ancho de hombros para el yugo, contorno de cintura para el aro — así que quien fabrica imprime la forma exacta para la que cortó la pieza, y otra cuando cambia la talla. Los mismos números que trazan un patrón plano en el común Fashion Cabinet dimensionan el pedestal sobre el que se fotografiará, lo que permite a un taller pequeño presentar su trabajo tan bien como una marca, sin comprar un almacén de utilería."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "head_ring",
+          "label": "Head landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "head_girth"
+          ]
+        },
+        {
+          "id": "waist_ring",
+          "label": "Waist landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "waist_girth",
+            "ring_tube_dia"
+          ]
+        },
+        {
+          "id": "shoulder_line",
+          "label": "Shoulder line",
+          "geometry_type": "profile",
+          "standard": "iso_8559",
+          "parameters": [
+            "shoulder_width",
+            "yoke_drop"
+          ]
+        },
+        {
+          "id": "post_socket",
+          "label": "Post-to-base socket",
+          "geometry_type": "socket",
+          "standard": "none",
+          "parameters": [
+            "post_dia",
+            "base_th",
+            "post_height"
+          ]
+        },
+        {
+          "id": "plinth_recess",
+          "label": "Plinth staging recess",
+          "geometry_type": "pocket",
+          "standard": "none",
+          "parameters": [
+            "plinth_w",
+            "plinth_d",
+            "plinth_h"
+          ]
+        }
+      ],
+      "standards": [
+        "iso_8559",
+        "none"
+      ],
+      "source": {
+        "manifest": "projects/garment-stand/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/garment-stand"
       }
     },
     {
@@ -13141,6 +13452,129 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/linear-wheel"
+      }
+    },
+    {
+      "slug": "lingerie-form",
+      "name": "Lingerie Form",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 17,
+      "parameter_ids": [
+        "target_part",
+        "bust_girth",
+        "underbust_girth",
+        "waist_girth",
+        "hip_girth",
+        "upper_chest_girth",
+        "thigh_girth",
+        "torso_length",
+        "underbust_to_waist",
+        "waist_to_hip",
+        "bust_depth_ratio",
+        "bust_projection",
+        "seat_depth_ratio",
+        "tab_width",
+        "tab_height",
+        "tab_thickness",
+        "target_material"
+      ],
+      "export_formats": [
+        "glb",
+        "gltf",
+        "stl",
+        "step",
+        "3mf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Intimates are the hardest garments to fit and the ones fitted least honestly: bra sizing collapses a two-number measurement — bust and underbust — into a letter, and most display forms have no underbust ring at all, so a band that does not fit still looks fine on the stand. This form carries both circles as real, verified ISO-8559 girths, which means a maker or a small shop can print a fitting surface for an actual body and see a band sit where it will really sit. The same numbers drive the flat patterns of the Fashion Cabinet commons, so pattern and form can never disagree, and a person whose measurements fall outside the narrow range of commercial sizing gets a form at last.",
+        "es": "La lencería es la prenda más difícil de ajustar y la que se ajusta con menos honestidad: la talla de brasier reduce una medida de dos números — busto y bajo busto — a una letra, y la mayoría de los maniquíes de exhibición no tienen anillo de bajo busto, así que una banda que no queda igual se ve bien en el pedestal. Esta forma lleva ambos círculos como contornos ISO-8559 reales y verificados, lo que permite que quien confecciona o un taller pequeño imprima una superficie de ajuste para un cuerpo real y vea dónde va a quedar de verdad la banda. Los mismos números manejan los patrones planos del común Fashion Cabinet, así que patrón y forma nunca se contradicen, y quien tiene medidas fuera del rango estrecho del tallaje comercial por fin tiene un maniquí."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "bust_ring",
+          "label": "Bust landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "bust_girth",
+            "bust_depth_ratio",
+            "bust_projection"
+          ]
+        },
+        {
+          "id": "underbust_ring",
+          "label": "Underbust band ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "underbust_girth",
+            "underbust_to_waist"
+          ]
+        },
+        {
+          "id": "upper_chest_ring",
+          "label": "Upper chest landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "upper_chest_girth"
+          ]
+        },
+        {
+          "id": "waist_ring",
+          "label": "Waist landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "waist_girth",
+            "waist_to_hip"
+          ]
+        },
+        {
+          "id": "hip_ring",
+          "label": "Hip landmark ring",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "hip_girth",
+            "seat_depth_ratio"
+          ]
+        },
+        {
+          "id": "thigh_ring",
+          "label": "Upper thigh ring (bottom seat face)",
+          "geometry_type": "surface",
+          "standard": "iso_8559",
+          "parameters": [
+            "thigh_girth",
+            "torso_length"
+          ]
+        }
+      ],
+      "standards": [
+        "iso_8559"
+      ],
+      "source": {
+        "manifest": "projects/lingerie-form/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/lingerie-form"
       }
     },
     {

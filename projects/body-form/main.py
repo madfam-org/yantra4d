@@ -21,6 +21,12 @@ Modes:
                    dress-form stand).
   - bifurcated   : the torso continued past the hip into two upper-thigh stumps
                    (a "trouser form") so bottoms/one-pieces have legs to fit.
+  - figure       : the full figure, shoulders to floor — the torso with a
+                   shoulder cap + short upper-arm stub each side, and the hip
+                   continued through thigh / knee / ankle rings to close at the
+                   ankles. Serves dresses, heritage robes, outerwear, tailoring.
+  - legs         : the lower body alone, waist ring through hip / thigh / knee /
+                   ankle — a trouser/skirt form for bottoms, skirts and denim.
 
 Watertight strategy (Yantra4D scar tissue, all respected):
   - The body is ONE lofted solid through convex elliptical wires — no boolean of
@@ -30,6 +36,12 @@ Watertight strategy (Yantra4D scar tissue, all respected):
   - The stand post is a SOLID cylinder embedded into the (closed, solid) neck and
     into the base — a solid post on a solid base, no trapped cavity.
   - Thigh stumps are solid lofts continued from the hip wire, capped flat.
+  - Full legs are solid lofts whose TOP wire starts well ABOVE the crotch, inside
+    the seat solid, so the leg/torso junction is a deep volumetric OVERLAP, never
+    a coplanar touch (coplanar-touch unions crack). The ankle is closed flat by
+    the loft's own end cap — no sphere pole.
+  - Arm stubs are lofted cones whose ROOT wire sits inside the shoulder shelf
+    (again an overlap, not a touch); the outboard end is a flat elliptical cap.
   - No fillet/chamfer after feature cuts (the uncatchable-OCCT-segfault path);
     the form has no cuts at all — it is a pure additive loft.
 
@@ -57,7 +69,7 @@ def PARAM(getter, default):
 
 # ── Parameters — ISO-8559 landmark GIRTHS (mm), full-body circumferences ─────
 target_part = str(PARAM(lambda: target_part, "torso"))
-# "torso" | "torso_stand" | "bifurcated"
+# "torso" | "torso_stand" | "bifurcated" | "figure" | "legs"
 
 neck_girth   = float(PARAM(lambda: neck_girth, 360.0))    # 4.4  neck base
 chest_girth  = float(PARAM(lambda: chest_girth, 900.0))   # 4.6  chest/bust girth
@@ -67,6 +79,11 @@ hip_girth    = float(PARAM(lambda: hip_girth, 980.0))     # 4.12 hip (fullest se
 back_waist_length = float(PARAM(lambda: back_waist_length, 410.0))  # nape→waist
 shoulder_width    = float(PARAM(lambda: shoulder_width, 400.0))     # point→point
 thigh_girth  = float(PARAM(lambda: thigh_girth, 580.0))   # per-leg thigh (bifurcated)
+knee_girth   = float(PARAM(lambda: knee_girth, 380.0))    # 4.17 per-leg knee
+ankle_girth  = float(PARAM(lambda: ankle_girth, 240.0))   # 4.19 per-leg ankle
+inside_leg_length = float(PARAM(lambda: inside_leg_length, 780.0))  # 4.26 crotch→floor
+upper_arm_girth   = float(PARAM(lambda: upper_arm_girth, 300.0))    # 4.14 upper arm
+arm_stub_length   = float(PARAM(lambda: arm_stub_length, 120.0))    # shoulder→stub end
 
 # Form/pose knobs (advisory; the rings stay authoritative)
 bust_depth_ratio  = float(PARAM(lambda: bust_depth_ratio, 0.72))  # depth:width at bust
@@ -87,6 +104,14 @@ hip_girth = max(440.0, min(hip_girth, 1800.0))
 back_waist_length = max(200.0, min(back_waist_length, 620.0))
 shoulder_width = max(240.0, min(shoulder_width, 620.0))
 thigh_girth = max(300.0, min(thigh_girth, 900.0))
+knee_girth = max(220.0, min(knee_girth, 620.0))
+ankle_girth = max(150.0, min(ankle_girth, 420.0))
+inside_leg_length = max(400.0, min(inside_leg_length, 1000.0))
+upper_arm_girth = max(180.0, min(upper_arm_girth, 560.0))
+arm_stub_length = max(40.0, min(arm_stub_length, 320.0))
+# The leg lofts stay well-posed only if each ring is smaller than the one above.
+knee_girth = min(knee_girth, thigh_girth * 0.92)
+ankle_girth = min(ankle_girth, knee_girth * 0.92)
 bust_depth_ratio = max(0.55, min(bust_depth_ratio, 0.98))
 seat_depth_ratio = max(0.55, min(seat_depth_ratio, 0.98))
 post_dia = max(16.0, min(post_dia, 80.0))
@@ -148,6 +173,17 @@ Z_CROTCH = -0.92 * BWL       # bifurcated split
 DR_WAIST = 0.70
 DR_CHEST = 0.62
 DR_NECK = 0.82
+
+# Full-leg stations (figure / legs). Unlike the torso rings these are NOT scaled
+# off BWL: inside_leg_length is itself a measurement (crotch → floor), so the
+# knee and ankle hang off it directly and the figure grows exactly as tall as
+# the wearer's leg says it should.
+ILL = inside_leg_length
+Z_ANKLE = Z_CROTCH - ILL * 0.94      # ankle ring (floor is ILL below the crotch)
+Z_FLOOR = Z_CROTCH - ILL             # notional floor; the form closes at the ankle
+Z_KNEE = Z_CROTCH - ILL * 0.47       # knee ≈ mid inside-leg
+Z_THIGH = Z_CROTCH - ILL * 0.10      # thigh ring, just below the crotch
+DR_LEG = 0.92                        # legs are near-round in section
 
 
 def _core_sections():
@@ -215,6 +251,138 @@ def build_bifurcated():
     return body.union(legs)
 
 
+def _leg_offset():
+    """Half the leg-centre spacing: how far each leg axis sits from the centre
+    front/back plane. Derived from the hip ellipse so a wider seat puts the legs
+    correspondingly further apart."""
+    a_hip, _b = _ellipse_axes(hip_girth, seat_depth_ratio)
+    return a_hip * 0.44
+
+
+def _leg(sx):
+    """ONE full leg, thigh through knee to a flat-capped ankle.
+
+    The TOP wire sits at Z_HIP — well ABOVE the crotch and therefore deep INSIDE
+    the seat solid — so the leg/torso union is a volumetric overlap, never the
+    coplanar touch that cracks a boolean. It starts at a generous ellipse
+    (roughly the half-seat the leg occupies) and necks down to the measured
+    thigh ring below the crotch, which is what gives the form its inner-thigh
+    line without any cut.
+
+    The ankle is closed by the loft's own flat end cap — no sphere pole, no
+    fillet. RULED loft everywhere, so no ring bulges past its girth."""
+    a_t, b_t = _ellipse_axes(thigh_girth, DR_LEG)
+    a_k, b_k = _ellipse_axes(knee_girth, DR_LEG)
+    a_a, b_a = _ellipse_axes(ankle_girth, DR_LEG)
+    # root wire: sized to fill its half of the seat so the overlap is generous
+    a_r, b_r = a_t * 1.30, b_t * 1.22
+    stations = [
+        (Z_HIP, a_r, b_r),                                 # root, inside the seat
+        (Z_CROTCH, a_t * 1.06, b_t * 1.04),                # crotch level
+        (Z_THIGH, a_t, b_t),                               # ★ THIGH (measured)
+        ((Z_THIGH + Z_KNEE) / 2.0,
+         (a_t + a_k) / 2.0 * 0.98, (b_t + b_k) / 2.0 * 0.98),   # mid-thigh taper
+        (Z_KNEE, a_k, b_k),                                # ★ KNEE (measured)
+        ((Z_KNEE + Z_ANKLE) / 2.0,
+         (a_k + a_a) / 2.0 * 1.04, (b_k + b_a) / 2.0 * 1.04),   # calf swell
+        (Z_ANKLE, a_a, b_a),                               # ★ ANKLE (measured)
+    ]
+    ordered = sorted(stations, key=lambda s: s[0])
+    z0, a0, b0 = ordered[0]
+    wp = cq.Workplane("XY").workplane(offset=z0).center(sx, 0.0).ellipse(a0, b0)
+    prev_z = z0
+    for z, a, b in ordered[1:]:
+        wp = wp.workplane(offset=z - prev_z).ellipse(a, b)
+        prev_z = z
+    return wp.loft(ruled=True, combine=True)
+
+
+def _legs():
+    """Both legs as one shape. They are unioned to the torso/hip solid, which is
+    what connects them into a single printable body through the seat."""
+    x_off = _leg_offset()
+    left = _leg(-x_off)
+    right = _leg(x_off)
+    return left.union(right)
+
+
+def _arm_stub(sx):
+    """A short upper-arm stub for one side, so a tailored shoulder hangs.
+
+    Built as a loft along the vertical axis in a LOCAL frame and then rotated
+    outboard, which keeps every wire an ordinary planar ellipse (the well-posed
+    case) instead of a swept path. The ROOT wire is deliberately placed inboard
+    of the shoulder shelf so the stub starts INSIDE the torso solid — an
+    overlap, not a touch — and the outboard end is a flat elliptical cap, never
+    a sphere."""
+    a_u, b_u = _ellipse_axes(upper_arm_girth, 0.86)
+    root_r = a_u * 1.16
+    # Build along +Z at the origin: root disc → armhole ring → stub end cap.
+    stub = (
+        cq.Workplane("XY").ellipse(root_r, root_r * 0.86)
+        .workplane(offset=arm_stub_length * 0.30).ellipse(a_u * 1.04, b_u * 1.04)
+        .workplane(offset=arm_stub_length * 0.70).ellipse(a_u * 0.94, b_u * 0.94)
+        .loft(ruled=True, combine=True)
+    )
+    # Point it outboard and tilt it down: shoulders slope, so does the stub.
+    side = 1.0 if sx >= 0 else -1.0
+    stub = stub.rotate((0, 0, 0), (0, 1, 0), 90.0 * side)
+    stub = stub.rotate((0, 0, 0), (0, 1, 0), 14.0 * side)   # ~14° shoulder slope
+    # Seat the root inside the shoulder shelf: start inboard of the shelf edge.
+    a_sh, _b_sh = _ellipse_axes(max(chest_girth * 0.82, neck_girth * 1.7), 0.66)
+    x_root = side * max(a_sh * 0.55, shoulder_width / 2.0 - a_u * 1.5)
+    return stub.translate((x_root, 0.0, Z_SHOULDER - a_u * 0.10))
+
+
+def _shoulder_cap():
+    """The shoulder shelf + both arm stubs.
+
+    The torso loft already carries a shoulder shelf ring; the cap widens it to
+    the measured shoulder_width with a shallow loft between two ellipses so a
+    jacket's shoulder line has somewhere real to sit, and the stubs then root
+    into that widened shelf."""
+    a_sh, b_sh = _ellipse_axes(max(chest_girth * 0.82, neck_girth * 1.7), 0.66)
+    half_w = max(shoulder_width / 2.0, a_sh)
+    shelf_h = max(16.0, 0.05 * BWL)
+    shelf = (
+        cq.Workplane("XY").workplane(offset=Z_SHOULDER - shelf_h)
+        .ellipse(a_sh * 0.98, b_sh * 0.98)
+        .workplane(offset=shelf_h * 0.55).ellipse(half_w, b_sh)
+        .workplane(offset=shelf_h * 0.45).ellipse(half_w * 0.94, b_sh * 0.96)
+        .loft(ruled=True, combine=True)
+    )
+    return shelf.union(_arm_stub(-1.0)).union(_arm_stub(1.0))
+
+
+def build_figure():
+    """Full figure, shoulders to floor: the torso, a shoulder cap + upper-arm
+    stubs, and both full legs closed at the ankle. One watertight solid — the
+    legs meet the torso through a deep seat overlap and the stubs root inside
+    the shoulder shelf, so every union is volumetric."""
+    body = build_torso()
+    body = body.union(_shoulder_cap())
+    return body.union(_legs())
+
+
+def _lower_sections():
+    """Waist → hip rings for the `legs` mode: the trouser block starts at the
+    measured waist and runs to the seat, where the legs take over."""
+    return [
+        (Z_HIP, hip_girth, seat_depth_ratio),                        # ★ HIP (measured)
+        ((Z_HIP + Z_WAIST) / 2.0, (hip_girth + waist_girth) / 2.0 * 0.99, 0.72),
+        (Z_WAIST, waist_girth, DR_WAIST),                            # ★ WAIST (measured)
+    ]
+
+
+def build_legs():
+    """Lower body, waist to ankle — the trouser/skirt form. A waist→hip block
+    closed flat at the waist by the loft's end cap, with both full legs unioned
+    into it through the seat. The two legs are connected through that block, so
+    the result is ONE printable solid, not two."""
+    block = _loft_sections(_lower_sections())
+    return block.union(_legs())
+
+
 def _stand():
     """Neck post + weighted round base. ONE solid: the post spans from inside the
     base (overlapping it) up through the form and above the neck, so post∪base∪
@@ -247,6 +415,8 @@ def build():
         "torso": build_torso,
         "torso_stand": build_torso_stand,
         "bifurcated": build_bifurcated,
+        "figure": build_figure,
+        "legs": build_legs,
     }
     fn = builders.get(target_part, build_torso)
     return fn()

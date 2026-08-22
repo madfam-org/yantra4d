@@ -1,0 +1,619 @@
+{
+  "project": {
+    "name": "Garment Stand",
+    "slug": "garment-stand",
+    "version": "0.1.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A family of non-body display solids — the honest rigid mounts a Fashion Cabinet catalog stages its accessories and hardware findings on, where a dress form would be the wrong prop. Four mounts share one visual language, seeded by body-form's torso stand: a cylindrical post rooted into a weighted round base with a built (not cut) chamfer skirt. A milliner's dome + neck head block stages hats, caps, and bucket hats at head girth; a bust-less shoulder yoke — a gently curved T-bar with rounded tips and a slight fall — stages bags, aprons, harnesses, and scarves; a horizontal ring at waist girth, carried off the post on a bridge arm, stages belts; and a small stepped plinth with a shallow top recess stages hardware findings as the objects they are. Every mode renders as one watertight printable solid, verified.\n\nOfficial visualizer and configurator: Yantra4D.",
+      "es": "Una familia de sólidos expositores sin cuerpo — los soportes rígidos y honestos sobre los que un catálogo Fashion Cabinet monta sus accesorios y herrajes, donde un maniquí sería el objeto equivocado. Cuatro soportes comparten un mismo lenguaje visual, sembrado por el pedestal de body-form: un poste cilíndrico enraizado en una base redonda lastrada con un chaflán construido (no cortado). Una horma de sombrerero — cúpula más cuello — monta sombreros, gorras y bucket hats al contorno de cabeza; un yugo de hombros sin busto — una barra en T suavemente curvada, de puntas redondeadas y ligera caída — monta bolsos, mandiles, arneses y bufandas; un aro horizontal al contorno de cintura, sostenido por un brazo puente desde el poste, monta cinturones; y un pequeño plinto escalonado con un rebaje superior monta los herrajes como los objetos que son. Cada modo se genera como un único sólido estanco imprimible, verificado.\n\nVisualizador y configurador oficial: Yantra4D."
+    },
+    "difficulty": "intermediate",
+    "tags": [
+      "display-stand",
+      "mannequin",
+      "head-block",
+      "accessories",
+      "findings",
+      "fashion",
+      "iso-8559",
+      "hyperobject",
+      "commons",
+      "cadquery"
+    ],
+    "attribution": {
+      "author": "Innovaciones MADFAM",
+      "license": "CERN-OHL-W-2.0"
+    },
+    "thumbnail": "/projects/garment-stand.webp"
+  },
+  "modes": [
+    {
+      "id": "head_block",
+      "label": {
+        "en": "Head block (hats)",
+        "es": "Horma de sombrerero"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "head_block"
+      ],
+      "estimate": {
+        "base_time": 200,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    },
+    {
+      "id": "t_rack",
+      "label": {
+        "en": "Shoulder yoke (bags, aprons)",
+        "es": "Yugo de hombros (bolsos, mandiles)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "t_rack"
+      ],
+      "estimate": {
+        "base_time": 190,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    },
+    {
+      "id": "waist_ring",
+      "label": {
+        "en": "Waist ring (belts)",
+        "es": "Aro de cintura (cinturones)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "waist_ring"
+      ],
+      "estimate": {
+        "base_time": 210,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    },
+    {
+      "id": "mini_plinth",
+      "label": {
+        "en": "Mini plinth (findings)",
+        "es": "Plinto pequeño (herrajes)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "mini_plinth"
+      ],
+      "estimate": {
+        "base_time": 90,
+        "per_unit": 1,
+        "per_part": 30
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "head_block",
+      "name": {
+        "en": "Head block",
+        "es": "Horma de sombrerero"
+      }
+    },
+    {
+      "id": "t_rack",
+      "name": {
+        "en": "Shoulder yoke",
+        "es": "Yugo de hombros"
+      }
+    },
+    {
+      "id": "waist_ring",
+      "name": {
+        "en": "Waist ring",
+        "es": "Aro de cintura"
+      }
+    },
+    {
+      "id": "mini_plinth",
+      "name": {
+        "en": "Mini plinth",
+        "es": "Plinto pequeño"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "target_part",
+      "type": "select",
+      "default": "head_block",
+      "options": [
+        {
+          "value": "head_block",
+          "label": {
+            "en": "Head block",
+            "es": "Horma de sombrerero"
+          }
+        },
+        {
+          "value": "t_rack",
+          "label": {
+            "en": "Shoulder yoke",
+            "es": "Yugo de hombros"
+          }
+        },
+        {
+          "value": "waist_ring",
+          "label": {
+            "en": "Waist ring",
+            "es": "Aro de cintura"
+          }
+        },
+        {
+          "value": "mini_plinth",
+          "label": {
+            "en": "Mini plinth",
+            "es": "Plinto pequeño"
+          }
+        }
+      ],
+      "label": {
+        "en": "Mount",
+        "es": "Soporte"
+      }
+    },
+    {
+      "id": "head_girth",
+      "type": "slider",
+      "default": 560,
+      "min": 380,
+      "max": 680,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "head_block"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "head_girth"
+      },
+      "label": {
+        "en": "Head girth (mm)",
+        "es": "Contorno de cabeza (mm)"
+      }
+    },
+    {
+      "id": "neck_dia",
+      "type": "slider",
+      "default": 120,
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "head_block"
+      ],
+      "label": {
+        "en": "Head-block neck Ø (mm)",
+        "es": "Ø del cuello de la horma (mm)"
+      }
+    },
+    {
+      "id": "shoulder_width",
+      "type": "slider",
+      "default": 430,
+      "min": 240,
+      "max": 620,
+      "step": 5,
+      "group": "measurements",
+      "modes": [
+        "t_rack"
+      ],
+      "label": {
+        "en": "Shoulder width, point→point (mm)",
+        "es": "Ancho de hombros (mm)"
+      }
+    },
+    {
+      "id": "yoke_drop",
+      "type": "slider",
+      "default": 25,
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "group": "shape",
+      "modes": [
+        "t_rack"
+      ],
+      "label": {
+        "en": "Shoulder fall at the tip (mm)",
+        "es": "Caída del hombro en la punta (mm)"
+      }
+    },
+    {
+      "id": "waist_girth",
+      "type": "slider",
+      "default": 760,
+      "min": 400,
+      "max": 1400,
+      "step": 10,
+      "group": "measurements",
+      "modes": [
+        "waist_ring"
+      ],
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "waist_girth"
+      },
+      "label": {
+        "en": "Waist girth (mm)",
+        "es": "Contorno de cintura (mm)"
+      }
+    },
+    {
+      "id": "ring_tube_dia",
+      "type": "slider",
+      "default": 12,
+      "min": 6,
+      "max": 30,
+      "step": 1,
+      "group": "shape",
+      "modes": [
+        "waist_ring"
+      ],
+      "label": {
+        "en": "Ring stock Ø (mm)",
+        "es": "Ø del tubo del aro (mm)"
+      }
+    },
+    {
+      "id": "post_dia",
+      "type": "slider",
+      "default": 30,
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "group": "stand",
+      "modes": [
+        "head_block",
+        "t_rack",
+        "waist_ring"
+      ],
+      "label": {
+        "en": "Post Ø (mm)",
+        "es": "Ø del poste (mm)"
+      }
+    },
+    {
+      "id": "post_height",
+      "type": "slider",
+      "default": 380,
+      "min": 120,
+      "max": 900,
+      "step": 10,
+      "group": "stand",
+      "modes": [
+        "head_block",
+        "t_rack",
+        "waist_ring"
+      ],
+      "label": {
+        "en": "Post height, base top → mount (mm)",
+        "es": "Altura del poste, base → soporte (mm)"
+      }
+    },
+    {
+      "id": "base_dia",
+      "type": "slider",
+      "default": 220,
+      "min": 120,
+      "max": 520,
+      "step": 10,
+      "group": "stand",
+      "modes": [
+        "head_block",
+        "t_rack",
+        "waist_ring"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Base Ø (mm)",
+        "es": "Ø de la base (mm)"
+      }
+    },
+    {
+      "id": "base_th",
+      "type": "slider",
+      "default": 12,
+      "min": 6,
+      "max": 60,
+      "step": 2,
+      "group": "stand",
+      "modes": [
+        "head_block",
+        "t_rack",
+        "waist_ring"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Base thickness (mm)",
+        "es": "Grosor de la base (mm)"
+      }
+    },
+    {
+      "id": "plinth_w",
+      "type": "slider",
+      "default": 120,
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "group": "plinth",
+      "modes": [
+        "mini_plinth"
+      ],
+      "label": {
+        "en": "Plinth width (mm)",
+        "es": "Ancho del plinto (mm)"
+      }
+    },
+    {
+      "id": "plinth_d",
+      "type": "slider",
+      "default": 80,
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "group": "plinth",
+      "modes": [
+        "mini_plinth"
+      ],
+      "label": {
+        "en": "Plinth depth (mm)",
+        "es": "Fondo del plinto (mm)"
+      }
+    },
+    {
+      "id": "plinth_h",
+      "type": "slider",
+      "default": 40,
+      "min": 15,
+      "max": 160,
+      "step": 5,
+      "group": "plinth",
+      "modes": [
+        "mini_plinth"
+      ],
+      "label": {
+        "en": "Plinth height (mm)",
+        "es": "Altura del plinto (mm)"
+      }
+    },
+    {
+      "id": "target_material",
+      "type": "select",
+      "default": "polymaker-polylite-pla",
+      "hidden": true,
+      "options": [
+        {
+          "value": "polymaker-polylite-pla",
+          "label": "Polymaker PolyLite PLA"
+        },
+        {
+          "value": "polymaker-polylite-petg",
+          "label": "Polymaker PolyLite PETG"
+        }
+      ],
+      "label": {
+        "en": "Target material",
+        "es": "Material objetivo"
+      }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "measurements",
+      "label": {
+        "en": "Body measurements (ISO 8559)",
+        "es": "Medidas corporales (ISO 8559)"
+      }
+    },
+    {
+      "id": "shape",
+      "label": {
+        "en": "Mount shaping",
+        "es": "Modelado del soporte"
+      }
+    },
+    {
+      "id": "stand",
+      "label": {
+        "en": "Post & base",
+        "es": "Poste y base"
+      }
+    },
+    {
+      "id": "plinth",
+      "label": {
+        "en": "Plinth",
+        "es": "Plinto"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "hat-adult",
+      "label": {
+        "en": "Adult hat block",
+        "es": "Horma adulto"
+      },
+      "values": {
+        "head_girth": 570,
+        "neck_dia": 120,
+        "post_height": 380,
+        "base_dia": 220
+      }
+    },
+    {
+      "id": "hat-child",
+      "label": {
+        "en": "Child hat block",
+        "es": "Horma infantil"
+      },
+      "values": {
+        "head_girth": 500,
+        "neck_dia": 95,
+        "post_height": 300,
+        "base_dia": 180
+      }
+    },
+    {
+      "id": "bag-yoke",
+      "label": {
+        "en": "Bag yoke",
+        "es": "Yugo para bolsos"
+      },
+      "values": {
+        "shoulder_width": 430,
+        "yoke_drop": 25,
+        "post_height": 420,
+        "base_dia": 260
+      }
+    },
+    {
+      "id": "belt-ring",
+      "label": {
+        "en": "Belt ring",
+        "es": "Aro para cinturones"
+      },
+      "values": {
+        "waist_girth": 760,
+        "ring_tube_dia": 12,
+        "post_height": 340,
+        "base_dia": 240
+      }
+    },
+    {
+      "id": "findings-tray",
+      "label": {
+        "en": "Findings plinth",
+        "es": "Plinto de herrajes"
+      },
+      "values": {
+        "plinth_w": 120,
+        "plinth_d": 80,
+        "plinth_h": 40
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "base_dia >= post_dia * 2.4",
+      "message": {
+        "en": "A base narrower than about 2.4 post diameters reads as a collar, not a weighted base, and tips over.",
+        "es": "Una base más estrecha que unos 2.4 diámetros del poste parece un collar, no una base lastrada, y se vuelca."
+      }
+    },
+    {
+      "expression": "neck_dia <= head_girth / 3.6",
+      "message": {
+        "en": "The head-block neck must stay well inside the dome it carries.",
+        "es": "El cuello de la horma debe quedar holgadamente dentro de la cúpula que sostiene."
+      }
+    }
+  ],
+  "export_formats": [
+    "glb",
+    "gltf",
+    "stl",
+    "step",
+    "3mf",
+    "obj"
+  ],
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "head_ring",
+        "label": {
+          "en": "Head landmark ring",
+          "es": "Anillo de cabeza"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "head_girth"
+        ]
+      },
+      {
+        "id": "waist_ring",
+        "label": {
+          "en": "Waist landmark ring",
+          "es": "Anillo de cintura"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "waist_girth",
+          "ring_tube_dia"
+        ]
+      },
+      {
+        "id": "shoulder_line",
+        "label": {
+          "en": "Shoulder line",
+          "es": "Línea de hombro"
+        },
+        "geometry_type": "profile",
+        "standard": "iso_8559",
+        "parameters": [
+          "shoulder_width",
+          "yoke_drop"
+        ]
+      },
+      {
+        "id": "post_socket",
+        "label": {
+          "en": "Post-to-base socket",
+          "es": "Encaje poste-base"
+        },
+        "geometry_type": "socket",
+        "standard": "none",
+        "parameters": [
+          "post_dia",
+          "base_th",
+          "post_height"
+        ]
+      },
+      {
+        "id": "plinth_recess",
+        "label": {
+          "en": "Plinth staging recess",
+          "es": "Rebaje de exposición del plinto"
+        },
+        "geometry_type": "pocket",
+        "standard": "none",
+        "parameters": [
+          "plinth_w",
+          "plinth_d",
+          "plinth_h"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "A shop that makes hats, bags, or belts needs display forms to sell them, and bought forms come in a few fixed sizes at prices a small maker cannot justify for a single window. These mounts regenerate from plain measurements — head girth for the block, shoulder width for the yoke, waist girth for the ring — so a maker prints the exact form the piece was cut for, and prints another when the size changes. The same numbers that draft a flat pattern in the Fashion Cabinet commons size the stand it will be photographed on, which means a small workshop can present its work as well as a brand can, without buying a prop closet.",
+      "es": "Un taller que hace sombreros, bolsos o cinturones necesita expositores para venderlos, y los expositores comerciales vienen en pocas tallas fijas a precios que un pequeño productor no justifica para un solo escaparate. Estos soportes se regeneran a partir de medidas simples — contorno de cabeza para la horma, ancho de hombros para el yugo, contorno de cintura para el aro — así que quien fabrica imprime la forma exacta para la que cortó la pieza, y otra cuando cambia la talla. Los mismos números que trazan un patrón plano en el común Fashion Cabinet dimensionan el pedestal sobre el que se fotografiará, lo que permite a un taller pequeño presentar su trabajo tan bien como una marca, sin comprar un almacén de utilería."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

@@ -263,8 +263,8 @@ def build_bar():
 # ── Dispatch ─────────────────────────────────────────────────────────────────
 # The platform renders PER PART: for every id in a mode's `parts[]` the worker
 # injects that id as `target_part`. These branches must cover the manifest's part
-# ids exactly — `hook_plate` and `bar_plate` — or a part falls through and renders
-# the whole set instead of itself. The short names are kept as legacy aliases.
+# ids exactly — `hook` and `bar` — or a part falls through and renders the whole
+# set instead of itself. The old plate names are kept as legacy aliases.
 if target_part in ("hook_plate", "hook"):
     result = build_hook()
 elif target_part in ("bar_plate", "bar"):

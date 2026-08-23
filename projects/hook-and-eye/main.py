@@ -183,10 +183,12 @@ def build_eye_plate(n_cols, n_rows):
 
 
 # ── Dispatch ─────────────────────────────────────────────────────────────────
-if target_part == "hook":
+if target_part in ("hook_plate", "hook", "tape_hook_plate"):
     result = build_hook_plate(1, rows)
-elif target_part == "eye":
+elif target_part in ("eye_plate", "eye"):
     result = build_eye_plate(1, rows)
+elif target_part == "tape_eye_plate":
+    result = build_eye_plate(columns, rows)
 else:  # bra_tape — hook plate (1 row of hooks) + eye plate (N columns of adjustment)
     hook = build_hook_plate(1, rows)
     eye = build_eye_plate(columns, rows)

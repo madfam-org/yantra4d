@@ -20,7 +20,7 @@
       "label": { "en": "Hook", "es": "Gancho" },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["hook_plate"],
+      "parts": ["hook"],
       "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
     },
     {
@@ -28,7 +28,7 @@
       "label": { "en": "Eye (bar)", "es": "Ojal (barra)" },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["eye_plate"],
+      "parts": ["eye"],
       "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
     },
     {
@@ -36,13 +36,15 @@
       "label": { "en": "Bra-back tape (N×M)", "es": "Cinta de espalda (N×M)" },
       "scad_file": "main.py",
       "cq_file": "main.py",
-      "parts": ["hook_plate", "eye_plate"],
+      "parts": ["tape_hook_plate", "tape_eye_plate"],
       "estimate": { "base_time": 18, "per_unit": 2, "per_part": 12 }
     }
   ],
   "parts": [
-    { "id": "hook_plate", "label": { "en": "Hook Plate", "es": "Placa de ganchos" }, "render_mode": 0, "color": "#b8a1c8" },
-    { "id": "eye_plate", "label": { "en": "Eye Plate", "es": "Placa de ojales" }, "render_mode": 0, "color": "#c8b1d8" }
+    { "id": "hook", "label": { "en": "Hook", "es": "Gancho" }, "render_mode": 0, "color": "#b8a1c8" },
+    { "id": "eye", "label": { "en": "Eye", "es": "Ojal" }, "render_mode": 0, "color": "#c8b1d8" },
+    { "id": "tape_hook_plate", "label": { "en": "Tape Hook Plate", "es": "Placa de ganchos de cinta" }, "render_mode": 0, "color": "#b8a1c8" },
+    { "id": "tape_eye_plate", "label": { "en": "Tape Eye Plate", "es": "Placa de ojales de cinta" }, "render_mode": 0, "color": "#c8b1d8" }
   ],
   "parameter_groups": [
     { "id": "closure", "label": { "en": "Closure Grid", "es": "Rejilla de cierre" } },

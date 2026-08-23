@@ -74,5 +74,36 @@ describe('i18n', () => {
       expect(en.pricing.pro.price).toContain('$9')
     })
   })
+
+  describe('"why hyperobjects" copy', () => {
+    // The word is the product's central claim; the landing must carry the
+    // explanation in both locales or half the audience gets an unglossed term.
+    it('exists in both locales with matching keys', () => {
+      const en = getTranslations('en')
+      const es = getTranslations('es')
+      expect(Object.keys(en.hyperCommons).sort()).toEqual(
+        Object.keys(es.hyperCommons).sort()
+      )
+      for (const key of ['whyHeading', 'whyBody', 'whyLink', 'whyLinkTarget'] as const) {
+        expect(typeof en.hyperCommons[key]).toBe('string')
+        expect(typeof es.hyperCommons[key]).toBe('string')
+      }
+    })
+
+    it('keeps both halves of the borrowed word', () => {
+      const en = getTranslations('en')
+      const es = getTranslations('es')
+      expect(en.hyperCommons.whyBody).toContain('Timothy Morton')
+      expect(es.hyperCommons.whyBody).toContain('Timothy Morton')
+      expect(en.hyperCommons.whyBody).toContain('hypertext')
+      expect(es.hyperCommons.whyBody).toContain('hipertexto')
+    })
+
+    it('is not left in English on the Spanish side', () => {
+      const es = getTranslations('es')
+      expect(es.hyperCommons.whyHeading).not.toBe('Why hyperobjects')
+      expect(es.hyperCommons.whyBody).not.toContain('on your desk')
+    })
+  })
 })
 

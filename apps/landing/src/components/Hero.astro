@@ -28,7 +28,12 @@ const studioUrl = STUDIO_URL;
   </div>
 
   <div class="mx-auto max-w-5xl text-center z-10 space-y-8">
-    <div class="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary backdrop-blur-sm mb-4">
+    <!--
+      Badge label uses text-primary-readable: at 14px this is small text, and
+      --primary measures 3.60:1 on this bg-primary/10 surface — under 4.5:1.
+      The border and background tint still carry the accent identity.
+    -->
+    <div class="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary-readable backdrop-blur-sm mb-4">
       <span class="flex h-2 w-2 rounded-full bg-primary mr-2 motion-safe:animate-pulse"></span>
       {t?.heroNew?.badge ?? 'v0.1.0 Public Beta'}
     </div>
@@ -57,9 +62,11 @@ const studioUrl = STUDIO_URL;
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
       </a>
+      <!-- hover:text-primary would drop this 14px link to 3.83:1; the
+           readable accent keeps the hover affordance above 4.5:1. -->
       <a
         href={studioUrl}
-        class="text-sm font-semibold leading-6 text-foreground hover:text-primary transition-colors flex items-center gap-1 min-h-[44px]"
+        class="text-sm font-semibold leading-6 text-foreground hover:text-primary-readable transition-colors flex items-center gap-1 min-h-[44px]"
       >
         {t?.heroNew?.studioBtn ?? 'Launch Studio'} <span aria-hidden="true">→</span>
       </a>

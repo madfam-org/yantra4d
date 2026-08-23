@@ -257,6 +257,10 @@ def render_markdown(catalog: dict) -> str:
         ("The machine-readable form, including per-object CDG interfaces, standards, "
         "and clone instructions, is [`docs/commons-catalog.json`](docs/commons-catalog.json)."),
         "",
+        ("*A hyperobject here is never the thing on your desk — it is the family the "
+        "thing regenerates into. On the word, its philosophy (Morton, 2013), and its "
+        "hypertext lineage: [Why \"Hyperobjects\"](docs/strategy/MANIFESTO.md#on-the-word-why-hyperobjects).*"),
+        "",
     ]
     if any(e.get("license_exposure") for e in catalog["cartridges"]):
         lines += [

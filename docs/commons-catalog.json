@@ -5,7 +5,7 @@
     "cartridges": 400,
     "with_cdg_interfaces": 386,
     "with_commons_license": 400,
-    "dual_engine": 23
+    "dual_engine": 22
   },
   "domains": {
     "household": 113,
@@ -15354,7 +15354,7 @@
       ],
       "dual_engine": true,
       "modes": 7,
-      "parts": 20,
+      "parts": 17,
       "parameters": 15,
       "parameter_ids": [
         "latch_width",
@@ -20797,12 +20797,11 @@
       "name": "Parametric Prosthetic Socket",
       "domain": "medical",
       "engines": [
-        "cadquery",
-        "openscad"
+        "cadquery"
       ],
-      "dual_engine": true,
-      "modes": 5,
-      "parts": 4,
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
       "parameters": 20,
       "parameter_ids": [
         "proximal_dia",
@@ -20878,7 +20877,7 @@
       "source": {
         "manifest": "projects/prosthetic-socket/project.json",
         "has_cadquery": true,
-        "has_openscad": true
+        "has_openscad": false
       },
       "clone": {
         "kind": "submodule",
@@ -22092,7 +22091,7 @@
       ],
       "dual_engine": false,
       "modes": 6,
-      "parts": 17,
+      "parts": 16,
       "parameters": 74,
       "parameter_ids": [
         "N",
@@ -22247,7 +22246,7 @@
       ],
       "dual_engine": false,
       "modes": 7,
-      "parts": 7,
+      "parts": 5,
       "parameters": 32,
       "parameter_ids": [
         "internalBoxWidthXMm",

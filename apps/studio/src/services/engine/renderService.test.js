@@ -297,7 +297,9 @@ describe('renderParts (backend mode)', () => {
     const body = JSON.parse(renderCall[1].body)
     expect(body.project).toBe('my-project')
     expect(body.mode).toBe('unit')
-    expect(body.size).toBe(20)
+    // Documented contract: parameters are NESTED, not spread at the top level.
+    expect(body.parameters).toEqual({ size: 20 })
+    expect(body.size).toBeUndefined()
   })
 
   it('omits project field from payload when not provided', async () => {

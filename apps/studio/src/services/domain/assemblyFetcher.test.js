@@ -203,6 +203,28 @@ describe('fetchAssemblyGeometries', () => {
     expect(result).toHaveLength(1)
   })
 
+  it('sends the documented nested payload shape', async () => {
+    const { fetchAssemblyGeometries } = await import('./assemblyFetcher')
+
+    apiFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        parts: [{ type: 'bottom', url: 'http://localhost:5000/static/bottom.stl' }],
+      }),
+    })
+
+    await fetchAssemblyGeometries({ size: 110, target_material: 'pla' }, ['size'])
+    const payload = JSON.parse(apiFetch.mock.calls[0][1].body)
+
+    // Contract: {mode, parameters, parts, export_format?, project?} — NESTED.
+    expect(payload.mode).toBe('assembly')
+    expect(payload.parameters).toEqual({ size: 110, target_material: 'pla' })
+    // Params must not leak to the top level (that form changes the server-side
+    // param_hash / cache key and drops target_material).
+    expect(payload.size).toBeUndefined()
+    expect(payload.target_material).toBeUndefined()
+  })
+
   it('includes project slug in payload when provided', async () => {
     const { fetchAssemblyGeometries } = await import('./assemblyFetcher')
 

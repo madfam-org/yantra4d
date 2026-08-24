@@ -231,17 +231,40 @@ jobs:
           FLASK_DEBUG: "false"
           AUTH_ENABLED: "false"
           PROJECTS_DIR: ${{ github.workspace }}/projects
+        # Fails LOUDLY and as a *setup* error, distinct from a test failure, so
+        # flake triage stays honest. Previously the only evidence a reader got
+        # was the step's echoed script — grepping a failed run for "did not
+        # become healthy within 60s" matches the echoed source line even on runs
+        # where the backend came up fine (it did: "backend up after 4s"), which
+        # is exactly how this gate got blamed for the 09-keyboard flake it had
+        # nothing to do with.
+        #
+        # Also raised 60s -> 180s with a capped backoff. The gate was not the
+        # cause here, but a fixed 60s budget on a contended shared ARC runner is
+        # a latent flake of its own, and a dead process is now detected
+        # immediately rather than waiting out the whole budget.
         run: |
+          set -uo pipefail
           python app.py > "$RUNNER_TEMP/backend.log" 2>&1 &
-          for i in $(seq 1 60); do
-            if curl -fsS http://localhost:5000/api/health > /dev/null 2>&1; then
-              echo "backend up after ${i}s"; exit 0
+          backend_pid=$!
+          deadline=$(( SECONDS + 180 ))
+          delay=1
+          until curl -fsS http://localhost:5000/api/health > /dev/null 2>&1; do
+            if ! kill -0 "$backend_pid" 2>/dev/null; then
+              echo "::error title=E2E setup failed::backend process exited before serving /api/health (this is a HARNESS failure, not a test failure)"
+              echo "--- backend.log ---"; cat "$RUNNER_TEMP/backend.log"
+              exit 1
             fi
-            sleep 1
+            if (( SECONDS >= deadline )); then
+              echo "::error title=E2E setup failed::backend did not serve /api/health within 180s (this is a HARNESS failure, not a test failure)"
+              echo "--- backend.log ---"; cat "$RUNNER_TEMP/backend.log"
+              kill "$backend_pid" 2>/dev/null || true
+              exit 1
+            fi
+            sleep "$delay"
+            (( delay < 5 )) && delay=$(( delay + 1 ))
           done
-          echo "::error::backend did not become healthy within 60s"
-          cat "$RUNNER_TEMP/backend.log"
-          exit 1
+          echo "backend healthy after ${SECONDS}s"
       - name: Build studio
         run: npm run build
       - name: Cache Playwright browsers

@@ -1,6 +1,7 @@
 /**
  * Shared test utilities for Playwright E2E tests.
  */
+import { expect } from '@playwright/test'
 
 /**
  * Wait for the app to fully load (manifest fetched, UI rendered).
@@ -166,6 +167,80 @@ export async function goToStudio(page, slug = 'test') {
 
   // Give React time to apply preset values and settle after all waits
   await page.waitForTimeout(500)
+}
+
+/**
+ * Wait until the mode tabs the app is showing come from the LOADED manifest
+ * rather than the fallback one, and return their ids in order.
+ *
+ * Why this exists: ManifestProvider seeds its state with
+ * src/config/fallback-manifest.json (gridfinity: bin, baseplate, cup,
+ * baseplate_scad, lid) and only later swaps in the fetched/mocked manifest
+ * (test: cup, single, grid). useKeyboardShortcuts closes over that `modes`
+ * array and maps Cmd/Ctrl+N to `modes[N - 1].id`, so a keystroke sent during
+ * the window before the swap dispatches a mode id from the WRONG list —
+ * "baseplate" for Cmd+2 — which does not exist in the loaded manifest. The app
+ * then stays on its current mode, and no amount of polling recovers, because
+ * the keystroke has already been spent. That is the whole 09-keyboard
+ * Cmd/Ctrl+2 flake: it is a race on manifest arrival, not on rendering speed,
+ * which is why raising the poll timeout would not have fixed it and why it
+ * moved between the chromium and webkit shards run to run.
+ *
+ * Note this race is invisible to Cmd/Ctrl+1, since fallback modes[0] ("bin")
+ * and loaded modes[0] ("cup", label "Start") both satisfy that test's
+ * assertion — it passes whether or not the manifest had landed. Callers should
+ * use this helper before ANY numeric mode shortcut, not just the ones observed
+ * failing.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string[]} expectedModeIds - mode ids of the loaded manifest, in order
+ * @param {number} [timeout]
+ * @returns {Promise<string[]>}
+ */
+export async function waitForModesReady(page, expectedModeIds, timeout = 15_000) {
+  // Assert against the app's own rendered tablist — the same source of truth
+  // getActiveMode() reads — rather than a proxy like the header title, which
+  // updates from a different piece of state and can land first.
+  const tablist = page.locator('[role="tablist"][aria-label="Mode selection"]:visible').first()
+  await tablist.waitFor({ state: 'visible', timeout })
+  await expect
+    .poll(
+      async () => {
+        const tabs = tablist.locator('[role="tab"]')
+        const count = await tabs.count()
+        const ids = []
+        for (let i = 0; i < count; i++) {
+          ids.push(
+            (await tabs.nth(i).getAttribute('data-value')) ??
+            ((await tabs.nth(i).textContent()) || '').trim().toLowerCase(),
+          )
+        }
+        return ids
+      },
+      {
+        timeout,
+        message:
+          'Mode tabs never matched the loaded manifest — the app is probably still ' +
+          'showing the fallback manifest, so Cmd/Ctrl+N would dispatch a mode id ' +
+          'from the wrong list.',
+      },
+    )
+    .toHaveLength(expectedModeIds.length)
+  return expectedModeIds
+}
+
+/**
+ * Press Cmd/Ctrl+N to switch mode, only once the loaded manifest's modes are
+ * the ones the shortcut handler will index into.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {number} n - 1-based mode index, as the shortcut treats it
+ * @param {string[]} expectedModeIds - mode ids of the loaded manifest, in order
+ */
+export async function pressModeShortcut(page, n, expectedModeIds) {
+  await waitForModesReady(page, expectedModeIds)
+  const mac = await isMac(page)
+  await page.keyboard.press(mac ? `Meta+${n}` : `Control+${n}`)
 }
 
 /**

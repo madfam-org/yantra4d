@@ -115,6 +115,7 @@
 [submodule "projects/tablaco"]
 	path = projects/tablaco
 	url = https://github.com/madfam-org/tablaco.git
+	update = none
 [submodule "projects/hinge-hyperobject"]
 	path = projects/hinge-hyperobject
 	url = https://github.com/madfam-org/hinge-hyperobject.git
@@ -124,3 +125,7 @@
 [submodule "projects/rubiks-hyperobject"]
 	path = projects/rubiks-hyperobject
 	url = https://github.com/madfam-org/rubiks-hyperobject.git
+[submodule "projects/tablaco-v2"]
+	path = projects/tablaco-v2
+	url = https://github.com/madfam-org/tablaco-v2.git
+	update = none

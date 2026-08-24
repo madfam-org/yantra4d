@@ -1,5 +1,20 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, isMac, forceBackendRender, waitForRenderSettled } from '../../helpers/test-utils.js'
+import {
+  goToStudio,
+  setLanguage,
+  isMac,
+  forceBackendRender,
+  waitForRenderSettled,
+  waitForModesReady,
+  pressModeShortcut,
+} from '../../helpers/test-utils.js'
+
+/**
+ * Mode ids of the MOCKED manifest (e2e/helpers/api-mocker.js), in the order the
+ * Cmd/Ctrl+N shortcut indexes them. Deliberately different from the gridfinity
+ * fallback manifest the app boots with, which is what makes the wait necessary.
+ */
+const MOCK_MODE_IDS = ['cup', 'single', 'grid']
 
 test.describe('Keyboard Shortcuts', () => {
   test.beforeEach(async ({ page }) => {
@@ -98,22 +113,33 @@ test.describe('Keyboard Shortcuts', () => {
   // first to the Design section tab and these assertions compared a mode name
   // against "Design". sidebar.getActiveMode() reads the visible mode tablist.
   test('Cmd/Ctrl+1 switches to first mode', async ({ page, sidebar }) => {
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+1' : 'Control+1')
-    await page.waitForTimeout(500)
-    await expect.poll(() => sidebar.getActiveMode(), { timeout: 5000 }).toMatch(/start|inicio/i)
+    // waitForModesReady, not a bare keypress: the shortcut handler indexes into
+    // whichever manifest is loaded when the key lands, and until the mock
+    // manifest arrives that is the gridfinity fallback. This test would pass
+    // either way — fallback modes[0] is "bin" and loaded modes[0] is "cup"
+    // (label "Start"), so /start|inicio/ matches the loaded one regardless —
+    // which made it a false green hiding the same race that fails Cmd/Ctrl+2.
+    await pressModeShortcut(page, 1, MOCK_MODE_IDS)
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 15_000 }).toMatch(/start|inicio/i)
   })
 
   test('Cmd/Ctrl+2 switches to second mode', async ({ page, sidebar }) => {
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+2' : 'Control+2')
-    await page.waitForTimeout(500)
-    await expect.poll(() => sidebar.getActiveMode(), { timeout: 5000 }).toMatch(/single|individual/i)
+    // The flake this file was red for. Sending Meta+2 before the mock manifest
+    // replaced the fallback dispatched fallback modes[1] = "baseplate", a mode
+    // absent from the loaded manifest, so the app stayed on "cup" and
+    // getActiveMode() returned "start" until the poll expired. Waiting for the
+    // loaded modes to be the ones on screen removes the race at its source.
+    await pressModeShortcut(page, 2, MOCK_MODE_IDS)
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 15_000 }).toMatch(/single|individual/i)
   })
 
   test('Cmd/Ctrl+number beyond mode count does nothing', async ({ page, sidebar }) => {
-    // This one was green, but only because both reads resolved to the Design
-    // section tab — it would have stayed green if Meta+9 had switched the mode.
+    // Guard the count too: the fallback manifest has FIVE modes, so a Meta+9
+    // here is only genuinely "beyond the mode count" once the 3-mode loaded
+    // manifest is in place. Without the wait this asserts nothing on a slow
+    // manifest — and would also have stayed green if Meta+9 had switched mode
+    // while both reads still resolved to the same tab.
+    await waitForModesReady(page, MOCK_MODE_IDS)
     const modeBefore = await sidebar.getActiveMode()
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+9' : 'Control+9')
@@ -140,11 +166,11 @@ test.describe('Keyboard Shortcuts', () => {
     // fail strict mode here before any key was pressed. Scope to the visible one.
     await page.locator('#main-content:visible').first().click()
     await page.waitForTimeout(200)
-    const mac = await isMac(page)
-    // Ctrl+3 selects the 3rd mode (Grid) — modes are 1-indexed in shortcuts
-    await page.keyboard.press(mac ? 'Meta+3' : 'Control+3')
-    await page.waitForTimeout(500)
-    await expect.poll(() => sidebar.getActiveMode(), { timeout: 5000 }).toMatch(/grid|cuadr/i)
+    // Ctrl+3 selects the 3rd mode (Grid) — modes are 1-indexed in shortcuts.
+    // Same manifest race as Cmd/Ctrl+2: fallback modes[2] is "cup", so an early
+    // keystroke here switches to Start and this asserts /grid/ against "start".
+    await pressModeShortcut(page, 3, MOCK_MODE_IDS)
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 15_000 }).toMatch(/grid|cuadr/i)
   })
 
   test('keyboard shortcuts do not interfere with text inputs', async ({ sidebar }) => {

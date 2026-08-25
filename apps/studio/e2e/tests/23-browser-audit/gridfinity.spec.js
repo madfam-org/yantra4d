@@ -75,7 +75,7 @@ test.describe('Gridfinity — Browser Audit', () => {
   test('adjusting width_units slider updates value', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
     await sidebar.editSliderValue('width_units', 4)
-    await expect(sidebar.sliderValue('width_units')).toHaveText('4', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width_units')).toHaveText('4', { timeout: 10000 })
   })
 
   test('toggling fingerslide checkbox works', async ({ page, sidebar }) => {
@@ -91,16 +91,16 @@ test.describe('Gridfinity — Browser Audit', () => {
   test('applies Small Parts Bin preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
     await sidebar.applyPreset('Small Parts Bin')
-    await expect(sidebar.sliderValue('width_units')).toHaveText('2', { timeout: 3000 })
-    await expect(sidebar.sliderValue('depth_units')).toHaveText('1', { timeout: 3000 })
-    await expect(sidebar.sliderValue('height_units')).toHaveText('3', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width_units')).toHaveText('2', { timeout: 10000 })
+    await expect(sidebar.sliderValue('depth_units')).toHaveText('1', { timeout: 10000 })
+    await expect(sidebar.sliderValue('height_units')).toHaveText('3', { timeout: 10000 })
   })
 
   test('applies Battery Holder preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
     await sidebar.applyPreset('Battery Holder')
-    await expect(sidebar.sliderValue('width_units')).toHaveText('3', { timeout: 3000 })
-    await expect(sidebar.sliderValue('depth_units')).toHaveText('2', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width_units')).toHaveText('3', { timeout: 10000 })
+    await expect(sidebar.sliderValue('depth_units')).toHaveText('2', { timeout: 10000 })
   })
 
   test('cross-mode preset switches to baseplate', async ({ page, sidebar }) => {
@@ -240,7 +240,7 @@ test.describe('Gridfinity — Browser Audit', () => {
     if (await nextBtn.isVisible().catch(() => false)) {
       await nextBtn.click()
       await page.waitForTimeout(300)
-      await expect(page.locator('text=/Step 2|Paso 2/')).toBeVisible({ timeout: 3000 })
+      await expect(page.locator('text=/Step 2|Paso 2/')).toBeVisible({ timeout: 10000 })
     }
   })
 

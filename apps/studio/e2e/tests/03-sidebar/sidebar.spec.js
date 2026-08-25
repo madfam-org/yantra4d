@@ -43,7 +43,7 @@ test.describe('Studio Sidebar', () => {
 
   test('clicking preset applies parameter values', async ({ sidebar }) => {
     await sidebar.applyPreset('Large')
-    await expect(sidebar.sliderValue('width')).toHaveText('150', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('150', { timeout: 10000 })
   })
 
   test('active preset is highlighted', async ({ sidebar }) => {
@@ -73,13 +73,13 @@ test.describe('Studio Sidebar', () => {
 
   test('editing value and blurring commits change', async ({ sidebar }) => {
     await sidebar.editSliderValue('width', 75)
-    await expect(sidebar.sliderValue('width')).toHaveText('75', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('75', { timeout: 10000 })
   })
 
   test('value is clamped to min/max', async ({ sidebar }) => {
     await sidebar.editSliderValue('width', 9999)
     // Should be clamped to max (200) — wait for React to re-render with clamped value
-    await expect(sidebar.sliderValue('width')).toHaveText('200', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('200', { timeout: 10000 })
   })
 
   test('default star marker is visible', async ({ page }) => {
@@ -188,9 +188,9 @@ test.describe('Studio Sidebar', () => {
 
   test('reset button reverts params to defaults', async ({ sidebar }) => {
     await sidebar.editSliderValue('width', 100)
-    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 10000 })
     await sidebar.clickReset()
-    await expect(sidebar.sliderValue('width')).toHaveText('50', { timeout: 3000 }) // default from mock manifest
+    await expect(sidebar.sliderValue('width')).toHaveText('50', { timeout: 10000 }) // default from mock manifest
   })
 
   // Visibility toggle

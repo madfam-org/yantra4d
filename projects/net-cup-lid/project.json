@@ -1,0 +1,287 @@
+{
+  "project": {
+    "name": "Hydroponic Net Cup Lid",
+    "slug": "net-cup-lid",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Reservoir lids and collars sized to the 2\" and 3\" net-cup standards, so a printed lid drops onto a bucket, tote or channel and accepts the companion net-cup cartridge. The shared interface is the net-cup rim seat: a 2\" cup seats in a ~50 mm hole, a 3\" cup in a ~76 mm hole, with a counterbore the cup lip rests on. Choose a round single-hole bucket lid with a locating skirt, a rectangular multi-hole Kratky/DWC raft, or a stepped grommet collar that retrofits a hole in a lid you already own.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Tapas de depósito y collarines dimensionados a los estándares de canastilla de 2\" y 3\", para que una tapa impresa caiga sobre una cubeta, contenedor o canal y acepte el cartucho net-cup complementario. La interfaz compartida es el asiento del borde de la canastilla: una de 2\" asienta en un orificio de ~50 mm, una de 3\" en uno de ~76 mm, con un rebaje donde descansa el labio. Elige una tapa redonda de un orificio con faldón localizador, una balsa rectangular Kratky/DWC de varios orificios, o un collarín escalonado que adapta un orificio en una tapa que ya tienes.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/net-cup-lid.webp",
+    "tags": [
+      "hydroponics",
+      "net-cup",
+      "kratky",
+      "dwc",
+      "lid",
+      "reservoir",
+      "growing",
+      "agriculture",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "single_lid",
+      "label": { "en": "Single-Hole Bucket Lid", "es": "Tapa de Cubeta de Un Orificio" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["single_lid"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "multi_lid",
+      "label": { "en": "Multi-Hole Raft", "es": "Balsa de Varios Orificios" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["multi_lid"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "hole_collar",
+      "label": { "en": "Retrofit Hole Collar", "es": "Collarín de Adaptación" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hole_collar"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 7 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "single_lid",
+      "label": { "en": "Single-Hole Bucket Lid", "es": "Tapa de Cubeta de Un Orificio" },
+      "render_mode": 0,
+      "color": "#4f8f5f"
+    },
+    {
+      "id": "multi_lid",
+      "label": { "en": "Multi-Hole Raft", "es": "Balsa de Varios Orificios" },
+      "render_mode": 0,
+      "color": "#5f9f6f"
+    },
+    {
+      "id": "hole_collar",
+      "label": { "en": "Retrofit Hole Collar", "es": "Collarín de Adaptación" },
+      "render_mode": 0,
+      "color": "#3f7f50"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "cup", "label": { "en": "Net Cup Seat", "es": "Asiento de la Canastilla" } },
+    { "id": "lid", "label": { "en": "Lid Body", "es": "Cuerpo de la Tapa" } },
+    { "id": "grid", "label": { "en": "Raft Grid", "es": "Rejilla de la Balsa" } }
+  ],
+  "parameters": [
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 50.0,
+      "min": 20.0,
+      "max": 110.0,
+      "step": 1,
+      "group": "cup",
+      "modes": ["single_lid", "multi_lid", "hole_collar"],
+      "label": { "en": "Net-Cup Hole (mm)", "es": "Orificio de Canastilla (mm)" },
+      "tooltip": {
+        "en": "Rim seat hole — 50 mm for a 2\" net cup, 76 mm for a 3\"",
+        "es": "Orificio del asiento — 50 mm para canastilla de 2\", 76 mm para 3\""
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "lip_seat",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "cup",
+      "modes": ["single_lid", "multi_lid", "hole_collar"],
+      "label": { "en": "Lip Seat Width (mm)", "es": "Ancho del Asiento del Labio (mm)" },
+      "tooltip": {
+        "en": "Counterbore ledge the net-cup lip rests on so the cup hangs flush",
+        "es": "Rebaje donde descansa el labio de la canastilla para que quede a ras"
+      }
+    },
+    {
+      "id": "lid_thick",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "lid",
+      "modes": ["single_lid", "multi_lid", "hole_collar"],
+      "label": { "en": "Lid Thickness (mm)", "es": "Espesor de la Tapa (mm)" },
+      "tooltip": {
+        "en": "Slab thickness — thicker carries more plants without sagging",
+        "es": "Espesor de la placa — más grueso soporta más plantas sin pandearse"
+      }
+    },
+    {
+      "id": "lid_dia",
+      "type": "slider",
+      "default": 120.0,
+      "min": 60.0,
+      "max": 300.0,
+      "step": 5,
+      "group": "lid",
+      "modes": ["single_lid"],
+      "label": { "en": "Lid Diameter (mm)", "es": "Diámetro de la Tapa (mm)" },
+      "tooltip": {
+        "en": "Outer diameter of the round lid — match your bucket or tote mouth",
+        "es": "Diámetro exterior de la tapa redonda — iguala la boca de tu cubeta"
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "skirt_h",
+      "type": "slider",
+      "default": 12.0,
+      "min": 4.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "lid",
+      "modes": ["single_lid", "hole_collar"],
+      "label": { "en": "Skirt / Insert Depth (mm)", "es": "Profundidad del Faldón (mm)" },
+      "tooltip": {
+        "en": "Downstand that locates the lid on the vessel, or how deep the collar drops in",
+        "es": "Faldón que ubica la tapa en el recipiente, o qué tan hondo entra el collarín"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.6,
+      "max": 8.0,
+      "step": 0.2,
+      "group": "lid",
+      "modes": ["single_lid", "hole_collar"],
+      "label": { "en": "Skirt / Collar Wall (mm)", "es": "Pared del Faldón (mm)" },
+      "tooltip": {
+        "en": "Wall thickness of the locating skirt or the grommet tube",
+        "es": "Espesor de pared del faldón localizador o del tubo del collarín"
+      }
+    },
+    {
+      "id": "cols",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "grid",
+      "modes": ["multi_lid"],
+      "label": { "en": "Raft Columns", "es": "Columnas de la Balsa" },
+      "tooltip": {
+        "en": "Net-cup holes across the raft",
+        "es": "Orificios de canastilla a lo ancho de la balsa"
+      }
+    },
+    {
+      "id": "rows",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "grid",
+      "modes": ["multi_lid"],
+      "label": { "en": "Raft Rows", "es": "Filas de la Balsa" },
+      "tooltip": {
+        "en": "Net-cup holes along the raft",
+        "es": "Orificios de canastilla a lo largo de la balsa"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "bucket_2in",
+      "mode": "single_lid",
+      "label": { "en": "2\" Cup Bucket Lid", "es": "Tapa de Cubeta 2\"" },
+      "values": { "hole_dia": 50.0, "lip_seat": 3.0, "lid_thick": 4.0, "lid_dia": 120.0, "skirt_h": 12.0 }
+    },
+    {
+      "id": "kratky_raft_3x2",
+      "mode": "multi_lid",
+      "label": { "en": "Kratky Raft 3×2 (3\" cups)", "es": "Balsa Kratky 3×2 (canastillas 3\")" },
+      "values": { "hole_dia": 76.0, "lip_seat": 3.0, "lid_thick": 5.0, "cols": 3, "rows": 2 }
+    },
+    {
+      "id": "retrofit_collar_2in",
+      "mode": "hole_collar",
+      "label": { "en": "2\" Retrofit Collar", "es": "Collarín de Adaptación 2\"" },
+      "values": { "hole_dia": 50.0, "lip_seat": 3.0, "lid_thick": 4.0, "skirt_h": 12.0, "wall": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "lid_dia > hole_dia + 2 * lip_seat + 10",
+      "severity": "error",
+      "message": {
+        "en": "The lid must be wider than the cup hole plus its lip seat and rim",
+        "es": "La tapa debe ser más ancha que el orificio más su asiento y borde"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 140] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 320] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 9,
+    "fn_factor": 24,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "agriculture",
+    "cdg_interfaces": [
+      {
+        "id": "net_cup_taper",
+        "label": { "en": "Net-Cup Rim Seat", "es": "Asiento del Borde de Canastilla" },
+        "geometry_type": "socket",
+        "standard": "2\" (Ø50 mm) and 3\" (Ø76 mm) net-cup rim seat",
+        "parameters": ["hole_dia", "lip_seat", "lid_thick"],
+        "compatible_with": ["net-cup"]
+      },
+      {
+        "id": "vessel_rim_skirt",
+        "label": { "en": "Vessel Rim Locating Skirt", "es": "Faldón Localizador del Recipiente" },
+        "geometry_type": "rail",
+        "standard": "bucket / tote mouth, annular downstand",
+        "parameters": ["lid_dia", "skirt_h", "wall"],
+        "compatible_with": []
+      },
+      {
+        "id": "raft_hole_grid",
+        "label": { "en": "Raft Hole Grid", "es": "Rejilla de Orificios de la Balsa" },
+        "geometry_type": "grid",
+        "standard": "Kratky / DWC raft spacing (hole pitch derived from cup diameter)",
+        "parameters": ["cols", "rows", "hole_dia", "lip_seat"],
+        "compatible_with": ["net-cup"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Kratky and deep-water culture are the cheapest routes to reliable food from a small footprint: a bucket, water, nutrient and a lid. The lid is the only part with no standard — growers hole-saw storage tote lids by hand, which is imprecise, wasteful of the tote, and the reason a cup sits crooked and drops its plant. Printing the lid to the actual net-cup rim seat makes the vessel a choice rather than a constraint, lets a grower retrofit a lid already owned with the collar mode instead of buying another, and scales from one bucket on a balcony to a multi-site raft. Recycled PETG or PP is appropriate here, and the toggle says so.",
+      "es": "Kratky y el cultivo en agua profunda son las rutas más baratas a comida confiable en poco espacio: una cubeta, agua, nutriente y una tapa. La tapa es la única pieza sin estándar — los cultivadores perforan tapas de contenedor a mano, lo que es impreciso, desperdicia el contenedor, y es la razón de que una canastilla quede chueca y suelte su planta. Imprimir la tapa al asiento real del borde convierte el recipiente en una elección y no una restricción, permite adaptar una tapa que ya se tiene con el modo collarín en vez de comprar otra, y escala de una cubeta en un balcón a una balsa de varios sitios. PETG o PP reciclado es apropiado aquí, y el interruptor lo dice."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

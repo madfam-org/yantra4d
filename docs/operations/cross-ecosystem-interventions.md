@@ -139,6 +139,25 @@ are not lost, not because Yantra4D can act on them.
 
 ---
 
+## Y6 — Flip `RENDER_SCOPE_ENFORCEMENT` to `enforce` after the observation window
+
+**One-line ops note:** ship in the default `log` mode, grep the API logs for
+`render.scope_missing` until a quiet window passes, add the `yantra4d:render`
+scope in Janua to every `client_id` that appears, then set
+`RENDER_SCOPE_ENFORCEMENT=enforce` on the API service — mirroring the
+`RENDER_STRICT_PAYLOAD` playbook.
+
+**Why it is here.** The code side is built and shipped in `log` mode (see
+`docs/AUTH.md`, *Machine tokens and render scope*). The flip itself is an
+operator action on the API service's environment, and any client that needs a
+scope added is an operator action in Janua's OAuth client registry. Rollback is
+the same env flip back to `log`; no redeploy of any consumer is required, since
+service tokens live one hour and re-mint on their own.
+
+Fashion Cabinet is already conformant and passes in both modes.
+
+---
+
 ## What is *not* on this page
 
 Items that are Yantra4D's own work — the node editor, further graph

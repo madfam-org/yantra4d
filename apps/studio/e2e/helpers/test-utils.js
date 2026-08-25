@@ -595,7 +595,7 @@ export function redoButton(page) {
  * this is working around a product layout defect, not around a timing race, and
  * it should be reverted to a plain .click() once that defect is fixed.
  *
- * The defect: StudioHeader is `h-12 landscape:h-11` (44px at the landscape
+ * The defect: StudioHeader is `h-12 phone-landscape:h-11` (44px at the landscape
  * height these tests run at) and its icon buttons carry `min-h-[44px]`. Firefox
  * lays the 44px button out inside the 44px header at a fractional offset, so
  * the button's own rect comes back as top:-0.5, bottom:43.5 — half a pixel
